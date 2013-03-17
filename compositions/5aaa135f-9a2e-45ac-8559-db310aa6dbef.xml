@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+<name>
+<value>Blood Pressure</value>
+</name>
+<language>
+<terminology_id>
+<value/>
+</terminology_id>
+<code_string/>
+</language>
+<territory>
+<terminology_id>
+<value>ISO 1366</value>
+</terminology_id>
+<code_string>036</code_string>
+</territory>
+<category>
+<value>event</value>
+<defining_code>
+<terminology_id>
+<value>openehr</value>
+</terminology_id>
+<code_string>433</code_string>
+</defining_code>
+</category>
+<composer xsi:type="PARTY_IDENTIFIED">
+<name>Dr. Pablo Pazos</name>
+</composer>
+<context>
+<start_time>
+<value>20070920T104614,0000+0930</value>
+</start_time>
+<setting>
+<value>emergency care</value>
+<defining_code>
+<terminology_id>
+<value>openEHR</value>
+</terminology_id>
+<code_string>226</code_string>
+</defining_code>
+</setting>
+</context>
+<content archetype_node_id="openEHR-EHR-OBSERVATION.blood_pressure.v1" xsi:type="OBSERVATION">
+<name>
+<value>Blood Pressure</value>
+</name>
+<language>
+<terminology_id>
+<value>ISO 639</value>
+</terminology_id>
+<code_string>en</code_string>
+</language>
+<encoding>
+<terminology_id>
+<value>IANA</value>
+</terminology_id>
+<code_string>utf-8</code_string>
+</encoding>
+<subject xsi:type="PARTY_SELF"/>
+<protocol archetype_node_id="at0011" xsi:type="ITEM_LIST">
+<name>
+<value>protocol</value>
+</name>
+<items archetype_node_id="at0014">
+<name>
+<value>Location of measurement</value>
+</name>
+<value xsi:type="DV_CODED_TEXT">
+<value>Right arm</value>
+<defining_code>
+<terminology_id>
+<value>local</value>
+</terminology_id>
+<code_string>at0025</code_string>
+</defining_code>
+</value>
+</items>
+</protocol>
+<data archetype_node_id="at0001">
+<name>
+<value>data</value>
+</name>
+<origin>
+<value>20070920T104614,0156+0930</value>
+</origin>
+<events archetype_node_id="at0006" xsi:type="POINT_EVENT">
+<name>
+<value>any event</value>
+</name>
+<time>
+<value>20070920T104614,0156+0930</value>
+</time>
+<data archetype_node_id="at0003" xsi:type="ITEM_LIST">
+<name>
+<value>data</value>
+</name>
+<items archetype_node_id="at0004">
+<name>
+<value>systolic</value>
+</name>
+<value xsi:type="DV_QUANTITY">
+<magnitude>120</magnitude>
+<units>mm[Hg]</units>
+</value>
+</items>
+<items archetype_node_id="at0005">
+<name>
+<value>diastolic</value>
+</name>
+<value xsi:type="DV_QUANTITY">
+<magnitude>90</magnitude>
+<units>mm[Hg]</units>
+</value>
+</items>
+</data>
+</events>
+</data>
+</content>
+<uid>
+<value>5aaa135f-9a2e-45ac-8559-db310aa6dbef</value>
+</uid>
+</data>

@@ -1,0 +1,5 @@
+en esta pimer implementacion:
+
+- la contribution y su id la ponia el cliente
+- se crean contributions desde el cliente
+- se agregan versiones desde el cliente

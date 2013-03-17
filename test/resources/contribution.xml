@@ -1,0 +1,42 @@
+<contribution>
+   <!-- HIER_OBJECT_ID -->
+   <uid>
+     <value>10aec661-5458-4ff6-8e63-c22655371234</value>
+   </uid>
+   
+   <!-- AUDIT_DETAILS -->
+   <audit>
+     <system_id>10aec661-5458-4ff6-8e63-c2265537196d</system_id>
+     
+     <!-- DV_DATE_TIME -->
+     <time_committed /><!-- lo debe setear el servidor -->
+     
+     <!-- DV_CODED_TEXT -->
+     <change_type>creation</change_type>
+     
+     <!-- PARTY_IDENTIFIED -->
+     <committer>
+       <name>Dr. Pablo Pazos</name>
+     </committer>
+   </audit>
+   
+   <!-- OBJECT_REF -->
+   <versions>
+     <!-- OBJECT_ID > OBJECT_VERSION_ID -->
+     <id>
+       <!-- <value>object_id::creating_system_id::version_tree_id</value>-->
+       <value>10aec661-5458-4ff6-8e63-c22655371222::ISIS_EMR::1</value>
+     </id>
+     <namespace>isis.ehr.versions</namespace>
+     <type>VERSION</type>
+   </versions>
+   <versions>
+     <!-- OBJECT_ID > OBJECT_VERSION_ID -->
+     <id>
+       <!-- <value>object_id::creating_system_id::version_tree_id</value>-->
+       <value>10aec661-5458-4ff6-8e63-c22655371444::ISIS_EMR::1</value>
+     </id>
+     <namespace>isis.ehr.versions</namespace>
+     <type>VERSION</type>
+   </versions>
+ </contribution>
