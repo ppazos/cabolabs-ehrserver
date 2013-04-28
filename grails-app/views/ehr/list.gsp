@@ -12,7 +12,13 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+<<<<<<< HEAD
+				<!--
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+			   -->
+=======
+				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 			</ul>
 		</div>
 		<div id="list-ehr" class="content scaffold-list" role="main">
@@ -35,10 +41,17 @@
 					</tr>
 				</thead>
 				<tbody>
+<<<<<<< HEAD
+				<g:each in="${list}" status="i" var="ehrInstance">
+					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+					
+						<td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "dateCreated")}</g:link></td>
+=======
 				<g:each in="${ehrInstanceList}" status="i" var="ehrInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td><g:link action="show" id="${ehrInstance.id}">${fieldValue(bean: ehrInstance, field: "dateCreated")}</g:link></td>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					
 						<td>${fieldValue(bean: ehrInstance, field: "ehrId")}</td>
 					
@@ -51,7 +64,11 @@
 				</tbody>
 			</table>
 			<div class="pagination">
+<<<<<<< HEAD
+				<g:paginate total="${total}" />
+=======
 				<g:paginate total="${ehrInstanceTotal}" />
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 			</div>
 		</div>
 	</body>

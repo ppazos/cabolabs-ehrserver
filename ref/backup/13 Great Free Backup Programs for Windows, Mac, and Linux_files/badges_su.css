@@ -1,0 +1,269 @@
+/* CSS buttons Stylesheet Header 
+@	used for dynamic badges
+*/
+/* @group global assignments */
+* {
+	padding: 0;
+	margin: 0;
+}
+ul.suHostedBadge {
+	list-style-position: outside;
+	list-style-type: none;
+}
+.suHostedBadge a {
+	display: block;
+	overflow: hidden;
+	border: 0; 
+	cursor: pointer;
+	color: #258DB1; 
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:11px; 
+	text-decoration:none;
+	line-height: 18px;
+}
+.suHostedBadge a.logo {
+	text-indent: -999em;
+}
+/* @end */
+
+/* @group badge1 */
+.badge1 .suHostedBadge {
+	width: 74px; 
+	height: 18px; 
+	z-index: 999;
+}
+.badge1 li {
+	float: left;
+	display: inline;
+}
+.badge1 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeRect74x18.png?v5) no-repeat 0 0;
+}
+.badge1 .suHostedBadge a.logo {
+	width: 20px;
+	height: 18px;
+	background-position: 0 0;
+}
+.badge1 .suHostedBadge a.count {
+	width:54px; 
+	height:18px; 
+	text-align: center; 	
+	background-position: 100% 0;
+}
+/* @end */
+/* @group badge2 */
+.badge2 .suHostedBadge {
+	width: 65px; 
+	height: 18px; 
+	z-index: 999;
+}
+.badge2 li {
+	float: left;
+	display: inline;
+}
+.badge2 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeRound65x18.png?v5) no-repeat 0 0;
+}
+.badge2 .suHostedBadge a.logo {
+	width: 18px;
+	height: 18px;
+	background-position: 0 0;
+}
+.badge2 .suHostedBadge a.count {
+	width:47px; 
+	height:18px; 
+	text-align: center; 	
+	background-position: 100% 0;
+}
+/* @end */
+/* @group Badge 3 */
+.badge3 .suHostedBadge {
+	width: 65px; 
+	height: 18px; 
+	z-index: 999;
+}
+.badge3 li {
+	float: left;
+	display: inline;
+}
+.badge3 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeLogo18x18.png?v5) no-repeat 0 0;
+}
+.badge3 .suHostedBadge a.logo {
+	width: 18px;
+	height: 18px;
+	background-position: 0 0;
+}
+.badge3 .suHostedBadge a.count {
+	width:47px; 
+	height:18px; 
+	text-align: center; 	
+	background: transparent none;
+}
+/* @end */
+/* @group badge4 */
+.badge4 .suHostedBadge {
+	width: 18px; 
+	height: 18px; 
+	z-index: 999;
+}
+.badge4 li {
+	float: left;
+	display: inline;
+}
+.badge4 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeLogo18x18.png?v5) no-repeat 0 0;
+}
+.badge4 .suHostedBadge a.logo {
+	width: 18px;
+	height: 18px;
+	background-position: 0 0;
+}
+.badge4 .suHostedBadge a.count {
+	width:47px; 
+	height:18px; 
+	text-align: center; 	
+	background: transparent none;
+}
+/* @end */
+/* @group badge5 */
+.badge5 .suHostedBadge {
+	width: 50px; 
+	height: 60px; 
+	z-index: 999;
+}
+.badge5 li {
+	float: none;
+}
+.badge5 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeRect50x60.png?v5) no-repeat 0 0;
+}
+.badge5 .suHostedBadge a.logo {
+	width: 50px;
+	height: 40px;
+	background-position: 0 0;
+}
+.badge5 .suHostedBadge a.count {
+	width: 50px; 
+	height: 20px; 
+	text-align: center; 	
+	background-position: 0 100%;
+}
+/* @end */
+/* @group badge6 */
+.badge6 .suHostedBadge {
+	width: 30px; 
+	height: 31px; 
+	z-index: 999;
+}
+.badge6 li {
+	float: left;
+	display: inline;
+}
+.badge6 .suHostedBadge a {
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeLogo30x31.png?v5) no-repeat 0 0;
+}
+.badge6 .suHostedBadge a.logo {
+	width: 30px;
+	height: 31px;
+	background-position: 0 0;
+}
+.badge6 .suHostedBadge a.count {
+	width:47px; 
+	height:18px; 
+	text-align: center; 	
+	background: transparent none;
+}
+/* @end */
+/* @group badge200+ custom badges */
+.badge200 .suHostedBadge,
+.badge210 .suHostedBadge,
+.badge300 .suHostedBadge {
+	width: 108px; 
+	height: 20px; 
+	z-index: 999;
+}
+.badge200 li,
+.badge210 li,
+.badge300 li  {
+	float: left;
+	display: inline;
+}
+.badge200 .suHostedBadge a,
+.badge200 .suHostedBadge .rate a span,
+.badge210 .suHostedBadge a,
+.badge210 .suHostedBadge .rate a span,
+.badge300 .suHostedBadge a,
+.badge300 .suHostedBadge .rate a span   {
+	outline: none;
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeCustom.png?v5) no-repeat 0 0;
+}
+.badge300 .suHostedBadge a {
+	font-weight: normal;
+}
+.badge200 .suHostedBadge a.text,
+.badge210 .suHostedBadge a.text,
+.badge300 .suHostedBadge a.text {
+	width: 60px; 
+	height: 20px;
+	padding-left: 22px;
+	text-align: center;
+	line-height: 20px;	
+	background-position: 0 0;
+}
+.badge200 .suHostedBadge a.text:hover,
+.badge210 .suHostedBadge a.text:hover,
+.badge300 .suHostedBadge a.text:hover {
+	background-position: 0 -21px;
+}
+.badge200 .suHostedBadge .rate a,
+.badge210 .suHostedBadge .rate a,
+.badge300 .suHostedBadge .rate a {
+	width: 25px; 
+	height: 20px; 	
+	background-position: -82px 0;
+}
+.badge200 .suHostedBadge .rate a:hover,
+.badge210 .suHostedBadge .rate a:hover,
+.badge300 .suHostedBadge .rate a:hover {
+	background-position: -82px -21px;
+}
+.badge200 .suHostedBadge .rate a span,
+.badge210 .suHostedBadge .rate a span,
+.badge300 .suHostedBadge .rate a span {
+	height: 20px;
+	width: 22px;
+	display: block;
+	background-position: -115px 0;
+}
+.badge200 .suHostedBadge .rate a.active span,
+.badge210 .suHostedBadge .rate a.active span,
+.badge300 .suHostedBadge .rate a.active span {
+	background-position: -115px -21px;
+}
+/* @end */
+/* @group Badge 3 */
+.badge310 .suHostedBadge {
+	width: 128px; 
+	height: 18px; 
+	z-index: 999;
+}
+.badge310 li {
+	float: left;
+	display: inline;
+}
+.badge310 .suHostedBadge a {
+}
+.badge310 .suHostedBadge a.logo {
+	width: 20px;
+	height: 18px;
+	background: transparent url(http://cdn.stumble-upon.com/i/badges/badgeLogo18x18.png?v5) no-repeat 0 0;
+}
+.badge310 .suHostedBadge a.count {
+	width:47px; 
+	height:18px; 
+	text-align: center; 	
+	background: transparent none;
+}
+/* @end */

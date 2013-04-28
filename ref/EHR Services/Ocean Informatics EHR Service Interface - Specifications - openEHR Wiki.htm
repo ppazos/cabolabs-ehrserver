@@ -1,0 +1,1029 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0131)http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-DataStructures -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <title>Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki</title>
+    
+        
+
+                        
+    
+    
+            
+<meta id="confluence-context-path" name="confluence-context-path" content="/wiki">
+<meta id="atlassian-token" name="atlassian-token" content="IMWVRfqdYd">
+<meta id="confluence-space-key" name="confluence-space-key" content="spec">
+
+<script type="text/javascript">
+    // Deprecated global variables. To be removed in a future version of Confluence.
+    var contextPath = '/wiki';
+</script>
+
+    
+
+<!-- include system css resources -->
+<link type="text/css" rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/batch.css" media="all">
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1/_/download/superbatch/css/batch.css?ieonly=true" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/batch(1).css" media="print">
+<link type="text/css" rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/com.atlassian.confluence.plugins.drag-and-drop-support.css" media="all">
+<link type="text/css" rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/confluence.macros.advanced-fancy-box.css" media="all">
+<link type="text/css" rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/confluence.web.resources-labels-editor.css" media="all">
+
+<!-- end system css resources -->
+
+    <link rel="stylesheet" href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/combined.css" type="text/css">
+
+    <meta name="confluence-request-time" content="1348379343983">
+
+<meta name="loggedInUsername" content="">
+
+    <link rel="shortcut icon" href="http://www.openehr.org/wiki/favicon.ico">
+    <link rel="icon" type="image/png" href="http://www.openehr.org/wiki/s/1724/1/_/images/logo/confluence_16.png">
+
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.openehr.org/wiki/opensearch/osd.action" title="openEHR Wiki">
+
+        <!-- include system javascript resources -->
+                        
+    
+    <script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/batch.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/com.atlassian.confluence.plugins.drag-and-drop-support.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/com.atlassian.confluence.plugins.drag-and-drop-drag-and-drop-for-view-content.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/confluence.macros.advanced-fancy-box.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/confluence.macros.advanced-thumbnail-images.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/engine.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/util.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/AddLabeltoEntity.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/RemoveLabelFromEntity.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/SuggestedLabelsForEntity.js"></script>
+<script type="text/javascript" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/confluence.web.resources-labels-editor.js"></script>
+
+    <!-- end system javascript resources -->
+
+    
+
+    
+    <link rel="canonical" href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface">
+    <link rel="shortlink" href="http://www.openehr.org/wiki/x/BoC4AQ">
+    <meta name="wikilink" content="[spec:Ocean Informatics EHR Service Interface]">
+
+<link type="text/css" rel="stylesheet" href="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/style.css"><script type="text/javascript" charset="utf-8" src="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/page_context.js"></script></head>
+
+<body onload="placeFocus()" id="com-atlassian-confluence" class="" screen_capture_injected="true">
+<div id="full-height-container">
+
+
+
+<fieldset class="hidden parameters">
+    <input type="hidden" id="statusDialogHeading" value="What are you working on?">
+    <input type="hidden" id="statusDialogLatestLabel" value="Last update:">
+    <input type="hidden" id="statusDialogUpdateButtonLabel" value="Update">
+    <input type="hidden" id="statusDialogCancelButtonLabel" value="Cancel">
+</fieldset>
+
+<fieldset class="hidden parameters">
+    <input type="hidden" id="globalSettingsAttachmentMaxSize" value="10485760">
+    <input type="hidden" id="userLocale" value="en_GB">
+    <input type="hidden" id="staticResourceUrlPrefix" value="/wiki/s/1724/1/_">
+    <input type="hidden" id="contextPath" value="/wiki">
+</fieldset>
+
+    
+<div id="header" class="">
+        <form id="quick-search" class="quick-search" method="get" action="http://www.openehr.org/wiki/dosearchsite.action">
+        <fieldset>
+            <legend>Quick Search</legend>
+            <input class="quick-search-query" id="quick-search-query" type="search" accesskey="q" autocomplete="off" name="queryString" size="25" results="10" placeholder="Search">
+            <input class="quick-search-submit" id="quick-search-submit" type="submit" value="Search">
+            <div class="aui-dd-parent quick-nav-drop-down"><!-- Quick nav appears here --></div>
+        </fieldset>
+        <fieldset class="hidden parameters">
+            <input type="hidden" id="quickNavEnabled" value="true">
+                    </fieldset>
+    </form>
+    <ul id="header-menu-bar" class="ajs-menu-bar">
+                    
+        
+            <li class="normal ajs-menu-item">
+        <a id="browse-menu-link" class="browse trigger ajs-menu-title" href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#"><span><span>Browse</span></span></a>         <div class="ajs-drop-down hidden" hidden="" style="">
+                        <ul id="browse-menu-link-leading" class="section-leading first">
+                                        <li>
+    
+        
+    
+    <a id="space-pages-link" href="http://www.openehr.org/wiki/pages/listpages.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Pages</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="space-blogposts-link" href="http://www.openehr.org/wiki/pages/viewrecentblogposts.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Blog</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="space-labels-link" href="http://www.openehr.org/wiki/labels/listlabels-heatmap.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Labels</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="space-attachments-link" href="http://www.openehr.org/wiki/spaces/listattachmentsforspace.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Attachments</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a href="http://www.openehr.org/wiki/spaces/space-bookmarks.action?spaceKey=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Bookmarks</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="space-mail-link" href="http://www.openehr.org/wiki/spaces/viewmailarchive.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Mail</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="space-advanced-link" href="http://www.openehr.org/wiki/spaces/viewspacesummary.action?key=spec" class="" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Advanced</span></a>        </li>
+                            </ul>
+                        <ul id="browse-menu-link-global" class="section-global">
+                                        <li>
+    
+        
+    
+    <a id="gadget-directory-link" href="http://www.openehr.org/wiki" class="user-item administration-link" title="Browse gadgets provided by Confluence">
+                   <span>Confluence Gadgets</span></a>        </li>
+                            </ul>
+                    </div>
+    </li>
+        
+                                                         <li class="ajs-menu-item normal">
+        
+        
+    
+    <a id="login-link" href="http://www.openehr.org/wiki/login.action?os_destination=%2Fdisplay%2Fspec%2FOcean%2BInformatics%2BEHR%2BService%2BInterface" class="user-item login-link">
+                   <span>Log In</span></a>        </li>
+                            <li class="ajs-menu-item normal">
+    
+        
+    
+    <a id="signup-link" href="http://www.openehr.org/wiki/signup.action" class="user-item signup-link">
+                   <span>Sign Up</span></a>        </li>
+                            </ul>
+    
+    
+    <ol id="breadcrumbs">
+                    
+        <li class="first">
+                                    <span><a href="http://www.openehr.org/wiki/dashboard.action">Dashboard</a></span>
+                </li>
+                    
+        <li>
+                                    <span><a href="http://www.openehr.org/wiki/display/spec">Specifications</a></span>
+                </li>
+                                        <li id="ellipsis" title="    …
+                    Specifications Home
+             &gt;         openEHR Service Model
+        …
+"><span><strong>…</strong></span></li>
+                                    
+        <li class="hidden-crumb">
+                                    <span><a href="http://www.openehr.org/wiki/display/spec/Specifications+Home">Specifications Home</a></span>
+                </li>
+                                
+        <li class="hidden-crumb">
+                                    <span><a href="http://www.openehr.org/wiki/display/spec/openEHR+Service+Model">openEHR Service Model</a></span>
+                </li>
+                    
+        <li>
+                                    <span><a href="http://www.openehr.org/wiki/display/spec/EHR+Service+Specification">EHR Service Specification</a></span>
+                </li>
+                    
+        <li>
+                                    <span>Ocean Informatics EHR Service Interface</span>
+                </li>
+        </ol>
+
+</div>
+<div id="main">
+    
+    
+    <div id="navigation" class="content-navigation view">
+        <fieldset class="hidden parameters">
+            <input type="hidden" id="pageId" value="28868614">
+        </fieldset>
+        <ul class="ajs-menu-bar">
+                                
+                        
+            <li class="normal ajs-menu-item">
+        <a id="action-menu-link" class="action trigger ajs-menu-title" href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#"><span><span>Tools</span></span></a>         <div class="ajs-drop-down most-right-menu-item hidden" hidden="" style="">
+                        <ul id="action-menu-link-primary" class="section-primary first">
+                                        <li>
+    
+        
+    
+    <a id="view-attachments-link" href="http://www.openehr.org/wiki/pages/viewpageattachments.action?pageId=28868614" class="action-view-attachments" accesskey="a">
+                   <span><u>A</u>ttachments (0)</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="action-view-history-link" href="http://www.openehr.org/wiki/pages/viewpreviousversions.action?pageId=28868614" class="action-view-history">
+                   <span>Page History</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="action-page-permissions-link" href="http://www.openehr.org/wiki/pages/viewinfo.action?pageId=28868614" class="action-page-permissions">
+                   <span>Restrictions</span></a>        </li>
+                            </ul>
+                        <ul id="action-menu-link-secondary" class="section-secondary">
+                                        <li>
+    
+        
+    
+    <a id="view-page-info-link" href="http://www.openehr.org/wiki/pages/viewinfo.action?pageId=28868614" class="action-view-info" accesskey="i">
+                   <span><u>I</u>nfo</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="link-to-page-link" href="http://www.openehr.org/wiki/pages/viewinfo.action?pageId=28868614" class="">
+                   <span>Link to this Page…</span></a>        </li>
+                                        <li>
+    
+        
+    
+    <a id="action-view-source-link" href="http://www.openehr.org/wiki/pages/viewpagesrc.action?pageId=28868614" class="action-view-source popup-link">
+                   <span>View Wiki Markup</span></a>        </li>
+                            </ul>
+                    </div>
+    </li>
+            </ul>
+    </div>
+
+    
+    <h1 id="title-heading" class="pagetitle">
+                    <a href="http://www.openehr.org/wiki/display/spec"><img class="logo global custom" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/global.logo" alt=""></a>        
+		<span id="title-text">
+					            <a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface">Ocean Informatics EHR Service Interface</a>
+    				</span>
+    </h1>
+
+    
+
+    
+    
+    
+    <div id="content" class="page view">
+        
+
+
+<fieldset id="link-to-page-fields" class="hidden parameters">
+    <input type="hidden" id="linkToThisPageHeading" value="Link to this Page">
+    <input type="hidden" id="linkToThisPageLink" value="Link">
+    <input type="hidden" id="linkToThisPageTinyLink" value="Tiny Link">
+    <input type="hidden" id="linkToThisPageWikiMarkup" value="Wiki Markup">
+    <input type="hidden" id="linkToThisPageClose" value="Close">
+</fieldset>
+    <fieldset class="hidden parameters">
+    <input type="hidden" title="movePageDialogViewPageTitle" value="Move Page – ‘Ocean Informatics EHR Service Interface’">
+    <input type="hidden" title="movePageDialogEditPageTitle" value="Set Page Location">
+    <input type="hidden" title="movePageDialogMoveButton" value="Move">
+    <input type="hidden" title="movePageDialogOkButton" value="OK">
+    <input type="hidden" title="movePageDialogCancelButton" value="Cancel">
+    <input type="hidden" title="movePageDialogBrowsePanelTip" value="Click to select the new parent page for this page and its children.">
+    <input type="hidden" title="movePageDialogSearchPanel" value="Search">
+    <input type="hidden" title="movePageDialogHistoryPanel" value="Recently Viewed">
+    <input type="hidden" title="movePageDialogHistoryNoResults" value="There were no recently viewed pages found.">
+    <input type="hidden" title="movePageDialogLocationPanel" value="Known Location">
+    <input type="hidden" title="movePageDialogLocationNotFound" value="The specified page was not found.">
+    <input type="hidden" title="movePageDialogBrowsePanel" value="Browse">
+    <input type="hidden" title="movePageDialogPanelLoadErrorMsg" value="Error reading the panel content from the server.">
+    <input type="hidden" title="movePageDialogPanelLoadErrorTip" value="You could try reloading the page and launching the dialog again.">
+    <input type="hidden" title="movePageDialogPanelLoadErrorStatus" value="HTTP Status">
+    <input type="hidden" title="movePageDialogNoSelectionErrorMsg" value="You must make a selection in the tree before you can move the page.">
+    <input type="hidden" title="movePageDialogSearchError" value="Failed to retrieve search results from the server.">
+    <input type="hidden" title="movePageDialogSearchNoResults" value="There were no pages found containing &lt;b&gt;{0}&lt;/b&gt;.">
+    <input type="hidden" title="movePageDialogSearchResultCount" value="Showing &lt;b&gt;{0}&lt;/b&gt;-&lt;b&gt;{1}&lt;/b&gt; of &lt;b&gt;{2}&lt;/b&gt; pages containing &lt;b&gt;{3}&lt;/b&gt;.">
+    <input type="hidden" title="movePageDialogMoveFailed" value="Move failed. There was a problem contacting the server.">
+    <input type="hidden" title="movePageDialogCannotChangeSpace" value="You cannot move this page to another space because you do not have permission to remove it from this space.">
+    <input type="hidden" title="pageTitle" value="Ocean Informatics EHR Service Interface">
+    <input type="hidden" title="parentPageTitle" value="EHR Service Specification">
+    <input type="hidden" title="fromPageTitle" value="">
+    <input type="hidden" title="spaceKey" value="spec">
+    <input type="hidden" title="spaceName" value="Specifications">
+    <input type="hidden" title="movePageDialogInvalidLocation" value="You cannot move a page to be underneath itself or its children.">
+</fieldset>
+
+<script type="text/x-template" title="movePageDialog">
+    <div class="row information">
+        Specify the new parent page for this page and its children by space and title.
+    </div>
+    <div class="form">
+        <div class="row">
+            <label for="new-space">New space:</label>
+            <div class="value new-space-value">
+                <input id="new-space-key" name="new-space-key" type="hidden" value="spec">
+                                    <span class="space-input">
+                        <input id="new-space" name="new-space" value="Specifications" disabled="disabled">
+                    </span>
+                    <span class="description warning">You cannot move this page to another space because you do not have permission to remove it from this space.</span>
+                                <div class="new-space-dropdown aui-dd-parent"></div>
+            </div>
+        </div>
+        <div class="row">
+            <label for="new-parent-page">New parent page:</label>
+            <div class="value new-parent-page-value">
+                <span class="page-input">
+                    <input id="new-parent-page" name="new-parent-page" value="EHR Service Specification">
+                </span>
+                <span class="description">Start typing a page title to see a list of suggestions.</span>
+                <div class="new-parent-page-dropdown aui-dd-parent"></div>
+            </div>
+        </div>
+    </div>
+    <div class="location-info">
+        <div class="row">
+            <label>Current location:</label>
+            <div class="value breadcrumbs-container">
+                <div class="breadcrumbs-line">
+                    <ul id="current-parent-breadcrumbs" class="breadcrumbs">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <label>New location:</label>
+            <div class="value breadcrumbs-container">
+                <div class="breadcrumbs-line">
+                    <ul id="new-parent-breadcrumbs" class="breadcrumbs">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/x-template" title="movePageErrors">
+    <div id="move-errors" class="hidden warning"></div>
+</script>
+<script type="text/x-template" title="movePageBreadcrumb">
+    <li><a class="{2}" title="{3}" tabindex="-1"><span>{0}</span></a></li>
+</script>
+<script type="text/x-template" title="movePageBreadcrumbLoading">
+    <li class="loading"><span>Loading breadcrumbs&hellip;</span></li>
+</script>
+<script type="text/x-template" title="movePageBreadcrumbError">
+    <li class="warning last"><span>Error retrieving breadcrumbs.</span></li>
+</script>
+<script type="text/x-template" title="movePageNoMatchingPages">
+    <ol><li><span class="warning">No matching pages found.</span></li></ol>
+</script>
+<script type="text/x-template" title="movePageNoMatchingSpaces">
+    <ol><li><span class="warning">No matching spaces found.</span></li></ol>
+</script>
+
+<script type="text/x-template" title="movePageSearchPanel">
+<div class="row information">
+    Search for and select the new parent page for this page and its children.
+</div>
+<div id="move-page-search-container" class="row">
+    <div class="search-form">
+        <input class="search-query">
+                    <select class="search-space" disabled="disabled">
+                <option value="spec" selected="selected">Specifications</option>
+            </select>
+                <input type="button" value="Search">
+                    <div class="description warning">You cannot move this page to another space because you do not have permission to remove it from this space.</div>
+            </div>
+    <div class="search-results">
+    </div>
+</div>
+</script>
+<script type="text/x-template" title="movePageSearchResult">
+    <tr class="search-result">
+        <th class="search-result-title"><a href="{1}" class="content-type-{2}"><span>{0}</span></a></th>
+        <td class="search-result-space"><a class="space" href="/wiki/display/{4}/" title="{3}">{3}</a></td>
+        <td class="search-result-date"><span class="date" title="{6}">{5}</span></td>
+    </tr>
+</script>
+<script type="text/x-template" title="movePageSearchResultsCount">
+    <p class="search-result-count">{0}</p>
+</script>
+<script type="text/x-template" title="movePageSearchResultsTable">
+    <table>
+        <tr class="header">
+            <th class="search-result-title">Page Title</th>
+            <th class="search-result-space">Space</th>
+            <th class="search-result-date">Updated</th>
+        </tr>
+    </table>
+</script>
+<script type="text/x-template" title="movePageSearchResultsLoading">
+    <div class="searching">Searching…</div>
+</script>
+
+<script type="text/x-template" title="movePageHistoryPanel">
+<div class="row information">
+    Select the new parent page for this page and its children from your history.
+</div>
+<div id="move-page-search-container" class="row">
+    <div class="search-results">
+    </div>
+</div>
+</script>
+<script type="text/x-template" title="movePageHistoryLoading">
+    <div class="searching">Loading…</div>
+</script>
+
+
+<script type="text/x-template" title="movePageBrowsePanel">
+    <div class="row information">
+        Click to select the new parent page for this page and its children.
+    </div>
+    <div class="tree"></div>
+</script>
+<script type="text/x-template" title="movePageBrowsePanelLoading">
+    <span>Loading…</span>
+</script>
+<script type="text/x-template" title="movePageBrowsePanelSpace">
+    <ul><li id='tree-root-node-item' class='root-node-list-item'><a class='root-node' href='#'>{0}</a></li></ul>
+</script>
+
+    <!-- Start restrictions section -->
+<fieldset class="hidden parameters i18n">
+        <input type="hidden" id="i18n.page.perms.error.invalid.entity.names" value="Unknown user or group:">
+        <input type="hidden" id="i18n.page.perms.dialog.heading" value="Page Restrictions">
+        <input type="hidden" id="i18n.page.perms.editing.restricted.to" value="Editing restricted to:">
+        <input type="hidden" id="i18n.cancel.name" value="Cancel">
+        <input type="hidden" id="i18n.close.name" value="Close">
+        <input type="hidden" id="i18n.update.name" value="Save">
+</fieldset>
+
+<script type="text/x-template" title="page-permissions-div">
+<div id="page-permissions-div">
+    <div id="page-permissions-editor-form">
+
+                <div id="page-permissions-error-div" class="hidden">
+            <a href="#" id="permissions-error-div-close">Ok</a>
+            <div></div>
+        </div>
+
+                <div id="page-permissions-type-radios" class="page-permissions-label-rows">
+            <div>
+                <input id="restrictViewRadio" type="radio" checked="checked" name="pagePermissionTypeRadio" value="view"/>
+                <label for="restrictViewRadio">Restrict viewing of this page</label>
+                <input id="restrictEditRadio" type="radio" name="pagePermissionTypeRadio" value="edit"/>
+                <label for="restrictEditRadio">Restrict editing of this page</label>
+            </div>
+        </div>
+        <div id="page-permissions-input" class="page-permissions-label-rows">
+            <div class="page-permissions-label">To:</div>
+            <div id="page-permissions-chooser-box">
+                                <span id="page-permissions-choose-user" class="ajs-button">
+                    
+
+
+
+    
+
+
+
+<a href="#" id='userpicker-popup-link-image' onClick="var picker = window.open('/wiki/spaces/openuserpicker.action?key=spec&amp;startIndex=0&amp;onPopupSubmit=AJS.PagePermissions.addUserPermissions', 'EntitiesPicker', 'status=yes,resizable=yes,top=100,left=200,width=700,height=680,scrollbars=yes'); picker.focus(); return false;"><img src="/wiki/s/1724/1/_/images/icons/user_16.gif" height=16 width=16 border=0 align="absmiddle"  title="Choose users" /></a>
+<a href="#" id='userpicker-popup-link-text' onClick="var picker = window.open('/wiki/spaces/openuserpicker.action?key=spec&amp;startIndex=0&amp;onPopupSubmit=AJS.PagePermissions.addUserPermissions', 'EntitiesPicker', 'status=yes,resizable=yes,top=100,left=200,width=700,height=680,scrollbars=yes'); picker.focus(); return false;">Person...</a>
+
+
+                </span>
+                <span id="page-permissions-choose-group" class="ajs-button">
+                    
+
+
+
+    
+
+ 
+
+<a href="#" id='grouppicker-popup-link-image' onClick="var picker = window.open('/wiki/spaces/opengrouppicker.action?key=spec&amp;startIndex=0&amp;actionName=dosearchgroups.action&amp;onPopupSubmit=AJS.PagePermissions.addGroupPermissions', 'EntitiesPicker', 'status=yes,resizable=yes,top=100,left=200,width=580,height=550,scrollbars=yes'); picker.focus(); return false;"><img src="/wiki/s/1724/1/_/images/icons/group_16.gif" height=16 width=16 border=0 align="absmiddle"  title="Choose groups" /></a>
+<a href="#" id='grouppicker-popup-link-text' onClick="var picker = window.open('/wiki/spaces/opengrouppicker.action?key=spec&amp;startIndex=0&amp;actionName=dosearchgroups.action&amp;onPopupSubmit=AJS.PagePermissions.addGroupPermissions', 'EntitiesPicker', 'status=yes,resizable=yes,top=100,left=200,width=580,height=550,scrollbars=yes'); picker.focus(); return false;">Group...</a>
+
+
+                </span>
+            </div>
+            <div id="page-permissions-input-box">
+                                <span>
+                    <input type="text" id="page-permissions-names-input" class="input-placeholder" value="Enter user or group name" name="permissionNames" size="30" autocomplete="off"/>
+                </span>
+                <input
+    type="hidden"
+                            id="page-permissions-names-hidden"           />                <img height="16px" width="1px" src="/wiki/s/1724/1/_/images/border/spacer.gif"/>
+                <input type="button" id="add-typed-names" value="Restrict">
+            </div>
+        </div>
+    </div>
+    <div id="page-permissions-tables">
+        <div id="page-permissions-table-div">
+                        <table id="page-permissions-table" class="page-permissions-table">
+                <tr id="page-permissions-no-views" class="marker-row">
+                    <td colspan="3" class="page-permissions-marker-cell"><span>No view restrictions are defined for this page</span></td>
+                </tr>
+                <tr id="page-permissions-no-edits" class="marker-row">
+                    <td colspan="3" class="page-permissions-marker-cell"><span>No edit restrictions are defined for this page</span></td>
+                </tr>
+            </table>
+        </div>
+        <div id="page-inherited-permissions-table-div" class="hidden">
+            <span id="page-inherited-permissions-table-desc">
+                <a class="icon twisty-closed">Show/Hide</a>
+                <a id="toggle-inherited-permissions" title="Click to see inherited restrictions">This page has restricted parent pages. It can only be seen by users who can see those parent pages.</a>
+            </span>
+            <div id="page-inherited-permissions-tables" class="hidden page-inheritance-togglable"></div>
+        </div>
+    </div>
+</div>
+</script>
+
+<script type="text/x-template" title="permissions-row-template">
+    <tr class="permission-row">
+                                
+                <td class="page-permissions-marker-cell" width="20%">
+            <span>Viewing restricted to:</span>
+        </td>
+                <td class="permission-entity" nowrap="true" width="40%">
+            <span class="entity-container">
+                <img class="permission-entity-picture"/>
+                <span class="permission-entity-display-name"></span>
+                <span class="permission-entity-name-wrap">&nbsp;(<span class="permission-entity-name"></span>)</span>
+            </span>
+        </td>
+        <td class="permission-detail-column">
+            <div class="permission-remove-div">
+                <a href="#" class="remove-permission-link">Remove restriction</a>
+            </div>
+        </td>
+    </tr>
+</script>
+<script type="text/x-template" title="permissions-username-no-suggestion-template">
+    <ol>
+        <li><a href="#" class="message"><span>No matches</span></a></li>
+    </ol>
+</script>
+<script type="text/x-template" title="page-inherited-permissions-table-div-template">
+        <div class="page-inherited-permissions-owner-div">
+        <div class="page-inherited-permissions-table-desc">Viewing restrictions apply to “<a></a>”. In order to see “<span></span>”, a user must be in the following list of users and groups:</div>
+        <table class="page-permissions-table"></table>
+    </div>
+</script>
+<script type="text/x-template" title="page-restrictions-help-link">
+    <div class="dialog-help-link">
+            <a href="http://confluence.atlassian.com/display/DOC/Page+Restrictions" target="_blank">Help</a>
+    </div>
+</script>
+<!-- End restrictions section -->
+
+
+        
+    
+    
+        <fieldset class="hidden parameters">
+            <input type="hidden" title="parentPageId" value="6553663">
+        </fieldset>
+    
+        
+                            
+    
+
+                    
+
+        
+        <div class="page-metadata">
+    <ul>
+                    <li class="page-metadata-item noprint">
+    
+            
+    
+    <a id="content-metadata-page-restrictions" href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#" class="page-metadata-icon page-restrictions hidden" title="Page restrictions apply. Click the lock icon to view or edit the restriction.">
+                   <span>Page restrictions apply</span></a>        </li>
+                <li class="page-metadata-modification-info">
+                    Added by <a class="url fn" href="http://www.openehr.org/wiki/display/~heath.frankel">Heath Frankel</a>, last edited by <a class="url fn" href="http://www.openehr.org/wiki/display/~thomas.beale">Thomas Beale</a> on 10-Mar-2012
+                                        <span class="noprint">&nbsp;(<a id="view-change-link" href="http://www.openehr.org/wiki/pages/diffpages.action?pageId=28868614&originalId=31424567">view change</a>)</span>
+                            </li>
+            </ul>
+      <div id="version-comment" class="noteMacro" style="display: none;">
+      <strong>Comment:</strong>
+      <br>
+  </div>
+</div>        
+        <fieldset class="hidden parameters">
+                        <input type="hidden" title="browsePageTreeMode" value="view">
+        </fieldset>            
+
+        <div class="wiki-content">
+           <!-- wiki content -->
+            <style type="text/css">/*<![CDATA[*/
+div.rbtoc1331392080586 {margin-left: 1.5em;padding: 0px;}
+div.rbtoc1331392080586 ul {list-style: disc;margin-left: 0px;padding-left: 20px;}
+div.rbtoc1331392080586 li {margin-left: 0px;padding-left: 0px;}
+
+/*]]>*/</style><div class="rbtoc1331392080586">
+<ul>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-Introduction">Introduction</a></li>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-DesignConcept">Design Concept</a></li>
+<ul>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-PathsandURIs">Paths and URIs</a></li>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-Querying">Querying</a></li>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-Authentication">Authentication</a></li>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-Exceptionhandling">Exception handling</a></li>
+</ul>
+    <li><a href="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface#OceanInformaticsEHRServiceInterface-Specification">Specification</a></li>
+<ul>
+    <li><a href="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki.htm">Data Structures</a></li>
+</ul>
+</ul></div>
+
+<h2><a name="OceanInformaticsEHRServiceInterface-Introduction"></a>Introduction</h2>
+
+<p>The interface below is the current EHR service interface for the back end EhrBank component, within the <a href="http://www.oceaninformatics.com/" class="external-link" rel="nofollow">Ocean Informatics</a> <em>open</em>EHR-based EHR product.</p>
+
+
+<p>StatusThis specification below is essentially complete, but some small details may be changed over time.</p>
+
+<h2><a name="OceanInformaticsEHRServiceInterface-DesignConcept"></a>Design Concept</h2>
+
+<p>The service specified below is a coarse-grained, stateless service interface to an openEHR data store. EHRs are committed in Contributions, and accessed either as individual Compositions or via AQL Queries. The corresponds to a thin client calling a web service.</p>
+
+<h3><a name="OceanInformaticsEHRServiceInterface-PathsandURIs"></a>Paths and URIs</h3>
+
+<p>To be continued</p>
+
+<h3><a name="OceanInformaticsEHRServiceInterface-Querying"></a>Querying</h3>
+
+<p>To be continued</p>
+
+
+<h3><a name="OceanInformaticsEHRServiceInterface-Authentication"></a>Authentication</h3>
+
+<p>Authentication is assumed to have taken place before any of these calls are made.</p>
+
+<p>To be continued</p>
+
+<h3><a name="OceanInformaticsEHRServiceInterface-Exceptionhandling"></a>Exception handling</h3>
+
+<p>Currently exceptions (e.g. user not authenticated etc) are not defined as part of this interface, but they could be.</p>
+
+<p>To be continued</p>
+
+<h2><a name="OceanInformaticsEHRServiceInterface-Specification"></a>Specification</h2>
+
+<h4><a name="OceanInformaticsEHRServiceInterface-EHRManagement"></a>EHR Management</h4>
+
+<div class="table-wrap">
+<table class="confluenceTable"><tbody>
+<tr>
+<th class="confluenceTh"> Description <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Signature <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Details <br class="atl-forced-newline"> </th>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Create EHR</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">HierObjectId CreateEHR(EhrStatus ehrStatus, AuditDetails commitAudit)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>ehrStatus</em>: EHR status details of the new EHR, this may include the subject external reference <br class="atl-forced-newline">
+<em>commitAudit</em>: Commit audit details of the EHR creation including the committer <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+EHR identifier </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Find EHR</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">HierObjectId FindEHR(PartyRef subjectExternalRef)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">  <em>subjectExternalRef</em>: subject external reference <br class="atl-forced-newline">  <b>Returns</b> <br class="atl-forced-newline">
+EHR identifier </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Get EHR Status</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Version&lt;EhrStatus&gt; GetEHRStatus(HierObjectId ehrId, string versionTime)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">  <em>ehrId</em>: EHR identifier <br class="atl-forced-newline">  <em>versionTime</em>: optional value representing the time of the latest version to be used in the query mnemonic (e.g. LATEST_TRUNK_VERSION) or date/time, default is LATEST_TRUNK_VERSION <br class="atl-forced-newline">  <b>Returns</b> <br class="atl-forced-newline">
+Version of EhrStatus at specified version time </td>
+</tr>
+</tbody></table>
+</div>
+
+
+
+<h4><a name="OceanInformaticsEHRServiceInterface-EHRContributions"></a>EHR Contributions</h4>
+
+<div class="table-wrap">
+<table class="confluenceTable"><tbody>
+<tr>
+<th class="confluenceTh"> Description <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Signature <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Details <br class="atl-forced-newline"> </th>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Commit Contribution</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">void CommitContribution(
+    HierObjectId ehrId, AuditDetails commitAudit, OriginalVersion[] versions)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>ehrId</em>: Identifier of EHR to which the versions will be committed <br class="atl-forced-newline">
+<em>commitAudit</em>: Commit audit details of the EHR contribution including the committer <br class="atl-forced-newline">
+<em>versions</em>: list of original version objects being committed to an EHR, type of version data may be different to other items in list <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+void </td>
+</tr>
+</tbody></table>
+</div>
+
+
+<h4><a name="OceanInformaticsEHRServiceInterface-Compositions"></a>Compositions</h4>
+
+<div class="table-wrap">
+<table class="confluenceTable"><tbody>
+<tr>
+<th class="confluenceTh"> Description <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Signature <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Details <br class="atl-forced-newline"> </th>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Find Compositions</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ResultSet FindCompositions(
+    HierObjectId ehrId, string[] compositionPaths,
+    ArchetypeId compositionArchetypeId, string[] compositionCriteria)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">  <em>ehrId</em>: Identifier of EHR to which the versions will be committed <br class="atl-forced-newline">  <em>compositionPaths</em>: List of item paths within a composition to be returned in results <br class="atl-forced-newline">  <em>compositionArchetypeId</em>: optional composition archetype ID <br class="atl-forced-newline">  <em>compositionCriteria</em>: optional list of composition criteria as item path comparision expressions (e.g. context/start_time &gt; '20120101') <br class="atl-forced-newline">  <b>Returns</b> <br class="atl-forced-newline">
+The result set containing composition path column definitions and rows of items for each column </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Get Composition</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">XVersionedObject&lt;Composition&gt; GetComposition(HierObjectId objectId)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>objectId</em>: Composition objectId (Versioned Composition UID) <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+Versioned composition with all versions </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Get Composition</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Version&lt;Composition&gt; GetComposition(HierObjectId objectId, string versionTime)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>objectId</em>: Composition objectId (Versioned composition uid) <br class="atl-forced-newline">
+<em>versionTime</em>: optional value representing the time of the latest version to be used in the query mnemonic (e.g. LATEST_TRUNK_VERSION) or date/time, default is LATEST_TRUNK_VERSION <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+Version of composition at specified version time </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Get Composition</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">Version&lt;Composition&gt; GetComposition(ObjectVersionId versionUid)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>versionUid</em>: Composition version UID <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+Version of composition with specified version UID </td>
+</tr>
+</tbody></table>
+</div>
+
+
+<h4><a name="OceanInformaticsEHRServiceInterface-EHRQueries"></a>EHR Queries</h4>
+
+<div class="table-wrap">
+<table class="confluenceTable"><tbody>
+<tr>
+<th class="confluenceTh"> Description <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Signature <br class="atl-forced-newline"> </th>
+<th class="confluenceTh"> Details <br class="atl-forced-newline"> </th>
+</tr>
+<tr>
+<td class="confluenceTd"> <b>Execute Query</b> </td>
+<td class="confluenceTd"> <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ResultSet ExecuteQuery(string queryStatement, string versionTime)</pre>
+</div></div> </td>
+<td class="confluenceTd"> <b>Parameters</b> <br class="atl-forced-newline">
+<em>queryStatement</em>: <a href="http://www.openehr.org/wiki/display/spec/AQL-+Archetype+Query+Language" title="AQL- Archetype Query Language">AQL</a> statement <br class="atl-forced-newline">
+<em>versionTime</em>: optional value representing the time of the latest version to be used in the query mnemonic (e.g. LATEST_TRUNK_VERSION) or date/time, default is LATEST_TRUNK_VERSION <br class="atl-forced-newline">
+<b>Returns</b> <br class="atl-forced-newline">
+The result set containing optional column definition and rows of items for each column </td>
+</tr>
+</tbody></table>
+</div>
+
+
+<h3><a name="OceanInformaticsEHRServiceInterface-DataStructures"></a>Data Structures</h3>
+
+
+<h4><a name="OceanInformaticsEHRServiceInterface-ResultSet"></a>ResultSet</h4>
+
+<h5><a name="OceanInformaticsEHRServiceInterface-XMLschemadataview"></a>XML schema data view</h5>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">&nbsp;&lt;xs:complexType name=<span class="code-quote">"ResultSet"</span>&gt;
+&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> name=<span class="code-quote">"name"</span> type=<span class="code-quote">"xs:string"</span> /&gt;
+&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> name=<span class="code-quote">"totalResults"</span> type=<span class="code-quote">"xs:<span class="code-object">int</span>"</span> /&gt;
+&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> maxOccurs=<span class="code-quote">"unbounded"</span> name=<span class="code-quote">"columns"</span> nillable=<span class="code-quote">"<span class="code-keyword">true</span>"</span>&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element name=<span class="code-quote">"name"</span> type=<span class="code-quote">"xs:string"</span> /&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> name=<span class="code-quote">"path"</span> type=<span class="code-quote">"xs:string"</span> /&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> name=<span class="code-quote">"rows"</span>&gt;
+&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> maxOccurs=<span class="code-quote">"unbounded"</span> name=<span class="code-quote">"row"</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;xs:element minOccurs=<span class="code-quote">"0"</span> maxOccurs=<span class="code-quote">"unbounded"</span> name=<span class="code-quote">"items"</span> nillable=<span class="code-quote">"<span class="code-keyword">true</span>"</span> /&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp;&nbsp;&nbsp;&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&nbsp;&nbsp; &lt;/xs:complexType&gt;
+&nbsp;&nbsp; &lt;/xs:element&gt;
+&nbsp; &lt;/xs:sequence&gt;
+&nbsp;&lt;/xs:complexType&gt;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+</pre>
+</div></div>
+
+<h5><a name="OceanInformaticsEHRServiceInterface-C%23%2FJava"></a>C# / Java</h5>
+
+<p>The following is C#.Net code, the Java code will be very similar, with different ancestor classes providing iteration / list capabilities.</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java"><span class="code-comment">// a ResultSet has a name, a count of rows, its definition (list of columnDefs), and the row data
+</span><span class="code-keyword">public</span> class ResultSet
+{
+    string Name { get; set; }
+    <span class="code-object">int</span> TotalResults { get; set; }
+    ResultColumnDef[] Columns { get; set; }
+    ResultRow[] Rows { get; set; }
+}
+
+<span class="code-comment">// the definition of the result set as a logical set of columns,
+</span><span class="code-comment">// mapped to archetyped data structures via paths
+</span><span class="code-keyword">public</span> class ResultColumnDef
+{
+    string Path { get; set; }    <span class="code-comment">// an archetype or RM path
+</span>    string Name { get; set; }    <span class="code-comment">// name of the column in <span class="code-keyword">this</span> result set
+</span>}
+
+<span class="code-comment">// a row object from which cell objects can be obtained,  via either an integer index (0-based) or the column name
+</span><span class="code-comment">// Here, 'object' is the 'Any' object of the programming language; it can be anything from a <span class="code-object">String</span>, <span class="code-object">Integer</span> etc,
+</span><span class="code-comment">// to a DV_CODED_TEXT or other openEHR Data type, to an Observation or Composition, from the main openEHR RM.
+</span><span class="code-comment">// What the objects are is completely dependent on what the query paths refer to.
+</span><span class="code-keyword">public</span> class ResultRow
+{
+    object[] Items { get; set;}
+}
+</pre>
+</div></div>
+
+<h5><a name="OceanInformaticsEHRServiceInterface-Modesofaccess"></a>Modes of access</h5>
+
+<p>Data in a ResultSet can be accessed in the following ways.</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">ResultSet results;
+
+results.Rows[0].Items[0]                 <span class="code-comment">// first row, first cell
+</span>results.Rows[5].Items[13]                <span class="code-comment">// 6th row, 14th cell
+</span>results.Rows[0].Items[<span class="code-quote">"name/value"</span>]      <span class="code-comment">// first row, 'name/value' column</span>
+</pre>
+</div></div>
+        </div>
+
+        <!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+         <rdf:Description
+    rdf:about="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface"
+    dc:identifier="http://www.openehr.org/wiki/display/spec/Ocean+Informatics+EHR+Service+Interface"
+    dc:title="Ocean Informatics EHR Service Interface"
+    trackback:ping="http://www.openehr.org/wiki/rpc/trackback/28868614"/>
+</rdf:RDF>
+-->
+
+            
+
+
+<fieldset class="hidden parameters">
+    <legend>Labels parameters</legend>
+    <input type="hidden" id="editLabel" value="Edit">
+    <input type="hidden" id="addLabel" value="Add Labels">
+    <input type="hidden" id="domainName" value="http://www.openehr.org/wiki">
+    <input type="hidden" id="pageId" value="28868614">
+    <input type="hidden" id="spaceKey" value="spec">
+</fieldset>
+
+<div id="labels-section" class="pageSection">
+    <div id="default-labels-header" class="section-header">
+        <h2 id="labels-section-title" class="section-title  hidden ">Labels</h2>
+            </div>
+
+    <div class="labels-editor">
+        <div id="labelsList">
+                    </div>
+
+        <span class="errorMessage error" id="errorSpan"></span>
+        <form method="GET" action="" id="add-labels-form">
+            <div id="labelInputSpan" class="labels-input">
+                <div id="labelOperationErrorContainer" class="hidden">
+                    <span class="error"><span class="errorMessage" id="labelOperationErrorMessage"></span></span>
+                </div>
+
+                <div class="caption">Enter labels to add to this page:</div>
+                <div id="label-input-fields">
+                    <input autocomplete="off" id="labelsString" name="labelsString" value="" size="40">
+                    <input id="add-labels-editor-button" type="submit" class="add-labels" value="Add">
+                    <input id="close-labels-editor-button" type="submit" class="hide-labels-editor" value="Done">
+                </div>
+                <div id="waitImageAndStatus">
+                    <img class="waiting" alt="Please wait" src="./Ocean Informatics EHR Service Interface - Specifications - openEHR Wiki_files/wait.gif">&nbsp;
+                    <span id="labelOperationStatus" class="smalltext"></span>
+                </div>
+                <div id="labelsAutocompleteList" class="aui-dd-parent"></div>
+                <div class="labels-tip">
+                    <div id="suggestedLabelsSpan"></div>
+                    Looking for a label? Just start typing.
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+            
+            
+
+
+
+
+            
+    
+    
+
+
+<fieldset class="parameters hidden">
+    <input type="hidden" id="deleteCommentConfirmMessage" value="Are you sure you want to remove the comment?">
+    <input type="hidden" id="collapseTooltip" value="Click to toggle the display of this comment.">
+</fieldset>
+
+
+
+
+
+
+<div id="comments-section" class="pageSection">
+    
+    
+    
+    
+                                    </div>
+
+
+            
+</div>
+    <br class="clear">
+</div>
+
+<div id="footer">
+                                                <p class="license license-community">
+                  Powered by a free <b>Atlassian Confluence Community License</b> granted to The openEHR Foundation . <a href="http://www.atlassian.com/c/conf/11460">Evaluate Confluence today</a>.<br>
+                </p>
+                            <ul id="poweredby">
+        <li class="noprint">Powered by <a href="http://www.atlassian.com/software/confluence" class="smalltext">Atlassian Confluence</a> 3.1.1, the <a href="http://www.atlassian.com/software/confluence" class="smalltext">Enterprise Wiki</a>.</li>
+        <li class="print-only">Printed by Atlassian Confluence 3.1.1, the Enterprise Wiki.</li>
+        <li class="noprint"><a href="http://jira.atlassian.com/secure/BrowseProject.jspa?id=10470" class="smalltext">Bug/feature request</a> –</li>
+        <li class="noprint"><a href="http://www.atlassian.com/about/connected.jsp?s_kwcid=Confluence-stayintouch" class="smalltext">Atlassian News</a> –</li>
+        <li class="noprint"><a href="http://www.openehr.org/wiki/administrators.action">Contact administrators</a></li>
+    </ul>
+
+    
+
+            
+    </div>    <!-- include system javascript resources -->
+                        
+    
+    
+    <!-- end system javascript resources -->
+</div>
+
+
+<iframe id="inline-dialog-shim" frameborder="0" src="javascript:false;"></iframe><div id="inline-dialog-shadow" style="display: none; "><div class="tl"></div><div class="tr"></div><div class="l"></div><div class="r"></div><div class="bl"></div><div class="br"></div><div class="b"></div></div><div class="shadow" style="margin-top: -105px; margin-left: -316px; width: 632px; height: 239px; display: none; "><div class="tl"></div><div class="tr"></div><div class="l" style="height: 193px; "></div><div class="r" style="height: 193px; "></div><div class="bl"></div><div class="br"></div><div class="b" style="width: 574px; "></div></div><div class="popup dialog" id="link-page-popup" style="margin-top: -105px; margin-left: -300px; width: 600px; height: 210px; background-color: rgb(255, 255, 255); display: none; background-position: initial initial; background-repeat: initial initial; "><div class="dialog-components"><h2>Link to this Page</h2><ul class="page-menu" style="height: 210px; display: none; "><li class="selected"><button>Link to this Page</button></li></ul><div class="page-body"><div class="panel-body" style="height: 104px; "><form id="link-page-popup-form" class="aui"><fieldset><div><label for="link-popup-field-link">Link:</label><input id="link-popup-field-link" readonly="readonly" value="" '="" class="text" type="text"></div><div><label for="link-popup-field-tiny-link">Tiny Link:</label><input id="link-popup-field-tiny-link" readonly="readonly" value="" '="" class="text" type="text"></div><div><label for="link-popup-field-wiki-markup">Wiki Markup:</label><input id="link-popup-field-wiki-markup" readonly="readonly" value="" '="" class="text" type="text"></div></fieldset></form></div></div><div class="button-panel"><button class="link-page-close-button">Close</button></div></div></div><div id="content-hover-shadow" style="display: none; "><div class="tl"></div><div class="tr"></div><div class="l"></div><div class="r"></div><div class="bl"></div><div class="br"></div><div class="b"></div></div><div id="current-user-status-holder" class="current-user-latest-status" style="display: none; "></div><div id="fancy_overlay"></div><div id="fancy_wrap"><div class="fancy_loading" id="fancy_loading"><div></div></div><div id="fancy_outer"><div id="fancy_inner"><div id="fancy_close"></div><div id="fancy_bg"><div class="fancy_bg fancy_bg_n"></div><div class="fancy_bg fancy_bg_ne"></div><div class="fancy_bg fancy_bg_e"></div><div class="fancy_bg fancy_bg_se"></div><div class="fancy_bg fancy_bg_s"></div><div class="fancy_bg fancy_bg_sw"></div><div class="fancy_bg fancy_bg_w"></div><div class="fancy_bg fancy_bg_nw"></div></div><a href="javascript:;" id="fancy_left"><span class="fancy_ico" id="fancy_left_ico"></span></a><a href="javascript:;" id="fancy_right"><span class="fancy_ico" id="fancy_right_ico"></span></a><div id="fancy_content"></div><div id="fancy_title"><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="fancy_title" id="fancy_title_left"></td><td class="fancy_title" id="fancy_title_main"><div></div></td><td class="fancy_title" id="fancy_title_right"></td></tr></tbody></table></div></div></div></div></body></html>

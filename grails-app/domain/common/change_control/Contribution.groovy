@@ -13,6 +13,10 @@ import javax.xml.bind.annotation.*
 //@XmlAccessorType(XmlAccessType.FIELD)
 class Contribution {
 
+<<<<<<< HEAD
+   Ehr ehr // puntero para atras al ehr que contiene esta contribution
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    AuditDetails audit
    
    String uid = (java.util.UUID.randomUUID() as String)

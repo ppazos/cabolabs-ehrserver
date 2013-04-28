@@ -1,0 +1,358 @@
+#GH_ {
+background: #fff;
+float: left;
+font: 11px Arial;
+width: 980px;
+margin: 0 auto 0;
+position: relative;
+z-index: 999998;
+}
+#GH_ #GH_hat {
+background: #F0F0F0;
+border-left: 1px solid #ddd;
+border-right: 1px solid #ddd;
+color: #666;
+float: left;
+height: 28px;
+width: 978px;
+}
+#GH_ .GH_hat_A {
+background: none;
+color: #333;
+text-decoration: none;
+}
+#GH_ .GH_hat_A:hover {
+text-decoration: underline;
+}
+#GH_ .GH_hat_UL {
+list-style-type: none;
+margin: 0;
+padding: 8px 0 0;
+}
+#GH_ .GH_hat_LI {
+float: left;
+}
+#GH_ #GH_hat_links {
+float: left;
+padding-left: 4px;
+width: 50%;
+}
+#GH_ #GH_hat_links .GH_hat_links_A,#GH_ #GH_hat_tools .GH_hat_links_A {
+border-right: 1px solid #999;
+padding: 0 10px;
+}
+#GH_ #GH_hat_more,#GH_ .GH_hat_more {
+padding: 0 0 0 10px;
+}
+#GH_ #GH_hat_more,#GH_ .GH_hat_LI_more {
+position: relative;
+}
+#GH_ #GH_hat_more_link {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat right -345px;
+display: block;
+height: 20px;
+left: 25px;
+padding: 0 12px 0 0;
+position: absolute;
+top: 0;
+}
+#GH_ #GH_hat_tools {
+float: right;
+padding: 8px 15px 0 0;
+}
+#GH_ #GH_more_list {
+border: 1px solid #c7c7c7;
+background: #fff;
+display: none;
+float: left;
+font-size: 12px;
+left: 340px;
+padding: 10px;
+position: absolute;
+top: 27px;
+width: 328px;
+z-index: 668;
+}
+#GH_ #GH_more_list_lab {
+border-bottom: 1px solid #c7c7c7;
+color: #2E2E2E;
+display: block;
+padding-bottom: 8px;
+}
+#GH_ .GH_more_list_UL {
+float: left;
+list-style-type: none;
+margin: 0;
+padding: 6px 0 0;
+width: 33.33%;
+}
+#GH_ #GH_more_list a {
+color: #2864B4;
+font-weight: normal;
+line-height: 18px;
+text-decoration: none;
+}
+#GH_ #GH_more_list a:hover {
+text-decoration: underline;
+}
+#GH_ #GH_guts {
+border-left: 1px solid #ddd;
+border-right: 1px solid #ddd;
+clear: both;
+display: block;
+float: left;
+height: 89px;
+position: relative;
+width: 978px;
+z-index: 667;
+}
+#GH_ #GH_brand {
+padding: 22px 0 0 14px;
+}
+#GH_ #GH_brand_link {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 0 -638px;
+color: #333;
+display: block;
+height: 47px;
+overflow: hidden;
+text-decoration: none;
+text-indent: -6666px;
+width: 214px;
+}
+#GH_ #GH_search {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 0 -200px;
+padding: 6px 8px;
+position: absolute;
+right: 218px;
+top: 15px;
+}
+#GH_ #GH_search_form {
+height: 43px;
+padding: 5px 0 0 5px;
+width: 473px;
+}
+#GH_ #GH_search_field {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 0 -50px;
+border: 0;
+color: #666;
+float: left;
+font: bold 16px Arial;
+height: 24px;
+margin: 0;
+overflow: hidden;
+padding: 10px 0 4px 13px;
+width: 342px;
+}
+#GH_ #GH_search_label {
+border: 0;
+color: #999;
+font: bold 16px Arial;
+height: 24px;
+left: 27px;
+margin: 0;
+position: absolute;
+top: 21px;
+width: 342px;
+}
+#GH_ #GH_search_field.GH_search_active {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 0 0;
+}
+#GH_ #GH_search_button {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 0 -100px;
+border: none;
+cursor: pointer;
+height: 39px;
+margin: 0 0 0 4px;
+overflow: hidden;
+padding: 0;
+text-indent: -6666px;
+width: 111px;
+}
+#GH_ #GH_search_button:hover {
+background-position: 0 -150px;
+}
+#GH_ #GH_search_results {
+background-color: #fff;
+border: 1px solid #818181;
+display: none;
+font-size: 12px;
+font-weight: normal;
+left: 13px;
+position: absolute;
+top: 49px;
+width: 353px;
+}
+#GH_ #GH_search_results ul {
+color: #666;
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+#GH_ #GH_search_results ul li {
+cursor: pointer;
+margin: 0;
+padding: 3px 10px;
+}
+#GH_ #GH_search_results .GH_highlight {
+background-color: #a4bd3d;
+color: #fff;
+text-decoration: underline;
+}
+#GH_ #GH_nav {
+background: #222 url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) repeat-x 0 -572px;
+clear: both;
+float: left;
+height: 28px;
+margin: 0 0 0 1px;
+padding: 0 0 0 6px;
+width: 973px;
+}
+#GH_ .GH_nav_LI {
+float: left;
+list-style-type: none;
+margin-right: 8px;
+padding-left: 1px;
+position: relative;
+z-index: 666;
+}
+#GH_ .GH_nav_list a {
+background: transparent url(/media/aol-globalheader-sprite.png) no-repeat scroll right -386px;
+padding-right: 12px;
+text-decoration: none;
+}
+#GH_ .GH_nav_list:hover a,#GH_ .GH_nav_list a:hover {
+background: transparent url(/media/aol-globalheader-sprite.png) no-repeat scroll right -436px;
+text-decoration: none;
+}
+#GH_ .GH_nav_A {
+color: #fff;
+display: block;
+float: left;
+font-size: 14px;
+font-weight: bold;
+height: 20px;
+padding: 7px 7px 0;
+text-decoration: none;
+}
+#GH_ #GH_nav_act {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat left -295px;
+}
+#GH_ #GH_nav_act .GH_nav_A {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat right -295px;
+}
+#GH_ #GH_nav_act.GH_nav_list {
+margin-right: 1px;
+}
+#GH_ #GH_nav_act.GH_nav_list .GH_nav_A {
+padding-right: 7px;
+}
+#GH_ #GH_nav_act #GH_nav_act_B {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat right -493px;
+display: block;
+padding-right: 12px;
+}
+#GH_ #GH_nav_act.GH_nav_list_open #GH_nav_act_B {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat scroll right -442px;
+}
+#GH_ .GH_nav_A:hover {
+text-decoration: underline;
+}
+#GH_ .GH_nav_list_UL {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat 31px -550px;
+border-bottom: 1px solid #2E2E2E;
+display: none;
+left: 0;
+list-style-type: none;
+margin: 0;
+padding: 7px 0 0 0;
+position: absolute;
+top: 22px;
+z-index: 667;
+}
+#GH_ .GH_nav_list_UL li {
+background-color: #fff;
+border-left: 1px solid #2E2E2E;
+border-right: 1px solid #2E2E2E;
+clear: both;
+float: left;
+font-size: 12px;
+width: 140px;
+}
+#GH_ .GH_nav_list_UL a {
+background: none;
+border-bottom: 1px solid #c7c7c7;
+color: #2864B4;
+display: block;
+float: left;
+font-size: 12px;
+font-weight: normal;
+padding: 7px 0 7px 7px;
+text-transform: none;
+width: 133px;
+}
+#GH_ .GH_nav_list_UL a:hover {
+background: #84a210;
+color: #fff;
+}
+#GH_ .GH_nav_list_UL .GH_nav_A_last {
+border: none;
+}
+#GH_ #GH_fb_link {
+float: right;
+list-style-type: none;
+margin-right: 0;
+padding-right: 15px;
+}
+#GH_ #GH_fb_link a {
+color: #fff;
+padding: 8px 0 0;
+font-size: 12px;
+}
+#GH_ #GH_hat_links #GH_hat_A_first {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat -470px -650px;
+display: block;
+float: left;
+height: 12px;
+margin-left: 10px;
+overflow: hidden;
+padding: 0;
+padding-right: 7px;
+text-indent: -99em;
+width: 30px;
+}
+
+/* ############### CUSTOM CHANGES ################ */
+
+#GH_ .GH_nav_A:hover {
+text-decoration: none;
+color: #fff;
+}
+#GH_ #GH_nav_act.GH_nav_list .GH_nav_A {
+color: #fff;
+}
+#GH_ .GH_nav_list_UL {
+border-bottom: 1px solid #ccc;
+-webkit-box-shadow: 0 4px 7px rgba(0,0,0,.5);
+-moz-box-shadow: 0 4px 7px rgba(0,0,0,.5);
+box-shadow: 0 4px 7px rgba(0,0,0,.5);
+}
+#GH_ .GH_nav_list_UL li {
+border-left: 1px solid #ccc;
+border-right: 1px solid #ccc;
+}
+#GH_ #GH_fb_link,
+#GH_ #GH_tip_link,
+#GH_ #GH_feed_link {
+float: right;
+list-style-type: none;
+margin-right: 0;
+padding-right: 15px;
+}
+#GH_ #GH_fb_link a,
+#GH_ #GH_tip_link a,
+#GH_ #GH_feed_link a {
+color: #fff;
+padding: 8px 0 0;
+font-size: 12px;
+font-weight: normal;
+}

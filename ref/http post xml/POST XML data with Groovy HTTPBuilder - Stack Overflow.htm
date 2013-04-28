@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>POST XML data with Groovy HTTPBuilder - Stack Overflow</title>
+    <link rel="shortcut icon" href="http://cdn.sstatic.net/stackoverflow/img/favicon.ico">
+    <link rel="apple-touch-icon" href="http://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png">
+    <link rel="search" type="application/opensearchdescription+xml" title="Stack Overflow" href="http://stackoverflow.com/opensearch.xml">
+
+    
+    <script type="text/javascript" async="" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/adzerk1_2_4_43,adzerk2_2_17_45"></script><script type="text/javascript" async="" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/ga.js"></script><script type="text/javascript" async="" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/quant.js"></script><script type="text/javascript" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/jquery.min.js"></script>
+    <script type="text/javascript" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/stub.js"></script>
+    <link rel="stylesheet" type="text/css" href="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/all.css">
+    
+    <meta name="relativepagescore" content="116651">
+    <link rel="canonical" href="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/POST XML data with Groovy HTTPBuilder - Stack Overflow.htm">
+    <link rel="alternate" type="application/atom+xml" title="Feed for question &#39;POST XML data with Groovy HTTPBuilder&#39;" href="http://stackoverflow.com/feeds/question/11017126">
+    <script type="text/javascript">
+        
+        StackExchange.ready(function () {
+            
+            StackExchange.question.init({votesCast:[],autoShowCommentHelp:true,showAnswerHelp:true,totalCommentCount:0,shownCommentCount:0,highlightColor:'#F4A83D',backgroundColor:'#FFF',questionId:11017126});
+
+            styleCode();
+
+                StackExchange.realtime.subscribeToQuestion('1', '11017126');
+            
+                
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        StackExchange.init({"stackAuthUrl":"https://stackauth.com","serverTime":1350734560,"styleCode":true,"enableUserHovercards":true,"site":{"name":"Stack Overflow","description":"Q&A for professional and enthusiast programmers","isNoticesTabEnabled":true,"recaptchaPublicKey":"6LdchgIAAAAAAJwGpIzRQSOFaO0pU6s44Xt8aTwc","enableSocialMediaInSharePopup":true},"user":{"fkey":"6632418469d115d235135f7f417954a4","isRegistered":true,"userId":1644320,"accountId":1807526,"gravatar":"<div class=\"\"><img src=\"http://www.gravatar.com/avatar/548344c65b5e122d05c1865ce8a88ed4?s=32&amp;d=identicon&amp;r=PG\" alt=\"\" width=\"32\" height=\"32\"></div>","profileUrl":"http://stackoverflow.com/users/1644320/pablo-pazos","notificationsUnviewedCount":2,"inboxUnviewedCount":0}});
+        StackExchange.using.setCacheBreakers({"js/prettify-full.js":"d1cd9a23171c","js/moderator.js":"37bba549a03e","js/full-anon.js":"029ae8e812e3","js/full.js":"f28a7d21ddaf","js/wmd.js":"049fcc6377ef","js/third-party/jquery.autocomplete.min.js":"e5f01e97f7c3","js/mobile.js":"6eb68240242f","js/help.js":"fc9fb0517db2","js/tageditor.js":"450c9e8426fc","js/tageditornew.js":"9ac6c13a3a7f","js/inline-tag-editing.js":"30f72b99548b","js/revisions.js":"8c6bcd93b7fe","js/probes.js":"beb933322ff0","js/review.js":"029fa297f9b7"});
+        
+    </script>
+<script async="" type="text/javascript" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/full.js"></script><link type="text/css" rel="stylesheet" href="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/style.css"><script type="text/javascript" charset="utf-8" src="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/page_context.js"></script><script async="" type="text/javascript" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/prettify-full.js"></script><script async="" type="text/javascript" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/wmd.js"></script><link href="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/sidebar.css" type="text/css" rel="stylesheet"></head>
+<body class="question-page" screen_capture_injected="true">
+    <noscript>&lt;div id="noscript-padding"&gt;&lt;/div&gt;</noscript>
+    <div id="notify-container"></div>
+    <div id="overlay-header"></div>
+    <div id="custom-header"></div>
+
+    <div class="container">
+        <div id="header">
+            <div id="portalLink">
+                <a class="genu" onclick="StackExchange.ready(function(){genuwine.click();});return false;">Stack Exchange</a>
+                        <a class="unreadCount newNotices" title="you have unread notices">2</a>
+            </div>
+            <div id="topbar">
+                <div id="hlinks">
+                    
+
+
+
+
+
+
+
+
+
+<span id="hlinks-user">
+        <span class="profile-triangle">▾</span><a href="http://stackoverflow.com/users/1644320/pablo-pazos" class="profile-link">Pablo Pazos</a>&nbsp;<a href="http://stackoverflow.com/users/1644320/pablo-pazos?tab=reputation"><span class="reputation-score" title="your reputation; view reputation changes" dir="ltr">1</span></a><span title="1 bronze badge"><span class="badge3"></span><span class="badgecount">1</span></span>
+ <span class="lsep">|</span>
+
+
+</span>
+<span id="hlinks-nav">
+
+</span>
+<span id="hlinks-custom">
+        <a href="http://chat.stackoverflow.com/">chat</a>
+
+ <span class="lsep">|</span>
+            <a href="http://meta.stackoverflow.com/">meta</a>
+
+ <span class="lsep">|</span>
+        <a href="http://stackoverflow.com/about">about</a>
+
+ <span class="lsep">|</span>
+    <a href="http://stackoverflow.com/faq">faq</a>
+
+</span>
+                </div>
+                <div id="hsearch">
+                    <form id="search" action="http://stackoverflow.com/search" method="get" autocomplete="off">
+                    <div>
+                        <input autocomplete="off" name="q" class="textbox" placeholder="search" tabindex="1" type="text" maxlength="140" size="28" value="">
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <br class="cbt">
+            <div id="hlogo">
+                <a href="http://stackoverflow.com/">Stack Overflow</a>
+            </div>
+            <div id="hmenus">
+                <div class="nav mainnavs">
+                    <ul>
+                        <li class="youarehere"><a id="nav-questions" href="http://stackoverflow.com/questions">Questions</a></li>
+                        <li><a id="nav-tags" href="http://stackoverflow.com/tags">Tags</a></li>
+                        <li><a id="nav-users" href="http://stackoverflow.com/users">Users</a></li>
+                        <li><a id="nav-badges" href="http://stackoverflow.com/badges">Badges</a></li>
+                        <li><a id="nav-unanswered" href="http://stackoverflow.com/unanswered">Unanswered</a></li>
+                    </ul>
+                </div>
+                <div class="nav askquestion">
+                    <ul>
+                        <li>
+                            <a id="nav-askquestion" href="http://stackoverflow.com/questions/ask">Ask Question</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+
+        <div id="content">
+            
+
+<div itemscope="" itemtype="http://schema.org/Article">
+<link itemprop="image" href="http://cdn.sstatic.net/stackoverflow/img/apple-touch-icon.png">
+<div id="question-header">
+    <h1 itemprop="name"><a href="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/POST XML data with Groovy HTTPBuilder - Stack Overflow.htm" class="question-hyperlink">POST XML data with Groovy HTTPBuilder</a></h1>
+</div>
+<div id="mainbar">
+
+
+
+<div class="question" id="question" data-questionid="11017126">
+            <div class="everyonelovesstackoverflow" id="adzerk1"><a href="http://engine.adzerk.net/redirect/0/5920/2444/8277/69e60e2bdfa9466eafa7f27f4de07365/43/1178/8806/634863313616859650/?keywords=xml%2cgroovy%2chttpbuilder%2cx-user-registered" rel="nofollow" target="_blank" title=""><img src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/60abb4b317034aa2af0bc697e6f02963.png" title="" alt="" border="0" height="90" width="728"></a><img width="0" height="0" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/v.gif"></div>
+
+
+
+    <table>
+    <tbody><tr>
+    <td class="votecell">
+        
+
+<div class="vote">
+    <input type="hidden" value="11017126">
+    <a class="vote-up-off" title="This question shows research effort; it is useful and clear (click again to undo)">up vote</a>
+    <span class="vote-count-post">1</span>
+    <a class="vote-down-off" title="This question does not show any research effort; it is unclear or not useful (click again to undo)">down vote</a>
+    
+    <a class="star-off" href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder#" title="This is a favorite question (click again to undo)">favorite</a>
+    <div class="favoritecount"><b></b></div>   
+
+ 
+</div>
+
+    </td>
+    
+<td class="postcell">
+<div>          
+    <div class="post-text" itemprop="description">
+        <p>I am trying to POST XML data to a URL using the HTTPBuilder class. At the moment I have:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="pln">def http = new HTTPBuilder('http://m4m:aghae7eihuph@m4m.fetchapp.com/api/orders/create')<br>http.request(POST, XML) {<br>body = {<br>&nbsp; &nbsp; &nbsp; &nbsp; element1 {<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; subelement 'value'<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; subsubelement {<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; key 'value2'<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br>&nbsp; &nbsp; &nbsp; &nbsp; }<br>&nbsp; &nbsp; } &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br><br>&nbsp; &nbsp; response.success = { /* handle success*/ }<br>&nbsp; &nbsp; response.failure = { resp, xml -&gt; /* handle failure */ }<br>}<br></span></code></pre>
+
+<p>and upon inspection I see that the request does get made with the XML as the body. I have 3 issues with this though. The first is, it omits the classic xml line:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="pun">&lt;?</span><span class="pln">xml version</span><span class="pun">=</span><span class="str">"1.0"</span><span class="pln"> encoding</span><span class="pun">=</span><span class="str">"UTF-8"</span><span class="pun">?&gt;</span><span class="pln"><br></span></code></pre>
+
+<p>which has to go at the top of the body, and secondly also the content type is not set to:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="pln">application/xml<br></span></code></pre>
+
+<p>Then lastly, for some of the elements in the XML I need to set attributes, for example:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="tag">&lt;element1</span><span class="pln"> </span><span class="atn">type</span><span class="pun">=</span><span class="atv">"something"</span><span class="tag">&gt;</span><span class="pln">...</span><span class="tag">&lt;/element1&gt;</span><span class="pln"><br></span></code></pre>
+
+<p>but I have no idea how to do this in the format above. Does anyone have an idea how? Or maybe an alternative way?</p>
+
+    </div>            
+    <div class="post-taglist">
+        <a href="http://stackoverflow.com/questions/tagged/xml" class="post-tag" title="show questions tagged &#39;xml&#39;" rel="tag">xml</a> <a href="http://stackoverflow.com/questions/tagged/groovy" class="post-tag" title="show questions tagged &#39;groovy&#39;" rel="tag">groovy</a> <a href="http://stackoverflow.com/questions/tagged/httpbuilder" class="post-tag" title="show questions tagged &#39;httpbuilder&#39;" rel="tag">httpbuilder</a> 
+    </div>
+    <table class="fw">
+    <tbody><tr>
+    <td class="vt">
+
+
+
+
+
+
+
+
+
+<div class="post-menu"><a href="http://stackoverflow.com/q/11017126/1644320" title="short permalink to this question" class="short-link" id="link-post-11017126">share</a><span class="lsep">|</span><a href="http://stackoverflow.com/posts/11017126/edit" class="suggest-edit-post" title="revise and improve this post">edit</a></div>
+    </td>
+    <td class="post-signature owner">
+    
+
+    <div class="user-info user-hover">
+        <div class="user-action-time">
+                                    asked
+ <span title="2012-06-13 14:30:54Z" class="relativetime">Jun 13 at 14:30</span>
+        </div>
+        <div class="user-gravatar32">
+            <a href="http://stackoverflow.com/users/484972/nico-huysamen"><div class=""><img src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/44a748dc9459f4d6a3222cc1ed3706b8" alt="" width="32" height="32"></div></a>
+        </div>
+        <div class="user-details">
+            <a href="http://stackoverflow.com/users/484972/nico-huysamen">Nico Huysamen</a><br>
+            <span class="reputation-score" title="reputation score" dir="ltr">3,563</span><span title="9 silver badges"><span class="badge2"></span><span class="badgecount">9</span></span><span title="30 bronze badges"><span class="badge3"></span><span class="badgecount">30</span></span>
+        </div>
+    </div>
+
+        <br class="cbt">
+        <div class="accept-rate accept-answer-link" title="this user has accepted an answer for 52 of 55 eligible questions">95% accept rate</div>
+    </td>
+    </tr>
+    </tbody></table>
+</div>
+</td>    </tr>
+
+
+<tr>
+<td class="votecell"></td>
+<td>
+    <div id="comments-11017126" class="comments dno">
+        <table>
+        <tbody>
+        
+            <tr><td></td><td></td></tr>
+        
+        </tbody>
+    
+        </table>
+    </div>
+    
+    
+    <div class="was-this-helpful" style="color: rgb(136, 136, 136); ">
+        feedback
+    </div>
+    
+</td>
+</tr>            </tbody></table>    
+</div>
+
+
+    
+
+
+<div id="answers">
+
+    <a name="tab-top"></a>
+    <div id="answers-header">
+        <div class="subheader answers-subheader">
+            <h2>1 Answer</h2>
+            <div id="tabs">
+                <a href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder?answertab=active#tab-top" title="Answers with the latest activity first">active</a>
+<a href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder?answertab=oldest#tab-top" title="Answers in the order they were provided">oldest</a>
+<a class="youarehere" href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder?answertab=votes#tab-top" title="Answers with the highest score first">votes</a>
+
+            </div>
+        </div>    
+    </div>    
+
+
+
+
+
+  
+    <a name="11018316"></a>
+    <div id="answer-11018316" class="answer accepted-answer" data-answerid="11018316">
+        <table>
+        <tbody><tr>
+        <td class="votecell">
+            
+
+<div class="vote">
+    <input type="hidden" value="11018316">
+    <a class="vote-up-off" title="This answer is useful (click again to undo)">up vote</a>
+    <span class="vote-count-post">2</span>
+    <a class="vote-down-off" title="This answer is not useful (click again to undo)">down vote</a>
+    
+
+            <span class="vote-accepted-on load-accepted-answer-date" title="loading when this answer was accepted...">accepted</span>
+ 
+</div>
+
+        </td>
+        
+
+
+<td class="answercell">
+    <div class="post-text"><ol>
+<li>To add the XML declaration line insert <a href="http://groovy.codehaus.org/api/groovy/xml/MarkupBuilderHelper.html#xmlDeclaration%28java.util.Map%29" rel="nofollow"><code>mkp.xmlDeclaration()</code></a> at the beginning of your markup.</li>
+<li>Passing <a href="http://groovy.codehaus.org/modules/http-builder/apidocs/groovyx/net/http/ContentType.html#XML" rel="nofollow"><code>ContentType.XML</code></a> as the second parameter to request sets the <code>Content-Type</code> header to <code>application/xml</code>.  I can't see why that isn't working for you, but you can try using a string of <code>application/xml</code> instead.</li>
+<li>To set attributes on an element, use this syntax in the markup builder: <code>element1(type: 'something') { ... }</code></li>
+</ol>
+
+<p>Here's an example:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="pln">@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.2')<br>import groovyx.net.http.*<br><br>new HTTPBuilder('http://localhost:8080/').request(Method.POST, ContentType.XML) {<br>&nbsp; &nbsp; body = { <br>&nbsp; &nbsp; &nbsp; &nbsp; mkp.xmlDeclaration()<br>&nbsp; &nbsp; &nbsp; &nbsp; element(attr: 'value') {<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; foo { <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bar()<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; } <br>&nbsp; &nbsp; &nbsp; &nbsp; }<br>&nbsp; &nbsp; }<br>}<br></span></code></pre>
+
+<p>The resulting HTTP request looks like this:</p>
+
+<pre class="lang-xml prettyprint"><code><span class="pln">POST / HTTP/1.1<br>Accept: application/xml, text/xml, application/xhtml+xml, application/atom+xml<br>Content-Length: 71<br>Content-Type: application/xml<br>Host: localhost:8080<br>Connection: Keep-Alive<br>Accept-Encoding: gzip,deflate<br><br></span><span class="pun">&lt;?</span><span class="pln">xml version</span><span class="pun">=</span><span class="str">'1.0'</span><span class="pun">?&gt;</span><span class="pln"><br></span><span class="tag">&lt;element</span><span class="pln"> </span><span class="atn">attr</span><span class="pun">=</span><span class="atv">'value'</span><span class="tag">&gt;&lt;foo&gt;&lt;bar/&gt;&lt;/foo&gt;&lt;/element&gt;</span><span class="pln"><br></span></code></pre>
+</div>
+    <table class="fw">
+    <tbody><tr>
+    <td class="vt">
+
+
+
+
+
+
+
+
+
+<div class="post-menu"><a href="http://stackoverflow.com/a/11018316/1644320" title="short permalink to this answer" class="short-link" id="link-post-11018316">share</a><span class="lsep">|</span><a href="http://stackoverflow.com/posts/11018316/edit" class="suggest-edit-post" title="revise and improve this post">edit</a></div>                    </td>
+            
+
+
+    <td align="right" class="post-signature">   
+       
+
+    
+
+    <div class="user-info ">
+        <div class="user-action-time">
+                                    answered
+ <span title="2012-06-13 15:30:31Z" class="relativetime">Jun 13 at 15:30</span>
+        </div>
+        <div class="user-gravatar32">
+            <a href="http://stackoverflow.com/users/190201/ataylor"><div class=""><img src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/142c3537ba70a0cadb1b241f9eb69540" alt="" width="32" height="32"></div></a>
+        </div>
+        <div class="user-details">
+            <a href="http://stackoverflow.com/users/190201/ataylor">ataylor</a><br>
+            <span class="reputation-score" title="reputation score 17934" dir="ltr">17.9k</span><span title="1 gold badge"><span class="badge1"></span><span class="badgecount">1</span></span><span title="13 silver badges"><span class="badge2"></span><span class="badgecount">13</span></span><span title="41 bronze badges"><span class="badge3"></span><span class="badgecount">41</span></span>
+        </div>
+    </div>
+
+    </td>
+    </tr>
+    </tbody></table>
+</td>        </tr>
+
+
+<tr>
+<td class="votecell"></td>
+<td>
+    <div id="comments-11018316" class="comments dno">
+        <table>
+        <tbody>
+        
+            <tr><td></td><td></td></tr>
+        
+        </tbody>
+    
+        </table>
+    </div>
+    
+    
+    <div class="was-this-helpful" style="color: rgb(136, 136, 136); ">
+        feedback
+    </div>
+    
+</td>
+</tr>            </tbody></table>
+</div>
+    <a name="new-answer"></a>
+    <form id="post-form" action="http://stackoverflow.com/questions/11017126/answer/submit" method="post" class="post-form">
+        <h2 class="space">Your Answer</h2>
+
+
+
+
+<script type="text/javascript">
+    StackExchange.ready(function() {
+        initTagRenderer("".split(" "), "".split(" "));
+         
+        prepareEditor({
+            heartbeatType: 'answer',
+            bindNavPrevention: true,
+            postfix: "",
+            onDemand: false,
+            discardSelector: ".discard-answer"
+            ,immediatelyShowMarkdownHelp:true
+        });
+        
+
+    });  
+</script>
+
+
+<div id="post-editor" class="post-editor">  
+
+    
+    <div class="wmd-container">
+        <div id="wmd-button-bar" class="wmd-button-bar"><ul id="wmd-button-row" class="wmd-button-row"><li class="wmd-button" style="left: 0px; " id="wmd-bold-button" title="Strong &lt;strong&gt; Ctrl+B"><span style="background-position: 0px 0px; "></span></li><li class="wmd-button" style="left: 25px; " id="wmd-italic-button" title="Emphasis &lt;em&gt; Ctrl+I"><span style="background-position: -20px 0px; "></span></li><li class="wmd-spacer wmd-spacer1" id="wmd-spacer1"></li><li class="wmd-button" style="left: 75px; " id="wmd-link-button" title="Hyperlink &lt;a&gt; Ctrl+L"><span style="background-position: -40px 0px; "></span></li><li class="wmd-button" style="left: 100px; " id="wmd-quote-button" title="Blockquote &lt;blockquote&gt; Ctrl+Q"><span style="background-position: -60px 0px; "></span></li><li class="wmd-button" style="left: 125px; " id="wmd-code-button" title="Code Sample &lt;pre&gt;&lt;code&gt; Ctrl+K"><span style="background-position: -80px 0px; "></span></li><li class="wmd-button" style="left: 150px; " id="wmd-image-button" title="Image &lt;img&gt; Ctrl+G"><span style="background-position: -100px 0px; "></span></li><li class="wmd-spacer wmd-spacer2" id="wmd-spacer2"></li><li class="wmd-button" style="left: 200px; " id="wmd-olist-button" title="Numbered List &lt;ol&gt; Ctrl+O"><span style="background-position: -120px 0px; "></span></li><li class="wmd-button" style="left: 225px; " id="wmd-ulist-button" title="Bulleted List &lt;ul&gt; Ctrl+U"><span style="background-position: -140px 0px; "></span></li><li class="wmd-button" style="left: 250px; " id="wmd-heading-button" title="Heading &lt;h1&gt;/&lt;h2&gt; Ctrl+H"><span style="background-position: -160px 0px; "></span></li><li class="wmd-button" style="left: 275px; " id="wmd-hr-button" title="Horizontal Rule &lt;hr&gt; Ctrl+R"><span style="background-position: -180px 0px; "></span></li><li class="wmd-spacer wmd-spacer3" id="wmd-spacer3"></li><li class="wmd-button" style="left: 325px; " id="wmd-undo-button" title="Undo - Ctrl+Z"><span style="background-position: -200px -20px; "></span></li><li class="wmd-button" style="left: 350px; " id="wmd-redo-button" title="Redo - Ctrl+Y"><span style="background-position: -220px -20px; "></span></li><li class="wmd-button wmd-help-button active-help" id="wmd-help-button" style="right: 0px; " title="Markdown Editing Help"><span style="background-position: -240px 0px; "></span></li><div id="mdhelp" class="mdhelp" style="right: -8px; width: 668px; top: 25px; ">
+    <ul id="mdhelp-tabs" class="mdhelp-tabs">
+        <li data-tab="mdhelp-links" data-buttons="link">Links</li>
+        <li data-tab="mdhelp-images" data-buttons="image">Images</li>
+        <li data-tab="mdhelp-styles" data-buttons="bold,italic,heading">Styling/Headers</li>
+        <li data-tab="mdhelp-lists" data-buttons="olist,ulist">Lists</li>
+        <li data-tab="mdhelp-blockquotes" data-buttons="quote">Blockquotes</li>
+        <li data-tab="mdhelp-code" data-buttons="code">Code</li>
+        <li data-tab="mdhelp-html">HTML</li>
+        <li style="float:right"><a href="http://stackoverflow.com/editing-help" target="_blank">advanced help »</a></li>
+    </ul>
+    
+    <div class="mdhelp-tab" id="mdhelp-links">
+            <p>
+                In most cases, a plain URL will be recognized as such and automatically linked:
+            </p>
+            <pre>Visit http://area51.stackexchange.com/ regularly!
+Use angle brackets to force linking: Have you seen &lt;http://superuser.com&gt;?
+</pre>
+            <p>
+                To create fancier links, use Markdown:
+            </p>
+                <pre>Here's [a link](http://www.example.com/)! And a reference-style link to [a panda][1].
+References don't have to be [numbers][question].
+
+ [1]: http://notfound.stackexchange.com/
+ [question]: http://english.stackexchange.com/questions/11481
+</pre>
+                <p>You can add tooltips to links:</p>
+<pre>Click [here](http://diy.stackexchange.com<span class="spaces">&nbsp;</span>"this text appears when you mouse over")!
+This works with [reference links][blog] as well.
+
+ [blog]: http://blog.stackoverflow.com/<span class="spaces">&nbsp;</span>"click here for updates"
+</pre>
+    </div>
+
+    <div class="mdhelp-tab" id="mdhelp-images">
+        <p>Images are exactly like links, but they have an exclamation point in front of them:</p>
+        <pre>![a busy cat](http://sstatic.net/stackoverflow/img/error-lolcat-problemz.jpg)
+![two muppets][1]
+
+ [1]: http://i.imgur.com/I5DFV.jpg "tooltip"
+</pre>
+        <p>
+            The word in square brackets is the alt text, which gets displayed if the browser
+            can't show the image. Be sure to include meaningful alt text for screen-reading
+            software.
+        </p>
+   
+    </div>
+    <div class="mdhelp-tab" id="mdhelp-styles">
+        <div class="col1">
+            <p>Be sure to use text styling sparingly; only where it helps readability.</p>
+                <pre>*This is italicized*, and so
+is _this_.
+
+**This is bold**, just like __this__.
+
+You can ***combine*** them
+if you ___really have to___.
+</pre>
+        
+        </div>
+        <div class="col2">
+            <p>
+                To break your text into sections, you can use headers:
+            </p>
+                <pre>A Large Header
+==============
+
+Smaller Subheader
+-----------------
+</pre>
+            <p>
+                Use hash marks if you need several levels of headers:</p>
+    <pre># Header 1 #
+## Header 2 ##
+### Header 3 ###
+</pre>
+
+            
+        </div>
+
+    </div>
+    <div class="mdhelp-tab" id="mdhelp-lists">
+        <p>Both bulleted and numbered lists are possible:</p>
+        <div class="col1">
+<pre>-<span class="spaces">&nbsp;</span>Use a minus sign for a bullet
++<span class="spaces">&nbsp;</span>Or plus sign
+*<span class="spaces">&nbsp;</span>Or an asterisk
+
+1.<span class="spaces">&nbsp;</span>Numbered lists are easy
+2.<span class="spaces">&nbsp;</span>Markdown keeps track of
+   the numbers for you
+7.<span class="spaces">&nbsp;</span>So this will be item 3.
+</pre>
+        </div>
+        <div class="col2">
+<pre>1.<span class="spaces">&nbsp;</span>Lists in a list item:
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>-<span class="spaces">&nbsp;</span>Indented four spaces.
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>*<span class="spaces">&nbsp;</span>indented eight spaces.
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>-<span class="spaces">&nbsp;</span>Four spaces again.
+2.<span class="spaces">&nbsp;&nbsp;</span>You can have multiple
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>paragraphs in a list items.
+<span class="spaces">&nbsp;</span>
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>Just be sure to indent.
+</pre>        
+        </div>
+    </div>
+
+    <div class="mdhelp-tab" id="mdhelp-blockquotes">
+        <div class="col1">
+            <pre>&gt; Create a blockquote by
+&gt; prepending “&gt;” to each line.
+&gt;
+&gt; Other formatting also works here, e.g.
+&gt;
+&gt; 1. Lists or
+&gt; 2. Headings:
+&gt;
+&gt; ## Quoted Heading ##
+            </pre>
+        </div>
+        <div class="col2">
+                <p>
+                    You can even put blockquotes in blockquotes:
+                </p>
+                <pre>&gt; A standard blockquote is indented
+&gt; &gt; A nested blockquote is indented more
+&gt; &gt; &gt; &gt; You can nest to any depth.
+</pre>
+        </div>
+    </div>
+
+    <div class="mdhelp-tab" id="mdhelp-code">
+        <p>
+            To create code blocks or other preformatted text, indent by four spaces:
+        </p>
+        <pre><span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>This will be displayed in a monospaced font. The first four spaces
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>will be stripped off, but all other whitespace will be preserved.
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>Markdown and HTML are turned off in code blocks:
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;i&gt;This is not italic&lt;/i&gt;, and [this is not a link](http://example.com)
+</pre>
+        <p>
+            To create not a block, but an inline code span, use backticks:
+        </p>
+        <pre>Press the `&lt;Tab&gt;` key, then type a `$`.
+</pre>
+        <p>
+            If you want to have a preformatted block within a list, indent by eight spaces:
+        </p>
+        <pre>1. This is normal text.
+2. So is this, but now follows a code block:
+<span class="spaces">&nbsp;</span>
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Skip a line and indent eight spaces.
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>That's four spaces for the list
+<span class="spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>and four to trigger the code block.
+</pre>
+    </div>
+
+    <div class="mdhelp-tab" id="mdhelp-html">
+        <p>
+            If you need to do something that Markdown can't handle, use HTML. Note that
+            <a href="http://meta.stackoverflow.com/questions/1777/what-html-tags-are-allowed" target="_blank">we only support a very strict subset of HTML!</a>
+        </p>
+        <pre>Strikethrough humor is &lt;strike&gt;funny&lt;/strike&gt;.
+</pre>
+        <p>
+            Markdown is smart enough not to mangle your span-level HTML:
+        </p>
+        <pre>&lt;b&gt;Markdown works *fine* in here.&lt;/b&gt;
+</pre>
+        <p>
+            Block-level HTML elements have a few restrictions:
+        </p>
+        <ol>
+            <li>They must be separated from surrounding text by blank lines.</li>
+            <li>The begin and end tags of the outermost block element must not be indented.</li>
+            <li>Markdown can't be used within HTML blocks.</li>
+        </ol>
+        <br>
+        <pre>&lt;pre&gt;
+    You can &lt;em&gt;not&lt;/em&gt; use Markdown in here.
+&lt;/pre&gt;
+</pre>
+    </div>
+
+    <div class="cbt"></div>
+</div></ul></div>
+        <div style="clear: both; height: 24px; "></div><textarea id="wmd-input" class="wmd-input processed" name="post-text" cols="92" rows="15" tabindex="101"></textarea>
+    <div class="grippie" style="margin-right: 0px; "></div></div>
+
+    <div class="fl" style="margin-top: 8px; height:24px;">&nbsp;</div>
+    <div id="draft-saved" class="draft-saved community-option fl" style="margin-top: 8px; height:24px; display:none;">draft saved</div>
+
+    <div id="draft-discarded" class="draft-discarded community-option fl" style="margin-top: 8px; height:24px; display:none;">draft discarded</div>
+
+
+
+    <div id="wmd-preview" class="wmd-preview"></div>
+    <div></div>
+    <div class="edit-block">
+        <input id="fkey" name="fkey" type="hidden" value="6632418469d115d235135f7f417954a4">
+        <input id="author" name="author" type="text">
+    </div>
+</div>                   
+            <div class="form-submit cbt">
+            <input id="submit-button" type="submit" value="Post Your Answer" tabindex="110">
+            <a href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder#" class="discard-answer dno">discard</a>
+        </div>
+    </form>
+
+
+
+        <h2 class="bottom-notice">
+                Not the answer you're looking for? 
+            Browse other questions tagged <a href="http://stackoverflow.com/questions/tagged/xml" class="post-tag" title="show questions tagged &#39;xml&#39;" rel="tag">xml</a> <a href="http://stackoverflow.com/questions/tagged/groovy" class="post-tag" title="show questions tagged &#39;groovy&#39;" rel="tag">groovy</a> <a href="http://stackoverflow.com/questions/tagged/httpbuilder" class="post-tag" title="show questions tagged &#39;httpbuilder&#39;" rel="tag">httpbuilder</a> 
+                or <a href="http://stackoverflow.com/questions/ask">ask your own question</a>.
+        </h2>
+</div>
+</div>
+<div id="sidebar">
+
+
+
+     <script type="text/javascript">
+        window.showNewUser = false;
+
+     </script>
+    <div class="module newuser newuser-greeting" id="newuser-box" style="display:none;">
+        <h4>Hello World!</h4>
+        <div>
+            <p>This is a collaboratively edited question and answer site for <b>professional and enthusiast programmers</b>. It's 100% free, no registration required.</p>
+            <p class="ar"><a href="http://stackoverflow.com/about?mnu=1">about »</a>&nbsp;&nbsp;&nbsp;<a href="http://stackoverflow.com/faq?mnu=1">faq »</a>
+            </p>
+        </div>
+    </div>
+     <script type="text/javascript">
+        if (showNewUser) {
+            document.getElementById('newuser-box').style.display = '';
+        }
+     </script>
+        <div class="module question-stats">
+        <p class="label-key">tagged</p>
+        <div class="tagged"><a href="http://stackoverflow.com/questions/tagged/xml" class="post-tag" title="show questions tagged &#39;xml&#39;" rel="tag">xml</a>&nbsp;<span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">50532</span></span><br>
+<a href="http://stackoverflow.com/questions/tagged/groovy" class="post-tag" title="show questions tagged &#39;groovy&#39;" rel="tag">groovy</a>&nbsp;<span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">4920</span></span><br>
+<a href="http://stackoverflow.com/questions/tagged/httpbuilder" class="post-tag" title="show questions tagged &#39;httpbuilder&#39;" rel="tag">httpbuilder</a>&nbsp;<span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">54</span></span><br>
+</div>
+        <table id="qinfo">
+            <tbody><tr>
+                <td><p class="label-key">asked</p></td>
+                <td style="padding-left:10px"><p class="label-key" title="2012-06-13 14:30:54Z"><b>4 months ago</b></p></td>
+            </tr>
+            <tr>
+                <td><p class="label-key">viewed</p></td>
+
+                <td style="padding-left:10px">
+                    <p class="label-key">
+                        <b>245 times</b>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td><p class="label-key">active</p></td>
+                <td style="padding-left:10px"><p class="label-key"><b><a href="http://stackoverflow.com/questions/11017126/post-xml-data-with-groovy-httpbuilder?lastactivity" class="lastactivity-link" title="2012-06-13 15:30:31Z">4 months ago</a></b></p></td>
+            </tr>
+        </tbody></table>
+    </div>
+    
+<div class="module community-bulletin" data-tracker="cb=1">
+    <h4>Community Bulletin</h4>
+    <div class="related">
+        <div class="spacer">
+            <div class="bulletin-item-type"><a href="http://blog.stackoverflow.com/?cb=1" class="event-date" target="_blank">blog</a></div>
+            <div class="bulletin-item-content">
+                <a href="http://blog.stackoverflow.com/2012/10/our-newest-team-members-diandra-robert-adam-nicole-and-casey/?cb=1" class="question-hyperlink" target="_blank">Our newest team members: Diandra, Robert, Adam, Nicole and Casey!</a>
+            </div>
+            <br class="cbt">
+        </div>
+    </div>
+</div>    
+                <script type="text/javascript">
+                var scriptSrc = "http://engine.adzerk.net/z/8277/adzerk1_2_4_43,adzerk2_2_17_45?keywords=xml,groovy,httpbuilder,x-user-registered";
+                if (document.referrer) {
+                    if (/\?/.test(scriptSrc))
+                        scriptSrc += "&";
+                    else
+                        scriptSrc += "?";
+                    scriptSrc += "xReferrer=" + document.referrer;
+                }
+                StackExchange.ready(function () {
+                    var z = document.createElement("script");
+                    z.type = "text/javascript";
+                    z.async = "true";
+                    z.src = scriptSrc;
+                    var s = document.getElementsByTagName("script")[0];
+                    s.parentNode.insertBefore(z, s);
+                });
+            </script>
+        <div class="everyonelovesstackoverflow" id="adzerk2"><a href="http://engine.adzerk.net/redirect/0/34525/28752/8277/43abfc44ce2346f29bd5928540c1a224/45/1178/51910/634863313616912700/?keywords=xml%2cgroovy%2chttpbuilder%2cx-user-registered" rel="nofollow" target="_blank" title=""><img src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/0c4ea033a09b4d2cb70b711759a778b1.png" title="" alt="" border="0" height="250" width="220"></a><img width="0" height="0" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/v(1).gif"></div>
+    <div id="hireme"> <a href="http://careers.stackoverflow.com/jobs?a=12" class="top" target="_blank"></a> <ul class="jobs"> <li> <a href="http://careers.stackoverflow.com/jobs/24225/sr-software-developer-lead-ensequence?a=sCzBDi0" target="_blank" title="Sr. Software Developer / Lead at Ensequence. Click to learn more."> Sr. Software Developer / Lead<br> <span class="company">Ensequence</span> <span class="location">Dayton, OH</span> </a> </li> <li> <a href="http://careers.stackoverflow.com/jobs/25025/frontend-developer-acto-a-s?a=tz8Epbi" target="_blank" title="Frontend Developer at Acto A/S. Click to learn more."> Frontend Developer<br> <span class="company">Acto A/S</span> <span class="location">Copenhagen, Denmark</span> </a> </li> <li> <a href="http://careers.stackoverflow.com/jobs/23648/front-end-developer-mobile-web-application-ratio-interactive?a=rWgO3pS" target="_blank" title="Front-End Developer for Mobile/Web Application Development at Ratio Interactive. Click to learn more."> Front-End Developer for Mobile/Web Application Development<br> <span class="company">Ratio Interactive</span> <span class="location">Seattle, WA</span> </a> </li> </ul> <img alt="" class="impression" src="./POST XML data with Groovy HTTPBuilder - Stack Overflow_files/tz8Epbi-sCzBDi0-rWgO3pS-12" style="display:none"></div>
+
+
+
+    
+  
+    
+    <div class="module sidebar-related">
+        <h4 id="h-related">Related</h4>
+        <div class="related" data-tracker="rq=1">
+            <div class="spacer">
+<a href="http://stackoverflow.com/questions/2823590/post-with-httpbuilder-nullpointerexception?rq=1" class="question-hyperlink">POST with HTTPBuilder -&gt; NullPointerException?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/3002966/convert-cookies-from-htmlunit-to-httpbuilder?rq=1" class="question-hyperlink">Convert cookies from HTMLUnit to HTTPBuilder?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/3020210/interfacing-httpbuilder-and-htmlunit-some-code?rq=1" class="question-hyperlink">Interfacing HTTPBuilder and HTMLUnit… some code</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/3493195/how-to-specify-content-type-in-request-in-groovy?rq=1" class="question-hyperlink">How to specify content type in request in groovy?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/4210671/handling-chunked-encoded-response-with-httpbuilder-groovy?rq=1" class="question-hyperlink">Handling 'chunked' encoded response with HTTPBuilder/Groovy</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/4398427/finding-xml-element-from-restclient-with-xmlslurper?rq=1" class="question-hyperlink">Finding XML element from RESTClient with XMLSlurper</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/4549647/groovy-java-lang-linkageerror-problem-with-executors-and-httpbuilder?rq=1" class="question-hyperlink">Groovy, java.lang.LinkageError problem with Executors and HttPBuilder</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/5819833/gpathresult-to-org-w3c-dom-node?rq=1" class="question-hyperlink">GPathResult to org.w3c.dom.Node</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/6452678/groovy-httpbuilder-and-multipartentity-multipart-form-data?rq=1" class="question-hyperlink">groovy HTTPBuilder and MultipartEntity / multipart form-data</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/6831736/posting-json-data-with-groovys-httpbuilder?rq=1" class="question-hyperlink">Posting JSON data with Groovy's HTTPBuilder</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/7493941/groovy-scraping-google-search-using-httpbuilder-result-doesnt-seem-to-parse-a?rq=1" class="question-hyperlink">Groovy Scraping Google Search Using HttpBuilder - Result doesn't seem to parse as html or xml</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/7505923/how-to-do-a-get-with-multiple-times-the-same-parameters-using-httpbuilder-and-gr?rq=1" class="question-hyperlink">How to do a GET with multiple times the same parameters using httpbuilder and groovy?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/7829340/groovy-httpbuilder-soap-response-not-being-parsed-properly?rq=1" class="question-hyperlink">Groovy HTTPBuilder SOAP response not being parsed properly</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/7915802/how-to-maintain-session-state-between-two-request-with-groovy-httpbuilder?rq=1" class="question-hyperlink">How to maintain session state between two request with Groovy HttpBuilder</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/8015391/groovy-httpbuilder-and-jackson?rq=1" class="question-hyperlink">Groovy HTTPBuilder and Jackson</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/8719242/httpbuilder-http-post-url-encoded-parameters-and-accept-xml-response?rq=1" class="question-hyperlink">HTTPBuilder HTTP Post url encoded parameters and accept xml response?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/8760713/groovy-httpbuilder-getting-the-entity-content-from-a-gziped-chunked-response?rq=1" class="question-hyperlink">Groovy HTTPBuilder : Getting the entity content from a GZIPed Chunked response</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/9101084/groovy-httpbuilder-mocking-the-response?rq=1" class="question-hyperlink">Groovy HTTPBuilder Mocking the Response</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/9331807/groovy-http-builder-not-returning-results?rq=1" class="question-hyperlink">groovy HTTP Builder not returning results</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/9916935/httpbuilder-set-requestbody-on-get-method?rq=1" class="question-hyperlink">HTTPBuilder set requestBody on GET method</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/10599141/how-to-pass-array-for-a-post-request-in-httpbuilder?rq=1" class="question-hyperlink">How to pass array for a POST request in HTTPBuilder</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/10646053/groovys-httpbuilder-for-java?rq=1" class="question-hyperlink">Groovy's HTTPBuilder for Java?</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/11303792/groovy-httpbuilder-authentication-with-realm-rabbit-mq?rq=1" class="question-hyperlink">Groovy Httpbuilder authentication with Realm + RABBIT MQ</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/11561013/httpbuilder-accessing-secured-link-i-e-https-link?rq=1" class="question-hyperlink">HttpBuilder accessing secured link (i.e. https link)</a>
+</div>
+<div class="spacer">
+<a href="http://stackoverflow.com/questions/12534335/groovy-httpbuilder-mocking-the-client?rq=1" class="question-hyperlink">Groovy HTTPBuilder Mocking the Client</a>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<div id="feed-link">
+    <div id="feed-link-text"><a href="http://stackoverflow.com/feeds/question/11017126" title="feed of this question and its answers"><span class="feed-icon"></span>question feed</a></div>
+</div>
+<script type="text/javascript">
+StackExchange.ready(function(){$.get('/posts/11017126/ivc/2646');});
+</script>
+<noscript>
+    &lt;div&gt;&lt;img src="/posts/11017126/ivc/2646" class="dno" alt="" width="0" height="0"&gt;&lt;/div&gt;
+</noscript><div style="display:none" id="prettify-lang">lang-xml</div></div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="footerwrap">
+            <div id="footer-menu">
+                <a href="http://stackoverflow.com/about">about</a> |
+                <a href="http://stackoverflow.com/faq">faq</a> |
+                <a href="http://blog.stackexchange.com/?blb=1">blog</a> |
+                    <a href="http://chat.stackoverflow.com/">chat</a> |
+                <a href="http://data.stackexchange.com/">data</a> |
+                <a href="http://stackexchange.com/legal">legal</a> |
+                <a href="http://stackexchange.com/legal/privacy-policy">privacy policy</a> |
+                <a href="http://stackexchange.com/about/hiring">jobs</a> |
+                <a href="http://engine.adzerk.net/redirect/0/2776/2751/0/4de3c60f719c4dfcb1a57531c7050090/0">advertising info</a> |
+
+                <a onclick="StackExchange.switchMobile(&#39;on&#39;, &#39;/questions/11017126/post-xml-data-with-groovy-httpbuilder&#39;)">mobile</a> |
+
+                <b><a href="http://stackoverflow.com/help">contact us</a></b>
+                  | <b><a href="http://meta.stackoverflow.com/">feedback</a></b>
+                <div id="footer-sites">
+                    
+                        <span style="color:#FE7A15;font-size:140%">■</span>&nbsp;<a href="http://stackoverflow.com/">stackoverflow.com</a>&nbsp; 
+                        <span style="color:#FE7A15;font-size:140%">■</span>&nbsp;<a href="http://stackapps.com/">api/apps</a>&nbsp; 
+                        <span style="color:#FE7A15;font-size:140%">■</span>&nbsp;<a href="http://careers.stackoverflow.com/">careers</a>&nbsp; 
+                        <span style="color:#E8272C;font-size:140%">■</span>&nbsp;<a href="http://serverfault.com/">serverfault.com</a>&nbsp; 
+                        <span style="color:#00AFEF;font-size:140%">■</span>&nbsp;<a href="http://superuser.com/">superuser.com</a>&nbsp; 
+                        <span style="color:#969696;font-size:140%">■</span>&nbsp;<a href="http://meta.stackoverflow.com/">meta</a>&nbsp; 
+                        <span style="color:#46937D;font-size:140%">■</span>&nbsp;<a href="http://area51.stackexchange.com/">area&nbsp;51</a>&nbsp; 
+                        <span style="color:#C0D0DC;font-size:140%">■</span>&nbsp;<a href="http://webapps.stackexchange.com/">webapps</a>&nbsp; 
+                        <span style="color:#000000;font-size:140%">■</span>&nbsp;<a href="http://gaming.stackexchange.com/">gaming</a>&nbsp; 
+                        <span style="color:#dd4814;font-size:140%">■</span>&nbsp;<a href="http://askubuntu.com/">ubuntu</a>&nbsp; 
+                        <span style="color:#9ce4fe;font-size:140%">■</span>&nbsp;<a href="http://webmasters.stackexchange.com/">webmasters</a>&nbsp; 
+                        <span style="color:#cf4d3f;font-size:140%">■</span>&nbsp;<a href="http://cooking.stackexchange.com/">cooking</a>&nbsp; 
+                        <span style="color:#f4f28d;font-size:140%">■</span>&nbsp;<a href="http://gamedev.stackexchange.com/">game development</a>&nbsp; 
+                        <span style="color:#0f3559;font-size:140%">■</span>&nbsp;<a href="http://math.stackexchange.com/">math</a>&nbsp; 
+                        <span style="color:#f2f2f2;font-size:140%">■</span>&nbsp;<a href="http://photo.stackexchange.com/">photography</a>&nbsp; 
+                        <span style="color:#037187;font-size:140%">■</span>&nbsp;<a href="http://stats.stackexchange.com/">stats</a>&nbsp; 
+                        <span style="color:#f1e7cc;font-size:140%">■</span>&nbsp;<a href="http://tex.stackexchange.com/">tex</a>&nbsp; 
+                        <span style="color:#e1cdae;font-size:140%">■</span>&nbsp;<a href="http://english.stackexchange.com/">english</a>&nbsp; 
+                        <span style="color:#a2d9f6;font-size:140%">■</span>&nbsp;<a href="http://cstheory.stackexchange.com/">theoretical cs</a>&nbsp; 
+                        <span style="color:#1b3e6c;font-size:140%">■</span>&nbsp;<a href="http://programmers.stackexchange.com/">programmers</a>&nbsp; 
+                        <span style="color:#293a5d;font-size:140%">■</span>&nbsp;<a href="http://unix.stackexchange.com/">unix</a>&nbsp;
+                        <span style="color:#bec0cb;font-size:140%">■</span>&nbsp;<a href="http://apple.stackexchange.com/">apple</a>&nbsp;
+                        <span style="color:#939185;font-size:140%">■</span>&nbsp;<a href="http://wordpress.stackexchange.com/">wordpress</a>&nbsp;
+                        <span style="color:#ebf5f5;font-size:140%">■</span>&nbsp;<a href="http://physics.stackexchange.com/">physics</a>&nbsp;
+                        <span style="color:#4176ab;font-size:140%">■</span>&nbsp;<a href="http://diy.stackexchange.com/">home&nbsp;improvement</a>&nbsp;
+                        <span style="color:#d1d8d7;font-size:140%">■</span>&nbsp;<a href="http://gis.stackexchange.com/">gis</a>&nbsp;
+                        <span style="color:#e5e2d3;font-size:140%">■</span>&nbsp;<a href="http://electronics.stackexchange.com/">electrical&nbsp;engineering</a>&nbsp;
+                        <span style="color:#a4c639;font-size:140%">■</span>&nbsp;<a href="http://android.stackexchange.com/">android</a>&nbsp;
+                        <span style="color:#2e4e60;font-size:140%">■</span>&nbsp;<a href="http://security.stackexchange.com/">security</a>&nbsp;
+                        <span style="color:#45bcb5;font-size:140%">■</span>&nbsp;<a href="http://bicycles.stackexchange.com/">bicycles</a>&nbsp;
+                        <span style="color:#00adee;font-size:140%">■</span>&nbsp;<a href="http://dba.stackexchange.com/">dba</a>&nbsp;
+                        <span style="color:#2edaf0;font-size:140%">■</span>&nbsp;<a href="http://drupal.stackexchange.com/">drupal</a>&nbsp;
+                        <span style="color:#213951;font-size:140%">■</span>&nbsp;<a href="http://sharepoint.stackexchange.com/">sharepoint</a>&nbsp;
+                        <span style="color:#73abb3;font-size:140%">■</span>&nbsp;<a href="http://scifi.stackexchange.com/">scifi &amp; fantasy</a>&nbsp;
+                        <span style="color:#23629F;font-size:140%">■</span>&nbsp;<a href="http://ux.stackexchange.com/">user experience</a>&nbsp;
+                        <span style="color:#faff72;font-size:140%">■</span>&nbsp;<a href="http://skeptics.stackexchange.com/">skeptics</a>&nbsp;
+                        <span style="color:#623121;font-size:140%">■</span>&nbsp;<a href="http://rpg.stackexchange.com/">rpg</a>&nbsp;
+                        <span style="color:#e4be88;font-size:140%">■</span>&nbsp;<a href="http://judaism.stackexchange.com/">judaism</a>&nbsp;
+                        <span style="color:#ffecb1;font-size:140%">■</span>&nbsp;<a href="http://mathematica.stackexchange.com/">mathematica</a>&nbsp;
+                </div>
+            </div>
+            <div id="footer-flair">
+                <a class="peer1" href="http://www.peer1.com/stackoverflow"></a>  
+	            <a href="http://creativecommons.org/licenses/by-sa/3.0/" class="cc-wiki-link"></a>
+                <div id="svnrev">rev 2012.10.20.4492</div>
+                        </div>
+            <div id="copyright">
+                site design / logo © 2012 stack exchange inc; 
+                user contributions licensed under <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">cc-wiki</a> with <a href="http://blog.stackoverflow.com/2009/06/attribution-required/" rel="license">attribution required</a>
+            </div>
+            
+
+        </div>
+    </div>
+    
+    <noscript>
+        &lt;div id="noscript-warning"&gt;Stack Overflow works best with JavaScript enabled&lt;img src="http://pixel.quantserve.com/pixel/p-c1rF4kxgLUzNc.gif" alt="" class="dno"&gt;&lt;/div&gt;
+    </noscript>
+    <script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-5620270-1']);
+        _gaq.push(['_setCustomVar', 1, 'tags', '|xml|groovy|httpbuilder|']); 
+        _gaq.push(['_setCustomVar', 2, 'accountid', '1807526',2]); 
+_gaq.push(['_trackPageview']);
+    var _qevents = _qevents || [];
+    (function(){
+        var s=document.getElementsByTagName('script')[0];
+        var ga=document.createElement('script');
+        ga.type='text/javascript';
+        ga.async=true;
+        ga.src='http://www.google-analytics.com/ga.js';
+        s.parentNode.insertBefore(ga,s);
+        var sc=document.createElement('script');
+        sc.type='text/javascript';
+        sc.async=true;
+        sc.src='http://edge.quantserve.com/quant.js'; 
+        s.parentNode.insertBefore(sc,s);
+    })();
+    </script>
+    <script type="text/javascript">
+        _qevents.push({ qacct: "p-c1rF4kxgLUzNc" });
+    </script>    
+    
+
+</body></html>

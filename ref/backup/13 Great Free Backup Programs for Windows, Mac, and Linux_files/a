@@ -1,0 +1,19 @@
+sponsorData = [
+	{
+	title:'All-in-one Backup Server'
+	, url:'www.arkeia.com/Appliance'
+	, d1:'Integrated Hardware And Software'
+	, d2:'Fast, Easy And Affordable Backup'
+	, redirect_url:'http://googleads.g.doubleclick.net/aclk?sa=l&ai=CZ9wBLpSSUM3KBKmF6wGo8oHwDdnameECyaaplTmRsN6FXRABIMGt2wMoAlCf09zgBGDJ_vOM5KTAE6ABvYCE_wPIAQGpAiU2SFa4xLU-qAMBqgS8AU_Qz0RhAyUxVYWDiQsJnvsmJAg0gpms3Chbgpt_DbUSipJQT-jqKQhRnu_TSB2k0EiA5S_GDHo10aCsL3AEQnPUyEJNwx2BSMpIiIb3-iRsq9oxQ0PHLE2uzZG6Ki2e9Wm-5RgwfitDjx8r-wptU5NCD4CGRLc_Mwvh3H1QjlHXGZFsfWLO3YgKYg80FoQXzBzNY3JP2J90yZzGTj7vm-IAjxQ68bCRDNZshghHdn51QDm-6NIVqhZA2Wfq&num=1&sig=AOD64_2wrFa58G9J-3jqAFP012i1FsRI6g&client=ca-aol_weblogs_xml&adurl=http://www.arkeia.com/promo/one-third-the-cost%3F_kk%3Dbackup%2520storage%2520server%26_kt%3D3b42e52e-bf57-44af-8cd1-7effceb18e79'
+	, sName:'AFC'
+	}
+,	{
+	title:'Top 10 Online Backup 2012'
+	, url:'Consumer-Rankings.com/Online-Backup'
+	, d1:'Compare the Best Backup Services.'
+	, d2:'See our #1 pick for 2012.'
+	, redirect_url:'http://googleads.g.doubleclick.net/aclk?sa=l&ai=C439aLpSSUM3KBKmF6wGo8oHwDYeN39AC_6mZ8DbAjbcBEAIgwa3bAygCUPWN_Nr5_____wFgyf7zjOSkwBOgAfGF8NkDyAEBqAMBqgS5AU_Q33W2Gj8IbTcwknUChuIkJwYxlZuoyC0R359hEKIZh5MaAuTo_rNRrwUILBC40EzK8C-NB2Is06OiKmcGRmfRgh9J3QCWQ8dJwsv7-GZxqdo5VF3GM1Ot0I-4NGeL4m2rvFMkaSsLwBwp8xRoDs5AEoiTV7shbUDowSIKkFbdEoloIyLC38ZGbQV9V4EQ1xGapPHm0590gpfGTi7tm-LQef870UVW-9VsQv1Ug3110My9CFSyX3Nh&num=2&sig=AOD64_0KM92WLCWOqs-bItdMirREdPgwLg&client=ca-aol_weblogs_xml&adurl=http://www.consumer-rankings.com/online-backup/%3Fch%3D1%26ag%3D4253659703%26ad%3D14642225303%26cr%3D10338630%26sc%3Dcontent%26kw%3Dbackup%2520software%26plc%3Ddownloadsquad.switched.com%26adpos%3Dnone'
+	, sName:'AFC'
+	}
+];
+parseSL(sponsorData);

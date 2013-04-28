@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+			<title>  Hibernate/JPA and myBatis Considered | Dynacron Group</title>
+	
+	<!-- Basic Meta Data -->
+	<meta charset="UTF-8" />
+	<meta name="copyright" content="Design is copyright 2012 The Theme Foundry" />
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="http://www.dynacrongroup.com/wp-content/themes/linen_pro_child/images/favicon.ico" />
+
+	<!-- WordPress -->
+	<link rel="pingback" href="http://www.dynacrongroup.com/xmlrpc.php" />
+	<link rel="alternate" type="application/rss+xml" title="Dynacron Group &raquo; Feed" href="http://www.dynacrongroup.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Dynacron Group &raquo; Comments Feed" href="http://www.dynacrongroup.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Dynacron Group &raquo; Hibernate/JPA and myBatis Considered Comments Feed" href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/feed/" />
+<link rel='stylesheet' id='linen-style-css'  href='http://www.dynacrongroup.com/wp-content/themes/linen_pro_child/style.css' type='text/css' media='all' />
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='linen-ie-style-css'  href='http://www.dynacrongroup.com/wp-content/themes/linen_pro/stylesheets/ie.css' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='linen-accent-font-style-css'  href='http://fonts.googleapis.com/css?family=Droid+Sans' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.dynacrongroup.com/wp-includes/js/comment-reply.js?ver=3.4.2'></script>
+<script type='text/javascript' src='http://www.dynacrongroup.com/wp-includes/js/jquery/jquery.js?ver=1.7.2'></script>
+<script type='text/javascript' src='http://www.dynacrongroup.com/wp-content/themes/linen_pro/javascripts/linen.js'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.dynacrongroup.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.dynacrongroup.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Rethinking The Camera' href='http://www.dynacrongroup.com/2011/06/rethinking-the-camera/' />
+<link rel='next' title='SeaJUG Video and Slides Posted' href='http://www.dynacrongroup.com/2011/06/seajug-video-and-slides-posted/' />
+<meta name="generator" content="WordPress 3.4.2" />
+<link rel='canonical' href='http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/' />
+<link rel='shortlink' href='http://www.dynacrongroup.com/?p=458' />
+				<style type="text/css">#title, .nav a, .slide-content h2, .slide-content a.more-link, .entry h2.title, .single-post-title, .post-date, .entry a.more-link, div.post-comments a, .entry h2, .entry h3, .entry h4, .post-footer, .navigation, h1.pagetitle, h2.pagetitle, .entries li span, #sidebar h2.widgettitle, .comment-number, div.c-head, div.reply, div.cancel-comment-reply, h3#reply-title, .footer-column h2, #copyright { font-family: 'Droid Sans', Helvetica, Arial, sans-serif; }</style>
+				</head>
+<body class="single single-post postid-458 single-format-standard">
+	<div class="skip-content"><a href="#content">Skip to content</a></div>
+	<div id="wrapper" class="clear">
+		<div id="header" class="clear">
+											<div id="title-logo">
+					<a href="http://www.dynacrongroup.com/">
+						<img src="http://www.dynacrongroup.com/wp-content/uploads/2012/02/header-image5.jpg" alt="Dynacron Group" />
+					</a>
+				</div>
+									<div id="description">
+						<h2>&quot;Simplicity is the ultimate sophistication&quot; &#8211; Leonardo da Vinci</h2>
+					</div><!--end description-->
+										<div id="navigation" class="clear"><ul id="menu-main-menu" class="nav"><li id="menu-item-764" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-764"><a href="http://www.dynacrongroup.com/">Welcome!</a></li>
+<li id="menu-item-766" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-766"><a href="http://www.dynacrongroup.com/about/">What We Do</a>
+<ul class="sub-menu">
+	<li id="menu-item-767" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-767"><a href="http://www.dynacrongroup.com/about/continuous-delivery/">Continuous Delivery</a></li>
+	<li id="menu-item-768" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-768"><a href="http://www.dynacrongroup.com/about/custom-software-development/">Software Development</a>
+	<ul class="sub-menu">
+		<li id="menu-item-769" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-769"><a href="http://www.dynacrongroup.com/about/custom-software-development/java/">Java</a></li>
+		<li id="menu-item-770" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-770"><a href="http://www.dynacrongroup.com/about/custom-software-development/net-sharepoint/">Microsoft .NET &#038; SharePoint</a></li>
+		<li id="menu-item-771" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-771"><a href="http://www.dynacrongroup.com/about/custom-software-development/github/">Public Technology</a></li>
+		<li id="menu-item-773" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-773"><a href="http://www.dynacrongroup.com/about/mobile-applications/">Mobile Applications</a></li>
+	</ul>
+</li>
+	<li id="menu-item-772" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-772"><a href="http://www.dynacrongroup.com/about/information-management/">Performance Management</a></li>
+	<li id="menu-item-774" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-774"><a href="http://www.dynacrongroup.com/about/selenium-training/">Test Automation (Selenium)</a></li>
+	<li id="menu-item-946" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-946"><a href="http://www.dynacrongroup.com/about/reading-list/">Reading List</a></li>
+</ul>
+</li>
+<li id="menu-item-775" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-775"><a href="http://www.dynacrongroup.com/how-we-do-it/">How We Do It</a>
+<ul class="sub-menu">
+	<li id="menu-item-776" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-776"><a href="http://www.dynacrongroup.com/how-we-do-it/engagement-models/">Engagement Models</a>
+	<ul class="sub-menu">
+		<li id="menu-item-777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-777"><a href="http://www.dynacrongroup.com/how-we-do-it/engagement-models/assessments/">Assessments</a></li>
+		<li id="menu-item-778" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-778"><a href="http://www.dynacrongroup.com/how-we-do-it/engagement-models/consulting/">Consulting</a></li>
+		<li id="menu-item-779" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-779"><a href="http://www.dynacrongroup.com/how-we-do-it/engagement-models/projects/">Projects</a></li>
+	</ul>
+</li>
+	<li id="menu-item-780" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-780"><a href="http://www.dynacrongroup.com/how-we-do-it/process-tools/">Process &#038; Tools</a></li>
+</ul>
+</li>
+<li id="menu-item-781" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-781"><a href="http://www.dynacrongroup.com/who-we-do-it-for/">Who We Do It For</a>
+<ul class="sub-menu">
+	<li id="menu-item-782" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-782"><a href="http://www.dynacrongroup.com/who-we-do-it-for/marketing-manager/">Marketing Manager</a></li>
+	<li id="menu-item-783" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-783"><a href="http://www.dynacrongroup.com/who-we-do-it-for/it-manager/">Technology Manager</a></li>
+</ul>
+</li>
+<li id="menu-item-784" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-784"><a href="http://www.dynacrongroup.com/about-us/">About Us</a>
+<ul class="sub-menu">
+	<li id="menu-item-787" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-787"><a href="http://www.dynacrongroup.com/about-us/contact-information/">Contact Information</a></li>
+	<li id="menu-item-786" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-786"><a href="http://www.dynacrongroup.com/about-us/company-values/">Company Values</a></li>
+</ul>
+</li>
+<li id="menu-item-789" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-789"><a href="http://www.jobscore.com/jobs/dynacrongroup/list">Careers</a></li>
+<li id="menu-item-788" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-788"><a href="http://www.dynacrongroup.com/blog/">Blog</a></li>
+<li id="menu-item-974" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-974"><a href="http://www.dynacrongroup.com/newsletter/">Newsletter</a></li>
+</ul></div>		</div><!--end header-->
+						<div id="content" >						<div id="post-458" class="post-458 post type-post status-publish format-standard hentry category-technical tag-java single">
+				<h1 class="single-post-title">Hibernate/JPA and myBatis Considered</h1>
+				<div class="single-post-meta">
+					by Will on June 24, 2011				</div>
+				<div class="entry single clear">
+										<p>At the last <a href="http://www.seajug.org/" target="_blank">SeaJUG</a>, I mentioned that I was really impressed with the latest <a href="http://www.mybatis.org/" target="_blank">myBatis</a> (the successor to iBatis), and that it might be more appropriate for many projects than <a href="http://hibernate.org/" target="_blank">Hibernate</a>/<a href="http://en.wikipedia.org/wiki/Java_Persistence_API" target="_blank">JPA</a>. I&#8217;ve gotten very, very deep on Hibernate, and so I think a few people were rather surprised to hear me speak so favorably about myBatis.</p>
+<p>First, a bit of background.  I started working with Hibernate really early, back in 2001-200, and I wrote <a href="http://www.cascadetg.com/hibernate" target="_blank">a book on Hibernate</a> in 2004. I&#8217;ve worked with many developers and projects that have used Hibernate (and a few <a href="http://nhforge.org/" target="_blank">NHibernate</a>) over the years.  In the summer of 2010, I served as a technical expert in a patent case that involved Hibernate.</p>
+<p>First, the brief version: HIbernate/JPA is great if you have a small, very senior team of developers who really understand Java, SQL, and ORM very, very well.  For a mid-to-large team with more than a few junior developers, Hibernate/JPA is a Really Bad Idea. For many situations and environments, myBatis is much more appropriate.</p>
+<p>Ok, if you&#8217;re still reading, you may be interested in &#8220;the long version.&#8221;  Here are a few more thoughts:</p>
+<ul>
+<li>Using Hibernate/JPA properly requires understanding Java and SQL very well.  If you use Hibernate to avoid learning SQL, you will be miserable and your app will perform poorly.  If it&#8217;s a toy app, it doesn&#8217;t really matter.</li>
+<li>Using Hibernate/JPA properly <strong>requires</strong> learning HQL and/or Criteria and paying attention to the generated SQL. To get that working, you need to spend time setting up your environment and tools correctly.</li>
+<li>Hibernate/JPA is so much better than EJB 1.x-2.x it&#8217;s a no-brainer. That&#8217;s actually not a huge compliment, alas.</li>
+<li>Someone asked about &#8220;legacy&#8221; Hibernate.  I personally define legacy code as code without a good test suite, regardless of framework.  Certainly an application based on Hibernate 3.x+ should not be considered legacy just because of that.</li>
+<li>Spring Transaction Annotations + Hibernate/JPA = almost always a terrible idea. Just use the open-session-in-view if you are building a web app. You will get much better performance, avoid lots of dumb lazy-loading exceptions, and automatically map transactions to web requests (which is almost always the transaction you want anyways).
+<ul>
+<li>Incidentally, <a href="http://omarello.com/2010/10/working-with-grails-transactions/" target="_blank">Grails transactions</a> defaults to basically an auto-commit=true model, but adds a one-liner to turn on transactions in an open-session-in-view model.  There is a debate going on about changing this.</li>
+<li><a href="http://www.playframework.org/documentation/1.2.1/jpa#transactions" target="_blank">Play Framework</a> defaults to open-session-in-view transactions.</li>
+</ul>
+</li>
+<li>You can have an excellent (or terrible) app in any framework.  It&#8217;s almost entirely a product of the development organization and has nothing to do with the framework.</li>
+<li>The learning curve for myBatis is practically nil compared to Hibernate/JPA.  You don&#8217;t have to worry about bad code nearly as much, because the SQL is so much more in your face.  The new annotions in myBatis (vs. XML config in iBatis) make myBatis really, really nice and easy.  The real kicker for me is (as Eelco mentioned) being able to develop the query quickly in your database tool and then just paste it in as an annotation in myBatis.  Simple and easy.</li>
+<li>myBatis is more or less useless if you want to maintain <strong>simultaneous</strong> database independence.  If you are working on in-house apps, you probably don&#8217;t care about switching out databases &#8211; and if you do want to switch databases, it&#8217;ll be an event, which you can still manage via iBatis.  Hopefully you have a good test suite.</li>
+<li>Hibernate/JPA is fantastic if you want to support multiple databases simultaneously. For example, you are working on a commercial product that needs to supports multiple RDBMS packages. Set up a build that targets all of the supported databases and you&#8217;re good to go.  This does require a good test suite and a solid commitment to <a href="http://en.wikipedia.org/wiki/Test-driven_development" target="_blank">TDD</a> &#8211; not typical junior dev territory.</li>
+<li>Hibernate has a really rich <a href="http://docs.jboss.org/hibernate/core/3.6/reference/en-US/html/performance.html#performance-cache" target="_blank">2nd level cache ecosystem</a> (part of what makes it the leading contender for JPA).  If you don&#8217;t care about (or more commonly, don&#8217;t understand) that, it just makes stuff more complicated.</li>
+<li>If you use JPA or if you use myBatis, I would recommend an explicit cache (e.g. as I talked about in my session) if you care about performance.  It&#8217;s more straight-forward and much easier for everyone to understand.</li>
+<li>If you are using lots of native SQL (or stored procedures) do not use HIbernate/JPA, period. You&#8217;re missing the whole point.  Use myBatis and you will be much happier.</li>
+<li>JPA is a (popular) standard.  If you want to be a credible senior Java developer in 2011, you should be really comfortable with Java, SQL, and JPA.  Having an opinion is one thing, but it should be an informed opinion.  &#8221;Hibernate/JPA/myBatis sucks&#8221; is not an informed opinion.</li>
+<li>Hibernate/JPA/myBatis absolutely can scale. None of these bring scale for free, all of them can be screwed up badly, all of them can be used in highly scale solutions. If you don&#8217;t have a real performance test environment, where you conduct real (verifiable, fact-based) performance tests, you&#8217;re just expressing opinions.</li>
+</ul>
+<p>As a corollary: if you are working in an environment that does not respect and encourage senior developers to take ownership, you will have problems. Put another way, if you hear that a company is having a lot of problems with Hibernate, that&#8217;s a good sign that the company is having trouble hiring/keeping good senior developers. But that&#8217;s another topic&#8230;</p>
+														</div><!--end entry-->
+				<div class="post-footer clear">
+					<div class="tags">
+						Tags: <a href="http://www.dynacrongroup.com/tag/java/" rel="tag">java</a>					</div>
+					<div class="cats">
+						From: <a href="http://www.dynacrongroup.com/category/technical/" title="View all posts in Technical" rel="category tag">Technical</a>					</div>
+				</div><!--end post footer-->
+			</div><!--end post-->
+				<div id="comments">
+	<div class="comment-number clear">
+		<span>5 Comments</span>
+			</div><!--end comment-number-->
+	<ol class="commentlist">
+			<li class="comment even thread-even depth-1" id="comment-89" >
+		<div class="c-grav"><img alt='' src='http://1.gravatar.com/avatar/d45e6c4a8c945ad4367775eb84a06e10?s=62&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D62&amp;r=G' class='avatar avatar-62 photo' height='62' width='62' /></div>
+		<div class="c-body">
+			<div class="c-head">
+				Deckard Cain 
+				<span class="c-permalink">
+					<a href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/#comment-89">#</a>
+									</span>
+			</div>
+						<p>That&#8217;s a great comparisson!<br />
+I always find myself at mybatis and thinking I&#8217;m missing out something to not use hibernate, but you make it very clear and well argumented about the right selection and that there&#8217;s no miracle solutions.</p>
+						<div class="c-date">
+				June 28, 2011			</div>
+			<div class="reply">
+							</div>
+			
+		</div><!--end c-body-->
+		<ul class='children'>
+	<li class="comment byuser comment-author-admin bypostauthor odd alt depth-2" id="comment-93" >
+		<div class="c-grav"><img alt='' src='http://1.gravatar.com/avatar/1003cae03a74e6a3adeabb76a5c5d5ab?s=62&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D62&amp;r=G' class='avatar avatar-62 photo' height='62' width='62' /></div>
+		<div class="c-body">
+			<div class="c-head">
+				<a href='http://www.dynacrongroup.com/' rel='external nofollow' class='url'>Will</a> 
+				<span class="c-permalink">
+					<a href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/#comment-93">#</a>
+									</span>
+			</div>
+						<p>Thanks!</p>
+						<div class="c-date">
+				July 1, 2011			</div>
+			<div class="reply">
+							</div>
+			
+		</div><!--end c-body-->
+		</li>
+</ul>
+</li>
+	<li class="comment even thread-odd thread-alt depth-1" id="comment-91" >
+		<div class="c-grav"><img alt='' src='http://0.gravatar.com/avatar/88c9fcb8956b625dd28fc518aea96079?s=62&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D62&amp;r=G' class='avatar avatar-62 photo' height='62' width='62' /></div>
+		<div class="c-body">
+			<div class="c-head">
+				Shay 
+				<span class="c-permalink">
+					<a href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/#comment-91">#</a>
+									</span>
+			</div>
+						<p>I like the comparison, but I think you didn&#8217;t mention some BIG problems in working with Hibernate, that I&#8217;ve encountered in every project used hibernate:</p>
+<p>- The worst: You can NEVER know for sure what&#8217;s your code is doing when you read it &#8211; Does the object  is in managed state, or is it in detached state &#8211; completely different behavior.</p>
+<p>- Updating objects coming from the UI is always a problem &#8211; The object is in detached state, and maybe you don&#8217;t have all its properties and connections &#8211; You always have to struggle to make it update just the way you want it, and again &#8211; when you or a different developer will read the code later, he can never be sure how exactly the framework will behave.</p>
+<p>I&#8217;ve worked in a lot of projects, always encountered these of problems and at the beginning thought I&#8217;m missing something.<br />
+With time i&#8217;ve understood there are no good solutions for these problems and they&#8217;re just part of the framework.</p>
+<p>I plan to start moving my team to MyBatis, so all new code will be hibernate clean.</p>
+						<div class="c-date">
+				July 1, 2011			</div>
+			<div class="reply">
+							</div>
+			
+		</div><!--end c-body-->
+		<ul class='children'>
+	<li class="comment byuser comment-author-admin bypostauthor odd alt depth-2" id="comment-92" >
+		<div class="c-grav"><img alt='' src='http://1.gravatar.com/avatar/1003cae03a74e6a3adeabb76a5c5d5ab?s=62&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D62&amp;r=G' class='avatar avatar-62 photo' height='62' width='62' /></div>
+		<div class="c-body">
+			<div class="c-head">
+				<a href='http://www.dynacrongroup.com/' rel='external nofollow' class='url'>Will</a> 
+				<span class="c-permalink">
+					<a href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/#comment-92">#</a>
+									</span>
+			</div>
+						<p>Absolutely true on both points. Technically, I would say that for the first if you stick with open-session-in-view you will always be working with managed objects.  For the second, UI input should always be treated as untrusted, so hand merging is maybe (?) a good idea to ensure that you&#8217;re getting what you want.</p>
+<p>Unfortunately, it&#8217;s all kind of magic, and requires that you set things up just&#8230; perfectly&#8230; so&#8230; or else it all gets really ugly fast.</p>
+<p>If you only plan on supporting one SQL dialect, moving to MyBatis will be a big simplification.  I would strongly recommend adding in an explicit cache as well, so you don&#8217;t wind up with a ton of static HashMaps to work around slow queries.  The SeaJUG presentation I just gave talks about this quite a bit.</p>
+						<div class="c-date">
+				July 1, 2011			</div>
+			<div class="reply">
+							</div>
+			
+		</div><!--end c-body-->
+		</li>
+</ul>
+</li>
+	<li class="comment even thread-even depth-1" id="comment-97" >
+		<div class="c-grav"><img alt='' src='http://0.gravatar.com/avatar/40949617a3539a24661f1e829bb8b32c?s=62&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D62&amp;r=G' class='avatar avatar-62 photo' height='62' width='62' /></div>
+		<div class="c-body">
+			<div class="c-head">
+				Marco 
+				<span class="c-permalink">
+					<a href="http://www.dynacrongroup.com/2011/06/hibernatejpa-and-mybatis-considered/#comment-97">#</a>
+									</span>
+			</div>
+						<p>Hi will, a great write up of things related to myBatis/Hibernate, currently we are also looking at myBatis for our persistence layer. We have no in depth experience with Hibernate and myBatis. But looking at Hibernate it gives me the shivers.. it feels so damn complex that i tend to lean towards using myBatis solely on the ground that our developement team can understand what is actually happening instead of relying on the magic of Hibernate.</p>
+						<div class="c-date">
+				July 7, 2011			</div>
+			<div class="reply">
+							</div>
+			
+		</div><!--end c-body-->
+		</li>
+	</ol>
+
+	<div class="navigation clear">
+		<div class="alignleft"></div>
+		<div class="alignright"></div>
+	</div>
+		<p class="note">Comments are closed.</p>
+</div><!--end comments-->
+
+									</div><!--end content-->
+	<div id="sidebar">
+					<div class="subscribe clear">
+			<ul>
+													<li>
+					<a href="http://www.facebook.com/pages/Dynacron-Group/213848215312203"><img src="http://www.dynacrongroup.com/wp-content/themes/linen_pro/images/flw-facebook.png" alt="Facebook" title="Facebook"/></a>
+				</li>
+										<li>
+					<a href="http://twitter.com/dynacrongroup"><img src="http://www.dynacrongroup.com/wp-content/themes/linen_pro/images/flw-twitter.png" alt="Twitter" title="Twitter"/></a>
+				</li>
+						<li>
+				<a href="http://www.dynacrongroup.com/feed/"><img src="http://www.dynacrongroup.com/wp-content/themes/linen_pro/images/flw-rss.png" alt="RSS Feed" title="RSS"/></a>
+			</li>
+		</ul>
+	</div>				<ul>
+			<li id="nav_menu-4" class="widget widget_nav_menu"><h2 class="widgettitle">Key Information</h2><div class="menu-quick-navigation-container"><ul id="menu-quick-navigation" class="menu"><li id="menu-item-191" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-191"><a href="http://www.dynacrongroup.com/about-us/contact-information/">Contact Information</a></li>
+<li id="menu-item-682" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-682"><a href="http://www.jobscore.com/jobs/dynacrongroup/list">Careers</a></li>
+<li id="menu-item-485" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-485"><a href="http://staff.dynacrongroup.com/">Staff Portal</a></li>
+</ul></div></li>		<li id="recent-posts-3" class="widget widget_recent_entries">		<h2 class="widgettitle">Recent Posts</h2>		<ul>
+				<li><a href="http://www.dynacrongroup.com/2012/10/truly-in-the-cloud/" title="Truly In The Cloud">Truly In The Cloud</a></li>
+				<li><a href="http://www.dynacrongroup.com/2012/09/saucelabs-ftw/" title="SauceLabs FTW">SauceLabs FTW</a></li>
+				<li><a href="http://www.dynacrongroup.com/2012/09/breaking-free-from-containers/" title="Breaking Free From Containers">Breaking Free From Containers</a></li>
+				<li><a href="http://www.dynacrongroup.com/2012/07/java-updates/" title="Java Updates">Java Updates</a></li>
+				<li><a href="http://www.dynacrongroup.com/2012/07/what-about-html5/" title="What about HTML5?">What about HTML5?</a></li>
+				</ul>
+		</li><li id="rss-3" class="widget widget_rss"><h2 class="widgettitle"><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/feed.atom' title='Syndicate this content'><img style='border:0' width='14' height='14' src='http://www.dynacrongroup.com/wp-includes/images/rss.png' alt='RSS' /></a> <a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/list' title='Dynacron Group'>Dynacron Careers</a></h2><ul><li><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/lead-continuous-delivery-engineer/bdaAuKdnqr4P1diGakhP3Q?ref=rss&#038;sid=68' title='Dynacron Group is a technology consulting firm based in the greater Seattle area. We build software solutions for our customers using Java, .NET/SharePoint and BI/DW. Our processes are based on delivering high quality results on an iterative basis using Agile processes (Scrum/Kanban/XP) and tools (TDD/CI/cloud-based testing). Our clients and staff love our f [&hellip;]'>Lead Continuous Delivery Engineer</a></li><li><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/senior-java-sdet/cFo1QmU-ur4Ah_eJe4bk1X?ref=rss&#038;sid=68' title='Dynacron Group is a technology consulting firm based in the greater Seattle area. We build software solutions for our customers using Java, .NET/SharePoint and BI/DW. Our processes are based on delivering high quality results on an iterative basis using Agile processes (Scrum/Kanban/XP) and tools (TDD/CI/cloud-based testing). Our clients and staff love our f [&hellip;]'>Senior Java SDET</a></li><li><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/senior-java-sdet/cwoaoadKGr4P2meJe4efaV?ref=rss&#038;sid=68' title='Dynacron Group is a technology consulting firm based in the greater Seattle area. We build software solutions for our customers using Java, .NET/SharePoint and BI/DW. Our processes are based on delivering high quality results on an iterative basis using Agile processes (Scrum/Kanban/XP) and tools (TDD/CI/cloud-based testing). Our clients and staff love our f [&hellip;]'>Senior Java SDET</a></li><li><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/release-manager/brjNeedKqr4OE4eJe4efaV?ref=rss&#038;sid=68' title='Dynacron Group is a technology consulting firm based in the greater Seattle area. We build software solutions for our customers using Java, .NET/SharePoint and BI/DW. Our processes are based on delivering high quality results on an iterative basis using Agile processes (Scrum/Kanban/XP) and tools (TDD/CI/cloud-based testing). Our clients and staff love our f [&hellip;]'>Release Manager</a></li><li><a class='rsswidget' href='http://www.jobscore.com/jobs/dynacrongroup/lead-net-developer/atbYTiU-Cr4zEheJe4bk1X?ref=rss&#038;sid=68' title='Dynacron Group is a technology consulting firm based in the greater Seattle area. We build software solutions for our customers using Java, .NET/SharePoint and BI/DW. Our processes are based on delivering high quality results on an iterative basis using Agile processes (Scrum/Kanban/XP) and tools (TDD/CI/cloud-based testing). Our clients and staff love our f [&hellip;]'>Lead .NET Developer</a></li></ul></li><li id="tag_cloud-3" class="widget widget_tag_cloud"><h2 class="widgettitle">Tags</h2><div class="tagcloud"><a href='http://www.dynacrongroup.com/tag/net/' class='tag-link-64' title='1 topic' style='font-size: 8pt;'>.net</a>
+<a href='http://www.dynacrongroup.com/tag/agile/' class='tag-link-16' title='22 topics' style='font-size: 20.904347826087pt;'>agile</a>
+<a href='http://www.dynacrongroup.com/tag/business-intelligence/' class='tag-link-19' title='9 topics' style='font-size: 16.521739130435pt;'>business intelligence</a>
+<a href='http://www.dynacrongroup.com/tag/cloud/' class='tag-link-10' title='10 topics' style='font-size: 17.008695652174pt;'>cloud</a>
+<a href='http://www.dynacrongroup.com/tag/company/' class='tag-link-15' title='3 topics' style='font-size: 11.652173913043pt;'>company</a>
+<a href='http://www.dynacrongroup.com/tag/continuous-delivery/' class='tag-link-37' title='11 topics' style='font-size: 17.495652173913pt;'>continuous delivery</a>
+<a href='http://www.dynacrongroup.com/tag/continuous-integration/' class='tag-link-41' title='7 topics' style='font-size: 15.304347826087pt;'>continuous integration</a>
+<a href='http://www.dynacrongroup.com/tag/design/' class='tag-link-14' title='8 topics' style='font-size: 15.913043478261pt;'>design</a>
+<a href='http://www.dynacrongroup.com/tag/devops/' class='tag-link-42' title='6 topics' style='font-size: 14.695652173913pt;'>devops</a>
+<a href='http://www.dynacrongroup.com/tag/economics/' class='tag-link-12' title='6 topics' style='font-size: 14.695652173913pt;'>economics</a>
+<a href='http://www.dynacrongroup.com/tag/estimation/' class='tag-link-27' title='2 topics' style='font-size: 10.191304347826pt;'>estimation</a>
+<a href='http://www.dynacrongroup.com/tag/gradle/' class='tag-link-53' title='2 topics' style='font-size: 10.191304347826pt;'>Gradle</a>
+<a href='http://www.dynacrongroup.com/tag/healthcare/' class='tag-link-9' title='5 topics' style='font-size: 13.84347826087pt;'>healthcare</a>
+<a href='http://www.dynacrongroup.com/tag/hibernate/' class='tag-link-61' title='3 topics' style='font-size: 11.652173913043pt;'>hibernate</a>
+<a href='http://www.dynacrongroup.com/tag/hiring/' class='tag-link-29' title='2 topics' style='font-size: 10.191304347826pt;'>hiring</a>
+<a href='http://www.dynacrongroup.com/tag/html5/' class='tag-link-36' title='2 topics' style='font-size: 10.191304347826pt;'>html5</a>
+<a href='http://www.dynacrongroup.com/tag/humor/' class='tag-link-25' title='3 topics' style='font-size: 11.652173913043pt;'>humor</a>
+<a href='http://www.dynacrongroup.com/tag/java/' class='tag-link-24' title='13 topics' style='font-size: 18.347826086957pt;'>java</a>
+<a href='http://www.dynacrongroup.com/tag/javascript/' class='tag-link-28' title='5 topics' style='font-size: 13.84347826087pt;'>javascript</a>
+<a href='http://www.dynacrongroup.com/tag/jpa/' class='tag-link-60' title='2 topics' style='font-size: 10.191304347826pt;'>jpa</a>
+<a href='http://www.dynacrongroup.com/tag/kanban/' class='tag-link-30' title='2 topics' style='font-size: 10.191304347826pt;'>kanban</a>
+<a href='http://www.dynacrongroup.com/tag/maven/' class='tag-link-31' title='8 topics' style='font-size: 15.913043478261pt;'>Maven</a>
+<a href='http://www.dynacrongroup.com/tag/mobile/' class='tag-link-23' title='6 topics' style='font-size: 14.695652173913pt;'>mobile</a>
+<a href='http://www.dynacrongroup.com/tag/mybatis/' class='tag-link-62' title='3 topics' style='font-size: 11.652173913043pt;'>mybatis</a>
+<a href='http://www.dynacrongroup.com/tag/open-source/' class='tag-link-47' title='9 topics' style='font-size: 16.521739130435pt;'>open source</a>
+<a href='http://www.dynacrongroup.com/tag/persistence/' class='tag-link-63' title='3 topics' style='font-size: 11.652173913043pt;'>persistence</a>
+<a href='http://www.dynacrongroup.com/tag/play-framework/' class='tag-link-50' title='2 topics' style='font-size: 10.191304347826pt;'>play framework</a>
+<a href='http://www.dynacrongroup.com/tag/process/' class='tag-link-5' title='26 topics' style='font-size: 21.75652173913pt;'>process</a>
+<a href='http://www.dynacrongroup.com/tag/project-management/' class='tag-link-26' title='8 topics' style='font-size: 15.913043478261pt;'>project management</a>
+<a href='http://www.dynacrongroup.com/tag/quality/' class='tag-link-22' title='12 topics' style='font-size: 17.860869565217pt;'>quality</a>
+<a href='http://www.dynacrongroup.com/tag/quick-tip/' class='tag-link-21' title='10 topics' style='font-size: 17.008695652174pt;'>quick tip</a>
+<a href='http://www.dynacrongroup.com/tag/requirements/' class='tag-link-49' title='3 topics' style='font-size: 11.652173913043pt;'>requirements</a>
+<a href='http://www.dynacrongroup.com/tag/robots/' class='tag-link-52' title='1 topic' style='font-size: 8pt;'>robots</a>
+<a href='http://www.dynacrongroup.com/tag/saucelabs/' class='tag-link-46' title='3 topics' style='font-size: 11.652173913043pt;'>saucelabs</a>
+<a href='http://www.dynacrongroup.com/tag/scala/' class='tag-link-51' title='2 topics' style='font-size: 10.191304347826pt;'>scala</a>
+<a href='http://www.dynacrongroup.com/tag/selenium/' class='tag-link-45' title='3 topics' style='font-size: 11.652173913043pt;'>selenium</a>
+<a href='http://www.dynacrongroup.com/tag/tdd/' class='tag-link-39' title='3 topics' style='font-size: 11.652173913043pt;'>tdd</a>
+<a href='http://www.dynacrongroup.com/tag/testing/' class='tag-link-44' title='4 topics' style='font-size: 12.869565217391pt;'>testing</a>
+<a href='http://www.dynacrongroup.com/tag/tools/' class='tag-link-6' title='8 topics' style='font-size: 15.913043478261pt;'>tools</a>
+<a href='http://www.dynacrongroup.com/tag/training/' class='tag-link-48' title='1 topic' style='font-size: 8pt;'>training</a>
+<a href='http://www.dynacrongroup.com/tag/trends/' class='tag-link-11' title='27 topics' style='font-size: 22pt;'>trends</a>
+<a href='http://www.dynacrongroup.com/tag/xp/' class='tag-link-40' title='1 topic' style='font-size: 8pt;'>xp</a></div>
+</li>		</ul>
+	</div><!--end sidebar-->
+</div><!--end wrapper-->
+			<div id="footer" class="clear">
+			<div id="footer-1" class="footer-column">
+				<div id="text-3" class="widget widget_text"><h2 class="widgettitle">What is Dynacron Group?</h2>			<div class="textwidget">Dynacron Group is a technology consulting firm based in Kirkland, WA (just outside Seattle).  We provide software development (Java/.NET) and BI/DW services based on Continuous Delivery.  Continuous Delivery refers to extensive automation throughout the development lifecycle in support of iterative development.</div>
+		</div>			</div>
+			<div id="footer-2" class="footer-column">
+									<h2 class="widgettitle">Pages</h2>
+					<ul>
+						<li class="page_item page-item-4"><a href="http://www.dynacrongroup.com/">Welcome!</a></li>
+<li class="page_item page-item-2"><a href="http://www.dynacrongroup.com/about/">What We Do</a></li>
+<li class="page_item page-item-537"><a href="http://www.dynacrongroup.com/how-we-do-it/">How We Do It</a></li>
+<li class="page_item page-item-46"><a href="http://www.dynacrongroup.com/who-we-do-it-for/">Who We Do It For</a></li>
+<li class="page_item page-item-58"><a href="http://www.dynacrongroup.com/about-us/">About Us</a></li>
+<li class="page_item page-item-7 current_page_parent"><a href="http://www.dynacrongroup.com/blog/">Blog</a></li>
+<li class="page_item page-item-971"><a href="http://www.dynacrongroup.com/newsletter/">Newsletter</a></li>
+					</ul>
+							</div>
+			<div id="footer-3" class="footer-column">
+									<h2 class="widgettitle">Categories</h2>
+					<ul>
+							<li class="cat-item cat-item-8"><a href="http://www.dynacrongroup.com/category/business/" title="View all posts filed under Business">Business</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.dynacrongroup.com/category/technical/" title="View all posts filed under Technical">Technical</a>
+</li>
+					</ul>
+							</div>
+			<div id="footer-4" class="footer-column">
+									<h2 class="widgettitle">Search</h2>
+					<form method="get" id="search-form" action="http://www.dynacrongroup.com//">
+	<div>
+		<label for="s">Search</label>
+		<input type="text" value="" name="s" id="s"/>
+		<input type="submit" value="Search" />
+	</div>
+</form>							</div>
+		</div>
+		<div id="copyright" class="wrapper">
+		<p>
+			<a href="http://thethemefoundry.com/linen/">Linen Theme</a> by <a href="http://thethemefoundry.com/">The Theme Foundry</a>		</p>
+		<p>
+			Copyright &copy; 2012 Dynacron Group. All rights reserved.		</p>
+	</div><!--end copyright-->
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-3707172-5']);
+_gaq.push(['_trackPageview']);
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+})();
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-3707172-5']);
+  _gaq.push(['_setDomainName', 'dynacrongroup.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></body>
+</html>

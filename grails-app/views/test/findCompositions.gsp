@@ -28,7 +28,52 @@
 	        xmlString = (new XMLSerializer()).serializeToString(xmlData);
 	    }
 	    return xmlString;
+<<<<<<< HEAD
+	 }
+	 
+	 // Formatea un string XML
+    // https://gist.github.com/1083506
+    function formatXml(xml) {
+
+      var formatted = '';
+      var reg = /(>)(<)(\/*)/g;
+      xml = xml.replace(reg, '$1\r\n$2$3');
+      var pad = 0;
+
+      jQuery.each(xml.split('\r\n'), function(index, node)
+      {
+          var indent = 0;
+          if (node.match( /.+<\/\w[^>]*>$/ ))
+          {
+              indent = 0;
+          }
+          else if (node.match( /^<\/\w/ ))
+          {
+              if (pad != 0) pad -= 1;
+          }
+          else if (node.match( /^<\w[^>]*[^\/]>.*$/ ))
+          {
+              indent = 1;
+          }
+          else
+          {
+              indent = 0;
+          }
+          var padding = '';
+          for (var i = 0; i < pad; i++)
+          {
+              padding += '  ';
+          }
+          formatted += padding + node + '\r\n';
+          pad += indent;
+      });
+
+      return formatted;
+    }
+    
+=======
 	 }   
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     
     // http://grails.1312388.n4.nabble.com/Ajax-formRemote-not-working-td4633608.html
     // en el formRemote se tiene que usar "data" como nombre del parametro para el js
@@ -37,13 +82,21 @@
     var findCompositionsSuccess = function(data)
     {
        console.log(data);
+<<<<<<< HEAD
+       $('#findCompositionsSuccess').text( formatXml( xmlToString(data) ) ); // Paso el XMLDocument a texto
+=======
        $('#findCompositionsSuccess').text( xmlToString(data) ); // Paso el XMLDocument a texto
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     };
        
     var findCompositionsFailure = function(data, b, c)
     {
        console.log(data);
+<<<<<<< HEAD
+       $('#findCompositionsFailure').text( formatXml( xmlToString(data) ) );
+=======
        $('#findCompositionsFailure').text( xmlToString(data) );
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     };
        
     

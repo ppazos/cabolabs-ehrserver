@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+            <title>Log In - openEHR Wiki</title>
+    
+        
+
+                        
+    
+    
+            
+<meta id="confluence-context-path" name="confluence-context-path" content="/wiki">
+<meta id="atlassian-token" name="atlassian-token" content="IMWVRfqdYd">
+
+<script type="text/javascript">
+    // Deprecated global variables. To be removed in a future version of Confluence.
+    var contextPath = '/wiki';
+</script>
+
+    
+
+<!-- include system css resources -->
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1/_/download/superbatch/css/batch.css" media="all">
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1/_/download/superbatch/css/batch.css?ieonly=true" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1/_/download/superbatch/css/batch.css?media=print" media="print">
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1.0/_/download/resources/confluence.web.resources:aui-forms/confluence-forms.css" media="all">
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" href="/wiki/s/1724/1/1.0/_/download/batch/confluence.web.resources:aui-forms/confluence.web.resources:aui-forms.css?ieonly=true" media="all">
+<![endif]-->
+
+<!-- end system css resources -->
+
+    <link rel="stylesheet" href="/wiki/s/1724/1/1/_/styles/combined.css" type="text/css">
+
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="robots" content="noarchive">
+    <meta name="confluence-request-time" content="1348378060504">
+
+<meta name="loggedInUsername" content="">
+
+    <link rel="shortcut icon" href="/wiki/favicon.ico">
+    <link rel="icon" type="image/png" href="/wiki/s/1724/1/_/images/logo/confluence_16.png">
+
+<link rel="search" type="application/opensearchdescription+xml" href="/wiki/opensearch/osd.action" title="openEHR Wiki"/>
+
+        <!-- include system javascript resources -->
+                        
+    
+    <script type="text/javascript" src="/wiki/s/1724/1/1/_/download/superbatch/js/batch.js" ></script>
+
+    <!-- end system javascript resources -->
+
+    
+
+    
+</head>
+
+<body             onload="placeFocus()"
+     id="com-atlassian-confluence" class="login">
+<div id="full-height-container">
+
+
+
+<fieldset class="hidden parameters">
+    <input type="hidden" id="statusDialogHeading" value="What are you working on?">
+    <input type="hidden" id="statusDialogLatestLabel" value="Last update:">
+    <input type="hidden" id="statusDialogUpdateButtonLabel" value="Update">
+    <input type="hidden" id="statusDialogCancelButtonLabel" value="Cancel">
+</fieldset>
+
+<fieldset class="hidden parameters">
+    <input type="hidden" id="globalSettingsAttachmentMaxSize" value="10485760">
+    <input type="hidden" id="userLocale" value="en_GB">
+    <input type="hidden" id="staticResourceUrlPrefix" value="/wiki/s/1724/1/_">
+    <input type="hidden" id="contextPath" value="/wiki">
+</fieldset>
+
+    
+<div id="header" class="">
+        <form id="quick-search" class="quick-search" method="get" action="/wiki/dosearchsite.action">
+        <fieldset>
+            <legend>Quick Search</legend>
+            <input class="quick-search-query" id="quick-search-query" type="text" accessKey="q" autocomplete="off" name="queryString" size="25" />
+            <input class="quick-search-submit" id="quick-search-submit" type="submit" value="Search" />
+            <div class="aui-dd-parent quick-nav-drop-down"><!-- Quick nav appears here --></div>
+        </fieldset>
+        <fieldset class="hidden parameters">
+            <input type="hidden" id="quickNavEnabled" value="true" />
+                    </fieldset>
+    </form>
+    <ul id="header-menu-bar" class="ajs-menu-bar">
+                        
+            <li class="normal ajs-menu-item">
+        <a id="browse-menu-link" class="browse trigger ajs-menu-title" href="#"><span><span>Browse</span></span></a>         <div class="hidden ajs-drop-down">
+                        <ul  id="browse-menu-link-global"                 class="section-global first">
+                                        <li>
+        
+        
+    
+    <a  id="gadget-directory-link" href="/wiki"  class="user-item administration-link"   title="Browse gadgets provided by Confluence">
+                   <span>Confluence Gadgets</span></a>        </li>
+                            </ul>
+                    </div>
+    </li>
+                                                             <li class="ajs-menu-item normal">
+    
+        
+    
+    <a  id="login-link" href="/wiki/login.action"  class="user-item login-link"   title="Browse gadgets provided by Confluence">
+                   <span>Log In</span></a>        </li>
+                            <li class="ajs-menu-item normal">
+    
+        
+    
+    <a  id="signup-link" href="/wiki/signup.action"  class="user-item signup-link"   title="Browse gadgets provided by Confluence">
+                   <span>Sign Up</span></a>        </li>
+                            </ul>
+    
+</div>
+<div id="main"  >
+    
+    
+    
+    <h1 id="title-heading" class="pagetitle">
+                    <a href="/wiki/homepage.action"><img class="global logo"  src="/wiki/download/attachments/5701633/global.logo?version=1&amp;amp;modificationDate=1242203102000" alt=""></a>        
+		<span id="title-text">
+					            <a href="/wiki/homepage.action">openEHR Wiki</a>
+    				</span>
+    </h1>
+
+    
+
+    
+    
+    
+    <div id="login-container">
+                    
+             
+    <form name="loginform" method="POST" action="/wiki/dologin.action" class="aui login-form-container">
+
+<fieldset class="compact-form-fields">
+                    
+
+<div >
+    <label id="os_username-label" for="os_username">
+Username:
+</label>
+<input type="text" name="os_username" id="os_username"      tabindex="1" class="text "  />
+              </div>
+                    
+
+<div>
+<label id="os_password-label" for="os_password">
+Password:
+</label>
+    <input type="password" name="os_password" id="os_password"                              tabindex="2"     class="password "              />
+                  </div>
+                    
+
+
+<div class="checkboxes">
+            <input type="checkbox" class="checkbox" value="true" name="os_cookie"
+                        tabindex="3"        id="os_cookie">
+        <label for="os_cookie">Remember me</label>
+                    </div>                    <div class="form-buttons compact-form-buttons">
+                        <input id="loginButton" name="login" type="submit" value="Log In" tabindex="4"/>
+                                                    <a id="forgot-password" href="/wiki/forgotuserpassword.action" tabindex="5">Forgot your password?</a>
+                                            </div>
+
+                                            <input type="hidden" name="os_destination" value="/download/attachments/786476/heath.frankel-86470-pp-p1010907.jpg?version=1&amp;modificationDate=1258039038000"/>
+                                    </fieldset>
+
+</form>                        <p class="last">
+                Not a member? <a href="signup.action">Sign up</a>.
+            </p>
+                            </div>
+    <br class="clear">
+</div>
+
+<div id="footer">
+                                                <p class="license license-community">
+                  Powered by a free <b>Atlassian Confluence Community License</b> granted to The openEHR Foundation . <a href="http://www.atlassian.com/c/conf/11460">Evaluate Confluence today</a>.<br>
+                </p>
+                            <ul id="poweredby">
+        <li class="noprint">Powered by <a href="http://www.atlassian.com/software/confluence" class="smalltext">Atlassian Confluence</a> 3.1.1, the <a href="http://www.atlassian.com/software/confluence" class="smalltext">Enterprise Wiki</a>.</li>
+        <li class="print-only">Printed by Atlassian Confluence 3.1.1, the Enterprise Wiki.</li>
+        <li class="noprint"><a href="http://jira.atlassian.com/secure/BrowseProject.jspa?id=10470" class="smalltext">Bug/feature request</a> &#8211;</li>
+        <li class="noprint"><a href="http://www.atlassian.com/about/connected.jsp?s_kwcid=Confluence-stayintouch" class="smalltext">Atlassian News</a> &#8211;</li>
+        <li class="noprint"><a href="/wiki/administrators.action">Contact administrators</a></li>
+    </ul>
+
+    
+
+            
+    </div>    <!-- include system javascript resources -->
+                        
+    
+    
+    <!-- end system javascript resources -->
+</div>
+</body>
+</html>

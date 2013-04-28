@@ -1,0 +1,4676 @@
+/* DLS */
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }
+body { line-height: 1.5; background: #fff; margin: 1.5em 0; }
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight:400; }
+blockquote, q { quotes: "" ""; }
+a img { border: none; }
+input,textarea { margin: 0; }
+
+/* Removes Firefox imposed outline */
+a { outline: none; }
+
+/* Clearing floats without extra markup  */
+.clear { clear: both; }
+.wrapper { display: inline-block; }
+.wrapper:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+* html .wrapper { height: 1%; }
+.wrapper { display: block; }
+
+.group:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+ 
+/* IE6 */
+* html .group { height: 1%; }
+ 
+/*IE7 */
+.group { min-height: 1px; }
+
+/* -------------------------------------------------------------- 
+   Typography
+-------------------------------------------------------------- */
+
+/* This is where you set your desired font size. The line-heights 
+   and vertical margins are automatically calculated from this. 
+   The percentage is of 16px (0.75 * 16px = 12px). */
+body { font-size: 75%; }
+
+
+/* Default fonts and colors. */
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea { font-family: Helvetica, Arial, sans-serif; }
+
+
+/* Headings
+-------------------------------------------------------------- */
+
+h1,h2,h3,h4,h5,h6 { font-weight: bold; }
+
+h1 { font-size: 3em; line-height: 1; margin-bottom: 0.5em; }
+h2 { font-size: 2em; margin-bottom: 0.75em; }
+h3 { font-size: 1.5em; line-height: 1; margin-bottom: 1em; }
+h4 { font-size: 1.2em; line-height: 1.25; margin-bottom: 1.25em; }
+h5 { font-size: 1em; margin-bottom: 1.5em; }
+h6 { font-size: 1em; }
+
+
+/* Text elements
+-------------------------------------------------------------- */
+
+p { margin: 0.80em 0 1.5em; }
+
+ul, ol { margin: 0 1.5em 1.5em 1.5em; }
+ul { list-style-type: circle; }
+ol { list-style-type: decimal; }
+
+dl { margin: 0 0 1.5em 0; }
+dl dt { font-weight: bold; }
+dl dd { margin-left: 1.5em; }
+
+abbr, acronym { border-bottom: 1px dotted #000; }
+address { margin-top: 1.5em; font-style: italic; }
+del { color: #000; }
+
+a { color: #71a42e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:active { position: relative; top: 1px; }
+
+blockquote { border-left: 2px solid #ddd; color: #777; margin: 1.5em; padding-left: 1em; line-height: 1.7; }
+blockquote cite { color: #555; }
+#main-content .pullquote-right { border-left: 2px solid #555; color: #666; float: right; font-weight: bold; font-size: 1.2em; line-height: 1.4em; width: 15em; margin: 0 0 1em 1.5em; }
+#main-content .pullquote-left { border-left: 2px solid #555; color: #666; float: left; font-weight: bold; font-size: 1.2em; line-height: 1.4em; width: 15em; margin: 0 1.5em 1em 0; }
+strong { font-weight: bold; }
+em, dfn { font-style: italic; }
+dfn { font-weight: bold; }
+pre, code { margin: 1.5em 0; white-space: pre; }
+pre, code, tt { font: 1em monospace; line-height: 1.5; } 
+tt { display: block; margin: 1.5em 0; line-height: 1.5; }
+span.amp { /* For better-looking ampersands */
+  font-family: Baskerville, Palatino, "Book Antiqua", serif;
+  font-style: italic;
+}
+p.note { font-family: Helvetica, sans-serif; background: #eee; border-bottom: 1px solid #ddd; border-left: 3px solid #ff6600; color: #888; padding: .5em 0 .3em .8em; }
+
+/* Begin */
+
+body {
+margin: 0;
+padding: 0;
+}
+
+#outer-container {
+background: #fff;
+width: 1000px;
+margin: 0 auto;
+}
+
+#container {
+background: #fff;
+width: 980px;
+margin: 0 auto;
+position: relative;
+}
+
+/* Branding and Promos */
+
+#branding {
+clear: both;
+position: relative;
+_zoom: 1;
+padding: 1.1em 0;
+width: 980px;
+}
+
+#branding #logo {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-switched-logo.png) top left no-repeat;
+float: left;
+text-indent: -9999px;
+width: 175px;
+height: 56px;
+margin-bottom: 1em;
+}
+
+.gallery #branding #logo {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-switched-logo-media.png) top left no-repeat;
+}
+
+#branding #logo a {
+display: block;
+width: 175px;
+height: 56px;
+}
+
+#branding #search-form {
+margin-top: 19px;
+*margin-top: 24px;
+_margin-top: 25px;
+margin-left: 305px;
+}
+
+#branding #search-form #search-field {
+background: #eee;
+color: #777;
+border: 1px solid #ccc;
+border-right: 1px solid #eee;
+border-bottom: 1px solid #eee;
+float: left;
+font-size: 14px;
+margin: 0 3px 0 0;
+padding: 5px;
+width: 267px;
+}
+
+#branding #search-button {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-btn-search2.png) no-repeat scroll left top transparent;
+border: none;
+float: left;
+width: 74px;
+height: 29px;
+text-indent: -9999px;
+margin: 0;
+padding: -4px 0 0 0;
+cursor: pointer;
+_font-size: 0;
+_line-height: 0;
+_overflow: hidden;
+color: transparent; 
+text-transform: uppercase;
+} 
+
+#branding .header-sponsorlogo {
+position: absolute;
+top: 20px;
+right: 0;
+}
+
+/* Perm Hero */
+
+#perm-hero {
+background: #fff;
+border-top: 2px solid #e5e5e5;
+clear: both;
+width: 976px;
+margin: 0 auto .3em auto;
+padding-top: .3em;
+overflow: hidden;
+}
+
+#perm-hero .slide {
+background: #fff;
+color: #777;
+float: left;
+width: 230px;
+height: 60px;
+margin-right: 18px;
+}
+
+#perm-hero .slide * {
+margin: 0;
+padding: 0;
+}
+
+#perm-hero .slide img {
+float: left;
+width: 60px;
+height: 60px;
+margin-right: 5px;
+}
+
+#perm-hero .slide h3 {
+font-size: 11px;
+text-transform: uppercase;
+margin-bottom: .3em;
+}
+
+#perm-hero .breaking h3 a {
+color: #f5001d; /* red */
+}
+
+#perm-hero .reviews h3 a, #perm-hero .techtips a {
+color: #ffa027; /* orange */
+}
+
+#perm-hero .geek h3 a, #perm-hero .apps h3 a, #perm-hero .science h3 a, #perm-hero .module h3 a, #perm-hero .mobile h3 a, #perm-hero .android h3 a {
+color: #09af35; /* green */
+}
+
+#perm-hero .design h3 a, #perm-hero .art h3 a, #perm-hero .browser h3 a, #perm-hero .ios h3 a, #perm-hero .macosx h3 a {
+color: #158ed5; /* blue */
+}
+
+#perm-hero .celebrities h3 a {
+color: #884e00; /* brown */
+}
+
+#perm-hero .diy h3 a {
+color: #d5151b; /* d red */
+}
+
+#perm-hero .future h3 a {
+color: #00a287; /* green */
+}
+
+#perm-hero .health h3 a {
+color: #a22e00; /* brown */
+}
+
+#perm-hero .robots h3 a {
+color: #224255; /* slate */
+}
+
+#perm-hero .video h3 a, #perm-hero .windows h3 a, #perm-hero .web h3 a {
+color: #ffac0d; /* yellow */
+}
+
+#perm-hero p a {
+color: #777;
+line-height: 1.2em;
+}
+
+#perm-hero .last {
+margin-right: 0;
+}
+
+#attic-promo {
+border-top: 2px solid #e5e5e5;
+margin: 0;
+padding: 0;
+_zoom: 1;
+}
+
+#attic-promo #main-hero {
+background: #fff;
+float: left;
+width: 660px;
+margin-right: 20px;
+}
+
+#attic-promo #main-hero .slide {
+width: 660px;
+height: 155px;
+overflow: hidden;
+position: absolute;
+}
+
+#attic-promo #main-hero .slide img a {
+display: block;
+width: 660px;
+height: 155px;
+}
+
+#attic-promo #main-hero .main-hero-select {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/div-line.png) left bottom repeat-x;
+list-style: none;
+margin: 0;
+overflow: hidden;
+width: 660px;
+_height: 1%;
+}
+
+#attic-promo #main-hero .main-hero-select li {
+border-right: 1px solid #e5e5e5;
+float: left;
+font-size: .9em;
+text-transform: uppercase;
+}
+
+#attic-promo #main-hero .main-hero-select li a {
+background: #fff;
+border-bottom: 1px solid #e5e5e5;
+display: block;
+font-weight: bold;
+color: #888;
+padding: .4em .8em;
+}
+
+#attic-promo #main-hero .main-hero-select li a:hover {
+border-bottom: 1px solid #fff;
+color: #111;
+text-decoration: none;
+}
+
+#attic-promo #main-hero .main-hero-select li a.current {
+background: #78A2E5;
+color: #fff;
+font-weight: bold;
+position: relative;
+}
+
+/* Slide Layouts */
+
+
+/* Default */
+
+#main-hero .slide {
+position: relative;
+width: 660px;
+height: 155px;
+}
+
+#main-hero .slide img {
+float: left;
+width: 330px;
+height: 155px;
+margin-right: 15px;
+}
+
+#main-hero .slide .title-card {
+float: left;
+width: 310px;
+margin-top: 30px;
+}
+
+#main-hero .slide .title-card h3 {
+font-size: 35px;
+margin: 0;
+padding: 0;
+letter-spacing: -2px;
+text-transform: uppercase;
+}
+
+#main-hero .slide .title-card p {
+margin: 0;
+padding: 0;
+}
+
+#main-hero .slide .title-card h3 a {
+color: #1f1f1f;
+}
+
+#main-hero .slide .title-card p {
+color: #444;
+font-size: 14px;
+margin: 0;
+padding: 0;
+}
+
+/* Alt */
+
+#main-hero .alt .title-card {
+}
+
+#main-hero .alt img {
+float: right;
+margin: 0 0 0 15px;
+}
+
+/* Full */
+
+#main-hero .full img {
+width: 660px;
+height: 155px;
+}
+
+#main-hero .full .title-card {
+background-color: #000000;
+background-color: rgba(0, 0, 0, 0.6);  /* FF3+, Saf3+, Opera 10.10+, Chrome */
+position: absolute;
+filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000'); /* IE6,IE7 */
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000')"; /* IE8 */
+width: 660px;
+left: 0;
+bottom: 0;
+padding: 8px;
+}
+
+#main-hero .full .title-card h3 {
+margin-bottom: 0;
+}
+
+#main-hero .full .title-card h3 a {
+color: #fff;
+font-size: 35px;
+text-shadow: 1px 1px #000;
+letter-spacing: 0;
+}
+
+#main-hero .full .title-card p {
+color: #fff;
+}
+
+/* Full Image */
+
+#main-hero .full-img img {
+width: 660px;
+height: 155px;
+}
+
+#main-hero .full .title-card {
+background-color: #000000;
+background-color: rgba(0, 0, 0, 0.6);  /* FF3+, Saf3+, Opera 10.10+, Chrome */
+position: absolute;
+filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000'); /* IE6,IE7 */
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000')"; /* IE8 */
+width: 660px;
+bottom: 0;
+padding: 8px;
+}
+
+#main-hero .full .title-card h3 {
+margin-bottom: 0;
+}
+
+#main-hero .full .title-card h3 a {
+color: #fff;
+font-size: 35px;
+text-shadow: 1px 1px #000;
+letter-spacing: 0;
+}
+
+#main-hero .full .title-card p {
+color: #fff;
+}
+
+/* Full Image */
+
+#main-hero .full-img img {
+width: 660px;
+height: 155px;
+}
+
+#attic-promo #main-features {
+float: left;
+width: 300px;
+height: 175px;
+}
+
+#attic-promo #main-features h3 {
+float: left;
+font: bold 16px "Helvetica Neue", Arial, sans-serif;
+margin: 0;
+padding-top: .3em;
+text-transform: uppercase;
+line-height: 1;
+}
+
+#attic-promo #main-features h3 a {
+color: #000000;
+font: bold 16px "Helvetica Neue", Arial, sans-serif;
+}
+
+#attic-promo #main-features ul {
+clear: both;
+margin: 0;
+padding: .5em 0 0 0;
+list-style: none;
+overflow: hidden;
+}
+
+#attic-promo #main-features ul li {
+border-bottom: 1px solid #eee;
+font-size: 1em;
+font-weight: bold;
+line-height: 1.2;
+overflow: hidden;
+padding: 4px 0;
+_zoom: 1;
+}
+
+#attic-promo #main-features ul li a {
+color: #333;
+}
+
+#attic-promo #main-features ul li.last {
+border-bottom: none;
+}
+
+#attic-promo #main-features ul li span {
+color: #999;
+font-size: .9em;
+font-weight: normal;
+float: right;
+width: 90px;
+}
+
+#attic-promo #main-features ul li span a {
+background: none;
+display: block;
+float: none;
+_width: 90px; 
+}
+
+#attic-promo #main-features a.read-more {
+display: inline;
+font-size: 11px;
+float: right;
+font-weight: bold;
+padding-top: 6px;
+}
+
+/* Navigation */
+
+body.main #main-nav {
+background: #FF6600;
+clear: both;
+width: 980px;
+margin: 180px 0 0 0;
+_margin-top: -5px;
+padding: 0;
+height: 35px;
+overflow: hidden;
+position: relative;
+_z-index: 20;
+}
+
+#main-nav {
+background: none repeat scroll 0 0 #9fd853;
+clear: both;
+width: 980px;
+margin: 0;
+_margin-top: -5px;
+padding: 0;
+height: 35px;
+position: relative;
+_z-index: 20;
+}
+
+#main-nav ul.primary {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 0 0 no-repeat;
+float: left;
+margin: 0;
+list-style: none;
+width: 660px;
+_width: 650px;
+height: 35px;
+margin: 0 0 0 2px;
+}
+
+#main-nav ul.primary li {
+float: left;
+text-indent: -9999px;
+}
+
+#main-nav ul.primary li a {
+display: block;
+}
+
+#main-nav ul.primary li a:active {
+top: 0;
+}
+
+#main-nav ul.primary li.home a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 0 35px no-repeat;
+width: 60px;
+height: 35px;
+}
+
+#main-nav ul.primary li.categories a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 60px 35px no-repeat;
+width: 114px;
+height: 35px;
+}
+
+#main-nav ul.primary li.video a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 170px 35px no-repeat;
+width: 67px;
+height: 35px;
+}
+
+#main-nav ul.primary li.reviews a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 237px 35px no-repeat;	
+width: 90px;
+height: 35px;
+}
+
+#main-nav ul.primary li.downloads a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-prim5.png) 327px 35px no-repeat;
+width: 60px;
+height: 35px;
+}
+
+#main-nav ul.primary li.galleries a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/dls-navbar-sprite-prim5.png) 444px 35px no-repeat;	
+width: 96px;
+height: 35px;
+}
+
+#nav-wrapper div.cat-listing {
+display: none;
+}
+
+#nav-wrapper .cat-listing {
+background: #fff;
+border: 1px solid #9fd853;
+border-top: none;
+width: 524px;
+z-index: 30;
+position: absolute;
+top: 35px;
+left: 76px;
+-moz-box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+-webkit-box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+}
+
+#nav-wrapper .cat-listing ul {
+border-right: 1px dotted #eee;
+float: left;
+margin: 10px 0 10px 12px;
+padding: 0;
+list-style: none;
+width: 116px;
+}
+
+#nav-wrapper .cat-listing ul li {
+margin: 0;
+padding: 0 0 .21em 0;
+height: 22px;
+}
+
+#nav-wrapper .cat-listing ul li a {
+color: #555;
+display: block;
+text-indent: 0;
+}
+
+#nav-wrapper .cat-listing .last {
+border: none;
+margin-right: 0;
+}
+
+#main-nav ul.secondary {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) 0 0 no-repeat;
+float: right;
+width: 300px;
+height: 35px;
+margin: 0 10px 0 0;
+padding: 0;
+list-style: none;
+overflow: hidden;
+text-shadow: 1px 1px #c95202;
+}
+
+#main-nav ul.secondary li {
+float: left;
+text-indent: -9999px;
+}
+
+#main-nav ul.secondary li a {
+display: block;
+}
+
+#main-nav ul.secondary li a:active {
+top: 0;
+}
+
+#main-nav ul.secondary li.about a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) 0 -35px no-repeat;
+width: 72px;
+height: 35px;
+}
+
+#main-nav ul.secondary li.contact a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) -72px -35px no-repeat;
+width: 89px;
+height: 35px;
+}
+
+#main-nav ul.secondary li.follow {
+width: 73px;
+height: 35px;	
+}
+
+#main-nav ul.secondary li.about a:hover {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) 0 -35px no-repeat;
+}
+
+#main-nav ul.secondary li.contact a:hover {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) -72px -35px no-repeat;
+}
+
+#main-nav ul.secondary li.feed a, #main-nav ul.secondary li.facebook a, #main-nav ul.secondary li.twitter a {
+width: 22px;
+height: 35px;	
+}
+
+#main-nav ul.secondary li.feed a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) -234px -35px no-repeat;	
+}
+
+#main-nav ul.secondary li.facebook a {
+background: url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) -256px -35px no-repeat;	
+}
+
+#main-nav ul.secondary li.twitter a {
+background:url(http://www.blogsmithmedia.com/downloadsquad.switched.com/media/dls-navbar-sprite-sec.png) no-repeat scroll -278px -35px transparent;
+}
+
+#sub-nav {
+background: #232323;
+padding: 8px;
+}
+
+#sub-nav * {
+margin: 0;
+padding: 0;
+}
+
+#sub-nav ul {
+float: left;
+list-style: none;
+}
+
+#sub-nav ul li {
+display: inline;
+}
+
+#sub-nav ul li a {
+color: #fff;
+padding-right: 7px;
+}
+
+#sub-nav ul li strong {
+color: #999;
+margin-right: 5px;
+}
+
+#sub-nav .prim {
+margin: 0 0 0 3px;
+width: 240px;
+}
+
+/* Trending */
+
+#trending-bar {
+background: #fff;
+border-bottom: 1px solid #e4e4e4;
+clear: both;
+width: 980px;
+}
+
+#trending-bar p {
+font-size: 1em;
+margin: 0;
+padding: .5em .4em .4em .3em;
+}
+
+#trending-bar p a {
+color: #2261ee;
+border-right: 1px solid #cccbcb;
+padding: 0 .5em;
+}
+
+#trending-bar p a.more-topics {
+border: none;
+color: #ff6600;
+}
+
+/* Content */
+
+#content {
+background: #fff;
+margin-top: 1em;
+_zoom: 1;
+_z-index: 3000;
+}
+
+#main-carousel {
+background: #fff;
+width: 660px;
+height: 200px;
+overflow: hidden;
+margin-bottom: 1.5em;
+_margin-bottom: 3em;
+}
+
+#main-carousel .card {
+float: left;
+width: 164px;
+position: relative;
+}
+
+#main-carousel .card p.swipe {
+position: absolute;
+margin: -10px 0 0 0;
+padding: 0;
+text-indent:5px;
+width: 135px;
+height: 31px;
+top: 95px;
+left: 0;
+}
+
+#main-carousel .card .swipe a {
+background: transparent url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat;
+display:block;
+width:135px;
+height:29px;
+padding-top:2px;
+text-transform:uppercase;
+color:white;
+font-weight:bold;
+text-shadow: 1px 1px rgba(0,0,0,0.2);
+}
+
+#main-carousel .card .swipe a {text-decoration:none;}
+
+#main-carousel .card .swipe a.breaking { background: #f5001d url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; } /* red */
+
+#main-carousel .card .swipe a.geek, #main-carousel .card .swipe a.apps, #main-carousel .card .swipe a.science, #main-carousel .card .swipe a.mobile, #main-carousel .card .swipe a.android { background: #09af35 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; } /* green */
+
+#main-carousel .card .swipe a.reviews, #main-carousel .card .swipe a.techtips { background: #ffa027 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.design, #main-carousel .card .swipe a.art, #main-carousel .card .swipe a.browser, #main-carousel .card .swipe a.ios, #main-carousel .card .swipe a.macosx { background: #158ed5 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.celebrities { background: #884e00 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.diy { background: #d5151b url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.future { background: #00a287 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.health { background: #a22e00 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.robots { background: #224255 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.video, #main-carousel .card .swipe a.windows, #main-carousel .card .swipe a.web { background: #ffac0d url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.giveaway { background: #F5B800 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.giveaway { background: #F5B800 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.meta { background: #FF3366 url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.desktop { background: #33CCFF url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+#main-carousel .card .swipe a.cross-platform { background: #FF33CC url(http://www.blogcdn.com/www.switched.com/media/2010/12/tag-bg.png) no-repeat; }
+
+
+#main-carousel .card h3 {
+font-size: 1em;
+padding: 1.8em 1em 0 0;
+line-height: 1.5em;
+}
+
+#main-carousel .card h3 a {
+color: #333;
+font-weight: bold;
+}
+
+#main-content {
+background: #fff;
+float: left;
+width: 660px;
+margin-right: 20px;
+zoom: 1;
+_overflow-x: hidden;
+}
+
+#main-content h3, #main-content h4, #main-content h5 {
+font-weight: normal;
+}
+
+/* Contact Form */
+
+#main-content #incontent {
+}
+
+#main-content #incontent p {
+border-bottom: 1px solid #eee;
+color: #222;
+font-size: 1.4em;
+padding-bottom: .5em;
+}
+
+#main-content #incontent .formlabel {
+color:  #777;
+clear: both;
+font-weight: bold;
+}
+
+#main-content #incontent form input, #main-content #incontent form textarea {
+border: 1px solid #ddd;
+border-top-color: #ccc;
+border-left-color: #ccc;
+font-size: 1.2em;
+margin: .5em 0 1.5em 0;
+padding: .3em;
+}
+
+#main-content #incontent form textarea {
+padding: 1em .3em;
+line-height: 1.5;
+}
+
+/* Posts */
+
+#main-content #post-selector {
+background: #fff;
+clear: both;
+border-bottom: 1px solid #ccc;
+overflow: hidden;
+margin-bottom: 1em;
+padding-bottom: .8em;
+_height: 1%;
+}
+
+#main-content #post-selector h1, #main-content #post-selector h2 {
+background: #fff url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-latestnews.png) no-repeat;
+float: left;
+_font-size: 0;
+width: 131px;
+height: 19px;
+text-indent: -9999em;
+margin: 0;
+padding: 0;
+}
+
+#main-content #post-selector ul {
+float: right;
+margin: .2em 0 0 0;
+padding: 0;
+list-style: none;
+}
+
+#main-content #post-selector ul li {
+float: left;
+font-size: 1em;
+margin: 0 .5em 0 0;
+padding: 0 .5em 0 0;
+text-transform: uppercase;
+}
+
+#main-content #post-selector ul li a {
+color: #999;
+}
+
+#main-content #post-selector ul li a:hover {
+color: #111;
+text-decoration: underline;
+}
+
+#main-content #post-selector ul li a.active {
+color: #111;
+font-weight: bold;
+}
+
+#main-content .post {
+border-bottom: 1px solid #ccc;
+width: 660px;
+margin-bottom: 2.5em;
+padding-bottom: 1.5em;
+}
+
+#main-content h1, #main-content h2 {
+font-size: 2em;
+line-height: 1.3;
+margin: 0;
+padding: 0;
+text-rendering: optimizeLegibility;
+}
+
+#main-content h1 a, #main-content h2 a {
+color: #111;
+}
+
+#main-content ul {
+font-size: 1em;
+line-height: 1;
+margin: 1.5em;
+list-style-type: disc;
+}
+
+#main-content ul li {
+padding: 0 0 .6em 0;
+line-height: 1.5em;
+}
+
+#main-content .post p.byline {
+color: #999;
+font-size: 12px;
+margin: .5em 0;
+}
+
+#main-content .post p.byline a {
+color: #222;
+font-weight: bold;
+}
+
+#main-content .post p.byline span.date, #main-content .post p.byline span.time {
+color: #222;
+}
+
+#main-content .post .post-body {
+color: #555;
+font-size: 14px;
+line-height: 1.6em;
+margin-top: 1em;
+}
+
+#main-content h3, #main-content h4, #main-content h5 {
+color: #111;
+font-weight: bold;
+margin: 0 0 .5em 0;
+padding: 0;
+}
+
+#main-content .post .post-body img {
+margin: 0 .5em 1.3em;
+}
+
+#main-content .post .post-body object {
+margin: 1.3em;
+}
+
+#main-content .post .post-body p.continueReading {
+font-size: 1em;
+margin: 1em 0;
+}
+
+#main-content .post .post-body p.continueReading a {
+font-weight: bold;
+}
+
+#main-content .post-body .meta-aside {
+border: 1px solid #ddd;
+color: #555;
+font-size: .8em;
+float: right;
+width: 160px;
+margin: .8em 0 .9em 2em;
+padding: 1em;
+-moz-box-shadow: 1px 2px 20px #ddd;
+-webkit-box-shadow: 1px 2px 20px #ddd;
+}
+
+#main-content .post-body .meta-aside .header {
+background: #eee;
+}
+
+#main-content .post-body .meta-aside .header h4 {
+padding: .5em;
+}
+
+#main-content .post-body .meta-aside ul li {
+margin: 0;
+padding: 0;
+}
+
+/* =POLLS -- */
+.poll {
+clear: both;
+border-collapse: collapse;
+background: #f1f1f1;
+width: 80%;
+padding-bottom: .5em;
+margin: 1em auto;
+position: relative;
+}
+div.poll {
+border: none;
+}
+.poll table.poll {
+width: 100%;
+}
+.poll fieldset {
+background: transparent;
+padding: 5px 10px 10px;
+font-size:1em;
+border:none;margin:0;
+text-align:left;
+width: 100%;
+}
+.poll caption, 
+#content .poll form p {
+font-family: "helvetica neue", Arial, Helvetica, "Lucida Grande", Verdana, sans-serif !important;
+padding:10px 0;
+margin:0;
+font-weight:bold;
+border-bottom: 3px solid #ddd; 
+background: #fff;
+border-top: 2px dotted #eee;
+font-size: 1.2em;
+line-height: 1.2em;
+text-align: center;
+color: #444;
+_height: 1%;
+}
+.poll td, .poll th {
+text-align:left;
+border-collapse: collapse;
+border-bottom: 1px dotted #ddd;
+padding: .3em 10px;
+font-weight: normal;
+}
+.poll th{
+width:80%;
+}
+.poll td{
+width: 20%;
+white-space: nowrap;
+border-left: 3px solid #fff;
+font-style: italic;
+}
+.poll form label{
+display:block;
+position: relative;
+
+text-align:left;
+margin: .4em 0;
+padding-left: 25px;
+width: 90%;
+line-height: 1.5em;
+_height: 1%;
+}
+.poll label input {
+position: absolute;
+top: 0;
+left: 0px;
+}
+.poll button {
+width: 7em;
+left: 50%;
+position: relative;
+margin-left: -3.5em;
+}
+.poll_result_bar {
+background: transparent !important;
+border-bottom: 12px solid #ff6600;
+position: relative;
+}
+
+/* Login */
+
+#content #main-content .loginPage h1 {
+border-bottom: 1px solid #eee;
+font-weight: bold;
+padding-bottom: .4em;
+}
+
+#content #main-content .loginPage h2 {
+font-size: 20px;
+border-bottom: 1px solid #eee;
+font-weight: bold;
+padding-bottom: .4em;
+letter-spacing: 0;
+}
+
+#main-content .loginPage ul {
+margin: 1em 0 0 0;
+padding: 0;
+list-style: none;
+}
+
+#main-content .loginPage ul li {
+float: left;
+margin-right: 10px;
+}
+
+#main-content .loginPage ul li {
+border: 1px solid #ddd;
+padding: 3px 7px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+}
+
+#main-content .loginPage ul li:hover {
+border: 1px solid #ccc;
+}
+
+#main-content .loginPage ul li img {
+float: left;
+margin: 2px 4px 0 0;
+}
+
+#userDiv, #signupDiv, #recoverDiv {
+margin-bottom: 2em;
+}
+
+#main-content .someForm {
+border: 3px solid #eee;
+margin-top: 1.5em;
+padding: 20px;
+width: 530px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+-moz-box-shadow: 3px 3px 10px #f7f7f7;
+}
+#main-content #signupDiv p.reg-message, #main-content #recoverDiv p.rc-message  {
+color: #555;
+font-size: 12px;
+margin-top: 1em!important;
+}
+#main-content #userDiv p.lg-message {
+color: #555;
+font-size: 12px;
+margin: 1.5em 0 0 0;
+padding: 0;
+}
+#userDiv label, #signupDiv label, #recoverDiv label {
+display: block;
+font:14px/23px Arial;
+color:#999;
+margin-bottom:0;
+clear:left;
+}
+#main-content #userDiv input, #main-content #signupDiv input, #main-content #recoverDiv input  {
+font-size: 14px;
+margin: 0 0 20px 0;
+padding: 7px;
+width: 75%;
+}
+#main-content .submit {
+border: 1px solid #ccc;
+color: #666!important;
+font-weight: bold;
+margin:  0 0 15px 0;
+padding: 5px 8px;
+text-decoration: none;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+#main-content .submit:hover {
+border: 1px solid #999;
+color: #333!important;
+text-decoration: none;
+} 
+
+.GH-hat-ddbox-container {
+    width:      320px;
+    height:     200px;
+    position:   absolute;
+    top:        25px;
+    z-index:    2000;
+    background: none;
+    display:    none;
+}
+
+#GH-hat-morebox-container {
+    left:       105px;
+    width:      500px;
+}
+
+#GH-hat-loginbox-container {
+    position:   absolute;
+    top: 30px;
+    left:       750px;
+    color:      white;
+}
+
+#GH-hat-loginbox-container label {
+font-size: 12px;
+text-align: left;
+}
+
+#GH-hat-loginbox-container #login-un, #GH-hat-loginbox-container #login-pw {
+width: 95%;
+margin: 0 0 .5em 0;
+}
+
+#GH-hat-loginbox-container .submit {
+border: 1px solid #ccc;
+color: #666!important;
+float:      left;
+margin:     0 0 5px 0;
+padding: 2px 5px;
+text-decoration: none;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+
+#GH-hat-loginbox-container .submit:hover {
+border: 1px solid #999;
+color: #333!important;
+text-decoration: none;
+}
+
+#GH-hat-loginbox-container .GH-hat-close-login {
+border: 1px solid #ccc;
+color: #666!important;
+float:      right;
+margin:     0 0 5px 5px;
+padding: 2px 5px;
+text-decoration: none;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+
+#GH-hat-loginbox-container .GH-hat-close-login:hover {
+border: 1px solid #999;
+color: #333!important;
+text-decoration: none;
+}
+
+.GH-hat-ddbox {
+border: 2px solid #FD702B;
+width: 430px;
+padding: 10px;
+border-top: none;
+background: white;
+}
+
+.GH-hat-ddbox label {
+font-size: 10px;
+}
+
+.GH-hat-ddbox p {
+border-bottom: 1px solid #eee;
+color: #333;
+font-weight: bold;
+margin: 0 0 .5em 0;
+padding-bottom: .5em;
+}
+
+.GH-hat-ddbox ul {
+float: left;
+font-size: 12px;
+margin: 0 10px 0 0;
+padding: 0;
+list-style: none;
+width: 30%;
+}
+
+.GH-hat-ddbox ul.last {
+margin: 0;
+padding: 0;
+}
+
+.GH-hat-ddbox ul li a {
+color: #0299d2!important;
+}
+
+.GH-hat-ddbox-bottom {
+    width:      320px;
+    height:     12px;
+    clear:      both;
+    position:   relative;
+    z-index:    2000;
+}
+
+.GH-hat-ddbox a {
+    color:      black !important;
+}
+
+.GH-hat-ddbox-round-right { float: right; }
+.GH-hat-ddbox-round-left  { float: left;  }
+.GH-hat-ddbox-btm { 
+    width:      296px;
+    height:     12px;
+    float:      left;
+    background: url(www.blogsmithmedia.com/www.joystiq.com/media/round_corner_bottom.png);
+}
+
+
+#GH-hat-loginbox-container, #GH-hat-loginbox-container div.GH-hat-ddbox-bottom {
+    width:      200px !important;
+}
+
+#GH-hat-loginbox-container div.GH-hat-ddbox-btm, #GH-hat-loginbox-container div.GH-hat-ddbox {
+    width:      176px !important;
+}
+
+#GH-hat-loginbox {
+    height:     200px !important;
+}
+
+/* Social Bar */
+
+#main-content .post .social-bar {
+clear: both;
+margin: .1em 0 1em 0;
+padding: .3em 0;
+overflow: hidden;
+height: 17px;
+}
+
+#main-content .post .social-bar p.filed-under {
+color: #888;
+float: left;
+font-size: .9em;
+margin: 0.2em 0;
+padding: 0;
+}
+
+#main-content .post .social-bar ul {
+margin: 0;
+padding: 0;
+list-style: none;
+float: right;
+}
+
+#main-content .post .social-bar ul li {
+display: inline;
+float: right;
+font-size: .8em;
+margin: .2em .8em 0 0;
+padding-top: .3em;
+text-transform: uppercase;
+}
+
+#main-content .post .social-bar ul li a {
+color: #777;
+}
+
+#main-content .post .social-bar ul li a:hover {
+color: #555;
+}
+
+#main-content .post .social-bar .social-tools {
+float: right;
+}
+
+.perm #main-content .post .social-bar .social-tools {
+    width: 225px;
+    float: right;
+}
+
+#main-content .post .social-bar .social-tools a {
+margin: 0 0 0 8px;
+padding: 0;
+}
+
+.aol-share .aol-share-email {
+padding-left: 23px!important;
+}
+
+/* Share Bar */
+
+#main-content #share-bar {
+overflow: hidden;
+margin: -3em 0 2.5em 0;
+padding: 1.5em 0 0 0;
+_height: 1%;
+}
+
+#main-content #share-bar .share-info {
+float: left;
+width: 100px;
+}
+
+#main-content #share-bar .share-info h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-sharediscuss.png) no-repeat;
+width: 84px;
+height: 42px;
+text-indent: -9999em;
+margin: 0 0 .5em;
+padding: 0;
+}
+
+#main-content #share-bar .share-info p {
+color: #555;
+font-size: 12px;
+line-height: 1;
+}
+
+#main-content #share-bar .share-link {
+float: left;
+width: 60px;
+height: 80px;
+margin-right: 35px;
+}
+
+#main-content #share-bar .last {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/social-badge-bubble.png) no-repeat;
+color: #fff;
+font-size: 1.5em;
+font-weight: bold;
+margin: 0;
+text-align: center;
+line-height: 3em;
+}
+
+#main-content #share-bar .last a {
+color: #fff;
+}
+
+#main-content #share-bar .last a:hover {
+color: #FD702B;
+}
+
+/* Post Features */
+
+#main-content #post-features {
+margin-bottom: 1.5em;
+padding-bottom: 1.5em;
+overflow: hidden;
+_height: 1%;
+}
+
+#main-content #post-features h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-postfeatures.png) no-repeat;
+width: 94px;
+height: 19px;
+text-indent: -9999em;
+margin: 0 0 .5em;
+}
+
+#main-content #post-features .feature {
+float: left;
+width: 154px;
+margin-right: 1.2em;
+height: 170px;
+}
+
+#main-content #post-features .feature p {
+font-size: 1.1em;
+line-height: 1.3em;
+margin-top: .5em;
+}
+
+#main-content #post-features .feature p a {
+color: #111;
+font-weight: bold;
+}
+
+#main-content #post-features .last {
+margin-right: 0;
+}
+
+/* Article Gallery */
+
+#main-content .article-gallery {
+border: 3px solid #ddd;
+margin: 1.5em auto;
+overflow: hidden;
+width:425px;
+}
+
+#main-content .article-gallery h3 {
+border-bottom: 1px solid #E5E5E5;
+font-size: 1em;
+font-weight: bold;
+line-height: 1em;
+margin: 0;
+padding: 1em;
+}
+
+#main-content .article-gallery h3 a {
+color: #111;
+}
+
+#main-content .article-gallery ul {
+margin: 0;
+padding: 1em;
+list-style: none;
+_height: 1%;
+overflow: hidden;
+}
+
+#main-content .article-gallery ul li {
+display: inline!important;
+margin: 0;
+padding: 0;
+}
+
+#main-content .article-gallery ul li img {
+float: left;
+width: 75px;
+height: 75px;
+margin: 0 2px 0 0!important;
+_margin: 0 1px 0 0!important;
+padding: 0;
+}
+
+#main-content .article-gallery ul li a img {
+border: 1px solid #eee;
+}
+
+#main-content .article-gallery ul li a:hover img {
+border: 1px solid #ccc;
+}
+
+#main-content .post .post-meta {
+clear: both;
+margin-top: 1.5em;
+overflow: hidden;
+}
+
+#main-content .post .post-meta .source {
+color: #666;
+float: left;
+font-style: italic;
+margin: 0;
+padding: 0;
+width: 250px;
+}
+
+#main-content .post .post-meta .source li {
+font-size: 1.1em;
+margin: 0;
+padding: 0;
+} 
+
+#main-content .post .post-meta .commentary {
+float: right;
+width: 340px;
+overflow: hidden;
+}
+
+#main-content .post .post-meta .commentary .comment {
+float: right;
+text-transform: uppercase;
+}
+
+#main-content .post .post-meta .commentary .comment a {	
+display: block;
+float: right;
+font-size: 19px;
+font-weight: bold;
+line-height: 1em;
+}
+
+#main-content .post .post-meta .commentary .comment a span {
+color: #111;
+font-size: 13px;
+}
+
+#main-content .post .post-meta .commentary .social-tools {
+float: right;
+width: 95px;
+_width: 115px;
+}
+
+#main-content #micro-posts .post .post-meta .social-tools {
+float: left;
+width: 200px;
+}
+
+#main-content .post p.tags {
+clear: both;
+color: #222;
+font-size: .8em;
+text-transform: uppercase;
+margin-top: 1.5em;
+}
+
+#main-content .post p.tags a {
+color: #555;
+}
+
+/* Post - Aside */
+
+#main-content .aside {
+background: url(/media/dls-noted-badge.png) 0 0 no-repeat;
+margin: 3em 0 3em -1em;
+}
+
+#main-content .aside h2 {
+font-size: 1.7em;
+line-height: 1.2em;
+margin: .8em 0 0 0;
+padding-left: 80px;
+}
+
+#main-content .aside p.byline {
+font-size: .9em;
+position: relative;
+margin: 5px 0 0 80px;
+padding: 0;
+line-height: 1.5;
+}
+
+#main-content .aside img.noted-img {
+width: 150px;
+height: 150px;
+float: right;
+margin: 0 0 2em 1em;
+}
+
+#main-content .aside ul.source {
+display: none;
+}
+
+#main-content .aside .social-bar {
+display: none;
+width: 95%;
+margin-left: 80px;
+width: 580px;
+}
+
+#main-content .aside .aside-img {
+display: block;
+float: right;
+width: 111px;
+height: 98px;
+}
+
+#main-content .aside .post-body {
+margin: 1em 0 1em 80px;
+font-size: 1.2em;
+line-height: 1.7em;
+}
+
+#main-content .aside .post-meta {
+padding: 0 1em 1em;
+}
+
+/* Microposts */
+
+#micro-posts .post h2 {
+font-size: 2em;
+font-weight: normal;
+}
+
+#micro-posts .post p.byline {
+color: #777;
+font-size: .9em;
+margin-bottom: 1em;
+}
+
+#micro-posts .post .post-body {
+color: #666;
+font-size: 1.1em;
+line-height: 1.5;
+}
+
+#micro-posts .post .post-body a {
+font-weight: bold;
+}
+
+#micro-posts .post .post-body img {
+border: 1px solid #ddd;
+display: block;
+float: left;
+width: 180px;
+height: 129px;
+margin: .2em 1.5em 1.5em 0;
+}
+
+/* Mini Posts */
+
+#mini-posts {
+margin-top: 1.5em;
+}
+
+#mini-posts .mini-post {
+margin-bottom: 1em;
+}
+
+#mini-posts .mini-post h2, #mini-posts .mini-post h3 {
+font-size: 1.8em;
+font-weight: normal;
+margin: 0;
+}
+
+#mini-posts .mini-post h2, #mini-posts .mini-post h3 a {
+color: #222;
+}
+
+#mini-posts .mini-post .thumb {
+float: left;
+width: 101px;
+height: 82px;
+margin: 1em 1em 0 0;
+}
+
+#mini-posts .mini-post .mini-content {
+float: left;
+width: 540px;
+margin-bottom: 2.5em;
+}
+
+#mini-posts .mini-post .mini-content p {
+color: #555;
+font-size: 1.1em;
+}
+
+#mini-posts .mini-post .mini-content p.byline, #mini-posts .mini-post .mini-content p.comment-count {
+font-size: .9em;
+margin: 0;
+padding: 0;
+}
+
+/* Comments */
+
+#main-content .notLoggedIn {
+border: 1px solid #FCB31C;
+color: #666;
+font-style: italic;
+margin: 1em 0 1.8em 0;
+padding: 10px;
+}
+
+#comments {
+position: relative;
+overflow: hidden;
+_height: 1%;
+}
+
+#comments h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-comments.png) 0 no-repeat;
+float: left;
+width: 125px;
+height: 19px;
+text-indent: -9999em;
+margin: .5em 0 .6em .5em;
+}
+
+#comments h3.hed {
+margin: 0.5em 0 0;
+}
+
+#comments .comment-count {
+position: absolute;
+top: -16px;
+left: 128px;
+font-size: 23px;
+font-weight: bold;
+}
+
+#comments a.subscribe {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-feed.png) 0 no-repeat;
+float: right;
+padding-left: 23px;
+}
+
+#comments .comment {
+background: #fff;
+border-bottom: 2px solid #e5e5e5;
+clear: both;
+padding: 1em 0;
+}
+
+#comments .child {
+border-left: 1px solid #ddd;
+border-bottom: 1px solid #ddd;
+margin-left: 2em;
+padding: 1em 0 1em 1em;
+}
+
+#main-content #comments .child .comment-author {
+color: #555;
+float: left;
+width: 180px;
+height: 80px;
+overflow: hidden;
+}
+
+#comments .comment .comment-author .rating .comment_rank.neutral {
+color: #ccc;
+}
+
+#comments .comment .comment-author .rating .comment_rank.lowest {
+color: #FFE37C;
+}
+
+#comments .comment .comment-author .rating .comment_rank.high {
+color: #5FE05F;
+}
+
+#comments .comment .comment-author .rating .comment_rank.highest {
+color: #00C900;
+}
+
+#main-content #comments .child .comment-author img {
+border: 1px solid #ddd;
+width: 50px;
+height: 50px;
+}
+
+#main-content #comments .child .the-comment {
+color: #777;
+float: right;
+width: 430px;
+}
+
+#comments .comment .comment-author {
+float: left;
+font-size: .9em;
+width: 195px;
+height: 80px;
+overflow: hidden;
+}
+
+#comments .comment .comment-author img {
+float: left;
+border: 2px solid #cecfd1;
+margin-right: 1em;
+}
+
+#comments .comment .comment-author p {
+margin: 0;
+padding: 0;
+}
+
+#comments .comment .comment-author a.author {
+color: #111;
+font-size: 13px;
+font-weight: bold;
+}
+
+#comments .comment .comment-author p a {
+color: #999;
+display: block;
+font-size: 10px;
+}
+
+#comments .comment .comment-author .comment-thumb {
+border: 2px solid #eee;
+width: 60px;
+height: 60px;
+float: left;
+margin-right: 1em;
+}
+
+#comments .comment .the-comment {
+color: #666;
+float: right;
+width: 430px;
+}
+
+#main-content #comments .comment .the-comment p {
+font-size: 14px;
+padding-right: 1em;
+line-height: 1.4;
+}
+
+#main-content #comments .child .the-comment p {
+font-size: 1em;
+}
+
+#comments .comment .comment-tools {
+clear: both;
+padding: .5em;
+}
+
+#main-content #comments .comment .comment-tools ul {
+margin: 0;
+padding: 0;
+list-style: none;
+text-align: right;
+}
+
+#comments .comment .comment-tools ul li {
+display: inline;
+font-size: .8em;
+margin-right: .3em;
+text-transform: uppercase;
+line-height: 1;
+}
+
+#comments .comment .comment-tools ul li a {
+background: #eee;
+border: 1px solid #ccc;
+color: #888;
+font-weight: bold;
+padding: .5em;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+
+#comments .comment .comment-tools ul li a:hover {
+border: 1px solid #999;
+color: #555;
+text-decoration: none;
+}
+
+#comments .comment .comment-tools ul li.reply a {
+color: #555;
+font-weight: bold;
+}
+
+#comments .comment .comment-tools ul li.like a:hover {
+background: #afc161;
+border: 1px solid #afc161;
+color: #fff;
+}
+
+#comments .comment .comment-tools ul li.dislike a:hover {
+background: #ffc161;
+border: 1px solid #ffc161;
+color: #fff;
+}
+
+#comments .comment .comment-tools ul li.report a {
+color: red;
+}
+
+#comments .comment .comment-tools ul li.report a:hover {
+background: red;
+border: 1px solid red;
+color: #fff;
+}
+
+.votedComment .cmt_tools a { display: none; }
+
+.votedComment .comment-tools {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/voted-icon.png) 0 no-repeat;
+}
+
+#main-content #cmt_paging {
+margin: 1em 0;
+padding: .5em;
+}
+
+/* Comment Form */
+
+#comment-form {
+overflow: hidden;
+}
+	
+#comment-form h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-postcomment.png) 0 no-repeat;
+width: 156px;
+height: 19px;
+text-indent: -9999em;
+margin: 0 0 .5em;
+}
+
+#comment-form .logged_in_msg {
+color: #666;
+}
+
+#comment-form .logged_in_msg strong {
+color: #333;
+}
+
+#comment-form #replyindicator {
+color: #777;
+margin-bottom: .5em;
+}
+	
+#comment-form #cmtmain {
+float: left;
+width: 400px;
+margin-bottom: 1.5em;
+}
+
+#comment-form .comments_label {
+clear: both;
+color: #555;
+display: block;
+margin-bottom: .5em;
+}
+	
+#comment-form #cmtmain textarea {
+border: 1px solid #ccc;
+color: #555;
+font-size: 12px;
+padding: .8em .5em;
+width: 383px;
+height: 130px;
+margin-bottom: 1em;
+}
+	
+#comment-form .notes {
+font-size: .9em;
+float: right;
+width: 240px;
+margin-top: 2.5em;
+}
+	
+#comment-form .notes h4 {
+font-weight: bold;
+margin: 0;
+}
+	
+#comment-form p {
+margin: 0.8em 0;
+}
+	
+#comment-form ol li {
+color: #555;
+}
+	
+#comment-form #addCommentButton {
+background: #FF6427 url(http://www.blogsmithmedia.com/www.switched.com/media/btn-comment-submit.png) no-repeat;
+border: none;
+color: #fff;
+float: left;
+_font-size: 0;
+_display: block;
+_line-height: 0;
+text-indent: -9999em;
+width: 100px;
+height: 34px;
+cursor: pointer;
+margin: 1em 1em 0 0;
+}
+
+#comment-form .comment-checks {
+color: #555;
+font-size: .9em;
+margin-top: 1.3em;
+}
+
+
+/* Post Pagination */
+
+#main-content #paginate {
+background: #fff;
+clear: both;
+margin: 0 0 1.5em 0;
+padding: 0;
+list-style: none;
+overflow: hidden;
+}
+
+#main-content #paginate li {
+margin: 0;
+padding: 0;
+}
+
+#main-content #paginate li.older a {
+display: block;
+float: left;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/older-posts.png) top left no-repeat;
+width: 166px;
+height: 24px;
+text-indent: -9999em;
+}
+
+#main-content #paginate li.older a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/older-posts.png) 0 -24px no-repeat;
+}
+
+#main-content #paginate li.newer a {
+display: block;
+float: right;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/newer-posts.png) top left no-repeat;
+width: 166px;
+height: 24px;
+text-indent: -9999em;
+}
+
+#main-content #paginate li.newer a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/newer-posts.png) 0 -24px no-repeat;
+}
+
+/* Sub-content Rail */
+
+#sub-content {
+background: #fff;
+float: left;
+width: 300px;
+_overflow-x: hidden;
+}
+
+/* Modules */
+
+#sub-content .rmod {
+background: #fff url(http://www.blogsmithmedia.com/www.switched.com/media/rmod-bg.gif) repeat-y;
+border: 1px solid #ccc;
+border-right: none;
+border-left: none;
+width: 300px;
+margin-bottom: 1em;
+_overflow: hidden;
+}
+
+#sub-content .rmod .header {
+_height: 1%;
+}
+
+#sub-content .rmod h3 {
+color: #111;
+font: bold 23px/1em Arial, sans-serif;
+text-transform: uppercase;
+margin: .6em .6em;
+letter-spacing: -1px;
+}
+
+#sub-content .rmod h3 a {
+color: #111;
+text-decoration: none;
+}
+
+#sub-content .rmod .rmod-inner {
+margin: 1em 1em;
+_margin: .8em .8em;
+}
+
+#content #sub-content .rmod div.post-listing {
+margin:1em 1em;
+overflow: hidden;
+}
+
+#sub-content .rmod p.teaser {
+color: #222;
+margin: 0 .8em .8em .8em;
+}
+
+#sub-content .rmod p.teaser a {
+color: #222;
+font-weight: bold;
+}
+
+#sub-content .rmod ul {
+margin: 0;
+list-style: none;
+overflow: hidden;
+_height: 1%;
+}
+
+#sub-content .rmod ul {
+margin: 1em;
+}
+
+#sub-content .rmod ul li {
+float:left;
+}
+
+#sub-content ul.tabs {
+margin: 4px 0;
+padding: 10px;
+_padding: 8px;
+}
+
+#sub-content ul.tabs li a {
+font: bold 23px/1em Helvetica, Arial, sans-serif;
+text-transform: uppercase;
+margin-right: 8px;
+letter-spacing: -1px;
+}
+
+/* Post Listing */
+
+#sub-content .rmod .post-listing .item {
+overflow: hidden;
+margin-bottom: .8em;
+_height: 1%;
+}
+
+#sub-content .rmod .post-listing .item .thumb img {
+border: 1px solid #ddd;
+display: block;
+width: 60px;
+height: 60px;
+float: left;
+}
+
+#sub-content .rmod .post-listing .item .title {
+float: left;
+font-size: 1.2em;
+width: 205px;
+margin-left: .5em;
+line-height: 1.1em;
+}
+
+#sub-content .rmod .post-listing .item .title a {
+color: #111;
+font-weight: bold;
+}
+
+/* Latest Posts */
+
+#sub-content #latest-posts .item .title {
+font-size: 12px;
+margin: 0;
+padding: 0;
+float: none;
+width: 100%;
+}
+
+#sub-content #latest-posts .item .title a {
+color: #FD702B;
+font-weight: normal;
+}
+
+#sub-content #latest-posts.dls .item .title a {
+color: #71a42e;
+}
+
+/* Archives Mod */
+#archive-nav,#archive-nav-bottom {
+	float:left;
+	width:100%;
+	margin-bottom:20px;
+}
+.archive-next,.archive-prev {
+	display:block;
+	background:#fff url(http://www.blogsmithmedia.com/www.switched.com/media/archivearrows.gif) no-repeat left top;
+	height:25px;
+	width:150px;
+	font-size:18px;
+	line-height:1.3em;
+	cursor:pointer;
+}
+.archive-next {
+	float:right;
+	text-align:right;
+	padding-right:35px;
+	background-position:right top;
+}
+.archive-prev {
+	padding-left:35px;
+	float:left;
+	background-position:left bottom;
+}
+#sub-content #archives-mod h3 {
+color: #111;
+text-decoration: none;
+margin-bottom: 0;
+}
+
+#sub-content #archives-mod h4 {
+font-size: 1.2em;
+font-weight: bold;
+float: left;
+color: #71a42e;
+margin: .8em .5em .3em .7em;
+_margin: .8em .5em .3em .3em;
+padding: 0;
+text-transform:uppercase;
+}
+
+#sub-content #archives-mod ul.controls {
+float: right;
+margin: 1.3em 0 0 0;
+padding: 0;
+list-style: none;
+width:40px;
+}
+
+#archives-mod ul.controls li {
+width:20px;
+height:20px;
+float:left;
+}
+
+#sub-content #archives-mod ul.controls li.prev a {
+display:block;
+float:right;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/prev-arw.png) 0 0 no-repeat;
+width: 20px;
+height: 20px;
+text-indent: -9999px;
+}
+
+#sub-content #archives-mod ul.controls li.next {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-arw-off.png) 0 0 no-repeat;
+}
+
+#sub-content #archives-mod ul.controls li.next a {
+display:block;
+float:right;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-arw.png) 0 0 no-repeat;
+width: 20px;
+height: 20px;
+text-indent: -9999px;
+}
+
+#sub-content #archives-mod #calendar {
+border-collapse: separate;
+clear: both;
+width: 286px;
+margin: .4em auto;
+position: relative;
+_zoom: 1;
+}
+
+#sub-content #archives-mod #calendar th {
+font-size: 1em;
+text-align: center;
+vertical-align: middle;
+text-transform:uppercase;
+font-weight:bold;
+}
+
+#sub-content #archives-mod #calendar td {
+background-color: #000;
+color: #999;
+font-size: 1.1em;
+position:relative;
+width: 40px;
+height: 40px;
+line-height: 40px;
+text-align: center;
+vertical-align: middle;
+overflow:visible;
+z-index:100;
+}
+
+#sub-content #archives-mod #calendar td.empty {
+background: #fff;
+}
+
+#archives-mod #calendar {
+position: relative;
+}
+
+#archives-mod #calendar td {
+position:relative;
+z-index:1;
+}
+
+#sub-content #archives-mod #calendar td a {
+display: block;
+background: #000;
+color: #fff;
+font-weight: bold;
+}	
+
+#sub-content #archives-mod #calendar span.archive-today {
+color: #71a42e;
+font-size:1.3em;
+}
+
+#sub-content #archives-mod #calendar td.today a {
+background-color: #fc6800;
+}	
+
+#sub-content #archives-mod #calendar td #calHover {
+background: #fff;
+border: 3px solid  #fc6800;
+display: block;
+font-size: .7em;
+padding: .6em .5em .5em .5em;
+position: absolute;
+width: 85px;
+height:20px;
+text-align: left;
+font-style: italic;
+line-height: 1.1em;
+z-index: 100000;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+}
+
+#sub-content #archives-mod #calendar td #calHover p {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cal-bubble-tail.png) 0 0 no-repeat;
+font-size:1.4em;
+color:#333;
+width: 70px;
+height: 14px;
+position: relative;
+top: -19px;
+left: 6px;
+padding-top:23px;
+margin:0;
+text-align:center;
+}
+
+#sub-content #archives-mod #calendar td .popup a {
+background: transparent;
+color: #000;
+font-size: 1.3em;
+width: auto;
+height: auto;
+line-height: 1em;
+margin-top: .2em;
+}
+
+/* Hot Topics */
+
+#sub-content #hot-topics #hot-topics-list {
+color: #555;
+font-size: 1.1em;
+margin: 1em;
+}
+
+/* Popular Module */
+
+#sub-content #popular-mod {
+overflow: hidden;
+}
+
+#sub-content #popular-mod ul li#popular a, #sub-content #popular-mod ul li#commented a {
+color: #999;
+} 
+
+#sub-content #popular-mod ul li#popular a:hover, #sub-content #popular-mod ul li#popular a.current, #sub-content #popular-mod ul li#commented a:hover,  #sub-content #popular-mod ul li#commented a.current {
+border-bottom: 3px solid #71a42e;
+color: #111;
+text-decoration: none;
+top: 0;
+}
+
+/* Latest News - cross module */
+
+#sub-content #latest-news .item .title {
+font-size: 13px;
+}
+
+#latest-news .item span {
+color: #777;
+display: block;
+font-size: 11px;
+}
+
+#latest-news .browse-all {
+float: right;
+}
+
+/* Newsletter Module */
+
+#newsletter-mod input#email {
+background: #eee;
+color: #777;
+border: 1px solid #ccc;
+border-right: 1px solid #eee;
+border-bottom: 1px solid #eee;
+float: left;
+font-size: 14px;
+margin: 0 3px 0 0;
+padding: 3px;
+width: 150px;
+}
+
+#newsletter-mod small {
+margin-top: 1em;
+color: #666;
+}
+
+/* Classics Module */
+
+#classics.rmod {
+	float:left;
+	position:relative;
+	height:290px;
+}
+#sub-content #classics .header h3 {
+float:left;
+margin-bottom:0;
+}
+#classics .header ul.classicsnav {
+float:right;
+margin-bottom:5px;
+}
+#classics .header ul.classicsnav li a {
+	text-transform:uppercase;
+	font-weight:bold;
+	color:black;
+	display:block;
+	margin-top:11px;
+	line-height:1em;
+}
+#classics ul.classicsnav a.prevlink {
+	padding-right:5px;
+	margin-right:5px;
+	border-right:1px solid black;
+}
+#classics a.browse-all {
+	text-transform:uppercase;
+	font-weight:bold;
+	font-size:10px;
+	float:right;
+	margin-right:10px;
+}
+
+#classics .classicsbody {position:relative;height:208px;margin-top:40px;}
+#classics img {
+	position:absolute;
+	z-index:0;
+}
+#classics .classicsteaser {
+	position:absolute;
+	font-weight:bold;
+	font-size:15px;
+	background-color: #000000;
+	background-color: rgba(0, 0, 0, 0.6);  /* FF3+, Saf3+, Opera 10.10+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#99000000',EndColorStr='#99000000')"; /* IE8 */
+	padding:10px;
+	bottom:0;
+	margin:0;
+line-height: 1.1;
+}
+#classics .classicsteaser a {
+	float:left;
+	color:white;
+}
+#classics .classicsteaser a:hover { text-decoration:none; }
+#classics .classicsteaser .classicscomments {
+	font-size:12px;
+	text-transform:lowercase;
+}
+#classics .classicsteaser .classicscomments span {
+	color:#FD702B;
+}
+
+/* Twitter Module */
+
+#twitter-mod * {
+margin: 0;
+padding: 0;
+}
+
+#twitter-mod .tweet {
+border-bottom: 1px dotted #ccc;
+height:auto;
+overflow: hidden;
+margin: 0;
+padding: .5em 0;
+_height: 1%;
+}
+
+#twitter-mod .tweet img {
+float: left;
+width: 48px;
+height: 48px;
+margin-right: 10px;
+}
+
+#twitter-mod p.follow-us a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/btn-followus.gif) 0 no-repeat;
+display: block;
+text-indent: -9999px;
+margin: 1em auto;
+width: 148px;
+height: 23px;
+}
+
+#twitter-mod .tweet dl {
+float: left;
+width: 216px;
+}
+
+#twitter-mod .tweet dl dt a {
+color: #222;
+}
+
+#twitter-mod .tweet dl dd p {
+color: #666;
+font-size: 11px;
+line-height: 1.2;
+}
+
+/* Team List Module */
+
+#sub-content #team-mod h3 {
+margin-left: .4em;
+}
+
+#sub-content #team-mod dl.team-list {
+float: left;
+width: 135px;
+margin: 0;
+padding: 0;
+margin-right: 3px;
+}
+
+#sub-content #team-mod dl.team-list dt img {
+clear: both;
+display: block;
+float: left;
+width: 40px;
+height: 40px;
+margin: 0 0 1em 0;
+padding: 0;
+}
+
+#sub-content #team-mod dl.team-list dd {
+width: 85px;
+float: left;
+margin: 0 0 0 .5em;
+padding: 0;
+}
+
+#sub-content #team-mod dl.team-list dd.author h4 {
+font-size: 11px;
+margin: 0;
+}
+
+#sub-content #team-mod dl.team-list dd.author h4 a {
+color: #111;
+}
+
+#sub-content #team-mod dl.team-list dd.title p {
+color: #888;
+font-size: .8em;
+}
+
+#sub-content #team-mod p {
+margin: 0;
+padding: 0;
+}
+
+#sub-content #team-mod dl.last {
+margin-right: 0;
+}
+
+/* Tech Tips Module */
+
+#sub-content #tech-tips h3 {
+float: left;
+margin: .6em .6em;
+padding: 0;
+}
+
+#sub-content #tech-tips  .header a.browse-all {
+float: right;
+margin: 1.2em;
+}
+
+#sub-content #tech-tips p {
+clear: both;
+margin: 1em;
+}
+
+#sub-content #tech-tips p a {
+font-weight: normal;
+font-style: italic;
+}
+
+#sub-content #tech-tips img {
+display: block;
+width: 280px;
+height: 95px;
+margin: .5em auto;
+}
+
+/* Facebook 101 Module */
+
+#sub-content #facebook-101 h3 {
+float: left;
+margin: .6em .6em;
+padding: 0;
+}
+
+#sub-content #facebook-101  .header a.browse-all {
+float: right;
+margin: 1.2em;
+}
+
+#sub-content #facebook-101 img {
+clear: both;
+display: block;
+width: 280px;
+height: 89px;
+margin: 1em auto;
+}
+
+/* Switched 101 Module */
+
+#sub-content #switched-mobile img {
+display: block;
+width: 280px;
+height: 89px;
+margin: 1em auto;
+}
+
+/* Smartphone Module */
+
+#sub-content #smartphone-hub img {
+display: block;
+width: 280px;
+height: 89px;
+margin: 1em auto 0 auto;
+}
+
+/* Gallery Mod */
+
+#sub-content #gallery-mod h3 {
+float: left;
+margin: .6em .6em;
+padding: 0;
+}
+
+#sub-content #gallery-mod .header a.browse-all {
+float: right;
+margin: 1.2em;
+}
+
+#sub-content #gallery-mod .g-photo {
+float: left;
+width: 115px;
+height: 135px;
+margin: 0 23px 40px 0;
+}
+
+#sub-content #gallery-mod h4 {
+line-height: 1.1;
+}
+
+#sub-content #gallery-mod h4 a {
+color: #181818;
+font-size: 12px;
+}
+
+#sub-content #gallery-mod h4 small {
+font-size: 10px;
+}
+
+#sub-content #gallery-mod img {
+border: 1px solid #eee;
+display: block;
+margin-bottom: 13px;
+width: 115px;
+height: 80px;
+}
+
+#sub-content .rmod-inner {
+clear: both;
+}
+
+#sub-content .rmod-inner ul {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+/* Sections */
+
+#main-content .section-name {
+border-bottom: 1px solid #ccc;
+font-weight: normal;
+margin-bottom: 1em;
+padding-bottom: .2em;
+}
+
+#main-content .section-name strong {
+color: #111;
+}
+
+/* Feeds */
+
+#switched-feeds p {
+color: #555;
+}
+
+#main-content div.fd-pod {
+float: left;
+font-size: 11px;
+width: 150px;
+height: 450px;
+margin-right: 10px;
+}
+
+#main-content div.fd-pod h3 {
+font-size: 14px;
+text-transform: uppercase;
+}
+
+/* Meet Switched */
+
+#meet-switched {
+background: #fff;
+position: relative;
+margin-top: .8em;
+}
+
+#meet-switched h1 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/header-bg-meetswitched.png) no-repeat;
+text-indent: -9999px;
+width: 230px;
+height: 28px;
+margin: 0 0 .5em;
+}
+
+#meet-switched p.intro {
+color: #3e3e3e;
+border-bottom: 1px solid #ccc;
+padding-bottom: 1em;
+}
+
+#meet-switched .writer-box {
+float: left;
+width: 150px;
+height: 210px;
+position: relative;
+margin: 0 1.4em 0 0;
+overflow: hidden;
+}
+
+#meet-switched .last {
+margin-right: 0;
+padding-right: 0;
+}
+
+#meet-switched .writer-box img {
+display: block;
+margin-bottom: .8em;
+width: 150px;
+height: 120px;
+}
+
+#meet-switched .writer-box a {
+color: #111;
+}
+
+#meet-switched .writer-box h2 {
+font-size: 1.2em;
+margin: 0 0 .2em;
+padding: 0;
+}
+
+#meet-switched .writer-box h3 {
+color: #5d5d5d;
+font-size: 1em;
+font-weight: normal;
+font-style: italic;
+margin: 0 0 .5em;
+padding: 0;
+}
+
+#meet-switched .writer-box a.email {
+font-size: 10px;
+margin: 0;
+padding: 0;
+}
+
+/* Search */
+
+#search-header h1 {
+font-weight: normal;
+}
+
+#search-header .search-selector {
+margin: 1em 0 2em 0;
+border-bottom: 1px solid #ccc;
+}
+
+#search-header .search-selector ul {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#search-header .search-selector ul li {
+display: inline;
+margin-right: .8em;
+text-transform: uppercase;
+}
+
+#search-header .search-selector ul li#products-select {
+margin-left: 1.5em;
+}
+
+#search-header .search-selector ul li a {
+color: #888;
+}
+
+#search-header .search-selector ul li a.active {
+color: #111;
+font-weight: bold;
+}
+
+/* Writer Section */
+
+#writer-card {
+background: #fff;
+position: relative;
+overflow: hidden;
+margin-bottom: 2.5em;
+_height: 1%;
+}
+
+#writer-card .details {
+float: left;
+width: 320px;
+}
+
+#writer-card .details h1 {
+margin: 0 0 .1em;
+padding: 0;
+}
+
+#writer-card .details p {
+color: #3e3e3e;
+margin: 0;
+padding: 0;
+}
+
+#writer-card .details p.title, #writer-card .details p.location {
+color: #555;
+font-size: 1.3em;
+}
+
+#writer-card .details p.location {
+margin: 0 0 1em;
+}
+
+#writer-card .details ul {
+color: #666;
+font-size: 1em;
+font-style: italic;
+margin: 1em 0 1em;
+list-style: none;
+}
+
+#writer-card .details ul li {
+padding: 0;
+}
+
+#writer-card .details ul li a {
+font-weight: bold;
+}
+
+#writer-card #writer-card-thumb {
+float: right;
+width: 299px;
+}
+
+
+/* Grid */
+
+#grid {
+border-top: 2px solid #ccc;
+clear: both;
+margin: 1.5em 0;
+padding-top: 1.5em;
+overflow: hidden;
+_height: 1%;
+}
+
+#grid .pod {
+float: left;
+width: 300px;
+margin: 0 40px 30px 0;
+padding: 0;
+}
+
+#grid .pod h4 {
+float: left;
+margin: 0 0 0.5em;
+padding: 0;
+text-transform: uppercase;
+}
+
+#grid .pod h4 a {
+color: #222;
+}
+
+#grid .pod a.favicon {
+float: left;
+display: block;
+margin-right: 6px;
+}
+
+#grid .pod ul {
+clear: both;
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#grid .pod ul li {
+border-bottom: 1px dotted #ccc;
+font-size: .9em;
+margin-bottom: .5em;
+padding-bottom: .5em;
+overflow: hidden;
+height: 14px;
+}
+
+#grid .last {
+margin-right: 0;
+}
+
+/* Footer */
+
+#footer {
+background: #000;
+clear: both;
+color: #fff;
+width: 980px;
+overflow: hidden;
+}
+
+#footer #notable {
+float: left;
+margin-right: 28px;
+width: 200px;
+}
+
+#footer #notable h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/footer-sprite.png) 0 0 no-repeat;
+width: 86px;
+height: 19px;
+margin: 0 0 1em 0;
+padding: 0;
+text-indent: -9999px;
+}
+
+#footer #notable ul {
+margin: 0;
+padding: 0;
+list-style: none;
+margin-bottom: 1.5em;
+}
+
+#footer #notable ul li {
+font-size: .9em;
+margin-bottom: .5em;
+}
+
+#footer #notable ul li.read-more a {
+color: #fff;
+font-weight: bold;
+}
+
+#footer-inner {
+margin: 1.5em;
+}
+
+#footer #our-favorite-sites {
+float: left;
+margin: 0 28px 0 0;
+width: 420px;
+overflow: hidden;
+}
+
+#footer #our-favorite-sites h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/footer-sprite.png) -86px 0 no-repeat;
+width: 200px;
+height: 19px;
+margin: 0 0 1em 0;
+padding: 0;
+text-indent: -9999px;
+}
+
+#footer .col {
+float: left;
+margin: 0 28px 0 0;
+width: 83px;
+}
+
+#footer .col a {
+color: #878787;
+}
+
+#footer .col h4 {
+font-size: 12px;
+text-transform: uppercase;
+margin: 0 0 .5em 0;
+padding: 0;
+}
+
+#footer .col ul {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#footer .col ul li {
+font-size: .9em;
+margin-bottom: .1em;
+}
+
+#footer #footer-feeds {
+float: left;
+width: 200px;
+margin: 0;
+padding: 0;
+}
+
+#footer #footer-feeds h3 {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/footer-sprite.png) -286px 0 no-repeat;
+width: 107px;
+height: 19px;
+margin: 0 0 1em 0;
+padding: 0;
+text-indent: -9999px;
+}
+
+#footer #footer-feeds ul {
+float: left;
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#footer #footer-feeds ul li {
+margin-bottom: .3em;
+}
+
+#footer #footer-feeds ul li a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-feed-footer.png) 0 0 no-repeat;
+padding: 2px 0 5px 23px;
+}
+
+#footer #footer-feeds ul li.more a {
+color: #fff;
+font-size: 11px;
+font-weight: bold;
+background: none;
+padding-left: 0;
+}
+
+#footer .basement {
+clear: both;
+border-top: 1px solid #333;
+border-bottom: 1px solid #333;
+overflow: hidden;
+}
+
+#footer .basement .logo {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/switched-footer-logo.png) top left no-repeat;
+float: left;
+text-indent: -9999px;
+width: 118px;
+height: 46px;
+margin: 1em;
+}
+
+#footer .basement ul {
+float: right;
+list-style: none;
+margin: 2em 1.5em 0 0;
+padding: 0;
+}
+
+#footer .basement ul li {
+display: inline;
+font-size: 1em;
+border-right: 1px solid #555;
+padding-right: 1em;
+padding-left: 1em;
+line-height: 27px;
+}
+
+#footer .basement ul li a {
+color: #fff;
+}
+
+#footer .basement ul li a.rss {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-feed-footer.png) 0 no-repeat;
+padding: 3px 5px 2px 20px;
+}
+
+#footer .basement ul li a.twit {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-twitter-footer.png) 0 no-repeat;
+padding: 3px 5px 2px 20px;
+}
+
+#footer .basement ul li a.fb {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-facebook-footer.png) 0 no-repeat;
+padding: 3px 5px 2px 20px;
+}
+
+#footer .basement ul li a.tumb {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/icon-tumblr-footer.png) 0 no-repeat;
+padding: 3px 5px 2px 20px;
+}
+
+#footer .basement .last {
+border-right: none;
+padding-right: 0;
+}
+
+#footer .last {
+margin-right: 0;
+}
+
+#footer .lower a.aol-news-logo {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cobrand-tech.png);
+display: block;
+float: left;
+text-indent: -9999px;
+width: 102px;
+height: 20px;
+margin: 15px 15px;
+}
+
+#footer .lower p.copyright {
+float: right;
+font-size: .9em;
+text-align: right;
+margin: 18px;
+}
+
+/* end */
+
+/* GLOBAL CUSTOMIZATIONS */
+#GH_ {
+background: transparent;
+margin: 0;
+}
+#GH_ #GH_hat {
+background: #fff;
+border: 1px solid #eee;
+border-right: none;
+border-left: none;
+margin-top: 0;
+}
+#GH_ #GH_guts {
+border: none;
+width: 980px;
+}
+#GH_ #GH_brand {
+margin-left: -3px;
+padding: 18px 0 0 0px;
+}
+#GH_ #GH_brand_link {
+height: 63px;
+width: 204px;
+background-position: 0 -632px;
+}
+#GH_ #GH_hat_more_link {
+padding: 0 12px 0 0;
+height: 20px;
+display: block;
+position: absolute;
+top: 0;
+left: 25px;
+}
+#GH_ #GH_nav {
+margin-left: -1px;
+width: 976px;
+background: #333;
+border-left: none; /*dark blue */
+border-right: none; /*dark blue */
+}
+#GH_ #GH_nav_act .GH_nav_A {
+color: #fff;
+}
+#GH_ .GH_nav_A {
+color: #fff;
+font-weight: normal;
+}
+#GH_ .GH_nav_A:hover {
+text-decoration: none;
+color: #fff;
+}
+#GH_ #GH_nav_act.GH_nav_list .GH_nav_A {
+background: transparent;
+padding-right: 7px;
+color: #fff;
+}
+#GH_ .GH_nav_list_UL {
+border-bottom: 1px solid #ccc;
+-webkit-box-shadow: 0 4px 7px rgba(0,0,0,.5);
+-moz-box-shadow: 0 4px 7px rgba(0,0,0,.5);
+box-shadow: 0 4px 7px rgba(0,0,0,.5);
+}
+#GH_ .GH_nav_list_UL li {
+border-left: 1px solid #ccc;
+border-right: 1px solid #ccc;
+}
+
+#GH_ .GH_nav_list_UL a:hover {
+background: #952310;
+}
+
+#GH_ #GH_hat_links #GH_hat_A_last {
+border-right: none;
+border-left: 1px solid #888;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aol-globalheader-sprite.png) no-repeat -425px -675px;
+display: block;
+float: left;
+height: 13px;
+margin-left: 10px;
+overflow: hidden;
+padding: 0;
+padding-right: 7px;
+text-indent: -99em;
+width: 67px;
+}
+
+#GH_ #GH_search {
+margin-right: 20px;
+}
+
+#GH_ .header-sponsorlogo {
+float:right;
+height:35px;
+left:-5px;
+_left: -2px;
+position:relative;
+width:215px;
+z-index:700;
+margin-top:-60px;
+}
+
+/* Sections */
+
+/* Archives */
+
+#archive-header {
+background: #fff;
+}
+
+#archive-header .header {
+border-bottom: 1px solid #ccc;
+overflow: hidden;
+margin-bottom: 1.5em;
+padding-bottom: .5em;
+}
+
+#archive-header h2 {
+float: left;
+font-size: 1.5em;
+font-weight: normal;
+margin: 0;
+padding: 0;
+}
+
+#archive-header p {
+float: right;
+font-size: 1.5em;
+margin: 0;
+padding: 0;
+line-height: 1em;
+}
+
+#main-content #archive-paginate {
+clear: both;
+margin: 1em 0;
+padding: 0;
+list-style: none;
+overflow: hidden;
+}
+
+#main-content #archive-paginate li {
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.prev a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/previous-day.png) 0 0 no-repeat;
+float: left;
+width: 135px;
+height: 24px;
+text-indent: -9999px;
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.prev a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/previous-day.png) 0 -24px no-repeat;
+}
+
+#main-content #archive-paginate li.next a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-day.png) 0 0 no-repeat;
+float: right;
+width: 103px;
+height: 24px;
+text-indent: -9999px;
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.next a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-day.png) 0 -24px no-repeat;
+}
+
+
+/* Ads */
+
+#omniture {position: absolute; top: 0 left: 0;}
+#dogear_promo {
+position:absolute;top:35px!important;right:0!important;width:120px;height:120px;z-index:99;
+}
+
+.outer-slice {
+background: #111;
+height: 35px;
+}
+
+.ad-slice {
+background: transparent;
+width: 980px;
+margin: 0 auto;
+line-height: 2.9em;
+}
+
+.ad-slice a {
+color: #777;
+}
+
+.ad-slice a:hover {
+color: #fff;
+text-decoration: none;
+}
+
+.header-cobrand {
+position:absolute;
+border: none !important;
+top:0px; 
+right:8px;
+display:block;
+height: 28px;
+width:101px;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cobrand-tech.png) no-repeat 0 6px !important;
+z-index: 2;
+text-indent: -9000px;
+}
+
+#topleader-wrap {
+width: 980px;
+margin: .5em auto;
+}
+
+#topleader-wrap .topleader {
+width: 728px;
+margin: 0 auto;
+}
+
+#cbuster-wrap {
+background: #000;
+padding: .5em 0;
+}
+
+#cbuster {
+width: 948px;
+height: 250px;
+margin: 0 auto;
+}
+
+.tower-ad {
+width: 160px;
+height: 600px;
+margin: 0 auto 1em auto;
+}
+
+.skyscraper {
+text-align: center;
+margin: 0 auto;
+padding-bottom: 10px;
+width: 160px;
+}
+
+#sub-content .medrect, #sub-content .medrect-tall {
+background: none;
+border: none!important;
+}
+
+#sub-content .medrect-tall {
+margin-bottom: 1em;
+}
+
+#main-content .inpostad {
+margin: 0 auto 3em auto;
+width: 300px;
+height: 250px;
+}
+
+.sponsorArea {display:block;position:relative;font-size:12px; }
+.sponsorArea .body {border-color:#cbcbcb;border-style:solid;border-width:1px 0px 1px;margin:0px 0px 4em;padding:5px 0px 15px;}
+.sponsorArea .body a.sponsorLink {color:#757454;font-weight:normal;margin:5px 0; position:absolute;top:0;right:0px;}
+.sponsorArea .body .sponsorPromo {color:#898989;margin-top:15px;}
+.sponsorArea .body .sponsorAFSPromo {color:#898989;margin-top:15px;cursor:pointer;}
+.sponsorArea .body .sponsorPromo .title a {font-weight:normal;}
+.sponsorArea .body .sponsorPromo .title a:hover {text-decoration:underline;}
+.sponsorArea .body .sponsorPromo .link a {color:#81bc61;font-weight:normal;}
+.sponsorArea .body .sponsorPromo .link a:hover {text-decoration:underline;}
+
+
+/* AOL Stocks */
+
+#subcontent #aol-stocks {
+margin-top: 1em;
+overflow: hidden;
+}
+
+#subcontent #aol-stocks h3 {
+margin: 0;
+padding: 0;
+}
+
+#subcontent #aol-stocks h3 .wrap a {
+color: inherit;
+text-decoration: none;
+margin:0;
+padding: 0;
+}
+
+#subcontent #aol-stocks ul.left {
+float: left;
+width: 45%;
+margin: 1em 0 0 1em;
+padding: 0 0 1em 0;
+}
+
+#subcontent #aol-stocks ul.right {
+float: left;
+width: 45%;
+margin: 1em 0 1em 1em;
+}
+
+/* Most Commented Trending Mod */
+
+#sub-content #col2_most_commented{
+width: 301px; 
+//min-height: 425px;
+overflow: hidden;
+_height: 525px;
+position: relative;
+padding-bottom: 12px;
+}
+
+#sub-content #col2_most_commented h3 {
+font-size: 1.3em;
+margin-bottom: .2em;
+padding-top: .3em;
+}
+
+#sub-content #col2_most_commented ul.tabs {
+margin: 0;
+margin-bottom: -15px;
+_margin-bottom: 0;
+padding-top: 0;
+_zoom: 1;
+_height: 1%;
+}
+
+#sub-content #col2_most_commented ul.tabs li a {
+color: #888;
+}
+
+#content #sub-content #col2_most_commented ul.tabs li a:hover, #content #sub-content div.rmod.tabbed li a.current {
+border-bottom:  3px solid #FF6600;
+color: #222;
+text-decoration: none;
+}
+
+#sub-content #col2_most_commented .mc_bar_graph{
+margin-left: 11px;
+}
+
+#col2_most_commented .mc_blurb a{color:#fff; display: block; font-weight: bold; overflow: hidden; min-height: 37px; padding-bottom: 20px;  }
+#col2_most_commented .mc_blurb a:hover{color:white;}		
+
+/*bar graph colors: BLUE*/
+	#col2_most_commented .mc_bar_graph .mc_bar_blue_digg{
+		width: 278px;  min-height: 57px; _height: 77px;
+		background-color: #1b5790;
+                border-bottom: 2px solid #154573;
+                margin-bottom: 3px;
+		position: relative;
+	}
+		#col2_most_commented .mc_bar_graph .mc_bar_blue_digg .mc_blurb{
+			width: 230px;
+			margin-left:8px;
+			margin-top:10px;
+			color:#fff;
+			line-height: 18px;
+		}
+		#col2_most_commented .mc_bar_graph .mc_bar_blue_digg .mc_comment_icon{
+                        border-bottom: 1px solid #154573;
+			float: right;
+			background-color: black;
+			position:absolute;
+			right:10px;
+			top:15px;				
+		}	
+
+
+	#col2_most_commented .mc_bar_graph .twitter {
+		width: 278px;  min-height: 57px; _height: 77px;
+		background: url(http://www.blogsmithmedia.com/www.engadget.com/media/twitter_1px_bg2.png);
+                border-bottom: 2px solid #379cba;	
+		position: relative;
+	}
+
+      #col2_most_commented .mc_bar_graph .twitter .mc_comment_icon {
+border-bottom: 1px solid #379cba;
+}
+
+
+
+
+#col2_most_commented .mc_bar_graph .mc_blurb{
+	float: left;	
+}
+#col2_most_commented .mc_bar_graph .mc_comment_icon .mc_num_comments a{
+	color: white;	
+	line-height: 25px;
+	padding: 7px;
+	font-size: 11px;
+        font-weight: bold;
+
+}
+#col2_most_commented .mc_bar_graph .mc_comment_icon .mc_num_comments a:hover{
+	color: #00bdf6;	
+}
+
+/* Commenter Profile */
+
+#commenter-profile {
+margin-bottom: 2em;
+width: 100%;
+}
+
+#commenter-profile .attic {
+border-bottom: 8px solid #eee;
+position: relative;
+}
+
+#commenter-profile h1#memberid.name {
+color: #333;
+font-size: 26px;
+font-weight:bold;
+margin: 0;
+padding: 0;
+}
+
+#commenter-profile p.title {
+float: left;
+color: #999;
+margin: 0;
+padding: 0;
+}
+
+#commenter-profile p#privacy_status {
+color: #888;
+margin: 0;
+padding: 0;
+position: absolute;
+top: 0;
+right: 0;
+}
+
+#commenter-profile p#profile_change {
+clear: both;
+margin: 0;
+padding: 0;
+}
+
+#commenter-profile p#profile_change a {
+border: 1px solid #ccc;
+color: #666!important;
+font-weight: bold;
+margin:  0 0 15px 0;
+padding: 5px 8px;
+text-decoration: none;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+
+#commenter-profile p#profile_change a:hover {
+border: 1px solid #999;
+color: #333!important;
+text-decoration: none;
+}
+
+#commenter-profile #changeSpace {
+margin-top: 1em;
+}
+
+#commenter-profile #changeSpace #profile_passchange, #commenter-profile #changeSpace form {
+background: #f8f8f8;
+clear: both;
+padding: 10px;
+border: 1px solid #eee;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+
+#commenter-profile #changeSpace #profile_passchange label {
+color: #777;
+font-size: 14px;
+margin-right: 10px;
+}
+
+#commenter-profile #changeSpace #profile_passchange input {
+display: block;
+font-size: 14px;
+margin-bottom: 5px;
+padding: 3px;
+width: 200px;
+}
+
+#commenter-profile #changeSpace #profile_passchange input#profileButton {
+display: inline;
+margin: 10px 20px 0 0;
+}
+
+#commenter-profile #changeSpace form input#uploadimg {
+margin-bottom: 1em;
+float: left;
+}
+
+#commenter-profile .attic #avatar {
+border: 1px solid #ccc;
+border-top-color: #ddd;
+border-left-color: #ddd;
+float: left;
+width: 64px;
+height: 64px;
+margin: 0 1em 1em 0;
+padding: 2px;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+}
+
+#commenter-profile .attic p.title {
+font-size: 1.2em;
+margin-bottom: .5em;
+}
+
+#commenter-profile .attic p.login a {
+background: #eee;
+border-bottom: 1px solid #ddd;
+padding: 2px 8px;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+}
+
+#commenter-profile .basement {
+clear: both;
+margin-top: 1.3em;
+position: relative;
+width: 660px;
+}
+
+#main-content #commenter-profile .basement h2.lp-hdr {
+border-bottom: 1px solid #eee;
+color: #555;
+font-size: 1.3em;
+font-weight: bold;
+margin-bottom: 1em;
+padding: 0 0 1em 0;
+letter-spacing: 0;
+}
+
+#commenter-profile .basement .subscribe {
+background: url(http://www.blogsmithmedia.com/www.joystiq.com/media/writer_rss.gif) 0 no-repeat;
+display: block;
+position: absolute;
+top: 0;
+right: 0;
+padding-left: 16px;
+cursor: pointer;
+}
+
+#commenter-profile .basement .comment-view .body {
+width: 100%;
+}
+
+#commenter-profile .basement .comment-view .body .time-stamp {
+color: #999;
+}
+
+#commenter-profile #activity_inner {
+border: 1px solid #ddd;
+margin: 2em 0 3em 0;
+height: 150px;
+overflow: auto;
+}
+
+#commenter-profile #activity_inner h2 {
+font-size: 19px;
+font-weight: bold;
+}
+
+#commenter-profile #activity_inner table {
+width: 100%;
+margin: .5em 0;
+}
+
+#commenter-profile #activity_inner table th {
+border-bottom: 2px solid #eee;
+font-size: 11px;
+font-weight: bold;
+padding: 5px;
+text-transform: uppercase;
+}
+
+#commenter-profile #activity_inner table td {
+background: #f9f9f9;
+border-bottom: 1px solid #eee;
+font-size: 11px;
+padding: 5px;
+}
+
+#commenter-profile #profile_comments .profile_cmt * {
+margin: 0;
+padding: 0;
+}
+
+#commenter-profile #profile_comments .profile_cmt .cmt_notify {
+color: #555;
+font-size: 11px;
+margin-top: 1em;
+}
+
+#commenter-profile #profile_comments h2 {
+color: #333;
+display: none;
+font-size: 1.5em;
+}
+
+#commenter-profile #profile_comments .profile_cmt {
+border-bottom: 1px solid #eee;
+margin-top: 1.5em;
+padding-bottom: 1.5em;
+}
+
+#commenter-profile #profile_comments .profile_cmt .cmt_cmt strong {
+color: #888;
+display: block;
+font-size: 11px;
+margin: .5em 0 1em 0;
+}
+
+#commenter-profile #profile_comments .profile_cmt h3 a {
+color: #333;
+font-size: 1em;
+}
+
+#commenter-profile #profile_comments .profile_cmt h3 span.blogname {
+color: #999;
+font-size: .8em;
+}
+
+#commenter-profile #profile_comments .profile_cmt h3 span.blogname a {
+color: #999;
+}
+
+#commenter-profile #profile_comments .profile_cmt .the-comment {
+color: #555;
+margin-top: 1em;
+line-height: 1.3;
+}
+
+/* Archives */
+
+#archive-header {
+background: #fff;
+}
+
+
+#archive-header h1 {
+}
+
+#archive-header .header {
+border-bottom: 1px solid #ccc;
+overflow: hidden;
+padding-bottom: .5em;
+}
+
+#archive-header p {
+float: right;
+font-size: 1.5em;
+margin: 0;
+padding: 0;
+line-height: 1em;
+}
+
+#main-content #archive-paginate {
+clear: both;
+margin: 1em 0;
+padding: 0;
+list-style: none;
+overflow: hidden;
+}
+
+#main-content #archive-paginate li {
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.prev a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/previous-day.png) 0 0 no-repeat;
+float: left;
+width: 135px;
+height: 24px;
+text-indent: -9999px;
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.prev a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/previous-day.png) 0 -24px no-repeat;
+}
+
+#main-content #archive-paginate li.next a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-day.png) 0 0 no-repeat;
+float: right;
+width: 103px;
+height: 24px;
+text-indent: -9999px;
+margin: 0;
+padding: 0;
+}
+
+#main-content #archive-paginate li.next a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/next-day.png) 0 -24px no-repeat;
+}
+
+/* RSS Feeds */
+
+#main-content .feed-header h1 {
+float: left;
+font-size: 25px;
+margin: 0;
+padding: 0;	
+}
+
+#main-content .feed-header p {
+color: #555;
+float: right;
+font-size: 11px;
+width: 494px;
+margin: 0;
+padding: 0;
+}
+
+#main-content .feed-header p a {
+font-weight: bold;
+}
+
+#main-content .feed-pods {
+margin-top: 40px;
+}
+
+#main-content .f-pod {
+margin-bottom: 40px;
+}
+
+#main-content .f-pod .f-info {
+background: transparent;
+float: left;
+width: 135px;
+margin-right: 31px;
+}
+
+#main-content .f-pod .f-info h2 {
+font-size: 1.2em;
+}
+
+#main-content .f-pod .f-info h2 a {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/rss_16.png) 0 no-repeat;
+padding-top: 2px;
+padding-left: 23px;
+text-decoration: none;
+}
+
+#main-content .f-pod .f-info p {
+color: #555;
+font-size: .9em;
+}
+
+#main-content .f-pod .feed-cols {
+width: 450px;
+float: left;
+}
+
+#main-content .f-pod .f-col {
+width: 114px;
+float: left;
+margin: 0 54px 15px 0;
+padding: 0;
+list-style: none;
+}
+
+#main-content .f-pod .last {
+margin: 0;
+padding: 0;
+}
+
+#main-content .f-pod .f-col li {
+margin: 0;
+padding: 0;
+}
+
+#main-content .f-pod .f-col li a {
+color: #222;
+font-weight: bold;
+}
+
+#main-content .exclude-feeds {
+clear: both;
+border-top: none;
+}
+
+#main-content .exclude-feeds h3 {
+font-weight: bold;
+font-size: 20px;
+}
+
+#main-content .exclude-feeds p {
+color: #666;
+}
+
+#main-content .exclude-feeds p strong {
+color: #333;
+font-size: 1em;
+}
+
+/* HUB */
+
+#main-content #hub {
+overflow: hidden;
+_z-index: 3000;
+}
+
+#main-content p.browse {
+float: right;
+margin: 0;
+padding: 0 0 .2em 0;
+}
+
+#main-content #hub #hub-name {
+border-bottom: 2px solid #e5e5e5;
+overflow: hidden;
+padding-bottom: 1em;
+_height: 1%;
+position:relative;
+}
+
+#main-content #hub #hub-name p {
+float: left;
+margin-right: 10px;
+}
+
+#main-content #hub #hub-name h1 {
+font-size: 2.4em;
+margin: 0;
+padding: 0;
+letter-spacing: -1px;
+}
+
+#main-content #hub #hub-name p {
+color: #666;
+margin-bottom: .5em;
+padding: 0;
+}
+
+#main-content #hub #hub-name h2 {
+font-size:1.2em;
+color: #888;
+margin: 0 0 1em 0;
+padding: 0;
+line-height: 1.2em;
+}
+
+#main-content #hub #hub-name img {
+position:absolute;
+top:0;
+right:0;
+}
+
+#main-content #hub-featured {
+clear: both;
+margin-top: 1.8em;
+overflow: hidden;
+}
+
+#main-content #hub-featured .header {
+overflow: hidden;
+_height: 1%;
+}
+
+#main-content #hub-featured h2 {
+float: left;
+width: 97px;
+height: 18px;
+margin: 0 0 .5em 0;
+padding: 0;
+text-transform: uppercase;
+}
+
+#main-content #hub-featured .slide {
+float: left;
+width: 213px;
+margin-right: 7px;
+position: relative;
+}
+
+#main-content #hub-featured .slide .comment-count {
+background: #FF6427;
+padding: .5em .8em;
+position: absolute;
+top: 0;
+right: 0;
+text-align: center;
+}
+
+#main-content #hub-featured .slide .comment-count a {
+color: #fff;
+}
+
+#main-content #hub-featured .slide .comment-count span {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/hub-comment-tail.png) 0 center no-repeat;
+display: block;
+width: 8px;
+height: 8px;
+position: absolute;
+top: 2.5em;
+_top: 2em;
+right: .5em;
+}
+
+#main-content #hub-featured img {
+display: block;
+margin-bottom: .8em;
+}
+
+#main-content #hub-featured h3 {
+font-size: 1.1em;
+line-height: 1.2em;
+}
+
+#main-content #hub-featured h3 a {
+color: #2d2d2d;
+}
+
+#main-content #hub-featured .last {
+margin: 0;
+}
+
+#main-content #hub-sorter {
+margin-top: 1.5em;
+}
+
+#main-content #hub-sorter .header {
+border-bottom: 1px solid #ccc;
+overflow: hidden;
+_height: 1%;
+}
+
+#main-content #hub-sorter ul {
+float: left;
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#main-content #hub-sorter ul li {
+display: inline;
+margin-right: .8em;
+text-transform: uppercase;
+font-size:1.4em;
+line-height:2em;
+}
+
+#main-content #hub-sorter ul li a {
+color: #888;
+}
+
+#main-content #hub-sorter ul li a:hover, #main-content #hub #hub-sorter ul li a.current {
+color: #111;
+text-decoration: none;
+}
+
+#main-content #hub-sorter ul li.sort {
+font-size: 1em;
+margin-right: 1em;
+}
+
+#main-content #hub-sorter .tabbed-content {
+margin-top: 1em;
+overflow: hidden;
+}
+
+#main-content #hub-sorter .tabbed-content .col {
+float: left;
+width: 325px;
+margin-right: 10px;
+}
+
+#main-content #hub-sorter .tabbed-content .col .slot {
+margin-bottom: .5em;
+overflow: hidden;
+_height: 1%;
+}
+
+#main-content #hub-sorter .tabbed-content .col .slot img {
+display: block;
+float: left;
+width: 50px;
+height: 50px;
+margin-right: .8em;
+}
+
+#main-content #hub-sorter .tabbed-content .col .slot h4 {
+font-size: 1.2em;
+font-weight: normal;
+padding-top: .2em;
+}
+
+#main-content #hub-sorter .tabbed-content .col .slot h4 a {
+color: #555;
+}
+
+#main-content #hub-sorter .tabbed-content .last {
+margin-right: 0;
+}
+
+#main-content .galleries-mod {
+float: left;
+width: 100%;
+margin-top: 1.5em;
+margin-right: 5em;
+}
+
+#content #main-content #hub .galleries-mod h2,#content #main-content #hub .video-mod h2 {
+margin: 0 0 .5em 0;
+padding: 0;
+width: 102px;
+height: 19px;
+text-transform:uppercase;
+}
+
+#main-content .galleries-mod .slide {
+width: 164px;
+float: left;
+position: relative;
+margin: 0 1px 1px 0;
+}
+
+#main-content .galleries-mod .slide .popup {
+background: #fff;
+border: 3px solid  #fc6800;
+color: #888;
+display: block;
+font-size: 1em;
+font-style: italic;
+padding: 1em;
+position: absolute;
+width: 150px;
+text-align: left;
+line-height: 1.1em;
+z-index: 10;
+_zoom: 1;
+_height: 1%;
+_float: left;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+top: 30px;
+left: 40px;
+}
+
+#main-content .galleries-mod .slide .popup span {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cal-bubble-tail.png) 0 0 no-repeat;
+width: 23px;
+height: 14px;
+position: absolute;
+top: -13px;
+left: 10px;
+}
+
+#main-content .galleries-mod .slide .popup a {
+color: #333;
+display: block;
+font-size: 1.1em;
+font-style: normal;
+}
+
+#main-content .video-mod {
+float: left;
+width:100%;
+overflow: hidden;
+margin-top: 1.5em;
+}
+
+#main-content .video-mod h2 {
+margin: 0 0 .5em 0;
+padding: 0;
+width: 102px;
+height: 19px;
+text-tranform:uppercase;
+}
+
+#main-content .video-mod ul {
+float: right;
+list-style: none;
+margin: .5em 0 0 0;
+padding: 0;
+width: 25px;
+}
+
+#main-content .video-mod ul li {
+display: inline;
+}
+
+#main-content .video-mod ul li.prev {
+float: left;
+width: 10px;
+height: 10px;
+}
+
+#main-content .video-mod ul li.next {
+float: right;
+width: 10px;
+height: 10px;
+}
+
+#main-content .video-mod ul li.prev a {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/prev-arw.png) 0 0 no-repeat;
+display: block;
+text-indent: -9999px;
+width: 10px;
+height: 10px;
+}
+
+#main-content .video-mod ul li.next a {
+background: transparent url(http://www.blogsmithmedia.com/www.switched.com/media/next-arw.png) 0 0 no-repeat;
+display: block;
+text-indent: -9999px;
+width: 10px;
+height: 10px;
+}
+
+#main-content .video-mod h3 {
+font-size: 1.2em;
+margin: .5em 0 0 0;
+padding: 0;
+}
+
+#main-content .video-mod h3 a {
+color: #222;
+}
+
+#main-content .video-mod p {
+color: #777;
+}
+
+#main-content .video-mod .slide {
+width:163px;
+height:200px;
+margin-right:1px;
+float:left;
+overflow: hidden;
+}
+
+#main-content .galleries-mod .slide h3 {
+font-size: 1.1em;
+margin: .5em 0 0 0;
+line-height: 1em;
+display:block;
+width:90%;
+}
+
+#main-content .galleries-mod .slide h3 a {
+color: #000;
+}
+
+#main-content .galleries-mod .slide h4 {
+font-size: 1em;
+line-height:2em;
+font-weight: normal;
+}
+
+#main-content .galleries-mod .slide h4 a {
+	color:#999;
+}
+
+.supercategory #hub #hub-name h1 {
+	width:400px;
+	float:left;
+}
+.supercategory #hub #hub-name h2 {
+	float:left;
+	clear:left;
+	width:240px;
+}
+
+.supercategory #main-content #hub #hub-name p {
+	float:left;
+	clear:left;
+	width:490px;
+}
+
+.gallery #topleader-wrap {
+	background:#1b1b1b;
+}
+
+#main-content #hub-sorter p.browse {
+	float:right;
+}
+#main-content #metacatlist ul {
+	list-style:none;
+	margin:0;
+}
+#main-content #metacatlist .slide {
+	width:150px;
+	float:left;
+	margin-right:10px;
+	height:390px;
+}
+#main-content #metacatlist img {
+margin-bottom: 1em;
+}
+#main-content #metacatlist h1 {
+	margin-bottom:1em;
+}
+#main-content #metacatlist h2 {
+	text-transform:uppercase;
+	font-size:13px;
+}
+#main-content #metacatlist h3 {
+	font-size:10px;
+	color:#666;
+}
+#main-content #metacatlist p {
+	font-size:10px;
+	line-height:13px;
+	color:#333;
+}
+#main-content #metacatlist p.pagednav {
+	display:block;
+	width:100%;
+	clear:both;
+	font-size:1.2em;
+	color:#666;
+}
+p.pagednav a {
+	padding:4px 2px;
+}
+
+
+
+/* =COMMENTSFORM SMS ---- */
+#cmttabs {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cmttabs-bg.gif) repeat-x 0 0;
+height: 42px;
+}
+#cmttabs ul {
+list-style: none;
+margin: 0;
+padding: 0; 
+}
+#cmttabs li {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cmttab-divider.gif) no-repeat right center;
+float: left;
+margin: 0;
+}
+#cmttabs li a {
+display: block;
+line-height: 41px;
+text-decoration: none;
+padding: 0;
+color: #999;
+font-weight: bold;
+padding: 0 15px;
+}
+#cmttabs li.currenttab a,
+#cmttabs li a:hover {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/cmttab-on.gif) no-repeat center bottom;
+color: #000;
+}
+#cmttabs li#cmtutab_sns {
+height: 42px;
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aim-logo-small.gif) no-repeat center 9px;
+}
+#cmttabs li#cmtutab_sns:hover,
+#cmttabs li.currenttab .cmtaol b {
+background: url(http://www.blogsmithmedia.com/www.switched.com/media/aim-logo-small.gif) no-repeat center 9px;
+display: block;
+}
+#cmttabs li#cmtutab_sns a {
+height: 41px;
+text-indent: -9000px;
+width: 60px;
+}
+.cmtuinfo {
+clear: left;
+padding: 10px 15px;
+border-bottom: 1px dotted #cecece;
+margin-bottom: 10px;
+overflow: hidden;
+}
+.cmtuinfo .instructions {
+color: #444;
+font-size: 13px;
+font-weight: bold;
+margin: 0 0 .7em;
+}
+.cmtuinfo label {
+font-weight: bold;
+display: block;
+float: left;
+}
+.cmtuinfo input {
+background: #eee;
+width: 160px;
+margin-right: 8px;
+}
+
+#cmtmain {
+padding: 10px;
+clear: both;
+}
+#cmtmain label {
+font-weight: bold;
+}
+#cmtmain div {
+padding: 5px;
+}
+#commentform {
+background: #fff;
+display: block;
+border: 1px solid #ddd;
+margin-bottom: 10px;
+border-top: 0;
+}
+
+.cmtuinfo input, #cmtmain textarea { border: 1px solid #eee; border-top-color: #bbb; border-left-color: #bbb; padding: 3px;}
+.cmtuinfo input:focus, #cmtmain textarea:focus { background: #e3f2df; }
+
+#cmtmain .cmtchecks { padding: 6px 5px 0; }
+#cmtmain .cmtchecks label { font-weight: normal; }
+#cmtmain .cmtchecks input { margin: 0 5px 0 0; }
+#cmtmain textarea {
+background: #eee;
+margin-top: 5px;
+}
+#replyindicator { font-weight: bold; }          
+
+#cmtbuttons input {
+margin-top: 1em;
+}
+#instructions {
+border-top: 1px dotted #cecece;
+font-size: 11px;
+padding: 15px;
+margin-top: 1em;
+}
+#instructions p {
+color: #777;
+margin: 0 0 .7em;
+line-height: 1.2em;
+}
+#instructions .preamble {
+color: #000;
+font-size: 1.1em;
+line-height: 1.1em;
+}
+#adsDiv0 {
+	text-align: center;
+}
+
+/* AOL Share over-ride */
+
+.aol-share-print {
+background: url(http://www.blogsmithmedia.com/www.tuaw.com/media/aol-share.gif) 0 0 no-repeat!important;
+}
+
+.aol-share-facebook {
+background: url(http://www.blogsmithmedia.com/www.tuaw.com/media/aol-share.gif) 0 -38px no-repeat!important;
+}
+
+.aol-share-twitter {
+background: url(http://www.blogsmithmedia.com/www.tuaw.com/media/aol-share.gif) 0 -57px no-repeat!important;
+}
+
+.aol-share-lifestream {
+background: url(http://www.blogsmithmedia.com/www.tuaw.com/media/aol-share.gif) 0 -95px no-repeat!important;
+}
+
+.aol-share-email {
+background: url(http://www.blogsmithmedia.com/www.tuaw.com/media/aol-share.gif) 0 -19px no-repeat!important;
+}

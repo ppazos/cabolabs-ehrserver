@@ -1,7 +1,11 @@
 <%@ page import="ehr.Ehr" %>
 
 
+<<<<<<< HEAD
+<%-- T0004
+=======
 
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 <div class="fieldcontain ${hasErrors(bean: ehrInstance, field: 'compositions', 'error')} ">
 	<label for="compositions">
 		<g:message code="ehr.compositions.label" default="Compositions" />
@@ -9,6 +13,10 @@
 	</label>
 	<g:select name="compositions" from="${support.identification.CompositionRef.list()}" multiple="multiple" optionKey="id" size="5" value="${ehrInstance?.compositions*.id}" class="many-to-many"/>
 </div>
+<<<<<<< HEAD
+--%>
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 <div class="fieldcontain ${hasErrors(bean: ehrInstance, field: 'contributions', 'error')} ">
 	<label for="contributions">

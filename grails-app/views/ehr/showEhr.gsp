@@ -7,10 +7,144 @@
     <title><g:message code="default.show.label" args="[entityName]" /></title>
     <style>
     .icon {
+<<<<<<< HEAD
+      width: 48px;
+      border: none;
+    }
+    tr:hover {
+     background: none;
+    }
+    td {
+      vertical-align: middle;
+    }
+    .filter_highlight {
+      background-color: #ffff80;
+    }
+    input[type=text] {
+      width: 100px;
+    }
+    ol.property-list, li {
+      margin:0px;
+    }
+    .composition_filters {
+      padding: 5px 0px 10px 0px;
+      border-bottom: 1px solid #ddd;
+    }
+    img.ui-datepicker-trigger {
+      vertical-align: middle;
+      height: 1.9em;
+      padding-bottom: 6px; /* alinea con el input */
+    }
+    </style>
+    
+    <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
+    
+    <g:javascript src="jquery-1.8.2.min.js" />
+    <g:javascript src="jquery.blockUI.js" />
+    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    
+    <script type="text/javascript">
+    $(document).ready(function() {
+    	
+    	/* ===================================================================================== 
+    	 * Calendars para filtros de compositions.
+    	 */
+    	$("input[name=fromDate]").datepicker({
+    		// Icono para mostrar el calendar 
+         showOn: "button",
+         buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+         buttonImageOnly: true,
+         buttonText: 'pick a date',
+         // Formato
+         dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
+         // Menus para cambiar mes y anio 
+         changeMonth: true,
+         changeYear: true,
+         // La fecha maxima es la que esta seleccionada en toDate si la hay
+         //onClose: function( selectedDate ) {
+         //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
+        // }
+      });
+    	$("input[name=toDate]").datepicker({
+    		// Icono para mostrar el calendar 
+         showOn: "button",
+         buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+         buttonImageOnly: true,
+         buttonText: 'pick a date',
+         // Formato
+         dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
+         // Menus para cambiar mes y anio 
+         changeMonth: true,
+         changeYear: true,
+         // La fecha minima es la que esta seleccionada en fromDate si la hay
+         //onClose: function( selectedDate ) {
+         //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
+         //}
+      });
+    	/* ===================================================================================== */
+    	
+
+      // Muestra modal con el contenido de la composition tal cual fue devuelto por el servidor EHR
+      // Esta es la forma de on() para que funcione como live() si nuevos links .showCompo se
+      // agregan de forma dinamica al DOM, sino no funciona el bind del click.
+      // la DIV #ehrContributiosn es fija y los A .showCompo varian usando AJAX.
+      $('#ehrContributions').on('click', '.showCompo', function(e) {
+        
+          //console.log('showCompo');
+        
+          e.preventDefault();
+          
+          modal = $('#composition_modal');
+          //console.log( modal.children()[0] );
+          //console.log( this.href );
+          
+          modal.children()[0].src = this.href;
+          
+          $.blockUI({
+            message: modal,
+            css: {
+              width: '960px',
+              height: '600px',
+              top: '10px',
+              left:'auto',
+              padding: '10px'
+            },
+            onOverlayClick: $.unblockUI
+          });
+          
+          //$('.blockOverlay').attr('title', 'salir').click($.unblockUI);
+      });
+    	
+    });
+    
+    var highlight_filtered_data = function()
+    {
+    	console.log('highlight_filtered_data');
+    	archId = $('select[name=qarchetypeId]').val();
+    	if (archId != '')
+      {
+    		console.log('archId ' + archId);
+    		
+    		$('td.contribution_data_archid').each( function(i,td){
+    			
+    			td = $(td);
+    			console.log('td ' + td);
+    			console.log('td ' + td.text());
+    			if (td.text() == archId)
+    			{
+    				td.addClass('filter_highlight');
+    			}
+    		});
+    	}
+    };
+    
+    </script>
+=======
       width: 64px;
       border: none;
     }
     </style>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
   </head>
   <body>
     <a href="#show-ehr" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -18,18 +152,32 @@
       <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
         <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+<<<<<<< HEAD
+        <%--<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>--%>
+      </ul>
+    </div>
+    
+    <g:render template="/person/patientData" model="[person: ehr.subject.person]" />
+    
+    <div id="show-ehr" class="content scaffold-show" role="main">
+    
+      <h1 class="hidden_uid">EHR <span class="uid">uid: ${ehr.ehrId}</span></h1>
+=======
         <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-ehr" class="content scaffold-show" role="main">
     
       <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
       </g:if>
       
       <ol class="property-list ehr">
+<<<<<<< HEAD
+=======
       
         <g:if test="${ehr?.ehrId}">
         <li class="fieldcontain">
@@ -60,6 +208,7 @@
           </span>
         </li>
         </g:if>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
         
         <g:if test="${ehr?.dateCreated}">
         <li class="fieldcontain">
@@ -74,6 +223,38 @@
           <span class="property-value" aria-labelledby="systemId-label"><g:fieldValue bean="${ehr}" field="systemId"/></span>
         </li>
         </g:if>
+<<<<<<< HEAD
+        
+        <li class="fieldcontain">
+        
+          <h2>Registros clínicos</h2>
+          <!-- T0002.1 -->
+          <div class="composition_filters">
+            <g:form id="${ehr.id}">
+	            <input type="text" name="fromDate" placeholder="from date" readonly="readonly" />
+	            <input type="text" name="toDate" placeholder="to date" readonly="readonly" />
+	            
+	            type <g:select name="qarchetypeId"
+	                           from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
+	                           noSelection="['':'']" />
+	                           
+	            <g:submitToRemote
+	               url="[action:'ehrContributions', id:ehr.id]"
+	               update="ehrContributions"
+	               value="filtrar"
+	               onSuccess="highlight_filtered_data()" />
+            </g:form>
+          </div>
+          
+          <div id="ehrContributions">
+            <g:include action="ehrContributions" id="${ehr.id}" />
+          </div>
+          
+        </li>
+      </ol>
+      
+      <!--
+=======
       
         <g:if test="${ehr?.contributions}">
         <li class="fieldcontain">
@@ -138,6 +319,7 @@
         </g:if>
       
       </ol>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       <g:form>
         <fieldset class="buttons">
           <g:hiddenField name="id" value="${ehr?.id}" />
@@ -145,6 +327,10 @@
           <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
         </fieldset>
       </g:form>
+<<<<<<< HEAD
+      -->
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     </div>
   </body>
 </html>

@@ -1,0 +1,87 @@
+- El XML de la composition en /compositions debería ser válido contra el XSD de composition:
+  - en lugar de empezar con <data> debería empezar con <composition>
+
+- Índice del contenido de las compositions XML
+  - extraer las paths válidas desde el arquetipo referenciado por la composition
+  - extraer las gpaths desde el arquetipo (para extraer datos directamente)
+  - mapear ambas cosas en una bd relacional, incluir el valor en cada path
+  - cada valor se guarda en una tabla específica para cada tipo de dato,
+    así una consulta obtiene valores para cada tipo de dato con su propia estructura
+  - las consultas se podrían hacer por path o gpath, siempre sobre los índices, nunca
+    sobre los XMLs.
+  - si no hay valor para una path (cuando se está indizando) no se agrega la referencia
+    (se busca solo en los valores que existen)
+  - los índices deben tener un puntero a la composition a la que pertenecen,
+    así puedo hacer consultas por condiciones en los valores, y obtener un set
+    de compositions que matcheen.
+  - COMPOSITION.context tambien se indexa (es el índice de nivel 1 porque sirve para
+    buscar documentos por fecha, tipo/arquetipo, autor, categoría, paciente, )
+
+
+
+-----------------
+==== ROADMAP ====
+-----------------
+
+- Query builder & tester:
+  - Poder diseñar queries desde UI
+  - Poder probarlas contra sets de datos de ejemplo que se commiteen para esa query
+     - generando también pacientes y EHRs según sea necesario
+     - que la generación sea paramétrica (cuántos pacientes/EHRs)
+  - Poder guardar la query con un nombre/id para que sea ejecutada luego
+  - La ejecución debe tener en cuenta los parámetros de la query y solicitarlos
+    (ej. desde la UI de prueba o verificar que vienen los parámetros obligatorios
+    desde invocación por servicio)
+
+
+- Trazabilidad también para consultas (logs)
+  - Quién accede, desde qué lugar y a qué registros
+  - Qué consultas se hicieron
+  - Cuándo se accedió y cuánto demoró (para medir tiempos en estadísticas y poder mejorar performance)
+
+
+- Servicio de replicación:
+  - Alta disponibilidad
+    - que con configuración de un proxy se pueda distribuir la carga entre distintas réplicas
+    - que ante la falla de un servidor, otro tome el lugar
+  - Seguridad
+    - respaldo automático de registros clínicos
+
+
+- Gestión de EHRStatus:
+  - Importa si el EHR es consultable y si es modificable
+  - Se debe verificar en query y en commit respectivamente
+
+
+- Gestión de permisos:
+  - definición de permisos a nivel de aplicación usando rangos de ip, puertos y servicios
+    a los que puede acceder en el EHR.
+  - haciendo un envelope de los mensajes se podría verificar id del sistema origen y
+    otros datos
+
+
+- Gestión de folders:
+  - Crear, mover, eliminar folders
+  - Toda acción debe estar logueada para audit
+  - Poner registros en folders de forma manual (gestión de registros clínicos)
+  - Creación de reglas de copia de registros commiteados a folders
+     - Para ubicación / ruteo automático de compositions a folders en el commit
+     - Una compo puede ir a más de un folder
+     - Reglas por datos demográficos, tipos de registro (archId), fecha, contenido (ej. un arquetipo interno como diagnóstico/problema de salud)
+
+
+- Merge de EHRs
+  - openEHR permite tener 2 EHRs con un mismo subject
+  - se debe permitir mergear EHRs conservando todo el historial y el log del merge
+  - es básico para gestión de registros clínicos
+
+  - Ver: http://www.openehr.org/wiki/display/spec/openEHR+Service+Model#openEHRServiceModel-EHR%2FSubjectCrossreferenceService
+    - EHR / Subject Cross-reference Service
+      This service provides a mapping from EHR identifiers (openEHR ehr_id) to one or
+      more subject identifiers. It can be used to avoid any subject identifiers
+      appearing in EHRs managed in the EHR service, as well as to manage correlations
+      across identification systems.
+    - También: http://www.openehr.org/201-OE.html
+
+
+- Encriptacion de documentos en fs

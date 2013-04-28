@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<!--[if IE 6 ]>
+<html id="ie6" lang="pl">
+<![endif]-->
+<!--[if IE 7 ]>
+<html id="ie7" lang="pl">
+<![endif]-->
+<!--[if !IE]><!-->
+<html lang="pl">
+<!--<![endif]-->
+
+<head>
+	<meta charset="UTF-8" />
+
+	<title>Transakcyjność w kontrolerach &laquo; Świat J2EE</title>
+
+	<link rel="stylesheet" href="http://s2.wp.com/wp-content/themes/pub/oulipo/style.css?m=1340750811g" type="text/css" media="screen" />
+	<link rel="pingback" href="http://j2eeworld.wordpress.com/xmlrpc.php" />
+	<link rel="profile" href="http://gmpg.org/xfn/11" />
+
+		<meta name='robots' content='noindex,nofollow' />
+<link rel="alternate" type="application/rss+xml" title="Świat J2EE &raquo; Kanał z wpisami" href="http://j2eeworld.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Świat J2EE &raquo; Kanał z komentarzami" href="http://j2eeworld.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Świat J2EE &raquo; Transakcyjność w&nbsp;kontrolerach Kanał z komentarzami" href="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/feed/" />
+<script type="text/javascript">
+/* <![CDATA[ */
+function addLoadEvent(func){var oldonload=window.onload;if(typeof window.onload!='function'){window.onload=func;}else{window.onload=function(){oldonload();func();}}}
+/* ]]> */
+</script>
+<link rel='stylesheet' id='all-css-0' href='http://s0.wp.com/_static/??/wp-includes/js/thickbox/thickbox.css,/wp-content/blog-plugins/loggedout-follow/widget.css,/wp-content/mu-plugins/infinity/themes/pub/oulipo.css,/wp-content/mu-plugins/post-flair/style.css,/wp-content/themes/h4/global.css?m=1350004034j' type='text/css' media='all' />
+<link rel='stylesheet' id='print-css-0' href='http://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1335386953g' type='text/css' media='print' />
+<script type='text/javascript'>
+/* <![CDATA[ */
+var LoggedOutFollow = {"invalid_email":"Your subscription did not succeed, please try again with a valid email address."};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://s0.wp.com/_static/??/wp-includes/js/jquery/jquery.js,/wp-content/blog-plugins/loggedout-follow/widget.js,/wp-includes/js/comment-reply.min.js?m=1349903959j'></script>
+<link rel='stylesheet' id='all-css-0' href='http://s1.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1343991657g' type='text/css' media='all' />
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='http://s2.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1307172283g&#038;ver=20110606' type='text/css' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://j2eeworld.wordpress.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://j2eeworld.wordpress.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Grails Spring Security, co za babol&nbsp;!' href='http://j2eeworld.wordpress.com/2011/08/23/grails-spring-security-co-za-babol/' />
+<link rel='next' title='Update bazy&nbsp;danych' href='http://j2eeworld.wordpress.com/2011/08/29/update-bazy-danych/' />
+<meta name="generator" content="WordPress.com" />
+<link rel='canonical' href='http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/' />
+<link rel='shortlink' href='http://wp.me/pU5vq-2s' />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Transakcyjność w&nbsp;kontrolerach" />
+<meta property="og:url" content="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/" />
+<meta property="og:description" content="Kontrolery w Grailsach nie są transakcyjne ! Można: zainstalować plugin: http://www.grails.org/plugin/transactional-controller przenieść kod do serwisu zrobić transakcyjność z palucha Ostatnie dwa ..." />
+<meta property="og:site_name" content="Świat J2EE" />
+<meta name="twitter:card" content="summary" />
+<meta property="fb:app_id" content="249643311490" />
+<link rel="shortcut icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311976023g" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="http://s2.wp.com/i/favicon.ico?m=1311976023g" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon-precomposed" href="http://s0.wp.com/i/webclip.png?m=1311618091g" />
+<link rel='openid.server' href='http://j2eeworld.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='http://j2eeworld.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="http://j2eeworld.wordpress.com/osd.xml" title="Świat J2EE" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://wordpress.com/opensearch.xml" title="WordPress.com" />
+		<style>
+		/* <![CDATA[ */
+		/* Block: reblog */
+		
+		.reblog-from img                   { margin: 0 10px 0 0; vertical-align: middle; padding: 0; border: 0; }
+		.reblogger-note img.avatar         { float: left; padding: 0; border: 0; }
+		.reblogger-note-content            { margin: 0 0 20px; }
+		.reblog-post .wpcom-enhanced-excerpt-content { border-left: 3px solid #eee; padding-left: 15px; }
+		.reblog-post ul.thumb-list         { display: block; list-style: none; margin: 2px 0; padding: 0; clear: both; }
+		.reblog-post ul.thumb-list li      { display: inline; margin: 0; padding: 0 1px; border: 0; }
+		.reblog-post ul.thumb-list li a    { margin: 0; padding: 0; border: 0; }
+		.reblog-post ul.thumb-list li img  { margin: 0; padding: 0; border: 0; }
+		
+		.reblog-post .wpcom-enhanced-excerpt { clear: both; }
+		
+		.reblog-post .wpcom-enhanced-excerpt address,
+		.reblog-post .wpcom-enhanced-excerpt li,
+		.reblog-post .wpcom-enhanced-excerpt h1,
+		.reblog-post .wpcom-enhanced-excerpt h2,
+		.reblog-post .wpcom-enhanced-excerpt h3,
+		.reblog-post .wpcom-enhanced-excerpt h4,
+		.reblog-post .wpcom-enhanced-excerpt h5,
+		.reblog-post .wpcom-enhanced-excerpt h6,
+		.reblog-post .wpcom-enhanced-excerpt p { font-size: 100% !important; }
+		
+		.reblog-post .wpcom-enhanced-excerpt blockquote,
+		.reblog-post .wpcom-enhanced-excerpt pre,
+		.reblog-post .wpcom-enhanced-excerpt code,
+		.reblog-post .wpcom-enhanced-excerpt q { font-size: 98% !important; }
+		
+
+		/* ]]> */		
+		</style>
+		<meta name="application-name" content="Świat J2EE" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Wszystko i nic o J2EE" /><meta name="msapplication-task" content="name=Zapisy;action-uri=http://j2eeworld.wordpress.com/feed/;icon-uri=http://s2.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=http://s2.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Wsparcie WordPress.com;action-uri=http://support.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Fora WordPress.com;action-uri=http://forums.wordpress.com/;icon-uri=http://s2.wp.com/i/favicon.ico" /><meta name="title" content="Transakcyjność w&nbsp;kontrolerach | Świat J2EE on WordPress.com" />
+<meta name="description" content="Kontrolery w Grailsach nie są transakcyjne ! Można: zainstalować plugin: http://www.grails.org/plugin/transactional-controller przenieść kod do serwisu zrobić transakcyjność z palucha Ostatnie dwa rozwiązania są opisane tutaj: http://omarello.com/2010/10/working-with-grails-transactions/" />
+</head>
+
+<body class="single single-post postid-152 single-format-standard color-light highlander-enabled highlander-light">
+<div id="wrapper">
+
+	
+	<div id="search">
+		<form method="get" id="searchform" action="http://j2eeworld.wordpress.com/">
+	<div>
+		<span class="search">Szukaj:</span><input type="text" value="" size="15" name="s" id="s" />
+		<input type="submit" id="searchsubmit" value="Go" />
+	</div>
+</form>	</div>
+
+	<div id="main-nav">
+		<h1 class="masthead"><a href="http://j2eeworld.wordpress.com">Świat J2EE</a></h1>
+		<p class="description">Wszystko i nic o J2EE</p>
+
+		<div class="menu-wrap"><ul class="menu"><li class="page_item page-item-2"><a href="http://j2eeworld.wordpress.com/about/">About</a></li></ul></div>
+	</div>
+<div id="content">
+
+	<div id="entry-content">
+
+	
+					<div id="post-152" class="post-152 post type-post status-publish format-standard hentry category-grails">
+				<h2 class="entry-title">Transakcyjność w&nbsp;kontrolerach</h2>
+				<p class="date">25/08/2011 <a href="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/#respond" title="Skomentuj &#8222;Transakcyjność w&nbsp;kontrolerach&#8221;"><span class="sep">&sect;</span> <span class="commentcount">Dodaj komentarz</span></a></p>
+
+				<div class="entry">
+					<p>Kontrolery w Grailsach nie są transakcyjne !</p>
+<p>Można:</p>
+<ul>
+<li>zainstalować plugin: <a href="http://www.grails.org/plugin/transactional-controller">http://www.grails.org/plugin/transactional-controller</a></li>
+<li>przenieść kod do serwisu</li>
+<li>zrobić transakcyjność z palucha</li>
+</ul>
+<div>Ostatnie dwa rozwiązania są opisane tutaj:</div>
+<div><a href="http://omarello.com/2010/10/working-with-grails-transactions/">http://omarello.com/2010/10/working-with-grails-transactions/</a></div>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled"><div class="wpl-likebox sd-block sd-like"><h3 class="sd-title">Dodaj do ulubionych:</h3><div class="sd-content"><div id="like-152" class="wpl-button "><a href='http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/?like=1&amp;_wpnonce=300d3d613a' title='I like this.' class='like needs-login sd-button' rel='nofollow'><span>Lubię</span></a></div><div class="wpl-count sd-like-count">Be the first to like this.</div></div></div></div>					
+					<p class="tags"></p>
+					
+
+<!-- You can start editing here. -->
+
+
+		
+
+									<div id="respond">
+				<h3 id="reply-title">Dodaj komentarz <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2011/08/25/transakcyjnosc-w-kontrolerach/#respond" style="display:none;">Anuluj pisanie odpowiedzi</a></small></h3>
+									<form action="http://j2eeworld.wordpress.com/wp-comments-post.php" method="post" id="commentform">
+																										
+
+
+												
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest" />
+
+<div class="comment-form-field comment-textarea">
+	<label for="comment">Wprowadź swój komentarz do tego pola...</label>
+	<div id="comment-form-comment"><textarea id="comment" name="comment"></textarea></div>
+</div>
+
+<div id="comment-form-identity">
+
+	<div id="comment-form-nascar">
+		<p>Wprowadź swoje dane lub kliknij jedną z tych ikon, aby się zalogować:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="#comment-form-guest" id="postas-guest" title="Guest">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" title="WordPress.com">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Twitter" id="postas-twitter" title="Twitter">
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Facebook" id="postas-facebook" title="Facebook">
+					<span></span>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="http://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Gravatar" width="25" class="no-grav" />
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">E-mail <span class="required">(wymagane)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Podpis <span class="required">(wymagane)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Witryna internetowa</label>
+					<div class="comment-form-input"><input id="url" name="url" type="text" value="" /></div>
+				</div> 
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="http://s2.wp.com/wp-content/mu-plugins/highlander-comments/images/wplogo.png?m=1289230950g" alt="WordPress.com Logo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="" />
+				<p class="comment-form-posting-as pa-wordpress"><strong></strong> You are commenting using your WordPress.com account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Zmień</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="http://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Twitter picture" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="" />
+				<p class="comment-form-posting-as pa-twitter"><strong></strong> You are commenting using your Twitter account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Zmień</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="http://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Facebook photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="" />
+				<p class="comment-form-posting-as pa-facebook"><strong></strong> You are commenting using your Facebook account. <span class="comment-form-log-out">(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Zmień</a>&nbsp;)</span></p>
+			</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Anuluj</a></div>
+		<p>Connecting to %s</p>
+	</div>
+	
+	
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	var input = document.createElement( 'input' ),
+	    comment = jQuery( '#comment' );
+
+	if ( 'placeholder' in input ) {
+		comment.attr( 'placeholder', jQuery( '.comment-textarea label' ).remove().text() );
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	jQuery( '#comment-form-identity' ).hide();
+	jQuery( '#comment-form-subscribe' ).hide();
+	jQuery( '#commentform .form-submit' ).hide();
+
+	comment.css( { 'height':'10px' } ).one( 'focus', function() {
+		var timer = setInterval( HighlanderComments.resizeCallback, 10 )
+		jQuery( this ).animate( { 'height': HighlanderComments.initialHeight } ).delay( 100 ).queue( function(n) { clearInterval( timer ); HighlanderComments.resizeCallback(); n(); } );
+		jQuery( '#comment-form-identity' ).slideDown();
+		jQuery( '#comment-form-subscribe' ).slideDown();
+		jQuery( '#commentform .form-submit' ).slideDown();
+	});
+});
+</script>
+
+<div id="comment-form-subscribe"> 
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;" tabindex="6"/> <label class="subscribe-label" id="subscribe-label" for="subscribe">Powiadom mnie o nowych komentarzach poprzez e-mail.</label></p></div>
+
+												<p class="form-submit">
+							<input name="submit" type="submit" id="comment-submit" value="Opublikuj komentarz" />
+							<input type='hidden' name='comment_post_ID' value='152' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						
+<input type="hidden" name="genseq" value="1350740098" />
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="a2f457460a" /></p><script type='text/javascript' src='http://s2.wp.com/wp-content/mu-plugins/akismet-2.5/form.js?m=1308783962g'></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="50"/></p>					</form>
+							</div><!-- #respond -->
+			<div style="clear: both"></div>			
+				</div>
+			</div>
+
+		
+		<div class="navigation">
+			<p class="alignleft">&laquo; <a href="http://j2eeworld.wordpress.com/2011/08/29/update-bazy-danych/" rel="next">Update bazy&nbsp;danych</a></p>
+			<p class="alignright"><a href="http://j2eeworld.wordpress.com/2011/08/23/grails-spring-security-co-za-babol/" rel="prev">Grails Spring Security, co za babol&nbsp;!</a> &raquo;</p>
+		</div>
+
+	
+</div> <!-- close entry-content -->
+
+	<div id="supplementary">
+		<div class="meta">
+
+					<div class="post-nav">
+				<h3>What&rsquo;s this?</h3>
+				<p>You are currently reading <strong>Transakcyjność w&nbsp;kontrolerach</strong> at <a href="http://j2eeworld.wordpress.com">Świat J2EE</a>.</p>
+
+				<h3>meta</h3>
+				<ul class="single-post-meta">
+					<li><strong>Autor:</strong> z3dd</li>
+					<li><strong>Comments:</strong> <a href="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/#respond" title="Skomentuj &#8222;Transakcyjność w&nbsp;kontrolerach&#8221;">Dodaj komentarz</a></li>
+					<li><strong>Kategorie:</strong> <a href="http://j2eeworld.wordpress.com/category/grails/" title="Zobacz wszystkie wpisy z kategorii &#8222;Grails&#8221;" rel="category tag">Grails</a></li>
+				</ul>
+				<p class="edit"></p>
+			</div>
+
+		
+	</div> <!-- close meta -->
+	</div> <!-- close supplementary -->
+
+</div> <!-- close content -->
+<div id="footer">
+
+	<div id="footer-contact">
+		<p><a href="http://pl.wordpress.com/?ref=footer" rel="generator">Blog na WordPress.com</a>.</p>
+		<p>Motyw: Oulipo. Autor motywu: <a href="http://andreamignolo.com" rel="designer">A. Mignolo</a>.</p>
+	</div>
+
+</div>
+
+</div> <!-- close wrapper -->
+
+<script type="text/javascript">
+var _qevents = _qevents || [], wpcomQuantcastData = {"qacct":"p-18-mFEk4J448M","labels":",language.pl,type.wpcom"};
+function wpcomQuantcastPixel( labels, options ) {
+	var i, defaults = wpcomQuantcastData, data = { event: 'ajax' };
+
+	labels  = labels  || '';
+	options = options || {};
+
+	if ( typeof labels != 'string' )
+		options = labels;
+
+	for ( i in defaults ) {
+		data[i] = defaults[i];
+	}
+
+	for ( i in options ) {
+		data[i] = options[i];
+	}
+
+	if ( data.labels ) {
+		data.labels += ',' + labels;
+	} else {
+		data.labels = labels;
+	}
+
+	_qevents.push( data );
+};
+(function() {var elem = document.createElement('script');elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";elem.async = true;elem.type = "text/javascript";var scpt = document.getElementsByTagName('script')[0];scpt.parentNode.insertBefore(elem, scpt);  })();
+_qevents.push( wpcomQuantcastData );
+</script>
+<noscript><div style="display: none;"><img src="//pixel.quantserve.com/pixel/p-18-mFEk4J448M.gif?labels=%2Clanguage.pl%2Ctype.wpcom" height="1" width="1" alt="" /></div></noscript>
+
+
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	(function($){
+		$(document).on( 'ready post-load', function() {
+
+			// Remove the login box when clicking the page
+			$( document ).mousedown( function( e ) {
+				if ( null == $( e.target ).closest( '#wpl-mustlogin' ).get( 0 ) ) {
+					$( '#wpl-mustlogin' ).remove();
+				}
+			});
+
+			// Handle clicking the like button itself
+			$('.wpl-button > a.like').click( function(e) {
+				e.preventDefault();
+
+				var postid = $(this).parent().attr('id').split('like-')[1];
+				$.post( 'http://j2eeworld.wordpress.com/wp-admin/admin-ajax.php', {
+					'action': 'wpl_record_stat',
+					'stat_name': 'loggedout_like_click'
+				} );
+
+				var tenMins = new Date();
+				tenMins.setTime( tenMins.getTime() + 600000 );
+				document.cookie = 'wpl_rand=4ce495a37d; expires=' + tenMins.toGMTString() + '; domain=wordpress.com; path=/;';
+
+				$(this).parent().siblings('.wpl-count').after( '\
+					<div id="wpl-mustlogin"> \
+						<form action="https://j2eeworld.wordpress.com/wp-login.php" method="post"> \
+							<p>Just one more step to like this:</p> \
+							<label><span>Nazwa użytkownika</span> <input type="text" name="log" id="user_login" class="input" value="" size="20" tabindex="80" /></label> \
+							<label><span>Hasło</span> <input type="password" name="pwd" id="user_pass" class="input" value="" size="20" tabindex="81" /></label> \
+							<input type="submit" name="wp-submit" id="wp-submit" class="button-primary" value="Zaloguj się" tabindex="82" /> \
+							<input type="hidden" name="postid" value="' + postid + '" /> \
+							<input type="hidden" name="redirect_to" value="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach?year=2011&#038;monthnum=08&#038;day=25&#038;name=transakcyjnosc-w-kontrolerach&#038;like=1" /> \
+							<input type="hidden" name="wpl_rand" value="4ce495a37d" /> \
+							<p>Nie masz jeszcze konta? <a href="http://wordpress.com/signup/?ref=likebox" id="wpl-signup-link">Zarejestruj się w serwisie WordPress.com</a></p> \
+						</form> \
+					</div> \
+				');
+
+				$('#wpl-mustlogin').hide().slideDown('fast');
+			} );
+
+			$('#wpl-mustlogin input.input').live( 'focus', function() {
+				$(this).prev().hide();
+			}).live( 'blur', function() {
+				if ( $(this).val() == '' ) {
+					$(this).prev().show();
+				}
+			});
+
+			$('#wpl-mustlogin input#wp-submit').live( 'click', function(e) {
+				e.preventDefault();
+
+				$.post( 'http://j2eeworld.wordpress.com/wp-admin/admin-ajax.php', {
+					'action': 'wpl_record_stat',
+					'stat_name': 'loggedout_login_submit'
+				}, function() {
+					$('#wpl-mustlogin form').submit();
+				} );
+			});
+
+			$('#wpl-mustlogin a#wpl-signup-link').live( 'click', function(e) {
+				e.preventDefault();
+
+				var link = $(this).attr('href');
+
+				$.post( 'http://j2eeworld.wordpress.com/wp-admin/admin-ajax.php', {
+					'action': 'wpl_record_stat',
+					'stat_name': 'loggedout_signup_click'
+				}, function() {
+					location.href = link;
+				} );
+			});
+		})
+	})(jQuery);
+	/* ]]> */
+	</script>
+<script type='text/javascript' src='http://s.gravatar.com/js/gprofiles.js?ver=201242ab'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://s1.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1318621548g'></script>
+<script>jQuery(document).ready(function($){ Gravatar.profile_cb = function( h, d ) { WPGroHo.syncProfileData( h, d );	}; Gravatar.my_hash = WPGroHo.my_hash; Gravatar.init( 'body', '#wp-admin-bar-my-account' ); });</script>	<div style="display:none">
+	</div>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Opublikuj komentarz","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Wyloguj si\u0119","loginText":"Zaloguj si\u0119","connectURL":"http:\/\/j2eeworld.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"http:\/\/j2eeworld.wordpress.com\/wp-login.php?action=logout&_wpnonce=ff2438bc70","homeURL":"http:\/\/j2eeworld.wordpress.com\/","postID":"152","gravDefault":"identicon","enterACommentError":"Prosimy wprowadzi\u0107 komentarz","enterEmailError":"Please enter your email address here","invalidEmailError":"Nieprawid\u0142owy adres elektr.","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Zmie\u0144","changeAccount":"Change Account","comment_registration":"0","userIsLoggedIn":"","isJetpack":"0"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://s0.wp.com/wp-content/mu-plugins/highlander-comments/script.js?m=1349905738g'></script>
+
+	<div id="bit" class="loggedout-follow-normal">
+		<a class="bsub" href="javascript:void(0)"><span id='bsub-text'>Follow</span></a>
+		<div id="bitsubscribe">
+
+					<h3><label for="loggedout-follow-field">Follow &ldquo;Świat J2EE&rdquo;</label></h3>
+
+			<form action="https://subscribe.wordpress.com" method="post" accept-charset="utf-8" id="loggedout-follow">
+			<p>Otrzymuj każdy nowy wpis na swoją skrzynkę e-mail.</p>
+
+			<p id="loggedout-follow-error" style="display: none;"></p>
+
+			
+			<p><input type="email" name="email" style="width: 95%; padding: 1px 2px" value="Enter your email address" onfocus='this.value=(this.value=="Enter your email address") ? "" : this.value;' onblur='this.value=(this.value=="") ? "Enter email address" : this.value;'  id="loggedout-follow-field"/></p>
+
+			<input type="hidden" name="action" value="subscribe"/>
+			<input type="hidden" name="blog_id" value="13367536"/>
+			<input type="hidden" name="source" value="http://j2eeworld.wordpress.com/2011/08/25/transakcyjnosc-w-kontrolerach/"/>
+			<input type="hidden" name="sub-type" value="loggedout-follow"/>
+
+			<input type="hidden" id="_wpnonce" name="_wpnonce" value="1af83a9c0c" /><input type="hidden" name="_wp_http_referer" value="/2011/08/25/transakcyjnosc-w-kontrolerach/" />
+			<p id='bsub-subscribe-button'><input type="submit" value="Sign me up" /></p>
+			</form>
+					<div id='bsub-credit'><a href="http://wordpress.com/signup/?ref=lof">Silnik: WordPress.com</a></div>
+		</div><!-- #bitsubscribe -->
+	</div><!-- #bit -->
+<script type='text/javascript'>
+/* <![CDATA[ */
+var thickboxL10n = {"next":"Nast\u0119pne \u00bb","prev":"\u00ab Poprzednie","image":"Obrazek","of":"z","close":"Zamknij","noiframes":"Ta funkcja wymaga u\u017cycia ramek inline. Obs\u0142uga iframe'\u00f3w jest w Twojej przegl\u0105darce wy\u0142\u0105czona lub nie s\u0105 one przez ni\u0105 obs\u0142ugiwane.","loadingAnimation":"http:\/\/j2eeworld.wordpress.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/j2eeworld.wordpress.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+var thickboxL10n = {"next":"Nast\u0119pne \u00bb","prev":"\u00ab Poprzednie","image":"Obrazek","of":"z","close":"Zamknij","noiframes":"Ta funkcja wymaga u\u017cycia ramek inline. Obs\u0142uga iframe'\u00f3w jest w Twojej przegl\u0105darce wy\u0142\u0105czona lub nie s\u0105 one przez ni\u0105 obs\u0142ugiwane.","loadingAnimation":"http:\/\/j2eeworld.wordpress.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/j2eeworld.wordpress.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://s2.wp.com/_static/??/wp-content/js/devicepx.js,/wp-includes/js/thickbox/thickbox.js?m=1349105731j'></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script><script src="http://s.stats.wordpress.com/w.js?21" type="text/javascript"></script>
+<script type="text/javascript">
+st_go({'blog':'13367536','v':'wpcom','user_id':'0','post':'152','subd':'j2eeworld'});
+ex_go({'crypt':'UE40eW5QN0p8M2Y/RE1mN3FZZmo1ciV5XXJsZ24wUjJacUxGNiVZTFVtXUxpbz8yZFVUTj9jNUg3XVRJPXJ6SSxrPTNscnkvSXpLMC5vWlt6cmNDZ11Rd2xMeHFbVDVNeXVNd2o0MS1fZTFqTlVZUUQzNUVfMH4wTVV5Wz1fellSRitudzRuck5tOWEuVE5pLix6bkhZc1JBREk4ZzEwUmEmcTFPcS5wX09XanNhbEgyRVJFYVhNSmRzakddTkpsWjZQNjB6eHI0eSxWbGpmPXw1Z05HY0NaWnkrZFs9R2YxblpoNF1FeGhnMSt5VU9jTnBkR0YmSDRRS25udFpDeTdCZXIzTmRjbWts'});
+addLoadEvent(function(){linktracker_init('13367536',152);});
+	</script>
+<noscript><img src="http://stats.wordpress.com/b.gif?v=noscript" style="height:0px;width:0px;overflow:hidden" alt="" /></noscript>
+</body>
+</html>

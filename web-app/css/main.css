@@ -6,6 +6,11 @@ input, select, textarea {
 
 h1, h2, h3, h4, h5, h6 {
 	line-height: 1.1;
+<<<<<<< HEAD
+	padding-bottom: 3px;
+	border-bottom: 1px solid #DFDFDF;
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 /* BASE LAYOUT */
@@ -49,8 +54,39 @@ body {
 }
 
 #grailsLogo {
+<<<<<<< HEAD
+  /*background-color: #abbf78; verde grails*/
+  background-color: #232C49; /*#0D2937;*/
+  vertical-align: middle;
+  padding: 10px;
+}
+#grailsLogo img {
+  vertical-align: middle;
+  height: 2.4em;
+  margin: 0 0 6px 0; /* para que las imgs queden en el medio vertical */
+}
+#grailsLogo span {
+  vertical-align: middle;
+}
+#grailsLogo #cb_app {
+  font-size: 2.8em;
+  font-weight: bold;
+  color: #C4CAE0;
+  margin: 5px 5px;
+}
+#grailsLogo #cb_logo img {
+  /*height: 46px;*/
+}
+#grailsLogo #cb_link {
+  float: right;
+}
+#grailsLogo #cb_link img {
+  height: 1.6em;
+  margin: 0.8em 0;
+=======
 	/*background-color: #abbf78; verde grails*/
 	background-color: #232C49; /*#0D2937;*/
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -77,10 +113,33 @@ a:hover, a:active {
 h1 {
 	/*color: #48802c; verde grails */
 	color: #232C49;
+<<<<<<< HEAD
+	font-weight: bold;
+	font-size: 1.3em;
+	margin: 0.8em 0 0.3em 0;
+}
+h2 {
+   font-size: 1.2em;
+   color: #444f80;
+   margin: 0.8em 0 0.3em 0;
+}
+h3 {
+   font-size: 1.12em;
+   color: #646fa0;
+   margin: 0.8em 0 0.3em 0;
+}
+h4 {
+   font-size: 1.06em;
+   font-style: italic;
+   color: #848fc0;
+   margin: 0.8em 0 0.3em 0;
+}
+=======
 	font-weight: normal;
 	font-size: 1.25em;
 	margin: 0.8em 0 0.3em 0;
 }
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 ul {
 	padding: 0;
@@ -94,7 +153,11 @@ img {
 
 #grailsLogo a {
 	display: inline-block;
+<<<<<<< HEAD
+	/*margin: 1em;*/
+=======
 	margin: 1em;
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 .content {
@@ -231,7 +294,11 @@ fieldset,
 .fieldcontain .property-label {
 	color: #666666;
 	text-align: right;
+<<<<<<< HEAD
+	/*width: 25%;*/
+=======
 	width: 25%;
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 .fieldcontain .property-label {
@@ -403,7 +470,11 @@ input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
 /* TABLES */
 
 table {
+<<<<<<< HEAD
+	/*border-top: 1px solid #DFDFDF;*/
+=======
 	border-top: 1px solid #DFDFDF;
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	border-collapse: collapse;
 	width: 100%;
 	margin-bottom: 1em;
@@ -599,3 +670,34 @@ a.skip {
 	position: absolute;
 	left: -9999px;
 }
+<<<<<<< HEAD
+
+/* =============================>>>>>> Estilo para _patientData.gsp */
+#datosPaciente {
+  padding: 10px;
+  margin: 10px auto;
+  background-color: #aaddff;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+#datosPaciente.sex_M {
+  background-color: #aaddff;
+}
+#datosPaciente.sex_F {
+  background-color: #ffbbbb;
+}
+#datosPaciente.sex_ {
+  background-color: #ffffbb;
+}
+.hidden_uid span.uid {
+  float: right;
+  color: #666;
+  display: none;
+}
+.hidden_uid:hover span.uid {
+  display: inline;
+}
+/* =============================>>>>>> /Estilo para _patientData.gsp */
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f

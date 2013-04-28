@@ -4,6 +4,18 @@ import com.thoughtworks.xstream.XStream
 import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.DataIndex
+<<<<<<< HEAD
+import common.change_control.Contribution
+import common.change_control.Version
+import common.generic.AuditDetails
+import query.DataCriteria
+import query.Query
+//import support.identification.CompositionRef // T0004
+import common.generic.DoctorProxy
+import ehr.clinical_documents.data.DataValueIndex
+import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+=======
 import common.change_control.Commit
 import common.change_control.Contribution
 import common.change_control.Version
@@ -11,11 +23,26 @@ import common.generic.AuditDetails
 import support.identification.CompositionRef
 import common.generic.DoctorProxy
 import ehr.clinical_documents.data.DataValueIndex
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 class TestController {
 
    def xmlService
    
+<<<<<<< HEAD
+   // Para acceder a las opciones de localizacion
+   def config = ApplicationHolder.application.config.app
+   
+   // Para hacer consultas en la base
+   def formatterDateDB = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.db_date_format )
+   
+   
+   
+   /**
+    * UI test
+    */
+   /*
+=======
    /**
     * UI: prueba de EhrController.createContribution
     * 
@@ -335,6 +362,7 @@ class TestController {
    /**
     * UI test
     */
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    def rollbackContribution(String uid)
    {
       if (!uid)
@@ -344,6 +372,10 @@ class TestController {
       
       // TODO
    }
+<<<<<<< HEAD
+   */
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    
    /**
@@ -369,6 +401,10 @@ class TestController {
       def dFromDate
       def dToDate
       
+<<<<<<< HEAD
+      // FIXME: cuando sea servicio no hay ui
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       if (!ehrId && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
          return // muestro ui para testear busqueda
@@ -378,16 +414,28 @@ class TestController {
       // FIXME: Si el formato esta mal va a tirar una except!
       if (fromDate)
       {
+<<<<<<< HEAD
+         dFromDate = Date.parse(config.l10n.date_format, fromDate)
+=======
          dFromDate = Date.parse("yyyyMMdd", fromDate)
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       }
       
       if (toDate)
       {
+<<<<<<< HEAD
+         dToDate = Date.parse(config.l10n.date_format, toDate)
+      }
+      
+      //println dFromDate
+      //println dToDate
+=======
          dToDate = Date.parse("yyyyMMdd", toDate)
       }
       
       println dFromDate
       println dToDate
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       def idxs = CompositionIndex.withCriteria {
          
@@ -408,11 +456,17 @@ class TestController {
          
          if (dToDate)
             le('startTime', dToDate) // lower or equal
+<<<<<<< HEAD
+      }
+      
+      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
+=======
          
          // Date.parse("yyyyMMdd", fromDate)
       }
       
       // TODO:
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
    }
    
@@ -440,6 +494,11 @@ class TestController {
       
       //println params
       
+<<<<<<< HEAD
+      // FIXME: si format es json, el error deberia devolverse como json!
+      
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // Verifica parametros
       if (!params.qehrId)
       {
@@ -482,8 +541,21 @@ class TestController {
       // parse de dates
       Date qFromDate
       Date qToDate
+<<<<<<< HEAD
+
+      if (fromDate)
+      {
+         dFromDate = Date.parse(config.l10n.date_format, fromDate)
+      }
+      
+      if (toDate)
+      {
+         dToDate = Date.parse(config.l10n.date_format, toDate)
+      }
+=======
       if (fromDate) qFromDate = Date.parse("yyyyMMdd", fromDate)
       if (toDate) qToDate = Date.parse("yyyyMMdd", toDate)
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       
       def res = DataValueIndex.withCriteria {
@@ -502,11 +574,19 @@ class TestController {
          
          // WHERE
          owner { // CompositionIndex
+<<<<<<< HEAD
+            eq('ehrId', qehrId) // Ya se verifico que viene el param y que el ehr existe
+            
+            if (qarchetypeId)
+            {
+               eq('archetypeId', qarchetypeId) // Arquetipo de composition
+=======
             eq('ehrId', params.qehrId) // Ya se verifico que viene el param y que el ehr existe
             
             if (params.qarchetypeId)
             {
                eq('archetypeId', params.qarchetypeId) // Arquetipo de composition
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             }
             
             if (qFromDate)
@@ -518,6 +598,11 @@ class TestController {
          
       }
       
+<<<<<<< HEAD
+      // TODO: sacar las agrupaciones a operaciones externas para no hacer if ...
+      
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       // 1. Agrupacion por owner (fila) una columna por cada path
       //    - Para display tabular
@@ -593,7 +678,11 @@ class TestController {
             // Datos de la composition
             // FIXME: deberia haber por lo menos un dvi, sino esto da error
             resGrouped[compoId]['date'] = dvis[0].owner.startTime
+<<<<<<< HEAD
+            resGrouped[compoId]['uid']  = dvis[0].owner.uid
+=======
             resGrouped[compoId]['uid'] = dvis[0].owner.uid
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             resGrouped[compoId]['cols'] = []
             
             // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
@@ -608,6 +697,30 @@ class TestController {
                // dvi para la columna actual
                dvi = dvis.find{it.path == path && it.owner.id == compoId}
                
+<<<<<<< HEAD
+               if (dvi)
+               {
+                  // Datos de cada path seleccionada dentro de la composition
+                  switch (colData['type'])
+                  {
+                     case 'DV_QUANTITY':
+                        col['magnitude'] = dvi.magnitude
+                        col['units'] = dvi.units
+                     break
+                     case 'DV_CODED_TEXT':
+                        col['value'] = dvi.value
+                     break
+                     case 'DV_DATE_TIME':
+                        col['code'] = dvi.code
+                        col['value'] = dvi.value
+                     break
+                     default:
+                        throw new Exception("type "+colData['type']+" not supported")
+                  }
+                  
+                  resGrouped[compoId]['cols'] << col
+               }
+=======
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
@@ -627,6 +740,7 @@ class TestController {
                }
                
                resGrouped[compoId]['cols'] << col
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             }
          }
          
@@ -730,7 +844,11 @@ class TestController {
       }
       
       
+<<<<<<< HEAD
+      // Por defecto no agrupa (group = null)
+=======
       // Por defecto no agrupa
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       if (!format || format == 'xml')
       {
          render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
@@ -746,6 +864,10 @@ class TestController {
       
    } // querydata
    
+<<<<<<< HEAD
+
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    /**
     * Busqueda de compositions por datos simples (DataValueIndex)
@@ -761,15 +883,26 @@ class TestController {
     * @return
     */
    //def queryByData(String archetypeId, String path, String operand, String value, boolean retrieveData)
+<<<<<<< HEAD
+   def queryByData(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
+   {
+      println params
+      
+=======
    def queryByData(String qehrId, String qarchetypeId, boolean retrieveData, boolean showUI)
    {
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // muestra gui
       if (!params.doit)
       {
          return
       }
       
+<<<<<<< HEAD
+      
+=======
       println params
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       // Viene una lista de cada parametro
       // String archetypeId, String path, String operand, String value
@@ -800,6 +933,24 @@ class TestController {
       String idxtype
 
       
+<<<<<<< HEAD
+      // parse de dates
+      Date qFromDate
+      Date qToDate
+
+      if (fromDate)
+      {
+         qFromDate = Date.parse(config.l10n.date_format, fromDate)
+      }
+      
+      if (toDate)
+      {
+         qToDate = Date.parse(config.l10n.date_format, toDate)
+      }
+      
+      
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // Armado de la query
       String q = "FROM CompositionIndex ci WHERE "
       
@@ -810,7 +961,14 @@ class TestController {
       // Criteria nivel 1 archetypeId (solo de composition)
       if (qarchetypeId) q += "ci.archetypeId = '" + qarchetypeId +"' AND "
       
+<<<<<<< HEAD
+      // Criterio de rango de fechas para ci.startTime
+      // Formatea las fechas al formato de la DB
+      if (qFromDate) q += "ci.startTime >= '"+ formatterDateDB.format( qFromDate ) +"' AND " // higher or equal
+      if (qToDate) q += "ci.startTime <= '"+ formatterDateDB.format( qToDate ) +"' AND " // lower or equal
+=======
       // TODO: criterio de rango de fechas para ci.startTime
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       //
       // ===============================================================
@@ -928,7 +1086,12 @@ class TestController {
             
             // Tiene declaracion de xml
             // Tambien tiene namespace, eso deberia estar en el nodo root 
+<<<<<<< HEAD
+            //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
+            buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
+=======
             buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             
             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -950,6 +1113,40 @@ class TestController {
    
    
    /**
+<<<<<<< HEAD
+    * Se implemento completa en QueryController
+    * 
+    * @param name
+    * @param qarchetypeId
+    * @return
+    */
+   def saveQueryByData(String name, String qarchetypeId)
+   {
+      // Datos de criterios
+      List archetypeIds = params.list('archetypeId')
+      List paths = params.list('path')
+      List operands = params.list('operand')
+      
+      def query = new Query(name:name, qarchetypeId:qarchetypeId, type:'composition') // qarchetypeId puede ser vacio
+      
+      archetypeIds.eachWithIndex { archId, i ->
+         
+         query.addToWhere( new DataCriteria(archetypeId:archId, path:paths[i], operand:operands[i]) )
+      }
+      
+      if (!query.save())
+      {
+         println "query errors: "+ query.errors
+      }
+
+      
+      render( query as grails.converters.XML )
+   }
+   
+   
+   /**
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     * Devuelve una lista de DataIndex.
     * 
     * Accion AJAX/JSON, se usa desde queryByData GUI.

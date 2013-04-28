@@ -60,7 +60,11 @@
       background-color: #ffccaa;
     }
     .composition_content {
+<<<<<<< HEAD
+      position: relative;
+=======
       position: absolute;
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       width: 100%;
       top: 5em;
       border: 1px solid #000;

@@ -89,3 +89,45 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+<<<<<<< HEAD
+
+app {
+   composition_repo = "compositions\\"
+   
+   l10n { // localization
+      
+      // general
+      decimal_symbol = ',' // separa numero enteros de la fraccion decimal
+      decimal_digits = 2   // digitos luego de decimal_symbol
+      digit_grouping = '.' // agrupador de a3 digitos para escribir numeros grandes ej. 1.000
+      display_leading_zeros = true // ej. si es false, 0,7 se escribe ,7
+      
+      // formatos de fechas
+      // ==================
+      //  - ref: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+      //
+      // h hora 1-12
+      // H hora 0-23
+      // a marcador AM/PM
+      // m minutis
+      // S milisegundos
+      // Z zona horaria (RFC 822)
+      
+      // formatos para procesamiento de fechas
+      // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
+      datetime_format = "yyyyMMdd'T'HHmmss,SSSSZ" 
+      date_format = "yyyyMMdd"
+      time_format = "HHmmss"
+      
+      // formatos para mostrar las fechas al usuario
+      display_datetime_format = "yyyy/MM/dd HH:mm:ss (Z)" 
+      display_date_format = "yyyy/MM/dd"
+      display_time_format = "HH:mm:ss"
+      
+      db_datetime_format = "yyyy-MM-dd HH:mm:ss" // mysql no soporta fragment o timezone, otros dbms si
+      db_date_format = "yyyy-MM-dd"
+      db_time_format = "HH:mm:ss"
+   }
+}
+=======
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f

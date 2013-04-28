@@ -1,0 +1,10 @@
+/* The below should just be for reference */
+/* These styles should be integrated or merged into a main css */
+#login-modal-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; background-color: rgba(0,0,0,0.25); display: none; }
+#login-modal {  overflow: hidden; border: 5px solid #333; padding: 25px; background-color: #FFF; width: 300px; margin-left: auto; margin-right: auto; }
+#login-modal h2 { text-align:left; margin-bottom: 12px; padding: 5px; background: #FD702B; color: #fff; position: relative;font-size: 1.5em;}
+#login-modal #login-box { width: 100%;  }
+#loginbox-container { margin-top: 5px; text-align: left; overflow: hidden; }
+#bpsubmit {-moz-border-radius:2px 2px 2px 2px; border:1px solid #CCCCCC; color:#666666 !important; float:left; margin:0 0 5px; padding:2px 5px;text-decoration:none;}
+#bpclose {-moz-border-radius:2px 2px 2px 2px; border:1px solid #CCCCCC; color:#666666 !important; float:left;margin:0 0 5px 5px;padding:2px 5px;text-decoration:none;}
+#login-un,  #login-pw { margin:0 0 0.5em;width:95%;}

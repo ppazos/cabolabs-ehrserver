@@ -18,7 +18,15 @@
 		<r:layoutResources />
 	</head>
 	<body>
+<<<<<<< HEAD
+		<div id="grailsLogo" role="banner">
+		  <span id="cb_logo"><img src="${resource(dir: 'images', file: 'ehr_logo.png')}" /></span>
+		  <span id="cb_app">EHR Server</span>
+		  <span id="cb_link"><a href="http://cabolabs.com" target="_blank"><img src="${resource(dir: 'images', file: 'cabolabs_logo.png')}"/></a></span>
+		</div>
+=======
 		<div id="grailsLogo" role="banner"><a href="http://cabolabs.com" target="_blank"><img src="${resource(dir: 'images', file: 'cabolabs_logo.png')}" alt="Grails"/></a></div>
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>

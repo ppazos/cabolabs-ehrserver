@@ -9,9 +9,16 @@ import common.change_control.Contribution
 import common.change_control.Version
 import common.generic.DoctorProxy
 import common.generic.AuditDetails
+<<<<<<< HEAD
+//import support.identification.VersionRef
+import support.identification.ContributionRef
+//import support.identification.CompositionRef // T0004
+import ehr.clinical_documents.CompositionIndex
+=======
 import support.identification.VersionRef
 import support.identification.ContributionRef
 import support.identification.CompositionRef
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
@@ -34,7 +41,11 @@ class XmlServiceTests { //  extends GroovyTestCase
       xstream.omitField(Contribution.class, "errors")
       xstream.omitField(DoctorProxy.class, "errors")
       xstream.omitField(AuditDetails.class, "errors")
+<<<<<<< HEAD
+      //xstream.omitField(VersionRef.class, "errors")
+=======
       xstream.omitField(VersionRef.class, "errors")
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       //xstream.omitField(DoctorProxy.class, "errors")
       
       String txt = xstream.toXML(contribution)
@@ -52,7 +63,12 @@ class XmlServiceTests { //  extends GroovyTestCase
       
       XStream xstream = new XStream()
       xstream.omitField(Version.class, "errors")
+<<<<<<< HEAD
+      //xstream.omitField(CompositionRef.class, "errors") // T0004
+      xstream.omitField(CompositionIndex.class, "errors")
+=======
       xstream.omitField(CompositionRef.class, "errors")
+>>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       xstream.omitField(DoctorProxy.class, "errors")
       xstream.omitField(AuditDetails.class, "errors")
       xstream.omitField(ContributionRef.class, "errors")

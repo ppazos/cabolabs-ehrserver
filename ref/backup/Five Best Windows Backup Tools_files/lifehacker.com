@@ -1,0 +1,1 @@
+PARSELY.pInit({"apikey":"lifehacker.com","customizations":null,"bundle":"/code/ptrack_v18.js","settings":{"debug":false,"widget":false,"tracker":true},"uuid":"9A51E31D-95BF-4825-B501-14EF805D5664"});

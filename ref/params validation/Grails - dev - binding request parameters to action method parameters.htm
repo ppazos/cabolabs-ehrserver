@@ -1,0 +1,1856 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0105)http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+					
+					<link rel="stylesheet" href="./Grails - dev - binding request parameters to action method parameters_files/nabble.pack.css" type="text/css">
+	<link rel="stylesheet" href="./Grails - dev - binding request parameters to action method parameters_files/NamlServlet.jtp" type="text/css">
+
+<link href="./Grails - dev - binding request parameters to action method parameters_files/css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.second-font, h1, h2, h3, h4, h5, h6 {
+font-family: 'Open Sans';
+}
+</style>
+					<script type="text/javascript" async="" src="./Grails - dev - binding request parameters to action method parameters_files/ga.js"></script><script src="./Grails - dev - binding request parameters to action method parameters_files/cb=gapi.loaded_0" async=""></script><script src="./Grails - dev - binding request parameters to action method parameters_files/jquery-1.7.2.pack.js" type="text/javascript"></script>
+	<script src="./Grails - dev - binding request parameters to action method parameters_files/nabbledropdown-2.4.1.pack.js" type="text/javascript"></script>
+	<script src="./Grails - dev - binding request parameters to action method parameters_files/NamlServlet(1).jtp" type="text/javascript"></script>
+					<script type="text/javascript">
+		var terms = Nabble.getSearchTerms();
+		var hasTurnOff = false;
+		Nabble.searchHighlight = function($elem) {
+			if (terms != null && terms.length > 0) {
+				$elem.each(function() {
+					Nabble.highlightSearchTerms(terms, this);
+				});
+				if (Nabble.hasHighlightedTerms && !hasTurnOff) {
+					var turnOffLink = '<span id="turn-off-highlight-control"><span class="highlight">&nbsp;X&nbsp;</span> ';
+					turnOffLink += '<a href="javascript:void(0)" onclick="Nabble.turnOffHighlight()">Turn off highlighting</a></span>';
+					$('#topics-controls-right').prepend(turnOffLink);
+					hasTurnOff = true;
+				}
+			}
+		};
+		Nabble.turnOffHighlight = function() {
+			Nabble.deleteCookie("query");
+			Nabble.deleteCookie("searchuser");
+			Nabble.deleteCookie("searchterms");
+			$('span.search-highlight').removeClass('bold highlight');
+			$('#turn-off-highlight-control').hide();
+		};
+	</script>
+	<script type="text/javascript">
+		Nabble.messageTextWidth();
+	</script>
+			<script type="text/javascript"> $(document).ready(function() { Nabble.searchHighlight($('h2.post-subject,div.message-text')); }); </script> <script type="text/javascript"> var _hash = Nabble.hash(); if (_hash) { (function(){ var post = _hash.substr(2); var allPosts = [3634611, 3635009, 3636275, 3636420, 3636530, 3636539, 3636686, 3639082]; var allURLs = ["/binding-request-parameters-to-action-method-parameters-td3634611.html"]; var iPost = allPosts.indexOf(parseInt(post)); var lower = 0; var upper = lower + 20; if (iPost != -1 && (iPost < lower || iPost >= upper)) location.replace(allURLs[Math.floor(iPost/20)]+_hash); })(); } $(document).ready(function() { var rootId = '3634611'; var currentPostId = rootId; var isChangingViews = _hash == '#none'; if (_hash && !isChangingViews) currentPostId = _hash.substr(2); Nabble.hideQuotes(); function scrollToSelectedPost() { var $arrow = $('#red-arrow'+currentPostId).show(); if ($arrow.size() > 0) { var isRootPost = currentPostId == rootId; if (Nabble.isEmbedded) { if (Nabble.canScroll()) scrollTo(0, 0); var y = isChangingViews? null : isRootPost? 1 : $arrow.parents('div.classic-row').offset().top; Nabble.resizeFrames('', y); } else if (Nabble.canScroll() && !isRootPost) { var yPos = $arrow.offset().top; scrollTo(0,yPos-20); } } else { var tb = $('div.top-bar').get(0); if (tb && Nabble.canScroll()) tb.scrollIntoView(); } }; $(window).load(scrollToSelectedPost); if (Nabble.isEmbedded) { $('div.message-text img').load(Nabble.resizeFrames); } }); </script> <style type="text/css"> div.classic-header { height:2.2em; clear:both; overflow:hidden; } div.classic-author-name { float:left; width: 140px; overflow: hidden; text-align:center; font-weight:bold; } div.classic-subject-line { left:.5em; overflow:hidden; height:1.3em; position:relative; } div.classic-right-menu { float:right; padding-left:1em; } div.classic-bar { padding:.5em .3em; clear:both; height:1.8em; } table.classic-body { border-collapse:collapse; margin-bottom:1em; table-layout: fixed; width:100%; } td.classic-author { vertical-align: top; text-align:center; width:140px; padding-bottom:1em; } td.classic-message { vertical-align:top; padding:1em; } div.message-text { cursor:text; overflow-x:auto; } div.avatar-inner { margin-left:20px; } div.avatar-outer { width:140px; text-align:left; } div.avatar-label { white-space:nowrap; font-size:80%; } </style>
+
+	<title>Grails - dev - binding request parameters to action method parameters</title>
+			<meta name="description" content="binding request parameters to action method parameters. One of the new features in Grails 2 will be a mechanism to automatically bind request parameters to controller action method arguments. The idea...">
+			<meta name="keywords" content="binding, request, parameters, action, method, one, new, features, grails, 2, will, mechanism, automatically, bind, controller, arguments, idea, support, something, like, class, -, dev">
+			<style type="text/css">
+			#search-box-dropdown {
+				text-align:left;
+				position:absolute;
+				display:none;
+				z-index:1000;
+				overflow:hidden;
+			}
+		</style>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				var $sdd = $('#search-box-dropdown');
+				var $sb = $('#search-input');
+				var $form = $sb.parent();
+				var timeout;
+				$(document).click(function(o){
+					var $target = $(o.target);
+					if ($target.parents().hasClass('search-box-dropdown')) {
+						clearTimeout(timeout);
+						$sb.focus();
+					}
+				});
+				$sb.focusin(function(e) {
+					$sdd.css('left', $sb.position().left - 5);
+					$sdd.width($sb.outerWidth() + 10);
+					$sdd.show();
+				});
+				$sb.focusout(function() {
+					timeout = setTimeout(function() {
+						$sdd.hide();
+					},250);
+				});
+				$('input[type=radio]', $sdd).change(function() {
+					var nodeId = $(this).val();
+					$('input[name="node"]', $form).val(nodeId);
+				});
+				$('input[name="node"]', $form).val(1312388);
+			});
+		</script><script type="text/javascript">
+			Nabble.setView = function(view,url,post) {
+				Nabble.setVar("tview",view);
+				url += Nabble.getClientID(';');
+				if (url.indexOf('#') == -1)
+					url += '#none';
+				location.replace(url);
+			};
+		</script><script type="text/javascript" src="./Grails - dev - binding request parameters to action method parameters_files/plusone.js" gapi_processed="true"></script><style type="text/css"> div.nabble-tooltip, div.nabble-tooltip * { color: #EEE; font-weight:bold; } div.nabble-tooltip { background: #000; font-size:90%; line-height:normal; display: none; position: absolute; z-index: 88888; padding: .5em; border: 1px solid #FFF; white-space:normal; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; } div.nabble-tooltip-small-row, div.nabble-tooltip-small-row * { color:#D0EAF2; } div.nabble-tooltip-small-row { font-size:80%; font-weight:normal; padding-top: .4em; } div.nabble-tooltip-arrow { font: 40px Arial, Sans-serif; line-height:1em; left:15px; position:absolute; bottom:-15px; height:15px; width:30px; overflow:hidden; } div.nabble-tooltip-arrow div { position:absolute; } div.nabble-tooltip-arrow div.d1 { top:-22px; color: #FFF; } div.nabble-tooltip-arrow div.d2 { top:-25px; color: #000; } </style> <script type="text/javascript"> Nabble.startTooltip = function(e, position, delay) { if (e.nabbletooltip) return; e.nabbletooltip = true; var $this = $(e); var $arrow = $this.children().last(); var $elem = $this.prev(); $elem.hover( function() { setTip(); setTimer(); }, function() { stopTimer(); $this.hide(); } ); function setTimer() { $this.showTipTimer = setTimeout(function() { $('div.nabble-tooltip').hide(); stopTimer(); $this.fadeTo('fast', .8); }, delay); }; function stopTimer() { clearInterval($this.showTipTimer); }; function setTip(){ if ($this.parent().get() != document.body) $(document.body).append($this); var useTitle = $this.attr('use_title') == 'true'; if (useTitle) { var title = $elem.attr('title'); if (title != '') { $arrow.remove(); $this.html(title); $elem.attr('title',''); $this.append($arrow); } } var win = $(window).width(); if (position == 'up') { var w = $this.outerWidth(); if (w > 250) { w = 250; $this.width(w); } var xMid = $elem.offset().left + $elem.outerWidth()/2; var xTip = xMid - w/2; if (xTip+w > win-5) xTip = win-w-5; if (xTip < 0) xTip = 0; var xArrow = xMid-xTip-11; var yTip = $elem.offset().top-$this.outerHeight()-12; $arrow.css('left', xArrow); $this.css({'top' : yTip, 'left' : xTip}); } else if (position == 'right') { var h = $this.outerHeight(); var yMid = $elem.offset().top + $elem.outerHeight()/2; var yTip = yMid - h/2; var xTip = $elem.offset().left + $elem.outerWidth() + 10; $arrow.width(8).height(24).css({bottom:0,left:-8}); var yArrow = (h - 24)/2; $arrow.css({top:yArrow}); var $d1 = $arrow.children().first(); var $d2 = $arrow.children().last(); $d1.css({top:-11}); $d2.css({top:-11,left:1}); $this.css({'top' : yTip, 'left' : xTip}); } }; }; </script><script type="text/javascript">
+			Nabble.pinTopic = function(id) {
+				var call = '/template/NamlServlet.jtp?macro=pin_topic&node=' + id + Nabble.getClientID();
+				$.getScript(call, function() {
+					$('#pin-icon').show();
+					NabbleDropdown.show('unpinTopic');
+					NabbleDropdown.hide('pinTopic');
+					alert('This topic has been pinned.');
+				});
+			};
+		</script><script type="text/javascript">
+			Nabble.unpinTopic = function(id) {
+				var call = '/template/NamlServlet.jtp?macro=unpin_topic&node=' + id + Nabble.getClientID();
+				$.getScript(call, function() {
+					$('#pin-icon').hide();
+					NabbleDropdown.hide('unpinTopic');
+					NabbleDropdown.show('pinTopic');
+					alert('This topic has been unpinned.');
+				});
+			};
+		</script><script type="text/javascript">
+			Nabble.lockTopic = function(id) {
+				var call = '/template/NamlServlet.jtp?macro=lock_topic&node=' + id + Nabble.getClientID();
+				$.getScript(call, function() {
+					$('#lock-icon').show();
+					NabbleDropdown.show('unlockTopic');
+					NabbleDropdown.hide('lockTopic');
+					alert('This topic has been locked.');
+				});
+			};
+		</script><script type="text/javascript">
+			Nabble.unlockTopic = function(id) {
+				var call = '/template/NamlServlet.jtp?macro=unlock_topic&node=' + id + Nabble.getClientID();
+				$.getScript(call, function() {
+					$('#lock-icon').hide();
+					NabbleDropdown.hide('unlockTopic');
+					NabbleDropdown.show('lockTopic');
+					alert('This topic has been unlocked.');
+				});
+			};
+		</script><script type="text/javascript">
+		var starredImg = new Image();
+		starredImg.src = "/images/icon_starred.png";
+		var unstarredImg = new Image();
+		unstarredImg.src = "/images/icon_unstarred.png";
+		var star = '<img src="/images/icon_starred.png" class="star" alt="star"/>';
+
+		function starInit(isStarred, c, id) {
+			$('#star'+c+id)
+				.css('cursor','pointer')
+				.click(function(){
+					starToggle(c,id);
+				});
+
+			starShow(isStarred,c,id);
+		};
+
+		function starShow(isStarred,c,id) {
+			var $img = $('#img-star'+c+id);
+			if (isStarred)
+				$img.attr('src', starredImg.src).attr('title', "Favorite (click to remove this item from your favorites list)");
+			else
+				$img.attr('src', unstarredImg.src).attr('title', "Add this item to your favorites list");
+			updateReadonlyStars(isStarred, id);
+		};
+
+		function updateReadonlyStars(isStarred, id) {
+			var $stars = $('#starC'+id+',#starD'+id);
+			$stars.html(isStarred? star : '');
+		};
+
+		function starToggle(c,id) {
+			if (!Nabble.userId) {
+				if( confirm("You must log in to star this item.\nWould you like to login now?") ) {
+					parent.location = "/template/NamlServlet.jtp?macro=login_page&nextUrl="+encodeURIComponent(parent.location) + Nabble.getClientID();
+				}
+				return;
+			}
+			var $img = $('#img-star'+c+id);
+			var isStarred = $img.attr('src') == starredImg.src;
+			isStarred = !isStarred;
+			var descendants = c == 'A';
+			var path = "/template/NamlServlet.jtp?node=" + id;
+			if( descendants && !isStarred )
+				path += "&macro=clear_descendant_stars";
+			else
+				path += "&macro=set_star&star=" + isStarred;
+			$.getScript(path + Nabble.getClientID(), function() {
+				starShow(isStarred,c,id);
+			});
+		};
+	</script><script type="text/javascript">
+		var site_admins = [368401, 129071, 136493];
+	</script><script type="text/javascript">
+			Nabble.nViews = function(id, views) {
+				var $v = $('#v'+id);
+				var pos = views=='1'?0:1;
+				var t = $v.html()? $v.html().split('|')[pos]:'';
+				$v.html(t == ''? views : t.replace(/%1/g,views)).show();
+			};
+		</script><style type="text/css">
+			img.report-flag {
+				vertical-align:middle;
+				cursor: pointer;
+			}
+			#report-inappropriate-content {
+				position: fixed;
+				z-index:9999;
+				display:none;
+				padding:1.5em;
+				left:8%;
+				right:8%;
+				top:8%;
+				background-color:#555;
+			}
+			#report-inappropriate-content-inner { padding:.5em; }
+			#report-inappropriate-content-inner div.big {
+				height:5em;
+				padding-top:2em;
+				text-align:center;
+				font-size:250%;
+			}
+			#report-inappropriate-content-inner div.big2 { font-size:70%; }
+			div.inappropriate-option { margin:.5em 0; }
+		</style>
+		<script type="text/javascript">
+			var reportNodeId = null;
+			Nabble.reportContent = function(nodeId) {
+				reportNodeId = nodeId;
+				$('#report-inappropriate-content').show();
+				var url = '/template/NamlServlet.jtp?macro=report_inappropriate_content_form';
+				$.get(url, function(data) {
+					$('#report-inappropriate-content-inner').html(data);
+				});
+			}
+			Nabble.closeReport = function() {
+				$('#report-inappropriate-content').hide();
+			}
+			Nabble.sendReport = function() {
+				$('#send-report-button').attr('disabled','true').addClass('toolbar-disabled');
+				var type = $('input[name=report_type]:checked').val();
+				var url = '/template/NamlServlet.jtp?macro=report_inappropriate_content_submit&node='+reportNodeId+'&type='+type+Nabble.getClientID();
+				$.get(url, function(data) {
+					var h = 'Thank You';
+					h += '<div class="weak-color big2">We will review your report soon.</div>';
+					h += '<a href="javascript: void Nabble.closeReport()">Close</a>';
+					$('#report-inappropriate-content-inner').html('<div class="big">'+h+'</div>');
+				});
+			}
+		</script>
+					<script type="text/javascript">
+		Nabble.setFontSize();
+		
+	</script>
+	<script type="text/javascript">
+		if (Nabble.analytics) Nabble.analytics();
+	</script>
+	<!-- Start Quantcast tag -->
+	<script type="text/javascript">
+		_qoptions={ qacct:"p-34EL1DZyJypTI" };
+	</script>
+	<script type="text/javascript" src="./Grails - dev - binding request parameters to action method parameters_files/quant.js"></script>
+	<noscript>
+		&lt;a href="http://www.quantcast.com/p-34EL1DZyJypTI" target="_blank" rel="nofollow"&gt;
+			&lt;img src="http://pixel.quantserve.com/pixel/p-34EL1DZyJypTI.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/&gt;
+		&lt;/a&gt;
+	</noscript>
+	<!-- End Quantcast tag -->
+			<!-- Start Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-91855-9']);
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+	<!-- End Google Analytics -->
+				<link type="text/css" rel="stylesheet" href="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/style.css"><script type="text/javascript" charset="utf-8" src="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/page_context.js"></script></head>
+				<body screen_capture_injected="true">
+					<div id="notice" class="notice rounded-bottom"></div>
+					<div class="nabble macro_classic_forum_topic" id="nabble">
+						
+			
+			<div class="top-bar">
+		<div class="breadcrumbs" style="float:left">
+			<span id="breadcrumbs" class="weak-color">
+		<a href="http://grails.1312388.n4.nabble.com/">Grails</a>
+						<span> › </span>
+				<a href="http://grails.1312388.n4.nabble.com/Grails-dev-f1393096.html">Grails - dev</a>
+	</span>
+		</div>
+		<div style="text-align:right;">
+			<span style="white-space:nowrap;" id="nabble-user-header"><span id="user-dd"><span id="usrdd" class="dropdown"><a href="javascript:void(0)">ppazos</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingusrdd" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanusrdd">Loading...</span></td></tr><tr id="starred"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=starred_nodes">My starred items</a></td></tr><tr id="myPosts"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=217309">My posts</a></td></tr><tr id="personalSettings"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_profile">Account settings</a></td></tr><tr id="adminNotice" style="display:none"><td style="border:none"><a href="javascript: void Nabble.showAdminNotice()">Show Nabble notice</a></td></tr><tr id="logout"><td style="border:none"><a href="javascript: void Nabble.logout()">Log out</a></td></tr></tbody></table></span></span></span>
+	<script type="text/javascript">Nabble.userHeader();</script>
+		</div>
+	</div>
+			
+			<div id="nabble-newsflash" class="info-message" style="display:none;padding:.5em;margin-bottom:.5em"></div>
+	
+			<div id="topic-search-box" class="search-box float-right" style="padding:.5em 0">
+		<form action="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp">
+		<input type="hidden" name="macro" value="search_page">
+		<input type="hidden" name="node" value="1312388">
+		
+		
+		
+		
+		<input id="search-input" name="query" size="18" class="medium-border-color">
+		<div id="search-box-dropdown" class="search-box-dropdown light-bg-color drop-shadow border1 medium-border-color rounded-bottom">
+		<div style="margin:.5em .5em 0 .5em">
+					<b>Search</b><br>
+					<input id="search-root-node" type="radio" name="n" value="1312388" checked="true">
+					<label for="search-root-node">everywhere</label><br>
+
+					<input id="search-this-node" type="radio" name="n" value="3634611">
+					<label for="search-this-node">
+						only in this topic
+					</label>
+				</div>
+		<div style="margin:.5em;line-height:2em">
+			<input class="toolbar action-button float-right" type="submit" value="Search">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=adv_search_page&node=3634611" rel="nofollow" style="font-size:80%">Advanced Search</a>
+		</div>
+	</div>
+	</form>
+	</div>
+
+	<h1 id="post-title" style="margin:0.25em 0 .8em">
+		binding request parameters to action method parameters
+	</h1>
+			<div style="margin:1.2em 0 5em">
+		<div id="topics-controls-left" class="float-left nowrap">
+			<table>
+		<tbody><tr>
+			<td style="padding-right:.1em">
+		<img src="./Grails - dev - binding request parameters to action method parameters_files/view-classic.gif" width="18" height="18" style="border:none" alt="classic">
+	</td>
+
+	<td style="padding-right:1.1em">
+		Classic
+	</td>
+
+			<td style="padding-right:.1em">
+		<a href="javascript:void(0)" onclick="Nabble.setView(&#39;list&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tc3634611.html&#39;,null)"><img src="./Grails - dev - binding request parameters to action method parameters_files/view-list.gif" width="18" height="18" style="border:none" alt="list"></a>
+	</td>
+
+	<td style="padding-right:1.1em">
+		<a href="javascript:void(0)" onclick="Nabble.setView(&#39;list&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tc3634611.html&#39;,null)">List</a>
+	</td>
+
+			<td style="padding-right:.1em">
+		<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html&#39;,null)"><img src="./Grails - dev - binding request parameters to action method parameters_files/view-threaded.gif" width="18" height="18" style="border:none" alt="threaded"></a>
+	</td>
+
+	<td style="padding-right:1.1em">
+		<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html&#39;,null)">Threaded</a>
+	</td>
+		</tr>
+	</tbody></table>
+		</div>
+		<div id="topics-controls-right" class="float-right nowrap" style="padding-top:.3em">
+			<span class="plus-one-button" style="vertical-align:-5px">
+		<div style="height: 20px; width: 90px; display: inline-block; text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial; " id="___plusone_0"><iframe allowtransparency="true" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 90px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px; " tabindex="0" vspace="0" width="100%" id="I0_1350741925654" name="I0_1350741925654" src="./Grails - dev - binding request parameters to action method parameters_files/fastbutton.htm" title="+1"></iframe></div>
+	</span>
+	<span style="padding-right:1em;height:21px">
+		<img id="pin-icon" src="./Grails - dev - binding request parameters to action method parameters_files/pin.png" width="20" height="21" title="This topic has been pinned in Grails - dev." style="vertical-align:middle;display:none;">
+		<div id="tooltip92999" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip92999'), 'up', 400);
+	</script>
+	</span>
+	<span id="lock-icon" class="weak-color" style="padding:0 .5em;margin-right:.5em;display:none;">
+		<img src="./Grails - dev - binding request parameters to action method parameters_files/lock_sm.png" width="10" height="15" style="vertical-align:middle"> Locked
+	</span>
+	<span style="padding-right:1em">
+		8 messages
+	</span>
+	<img src="./Grails - dev - binding request parameters to action method parameters_files/gear.png" class="image16" alt="Options">
+	<span id="dd_topicdropdown"><span id="topicdropdown" class="dropdown"><a href="javascript:void(0)" title="Click for more options">Options</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingtopicdropdown" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpantopicdropdown">Loading...</span></td></tr><tr id="topicSubscriptionLink"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=subscribe&node=3634611" rel="nofollow">Subscribe via email</a></td></tr><tr class="dropdown-separator"><td class="action-separator medium-border-color">&nbsp;</td></tr><tr id="moveTopic" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3634611" rel="nofollow">Move topic</a></td></tr><tr id="pinTopic" style="display:none"><td style="border:none"><a href="javascript: void Nabble.pinTopic(3634611)" rel="nofollow">Pin topic</a></td></tr><tr id="unpinTopic" style="display:none"><td style="border:none"><a href="javascript: void Nabble.unpinTopic(3634611)" rel="nofollow">Unpin topic</a></td></tr><tr id="lockTopic" style="display:none"><td style="border:none"><a href="javascript: void Nabble.lockTopic(3634611)" rel="nofollow">Lock topic</a></td></tr><tr id="unlockTopic" style="display:none"><td style="border:none"><a href="javascript: void Nabble.unlockTopic(3634611)" rel="nofollow">Unlock topic</a></td></tr><tr id="deleteRecursively" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3634611)" rel="nofollow">Delete this topic</a></td></tr><tr id="deletePost" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3634611)" rel="nofollow">Delete this topic</a></td></tr><tr id="changeMetaTags" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_title_and_meta_tags&node=3634611" rel="nofollow">Change title and meta tags</a></td></tr><tr id="embedPost3634611"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/embed/EmbedOptions.jtp?node=3634611" rel="nofollow">Embed post</a></td></tr><tr id="permalink3634611"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611.html&#39;)">Permalink</a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("topicdropdown", "Options","Click for more options");
+		
+		dropdown.add('topicSubscriptionLink', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dsubscribe&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3ESubscribe via email\x3C/a\x3E');
+		dropdown.addSeparator();
+		dropdown.add('moveTopic', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EMove topic\x3C/a\x3E', 'display:none');
+		dropdown.add('pinTopic', '\x3Ca href\x3D\"javascript: void Nabble.pinTopic(3634611)\" rel\x3D\"nofollow\"\x3EPin topic\x3C/a\x3E', 'display:none');
+		dropdown.add('unpinTopic', '\x3Ca href\x3D\"javascript: void Nabble.unpinTopic(3634611)\" rel\x3D\"nofollow\"\x3EUnpin topic\x3C/a\x3E', 'display:none');
+		dropdown.add('lockTopic', '\x3Ca href\x3D\"javascript: void Nabble.lockTopic(3634611)\" rel\x3D\"nofollow\"\x3ELock topic\x3C/a\x3E', 'display:none');
+		dropdown.add('unlockTopic', '\x3Ca href\x3D\"javascript: void Nabble.unlockTopic(3634611)\" rel\x3D\"nofollow\"\x3EUnlock topic\x3C/a\x3E', 'display:none');
+		dropdown.add('deleteRecursively', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3634611)\" rel\x3D\"nofollow\"\x3EDelete this topic\x3C/a\x3E', 'display:none');
+			dropdown.add('deletePost', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3634611)\" rel\x3D\"nofollow\"\x3EDelete this topic\x3C/a\x3E', 'display:none');
+		dropdown.add('changeMetaTags', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_title_and_meta_tags&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EChange title and meta tags\x3C/a\x3E', 'display:none');
+		dropdown.add('embedPost3634611', '\x3Ca href\x3D\"/embed/EmbedOptions.jtp?node\x3D3634611\" rel\x3D\"nofollow\"\x3EEmbed post\x3C/a\x3E');
+		dropdown.add('permalink3634611', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.build('dd_topicdropdown');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=topic_dropdown_later&node=3634611' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+		</div>
+	</div>
+			<div id="topic-contents" style="margin-top:1em;clear:both">
+		<div id="classic-contents">
+		
+		<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=44410">Jeff Brown-4</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3634611" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html&#39;,3634611)">Threaded</a>
+	<div id="tooltip15723" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip15723'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3634611"><span id="postdropdown3634611" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3634611" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3634611">Loading...</span></td></tr><tr id="replyToAuthor3634611" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3634611" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3634611" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3634611" rel="nofollow">Edit post</a></td></tr><tr id="movePost3634611" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3634611" rel="nofollow">Move post</a></td></tr><tr id="deletePost3634611" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3634611)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3634611" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3634611)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3634611" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3634611" rel="nofollow">Change post date</a></td></tr><tr id="print3634611"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3634611" rel="nofollow">Print post</a></td></tr><tr id="permalink3634611"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611.html&#39;)">Permalink</a></td></tr><tr id="rawMail3634611" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3634611" rel="nofollow">Raw mail</a></td></tr><tr id="social3634611" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&t=binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&title=binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&title=binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&title=binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&title=binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3634611", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3634611', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3634611\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3634611', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3634611', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3634611', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3634611)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3634611', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3634611)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3634611', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3634611', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3634611', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3634611', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3634611\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3634611', '\x3Ca href\x3D\"http://twitter.com/share?text\x3Dbinding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;t\x3Dbinding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;title\x3Dbinding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;title\x3Dbinding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;title\x3Dbinding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611.html&amp;title\x3Dbinding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3634611');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3634611' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3634611)">
+	<div id="tooltip4147" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip4147'), 'up', 400);
+	</script>
+					<span id="starB3634611" style="cursor: pointer; ">
+		<img id="img-starB3634611" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip2957" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip2957'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3634611" class="float-left invisible" style="margin-top: 0.2em; display: inline; ">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309402835000-841">Jun 30, 2011; 12:00am</span><script type="text/javascript">
+		Nabble.get('d1309402835000-841').innerHTML= Nabble.formatDateLong(new Date(1309402835000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=44410" rel="nofollow" title="View profile of Jeff Brown-4" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/1912b9993a9606826f22a0d314a41bae" height="100" width="100" alt="Jeff Brown-4" title="Jeff Brown-4"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online44410 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count44410 avatar-label weak-color">73 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3634611" class="message-text"><span>
+		One of the new features in Grails 2 will be a mechanism to automatically bind request parameters to controller action method arguments. &nbsp;The idea is to support something like this:
+</span><br><br><span>class DemoController {
+</span><br><br><span>&nbsp; &nbsp; def someAction(String name, int age) {
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp; // ...
+</span><br><span>&nbsp; &nbsp; }
+</span><br><br><span>}
+</span><br><br><span>In Grails 1.3 that might be something like this:
+</span><br><br><span>class DemoController {
+</span><br><br><span>&nbsp; &nbsp; def someAction = {
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp; String name = params.name
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp; int age = params.int('age')
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp; // ...
+</span><br><span>&nbsp; &nbsp; }
+</span><br><span>}
+</span><br><br><span>Some of the work has begun to start adding support for that. &nbsp;MethodActionTransformerParameterBindingSpec describes the current behavior. &nbsp;Right now there is support for String and 6 of the 8 primitive types (no byte and no char) and their corresponding type wrappers. &nbsp;The impl is still funky but I am mostly interested in defining desired behavior at this point. &nbsp;If you care to look at MethodActionTransformerParameterBindingSpec, please share any thoughts or concerns.
+</span><br><br><span>Thanks for your time.
+</span><br><br><br><br><span>jb
+</span><br><br><span>-- 
+</span><br><span>Jeff Brown
+</span><br><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3634611&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>
+</span><br><span>SpringSource - A Division Of VMware
+</span><br><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><br><span>Autism Strikes 1 in 166
+</span><br><span>Find The Cause ~ Find The Cure
+</span><br><a href="http://www.autismspeaks.org/" target="_top" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><br><br><span>---------------------------------------------------------------------
+</span><br><span>To unsubscribe from this list, please visit:
+</span><br><br><span>&nbsp; &nbsp; </span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><br><br><span>
+
+	
+	
+	
+	</span></div>
+	<div class="ad " style="display:block !important;text-align:left;padding-top:1em">
+						<script type="text/javascript">
+							Nabble.ads('ADSENSE', 'first_classic_message');
+						</script><a id="ad0.8757281205616891" href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#" style="display:none">.</a>
+<script type="text/javascript" src="./Grails - dev - binding request parameters to action method parameters_files/show_ads.js"></script><ins style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:300px"><ins id="aswift_0_anchor" style="display:block;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:300px"><iframe allowtransparency="true" frameborder="0" height="250" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+=&#39;.call&#39;;setTimeout(h,0)}else if(h.match){i+=&#39;.nav&#39;;w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" scrolling="no" vspace="0" width="300" id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;"></iframe></ins></ins>
+						<div class="remove-ads-link invisible" style="margin-top:.3em;font-size:90%;"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=remove_ads_page">Remove Ads</a></div>
+					</div>
+			<script type="text/javascript">
+		$(document).ready(function() {
+			if (Nabble.userId && site_admins.indexOf(Number(Nabble.userId)) >= 0)
+				$('div.remove-ads-link').show();
+		});
+	</script>
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=129071">Graeme Rocher-4</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3635009" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3635009&#39;,3635009)">Threaded</a>
+	<div id="tooltip89725" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip89725'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3635009"><span id="postdropdown3635009" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3635009" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3635009">Loading...</span></td></tr><tr id="replyToAuthor3635009" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3635009" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3635009" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3635009" rel="nofollow">Edit post</a></td></tr><tr id="movePost3635009" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3635009" rel="nofollow">Move post</a></td></tr><tr id="deletePost3635009" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3635009)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3635009" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3635009)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3635009" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3635009" rel="nofollow">Change post date</a></td></tr><tr id="print3635009"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3635009" rel="nofollow">Print post</a></td></tr><tr id="permalink3635009"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&#39;)">Permalink</a></td></tr><tr id="rawMail3635009" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3635009" rel="nofollow">Raw mail</a></td></tr><tr id="social3635009" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3635009", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3635009', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3635009\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3635009', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3635009\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3635009', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3635009\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3635009', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3635009)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3635009', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3635009)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3635009', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3635009\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3635009', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3635009\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3635009', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3635009.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3635009', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3635009\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3635009', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3635009.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3635009');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3635009' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3635009)">
+	<div id="tooltip43407" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip43407'), 'up', 400);
+	</script>
+					<span id="starB3635009" style="cursor: pointer; ">
+		<img id="img-starB3635009" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip3841" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip3841'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3635009" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309419426000-875">Jun 30, 2011; 4:37am</span><script type="text/javascript">
+		Nabble.get('d1309419426000-875').innerHTML= Nabble.formatDateLong(new Date(1309419426000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=129071" rel="nofollow" title="View profile of Graeme Rocher-4" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/70973da6c22b121d814587882734824f" height="100" width="100" alt="Graeme Rocher-4" title="Graeme Rocher-4"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online129071 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	<div class="avatar-label weak-color"><b>Administrator</b></div>
+	
+	<div class="post-count129071 avatar-label weak-color">1393 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3635009" class="message-text"><span>
+		Nice work Jeff. Might be interesting to take advantage of Groovy 1.8's
+</span><br><span>closure parameters for annotations and allow:
+</span><br><br><span>&nbsp; &nbsp;@Validate( { &nbsp;name &amp;&amp; age &gt; 18 &nbsp;} )
+</span><br><span>&nbsp; &nbsp;def someAction(String name, int age) {
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp;if(hasErrors()) {
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;render view:"errors", model:[errors:errors]
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp;}
+</span><br><span>&nbsp; &nbsp; &nbsp; &nbsp;else {
+</span><br><br><span>&nbsp; &nbsp; &nbsp; &nbsp;}
+</span><br><span>&nbsp; &nbsp;}
+</span><br><br><span>Also if we are going to extend this to non-primitives like dates etc.
+</span><br><span>you would want to expose the binding errors. Which could be done the
+</span><br><span>same way as above
+</span><br><br><span>But maybe this is really getting into feature creep territory ;-)
+</span><br><br><span>Cheers
+</span><br><br><span>On Thu, Jun 30, 2011 at 5:00 AM, Jeff Brown &lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3635009&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:
+</span><div class="shrinkable-quote" style="height: 160px; overflow-y: hidden; "><br><span>&gt; One of the new features in Grails 2 will be a mechanism to automatically bind request parameters to controller action method arguments. &nbsp;The idea is to support something like this:
+</span><br><span>&gt;
+</span><br><span>&gt; class DemoController {
+</span><br><span>&gt;
+</span><br><span>&gt; &nbsp; &nbsp;def someAction(String name, int age) {
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; &nbsp;// ...
+</span><br><span>&gt; &nbsp; &nbsp;}
+</span><br><span>&gt;
+</span><br><span>&gt; }
+</span><br><span>&gt;
+</span><br><span>&gt; In Grails 1.3 that might be something like this:
+</span><br><span>&gt;
+</span><br><span>&gt; class DemoController {
+</span><br><span>&gt;
+</span><br><span>&gt; &nbsp; &nbsp;def someAction = {
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; &nbsp;String name = params.name
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; &nbsp;int age = params.int('age')
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; &nbsp;// ...
+</span><br><span>&gt; &nbsp; &nbsp;}
+</span><br><span>&gt; }
+</span><br><span>&gt;
+</span><br><span>&gt; Some of the work has begun to start adding support for that. &nbsp;MethodActionTransformerParameterBindingSpec describes the current behavior. &nbsp;Right now there is support for String and 6 of the 8 primitive types (no byte and no char) and their corresponding type wrappers. &nbsp;The impl is still funky but I am mostly interested in defining desired behavior at this point. &nbsp;If you care to look at MethodActionTransformerParameterBindingSpec, please share any thoughts or concerns.
+</span><br><span>&gt;
+</span><br><span>&gt; Thanks for your time.
+</span><br><span>&gt;
+</span><br><span>&gt;
+</span><br><span>&gt;
+</span><br><span>&gt; jb
+</span><br><span>&gt;
+</span><br><span>&gt; --
+</span><br><span>&gt; Jeff Brown
+</span><br><span>&gt; </span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3635009&i=1" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>
+</span><br><span>&gt; SpringSource - A Division Of VMware
+</span><br><span>&gt; </span><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><span>&gt;
+</span><br><span>&gt; Autism Strikes 1 in 166
+</span><br><span>&gt; Find The Cause ~ Find The Cure
+</span><br><span>&gt; </span><a href="http://www.autismspeaks.org/" target="_top" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><span>&gt;
+</span><br><span>&gt;
+</span><br><span>&gt; ---------------------------------------------------------------------
+</span><br><span>&gt; To unsubscribe from this list, please visit:
+</span><br><span>&gt;
+</span><br><span>&gt; &nbsp; &nbsp;</span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><span>&gt;
+</span><br><span>&gt;
+</span><br><span>&gt;
+</span></div><div class="shrink-quote"><span>...</span> [<a href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#">show rest of quote</a>]</div><br><br><br><span>-- 
+</span><br><span>Graeme Rocher
+</span><br><span>Grails Project Lead
+</span><br><span>SpringSource - A Division of VMware
+</span><br><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com</span></a><br><br><span>---------------------------------------------------------------------
+</span><br><span>To unsubscribe from this list, please visit:
+</span><br><br><span>&nbsp; &nbsp; </span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><br><br><span>
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=26910">Colin Harrington</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3636275" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3636275&#39;,3636275)">Threaded</a>
+	<div id="tooltip80" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip80'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3636275"><span id="postdropdown3636275" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3636275" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3636275">Loading...</span></td></tr><tr id="replyToAuthor3636275" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3636275" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3636275" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3636275" rel="nofollow">Edit post</a></td></tr><tr id="movePost3636275" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3636275" rel="nofollow">Move post</a></td></tr><tr id="deletePost3636275" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3636275)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3636275" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3636275)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3636275" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3636275" rel="nofollow">Change post date</a></td></tr><tr id="print3636275"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3636275" rel="nofollow">Print post</a></td></tr><tr id="permalink3636275"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&#39;)">Permalink</a></td></tr><tr id="rawMail3636275" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3636275" rel="nofollow">Raw mail</a></td></tr><tr id="social3636275" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3636275", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3636275', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3636275\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3636275', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3636275\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3636275', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3636275\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3636275', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3636275)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3636275', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3636275)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3636275', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3636275\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3636275', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3636275\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3636275', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636275.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3636275', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3636275\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3636275', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636275.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3636275');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3636275' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3636275)">
+	<div id="tooltip67257" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip67257'), 'up', 400);
+	</script>
+					<span id="starB3636275" style="cursor: pointer; ">
+		<img id="img-starB3636275" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip16594" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip16594'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3636275" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309453196000-293">Jun 30, 2011; 1:59pm</span><script type="text/javascript">
+		Nabble.get('d1309453196000-293').innerHTML= Nabble.formatDateLong(new Date(1309453196000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=26910" rel="nofollow" title="View profile of Colin Harrington" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/1cf0b0145a2c39d906a1ae43d9c0be7c" height="100" width="100" alt="Colin Harrington" title="Colin Harrington"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online26910 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count26910 avatar-label weak-color">70 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3636275" class="message-text"><span>
+		This looks good for the simple case.&nbsp; It feels very similar to Spring's </span><a href="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/mvc.html#mvc-ann-requestparam" target="_top" rel="nofollow" link="external"><span>@RequestParam</span></a><span>.&nbsp; One thing that we lose is the ability to map a param 'age' to a differently named someAction(int studentAge) in Spring you could annotate the method parameter like this:</span><br><span>
+
+</span><pre style="font-family: courier new,monospace;" class="programlisting"><span>@RequestParam(</span><span class="hl-string"><span>"age"</span></span><span>) </span><span class="hl-keyword"><span>int</span></span><span> studentAge</span><br></pre><span>In Grails 1.3.7, you would just write this in the closure:</span><br><span>
+
+</span><span style="font-family: courier new,monospace;"><span>int studentAge = </span><a href="http://params.int/" target="_top" rel="nofollow" link="external"><span>params.int</span></a><span>('age')</span></span><br><span>Would be handy to have an additional (optional) mechanism to map params to method parameters.</span><br><span>
+
+</span><br><span>What about non primitive types?&nbsp; Would they be databound the same way?</span><br><span style="font-family: courier new,monospace;"><br><span>def someAction(Book book) { ... }</span></span><br><br><span>Where does this leave Command Objects?</span><br><span>
+
+</span><br><span style="font-family: courier new,monospace;"><span>def someAction(MyCommand commandBean, String name, int age)&nbsp; { ... }</span></span><br><br><br><span>There are a few other areas of consideration:</span><br><ul><li><span>How do Custom Property Editors fit into this?</span></li><span>
+
+</span><li><span>How does validation work on these (as Graeme pointed out)</span></li></ul><br clear="all"><span>Colin Harrington</span><br><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636275&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><br><span>
+</span><br><br><div class="gmail_quote"><span>On Thu, Jun 30, 2011 at 2:37 AM, Graeme Rocher </span><span dir="ltr"><span>&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636275&i=1" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt;</span></span><span> wrote:</span><br><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><span>
+
+Nice work Jeff. Might be interesting to take advantage of Groovy 1.8's</span><br><span>
+closure parameters for annotations and allow:</span><br><span>
+</span><br><span>
+ &nbsp; @Validate( { &nbsp;name &amp;&amp; age &gt; 18 &nbsp;} )</span><br><span>
+</span><div class="im"><span> &nbsp; def someAction(String name, int age) {</span><br><span>
+</span></div><span> &nbsp; &nbsp; &nbsp; if(hasErrors()) {</span><br><span>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; render view:"errors", model:[errors:errors]</span><br><span>
+ &nbsp; &nbsp; &nbsp; }</span><br><span>
+ &nbsp; &nbsp; &nbsp; else {</span><br><span>
+</span><br><span>
+ &nbsp; &nbsp; &nbsp; }</span><br><span>
+ &nbsp; }</span><br><span>
+</span><br><span>
+Also if we are going to extend this to non-primitives like dates etc.</span><br><span>
+you would want to expose the binding errors. Which could be done the</span><br><span>
+same way as above</span><br><span>
+</span><br><span>
+But maybe this is really getting into feature creep territory ;-)</span><br><span>
+</span><br><span>
+Cheers</span><br><span>
+</span><div><div></div><div class="h5"><br><span>
+On Thu, Jun 30, 2011 at 5:00 AM, Jeff Brown &lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636275&i=2" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:</span><br><span>
+&gt; One of the new features in Grails 2 will be a mechanism to automatically bind request parameters to controller action method arguments. &nbsp;The idea is to support something like this:</span><br><span>
+&gt;</span><br><span>
+&gt; class DemoController {</span><br><span>
+&gt;</span><br><span>
+&gt; &nbsp; &nbsp;def someAction(String name, int age) {</span><br><span>
+&gt; &nbsp; &nbsp; &nbsp; &nbsp;// ...</span><br><span>
+&gt; &nbsp; &nbsp;}</span><br><span>
+&gt;</span><br><span>
+&gt; }</span><br><span>
+&gt;</span><br><span>
+&gt; In Grails 1.3 that might be something like this:</span><br><span>
+&gt;</span><br><span>
+&gt; class DemoController {</span><br><span>
+&gt;</span><br><span>
+&gt; &nbsp; &nbsp;def someAction = {</span><br><span>
+&gt; &nbsp; &nbsp; &nbsp; &nbsp;String name = </span><a href="http://params.name/" target="_blank" rel="nofollow" link="external"><span>params.name</span></a><br><span>
+&gt; &nbsp; &nbsp; &nbsp; &nbsp;int age = </span><a href="http://params.int/" target="_blank" rel="nofollow" link="external"><span>params.int</span></a><span>('age')</span><br><span>
+&gt; &nbsp; &nbsp; &nbsp; &nbsp;// ...</span><br><span>
+&gt; &nbsp; &nbsp;}</span><br><span>
+&gt; }</span><br><span>
+&gt;</span><br><span>
+&gt; Some of the work has begun to start adding support for that. &nbsp;MethodActionTransformerParameterBindingSpec describes the current behavior. &nbsp;Right now there is support for String and 6 of the 8 primitive types (no byte and no char) and their corresponding type wrappers. &nbsp;The impl is still funky but I am mostly interested in defining desired behavior at this point. &nbsp;If you care to look at MethodActionTransformerParameterBindingSpec, please share any thoughts or concerns.</span><br><span>
+
+
+&gt;</span><br><span>
+&gt; Thanks for your time.</span><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+&gt; jb</span><br><span>
+&gt;</span><br><span>
+&gt; --</span><br><span>
+&gt; Jeff Brown</span><br><span>
+&gt; </span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636275&i=3" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><br><span>
+&gt; SpringSource - A Division Of VMware</span><br><span>
+&gt; </span><a href="http://www.springsource.com/" target="_blank" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><span>
+&gt;</span><br><span>
+&gt; Autism Strikes 1 in 166</span><br><span>
+&gt; Find The Cause ~ Find The Cure</span><br><span>
+&gt; </span><a href="http://www.autismspeaks.org/" target="_blank" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+&gt; ---------------------------------------------------------------------</span><br><span>
+&gt; To unsubscribe from this list, please visit:</span><br><span>
+&gt;</span><br><span>
+&gt; &nbsp; &nbsp;</span><a href="http://xircles.codehaus.org/manage_email" target="_blank" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+</span><br><span>
+</span><br><span>
+</span><br><span>
+</span></div></div><font color="#888888"><span>--</span><br><span>
+Graeme Rocher</span><br><span>
+Grails Project Lead</span><br><span>
+</span></font><div class="im"><span>SpringSource - A Division of VMware</span><br><span>
+</span><a href="http://www.springsource.com/" target="_blank" rel="nofollow" link="external"><span>http://www.springsource.com</span></a><br><span>
+</span><br><span>
+</span></div><div><div></div><div class="h5"><span>---------------------------------------------------------------------</span><br><span>
+To unsubscribe from this list, please visit:</span><br><span>
+</span><br><span>
+ &nbsp; &nbsp;</span><a href="http://xircles.codehaus.org/manage_email" target="_blank" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><span>
+</span><br><span>
+</span><br><span>
+</span></div></div></blockquote></div><br><span>
+
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800">Jeff Brown-3</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3636420" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3636420&#39;,3636420)">Threaded</a>
+	<div id="tooltip33568" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip33568'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3636420"><span id="postdropdown3636420" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3636420" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3636420">Loading...</span></td></tr><tr id="replyToAuthor3636420" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3636420" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3636420" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3636420" rel="nofollow">Edit post</a></td></tr><tr id="movePost3636420" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3636420" rel="nofollow">Move post</a></td></tr><tr id="deletePost3636420" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3636420)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3636420" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3636420)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3636420" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3636420" rel="nofollow">Change post date</a></td></tr><tr id="print3636420"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3636420" rel="nofollow">Print post</a></td></tr><tr id="permalink3636420"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&#39;)">Permalink</a></td></tr><tr id="rawMail3636420" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3636420" rel="nofollow">Raw mail</a></td></tr><tr id="social3636420" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3636420", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3636420', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3636420\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3636420', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3636420\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3636420', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3636420\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3636420', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3636420)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3636420', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3636420)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3636420', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3636420\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3636420', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3636420\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3636420', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636420.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3636420', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3636420\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3636420', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636420.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3636420');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3636420' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3636420)">
+	<div id="tooltip37839" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip37839'), 'up', 400);
+	</script>
+					<span id="starB3636420" style="cursor: pointer; ">
+		<img id="img-starB3636420" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip24201" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip24201'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3636420" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309456823000-656">Jun 30, 2011; 3:00pm</span><script type="text/javascript">
+		Nabble.get('d1309456823000-656').innerHTML= Nabble.formatDateLong(new Date(1309456823000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800" rel="nofollow" title="View profile of Jeff Brown-3" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/1fdcaacd838514ebc337efab92ef5496" height="100" width="100" alt="Jeff Brown-3" title="Jeff Brown-3"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online94800 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count94800 avatar-label weak-color">1059 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3636420" class="message-text"><span>
+		On Thu, Jun 30, 2011 at 11:59 AM, Colin Harrington
+</span><br><span>&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636420&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:
+</span><div class="shrinkable-quote" style="height: 160px; overflow-y: hidden; "><br><span>&gt; This looks good for the simple case.&nbsp; It feels very similar to Spring's
+</span><br><span>&gt; @RequestParam.&nbsp; One thing that we lose is the ability to map a param 'age'
+</span><br><span>&gt; to a differently named someAction(int studentAge) in Spring you could
+</span><br><span>&gt; annotate the method parameter like this:
+</span><br><span>&gt;
+</span><br><span>&gt; @RequestParam("age") int studentAge
+</span><br><span>&gt;
+</span><br><span>&gt; In Grails 1.3.7, you would just write this in the closure:
+</span><br><span>&gt; int studentAge = params.int('age')
+</span><br><span>&gt; Would be handy to have an additional (optional) mechanism to map params to
+</span><br><span>&gt; method parameters.
+</span></div><div class="shrink-quote"><span>...</span> [<a href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#">show rest of quote</a>]</div><br><span>At the moment the mapping from request parameter name to method
+</span><br><span>argument name is by convention. &nbsp;There is no configuration option. &nbsp;If
+</span><br><span>for some reason I want a local variable with a different name, I can
+</span><br><span>declare and initialize it as you show above. &nbsp;That of course will
+</span><br><span>still work in Grails 2. &nbsp;The convention based approach will surely
+</span><br><span>satisfy many use cases. &nbsp;If there is enough interest in arbitrarily
+</span><br><span>mapping request parameter names to method argument names we would work
+</span><br><span>something like that up. &nbsp;I question the usefulness. &nbsp;The 80/20 rule
+</span><br><span>may be more like 90/10 in this case. &nbsp;What we have is a great option,
+</span><br><span>even if it didn't evolve much further (which it will).
+</span><br><br><br><span>&gt;
+</span><br><span>&gt; What about non primitive types?&nbsp; Would they be databound the same way?
+</span><br><span>&gt;
+</span><br><br><span>Right now there are 9 non-primitive types supported. &nbsp;Those are the 8
+</span><br><span>java.lang type wrappers and java.lang.String. &nbsp;We should probably have
+</span><br><span>support for some other basic types (Date comes to mind) and maybe a
+</span><br><span>mechanism for plugging in converters for arbitrary types. &nbsp;Some of
+</span><br><span>that might be useful and I wouldn't say that is necessarily out of
+</span><br><span>scope, but is beyond what I wanted to knock out with this first step
+</span><br><span>yesterday.
+</span><br><br><span>&gt;
+</span><br><span>&gt; Where does this leave Command Objects?
+</span><br><span>&gt;
+</span><br><span>&gt; def someAction(MyCommand commandBean, String name, int age)&nbsp; { ... }
+</span><br><br><span>Command object binding and validation should continue to work as it
+</span><br><span>has. &nbsp;Depending on what we end up with for validation options, some of
+</span><br><span>this may or may not overlap with what you might have otherwise used
+</span><br><span>command objects for.
+</span><br><br><span>&gt;
+</span><br><span>&gt;
+</span><br><span>&gt; There are a few other areas of consideration:
+</span><br><span>&gt;
+</span><br><span>&gt; How do Custom Property Editors fit into this?
+</span><br><br><span>Custom Property Editors don't play any role at all in the current
+</span><br><span>implementation.
+</span><br><br><br><span>&gt; How does validation work on these (as Graeme pointed out)
+</span><br><span>&gt;
+</span><br><br><span>There is no validation at all in the current implementation aside from
+</span><br><span>handling conversion failures. &nbsp;As far as validation goes, the
+</span><br><span>following are the same:
+</span><br><br><span>def grails137Action = {
+</span><br><span>&nbsp; &nbsp; int age = params.int('age')
+</span><br><span>&nbsp; &nbsp; // ...
+</span><br><span>}
+</span><br><br><span>def grails2Action(int age) {
+</span><br><span>&nbsp; &nbsp; // ...
+</span><br><span>}
+</span><br><br><span>There are a number of nice things that become options with this. &nbsp;For
+</span><br><span>example, default parameters will work:
+</span><br><br><span>def grails2Action(String firstName, int age = 99, boolean
+</span><br><span>requirePasswordChange = true) {
+</span><br><span>}
+</span><br><br><span>If the "age" and "requirePasswordChange" request parameters are there
+</span><br><span>and can be converted, their values will be passed in otherwise the
+</span><br><span>default values are in place. &nbsp;That isn't something that will apply to
+</span><br><span>every controller action of course, but certainly some will be made
+</span><br><span>more simple by that option.
+</span><br><br><span>I think this is a great feature and like everything else in the
+</span><br><span>framework, we want feedback and suggestions from everyone interested.
+</span><br><br><span>Thanks!
+</span><br><br><br><br><br><span>jb
+</span><br><span>-- 
+</span><br><span>Jeff Brown
+</span><br><span>SpringSource
+</span><br><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><br><span>Autism Strikes 1 in 166
+</span><br><span>Find The Cause ~ Find The Cure
+</span><br><a href="http://www.autismspeaks.org/" target="_top" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><br><span>---------------------------------------------------------------------
+</span><br><span>To unsubscribe from this list, please visit:
+</span><br><br><span>&nbsp; &nbsp; </span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><br><br><span>
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800">Jeff Brown-3</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3636530" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3636530&#39;,3636530)">Threaded</a>
+	<div id="tooltip10318" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip10318'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3636530"><span id="postdropdown3636530" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3636530" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3636530">Loading...</span></td></tr><tr id="replyToAuthor3636530" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3636530" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3636530" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3636530" rel="nofollow">Edit post</a></td></tr><tr id="movePost3636530" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3636530" rel="nofollow">Move post</a></td></tr><tr id="deletePost3636530" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3636530)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3636530" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3636530)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3636530" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3636530" rel="nofollow">Change post date</a></td></tr><tr id="print3636530"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3636530" rel="nofollow">Print post</a></td></tr><tr id="permalink3636530"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&#39;)">Permalink</a></td></tr><tr id="rawMail3636530" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3636530" rel="nofollow">Raw mail</a></td></tr><tr id="social3636530" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3636530", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3636530', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3636530\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3636530', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3636530\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3636530', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3636530\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3636530', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3636530)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3636530', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3636530)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3636530', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3636530\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3636530', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3636530\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3636530', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636530.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3636530', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3636530\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3636530', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636530.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3636530');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3636530' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3636530)">
+	<div id="tooltip681" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip681'), 'up', 400);
+	</script>
+					<span id="starB3636530" style="cursor: pointer; ">
+		<img id="img-starB3636530" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip70792" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip70792'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3636530" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309460000000-520">Jun 30, 2011; 3:53pm</span><script type="text/javascript">
+		Nabble.get('d1309460000000-520').innerHTML= Nabble.formatDateLong(new Date(1309460000000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800" rel="nofollow" title="View profile of Jeff Brown-3" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/1fdcaacd838514ebc337efab92ef5496" height="100" width="100" alt="Jeff Brown-3" title="Jeff Brown-3"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online94800 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count94800 avatar-label weak-color">1059 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	<div class="weak-color" style="font-size:80%;padding-bottom:1em">
+				In reply to <a href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3635009.html" rel="nofollow">this post</a> by Graeme Rocher-4
+			</div>
+	<div id="message3636530" class="message-text"><span>
+		On Thu, Jun 30, 2011 at 2:37 AM, Graeme Rocher &lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636530&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:
+</span><div class="shrinkable-quote" style="height: 160px; overflow-y: hidden; "><br><span>&gt; Nice work Jeff. Might be interesting to take advantage of Groovy 1.8's
+</span><br><span>&gt; closure parameters for annotations and allow:
+</span><br><span>&gt;
+</span><br><span>&gt; &nbsp; @Validate( { &nbsp;name &amp;&amp; age &gt; 18 &nbsp;} )
+</span><br><span>&gt; &nbsp; def someAction(String name, int age) {
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; if(hasErrors()) {
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; render view:"errors", model:[errors:errors]
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; }
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; else {
+</span><br><span>&gt;
+</span><br><span>&gt; &nbsp; &nbsp; &nbsp; }
+</span><br><span>&gt; &nbsp; }
+</span><br><span>&gt;
+</span></div><div class="shrink-quote"><span>...</span> [<a href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#">show rest of quote</a>]</div><br><span>In a case like that, what would potentially be in the errors property?
+</span><br><br><br><br><span>jb
+</span><br><br><span>-- 
+</span><br><span>Jeff Brown
+</span><br><span>SpringSource
+</span><br><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><br><span>Autism Strikes 1 in 166
+</span><br><span>Find The Cause ~ Find The Cure
+</span><br><a href="http://www.autismspeaks.org/" target="_top" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><br><span>---------------------------------------------------------------------
+</span><br><span>To unsubscribe from this list, please visit:
+</span><br><br><span>&nbsp; &nbsp; </span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><br><br><span>
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=112035">smaldini</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3636539" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3636539&#39;,3636539)">Threaded</a>
+	<div id="tooltip46842" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip46842'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3636539"><span id="postdropdown3636539" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3636539" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3636539">Loading...</span></td></tr><tr id="replyToAuthor3636539" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3636539" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3636539" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3636539" rel="nofollow">Edit post</a></td></tr><tr id="movePost3636539" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3636539" rel="nofollow">Move post</a></td></tr><tr id="deletePost3636539" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3636539)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3636539" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3636539)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3636539" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3636539" rel="nofollow">Change post date</a></td></tr><tr id="print3636539"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3636539" rel="nofollow">Print post</a></td></tr><tr id="permalink3636539"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&#39;)">Permalink</a></td></tr><tr id="rawMail3636539" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3636539" rel="nofollow">Raw mail</a></td></tr><tr id="social3636539" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3636539", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3636539', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3636539\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3636539', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3636539\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3636539', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3636539\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3636539', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3636539)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3636539', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3636539)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3636539', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3636539\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3636539', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3636539\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3636539', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636539.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3636539', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3636539\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3636539', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636539.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3636539');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3636539' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3636539)">
+	<div id="tooltip99208" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip99208'), 'up', 400);
+	</script>
+					<span id="starB3636539" style="cursor: pointer; ">
+		<img id="img-starB3636539" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip50799" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip50799'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3636539" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309460141000-687">Jun 30, 2011; 3:55pm</span><script type="text/javascript">
+		Nabble.get('d1309460141000-687').innerHTML= Nabble.formatDateLong(new Date(1309460141000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=112035" rel="nofollow" title="View profile of smaldini" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/e0a25ad3429254ca316187abb6bebc1b" height="100" width="100" alt="smaldini" title="smaldini"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online112035 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count112035 avatar-label weak-color">553 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	<div class="weak-color" style="font-size:80%;padding-bottom:1em">
+				In reply to <a href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636420.html" rel="nofollow">this post</a> by Jeff Brown-3
+			</div>
+	<div id="message3636539" class="message-text"><span>
+		Some feature requests :</span><div><span>- @RequestParam (or @As, shorter alias ) would be a nice plus.</span><div><span>- File&nbsp;</span></div><div><span>- Simple pojo : &nbsp;?params1.a=1 =&gt; &nbsp; action(Pojo params1){ // where a is Pojo property &nbsp;</span></div><div><span>- Date</span></div><span>
+
+</span><div><span>- @Validate( {} &nbsp;) returning 404 error by default (or @Validate('failAction', {} ) forward to another action</span><br><br><div class="gmail_quote"><span>On Thu, Jun 30, 2011 at 8:00 PM, Jeff Brown </span><span dir="ltr"><span>&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636539&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt;</span></span><span> wrote:</span><br><span>
+
+</span><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><div class="im"><span>On Thu, Jun 30, 2011 at 11:59 AM, Colin Harrington</span><br><span>
+&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636539&i=1" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:</span><br><span>
+&gt; This looks good for the simple case.&nbsp; It feels very similar to Spring's</span><br><span>
+&gt; @RequestParam.&nbsp; One thing that we lose is the ability to map a param 'age'</span><br><span>
+&gt; to a differently named someAction(int studentAge) in Spring you could</span><br><span>
+&gt; annotate the method parameter like this:</span><br><span>
+&gt;</span><br><span>
+&gt; @RequestParam("age") int studentAge</span><br><span>
+&gt;</span><br><span>
+&gt; In Grails 1.3.7, you would just write this in the closure:</span><br><span>
+&gt; int studentAge = </span><a href="http://params.int/" target="_blank" rel="nofollow" link="external"><span>params.int</span></a><span>('age')</span><br><span>
+&gt; Would be handy to have an additional (optional) mechanism to map params to</span><br><span>
+&gt; method parameters.</span><br><span>
+</span><br><span>
+</span></div><span>At the moment the mapping from request parameter name to method</span><br><span>
+argument name is by convention. &nbsp;There is no configuration option. &nbsp;If</span><br><span>
+for some reason I want a local variable with a different name, I can</span><br><span>
+declare and initialize it as you show above. &nbsp;That of course will</span><br><span>
+still work in Grails 2. &nbsp;The convention based approach will surely</span><br><span>
+satisfy many use cases. &nbsp;If there is enough interest in arbitrarily</span><br><span>
+mapping request parameter names to method argument names we would work</span><br><span>
+something like that up. &nbsp;I question the usefulness. &nbsp;The 80/20 rule</span><br><span>
+may be more like 90/10 in this case. &nbsp;What we have is a great option,</span><br><span>
+even if it didn't evolve much further (which it will).</span><br><span>
+</span><div class="im"><br><span>
+</span><br><span>
+&gt;</span><br><span>
+&gt; What about non primitive types?&nbsp; Would they be databound the same way?</span><br><span>
+&gt;</span><br><span>
+</span><br><span>
+</span></div><span>Right now there are 9 non-primitive types supported. &nbsp;Those are the 8</span><br><span>
+java.lang type wrappers and java.lang.String. &nbsp;We should probably have</span><br><span>
+support for some other basic types (Date comes to mind) and maybe a</span><br><span>
+mechanism for plugging in converters for arbitrary types. &nbsp;Some of</span><br><span>
+that might be useful and I wouldn't say that is necessarily out of</span><br><span>
+scope, but is beyond what I wanted to knock out with this first step</span><br><span>
+yesterday.</span><br><span>
+</span><div class="im"><br><span>
+&gt;</span><br><span>
+&gt; Where does this leave Command Objects?</span><br><span>
+&gt;</span><br><span>
+&gt; def someAction(MyCommand commandBean, String name, int age)&nbsp; { ... }</span><br><span>
+</span><br><span>
+</span></div><span>Command object binding and validation should continue to work as it</span><br><span>
+has. &nbsp;Depending on what we end up with for validation options, some of</span><br><span>
+this may or may not overlap with what you might have otherwise used</span><br><span>
+command objects for.</span><br><span>
+</span><div class="im"><br><span>
+&gt;</span><br><span>
+&gt;</span><br><span>
+&gt; There are a few other areas of consideration:</span><br><span>
+&gt;</span><br><span>
+&gt; How do Custom Property Editors fit into this?</span><br><span>
+</span><br><span>
+</span></div><span>Custom Property Editors don't play any role at all in the current</span><br><span>
+implementation.</span><br><span>
+</span><div class="im"><br><span>
+</span><br><span>
+&gt; How does validation work on these (as Graeme pointed out)</span><br><span>
+&gt;</span><br><span>
+</span><br><span>
+</span></div><span>There is no validation at all in the current implementation aside from</span><br><span>
+handling conversion failures. &nbsp;As far as validation goes, the</span><br><span>
+following are the same:</span><br><span>
+</span><br><span>
+def grails137Action = {</span><br><span>
+</span><div class="im"><span> &nbsp; &nbsp;int age = </span><a href="http://params.int/" target="_blank" rel="nofollow" link="external"><span>params.int</span></a><span>('age')</span><br><span>
+ &nbsp; &nbsp;// ...</span><br><span>
+}</span><br><span>
+</span><br><span>
+</span></div><span>def grails2Action(int age) {</span><br><span>
+ &nbsp; &nbsp;// ...</span><br><span>
+}</span><br><span>
+</span><br><span>
+There are a number of nice things that become options with this. &nbsp;For</span><br><span>
+example, default parameters will work:</span><br><span>
+</span><br><span>
+def grails2Action(String firstName, int age = 99, boolean</span><br><span>
+requirePasswordChange = true) {</span><br><span>
+}</span><br><span>
+</span><br><span>
+If the "age" and "requirePasswordChange" request parameters are there</span><br><span>
+and can be converted, their values will be passed in otherwise the</span><br><span>
+default values are in place. &nbsp;That isn't something that will apply to</span><br><span>
+every controller action of course, but certainly some will be made</span><br><span>
+more simple by that option.</span><br><span>
+</span><br><span>
+I think this is a great feature and like everything else in the</span><br><span>
+framework, we want feedback and suggestions from everyone interested.</span><br><span>
+</span><br><span>
+Thanks!</span><br><span>
+</span><br><span>
+</span><br><span>
+</span><br><span>
+</span><br><span>
+jb</span><br><span>
+</span><font color="#888888"><span>--</span><br><span>
+Jeff Brown</span><br><span>
+SpringSource</span><br><span>
+</span></font><div><div></div><div class="h5"><a href="http://www.springsource.com/" target="_blank" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><span>
+</span><br><span>
+Autism Strikes 1 in 166</span><br><span>
+Find The Cause ~ Find The Cure</span><br><span>
+</span><a href="http://www.autismspeaks.org/" target="_blank" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><span>
+</span><br><span>
+---------------------------------------------------------------------</span><br><span>
+To unsubscribe from this list, please visit:</span><br><span>
+</span><br><span>
+ &nbsp; &nbsp;</span><a href="http://xircles.codehaus.org/manage_email" target="_blank" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><span>
+</span><br><span>
+</span><br><span>
+</span></div></div></blockquote></div><br><br clear="all"><br><span>-- </span><br><div><span style="font-family:arial, sans-serif;font-size:13px;border-collapse:collapse"><div style="color:rgb(0, 0, 0)"><b><span>Stéphane MALDINI</span></b></div><div><div><span>
+
+</span><div><font color="#500050"><span>--</span></font><font color="#0658b5"><br></font></div><div style="color:rgb(80, 0, 80)"><br></div></div></div></span></div><br><span>
+</span></div></div><span>
+
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800">Jeff Brown-3</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3636686" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3636686&#39;,3636686)">Threaded</a>
+	<div id="tooltip9473" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip9473'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3636686"><span id="postdropdown3636686" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3636686" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3636686">Loading...</span></td></tr><tr id="replyToAuthor3636686" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3636686" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3636686" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3636686" rel="nofollow">Edit post</a></td></tr><tr id="movePost3636686" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3636686" rel="nofollow">Move post</a></td></tr><tr id="deletePost3636686" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3636686)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3636686" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3636686)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3636686" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3636686" rel="nofollow">Change post date</a></td></tr><tr id="print3636686"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3636686" rel="nofollow">Print post</a></td></tr><tr id="permalink3636686"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&#39;)">Permalink</a></td></tr><tr id="rawMail3636686" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3636686" rel="nofollow">Raw mail</a></td></tr><tr id="social3636686" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3636686", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3636686', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3636686\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3636686', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3636686\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3636686', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3636686\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3636686', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3636686)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3636686', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3636686)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3636686', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3636686\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3636686', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3636686\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3636686', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3636686.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3636686', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3636686\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3636686', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3636686.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3636686');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3636686' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3636686)">
+	<div id="tooltip39356" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip39356'), 'up', 400);
+	</script>
+					<span id="starB3636686" style="cursor: pointer; ">
+		<img id="img-starB3636686" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip44537" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip44537'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3636686" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309462993000-985">Jun 30, 2011; 4:43pm</span><script type="text/javascript">
+		Nabble.get('d1309462993000-985').innerHTML= Nabble.formatDateLong(new Date(1309462993000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=94800" rel="nofollow" title="View profile of Jeff Brown-3" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/1fdcaacd838514ebc337efab92ef5496" height="100" width="100" alt="Jeff Brown-3" title="Jeff Brown-3"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online94800 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count94800 avatar-label weak-color">1059 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3636686" class="message-text"><span>
+		On Thu, Jun 30, 2011 at 1:55 PM, Stephane Maldini
+</span><br><span>&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3636686&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:
+</span><br><span>&gt; Some feature requests :
+</span><br><span>&gt; - @RequestParam (or @As, shorter alias ) would be a nice plus.
+</span><br><br><span>I added support for this:
+</span><br><br><span>import grails.web.RequestParameter
+</span><br><span>class DemoController {
+</span><br><br><span>&nbsp; &nbsp; def someMethod(@RequestParameter('firstName') String name,
+</span><br><span>@RequestParameter('yearsOld') int age) {
+</span><br><span>&nbsp; &nbsp;}
+</span><br><span>}
+</span><br><br><span>I don't really care about the annotation name. &nbsp;If folks want a
+</span><br><span>shorter name and have a recommendation, fire away.
+</span><br><br><span>FYI... All of that is wangled out at compile time so there isn't
+</span><br><span>really any runtime performance associated with @RequestParameter.
+</span><br><br><br><br><span>&gt; - Simple pojo : &nbsp;?params1.a=1 =&gt; &nbsp; action(Pojo params1){ // where a is Pojo
+</span><br><br><span>Are you asking for something fundamentally different than the current
+</span><br><span>command object behavior?
+</span><br><br><br><br><br><span>jb
+</span><br><br><span>-- 
+</span><br><span>Jeff Brown
+</span><br><span>SpringSource
+</span><br><a href="http://www.springsource.com/" target="_top" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><br><span>Autism Strikes 1 in 166
+</span><br><span>Find The Cause ~ Find The Cure
+</span><br><a href="http://www.autismspeaks.org/" target="_top" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><br><span>---------------------------------------------------------------------
+</span><br><span>To unsubscribe from this list, please visit:
+</span><br><br><span>&nbsp; &nbsp; </span><a href="http://xircles.codehaus.org/manage_email" target="_top" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><br><br><span>
+
+	
+	
+	
+	</span></div>
+	
+    
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	<div class="classic-row">
+		<div class="classic-header">
+			<div class="classic-bar shaded-bg-color rounded-top">
+				<div class="classic-author-name nowrap">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=112035">smaldini</a>
+				</div>
+				<div class="classic-right-menu shaded-bg-color weak-color">
+					<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=reply&node=3639082" rel="nofollow">Reply</a> |
+					<a href="javascript:void(0)" onclick="Nabble.setView(&#39;threaded&#39;, &#39;/binding-request-parameters-to-action-method-parameters-tt3634611.html#a3639082&#39;,3639082)">Threaded</a>
+	<div id="tooltip94821" class="nabble-tooltip" use_title="false">
+		Open this post in threaded view
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip94821'), 'up', 400);
+	</script> |
+					<span id="dd_postdropdown3639082"><span id="postdropdown3639082" class="dropdown"><a href="javascript:void(0)" title="Click for more options">More</a> <img src="./Grails - dev - binding request parameters to action method parameters_files/more.png" width="10" height="10"><table class="light-bg-color medium-border-color drop-shadow" style="margin-top:1px;"><tbody><tr id="_loadingpostdropdown3639082" style="display:none"><td class="dropdown-simple-row"><span id="_loadingSpanpostdropdown3639082">Loading...</span></td></tr><tr id="replyToAuthor3639082" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=pm&post=3639082" rel="nofollow">Reply to author</a></td></tr><tr id="editPost3639082" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=edit_post&node=3639082" rel="nofollow">Edit post</a></td></tr><tr id="movePost3639082" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=move_node&node=3639082" rel="nofollow">Move post</a></td></tr><tr id="deletePost3639082" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deletePost(3639082)" rel="nofollow">Delete this post</a></td></tr><tr id="deleteRecursively3639082" style="display:none"><td style="border:none"><a href="javascript: void(0)" onclick="Nabble.deleteFromSite(3639082)" rel="nofollow">Delete this post and replies</a></td></tr><tr id="changePostDate3639082" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=change_post_date&node=3639082" rel="nofollow">Change post date</a></td></tr><tr id="print3639082"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=print_post&node=3639082" rel="nofollow">Print post</a></td></tr><tr id="permalink3639082"><td style="border:none"><a href="javascript: void(0)" onclick="prompt(&#39;Copy this:&#39;,&#39;http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&#39;)">Permalink</a></td></tr><tr id="rawMail3639082" style="display:none"><td style="border:none"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=raw_mail&node=3639082" rel="nofollow">Raw mail</a></td></tr><tr id="social3639082" style="white-space:nowrap"><td style="border:none"><a href="http://twitter.com/share?text=Re%3A+binding+request+parameters+to+action+method+parameters&related=Grails&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html" title="Twitter" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/twitter.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.facebook.com/share.php?v=4&src=bm&u=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&t=Re%3A+binding+request+parameters+to+action+method+parameters" title="Facebook" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/facebook.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://del.icio.us/post?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Delicious" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/delicious.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.google.com/bookmarks/mark?op=add&bkmk=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Google Bookmarks" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/google.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Stumble Upon" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/stumbleupon.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&title=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&source=Grails" title="LinkedIn" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/linkedin.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a> <a href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&title=Re%3A+binding+request+parameters+to+action+method+parameters" title="Digg" target="_blank" ignore="y"> <img src="./Grails - dev - binding request parameters to action method parameters_files/digg.png" style="width:16px;height:16px;margin-top:.2em;border:none;"> </a></td></tr></tbody></table></span></span>
+	<script type="text/javascript">
+		var dropdown = new NabbleDropdown("postdropdown3639082", "More","Click for more options");
+		
+		dropdown.add('replyToAuthor3639082', '\x3Ca href\x3D\"/user/SendEmail.jtp?type\x3Dpm&amp;post\x3D3639082\" rel\x3D\"nofollow\"\x3EReply to author\x3C/a\x3E', 'display:none');
+		dropdown.add('editPost3639082', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dedit_post&amp;node\x3D3639082\" rel\x3D\"nofollow\"\x3EEdit post\x3C/a\x3E', 'display:none');
+		dropdown.add('movePost3639082', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dmove_node&amp;node\x3D3639082\" rel\x3D\"nofollow\"\x3EMove post\x3C/a\x3E', 'display:none');
+		dropdown.add('deletePost3639082', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deletePost(3639082)\" rel\x3D\"nofollow\"\x3EDelete this post\x3C/a\x3E', 'display:none');
+			dropdown.add('deleteRecursively3639082', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"Nabble.deleteFromSite(3639082)\" rel\x3D\"nofollow\"\x3EDelete this post and replies\x3C/a\x3E', 'display:none');
+		dropdown.add('changePostDate3639082', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dchange_post_date&amp;node\x3D3639082\" rel\x3D\"nofollow\"\x3EChange post date\x3C/a\x3E', 'display:none');
+		dropdown.add('print3639082', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Dprint_post&amp;node\x3D3639082\" rel\x3D\"nofollow\"\x3EPrint post\x3C/a\x3E');
+		dropdown.add('permalink3639082', '\x3Ca href\x3D\"javascript: void(0)\" onclick\x3D\"prompt(\'Copy this:\',\'http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-tp3634611p3639082.html\')\"\x3EPermalink\x3C/a\x3E');
+		dropdown.add('rawMail3639082', '\x3Ca href\x3D\"/template/NamlServlet.jtp?macro\x3Draw_mail&amp;node\x3D3639082\" rel\x3D\"nofollow\"\x3ERaw mail\x3C/a\x3E', 'display:none');
+		dropdown.add('social3639082', '\x3Ca href\x3D\"http://twitter.com/share?text\x3DRe%3A+binding+request+parameters+to+action+method+parameters&amp;related\x3DGrails&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html\" title\x3D\"Twitter\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/twitter.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.facebook.com/share.php?v\x3D4&amp;src\x3Dbm&amp;u\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;t\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Facebook\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/facebook.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://del.icio.us/post?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Delicious\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/delicious.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.google.com/bookmarks/mark?op\x3Dadd&amp;bkmk\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Google Bookmarks\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/google.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.stumbleupon.com/submit?url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Stumble Upon\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/stumbleupon.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://www.linkedin.com/shareArticle?mini\x3Dtrue&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;title\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;source\x3DGrails\" title\x3D\"LinkedIn\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/linkedin.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E \x3Ca href\x3D\"http://digg.com/submit?phase\x3D2&amp;url\x3Dhttp%3A%2F%2Fgrails.1312388.n4.nabble.com%2Fbinding-request-parameters-to-action-method-parameters-tp3634611p3639082.html&amp;title\x3DRe%3A+binding+request+parameters+to+action+method+parameters\" title\x3D\"Digg\" target\x3D\"_blank\" ignore\x3D\"y\"\x3E \x3Cimg src\x3D\"/images/social/digg.png\" style\x3D\"width:16px;height:16px;margin-top:.2em;border:none;\"/\x3E \x3C/a\x3E','white-space:nowrap');
+		dropdown.build('dd_postdropdown3639082');
+		dropdown.loadOnClick('/template/NamlServlet.jtp?macro=post_dropdown_later&node=3639082' + Nabble.getClientID() + '&_=' + Math.floor(Math.random()*999999));
+	</script>
+					&nbsp;
+					<img src="./Grails - dev - binding request parameters to action method parameters_files/flag_gray.png" class="report-flag" onclick="Nabble.reportContent(3639082)">
+	<div id="tooltip69162" class="nabble-tooltip" use_title="false">
+		Report Content as Inappropriate
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip69162'), 'up', 400);
+	</script>
+					<span id="starB3639082" style="cursor: pointer; ">
+		<img id="img-starB3639082" src="./Grails - dev - binding request parameters to action method parameters_files/icon_unstarred.png" class="star" alt="star" title="Add this item to your favorites list">
+		<div id="tooltip71965" class="nabble-tooltip" use_title="true">
+		
+		<div class="nabble-tooltip-arrow">
+			<div class="d1">♦</div>
+			<div class="d2">♦</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		Nabble.startTooltip(Nabble.get('tooltip71965'), 'up', 400);
+	</script>
+	</span>
+	
+				</div>
+				<div class="classic-subject-line">
+					<span id="red-arrow3639082" class="float-left invisible" style="margin-top:.2em">
+		<img title="Selected post" width="15" height="15" src="./Grails - dev - binding request parameters to action method parameters_files/arrow.png" alt="Selected post">
+	</span>
+					<span class="post-date float-left">
+		<span id="d1309547506000-328">Jul 01, 2011; 4:11pm</span><script type="text/javascript">
+		Nabble.get('d1309547506000-328').innerHTML= Nabble.formatDateLong(new Date(1309547506000));
+	</script>
+	</span>
+					<h2 class="post-subject float-left" style="width:30%;overflow:visible;font-family:inherit"><span>
+		Re: binding request parameters to action method parameters
+	</span></h2>
+				</div>
+			</div>
+		</div>
+		<table class="classic-body">
+			<tbody><tr>
+				<td class="classic-author shaded-bg-color rounded-bottom">
+					<div class="avatar-outer">
+		<div class="avatar-inner">
+			<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=user_nodes&user=112035" rel="nofollow" title="View profile of smaldini" class="nowrap no-decoration"><img class="avatar medium-border-color" src="./Grails - dev - binding request parameters to action method parameters_files/e0a25ad3429254ca316187abb6bebc1b" height="100" width="100" alt="smaldini" title="smaldini"><img src="./Grails - dev - binding request parameters to action method parameters_files/online.png" class="online112035 online invisible" title="User is online" alt="online"></a>
+
+	
+	
+		</div>
+	</div>
+	
+	
+	<div class="post-count112035 avatar-label weak-color">553 posts</div>
+	
+				</td>
+				<td class="classic-message">
+					
+	
+	
+	<div id="message3639082" class="message-text"><span>
+		In fact it's a Command Object without boilerplate (injection, validation, propertyEditor binding). So I guess it's not very different fundamentally.</span><br><br><div class="gmail_quote"><span>On Thu, Jun 30, 2011 at 9:43 PM, Jeff Brown </span><span dir="ltr"><span>&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3639082&i=0" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt;</span></span><span> wrote:</span><br><span>
+
+</span><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><div class="im"><span>On Thu, Jun 30, 2011 at 1:55 PM, Stephane Maldini</span><br><span>
+&lt;</span><a href="http://grails.1312388.n4.nabble.com/user/SendEmail.jtp?type=node&node=3639082&i=1" target="_top" rel="nofollow" link="external"><span>[hidden email]</span></a><span>&gt; wrote:</span><br><span>
+&gt; Some feature requests :</span><br><span>
+&gt; - @RequestParam (or @As, shorter alias ) would be a nice plus.</span><br><span>
+</span><br><span>
+</span></div><span>I added support for this:</span><br><span>
+</span><br><span>
+import grails.web.RequestParameter</span><br><span>
+class DemoController {</span><br><span>
+</span><br><span>
+ &nbsp; &nbsp;def someMethod(@RequestParameter('firstName') String name,</span><br><span>
+@RequestParameter('yearsOld') int age) {</span><br><span>
+ &nbsp; }</span><br><span>
+}</span><br><span>
+</span><br><span>
+I don't really care about the annotation name. &nbsp;If folks want a</span><br><span>
+shorter name and have a recommendation, fire away.</span><br><span>
+</span><br><span>
+FYI... All of that is wangled out at compile time so there isn't</span><br><span>
+really any runtime performance associated with @RequestParameter.</span><br><span>
+</span><div class="im"><br><span>
+</span><br><span>
+</span><br><span>
+&gt; - Simple pojo : &nbsp;?params1.a=1 =&gt; &nbsp; action(Pojo params1){ // where a is Pojo</span><br><span>
+</span><br><span>
+</span></div><span>Are you asking for something fundamentally different than the current</span><br><span>
+command object behavior?</span><br><span>
+</span><div><div></div><div class="h5"><br><span>
+</span><br><span>
+</span><br><span>
+</span><br><span>
+jb</span><br><span>
+</span><br><span>
+--</span><br><span>
+Jeff Brown</span><br><span>
+SpringSource</span><br><span>
+</span><a href="http://www.springsource.com/" target="_blank" rel="nofollow" link="external"><span>http://www.springsource.com/</span></a><br><span>
+</span><br><span>
+Autism Strikes 1 in 166</span><br><span>
+Find The Cause ~ Find The Cure</span><br><span>
+</span><a href="http://www.autismspeaks.org/" target="_blank" rel="nofollow" link="external"><span>http://www.autismspeaks.org/</span></a><br><span>
+</span><br><span>
+---------------------------------------------------------------------</span><br><span>
+To unsubscribe from this list, please visit:</span><br><span>
+</span><br><span>
+ &nbsp; &nbsp;</span><a href="http://xircles.codehaus.org/manage_email" target="_blank" rel="nofollow" link="external"><span>http://xircles.codehaus.org/manage_email</span></a><br><span>
+</span><br><span>
+</span><br><span>
+</span></div></div></blockquote></div><br><br clear="all"><br><span>-- </span><br><div><span style="font-family:arial, sans-serif;font-size:13px;border-collapse:collapse"><div style="color:rgb(0, 0, 0)"><b><span>Stéphane MALDINI</span></b></div><div><div><span>
+
+</span><div><font color="#500050"><span>--</span></font><font color="#0658b5"><br></font></div><div style="color:rgb(80, 0, 80)"><br></div></div></div></span></div><br><span>
+
+
+	
+	
+	
+	</span></div>
+	
+    <div class="ad " style="display:block !important;text-align:left;padding-top:1em">
+						<script type="text/javascript">
+							Nabble.ads('ADSENSE', 'last_classic_message');
+						</script><a id="ad0.6878946505021304" href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#" style="display:none">.</a>
+<script type="text/javascript" src="./Grails - dev - binding request parameters to action method parameters_files/show_ads.js"></script><ins style="display:inline-table;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px"><ins id="aswift_1_anchor" style="display:block;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px"><iframe allowtransparency="true" frameborder="0" height="90" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+=&#39;.call&#39;;setTimeout(h,0)}else if(h.match){i+=&#39;.nav&#39;;w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" scrolling="no" vspace="0" width="728" id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;"></iframe></ins></ins>
+						<div class="remove-ads-link invisible" style="margin-top:.3em;font-size:90%;"><a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=remove_ads_page">Remove Ads</a></div>
+					</div>
+			<script type="text/javascript">
+		$(document).ready(function() {
+			if (Nabble.userId && site_admins.indexOf(Number(Nabble.userId)) >= 0)
+				$('div.remove-ads-link').show();
+		});
+	</script>
+				</td>
+			</tr>
+		</tbody></table>
+	</div>
+	
+		
+	</div>
+	</div>
+			<div id="topic-footer" class="weak-color" style="padding-top:1em">
+		«
+		<a href="http://grails.1312388.n4.nabble.com/Grails-dev-f1393096.html">Return to Grails - dev</a>
+		&nbsp;|&nbsp;
+		<span id="v3634611" style="">495 views</span>
+	
+	
+	</div>
+			<div id="report-inappropriate-content" class="report-inappropriate-content rounded">
+		<div id="report-inappropriate-content-inner" class="no-bg-color medium-border-color border2">
+			<div class="big">Loading...</div>
+		</div>
+	</div>
+			<table class="footer-table shaded-bg-color">
+		<tbody><tr>
+			<td class="footer-left weak-color">
+				Powered by
+				<a href="http://www.nabble.com/" target="_top">Nabble</a>
+			</td>
+			<td class="footer-right">
+				<a href="http://grails.1312388.n4.nabble.com/template/NamlServlet.jtp?macro=macro_viewer&id=classic_forum_topic%21nabble%3Atopic.naml&base=nabble.view.web.template.ServletNamespace" rel="nofollow">See how NAML generates this page</a>
+			</td>
+		</tr>
+	</tbody></table>
+	<!-- Ad.null -->
+			<script type="text/javascript">
+var scriptUrl = '/template/NamlServlet.jtp?macro=js_page&searchSpecial=3634611&incViewCount=3634611&newsflash=&starB=3634611|3635009|3636275|3636420|3636530|3636539|3636686|3639082&visitorOnline=&avatarOnline=44410|129071|26910|94800|112035&postCount=44410|129071|26910|94800|112035&markVisited=3639082&views=3634611';
+scriptUrl += '&_=' + Math.floor(Math.random()*9999) + Nabble.getClientID();
+$.getScript(scriptUrl, function() { Nabble.resizeFrames(); });
+</script>
+
+					<a id="not-visited" class="invisible" href="http://grails.1312388.n4.nabble.com/any-url">x</a> <a id="visited" class="visited-link invisible" href="http://grails.1312388.n4.nabble.com/binding-request-parameters-to-action-method-parameters-td3634611.html#">x</a></div>
+					<script type="text/javascript">
+						$(document).ready(function() { Nabble.fixCookieClientID(); });
+					</script>
+					<!-- n4.nabble.com | Site ID = 1312388 -->
+				
+			</body></html>

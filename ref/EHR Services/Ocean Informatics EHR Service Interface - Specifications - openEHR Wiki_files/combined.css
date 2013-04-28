@@ -1,0 +1,10 @@
+
+
+
+@import url('/wiki/s/1724/1/2/_/styles/colors.css?spaceKey=spec');
+
+    /* Including stylesheet [ name='default-theme.css', location='classpath:/includes/css/default-theme.css' ] */
+
+            @import url('/wiki/s/1724/1/1/_/download/resources/com.atlassian.confluence.themes.default:styles/default-theme.css');
+    
+@import url('/wiki/s/1724/1/2/_/styles/custom.css?spaceKey=spec');
