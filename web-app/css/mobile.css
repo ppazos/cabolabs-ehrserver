@@ -47,15 +47,11 @@
 	}
 
 	/* hide all but the first column of list tables */
-<<<<<<< HEAD
 	/*
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	.scaffold-list td:not(:first-child),
 	.scaffold-list th:not(:first-child) {
 		display: none;
 	}
-<<<<<<< HEAD
 	*/
 	/* CSS Custom: Quiero mostrar tambien la ultima columna que tiene acciones ... */
 	.scaffold-list td,
@@ -68,8 +64,6 @@
    .scaffold-list th:last-child {
       display: table-cell;
    }
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 	.scaffold-list thead th {
 		text-align: center;

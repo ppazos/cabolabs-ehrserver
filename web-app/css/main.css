@@ -6,11 +6,8 @@ input, select, textarea {
 
 h1, h2, h3, h4, h5, h6 {
 	line-height: 1.1;
-<<<<<<< HEAD
 	padding-bottom: 3px;
 	border-bottom: 1px solid #DFDFDF;
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 /* BASE LAYOUT */
@@ -54,7 +51,6 @@ body {
 }
 
 #grailsLogo {
-<<<<<<< HEAD
   /*background-color: #abbf78; verde grails*/
   background-color: #232C49; /*#0D2937;*/
   vertical-align: middle;
@@ -83,10 +79,6 @@ body {
 #grailsLogo #cb_link img {
   height: 1.6em;
   margin: 0.8em 0;
-=======
-	/*background-color: #abbf78; verde grails*/
-	background-color: #232C49; /*#0D2937;*/
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -113,7 +105,6 @@ a:hover, a:active {
 h1 {
 	/*color: #48802c; verde grails */
 	color: #232C49;
-<<<<<<< HEAD
 	font-weight: bold;
 	font-size: 1.3em;
 	margin: 0.8em 0 0.3em 0;
@@ -134,12 +125,6 @@ h4 {
    color: #848fc0;
    margin: 0.8em 0 0.3em 0;
 }
-=======
-	font-weight: normal;
-	font-size: 1.25em;
-	margin: 0.8em 0 0.3em 0;
-}
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 ul {
 	padding: 0;
@@ -153,11 +138,7 @@ img {
 
 #grailsLogo a {
 	display: inline-block;
-<<<<<<< HEAD
 	/*margin: 1em;*/
-=======
-	margin: 1em;
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 .content {
@@ -294,11 +275,7 @@ fieldset,
 .fieldcontain .property-label {
 	color: #666666;
 	text-align: right;
-<<<<<<< HEAD
 	/*width: 25%;*/
-=======
-	width: 25%;
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }
 
 .fieldcontain .property-label {
@@ -470,11 +447,7 @@ input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
 /* TABLES */
 
 table {
-<<<<<<< HEAD
 	/*border-top: 1px solid #DFDFDF;*/
-=======
-	border-top: 1px solid #DFDFDF;
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	border-collapse: collapse;
 	width: 100%;
 	margin-bottom: 1em;
@@ -670,7 +643,6 @@ a.skip {
 	position: absolute;
 	left: -9999px;
 }
-<<<<<<< HEAD
 
 /* =============================>>>>>> Estilo para _patientData.gsp */
 #datosPaciente {
@@ -699,5 +671,3 @@ a.skip {
   display: inline;
 }
 /* =============================>>>>>> /Estilo para _patientData.gsp */
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f

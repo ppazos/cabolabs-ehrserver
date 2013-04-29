@@ -12,7 +12,6 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-<<<<<<< HEAD
 				<!--
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 				-->
@@ -34,46 +33,16 @@
 						<g:sortableColumn property="path" title="${message(code: 'dataIndex.path.label', default: 'Path')}" />
 					
 						<g:sortableColumn property="rmTypeName" title="${message(code: 'dataIndex.rmTypeName.label', default: 'Rm Type Name')}" />
-=======
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-			</ul>
-		</div>
-		<div id="list-dataIndex" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
-			</g:if>
-			<table>
-				<thead>
-					<tr>
-					
-						<g:sortableColumn property="archetypeId" title="${message(code: 'dataIndex.archetypeId.label', default: 'Archetype Id')}" />
-					
-						<g:sortableColumn property="gpath" title="${message(code: 'dataIndex.gpath.label', default: 'Gpath')}" />
-					
-						<g:sortableColumn property="path" title="${message(code: 'dataIndex.path.label', default: 'Path')}" />
-					
-						<g:sortableColumn property="rmTypeName" title="${message(code: 'dataIndex.rmTypeName.label', default: 'Rm Type Name')}" />
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					</tr>
 				</thead>
 				<tbody>
 				<g:each in="${dataIndexInstanceList}" status="i" var="dataIndexInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-<<<<<<< HEAD
-=======
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 						<td><g:link action="show" id="${dataIndexInstance.id}">${fieldValue(bean: dataIndexInstance, field: "archetypeId")}</g:link></td>
 					
 						<td>${fieldValue(bean: dataIndexInstance, field: "path")}</td>
 					
 						<td>${fieldValue(bean: dataIndexInstance, field: "rmTypeName")}</td>
-<<<<<<< HEAD
-=======
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					</tr>
 				</g:each>
 				</tbody>
@@ -83,8 +52,4 @@
 			</div>
 		</div>
 	</body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f

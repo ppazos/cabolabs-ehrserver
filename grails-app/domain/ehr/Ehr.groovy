@@ -1,12 +1,8 @@
 package ehr
 
 import common.generic.PatientProxy
-<<<<<<< HEAD
 //import support.identification.CompositionRef // T0004 antes compositions era CompositionRef ahora es CompositionIndex
 import ehr.clinical_documents.CompositionIndex
-=======
-import support.identification.CompositionRef
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 import common.change_control.Contribution
 import javax.xml.bind.annotation.*
 
@@ -35,11 +31,7 @@ class Ehr {
    
    List compositions
    List contributions
-<<<<<<< HEAD
    static hasMany = [compositions:CompositionIndex, contributions:Contribution]
-=======
-   static hasMany = [compositions:CompositionRef, contributions:Contribution]
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    
    static constraints = {

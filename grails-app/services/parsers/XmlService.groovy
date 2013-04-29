@@ -1,16 +1,12 @@
 package parsers
 
 import com.thoughtworks.xstream.XStream
-<<<<<<< HEAD
 import ehr.Ehr
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 import common.change_control.Contribution
 import common.change_control.Version
 import common.generic.AuditDetails
 import common.generic.DoctorProxy
 import groovy.util.slurpersupport.GPathResult
-<<<<<<< HEAD
 //import support.identification.CompositionRef
 import ehr.clinical_documents.CompositionIndex
 import org.codehaus.groovy.grails.commons.ApplicationHolder
@@ -21,12 +17,6 @@ class XmlService {
    def config = ApplicationHolder.application.config.app
    
    
-=======
-import support.identification.CompositionRef
-
-class XmlService {
-
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    /*
    <version>
      <!-- OBJECT_REF -->
@@ -86,11 +76,7 @@ class XmlService {
      </lifecycle_state>
    </version>
    */
-<<<<<<< HEAD
    def parseVersions(Ehr ehr, List<String> versionsXML, List dataOut)
-=======
-   def parseVersions(List<String> versionsXML, List dataOut)
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    {
       //new File('debug_xml.log') << versionsXML.toString()
       
@@ -103,11 +89,8 @@ class XmlService {
       def commitAudit
       def data
       def version
-<<<<<<< HEAD
       def compoIndex
       def startTime
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       versionsXML.eachWithIndex { versionXML, i ->
       
          // Sin esto pone tag0 como namespace en todas las tags!!!
@@ -123,16 +106,11 @@ class XmlService {
          )
          
          
-<<<<<<< HEAD
          // Genera un UID para la composition
          String compositionUID = java.util.UUID.randomUUID() as String
          
          
          /* T0004: CompositionRef se deja de usar y se usa CompositionIndex
-=======
-         String compositionUID = java.util.UUID.randomUUID() as String
-         
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          // A la composition se le asigna un UID en el EHR Server
          // TODO: cambiar el XML de la composition para ponerle este valor en
          //         <data xsi:type="COMPOSITION"><uid> que es atributo de LOCATABLE
@@ -140,7 +118,6 @@ class XmlService {
          data = new CompositionRef(
             value: compositionUID
          )
-<<<<<<< HEAD
          */
          
          
@@ -182,8 +159,6 @@ class XmlService {
             ehrId:       ehr.ehrId,
             archetypeId: parsedVersion.data.@archetype_node_id.text()
          )
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          
          
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
@@ -201,7 +176,6 @@ class XmlService {
             //  - la ref a contribution NO se comitea,
             //    se crea en el servidor junto a la Contribution.
             
-<<<<<<< HEAD
             /* T0004: CompositionRef se deja de usar y se usa CompositionIndex
             data: data
             */
@@ -210,11 +184,6 @@ class XmlService {
          
          
          
-=======
-            data: data
-         )
-         
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          // Modifica XML con uid asignado
          // Supongo que la COMPOSITION NO tiene un UID
          parsedVersion.data.appendNode {

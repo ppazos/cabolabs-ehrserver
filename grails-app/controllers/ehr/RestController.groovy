@@ -4,25 +4,17 @@ import grails.converters.*
 import java.text.SimpleDateFormat
 import demographic.Person
 
-<<<<<<< HEAD
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 class RestController {
 
    
    // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
    
-<<<<<<< HEAD
    //def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
    //def formatterDate = new SimpleDateFormat("yyyyMMdd")
    def formatter = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.date_format )
-=======
-   def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
-   def formatterDate = new SimpleDateFormat("yyyyMMdd")
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    def ehrList(String format)
    {
@@ -205,7 +197,6 @@ class RestController {
    
    
    
-<<<<<<< HEAD
    def patientList(String format, int max, int offset)
    {
       // Paginacion
@@ -217,14 +208,6 @@ class RestController {
       // 1. Lista personas con rol paciente
       //
       def subjects = Person.findAllByRole('pat', [max: max, offset: offset])
-=======
-   def patientList(String format)
-   {
-      // ===========================================================================
-      // 1. Lista personas con rol paciente
-      //
-      def subjects = Person.findAllByRole('pat')
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       
       // ===========================================================================
@@ -233,7 +216,6 @@ class RestController {
       if (!format || format == "xml")
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
-<<<<<<< HEAD
             'result' {
                'patients' {
                   subjects.each { person ->
@@ -254,26 +236,11 @@ class RestController {
                   nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
                   prevOffset( ((offset-max < 0) ? 0 : offset-max) )
                }
-=======
-            'patients' {
-               subjects.each { person ->
-                  'patient'{
-                     uid(person.uid)
-                     firstName(person.firstName)
-                     lastName(person.lastName)
-                     dob(this.formatterDate.format( person.dob ) )
-                     sex(person.sex)
-                     idCode(person.idCode)
-                     idType(person.idType)
-                  }
-               }
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             }
          }
       }
       else if (format == "json")
       {
-<<<<<<< HEAD
          def data = [
             patients: [],
             pagination: [
@@ -285,11 +252,6 @@ class RestController {
          ]
          subjects.each { person ->
             data.patients << [
-=======
-         def data = []
-         subjects.each { person ->
-            data << [
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
                uid: person.uid,
                firstName: person.firstName,
                lastName: person.lastName,

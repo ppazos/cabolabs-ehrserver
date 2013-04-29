@@ -89,7 +89,6 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
-<<<<<<< HEAD
 
 app {
    composition_repo = "compositions\\"
@@ -129,5 +128,3 @@ app {
       db_time_format = "HH:mm:ss"
    }
 }
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f

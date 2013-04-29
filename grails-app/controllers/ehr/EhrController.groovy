@@ -15,17 +15,13 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import common.change_control.Contribution
 
-<<<<<<< HEAD
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 class EhrController {
 
    def xmlService
    def apiService
    
-<<<<<<< HEAD
 
    // Para acceder a las opciones de localizacion 
    def config = ApplicationHolder.application.config.app
@@ -49,10 +45,6 @@ class EhrController {
       [ehrInstance: ehrInstance]
   }
    
-=======
-   def index() { }
-   
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    /**
     * GUI test: devuelve el XML de las compositions commiteadas
     * @param uid
@@ -60,11 +52,7 @@ class EhrController {
     */
    def showComposition(String uid)
    {
-<<<<<<< HEAD
       def compo = new File(config.composition_repo + uid +".xml")
-=======
-      def compo = new File("compositions\\"+uid+".xml")
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       render(text:compo.getText(), contentType:"text/xml", encoding:"UTF-8")
    }
@@ -72,30 +60,22 @@ class EhrController {
    // GUI debug
    def showEhr(String patientUID)
    {
-<<<<<<< HEAD
       // TODO: patientUID existe?
       
       def c = Ehr.createCriteria()
-=======
-      def c = Ehr.createCriteria()
-      
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       def ehr = c.get {
          subject {
             eq ('value', patientUID)
          }
       }
       
-<<<<<<< HEAD
       if (!ehr)
       {
          flash.message = "No existe el ehr para el paciente $patientUID"
          redirect(controller:'person', action:'list')
          return
       }
-      
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
+
       /*
       // carga lazy
       ehr.contributions.each { contribRef ->
@@ -119,7 +99,6 @@ class EhrController {
    }
    
    /**
-<<<<<<< HEAD
     * Auxiliar de showEhr para mostrar las contributiosn y sus
     * compositions en una tabla y poder filtrarlas.
     * @return
@@ -165,8 +144,6 @@ class EhrController {
    }
    
    /**
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     * GUI
     * 
     * @param patientUID uid de la Person con rol paciente
@@ -174,10 +151,7 @@ class EhrController {
     */
    def createEhr(String patientUID)
    {
-<<<<<<< HEAD
       // TODO: no tirar excepciones porque pueden llegar a la gui
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       if (!patientUID)
       {
          throw new Exception("patientUID es obligatorio")
@@ -193,10 +167,6 @@ class EhrController {
       
       // 2. el paciente ya tiene EHR?
       def c = Ehr.createCriteria()
-<<<<<<< HEAD
-=======
-      
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       def ehr = c.get {
          subject {
             eq ('value', patientUID)
@@ -321,11 +291,7 @@ class EhrController {
       
       // En data esta el XML de la composition recibida
       List parsedCompositions = [] // List<GPathResult>
-<<<<<<< HEAD
       def versions = xmlService.parseVersions(ehr, xmlVersions, parsedCompositions)
-=======
-      def versions = xmlService.parseVersions(xmlVersions, parsedCompositions)
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       // test
       // muestra los uids en vacio porque el escritor de xml es lazy,
@@ -364,11 +330,7 @@ class EhrController {
          println contribution.audit.errors
       }
       
-<<<<<<< HEAD
       // FIXME: dejar esta tarea a un job
-=======
-      
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // Guarda compositions y crea indices a nivel de documento (nivel 1)
       def compoFile
       def compoIndex
@@ -380,12 +342,8 @@ class EhrController {
          // TODO: path configurable
          // TODO: guardar en repositorio temporal, no en el de commit definitivo
          // COMPOSITION tiene su uid asignado por el servidor como nombre
-<<<<<<< HEAD
          //compoFile = new File("compositions\\"+version.data.value+".xml")
          compoFile = new File(config.composition_repo + version.data.uid +".xml")
-=======
-         compoFile = new File("compositions\\"+version.data.value+".xml")
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
          
          
@@ -397,12 +355,9 @@ class EhrController {
          ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
          
          
-<<<<<<< HEAD
          /* 
           * Codigo movido a XmlService
           * 
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          // =====================================================================
          // Crea indice para la composition
          // =====================================================================
@@ -428,20 +383,12 @@ class EhrController {
             //
             // TODO: formato de fecha completa que sea configurable
             //       ademas la fraccion con . o , depende del locale!!!
-<<<<<<< HEAD
             //startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", parsedCompositions[i].context.start_time.value.text())
             startTime = Date.parse(config.l10n.datetime_format, parsedCompositions[i].context.start_time.value.text())
          }
          
          compoIndex = new CompositionIndex(
             uid:         version.data.value, // compositionIndex uid
-=======
-            startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", parsedCompositions[i].context.start_time.value.text())
-         }
-         
-         compoIndex = new CompositionIndex(
-            uid:         version.data.value, // compositionRef uid
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             category:    parsedCompositions[i].category.value.text(), // event o persistent
             startTime:   startTime, // puede ser vacio si category es persistent
             subjectId:   ehr.subject.value,
@@ -458,11 +405,7 @@ class EhrController {
          // =====================================================================
          // /Crea indice para la composition
          // =====================================================================
-<<<<<<< HEAD
          */
-=======
-         
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       }
       
       
@@ -496,12 +439,8 @@ class EhrController {
       def compoXML
       def compoParsed
    
-<<<<<<< HEAD
-      //compoFile = new File("compositions\\"+uid+".xml")
+
       compoFile = new File(config.composition_repo + uid +".xml")
-=======
-      compoFile = new File("compositions\\"+uid+".xml")
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       compoXML = compoFile.getText()
       compoParsed = new XmlSlurper(true, false).parseText(compoXML)
       
@@ -544,13 +483,9 @@ class EhrController {
    
    
    // ===========================================================
-<<<<<<< HEAD
    // Esta operacion fue movida a IndexDataJob
    //
    /*
-=======
-   // test
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    def indexData() {
       
       // TODO: listar solo las compositions que NO tienen indices
@@ -564,17 +499,11 @@ class EhrController {
       def compoParsed
       
       // Para cada composition
-<<<<<<< HEAD
       // El compoIndex se crea en el commit
       compoIdxs.each { compoIndex ->
       
-         //compoFile = new File("compositions\\"+compoIndex.uid+".xml")
+
          compoFile = new File(config.composition_repo + compoIndex.uid +".xml")
-=======
-      compoIdxs.each { compoIndex ->
-      
-         compoFile = new File("compositions\\"+compoIndex.uid+".xml")
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          compoXML = compoFile.getText()
          compoParsed = new XmlSlurper(true, false).parseText(compoXML)
          
@@ -595,10 +524,7 @@ class EhrController {
          }
       }
       
-<<<<<<< HEAD
       // test
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       render(text: (indexes as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
    }
    
@@ -696,22 +622,12 @@ class EhrController {
    
    private DvQuantityIndex create_DV_QUANTITY_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
    {
-<<<<<<< HEAD
 //      WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
 //      <value xsi:type="DV_QUANTITY">
 //         <magnitude>120</magnitude>
 //         <units>mm[Hg]</units>
 //      </value>
       
-=======
-      /*
-       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
-      <value xsi:type="DV_QUANTITY">
-         <magnitude>120</magnitude>
-         <units>mm[Hg]</units>
-      </value>
-      */
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       return new DvQuantityIndex(
          archetypeId: archetypeId,
          path: path,
@@ -723,7 +639,6 @@ class EhrController {
    
    private DvCodedTextIndex create_DV_CODED_TEXT_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
    {
-<<<<<<< HEAD
 
 //      WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
 //      <value xsi:type="DV_CODED_TEXT">
@@ -735,20 +650,6 @@ class EhrController {
 //            <code_string>at0025</code_string>
 //         </defining_code>
 //      </value>
-=======
-      /*
-       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
-      <value xsi:type="DV_CODED_TEXT">
-         <value>Right arm</value>
-         <defining_code>
-            <terminology_id>
-               <value>local</value>
-            </terminology_id>
-            <code_string>at0025</code_string>
-         </defining_code>
-      </value>
-      */
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       return new DvCodedTextIndex(
          archetypeId: archetypeId,
@@ -762,33 +663,18 @@ class EhrController {
    
    private DvDateTimeIndex create_DV_DATE_TIME_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
    {
-<<<<<<< HEAD
 //      WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
 //      <time>
 //         <value>20070920T104614,0156+0930</value>
 //      </time>
       
-=======
-      /*
-       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
-      <time>
-         <value>20070920T104614,0156+0930</value>
-      </time>
-      */
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       return new DvDateTimeIndex(
          archetypeId: archetypeId,
          path: path,
          owner: owner,
-<<<<<<< HEAD
          value: Date.parse(config.l10n.datetime_format, node.value.text())
          //value: Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", node.value.text())
       )
    }
    */
-=======
-         value: Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", node.value.text())
-      )
-   }
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 }

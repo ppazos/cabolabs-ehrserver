@@ -4,7 +4,6 @@ import com.thoughtworks.xstream.XStream
 import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.DataIndex
-<<<<<<< HEAD
 import common.change_control.Contribution
 import common.change_control.Version
 import common.generic.AuditDetails
@@ -15,21 +14,11 @@ import common.generic.DoctorProxy
 import ehr.clinical_documents.data.DataValueIndex
 import java.text.SimpleDateFormat
 import org.codehaus.groovy.grails.commons.ApplicationHolder
-=======
-import common.change_control.Commit
-import common.change_control.Contribution
-import common.change_control.Version
-import common.generic.AuditDetails
-import support.identification.CompositionRef
-import common.generic.DoctorProxy
-import ehr.clinical_documents.data.DataValueIndex
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 
 class TestController {
 
    def xmlService
    
-<<<<<<< HEAD
    // Para acceder a las opciones de localizacion
    def config = ApplicationHolder.application.config.app
    
@@ -42,327 +31,6 @@ class TestController {
     * UI test
     */
    /*
-=======
-   /**
-    * UI: prueba de EhrController.createContribution
-    * 
-    * @param ehrId
-    * @param contribution XML de contribution como string
-    * @return
-    */
-   /*
-   def createContribution(String ehrId, String contribution)
-   {
-      println params
-      
-      if (!ehrId || !contribution)
-      {
-         // Muestra UI
-         return
-      }
-      
-      def ehr = Ehr.findByEhrId(ehrId)
-      
-      // 1. ehr debe existir
-      if (!ehr)
-      {
-         render(text:'<result><code>error</code><message>EHR no existe</message></result>', contentType:"text/xml", encoding:"UTF-8")
-         return
-      }
-      
-      //println ehr
-      
-      def contrib = xmlService.parseContribution(contribution)
-      
-      // 2. No puede haber una contrib con el mismo uid
-      // TODO: es un unique en el uid
-      if (Contribution.countByUid(contrib.uid) > 0)
-      {
-         throw new Exception("Ya existe una contribution con el uid "+ contrib.uid)
-      }
-      
-      // 3. Debe tener por lo menos una versionRef
-      // TODO
-      
-      
-//      XStream xstream = new XStream()
-//      xstream.omitField(Contribution.class, "errors")
-//      xstream.omitField(AuditDetails.class, "errors")
-//      xstream.omitField(Version.class, "errors")
-//      xstream.omitField(DoctorProxy.class, "errors")
-//      println xstream.toXML(contrib)
-//      
-      
-      if (!contrib.save())
-      {
-         println contrib.errors
-      }
-      
-      
-      // FIXME: esto se deberia hacer en commitContribution punto 3.
-      // las contributions no deberian quedar asociadas hasta que se commiteen
-      // esto se deberia guardar en un CommitBuilder, un objeto que guarde las
-      // referencias necesarias para el commit de manera temporal hasta que se
-      // haga el commit definitivo.
-      //
-      // def contribRef = new ContributionRef(
-      //   value: contrib.uid
-      // )
-      //
-      // Ya salva
-      //ehr.addToContributions(contribRef)
-      
-      
-      // Commit temporal hasta que se finalice el commit o se haga rollback
-      def commit = new Commit(
-         ehrId: ehrId,
-         contributionId: contrib.uid
-      )
-      
-      if (!commit.save())
-      {
-         println commit.errors
-      }
-      
-      render(text:'<result><code>ok</code><message>...</message></result>', contentType:"text/xml", encoding:"UTF-8")
-
-   } // createContribution
-   */
-   
-   
-   /**
-    * UI
-    *
-    * @param Version
-    * @return
-    */
-   /*
-   def addVersion(String version)
-   {
-      // muestra GUI
-      if (!version)
-      {
-         return
-      }
-      
-      // data[0] tiene el XML de la composition recibida
-      List data = []
-      def ver = xmlService.parseVersion(version, data)
-      
-      
-      println "Version recibida: "+ ver.uid
-      
-      // 0. Verificaciones sobre el XML recibido
-      // TODO
-      
-      // -----------------------
-      // Obligatorios en el XML:
-      // -----------------------
-      //  - composition.category.value con valor 'event' o 'persistent'
-      //    - si no esta o tiene otro valor, ERROR
-      //  - composition.context.start_time.value
-      //    - DEBE ESTAR SI category = 'event'
-      //  - composition.@archetype_node_id
-      //    - obligatorio el atributo
-      //  - composition.'@xsi:type' = 'COMPOSITION'
-      // -----------------------
-      
-      
-      // 1. existe la contribution?
-      def contrib = Contribution.findByUid( ver.contribution.value )
-      
-      if (!contrib)
-      {
-         throw new Exception("No existe la contribution")
-      }
-      
-      
-      // 2. la contribution referencia a la version?
-      // TODO: hacer una consulta especifica para no tener que recorrer todas lsa versions de la contrib (que carga de la base).
-      def versionRef = contrib.versions.find{ it.value == ver.uid }
-      
-      println "versionRef encontrado: " + versionRef
-      
-      if (!versionRef)
-      {
-         throw new Exception("La contribution no referencia a la version commiteada")
-      }
-      
-      
-      // 3. Verificar que ya no existe una Version con ese uid (evita que sea agregada 2 veces)
-      // esto es un unique de Version.uid
-      if (Version.countByUid( ver.uid ) != 0)
-      {
-         throw new Exception("Ya existe una version con uid "+ ver.uid)
-      }
-      
-      
-      // 4. Guardar la composition en el filesystem
-      // TODO: path configurable
-      // TODO: guardar en repositorio temporal, no en el de commit definitivo
-      // COMPOSITION tiene su uid asignado por el servidor como nombre
-      def compo = new File("compositions\\"+ver.data.value+".xml")
-      compo << groovy.xml.XmlUtil.serialize( data[0] )
-      
-      
-      // ===================================================================================================================
-      // FIXME: las compositions no deberian quedar disponibles para busqueda hasta que no se haya finalizado el commit.
-      // ===================================================================================================================
-      
-      
-      // 5. Guarda la version
-      if (!ver.save())
-      {
-         println ver.errors
-      }
-      
-      
-//      XStream xstream = new XStream()
-//      xstream.omitField(Version.class, "errors")
-//      xstream.omitField(AuditDetails.class, "errors")
-//      xstream.omitField(CompositionRef.class, "errors")
-//      xstream.omitField(ContributionRef.class, "errors")
-//      xstream.omitField(DoctorProxy.class, "errors")
-//      println xstream.toXML(ver)
-      
-      
-      // TODO
-      render(text:'<result><code>ok</code><message>...</message></result>', contentType:"text/xml", encoding:"UTF-8")
-   } // addVersion
-   */
-   
-   /**
-    * UI test
-    * 
-    * @param uid identificador de la contribution a commitear
-    * @return
-    */
-   /*
-   def commitContribution(String uid)
-   {
-      // FIXME: timeCommitted deberia establecerse en esta operacion
-      // FIXME: sino se dan las condiciones, se debe hacer rollback
-      
-      if (!uid)
-      {
-         throw new Exception("UID de la contribution es obligatorio")
-      }
-      
-      // Contribution debe haber sido enviada previamente con createContribution
-      def contrib = Contribution.findByUid(uid)
-      
-      // 1. Contribution existe?
-      if (!contrib)
-      {
-         // TODO: XML
-         throw new Exception("No existe conrtribution $uid")
-      }
-      
-      // 2. Tiene todas las versiones referenciadas agregadas?
-      def contribCompleta = true
-      //def version
-      
-      // Por precondicion en createContribution, debe tener por lo menos una versionRef
-      contrib.versions.each { versionRef ->
-         
-         if (Version.countByUid(versionRef.value) == 0) contribCompleta = false
-      }
-      
-      if (!contribCompleta)
-      {
-         // TODO: XML
-         throw new Exception("No se agregaron todas las versiones de la contribution")
-      }
-      
-      
-      // 3. Se deberian marcar las compositions que vinieron en las versions
-      // de la contribution como disponibles para busqueda.
-      // En realidad aqui se deberian agregar las contributions y
-      // compositions al EHR
-      // TODO
-      
-      def commit = Commit.findByContributionId(contrib.uid)
-      def ehr = commit.getEhr()
-
-            
-      // Agrega contribution al Ehr
-      // Ehr -> Contribution (ya salva)
-      ehr.addToContributions( contrib ) //new ContributionRef(value: contrib.uid) )
-      
-      
-      // Agrega todas las compositions de las versiones de la contribution al Ehr
-      // Ehr ->* Composition
-      def cindex
-      def compoFile
-      def compoXML
-      def startTime
-      contrib.versions.each { version ->
-         
-         //version = Version.findByUid(versionRef.value)
-         
-         // TODO: porque no guardo la version que tiene la ref a la composition en lugar de guardar la ref a la composition?
-         ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
-         
-         
-         // Genera indices de compositions para busqueda
-         
-         compoFile = new File("compositions\\"+version.data.value+".xml")
-         compoXML = new XmlSlurper(true, false).parseText(compoFile.getText())
-         
-         println "XML: " + compoXML
-         
-         // -----------------------
-         // Obligatorios en el XML:
-         // -----------------------
-         //  - composition.category.value con valor 'event' o 'persistent'
-         //    - si no esta o tiene otro valor, ERROR
-         //  - composition.context.start_time.value
-         //    - DEBE ESTAR SI category = 'event'
-         //    - debe tener formato completo: 20070920T104614,0156+0930
-         //  - composition.@archetype_node_id
-         //    - obligatorio el atributo
-         //  - composition.'@xsi:type' = 'COMPOSITION'
-         // -----------------------
-         if (compoXML.context.start_time.value)
-         {
-            // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
-            // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
-            // There is no limit on the number of decimal places for the decimal fraction. However, the number of
-            // decimal places needs to be agreed to by the communicating parties.
-            //
-            // TODO: formato de fecha completa que sea configurable
-            //       ademas la fraccion con . o , depende del locale!!!
-            startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", compoXML.context.start_time.value.text())
-         }
-         
-         cindex = new CompositionIndex(
-            uid: version.data.value,
-            category: compoXML.category.value.text(), // event o persistent
-            startTime: startTime, // puede ser vacio si category es persistent
-            subjectId: ehr.subject.value,
-            ehrId: ehr.ehrId,
-            archetypeId: compoXML.@archetype_node_id.text()
-         )
-         
-         if (!cindex.save())
-         {
-            println cindex.errors
-         }
-      }
-      
-      
-      // Elimina el commit temporal
-      commit.delete()
-      
-      
-      render(text:'<result><code>ok</code><message>...</message></result>', contentType:"text/xml", encoding:"UTF-8")
-   } // commitContribution
-   */
-   
-   /**
-    * UI test
-    */
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    def rollbackContribution(String uid)
    {
       if (!uid)
@@ -372,10 +40,7 @@ class TestController {
       
       // TODO
    }
-<<<<<<< HEAD
    */
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    
    /**
@@ -401,10 +66,7 @@ class TestController {
       def dFromDate
       def dToDate
       
-<<<<<<< HEAD
       // FIXME: cuando sea servicio no hay ui
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       if (!ehrId && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
          return // muestro ui para testear busqueda
@@ -414,28 +76,16 @@ class TestController {
       // FIXME: Si el formato esta mal va a tirar una except!
       if (fromDate)
       {
-<<<<<<< HEAD
          dFromDate = Date.parse(config.l10n.date_format, fromDate)
-=======
-         dFromDate = Date.parse("yyyyMMdd", fromDate)
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       }
       
       if (toDate)
       {
-<<<<<<< HEAD
          dToDate = Date.parse(config.l10n.date_format, toDate)
       }
       
       //println dFromDate
       //println dToDate
-=======
-         dToDate = Date.parse("yyyyMMdd", toDate)
-      }
-      
-      println dFromDate
-      println dToDate
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       def idxs = CompositionIndex.withCriteria {
          
@@ -456,17 +106,9 @@ class TestController {
          
          if (dToDate)
             le('startTime', dToDate) // lower or equal
-<<<<<<< HEAD
       }
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
-=======
-         
-         // Date.parse("yyyyMMdd", fromDate)
-      }
-      
-      // TODO:
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
    }
    
@@ -494,11 +136,8 @@ class TestController {
       
       //println params
       
-<<<<<<< HEAD
       // FIXME: si format es json, el error deberia devolverse como json!
       
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // Verifica parametros
       if (!params.qehrId)
       {
@@ -541,7 +180,6 @@ class TestController {
       // parse de dates
       Date qFromDate
       Date qToDate
-<<<<<<< HEAD
 
       if (fromDate)
       {
@@ -552,10 +190,6 @@ class TestController {
       {
          dToDate = Date.parse(config.l10n.date_format, toDate)
       }
-=======
-      if (fromDate) qFromDate = Date.parse("yyyyMMdd", fromDate)
-      if (toDate) qToDate = Date.parse("yyyyMMdd", toDate)
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       
       def res = DataValueIndex.withCriteria {
@@ -574,19 +208,11 @@ class TestController {
          
          // WHERE
          owner { // CompositionIndex
-<<<<<<< HEAD
             eq('ehrId', qehrId) // Ya se verifico que viene el param y que el ehr existe
             
             if (qarchetypeId)
             {
                eq('archetypeId', qarchetypeId) // Arquetipo de composition
-=======
-            eq('ehrId', params.qehrId) // Ya se verifico que viene el param y que el ehr existe
-            
-            if (params.qarchetypeId)
-            {
-               eq('archetypeId', params.qarchetypeId) // Arquetipo de composition
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             }
             
             if (qFromDate)
@@ -598,11 +224,8 @@ class TestController {
          
       }
       
-<<<<<<< HEAD
       // TODO: sacar las agrupaciones a operaciones externas para no hacer if ...
       
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       // 1. Agrupacion por owner (fila) una columna por cada path
       //    - Para display tabular
@@ -678,11 +301,7 @@ class TestController {
             // Datos de la composition
             // FIXME: deberia haber por lo menos un dvi, sino esto da error
             resGrouped[compoId]['date'] = dvis[0].owner.startTime
-<<<<<<< HEAD
             resGrouped[compoId]['uid']  = dvis[0].owner.uid
-=======
-            resGrouped[compoId]['uid'] = dvis[0].owner.uid
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             resGrouped[compoId]['cols'] = []
             
             // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
@@ -697,7 +316,6 @@ class TestController {
                // dvi para la columna actual
                dvi = dvis.find{it.path == path && it.owner.id == compoId}
                
-<<<<<<< HEAD
                if (dvi)
                {
                   // Datos de cada path seleccionada dentro de la composition
@@ -720,27 +338,6 @@ class TestController {
                   
                   resGrouped[compoId]['cols'] << col
                }
-=======
-               // Datos de cada path seleccionada dentro de la composition
-               switch (colData['type'])
-               {
-                  case 'DV_QUANTITY':
-                     col['magnitude'] = dvi.magnitude
-                     col['units'] = dvi.units
-                  break
-                  case 'DV_CODED_TEXT':
-                     col['value'] = dvi.value
-                  break
-                  case 'DV_DATE_TIME':
-                     col['code'] = dvi.code
-                     col['value'] = dvi.value
-                  break
-                  default:
-                     throw new Exception("type "+colData['type']+" not supported")
-               }
-               
-               resGrouped[compoId]['cols'] << col
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             }
          }
          
@@ -844,11 +441,7 @@ class TestController {
       }
       
       
-<<<<<<< HEAD
       // Por defecto no agrupa (group = null)
-=======
-      // Por defecto no agrupa
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       if (!format || format == 'xml')
       {
          render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
@@ -864,10 +457,7 @@ class TestController {
       
    } // querydata
    
-<<<<<<< HEAD
 
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    /**
     * Busqueda de compositions por datos simples (DataValueIndex)
@@ -883,26 +473,17 @@ class TestController {
     * @return
     */
    //def queryByData(String archetypeId, String path, String operand, String value, boolean retrieveData)
-<<<<<<< HEAD
    def queryByData(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
    {
       println params
       
-=======
-   def queryByData(String qehrId, String qarchetypeId, boolean retrieveData, boolean showUI)
-   {
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // muestra gui
       if (!params.doit)
       {
          return
       }
       
-<<<<<<< HEAD
       
-=======
-      println params
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       // Viene una lista de cada parametro
       // String archetypeId, String path, String operand, String value
@@ -933,7 +514,6 @@ class TestController {
       String idxtype
 
       
-<<<<<<< HEAD
       // parse de dates
       Date qFromDate
       Date qToDate
@@ -949,8 +529,6 @@ class TestController {
       }
       
       
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       // Armado de la query
       String q = "FROM CompositionIndex ci WHERE "
       
@@ -961,14 +539,10 @@ class TestController {
       // Criteria nivel 1 archetypeId (solo de composition)
       if (qarchetypeId) q += "ci.archetypeId = '" + qarchetypeId +"' AND "
       
-<<<<<<< HEAD
       // Criterio de rango de fechas para ci.startTime
       // Formatea las fechas al formato de la DB
       if (qFromDate) q += "ci.startTime >= '"+ formatterDateDB.format( qFromDate ) +"' AND " // higher or equal
       if (qToDate) q += "ci.startTime <= '"+ formatterDateDB.format( qToDate ) +"' AND " // lower or equal
-=======
-      // TODO: criterio de rango de fechas para ci.startTime
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       //
       // ===============================================================
@@ -1086,12 +660,8 @@ class TestController {
             
             // Tiene declaracion de xml
             // Tambien tiene namespace, eso deberia estar en el nodo root 
-<<<<<<< HEAD
             //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
             buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
-=======
-            buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             
             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1113,7 +683,6 @@ class TestController {
    
    
    /**
-<<<<<<< HEAD
     * Se implemento completa en QueryController
     * 
     * @param name
@@ -1145,8 +714,6 @@ class TestController {
    
    
    /**
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
     * Devuelve una lista de DataIndex.
     * 
     * Accion AJAX/JSON, se usa desde queryByData GUI.

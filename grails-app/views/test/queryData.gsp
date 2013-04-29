@@ -41,69 +41,8 @@
       }
     </style>
     <r:require module="jquery" />
-<<<<<<< HEAD
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
-=======
-    <g:javascript>
-      // Convierte un documento XML a un string XML
-	   // http://stackoverflow.com/questions/6507293/convert-xml-to-string-with-jquery
-	   function xmlToString(xmlData) { 
-
-        var xmlString;
-	     //IE
-	     if (window.ActiveXObject) {
-	         xmlString = xmlData.xml;
-	     }
-	     // code for Mozilla, Firefox, Opera, etc.
-	     else {
-	         xmlString = (new XMLSerializer()).serializeToString(xmlData);
-	     }
-	     return xmlString;
-	   }
-	   
-	   // Formatea un string XML
-	   // https://gist.github.com/1083506
-	   function formatXml(xml) {
-
-        var formatted = '';
-        var reg = /(>)(<)(\/*)/g;
-        xml = xml.replace(reg, '$1\r\n$2$3');
-        var pad = 0;
-
-        jQuery.each(xml.split('\r\n'), function(index, node)
-        {
-           var indent = 0;
-           if (node.match( /.+<\/\w[^>]*>$/ ))
-           {
-              indent = 0;
-           }
-           else if (node.match( /^<\/\w/ ))
-           {
-              if (pad != 0) pad -= 1;
-           }
-           else if (node.match( /^<\w[^>]*[^\/]>.*$/ ))
-           {
-              indent = 1;
-           }
-           else
-           {
-              indent = 0;
-           }
-           var padding = '';
-           for (var i = 0; i < pad; i++)
-           {
-              padding += '  ';
-           }
-           formatted += padding + node + '\r\n';
-           pad += indent;
-        });
-
-        return formatted;
-      }
-
-      
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.
        */
@@ -132,7 +71,6 @@
         chart = new Highcharts.Chart({
           chart: {
             renderTo: 'chartContainer',
-<<<<<<< HEAD
             type: 'line',
             zoomType: 'x' // lo deja hacer zoom en el eje x, y o ambos: xy
           },
@@ -145,25 +83,12 @@
             categories: []
           },
           /* depende de lo que este graficando!
-=======
-            type: 'line'
-          },
-          title: {
-            text: 'Blood Pressure' // TODO: obtener del arquetipo+path en la ontologia del arquetipo
-          },
-          xAxis: {
-            categories: []
-          },
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
           yAxis: {
             title: {
               text: 'Blood Pressure mmHg' // TODO: obtener del arquetipo
             }
           },
-<<<<<<< HEAD
           */
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
           plotOptions: {
             line: {
               dataLabels: {
@@ -262,13 +187,7 @@
 	            htmlrows += '<td>';
 	            htmlrows += '<a href="'+ linkCompoXML +'?uid='+ data.uid +'"><img src="${resource(dir: 'images', file: 'xml.png')}" class="icon" /></a>';
                htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ data.uid +'"><img src="${resource(dir: 'images', file: 'doc.png')}" class="icon" /></a>';
-<<<<<<< HEAD
 	            htmlrows += '</td></tr>';
-=======
-	            htmlrows += '</td>';
-	            
-	            htmlrows += '</tr>';
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	          });
 	          
 	          
@@ -321,7 +240,6 @@
 	            /**
 	             * Estructura:
 	             *   { name: 'John', data: [5, 7, 3] }
-<<<<<<< HEAD
 	             *
 	             *   o si quiero mostrar una etiqueta en el punto:
 	             *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
@@ -330,11 +248,6 @@
             
 
                // FIXME: cuidado, esto es solo para DvQuantity!!!!!
-=======
-                */
-	            var serie = { name: dviseries.name, data: [] };
-            
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	            $.each( dviseries.serie, function(ii, dvi) {
 	             
 	              //console.log('ii y dvi', ii, dvi);
@@ -342,17 +255,12 @@
 	              // FIXME: el valor depende del tipo de dato, y para graficar se necesitan ordinales
 	              // TODO: ver si se pueden graficar textos y fechas
 	              // TODO: prevenir internar graficar tipos de datos que no se pueden graficar
-<<<<<<< HEAD
 	              //serie.data.push( dvi.magnitude );
 	              
 	              // para que la etiqueta muestre las unidades
 	              point = {name: dvi.magnitude+' '+dvi.units,
 	                       y: dvi.magnitude}
 	              serie.data.push(point);
-
-=======
-	              serie.data.push( dvi.magnitude );
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	            });
 	            
 	            series.push(serie);
@@ -442,10 +350,7 @@
 	      }
 	   };
 	   
-<<<<<<< HEAD
 	   
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	   /**
        * Handler failure para consulta por ajax de remoteForm.
        * FIXME: verificar el nombre de los parametros (no es data).
@@ -453,11 +358,7 @@
 	   var queryFailure = function(XMLHttpRequest, textStatus, errorThrown)
 	   {
          console.log(XMLHttpRequest, textStatus, errorThrown);
-<<<<<<< HEAD
          alert("error: " + errorThrown + ' ('+ XMLHttpRequest.responseText +')');
-=======
-         alert("error: " + errorThrown);
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          
 	      //$('#queryFailure').text( xmlToString(data) );
       };
@@ -535,10 +436,6 @@
             alert('seleccione una path');
             return;
           }
-<<<<<<< HEAD
-=======
-
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
           
           $('#criteria').append(
             '<tr>'+
@@ -570,10 +467,6 @@
         
       });
     </g:javascript>
-<<<<<<< HEAD
-=======
-    
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
   </head>
   <body>
     <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
@@ -596,14 +489,8 @@
             <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
             <g:set var="dataIndexes" value="${ehr.clinical_documents.DataIndex.list()}" />
       
-<<<<<<< HEAD
 	         <g:select name="sarchetypeId" size="5"
 	                   from="${dataIndexes.archetypeId.unique()}"
-=======
-	         <g:select name="sarchetypeId"
-	                   from="${dataIndexes.archetypeId.unique()}"
-	                   size="5"
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	                   noSelection="['':'Elija arquetipo']" />
           </td>
         </tr>
@@ -653,17 +540,12 @@
 	          <tr>
 	            <td>ehrId</td>
 	            <td>
-<<<<<<< HEAD
 		           <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
-=======
-		           <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="5" />
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	            </td>
 	          </tr>
 	          <tr>
 	            <td>archetypeId</td>
 	            <td>
-<<<<<<< HEAD
 	              <!-- FIXME: busco los arquetipos de composition en los indices porque
                         el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
                         tenga, esta operacion deberia usar el ArchetypeManager. -->
@@ -671,12 +553,6 @@
 		           <!-- solo arquetipos de composition -->
 			        <g:select name="qarchetypeId" size="4"
 			                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
-=======
-		           <!-- solo arquetipos de composition -->
-			        <g:select name="qarchetypeId"
-			                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
-			                  size="5" />
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	            </td>
 	          </tr>
 	          <tr>

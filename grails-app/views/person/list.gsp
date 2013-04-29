@@ -22,28 +22,12 @@
 			<table>
 				<thead>
 					<tr>
-<<<<<<< HEAD
 					   <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First Name')}" />
 						<g:sortableColumn property="sex" title="${message(code: 'person.sex.label', default: 'Sex')}" />
 						<g:sortableColumn property="idCode" title="${message(code: 'person.idCode.label', default: 'Id Code')}" />
 						<g:sortableColumn property="idType" title="${message(code: 'person.idType.label', default: 'Id Type')}" />
 						<g:sortableColumn property="role" title="${message(code: 'person.role.label', default: 'Role')}" />
 						<g:sortableColumn property="dob" title="${message(code: 'person.dob.label', default: 'Dob')}" />
-=======
-					
-						<g:sortableColumn property="sex" title="${message(code: 'person.sex.label', default: 'Sex')}" />
-					
-						<g:sortableColumn property="idCode" title="${message(code: 'person.idCode.label', default: 'Id Code')}" />
-					
-						<g:sortableColumn property="idType" title="${message(code: 'person.idType.label', default: 'Id Type')}" />
-					
-						<g:sortableColumn property="role" title="${message(code: 'person.role.label', default: 'Role')}" />
-					
-						<g:sortableColumn property="dob" title="${message(code: 'person.dob.label', default: 'Dob')}" />
-					
-						<g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First Name')}" />
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					  <th>
 					    Actions
 					  </th>
@@ -52,28 +36,12 @@
 				<tbody>
 				<g:each in="${personInstanceList}" status="i" var="personInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-<<<<<<< HEAD
 					   <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "firstName")} ${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
 						<td>${fieldValue(bean: personInstance, field: "sex")}</td>
 						<td>${fieldValue(bean: personInstance, field: "idCode")}</td>
 						<td>${fieldValue(bean: personInstance, field: "idType")}</td>
 						<td>${fieldValue(bean: personInstance, field: "role")}</td>
 						<td><g:formatDate date="${personInstance.dob}" /></td>
-=======
-					
-						<td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "sex")}</g:link></td>
-					
-						<td>${fieldValue(bean: personInstance, field: "idCode")}</td>
-					
-						<td>${fieldValue(bean: personInstance, field: "idType")}</td>
-					
-						<td>${fieldValue(bean: personInstance, field: "role")}</td>
-					
-						<td><g:formatDate date="${personInstance.dob}" /></td>
-					
-						<td>${fieldValue(bean: personInstance, field: "firstName")}</td>
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					   <td>
 					     <g:hasEhr patientUID="${personInstance.uid}">
                       <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
@@ -82,10 +50,6 @@
 					       <g:link controller="ehr" action="createEhr" params="[patientUID: personInstance.uid]">Create EHR</g:link>
 					     </g:dontHasEhr>
 					   </td>
-<<<<<<< HEAD
-=======
-					
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 					</tr>
 				</g:each>
 				</tbody>

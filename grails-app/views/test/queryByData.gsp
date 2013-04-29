@@ -33,68 +33,8 @@
       }
     </style>
     <r:require module="jquery" />
-<<<<<<< HEAD
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
-=======
-    <g:javascript>
-      // Convierte un documento XML a un string XML
-	   // http://stackoverflow.com/questions/6507293/convert-xml-to-string-with-jquery
-	   function xmlToString(xmlData) { 
-
-        var xmlString;
-	     //IE
-	     if (window.ActiveXObject) {
-	         xmlString = xmlData.xml;
-	     }
-	     // code for Mozilla, Firefox, Opera, etc.
-	     else {
-	         xmlString = (new XMLSerializer()).serializeToString(xmlData);
-	     }
-	     return xmlString;
-	   }
-	   
-	   // Formatea un string XML
-	   // https://gist.github.com/1083506
-	   function formatXml(xml) {
-
-        var formatted = '';
-        var reg = /(>)(<)(\/*)/g;
-        xml = xml.replace(reg, '$1\r\n$2$3');
-        var pad = 0;
-
-        jQuery.each(xml.split('\r\n'), function(index, node)
-        {
-            var indent = 0;
-            if (node.match( /.+<\/\w[^>]*>$/ ))
-            {
-                indent = 0;
-            }
-            else if (node.match( /^<\/\w/ ))
-            {
-                if (pad != 0) pad -= 1;
-            }
-            else if (node.match( /^<\w[^>]*[^\/]>.*$/ ))
-            {
-                indent = 1;
-            }
-            else
-            {
-                indent = 0;
-            }
-            var padding = '';
-            for (var i = 0; i < pad; i++)
-            {
-                padding += '  ';
-            }
-            formatted += padding + node + '\r\n';
-            pad += indent;
-        });
-
-        return formatted;
-      }
-
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.
@@ -114,12 +54,6 @@
       var findCompositionsSuccess = function(data, textStatus)
 	   {
          console.log(data);
-<<<<<<< HEAD
-
-=======
-	      //$('#findCompositionsSuccess').text( xmlToString(data) ); // Paso el XMLDocument a texto
-	      
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	      // Si devuelve HTML
 	      if ($('select[name=showUI]').val()=='true')
 	      {
@@ -196,11 +130,7 @@
                 console.log(textStatus, errorThrown);
               }
           });
-<<<<<<< HEAD
         }); // click en select sarchetypeId
-=======
-        }); // selecciona archetypeId
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
         
         
 
@@ -289,14 +219,8 @@
             <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
             <g:set var="dataIndexes" value="${ehr.clinical_documents.DataIndex.list()}" />
       
-<<<<<<< HEAD
 	         <g:select name="sarchetypeId" size="3"
 	                   from="${dataIndexes.archetypeId.unique()}"
-=======
-	         <g:select name="sarchetypeId"
-	                   from="${dataIndexes.archetypeId.unique()}"
-	                   size="3"
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	                   noSelection="['':'Elija arquetipo']" />
           </td>
         </tr>
@@ -310,10 +234,7 @@
         <tr>
           <td><label>operand</label></td>
           <td>
-<<<<<<< HEAD
             <%-- TODO: sacar de restriccion inList de DataCriteria.operand --%>
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
             <select name="soperand" size="5">
 		        <option value="">Elija operador</option>
 		        <option value="=">=</option>
@@ -373,7 +294,6 @@
 	          <tr>
 	            <td>archetypeId</td>
 	            <td>
-<<<<<<< HEAD
 	              <!-- FIXME: busco los arquetipos de composition en los indices porque
                         el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
                         tenga, esta operacion deberia usar el ArchetypeManager. -->
@@ -381,12 +301,6 @@
 		           <!-- solo arquetipos de composition -->
 			        <g:select name="qarchetypeId" size="5"
 			                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
-=======
-		           <!-- solo arquetipos de composition -->
-			        <g:select name="qarchetypeId"
-			                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
-			                  size="5" />
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	            </td>
 	          </tr>
 	          <tr>
@@ -414,15 +328,12 @@
 	              </select>
 	            </td>
 	          </tr>
-<<<<<<< HEAD
 	          <tr>
                <td>query name (for saving)</td>
                <td>
                  <input type="text" name="name" />
                </td>
              </tr>
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	        </table>
 	        
 	        <table id="criteria">
@@ -437,10 +348,7 @@
 	        
 	        <div class="actions">
 	          <input type="submit" value="Find" />
-<<<<<<< HEAD
 	          <g:submitToRemote value="Save query" url="[action:'saveQueryByData']" />
-=======
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 	        </div>
 	      </g:formRemote>
       

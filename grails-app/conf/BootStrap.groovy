@@ -66,18 +66,12 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/uid', gpath:'uid', rmTypeName:'HIER_OBJECT_ID'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/uid/value', gpath:'uid.value', rmTypeName:'String'],
          
-<<<<<<< HEAD
          // name es el valor de la ontologia para at0000
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name', rmTypeName:'DV_TEXT'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name/value', rmTypeName:'String'],
          
          // category esta indexado en composition index
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/category', rmTypeName:'DV_CODED_TEXT'],
-=======
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name', rmTypeName:'DV_TEXT'],
-         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name/value', rmTypeName:'String'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/category', rmTypeName:'DV_CODED_TEXT'],
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/category/value', rmTypeName:'String'],
          // ... TODO category DV_CODED_TEXT
          
@@ -110,11 +104,7 @@ class BootStrap {
          // se puede saber que es sin ver el nombre, usando el nodeID (que esta en la path!)
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/name', rmTypeName:'DV_TEXT'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/name/value', rmTypeName:'String'],
-<<<<<<< HEAD
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value', rmTypeName:'DV_CODED_TEXT', name:'location of measure'],
-=======
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value', rmTypeName:'DV_CODED_TEXT', name:'location of measure value'],
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value/value', rmTypeName:'String'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value/defining_code', rmTypeName:'CODE_PHRASE'],
          // La path no llega a los valores simples (terminology_id y code_string se codifican en un solo valor term_id::code)
@@ -147,25 +137,17 @@ class BootStrap {
          
          // systolic
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]',      rmTypeName:'ELEMENT', name:'systolic'],
-<<<<<<< HEAD
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/name', rmTypeName:'DV_TEXT'],
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/name/value', rmTypeName:'String'],
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value', rmTypeName:'DV_QUANTITY', name:'systolic'],
-=======
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/name', rmTypeName:'DV_TEXT'],
-         // La path no llega a los valores simples
-         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/name/value', rmTypeName:'String'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value', rmTypeName:'DV_QUANTITY', name:'systolic value'],
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/magnitude', rmTypeName:'Float'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/units', rmTypeName:'String'],
          
          // diastolic
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]', rmTypeName:'ELEMENT', name:'diastolic'],
-<<<<<<< HEAD
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/name', rmTypeName:'DV_TEXT'],
          // La path no llega a los valores simples
@@ -267,15 +249,6 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/value', rmTypeName:'DV_QUANTITY', name:'estatura'],
          // /Estatura
-=======
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/name', rmTypeName:'DV_TEXT'],
-         // La path no llega a los valores simples
-         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/name/value', rmTypeName:'String'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value', rmTypeName:'DV_QUANTITY', name:'diastolic value'],
-         // La path no llega a los valores simples
-         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/magnitude', rmTypeName:'Float'],
-         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/units', rmTypeName:'String']
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
       ]
       
       dataIndexes.each { map ->

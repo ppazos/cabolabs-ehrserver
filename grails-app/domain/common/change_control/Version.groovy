@@ -1,12 +1,8 @@
 package common.change_control
 
 import common.generic.AuditDetails
-<<<<<<< HEAD
 import ehr.clinical_documents.CompositionIndex
 //import support.identification.CompositionRef // T0004 ya no se usa
-=======
-import support.identification.CompositionRef
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
@@ -33,13 +29,9 @@ class Version {
    AuditDetails commitAudit
    
    // Datos commiteados (referencia a la composition)
-<<<<<<< HEAD
    //CompositionRef data
    // T0004: CompositionRef se deja de usar y se usa CompositionIndex
    CompositionIndex data
-=======
-   CompositionRef data
->>>>>>> ff42c414310cae9ca7e6f5f714b11310075dfb0f
    
    Contribution contribution
    
