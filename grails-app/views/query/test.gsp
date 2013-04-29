@@ -124,12 +124,23 @@
             }
             else // Si devuelve el XML
             {
-               $('#results').empty();
+              //console.log("Resultado XML: form_composition.submit.success", responseText);
+            
+              $('#results').empty();
              
-               // el append devuelve la DIV no el PRE, chidren tiene el PRE
-               var pre = $('#results').append('<pre></pre>').children()[0];
-               $(pre).text( formatXml( xmlToString(responseText) ) );
+              // el append devuelve la DIV no el PRE, chidren tiene el PRE
+              var pre = $('#results').append('<pre></pre>').children()[0];
+               
+              $(pre).text( formatXml( xmlToString(responseText) ) );
+               
+              // Como XML no hace render de tabla o grafica, muestro los datos
+              // crudos como si hiciera clic en show_data.
+              $('#results').show('slow');
             }
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
           }
         });
         

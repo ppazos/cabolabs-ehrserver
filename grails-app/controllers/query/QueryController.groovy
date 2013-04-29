@@ -262,6 +262,7 @@ class QueryController {
        // TODO: criterio por atributos del ci
        def cilist = CompositionIndex.findAll( q )
  
+       println "Resultados (CompositionIndex): " + cilist
        
        println "prev mostrar resultados"
        
