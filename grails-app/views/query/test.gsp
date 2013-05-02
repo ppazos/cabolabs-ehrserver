@@ -53,7 +53,7 @@
       }
     </style>
     <g:javascript src="jquery-1.8.2.min.js" />
-    <g:javascript src="jquery.form.js" /><!-- xmlToString -->
+    <g:javascript src="jquery.form.js" /><!-- ajax form -->
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
     
@@ -61,16 +61,21 @@
       $(document).ready(function() {
      
      
-        // Muestra los datos crudos devueltos por el servidor 
+        // ====================================================================
+        // Muestra los datos crudos devueltos por el servidor
+        // ====================================================================
+        
         $('#show_data').click( function(e) {
           
           e.preventDefault();
-          
           $('#results').toggle('slow');
         });
         
     
-        // Test de busqueda de compositions por criterios de datos
+        // ====================================================================
+        // Submit ajax para busqueda de compositions por criterios de datos
+        // ====================================================================
+        
         $('#form_composition').ajaxForm({
         
           //dataType: 'json',
@@ -79,8 +84,7 @@
         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
             
-            console.log('form_composition beforeSubmit');
-            //console.log(data);
+            console.log('form_composition beforeSubmit', data);
             
             valid = true;
             
@@ -90,12 +94,11 @@
               e = $(elem);
               e.removeClass('errors');
               
-              //console.log($(elem).val());
-              //console.log( elem.value );
+              //console.log($(elem).val(), elem.value);
+
               if (e.val() == '')
               {
                 valid = false;
-                
                 e.addClass('errors');
               }
             });
@@ -106,10 +109,9 @@
             }
             
             return valid;
-            
           },
           
-          success: function(responseText, statusTest, req, form) { // >>> SUCCESS
+          success: function(responseText, statusTest, req, form) {  // >>> SUCCESS
             
             console.log('form_composition success');
             //console.log(responseText);
@@ -130,7 +132,6 @@
              
               // el append devuelve la DIV no el PRE, chidren tiene el PRE
               var pre = $('#results').append('<pre></pre>').children()[0];
-               
               $(pre).text( formatXml( xmlToString(responseText) ) );
                
               // Como XML no hace render de tabla o grafica, muestro los datos
@@ -145,6 +146,9 @@
         });
         
         
+        // ====================================================================
+        // Submit ajax para busqueda de datos por paths
+        // ====================================================================
         
         /**
          * En lugar de asociar directamente el ajaxForm, tengo que asociarlo
@@ -154,7 +158,6 @@
          * error en el submit.
          */
         $('#form_datavalue').submit( function(e) {
-        
         
           // Validacion
           if ($('select[name=qehrId]').val()==null)
@@ -221,7 +224,6 @@
                 {
                   queryDataRenderChart(responseText);
                 }
-                
               }
               else // Si devuelve el XML
               {
@@ -245,7 +247,6 @@
               
               // Hace scroll animado para mostrar el resultado
               $('html,body').animate({scrollTop:$('#results').offset().top+400}, 500);
-
             },
             
             error: function(response, textStatus, errorThrown)
@@ -261,7 +262,6 @@
           
         }); // form data_value ajax submit
 
-        
       }); // ready
       
       

@@ -27,13 +27,25 @@
       td {
         font-size: 0.9em;
       }
+      /* Notificaciones: http://www.malsup.com/jquery/block/#demos */
+      div.growlUI {
+        /*background: url(check48.png) no-repeat 10px 10px; */
+      }
+      div.growlUI h1, div.growlUI h2 {
+        color: white;
+        padding: 5px 10px;
+        text-align: left;
+        border: 0px;
+      }
     </style>
-    <r:require module="jquery" />
+    <%--<r:require module="jquery" />--%>
+    <g:javascript src="jquery-1.8.2.min.js" />
+    <g:javascript src="jquery.blockUI.js" />
     <g:javascript>
       $(document).ready(function() {
       
         /*
-         * Muestra campos dependiendo del tipo de consulta a crear.
+         * Change del tipo de consulta. Muestra campos dependiendo del tipo de consulta a crear.
          */
         $('select[name=type]').change( function() {
         
@@ -41,7 +53,9 @@
           // se cambia el tipo de la query para evitar errores.
           clearCriteriaAndSelection();
           
-        
+          // La class query_build marca las divs con campos para crear consultas,
+          // tanto los comunes como los particulares para busqueda de compositions
+          // o de data_values
           $('.query_build').hide();
           
           if (this.value != '')
@@ -149,6 +163,10 @@
               '<input type="hidden" name="value" value="'+$('input[name=svalue]').val()+'" />'+
             '</td></tr>'
           );
+          
+          
+          // Notifica que la condicion fue agregada
+          $.growlUI('Condici&oacute;n agregada', '<a href="#criteria">Verifique la condicion agregada</a>'); 
         });
         
         
@@ -170,6 +188,7 @@
          * /queryByData (query composition)
          * ======================================================
          */
+        
         
         /*
          * ======================================================
@@ -206,6 +225,9 @@
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
             '</td></tr>'
           );
+          
+           // Notifica que la condicion fue agregada
+          $.growlUI('Selecci&oacute;n agregada', '<a href="#selection">Verifique la selecci&oacute;n agregada</a>'); 
         });
         
         
@@ -261,6 +283,7 @@
         removeTRsFromTable(criteriaTable, 1);
       };
       
+      
       /**
        * Auxiliar usada por cleanCriteriaOrSelection
        * Elimina los TRs desde from:int, si from es undefined o 0, elimina todos los TRs.
@@ -306,7 +329,6 @@
           return true;
         }
       }; // validate
-      
     </g:javascript>
   </head>
   <body>
@@ -402,12 +424,18 @@
             <td>
               <%-- TODO: sacar de restriccion inList de DataCriteria.operand --%>
               <select name="soperand" size="5">
-                <option value="">Elija operador</option>
                 <option value="=">=</option>
                 <option value="<>">!=</option>
                 <option value=">">&gt;</option>
                 <option value="<">&lt;</option>
               </select>
+              
+              <!-- Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
+              <label><input type="radio" name="soperand" value="=" />=</label>
+              <label><input type="radio" name="soperand" value="<>" />!=</label>
+              <label><input type="radio" name="soperand" value=">" />&gt;</label>
+              <label><input type="radio" name="soperand" value="<" />&lt;</label>
+              -->
             </td>
           </tr>
           <tr>
@@ -461,6 +489,7 @@
           </tr>
         </table>
         
+        <a name="criteria"></a>
         <h3>Condiciones</h3>
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
@@ -545,8 +574,9 @@
           </tr>
         </table>
         
-        <h3>Selección</h3>
+        <h3>Selecci&oacute;n</h3>
         <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
+        <a name="selection"></a>
         <table id="selection">
           <tr>
             <th>archetypeId</th>

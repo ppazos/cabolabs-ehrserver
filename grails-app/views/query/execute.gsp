@@ -126,12 +126,20 @@
             }
             else // Si devuelve el XML
             {
-               $('#results').empty();
+              $('#results').empty();
              
-               // el append devuelve la DIV no el PRE, chidren tiene el PRE
-               var pre = $('#results').append('<pre></pre>').children()[0];
-               $(pre).text( formatXml( xmlToString(responseText) ) );
+              // el append devuelve la DIV no el PRE, chidren tiene el PRE
+              var pre = $('#results').append('<pre></pre>').children()[0];
+              $(pre).text( formatXml( xmlToString(responseText) ) );
+               
+              // Como XML no hace render de tabla o grafica, muestro los datos
+              // crudos como si hiciera clic en show_data.
+              $('#results').show('slow');
             }
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
           }
         });
         
@@ -450,15 +458,15 @@
       </ul>
     </div>
     
-    <h1>Ejecución de consulta "${query.name}"</h1>
+    <h1>Ejecuci&oacute;n de consulta "${query.name}"</h1>
       
     <g:if test="${flash.message}">
       <div class="message" role="status">${flash.message}</div>
     </g:if>
-      
+    
     <g:if test="${type == 'composition'}">
       
-      <h2>Búsqueda de documentos por datos</h2>
+      <h2>B&uacute;squeda de documentos por datos</h2>
       <form id="form_composition" method="post">
         
         <h3>Criterio</h3>

@@ -18,8 +18,9 @@
     <div id="show-query" class="content scaffold-show" role="main">
       <h1><g:message code="default.show.label" args="[entityName]" /></h1>
       <g:if test="${flash.message}">
-      <div class="message" role="status">${flash.message}</div>
+        <div class="message" role="status">${flash.message}</div>
       </g:if>
+      
       <ol class="property-list query">
       
         <g:if test="${queryInstance?.name}">
@@ -27,7 +28,6 @@
           <span id="name-label" class="property-label"><g:message code="query.name.label" default="Name" /></span>
           
           <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${queryInstance}" field="name"/></span>
-          
         </li>
         </g:if>
       
@@ -36,7 +36,6 @@
           <span id="group-label" class="property-label"><g:message code="query.group.label" default="Group" /></span>
           
           <span class="property-value" aria-labelledby="group-label"><g:fieldValue bean="${queryInstance}" field="group"/></span>
-          
         </li>
         </g:if>
       
@@ -45,7 +44,6 @@
           <span id="qarchetypeId-label" class="property-label"><g:message code="query.qarchetypeId.label" default="Qarchetype Id" /></span>
           
           <span class="property-value" aria-labelledby="qarchetypeId-label"><g:fieldValue bean="${queryInstance}" field="qarchetypeId"/></span>
-          
         </li>
         </g:if>
       
@@ -54,7 +52,6 @@
           <span id="format-label" class="property-label"><g:message code="query.format.label" default="Format" /></span>
           
           <span class="property-value" aria-labelledby="format-label"><g:fieldValue bean="${queryInstance}" field="format"/></span>
-          
         </li>
         </g:if>
       
@@ -63,7 +60,6 @@
           <span id="type-label" class="property-label"><g:message code="query.type.label" default="Type" /></span>
           
           <span class="property-value" aria-labelledby="type-label"><g:fieldValue bean="${queryInstance}" field="type"/></span>
-          
         </li>
         </g:if>
       
@@ -77,7 +73,6 @@
               <th>path</th>
             </tr>
             <g:each in="${queryInstance.select}" var="s">
-              
               <!--
               <span class="property-value" aria-labelledby="select-label">  <g:link controller="dataGet" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></span>
               -->
@@ -87,7 +82,6 @@
               </tr>
             </g:each>
           </table>
-          
         </li>
         </g:if>
       
@@ -104,19 +98,18 @@
             </tr>
             <g:each in="${queryInstance.where}" var="w">
               <!-- <span class="property-value" aria-labelledby="where-label"><g:link controller="dataCriteria" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></span> -->
-              
               <tr>
-                <td>${s.archetypeId}</td>
-                <td>${s.path}</td>
-                <td>${s.operand}</td>
-                <td>${s.value}</td>
+                <td>${w.archetypeId}</td>
+                <td>${w.path}</td>
+                <td>${w.operand}</td>
+                <td>${w.value}</td>
               </tr>
             </g:each>
-          
+          </table>
         </li>
         </g:if>
-      
       </ol>
+      
       <g:form>
         <fieldset class="buttons">
           <g:hiddenField name="id" value="${queryInstance?.id}" />
@@ -127,6 +120,7 @@
           <g:link class="edit" action="execute" params="[name:queryInstance?.name]">Ejecutar consulta</g:link>
         </fieldset>
       </g:form>
+      
     </div>
   </body>
 </html>

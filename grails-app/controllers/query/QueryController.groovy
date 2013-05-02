@@ -402,7 +402,7 @@ class QueryController {
           redirect(action:'list')
        }
        
-       return [query: query]
+       return [query: query, type: query.type]
     }
     
     
