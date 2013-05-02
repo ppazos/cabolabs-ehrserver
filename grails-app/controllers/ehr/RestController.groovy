@@ -102,7 +102,7 @@ class RestController {
       def _subject = Person.findByUidAndRole(subjectUid, 'pat')
       if (!_subject)
       {
-         render(status: 500, text:'<result><code>error</code><message>No existe el paciente $subjectId</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
          return
       }
       
@@ -117,7 +117,7 @@ class RestController {
       }
       if (!_ehr)
       {
-         render(status: 500, text:'<result><code>error</code><message>EHR no encontrado para el paciente $subjectId, se debe crear un EHR para el paciente</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el paciente $subjectUid, se debe crear un EHR para el paciente</message></result>", contentType:"text/xml", encoding:"UTF-8")
          return
       }
       
@@ -161,7 +161,7 @@ class RestController {
       }
       if (!_ehr)
       {
-         render(status: 500, text:'<result><code>error</code><message>EHR no encontrado para el ehrUid $ehrUid</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el ehrUid $ehrUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
          return
       }
       
