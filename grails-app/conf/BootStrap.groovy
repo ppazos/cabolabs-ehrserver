@@ -23,6 +23,35 @@ class BootStrap {
             idCode: '1234567-0',
             idType: 'CI',
             role: 'pat'
+         ),
+         new Person(
+            firstName: 'Carlos',
+            lastName: 'Cardozo',
+            dob: new Date(80, 2, 20),
+            sex: 'M',
+            idCode: '3453455-0',
+            idType: 'CI',
+            role: 'pat'
+         )
+         ,
+         new Person(
+            firstName: 'Mario',
+            lastName: 'Gomez',
+            dob: new Date(64, 8, 19),
+            sex: 'M',
+            idCode: '5677565-0',
+            idType: 'CI',
+            role: 'pat'
+         )
+         ,
+         new Person(
+            firstName: 'Carla',
+            lastName: 'Martinez',
+            dob: new Date(92, 1, 5),
+            sex: 'F',
+            idCode: '84848884-0',
+            idType: 'CI',
+            role: 'pat'
          )
       ]
       
@@ -88,7 +117,7 @@ class BootStrap {
          // ... TODO setting DV_CODED_TEXT
          
          // TODO: ver que en una misma gpath puedo tener objetos de distinto tipo, la path es distinta pero la gpath es la misma...
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content',                      rmTypeName:'OBSERVATION'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content',                      rmTypeName:'OBSERVATION'],
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/name',                 rmTypeName:'DV_TEXT'],
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/name/value',         rmTypeName:'String'],
@@ -98,7 +127,7 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/name', rmTypeName:'DV_TEXT'],
          
          // items es un contenedor de ELEMENT, tiene uno o mas
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]', rmTypeName:'ELEMENT', name:'location of measurement'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]', rmTypeName:'ELEMENT', name:'location of measurement'],
          // cada ELEMENT en items tiene un nombre
          // en este caso el nombre es "location of measurement" (at0014)
          // se puede saber que es sin ver el nombre, usando el nodeID (que esta en la path!)
@@ -112,16 +141,16 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value/defining_code/terminology_id/value', rmTypeName:'String'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/protocol[at0011]/items[at0014]/value/defining_code/code_string', rmTypeName:'String', name:'code'],
          
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/origin', rmTypeName:'DV_DATE_TIME'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/origin/value', rmTypeName:'Date'], // hay una date serializada a string
          
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/time/value', rmTypeName:'Date'], // hay una date serializada a string
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]', rmTypeName:'ITEM_LIST'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]', rmTypeName:'ITEM_LIST'],
          
          // ===================================================================
          // TODO: ver que para systolic y diastolic las gpaths son iguales,
@@ -136,7 +165,7 @@ class BootStrap {
          // ===================================================================
          
          // systolic
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]',      rmTypeName:'ELEMENT', name:'systolic'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]', rmTypeName:'ELEMENT', name:'systolic'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/name', rmTypeName:'DV_TEXT'],
          // La path no llega a los valores simples
@@ -147,7 +176,7 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/units', rmTypeName:'String'],
          
          // diastolic
-         [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]', rmTypeName:'ELEMENT', name:'diastolic'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]', rmTypeName:'ELEMENT', name:'diastolic'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/name', rmTypeName:'DV_TEXT'],
          // La path no llega a los valores simples
@@ -166,85 +195,85 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/category', rmTypeName:'DV_CODED_TEXT'],
          
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/context/setting',           rmTypeName:'DV_CODED_TEXT'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content',                   rmTypeName:'OBSERVATION'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content',                   rmTypeName:'OBSERVATION'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content/name',              rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content/subject',           rmTypeName:'PARTY_PROXY'],
          
          // presion arterial
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/origin', rmTypeName:'DV_DATE_TIME'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]', rmTypeName:'ITEM_TREE'],
          
          // systolic
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0004]',      rmTypeName:'ELEMENT', name:'sistólica'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0004]',      rmTypeName:'ELEMENT', name:'sistólica'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0004]/name', rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0004]/value', rmTypeName:'DV_QUANTITY', name:'sistólica'],
          
          // diastolic
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0005]', rmTypeName:'ELEMENT', name:'diastólica'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0005]', rmTypeName:'ELEMENT', name:'diastólica'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0005]/name', rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0006]/data[at0007]/events[at0002]/data[at0003]/items[at0005]/value', rmTypeName:'DV_QUANTITY', name:'diastólica'],
          // /presion arterial
          
          // Temperatura corporal
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/origin', rmTypeName:'DV_DATE_TIME'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]', rmTypeName:'ITEM_TREE'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]/items[at0012]',       rmTypeName:'ELEMENT', name:'temperatura'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]', rmTypeName:'ITEM_TREE'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]/items[at0012]',       rmTypeName:'ELEMENT', name:'temperatura'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]/items[at0012]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0008]/data[at0009]/events[at0010]/data[at0011]/items[at0012]/value', rmTypeName:'DV_QUANTITY', name:'temperatura'],
          // /Temperatura corporal
          
          // Frecuencia cardiaca
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/origin', rmTypeName:'DV_DATE_TIME'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]', rmTypeName:'ITEM_TREE'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]/items[at0017]',       rmTypeName:'ELEMENT', name:'frecuencia cardiaca'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]', rmTypeName:'ITEM_TREE'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]/items[at0017]',       rmTypeName:'ELEMENT', name:'frecuencia cardiaca'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]/items[at0017]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0013]/data[at0014]/events[at0015]/data[at0016]/items[at0017]/value', rmTypeName:'DV_QUANTITY', name:'frecuenca cardiaca'],
          // /Frecuencia cardiaca
          
          // Frecuencia respiratoria
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/origin', rmTypeName:'DV_DATE_TIME'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]', rmTypeName:'ITEM_TREE'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]/items[at0022]',       rmTypeName:'ELEMENT', name:'frecuencia respiratoria'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]', rmTypeName:'ITEM_TREE'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]/items[at0022]',       rmTypeName:'ELEMENT', name:'frecuencia respiratoria'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]/items[at0022]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0018]/data[at0019]/events[at0020]/data[at0021]/items[at0022]/value', rmTypeName:'DV_QUANTITY', name:'frecuenca respiratoria'],
          // /Frecuencia respiratoria
          
          // Peso corporal
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/origin', rmTypeName:'DV_DATE_TIME'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]', rmTypeName:'ITEM_TREE'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]/items[at0027]',       rmTypeName:'ELEMENT', name:'peso'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]', rmTypeName:'ITEM_TREE'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]/items[at0027]',       rmTypeName:'ELEMENT', name:'peso'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]/items[at0027]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0023]/data[at0024]/events[at0025]/data[at0026]/items[at0027]/value', rmTypeName:'DV_QUANTITY', name:'peso'],
          // /Peso corporal
          
          // Estatura
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]', rmTypeName:'HISTORY'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/origin', rmTypeName:'DV_DATE_TIME'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]', rmTypeName:'POINT_EVENT', name:'event'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]', rmTypeName:'HISTORY'],
+         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/origin', rmTypeName:'DV_DATE_TIME', name:'history origin'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]', rmTypeName:'POINT_EVENT', name:'event'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/time', rmTypeName:'DV_DATE_TIME', name:'event date time'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]', rmTypeName:'ITEM_TREE'],
-         [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]',       rmTypeName:'ELEMENT', name:'estatura'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]', rmTypeName:'ITEM_TREE'],
+         //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]',       rmTypeName:'ELEMENT', name:'estatura'],
          // el nombre lo saco del arquetipo para el nodeID de la path
          //[archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/name',  rmTypeName:'DV_TEXT'],
          [archetypeId:'openEHR-EHR-COMPOSITION.signos.v1', path:'/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/value', rmTypeName:'DV_QUANTITY', name:'estatura'],
