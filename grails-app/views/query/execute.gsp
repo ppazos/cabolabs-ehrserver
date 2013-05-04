@@ -23,15 +23,14 @@
         font-weight: bold;
       }
       textarea {
-          width: 98%;
-          height: 300px;
-
-          display: block;
-          border: 1px solid black;
-          padding: 5px;
-          margin: 5px;
-          font-family: courier;
-          font-size: 12px;
+        width: 98%;
+        height: 300px;
+        display: block;
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+        font-family: courier;
+        font-size: 12px;
       }
       .actions {
         text-align: right;
@@ -62,8 +61,14 @@
     <g:javascript>
       $(document).ready(function() {
      
+        /*
+        FIXME: este JS es el mismo que en test.gsp reutilizar el mismo codigo.
+        */
      
-        // Muestra los datos crudos devueltos por el servidor 
+        // ====================================================================
+        // Muestra los datos crudos devueltos por el servidor
+        // ====================================================================
+        
         $('#show_data').click( function(e) {
           
           e.preventDefault();
@@ -72,7 +77,10 @@
         });
         
     
-        // Test de busqueda de compositions por criterios de datos
+        // ====================================================================
+        // Submit ajax para busqueda de compositions por criterios de datos
+        // ====================================================================
+        
         $('#form_composition').ajaxForm({
         
           //dataType: 'json',
@@ -140,6 +148,13 @@
             // Muestra el boton que permite ver los datos crudos
             // devueltos por el servidor
             $('#show_data').show();
+          },
+          
+          error: function(response, textStatus, errorThrown) {  // >>> ERROR
+          
+            console.log(response, textStatus, errorThrown);
+            
+            alert(errorThrown); // lo devuelto por el servidor
           }
         });
         

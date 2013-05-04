@@ -21,15 +21,14 @@
         font-weight: bold;
       }
       textarea {
-          width: 98%;
-          height: 300px;
-
-          display: block;
-          border: 1px solid black;
-          padding: 5px;
-          margin: 5px;
-          font-family: courier;
-          font-size: 12px;
+        width: 98%;
+        height: 300px;
+        display: block;
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+        font-family: courier;
+        font-size: 12px;
       }
       .actions {
         text-align: right;
@@ -59,7 +58,6 @@
     
     <g:javascript>
       $(document).ready(function() {
-     
      
         // ====================================================================
         // Muestra los datos crudos devueltos por el servidor
@@ -111,11 +109,11 @@
             return valid;
           },
           
-          success: function(responseText, statusTest, req, form) {  // >>> SUCCESS
+          success: function(responseText, statusText, req, form) {  // >>> SUCCESS
             
             console.log('form_composition success');
             //console.log(responseText);
-            //console.log(statusTest);
+            //console.log(statusText);
             //console.log(req);
             //console.log(form);
 
@@ -142,8 +140,16 @@
             // Muestra el boton que permite ver los datos crudos
             // devueltos por el servidor
             $('#show_data').show();
+          },
+          
+          error: function(response, textStatus, errorThrown) {  // >>> ERROR
+          
+            console.log(response, textStatus, errorThrown);
+            
+            alert(errorThrown); // lo devuelto por el servidor
           }
         });
+        
         
         
         // ====================================================================
@@ -188,7 +194,7 @@
               console.log('form_datavalue beforeSubmit');
             },
             
-            success: function(responseText, statusTest, req, form) {
+            success: function(responseText, statusText, req, form) {
               
               console.log('form_datavalue success');
               
@@ -459,7 +465,7 @@
       
     <g:if test="${type == 'composition'}">
       
-      <h2>Búsqueda de documentos por datos</h2>
+      <h2>B&uacute;queda de documentos por datos</h2>
       <form id="form_composition" method="post">
       
         <h3>Criterio</h3>
@@ -554,10 +560,10 @@
     </g:if>
     <g:else>
     
-      <h2>Búsqueda de datos</h2>
+      <h2>B&uacute;queda de datos</h2>
       <form id="form_datavalue" method="post">
       
-        <h3>Selección</h3>
+        <h3>Selecci&oacute;n</h3>
         <table>
           <tr>
             <th>archetypeId</th>
