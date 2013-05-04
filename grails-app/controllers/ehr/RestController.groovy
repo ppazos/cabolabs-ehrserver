@@ -11,6 +11,15 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class RestController {
 
+   /**
+    * Auxiliar para consultas por datos (ej. queryCompositions)
+    */
+   static Map operandMap = [
+     'eq': '=',
+     'lt': '<',
+     'gt': '>',
+     'neq': '<>' // http://stackoverflow.com/questions/723195/should-i-use-or-for-not-equal-in-tsql
+   ]
    
    // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
    
@@ -293,11 +302,12 @@ class RestController {
    
    /**
     * Previo QueryController.testQueryByData
+    * Solo soporta XML.
     * @return
     */
    def queryCompositions(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
     {
-       println "testQueryByData"
+       println "queryCompositions"
        println params
        
        
@@ -305,26 +315,19 @@ class RestController {
        // String archetypeId, String path, String operand, String value
        // El mismo indice en cada lista corresponde con un atributo del mismo criterio de busqueda
        
-       /* ya viene el nombre correcto
-       String op
-       switch (operand)
-       {
-          case '=': op = 'eq'
-          break
-          case '<': op = 'lt'
-          break
-          case '>': op = 'gt'
-          break
-          case '!=': op = 'neq'
-          break
-       }
-       */
-       
        // Datos de criterios
        List archetypeIds = params.list('archetypeId')
        List paths = params.list('path')
-       List operands = params.list('operand')
+       //List operands = params.list('operand')
        List values = params.list('value')
+       
+       // Con nombres eq, lt, ...
+       // Hay que transformarlo a =, <, ...
+       // No vienen los operadores directamente porque rompen en HTML, ej. <, >
+       List operands = params.list('operand')
+       operands = operands.collect {
+          operandMap[it] // 'gt' => '>'
+       }
        
        DataIndex dataidx
        String idxtype
@@ -339,9 +342,6 @@ class RestController {
        
        if (toDate)
           qToDate = Date.parse(config.l10n.date_format, toDate)
-       
-       
-       println "prev query"
        
        
        // Armado de la query
@@ -362,6 +362,13 @@ class RestController {
        //
        // ===============================================================
        
+       /**
+        * FIXME: issue #6
+        * si en el create se verifican las condiciones para que a aqui no
+        * llegue una path a un tipo que no corresponde, el error de tipo
+        * no sucederia nunca, asi no hay que tirar except aca.
+        */
+
        archetypeIds.eachWithIndex { archId, i ->
           
           // Lookup del tipo de objeto en la path para saber los nombres de los atributos
@@ -401,7 +408,6 @@ class RestController {
           if (i+1 < archetypeIds.size()) q += " AND "
        }
        
-       println "post query"
        println q
        
        /*
@@ -434,8 +440,6 @@ class RestController {
        def cilist = CompositionIndex.findAll( q )
  
        println "Resultados (CompositionIndex): " + cilist
-       
-       println "prev mostrar resultados"
        
        
        // Muestra compositionIndex/list

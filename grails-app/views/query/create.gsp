@@ -12,7 +12,7 @@
       .buttons {
         margin: 20px 0 0 0;
       }
-      tr td:last-child select, tr td:last-child input {
+      tr td:last-child select, tr td:last-child input[type=text] {
         width: 100%;
       }
       tr td:first-child {
@@ -137,7 +137,14 @@
             alert('seleccione una path');
             return;
           }
+          /*
           if ( $('select[name=soperand]').val() == null )
+          {
+            alert('seleccione un operador');
+            return;
+          }
+          */
+          if ( $('input[name=soperand]:checked').val() == null )
           {
             alert('seleccione un operador');
             return;
@@ -148,18 +155,19 @@
             return;
           }
           
-          
           $('#criteria').append(
             '<tr>'+
             '<td>'+ $('select[name=sarchetypeId]').val() +'</td>'+
             '<td>'+ $('select[name=spath]').val() +'</td>'+
-            '<td>'+ $('select[name=soperand]').val() +'</td>'+
+            //'<td>'+ $('select[name=soperand]').val() +'</td>'+
+            '<td>'+ $('input[name=soperand]:checked').val() +'</td>'+
             '<td>'+ $('input[name=svalue]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeCriteria">[-]</a>'+
               '<input type="hidden" name="archetypeId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
-              '<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
+              //'<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
+              '<input type="hidden" name="operand" value="'+$('input[name=soperand]:checked').val()+'" />'+
               '<input type="hidden" name="value" value="'+$('input[name=svalue]').val()+'" />'+
             '</td></tr>'
           );
@@ -423,19 +431,23 @@
             <td><label>operand</label></td>
             <td>
               <%-- TODO: sacar de restriccion inList de DataCriteria.operand --%>
+              <%--
               <select name="soperand" size="5">
-                <option value="=">=</option>
-                <option value="<>">!=</option>
-                <option value=">">&gt;</option>
-                <option value="<">&lt;</option>
+                <option value="eq">=</option>
+                <option value="neq">!=</option>
+                <option value="gt">&gt;</option>
+                <option value="lt">&lt;</option>
               </select>
+              --%>
               
-              <!-- Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
-              <label><input type="radio" name="soperand" value="=" />=</label>
-              <label><input type="radio" name="soperand" value="<>" />!=</label>
-              <label><input type="radio" name="soperand" value=">" />&gt;</label>
-              <label><input type="radio" name="soperand" value="<" />&lt;</label>
+              <!--
+              Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
               -->
+              <label><input type="radio" name="soperand" value="eq" />=</label>
+              <label><input type="radio" name="soperand" value="neq" />!=</label>
+              <label><input type="radio" name="soperand" value="gt" />&gt;</label>
+              <label><input type="radio" name="soperand" value="lt" />&lt;</label>
+
             </td>
           </tr>
           <tr>
