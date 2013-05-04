@@ -261,7 +261,7 @@
 		jQuery.ajax({
 		    type: 'POST',
 		    data: jQuery(this).serialize(),
-		    url: '/ehr/test/queryByData?doit=true',
+		    url: '/ehr/rest/queryCompositions?doit=true',
 		    success: function (data, textStatus) {
 		        findCompositionsSuccess(data, textStatus);
 		    },
@@ -277,7 +277,7 @@
 	     <h2>Criteria</h2>
 	     <g:formRemote name="myForm"
 	                  on404="alert('not found!')"
-	                  url="[controller:'test', action:'queryByData', params:[doit:true]]"
+	                  url="[controller:'rest', action:'queryCompositions', params:[doit:true]]"
 	                  before="findCompositionsBefore()"
 	                  onSuccess="findCompositionsSuccess(data, textStatus)"
 	                  onFailure="findCompositionsFailure(XMLHttpRequest, textStatus, errorThrown)">

@@ -79,7 +79,7 @@
         $('#form_composition').ajaxForm({
         
           //dataType: 'json',
-          url: '${createLink(controller:'query', action:'testQueryByData')}',
+          url: '${createLink(controller:'rest', action:'queryCompositions')}',
           //data: {doit:'true'},
         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT

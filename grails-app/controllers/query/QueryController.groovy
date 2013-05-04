@@ -123,6 +123,9 @@ class QueryController {
      * @param showUI
      * @return
      */
+    /*
+     * Implementacion definitiva en RestController.queryCompositions
+     * 
     def testQueryByData(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
     {
        println "testQueryByData"
@@ -133,20 +136,20 @@ class QueryController {
        // String archetypeId, String path, String operand, String value
        // El mismo indice en cada lista corresponde con un atributo del mismo criterio de busqueda
        
-       /* ya viene el nombre correcto
-       String op
-       switch (operand)
-       {
-          case '=': op = 'eq'
-          break
-          case '<': op = 'lt'
-          break
-          case '>': op = 'gt'
-          break
-          case '!=': op = 'neq'
-          break
-       }
-       */
+//     ya viene el nombre correcto
+//       String op
+//       switch (operand)
+//       {
+//          case '=': op = 'eq'
+//          break
+//          case '<': op = 'lt'
+//          break
+//          case '>': op = 'gt'
+//          break
+//          case '!=': op = 'neq'
+//          break
+//       }
+       
        
        // Datos de criterios
        List archetypeIds = params.list('archetypeId')
@@ -233,30 +236,30 @@ class QueryController {
        
        println q
        
-       /*
-       EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
-               AND dvi.magnitude>140.0
-       ) AND EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
-               AND dvi.magnitude<130.0
-       ) AND EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/origin
-               AND dvi.value>20080101
-       )
-       */
+       
+//       EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
+//               AND dvi.magnitude>140.0
+//       ) AND EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
+//               AND dvi.magnitude<130.0
+//       ) AND EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/origin
+//               AND dvi.value>20080101
+//       )
+       
        
        
        // TODO: criterio por atributos del ci
@@ -314,10 +317,10 @@ class QueryController {
              buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
              buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
              
-             /**
-              * Composition queda:
-              *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-              */
+//             
+//              Composition queda:
+//                <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+//              
              
              out += buff + "\n"
           }
@@ -327,7 +330,7 @@ class QueryController {
        }
        
     } // testQueryByData
-    
+    */
 
     /**
      * 

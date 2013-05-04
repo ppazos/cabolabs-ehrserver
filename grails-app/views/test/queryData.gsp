@@ -513,7 +513,7 @@
 		jQuery.ajax({
 		    type: 'POST',
 		    data: jQuery(this).serialize(),
-		    url: '/ehr/test/queryByData?doit=true',
+		    url: '/ehr/test/queryData?doit=true',
 		    success: function (data, textStatus) {
 		        querySuccess(data, textStatus);
 		    },
