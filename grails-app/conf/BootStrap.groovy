@@ -1,4 +1,6 @@
 import demographic.Person
+import common.generic.PatientProxy
+import ehr.Ehr
 import ehr.clinical_documents.DataIndex
 
 class BootStrap {
@@ -62,6 +64,24 @@ class BootStrap {
             println p.errors
          }
       }
+	  
+	  
+	  // Crea EHRs para los pacientes de prueba
+	  // Idem EhrController.createEhr
+	  def ehr
+	  persons.each { p ->
+	  
+	     if (p.role == 'pat')
+		 {
+			ehr = new Ehr(
+			   subject: new PatientProxy(
+			      value: p.uid
+			   )
+		    )
+         
+            if (!ehr.save()) println ehr.errors
+		 }
+	  }
       
       
       // ================================================
