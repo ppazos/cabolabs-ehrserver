@@ -1,11 +1,10 @@
 package ehr
 
-import com.thoughtworks.xstream.XStream
+//import com.thoughtworks.xstream.XStream
 import common.generic.PatientProxy
 import demographic.Person
 import common.generic.AuditDetails
 import common.generic.DoctorProxy
-import common.generic.PatientProxy
 import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DvCodedTextIndex

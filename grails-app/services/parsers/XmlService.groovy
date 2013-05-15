@@ -1,6 +1,6 @@
 package parsers
 
-import com.thoughtworks.xstream.XStream
+//import com.thoughtworks.xstream.XStream
 import ehr.Ehr
 import common.change_control.Contribution
 import common.change_control.Version

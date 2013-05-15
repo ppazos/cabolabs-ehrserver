@@ -1,7 +1,7 @@
 package parsers
 
 // grails test-app me dice que no encuentra la lib...
-import com.thoughtworks.xstream.XStream
+//import com.thoughtworks.xstream.XStream
 import grails.test.mixin.*
 import org.junit.*
 
@@ -31,6 +31,7 @@ class XmlServiceTests { //  extends GroovyTestCase
       //def contribution = xmlService.parseConstribution()
       def contribution = service.parseContribution(xml)
       
+	  /*
       XStream xstream = new XStream()
       xstream.omitField(Contribution.class, "errors")
       xstream.omitField(DoctorProxy.class, "errors")
@@ -41,6 +42,7 @@ class XmlServiceTests { //  extends GroovyTestCase
       String txt = xstream.toXML(contribution)
       
       println txt
+	  */
    }
    
    void testVersion()
@@ -51,6 +53,7 @@ class XmlServiceTests { //  extends GroovyTestCase
       List data = []
       def version = service.parseVersion(xml, data)
       
+	  /*
       XStream xstream = new XStream()
       xstream.omitField(Version.class, "errors")
       //xstream.omitField(CompositionRef.class, "errors") // T0004
@@ -60,7 +63,8 @@ class XmlServiceTests { //  extends GroovyTestCase
       xstream.omitField(ContributionRef.class, "errors")
       
       println xstream.toXML(version)
-      
+      */
+	  
       //println xstream.toXML(data) data[0] es un GPathResult parseado con XmlSlurper
       
       /*
