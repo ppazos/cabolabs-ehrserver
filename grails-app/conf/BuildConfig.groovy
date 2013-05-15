@@ -49,8 +49,14 @@ grails.project.dependency.resolution = {
        }
        */
        
-       runtime('com.thoughtworks.xstream:xstream:1.4.3') {}
-       
+/*
+       runtime('com.thoughtworks.xstream:xstream:1.4.3') {
+	      // loader constraint violation: loader (instance of <bootloader>) previously
+	      // initiated loading for a different type with name "org/w3c/dom/TypeInfo"
+	      //excludes 'xmlbeans'
+	   }
+       */
+	   
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
          excludes "commons-logging", "xml-apis", "groovy"
        }
