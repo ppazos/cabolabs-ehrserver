@@ -25,7 +25,7 @@ class DataCriteria {
    //       tiene el nodeId)
    
    static constraints = {
-      operand(inList:['=','!=','<','>','<=','>='])
+      operand(inList:['eq','neq','lt','gt','le','ge'])
       value(nullable:true)
    }
    
