@@ -2,7 +2,6 @@ package common.change_control
 
 import common.generic.AuditDetails
 import ehr.Ehr
-import javax.xml.bind.annotation.*
 
 /**
  * La contribution queda pendiente/incompleta hasta que no se envien todas las versiones referenciadas.
@@ -10,7 +9,6 @@ import javax.xml.bind.annotation.*
  * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
 class Contribution {
 
    Ehr ehr // puntero para atras al ehr que contiene esta contribution
