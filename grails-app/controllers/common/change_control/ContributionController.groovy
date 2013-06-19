@@ -10,9 +10,15 @@ class ContributionController {
         redirect(action: "list", params: params)
     }
 
-    def list(Integer max) {
+    def list(Integer max)
+	{
         params.max = Math.min(max ?: 10, 100)
-        [contributionInstanceList: Contribution.list(params), contributionInstanceTotal: Contribution.count()]
+		
+		def lst = Contribution.list(params)
+		def cnt = Contribution.count()
+		
+        return [contributionInstanceList: lst,
+		        contributionInstanceTotal: cnt]
     }
 
     def create() {
