@@ -8,10 +8,12 @@ class UrlMappings {
 		}
 
 		//"/"(view:"/index")
-      "/"( // por defecto va al escritorio del EHR Server
-         controller: 'app',
-         action: 'index'
-      )
+        "/"( // por defecto va al escritorio del EHR Server
+            controller: 'app',
+            action: 'index'
+        )
+		
+		
 		"500"(view:'/error')
 	}
 }
