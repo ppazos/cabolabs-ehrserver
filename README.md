@@ -78,3 +78,28 @@
 * Support for AQL/EQL output (openEHR archetype-based query language)
 
 
+## REST API
+### Get EHRs
+/rest/ehrList(String format:XML|JSON, int max, int offset)
+
+### Get patients (this service will be obsolete when we move patient data to a specific demographic repo)
+/rest/patientList(String format:XML|JSON, int max, int offset)
+
+### Get EHR for a subject
+/rest/ehrForSubject(String subjectUid, String format:XML|JSON)
+
+### Get EHR by uid
+/rest/ehrGet(String ehrUid, String format:XML|JSON)
+
+### Get all compositions for a patient
+/rest/findCompositions(String ehrId)
+
+### Get query definitions
+/rest/queryList(String format:XML|JSON, int max, int offset)
+
+### Query execution by uid (not implemented yet)
+/rest/query(String queryUid, Map params)
+
+### Commits a set of clinical documents to the EHR (not implemented yet)
+/rest/commit(String ehrUid, Collection<Composition> compositions, Map params)
+
