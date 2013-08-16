@@ -1,0 +1,244 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1
+
+concept
+	[at0000]	-- Orden de estudios imagenologicos
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Orden de estudios imagenologicos">
+			use = <"">
+			misuse = <"">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"B29A8AF2F038F9D9860A5F98E4328A12">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Orden de estudios imagenologicos
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0023] matches {*}
+				}
+			}
+		}
+		content cardinality matches {0..*; unordered} matches {
+			INSTRUCTION[at0001] matches {	-- Estudio imagenologico
+				activities cardinality matches {0..*; unordered} matches {
+					ACTIVITY[at0002] occurrences matches {0..1} matches {	-- Current Activity
+						description matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Categoría
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0012, 	-- Tomografía Computada
+													at0013, 	-- Tomografía Computada 3D
+													at0014, 	-- Tomografía Computada - Angiografía
+													at0015, 	-- Mamografía
+													at0016, 	-- Resonancia Magnética - Angiografía
+													at0017, 	-- Resonancia Magnética
+													at0018, 	-- Medicina Nuclear
+													at0019, 	-- Medicina Nuclear - PET
+													at0020, 	-- Ecografía
+													at0021, 	-- ECO Doppler
+													at0022]	-- Rayos X
+												}
+											}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Tipo de estudio
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[ac0002]}		-- Tipo de estudio de radiología
+											}
+										}
+									}
+									ELEMENT[at0008] occurrences matches {0..1} matches {	-- Localización anatómica
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[ac0001]}		-- Localización anatómica de LOINC
+											}
+										}
+									}
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- ¿Es urgente?
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0009] occurrences matches {0..1} matches {	-- Descripción
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- Fecha esperada del resultado
+										value matches {
+											DV_DATE_TIME matches {
+												value matches {yyyy-mm-ddTHH:??:??}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	terminologies_available = <"LOINC", ...>
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Orden de estudios imagenologicos">
+					description = <"Documento para crear órdenes de estudios imagenológicos">
+				>
+				["at0023"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0001"] = <
+					text = <"Estudio imagenologico">
+					description = <"Orden de estudio imagenologico">
+				>
+				["at0002"] = <
+					text = <"Current Activity">
+					description = <"Current Activity">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Categoría">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Tipo de estudio">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"¿Es urgente?">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Fecha esperada del resultado">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Localización anatómica">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Descripción">
+					description = <"*">
+				>
+				["at0012"] = <
+					text = <"Tomografía Computada">
+					description = <"Tomografía Computada">
+				>
+				["at0013"] = <
+					text = <"Tomografía Computada 3D">
+					description = <"Tomografía Computada 3D">
+				>
+				["at0014"] = <
+					text = <"Tomografía Computada - Angiografía">
+					description = <"Angiografía / Angiograma por Tomografía Computada">
+				>
+				["at0015"] = <
+					text = <"Mamografía">
+					description = <"Mamografía">
+				>
+				["at0016"] = <
+					text = <"Resonancia Magnética - Angiografía">
+					description = <"Angiografía / Angiograma por Resonancia Magnética">
+				>
+				["at0017"] = <
+					text = <"Resonancia Magnética">
+					description = <"Resonancia Magnética">
+				>
+				["at0018"] = <
+					text = <"Medicina Nuclear">
+					description = <"Medicina Nuclear">
+				>
+				["at0019"] = <
+					text = <"Medicina Nuclear - PET">
+					description = <"Medicina Nuclear - PET">
+				>
+				["at0020"] = <
+					text = <"Ecografía">
+					description = <"Ecografía / Ultrasonido">
+				>
+				["at0021"] = <
+					text = <"ECO Doppler">
+					description = <"Ecografía / Ultrasonido Doppler">
+				>
+				["at0022"] = <
+					text = <"Rayos X">
+					description = <"Radiología Convencional por Rayos X">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["es"] = <
+			items = <
+				["ac0001"] = <
+					text = <"Localización anatómica de LOINC">
+					description = <"Corresponde al campo \"system\" de la tabla de LOINC, pero solo para los registros de \"class=RAD\".">
+				>
+				["ac0002"] = <
+					text = <"Tipo de estudio de radiología">
+					description = <"Codificado según LOINC v2.40, son los METHOD_TYPE para class=RAD">
+				>
+			>
+		>
+	>
+	term_bindings = <
+		["LOINC"] = <
+			items = <
+				["at0012"] = <[LOINC(2.40)::CT]>
+				["at0013"] = <[LOINC(2.40)::CT.3D]>
+				["at0014"] = <[LOINC(2.40)::CT.angio]>
+				["at0015"] = <[LOINC(2.40)::Mam]>
+				["at0016"] = <[LOINC(2.40)::MRI.angio]>
+				["at0017"] = <[LOINC(2.40)::MRI]>
+				["at0018"] = <[LOINC(2.40)::Radnuc]>
+				["at0019"] = <[LOINC(2.40)::Radnuc.PET]>
+				["at0020"] = <[LOINC(2.40)::US]>
+				["at0021"] = <[LOINC(2.40)::US.doppler]>
+				["at0022"] = <[LOINC(2.40)::XR]>
+			>
+		>
+	>
+	constraint_bindings = <
+		["LOINC"] = <
+			items = <
+				["ac0001"] = <terminology:LOINC/2.40?subset=RAD_SYSTEM>
+				["ac0002"] = <terminology:LOINC/2.40?subset=RAD_METHOD_TYPE>
+			>
+		>
+	>

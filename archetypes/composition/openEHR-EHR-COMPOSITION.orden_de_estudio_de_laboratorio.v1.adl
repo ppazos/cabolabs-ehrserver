@@ -1,0 +1,180 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1
+
+concept
+	[at0000]	-- Orden de estudio de laboratorio
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"Pablo Pazos Gutierrez">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Orden de estudio de laboratorio">
+			use = <"">
+			misuse = <"">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"F63D850C5559E42A11365B6EE89D5C09">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Orden de estudio de laboratorio
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0001] matches {*}
+				}
+			}
+		}
+		content cardinality matches {0..*; unordered} matches {
+			INSTRUCTION[at0002] matches {	-- Estudio laboratorio
+				activities cardinality matches {0..*; unordered} matches {
+					ACTIVITY[at0003] occurrences matches {0..*} matches {	-- Current Activity
+						description matches {
+							ITEM_TREE[at0004] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- categoria
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0010, 	-- orina
+													at0011, 	-- sangre
+													at0012, 	-- citologia
+													at0013, 	-- histologia
+													at0014]	-- microbiologia
+												}
+											}
+										}
+									}
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- tipo de estudio
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[ac0001]}		-- Estudios de laboratorio LOINC
+											}
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- �es urgente?
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0008] occurrences matches {0..1} matches {	-- descripcion
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0009] occurrences matches {0..1} matches {	-- fecha esperada del resultado
+										value matches {
+											DV_DATE_TIME matches {
+												value matches {yyyy-mm-ddTHH:??:XX}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Orden de estudio de laboratorio">
+					description = <"Documento para crear órdenes de estudios de laboratorio">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Estudio laboratorio">
+					description = <"unknown">
+				>
+				["at0003"] = <
+					text = <"Current Activity">
+					description = <"Current Activity">
+				>
+				["at0004"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0005"] = <
+					text = <"categoria">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"tipo de estudio">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"�es urgente?">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"descripcion">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"fecha esperada del resultado">
+					description = <"*">
+				>
+				["at0010"] = <
+					text = <"orina">
+					description = <"orina">
+				>
+				["at0011"] = <
+					text = <"sangre">
+					description = <"sangre">
+				>
+				["at0012"] = <
+					text = <"citologia">
+					description = <"citologia">
+				>
+				["at0013"] = <
+					text = <"histologia">
+					description = <"histologia">
+				>
+				["at0014"] = <
+					text = <"microbiologia">
+					description = <"microbiologia">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["es"] = <
+			items = <
+				["ac0001"] = <
+					text = <"Estudios de laboratorio LOINC">
+					description = <"*">
+				>
+			>
+		>
+	>
+	constraint_bindings = <
+		["LOINC"] = <
+			items = <
+				["ac0001"] = <terminology:LOINC>
+			>
+		>
+	>

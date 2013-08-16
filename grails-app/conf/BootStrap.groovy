@@ -7,6 +7,11 @@ class BootStrap {
 
    def init = { servletContext ->
       
+	  // TEST
+	  def ai = new com.cabolabs.archetype.ArchetypeIndexer()
+	  ai.index("openEHR-EHR-COMPOSITION.signos.v1")
+	  // /TEST
+	  
       def persons = [
          new Person(
             firstName: 'Pablo',

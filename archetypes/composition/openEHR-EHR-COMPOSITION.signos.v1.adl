@@ -1,0 +1,398 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-COMPOSITION.signos.v1
+
+concept
+	[at0000]	-- Signos
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Signos">
+			use = <"">
+			misuse = <"">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"CA0D9C5FC48EAAEBF0DDCCC29CE382D6">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Signos
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0001] matches {*}
+				}
+			}
+		}
+		content cardinality matches {0..*; unordered} matches {
+			
+			OBSERVATION[at0006] matches {	-- Presión Arterial
+				data matches {
+					HISTORY[at0007] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0002] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0003] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0004] occurrences matches {0..1} matches {	-- Sistólica
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::125]>
+														list = <
+															["1"] = <
+																units = <"mm[Hg]">
+																magnitude = <|0.0..400.0|>
+															>
+														>
+													>
+												}
+											}
+											ELEMENT[at0005] occurrences matches {0..1} matches {	-- Diastólica
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::125]>
+														list = <
+															["1"] = <
+																units = <"mm[Hg]">
+																magnitude = <|0.0..400.0|>
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			OBSERVATION[at0008] matches {	-- Temperatura corporal
+				data matches {
+					HISTORY[at0009] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0010] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0011] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0012] occurrences matches {0..1} matches {	-- Temperatura
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::127]>
+														list = <
+															["1"] = <
+																units = <"ºC">
+																magnitude = <|0.0..50.0|>
+															>
+															["2"] = <
+																units = <"ºF">
+																magnitude = <|32.0..122.0|>
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+	
+			OBSERVATION[at0013] matches {	-- Frecuencia cardiaca
+				data matches {
+					HISTORY[at0014] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0015] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0016] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0017] occurrences matches {0..1} matches {	-- Frecuencia Cardiaca
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::382]>
+														list = <
+															["1"] = <
+																units = <"/min">
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+
+			OBSERVATION[at0018] matches {	-- Frecuencia respiratoria
+				data matches {
+					HISTORY[at0019] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0020] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0021] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0022] occurrences matches {0..1} matches {	-- Frecuencia Respiratoria
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::382]>
+														list = <
+															["1"] = <
+																units = <"/min">
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} -- frec resp
+			
+			
+			OBSERVATION[at0023] matches {	-- Peso corporal
+				data matches {
+					HISTORY[at0024] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0025] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0026] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0027] occurrences matches {0..1} matches {	-- Peso
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::124]>
+														list = <
+															["1"] = <
+																units = <"kg">
+																magnitude = <|0.0..400.0|>
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} -- peso
+			
+			OBSERVATION[at0028] matches {	-- Estatura
+				data matches {
+					HISTORY[at0029] matches {	-- Event Series
+						events cardinality matches {1..*; unordered} matches {
+							EVENT[at0030] occurrences matches {0..1} matches {	-- Cualquier evento
+								data matches {
+									ITEM_TREE[at0031] matches {	-- Arbol
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0032] occurrences matches {0..1} matches {	-- Estatura
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::122]>
+														list = <
+															["1"] = <
+																units = <"cm">
+																magnitude = <|0.0..250.0|>
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} -- estatura / talla
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Signos">
+					description = <"Registro de signos">
+				>
+				["at0001"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				
+				-- presion arterial
+				["at0006"] = <
+					text = <"Presión Arterial">
+					description = <"unknown">
+				>
+				["at0007"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Sistólica">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Diastólica">
+					description = <"*">
+				>
+				-- presion arterial
+				
+				-- temperatura
+				["at0008"] = <
+					text = <"Temperatura corporal">
+					description = <"unknown">
+				>
+				["at0009"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0011"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0012"] = <
+					text = <"Temperatura">
+					description = <"*">
+				>
+				-- temperatura
+				
+				-- frec cardiaca
+				["at0013"] = <
+					text = <"Frecuencia cardiaca">
+					description = <"unknown">
+				>
+				["at0014"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0015"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0017"] = <
+					text = <"Frecuencia Cardiaca">
+					description = <"*">
+				>
+				-- frec cardiaca
+				
+				-- frec resp
+				["at0018"] = <
+					text = <"Frecuencia respiratoria">
+					description = <"unknown">
+				>
+				["at0019"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0020"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0021"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0022"] = <
+					text = <"Frecuencia Respiratoria">
+					description = <"*">
+				>
+				-- frec resp
+				
+				-- peso
+				["at0023"] = <
+					text = <"Peso corporal">
+					description = <"unknown">
+				>
+				["at0024"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0025"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0026"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0027"] = <
+					text = <"Peso">
+					description = <"*">
+				>
+				-- peso
+				
+				-- estatura / talla
+				["at0028"] = <
+					text = <"Estatura">
+					description = <"unknown">
+				>
+				["at0029"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0030"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0031"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0032"] = <
+					text = <"Estatura">
+					description = <"*">
+				>
+				-- estatura / talla
+			>
+		>
+	>
