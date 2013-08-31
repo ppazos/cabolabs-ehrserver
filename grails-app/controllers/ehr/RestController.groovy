@@ -34,33 +34,33 @@ class RestController {
    {
       // TODO: fromDate, toDate
       
-	  // Paginacion
+      // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
-	  
-	  // Lista ehrs
+      
+      // Lista ehrs
       def _ehrs = Ehr.list(max: max, offset: offset, readOnly: true)
       
-	  
-	  /*
-	  println params
-	  
-	  withFormat { 
+      
+      /*
+      println params
+      
+      withFormat { 
          xml { println "xml" } 
          json { println "json" }
          html { println "html" }
-         text { println "text" }		 
+         text { println "text" }         
       }
-	  */
-	  
-	  
+      */
+      
+      
       // ===========================================================================
       // 3. Discusion por formato de salida
       //
       if (!format || format == "xml")
       {
          /*
-		 <result>
+         <result>
           <ehrs>
             <ehr>
               <ehrId>33b94e05-3da5-4291-872e-07b3a4664837</ehrId>
@@ -75,35 +75,35 @@ class RestController {
               <systemId>ISIS_EHR_SERVER</systemId>
             </ehr>
           </ehrs>
-		  <pagination>...</pagination>
-		  </result>
+          <pagination>...</pagination>
+          </result>
           */
          //render(text: ehrs as XML, contentType:"text/xml", encoding:"UTF-8")
          render(contentType:"text/xml", encoding:"UTF-8") {
             'result' {
-			   'ehrs' {
+               'ehrs' {
                   _ehrs.each { _ehr ->
                      'ehr'{
                         ehrId(_ehr.ehrId)
                         dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                         subjectUid(_ehr.subject.value)
                         systemId(_ehr.systemId)
-				     }
+                     }
                   }
                }
-			   pagination {
-			      delegate.max(max)
+               pagination {
+                  delegate.max(max)
                   delegate.offset(offset)
                   nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
                   prevOffset( ((offset-max < 0) ? 0 : offset-max) )
-			   }
+               }
             }
          }
       }
       else if (format == "json")
       {
          /*
-		 {
+         {
           "ehrs": [
             {
               "ehrId": "33b94e05-3da5-4291-872e-07b3a4664837",
@@ -118,19 +118,19 @@ class RestController {
               "systemId": "ISIS_EHR_SERVER"
             }
           ],
-		  "pagination": {...}
-		}
+          "pagination": {...}
+        }
         */
          def data = [
-		   ehrs: [],
-		   pagination: [
+           ehrs: [],
+           pagination: [
                'max': max,
                'offset': offset,
                nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
                prevOffset: ((offset-max < 0) ? 0 : offset-max )
             ]
-		 ]
-		 
+         ]
+         
          _ehrs.each { _ehr ->
             data.ehrs << [
                ehrId: _ehr.ehrId,
@@ -141,7 +141,7 @@ class RestController {
          }
          
          //render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-		 render data as JSON
+         render data as JSON
       }
       else
       {
@@ -332,62 +332,61 @@ class RestController {
    def queryList(String format, int max, int offset)
    {
       println params
-	  
+      
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
-	  
-	  // Lista ehrs
+      
+      // Lista ehrs
       def _queries = Query.list(max: max, offset: offset, readOnly: true)
-	  
-	  // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
-	  /*
-	  withFormat {
-	  
-	     xml { render 'xml' }
-		 json { render 'json' }
-	  }
-	  */
-	  
-	  withFormat {
-	  
-	     xml {
-		    render(contentType:"text/xml", encoding:"UTF-8") {
-            'result' {
-               'queries' {
-                  _queries.each { query ->
-                     delegate.query {
-                        name(query.name) // FIXME: debe tener uid
-                        type(query.type)
-						delegate.format(query.format)
-						qarchetypeId(query.qarchetypeId)
-						group(query.group)
-						
-						delegate.select {
-						  query.select.each { _dataGet ->
-						     get {
-							   archetypeId(_dataGet.archetypeId)
-							   path(_dataGet.path)
-							 }
-						  }
-						}
+      
+      // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
+      /*
+      withFormat {
+      
+         xml { render 'xml' }
+         json { render 'json' }
+      }
+      */
+      
+      withFormat {
+      
+         xml {
+            render(contentType:"text/xml", encoding:"UTF-8") {
+               'result' {
+                  'queries' {
+                     _queries.each { query ->
+                        delegate.query {
+                           name(query.name) // FIXME: debe tener uid
+                           type(query.type)
+                           delegate.format(query.format)
+                           qarchetypeId(query.qarchetypeId)
+                           group(query.group)
+                           
+                           delegate.select {
+                             query.select.each { _dataGet ->
+                                get {
+                                  archetypeId(_dataGet.archetypeId)
+                                  path(_dataGet.path)
+                                }
+                             }
+                           }
+                        }
                      }
                   }
-               }
-               pagination {
-                  delegate.max(max)
-                  delegate.offset(offset)
-                  nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-                  prevOffset( ((offset-max < 0) ? 0 : offset-max) )
+                  pagination {
+                     delegate.max(max)
+                     delegate.offset(offset)
+                     nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+                     prevOffset( ((offset-max < 0) ? 0 : offset-max) )
+                  }
                }
             }
          }
-		 }
-		 json {
-		   render 'json'
-		 }
-	  }
-	  
+         json {
+           render 'json'
+         }
+      }
    }
    
    def queryShow()
