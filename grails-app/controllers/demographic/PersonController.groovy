@@ -30,15 +30,19 @@ class PersonController {
         redirect(action: "show", id: personInstance.id)
     }
 
-    def show(Long id) {
-        def personInstance = Person.get(id)
-        if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect(action: "list")
-            return
-        }
+    def show(Long id, String uid) {
+    
+      def personInstance
+      if (id) personInstance = Person.get(id)
+      else personInstance = Person.findByUid(uid)
+    
+      if (!personInstance) {
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+         redirect(action: "list")
+         return
+      }
 
-        [personInstance: personInstance]
+      [personInstance: personInstance]
     }
 
     def edit(Long id) {
