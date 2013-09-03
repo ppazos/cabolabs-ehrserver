@@ -1,6 +1,7 @@
 package ehr.clinical_documents
 
 import org.springframework.dao.DataIntegrityViolationException
+import com.cabolabs.archetype.*
 
 class DataIndexController {
 
@@ -98,5 +99,31 @@ class DataIndexController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'dataIndex.label', default: 'DataIndex'), id])
             redirect(action: "show", id: id)
         }
+    }
+    
+    /**
+     * (re)generates indexes for all archetypes in the repo.
+     * This is usefull to add archetypes to the repo and index them to generate new queries.    
+     */
+    def generate() {
+    
+       def manager = ArchetypeManager.getInstance()
+       def archetypes = manager.getArchetypes('composition', '.*')
+       def ai = new ArchetypeIndexer()
+       
+       // FIXME: just reindex if there are no indexes defined for the archetype
+       
+       // delete current
+       def indexes = DataIndex.list()
+       indexes.each {
+         it.delete()
+       }
+       
+       // reindex the whole repo
+       archetypes.each { archetype ->
+          ai.index(archetype)
+       }
+       
+       redirect(action: "list")
     }
 }
