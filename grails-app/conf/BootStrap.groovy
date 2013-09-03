@@ -10,6 +10,9 @@ class BootStrap {
 	  // TEST
 	  def ai = new com.cabolabs.archetype.ArchetypeIndexer()
 	  ai.index("openEHR-EHR-COMPOSITION.signos.v1")
+     ai.index("openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1")
+     ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
+     
 	  // /TEST
 	  
       def persons = [
@@ -106,6 +109,7 @@ class BootStrap {
       //       por ahora sn solo se usan arquetipos planos, luego
       //       se usan las referencias a los arquetipos originales
       //       que se usaron para aplanar.
+      /*
       def dataIndexes = [
          
          // TODO: ver si necesito llegar hasta los tipos basicos o si alcanza con los tipos de openehr
@@ -120,6 +124,7 @@ class BootStrap {
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/uid', gpath:'uid', rmTypeName:'HIER_OBJECT_ID'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/uid/value', gpath:'uid.value', rmTypeName:'String'],
          
+         // FIXME: agregarlo a n1
          // name es el valor de la ontologia para at0000
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name', rmTypeName:'DV_TEXT'],
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/name/value', rmTypeName:'String'],
@@ -143,7 +148,13 @@ class BootStrap {
          
          // TODO: ver que en una misma gpath puedo tener objetos de distinto tipo, la path es distinta pero la gpath es la misma...
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content',                      rmTypeName:'OBSERVATION'],
+         
+         // WARNING:
+         // Todo Pathable tiene un nombre en el RM, es la copia del texto del arquetipo para el nodeID correspondiente
+         // Para esto no se va a crear un indice porque no son datos, es mas para saber como mostrar la info, y no es realmente necesario guardar
+         // ese dato en la base, si se tiene el nodeID y el arquetipo, se saca del arquetipo.
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/name',                 rmTypeName:'DV_TEXT'],
+         
          // La path no llega a los valores simples
          //[archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/name/value',         rmTypeName:'String'],
          [archetypeId:'openEHR-EHR-COMPOSITION.encounter.v1', path:'/content/subject',              rmTypeName:'PARTY_PROXY'],
@@ -313,6 +324,8 @@ class BootStrap {
             println di.errors
          }
       }
+      */
+      
    }
    def destroy = {
    }
