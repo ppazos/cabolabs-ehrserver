@@ -1,4 +1,3 @@
-
 <%@ page import="ehr.Ehr" %>
 <!doctype html>
 <html>
@@ -33,7 +32,6 @@
 						<th><g:message code="ehr.subject.label" default="Subject" /></th>
 					
 						<g:sortableColumn property="systemId" title="${message(code: 'ehr.systemId.label', default: 'System Id')}" />
-					
 					</tr>
 				</thead>
 				<tbody>
@@ -44,10 +42,9 @@
 					
 						<td>${fieldValue(bean: ehrInstance, field: "ehrId")}</td>
 					
-						<td>${fieldValue(bean: ehrInstance, field: "subject")}</td>
+						<td><g:link controller="person" action="show" params="[uid:ehrInstance.subject.value]">${ehrInstance.subject.value}</g:link></td>
 					
 						<td>${fieldValue(bean: ehrInstance, field: "systemId")}</td>
-					
 					</tr>
 				</g:each>
 				</tbody>
