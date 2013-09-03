@@ -183,51 +183,21 @@
           
             <a href="http://cabolabs.com" target="_blank"><img src="images/cabolabs_logo.png" /></a>
           
-            <h1 align="center">EHR Server</h1>
+            <h1 align="center"><g:message code="desktop.app" /></h1>
             
             <g:if test="${flash.message}">
               <div class="error"><g:message code="${flash.message}" /></div>
             </g:if>
-            
-            <!--
-            lista de pacientes, 
-            lista de EHRs, 
-            lista de contributions, 
-            lista de folders (luego), 
-            lista de queries, 
-            lista de definiciones de indices
-            -->
+
             <div>
-              <g:link controller="person" action="list" class="access">Pacientes</g:link>
-
-              <g:link controller="ehr" action="list" class="access ehr">EHRs</g:link>
-
-              <g:link controller="contribution" action="list" class="access contributions">Contribuciones</g:link>
-
-              <a href="#" class="access directory">Directorio</a>
-
-              <g:link controller="query" action="list" class="access query">Consultas</g:link>
-
-              <g:link controller="dataIndex" action="list" class="access indexes">Indices</g:link>
+              <g:link controller="person" action="list" class="access"><g:message code="desktop.patients" /></g:link>
+              <g:link controller="ehr" action="list" class="access ehr"><g:message code="desktop.ehrs" /></g:link>
+              <g:link controller="contribution" action="list" class="access contributions"><g:message code="desktop.contributions" /></g:link>
+              <a href="#" class="access directory"><g:message code="desktop.directory" /></a>
+              <g:link controller="query" action="list" class="access query"><g:message code="desktop.queries" /></g:link>
+              <g:link controller="dataIndex" action="list" class="access indexes"><g:message code="desktop.indexes" /></g:link>
             </div>
             <div style="clear: both"></div>
-            
-            <!--
-            <table>
-              <tr>
-                <th>Usuario</th>
-                <td><input type="text" id="user" name="user" size="24" /></td>
-              </tr>
-              <tr>
-                <th>Clave</th>
-                <td><input type="password" name="pass" size="24" /></td>
-              </tr>
-              <tr>
-                <th></th>
-                <td><input type="submit" name="doit" value="Ingresar" /></td>
-              </tr>
-            </table>
-            -->
             
           </div>
         </div>
