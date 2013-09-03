@@ -37,12 +37,24 @@
         text-align: left;
         border: 0px;
       }
+      .info .content {
+        display: none;
+        text-align: left;
+      }
+      .info img {
+        cursor: pointer;
+      }
     </style>
     <%--<r:require module="jquery" />--%>
     <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery.blockUI.js" />
     <g:javascript>
       $(document).ready(function() {
+      
+        $('.info img').click(function(e) {
+          console.log($('.content', $(this).parent()));
+          $('.content', $(this).parent()).toggle('slow');
+        });
       
         /*
          * Change del tipo de consulta. Muestra campos dependiendo del tipo de consulta a crear.
@@ -386,6 +398,15 @@
             <label for="type">
               <g:message code="query.type.label" default="Type" />
             </label>
+            <span class="info">
+              <img src="${resource(dir:"images/skin", file:"information.png")}" />
+              <span class="content">
+                <ul>
+                  <li>composition: find clinical documents by criteria over data points</li>
+                  <li>datavalue: find data points by context based criteria</li>
+                </ul>
+              </span>
+            </span>
           </td>
           <td>
             <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']"/>
@@ -476,7 +497,22 @@
         <!-- Indices de nivel 1 -->
         <table>
           <tr>
-            <td>composition archetypeId</td>
+            <td>
+              composition archetypeId
+              <span class="info">
+                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                 <span class="content">
+                   <ul>
+                     <li>
+                       Selecting an archetype here will narrow the query to get only data for this archetype id.
+                       This makes sense if criteria is defined over archetypes that are not the root composition archetype.
+                       Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
+                       This is here only for demo/test purposes.
+                     </li>
+                   </ul>
+                 </span>
+              </span>
+            </td>
             <td>
               <!--
                FIXME:
@@ -491,7 +527,19 @@
             </td>
           </tr>
           <tr>
-            <td>show UI?</td>
+            <td>
+              show UI?
+              <span class="info">
+                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                <span class="content">
+                  <ul>
+                    <li>
+                      Select between showing the clinical document as a web view or retrieve it as XML.
+                    </li>
+                  </ul>
+                </span>
+              </span>
+            </td>
             <td>
               <select name="showUI">
                 <option value="false" selected="selected">no</option>
@@ -552,7 +600,22 @@
         
         <table>
           <tr>
-            <td>composition archetypeId</td>
+            <td>
+              composition archetypeId
+              <span class="info">
+                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                <span class="content">
+                  <ul>
+                    <li>
+                      Selecting an archetype here will narrow the query to get only data for this archetype id.
+                      This makes sense if criteria is defined over archetypes that are not the root composition archetype.
+                      Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
+                      This is here only for demo/test purposes.
+                    </li>
+                  </ul>
+                </span>
+              </span>
+            </td>
             <td>
               <!--
               FIXME:
