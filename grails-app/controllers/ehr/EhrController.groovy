@@ -410,7 +410,7 @@ class EhrController {
       
       // Agrega contribution al EHR
       // Ehr -> Contribution (ya salva)
-      ehr.addToContributions( contribution ) //new ContributionRef(value: contrib.uid) )
+      ehr.addToContributions( contribution )
       
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")

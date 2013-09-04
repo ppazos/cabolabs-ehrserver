@@ -16,7 +16,7 @@
 		<g:message code="ehr.contributions.label" default="Contributions" />
 		
 	</label>
-	<g:select name="contributions" from="${support.identification.ContributionRef.list()}" multiple="multiple" optionKey="id" size="5" value="${ehrInstance?.contributions*.id}" class="many-to-many"/>
+	<g:select name="contributions" from="${common.change_control.Contribution.list()}" multiple="multiple" optionKey="id" size="5" value="${ehrInstance?.contributions*.id}" class="many-to-many"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: ehrInstance, field: 'ehrId', 'error')} ">

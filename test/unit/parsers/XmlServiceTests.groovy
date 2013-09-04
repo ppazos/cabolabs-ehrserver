@@ -10,7 +10,7 @@ import common.change_control.Version
 import common.generic.DoctorProxy
 import common.generic.AuditDetails
 //import support.identification.VersionRef
-import support.identification.ContributionRef
+//import support.identification.ContributionRef
 //import support.identification.CompositionRef // T0004
 import ehr.clinical_documents.CompositionIndex
 
@@ -60,7 +60,6 @@ class XmlServiceTests { //  extends GroovyTestCase
       xstream.omitField(CompositionIndex.class, "errors")
       xstream.omitField(DoctorProxy.class, "errors")
       xstream.omitField(AuditDetails.class, "errors")
-      xstream.omitField(ContributionRef.class, "errors")
       
       println xstream.toXML(version)
       */
