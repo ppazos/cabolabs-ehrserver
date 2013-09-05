@@ -85,7 +85,7 @@
         
           //dataType: 'json',
           url: '${createLink(controller:'rest', action:'queryCompositions')}',
-          //data: {doit:'true'},
+          data: {},
         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
             
@@ -116,9 +116,7 @@
             }
             
             return valid;
-            
           },
-          
           success: function(responseText, statusTest, req, form) { // >>> SUCCESS
             
             console.log('form_composition success');
@@ -130,7 +128,7 @@
             // Si devuelve HTML
             if ($('select[name=showUI]').val()=='true')
             {
-               $('#results').html( responseText );
+              $('#results').html( responseText );
             }
             else // Si devuelve el XML
             {
@@ -169,7 +167,6 @@
          */
         $('#form_datavalue').submit( function(e) {
         
-        
           // Validacion
           if ($('select[name=qehrId]').val()==null)
           {
@@ -186,13 +183,8 @@
           $(this).ajaxSubmit({
           
             dataType: type,
-            
-            // ============================================================
-            // TODO: poner el codigo de test/queryData en QueryController
-            // ============================================================
-            
-            url: '${createLink(controller:'test', action:'queryData')}',
-            data: {doit:true},
+            url: '${createLink(controller:'rest', action:'queryData')}',
+            data: {},
           
             beforeSubmit: function(data, form, options) {
             
