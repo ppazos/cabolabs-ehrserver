@@ -110,10 +110,7 @@
             },
             onOverlayClick: $.unblockUI
           });
-          
-          //$('.blockOverlay').attr('title', 'salir').click($.unblockUI);
       });
-    	
     });
     
     var highlight_filtered_data = function()
