@@ -183,12 +183,12 @@ class TestController {
 
       if (fromDate)
       {
-         dFromDate = Date.parse(config.l10n.date_format, fromDate)
+         qFromDate = Date.parse(config.l10n.date_format, fromDate)
       }
       
       if (toDate)
       {
-         dToDate = Date.parse(config.l10n.date_format, toDate)
+         qToDate = Date.parse(config.l10n.date_format, toDate)
       }
       
       
