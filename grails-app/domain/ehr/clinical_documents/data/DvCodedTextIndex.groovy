@@ -1,7 +1,5 @@
 package ehr.clinical_documents.data
 
-import ehr.clinical_documents.CompositionIndex
-
 /**
  * TODO: esta clase podria heredar de DvTextIndex y las
  *       busquedas por value incuirian DvText y DvCodedText
