@@ -396,12 +396,12 @@ class QueryController {
     }
 
     
-    def execute(String name)
+    def execute(String uid)
     {
-       def query = Query.findByName(name)
+       def query = Query.findByUid(uid)
        if (!query)
        {
-          flash.message = 'No existe la query con nombre $name'
+          flash.message = 'No existe la query con uid = $uid'
           redirect(action:'list')
        }
        
