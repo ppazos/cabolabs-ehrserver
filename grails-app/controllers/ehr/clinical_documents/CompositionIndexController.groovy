@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class CompositionIndexController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    //static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -15,6 +15,7 @@ class CompositionIndexController {
         [compositionIndexInstanceList: CompositionIndex.list(params), compositionIndexInstanceTotal: CompositionIndex.count()]
     }
 
+    /* CompositionIndexes are created automatically on commit
     def create() {
         [compositionIndexInstance: new CompositionIndex(params)]
     }
@@ -29,6 +30,7 @@ class CompositionIndexController {
         flash.message = message(code: 'default.created.message', args: [message(code: 'compositionIndex.label', default: 'CompositionIndex'), compositionIndexInstance.id])
         redirect(action: "show", id: compositionIndexInstance.id)
     }
+    */
 
     def show(Long id) {
         def compositionIndexInstance = CompositionIndex.get(id)
@@ -41,6 +43,7 @@ class CompositionIndexController {
         [compositionIndexInstance: compositionIndexInstance]
     }
 
+    /* CompositionIndexes are not editable
     def edit(Long id) {
         def compositionIndexInstance = CompositionIndex.get(id)
         if (!compositionIndexInstance) {
@@ -99,4 +102,5 @@ class CompositionIndexController {
             redirect(action: "show", id: id)
         }
     }
+    */
 }

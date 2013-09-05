@@ -5,7 +5,7 @@ import com.cabolabs.archetype.*
 
 class DataIndexController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    //static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -16,6 +16,7 @@ class DataIndexController {
         [dataIndexInstanceList: DataIndex.list(params), dataIndexInstanceTotal: DataIndex.count()]
     }
 
+    /* DataIndex is not creatable, is generated
     def create() {
         [dataIndexInstance: new DataIndex(params)]
     }
@@ -30,6 +31,7 @@ class DataIndexController {
         flash.message = message(code: 'default.created.message', args: [message(code: 'dataIndex.label', default: 'DataIndex'), dataIndexInstance.id])
         redirect(action: "show", id: dataIndexInstance.id)
     }
+    */
 
     def show(Long id) {
         def dataIndexInstance = DataIndex.get(id)
@@ -42,6 +44,7 @@ class DataIndexController {
         [dataIndexInstance: dataIndexInstance]
     }
 
+    /* DataIndex is not editable, is generated
     def edit(Long id) {
         def dataIndexInstance = DataIndex.get(id)
         if (!dataIndexInstance) {
@@ -81,7 +84,7 @@ class DataIndexController {
         flash.message = message(code: 'default.updated.message', args: [message(code: 'dataIndex.label', default: 'DataIndex'), dataIndexInstance.id])
         redirect(action: "show", id: dataIndexInstance.id)
     }
-
+    
     def delete(Long id) {
         def dataIndexInstance = DataIndex.get(id)
         if (!dataIndexInstance) {
@@ -100,6 +103,7 @@ class DataIndexController {
             redirect(action: "show", id: id)
         }
     }
+    */
     
     /**
      * (re)generates indexes for all archetypes in the repo.
