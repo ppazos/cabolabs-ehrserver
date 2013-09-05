@@ -25,8 +25,14 @@
       
         <g:if test="${queryInstance?.name}">
         <li class="fieldcontain">
+          <span id="name-label" class="property-label"><g:message code="query.uid.label" default="UID" /></span>
+          <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${queryInstance}" field="uid"/></span>
+        </li>
+        </g:if>
+      
+        <g:if test="${queryInstance?.name}">
+        <li class="fieldcontain">
           <span id="name-label" class="property-label"><g:message code="query.name.label" default="Name" /></span>
-          
           <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${queryInstance}" field="name"/></span>
         </li>
         </g:if>
@@ -34,7 +40,6 @@
         <g:if test="${queryInstance?.group}">
         <li class="fieldcontain">
           <span id="group-label" class="property-label"><g:message code="query.group.label" default="Group" /></span>
-          
           <span class="property-value" aria-labelledby="group-label"><g:fieldValue bean="${queryInstance}" field="group"/></span>
         </li>
         </g:if>
@@ -42,7 +47,6 @@
         <g:if test="${queryInstance?.qarchetypeId}">
         <li class="fieldcontain">
           <span id="qarchetypeId-label" class="property-label"><g:message code="query.qarchetypeId.label" default="Qarchetype Id" /></span>
-          
           <span class="property-value" aria-labelledby="qarchetypeId-label"><g:fieldValue bean="${queryInstance}" field="qarchetypeId"/></span>
         </li>
         </g:if>
@@ -50,7 +54,6 @@
         <g:if test="${queryInstance?.format}">
         <li class="fieldcontain">
           <span id="format-label" class="property-label"><g:message code="query.format.label" default="Format" /></span>
-          
           <span class="property-value" aria-labelledby="format-label"><g:fieldValue bean="${queryInstance}" field="format"/></span>
         </li>
         </g:if>
@@ -58,7 +61,6 @@
         <g:if test="${queryInstance?.type}">
         <li class="fieldcontain">
           <span id="type-label" class="property-label"><g:message code="query.type.label" default="Type" /></span>
-          
           <span class="property-value" aria-labelledby="type-label"><g:fieldValue bean="${queryInstance}" field="type"/></span>
         </li>
         </g:if>
@@ -117,7 +119,7 @@
           <g:link class="edit" action="edit" id="${queryInstance?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
           <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
           -->
-          <g:link class="edit" action="execute" params="[name:queryInstance?.name]">Ejecutar consulta</g:link>
+          <g:link class="edit" action="execute" params="[uid:queryInstance?.uid]">Ejecutar consulta</g:link>
         </fieldset>
       </g:form>
       
