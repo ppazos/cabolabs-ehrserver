@@ -145,6 +145,17 @@ class IndexDataJob {
       }
       else // Si tiene hijos
       {
+         // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
+         switch (idxtype)
+         {
+            case 'DvDateTime': idxtype = 'DV_DATE_TIME'
+            break
+            case 'DvQuantity': idxtype = 'DV_QUANTITY'
+            break
+            case 'DvCodedText': idxtype = 'DV_CODED_TEXT'
+            break
+         }
+         
          // Si es de un tipo de dato indizable por valor
          if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT'].contains(idxtype))
          {
