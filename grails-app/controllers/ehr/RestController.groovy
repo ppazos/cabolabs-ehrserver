@@ -8,6 +8,7 @@ import query.DataGet
 import query.DataCriteria
 import ehr.clinical_documents.DataIndex
 import ehr.clinical_documents.CompositionIndex
+import ehr.clinical_documents.data.DataValueIndex
 
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
@@ -391,12 +392,269 @@ class RestController {
    
    def queryShow()
    {
-      
+      // TODO: query as JSON or XML
    }
    
-   def queryData()
+   // FIXME: this should receive queryUID, params should be only params of the query
+   //        like dates or output format, the criteria is defined the Query.   
+   def queryData(String qehrId, String qarchetypeId, String fromDate, String toDate, String format, String group)
    {
+      println "queryData"
+      println params
       
+      // En una consulta EQL archetypeId+path seria el SELECT
+      List archetypeIds = params.list('archetypeId')
+      List paths = params.list('path')
+      
+      // parse de dates
+      Date qFromDate
+      Date qToDate
+
+      if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
+      if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
+      
+      // Query data
+      def res = DataValueIndex.withCriteria {
+         
+         // SELECT
+         or { // matchea algun par archId+path
+            archetypeIds.eachWithIndex { archId, i ->
+               
+               and {
+                  eq('archetypeId', archId)
+                  eq('path', paths[i])
+               }
+            }
+         }
+         
+         // WHERE
+         owner { // CompositionIndex
+            eq('ehrId', qehrId) // Ya se verifico que viene el param y que el ehr existe
+            
+            if (qarchetypeId)
+            {
+               eq('archetypeId', qarchetypeId) // Arquetipo de composition
+            }
+            
+            if (qFromDate) ge('startTime', qFromDate) // greater or equal
+            if (qToDate) le('startTime', qToDate) // lower or equal
+         }
+      }
+      
+      println res
+      println "group $group"
+      
+      // Group
+      if (group == 'composition')
+      {
+         res = queryDataGroupComposition(res, archetypeIds, paths)
+      }
+      else if (group == 'path')
+      {
+         res = queryDataGroupPath(res, archetypeIds, paths)
+      }
+
+      // Format
+      if (!format || format == 'xml')
+      {
+         render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+      }
+      return
+   }
+   
+   /**
+    * Usada por queryData para agrupar por composition
+    */
+   private queryDataGroupComposition(res, archetypeIds, paths)
+   {
+      def resHeaders = [:]
+      def dataidx
+      
+      // =========================================================================
+      // TODO: obtener el nombre del arquetipo en cada path para usar de header
+      // =========================================================================
+      
+      // Headers para la tabla: 1 col por path, y dentro de cada path 1 col por atributo del DataValue
+      // h1: | path1 (DvQuantity) | path2 (DvCodedText) | ... |
+      // h2: | magnitude | units  |   code   |  value   | ... |
+      //
+      // [
+      //  path1: [ type:'DV_QUANTITY', attrs:['magnitude','units'] ],
+      //  path2: [ type:'DV_CODED_TEXT', attrs:['code','value'],
+      //  ...
+      // ]
+      
+      archetypeIds.eachWithIndex { archId, i ->
+         
+         // Lookup del tipo de objeto en la path para saber los nombres de los atributos
+         // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
+         dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
+         
+         resHeaders[paths[i]] = [:]
+         resHeaders[paths[i]]['type'] = dataidx.rmTypeName
+         resHeaders[paths[i]]['name'] = dataidx.name
+         
+         switch (dataidx.rmTypeName)
+         {
+            case ['DV_QUANTITY', 'DvQuantity']:
+               resHeaders[paths[i]]['attrs'] = ['magnitude', 'units']
+            break
+            case ['DV_CODED_TEXT', 'DvCodedText']:
+               resHeaders[paths[i]]['attrs'] = ['value']
+            break
+            case ['DV_DATE_TIME', 'DvDateTime']:
+               resHeaders[paths[i]]['attrs'] = ['code', 'value']
+            break
+            default:
+               throw new Exception("type "+dataidx.rmTypeName+" not supported")
+         }
+      }
+      
+      
+      // Filas de la tabla
+      def resGrouped = [:]
+      
+      
+      // DEBUG
+      //println res as grails.converters.JSON
+      
+
+      // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
+      // http://groovy.codehaus.org/groovy-jdk/java/util/Collection.html#groupBy(groovy.lang.Closure)
+      def rows = res.groupBy { it.owner.id } // as grails.converters.JSON
+      
+      //println rows
+      
+      def dvi
+      def col // lista de valores de una columna
+      rows.each { compoId, dvis ->
+         
+         //println compoId + ": " + dvis
+         
+         resGrouped[compoId] = [:]
+         
+         // Datos de la composition
+         // FIXME: deberia haber por lo menos un dvi, sino esto da error
+         resGrouped[compoId]['date'] = dvis[0].owner.startTime
+         resGrouped[compoId]['uid']  = dvis[0].owner.uid
+         resGrouped[compoId]['cols'] = []
+         
+         // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
+         // Cada columna de la fila
+         resHeaders.each { path, colData -> // colData = [type:'XX', attrs:['cc','vv']]
+            
+            //println "header: " + path + " " + colData
+            //resGrouped[compoId]['cols']['type'] = idxtype
+            
+            col = [type: colData['type'], path: path] // pongo la path para debug
+            
+            // dvi para la columna actual
+            dvi = dvis.find{it.path == path && it.owner.id == compoId}
+            
+            if (dvi)
+            {
+               // Datos de cada path seleccionada dentro de la composition
+               switch (colData['type'])
+               {
+                  case ['DV_QUANTITY', 'DvQuantity']:
+                     col['magnitude'] = dvi.magnitude
+                     col['units'] = dvi.units
+                  break
+                  case ['DV_CODED_TEXT', 'DvCodedText']:
+                     col['value'] = dvi.value
+                  break
+                  case ['DV_DATE_TIME', 'DvDateTime']:
+                     col['code'] = dvi.code
+                     col['value'] = dvi.value
+                  break
+                  default:
+                     throw new Exception("type "+colData['type']+" not supported")
+               }
+               
+               resGrouped[compoId]['cols'] << col
+            }
+         }
+      }
+      
+      return [resHeaders, resGrouped]
+   } // queryDataGroupComposition
+   
+   /**
+    * Usada por queryData para agrupar por path
+    */
+   private queryDataGroupPath(res, archetypeIds, paths)
+   {
+      // En este caso los headers son las filas
+      //def resHeaders = [:]
+      def dataidx
+      
+      // Columnas de la tabla (series)
+      def resGrouped = [:]
+      
+      
+      // TODO: necesito la fecha de la composition para cada item de la serie,
+      //       el mismo indice en distintas series corresponde la misma fecha
+      //       la fecha identifica la fila, y cada serie es una columna.
+      
+      // FIXME: deberia ser archId+path para que sea absoluta
+      //        seria mas facil si archId y path fueran un solo campo
+      def cols = res.groupBy { it.path }
+      
+      
+      // TODO: cada serie debe tener el nombre de la path (lookup de DataIndex)
+      
+      archetypeIds.eachWithIndex { archId, i ->
+         
+         // Lookup del tipo de objeto en la path para saber los nombres de los atributos
+         // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
+         dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
+         
+         resGrouped[paths[i]] = [:]
+         resGrouped[paths[i]]['type'] = dataidx.rmTypeName // type va en cada columna
+         resGrouped[paths[i]]['name'] = dataidx.name // name va en cada columna
+         
+         // FIXME: hay tipos de datos que no deben graficarse
+         // TODO: entregar solo valores segun el tipo de dato, en lugar de devolver DataValueIndexes
+         //resGrouped[paths[i]]['serie'] = cols[paths[i]]
+         
+         resGrouped[paths[i]]['serie'] = []
+         
+         cols[paths[i]].each { dvi ->
+            
+            // Datos de cada path seleccionada dentro de la composition
+            switch (dataidx.rmTypeName)
+            {
+               case ['DV_QUANTITY', 'DvQuantity']: // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
+                  resGrouped[paths[i]]['serie'] << [magnitude: dvi.magnitude,
+                                                    units:     dvi.units,
+                                                    date:      dvi.owner.startTime]
+               break
+               case ['DV_CODED_TEXT', 'DvCodedText']:
+                  resGrouped[paths[i]]['serie'] << [value:     dvi.value,
+                                                    date:      dvi.owner.startTime]
+               break
+               case ['DV_DATE_TIME', 'DvDateTime']:
+                  resGrouped[paths[i]]['serie'] << [code:      dvi.code,
+                                                    value:     dvi.value,
+                                                    date:      dvi.owner.startTime]
+               break
+               default:
+                  throw new Exception("type "+dataidx.rmTypeName+" not supported")
+            }
+            
+            // para cada fila quiero fecha y uid de la composition
+         }
+      }
+      
+      return resGrouped
    }
    
    /**
@@ -405,7 +663,7 @@ class RestController {
     * @return
     */
    def queryCompositions(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
-    {
+   {
        println "queryCompositions"
        println params
        
@@ -601,5 +859,4 @@ class RestController {
           render(text: out, contentType:"text/xml", encoding:"UTF-8")
        }
    }
-   
 }
