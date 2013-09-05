@@ -2,7 +2,7 @@
   <head>
     <title>Desktop</title>
 
-    <style type="text/css">    
+    <style type="text/css">
       html,body{
         height:100%;
         background-color:#efefef;
