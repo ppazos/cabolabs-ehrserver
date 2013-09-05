@@ -117,9 +117,6 @@
         background-image: url('images/icons/list-ordered.png');
       }
       
-      .center {
-        text-align: center;
-      }
       #panel {
         overflow: visible;
         /*width: 600px;*/
@@ -151,31 +148,6 @@
     
   </head>
   <body>
-    <%--
-	  <div class="center">
-	    <div id="panel">
-	      <div class="access">
-	        <g:link controller="person" action="list">Pacientes</g:link>
-	      </div>
-	      <div class="access">
-	        <g:link controller="ehr" action="list">EHRs</g:link>
-	      </div>
-	      <div class="access">
-	        <g:link controller="contribution" action="list">Contribuciones</g:link>
-	      </div>
-	      <div class="access">
-	        Directorio
-	      </div>
-	      <div class="access">
-	        <g:link controller="query" action="list">Consultas</g:link>
-	      </div>
-	      <div class="access">
-	        <g:link controller="dataIndex" action="list">Indices</g:link>
-	      </div>
-	      <div style="clear: both"></div>
-	    </div>
-	  </div>
-	 --%>
     <div id="wrapper">
       <div id="outer">
         <div id="formwrap">
@@ -190,7 +162,7 @@
             </g:if>
 
             <div>
-              <g:link controller="person" action="list" class="access"><g:message code="desktop.patients" /></g:link>
+              <g:link controller="person" action="list" class="access"><g:message code="person.list.title" /></g:link>
               <g:link controller="ehr" action="list" class="access ehr"><g:message code="desktop.ehrs" /></g:link>
               <g:link controller="contribution" action="list" class="access contributions"><g:message code="desktop.contributions" /></g:link>
               <a href="#" class="access directory"><g:message code="desktop.directory" /></a>
