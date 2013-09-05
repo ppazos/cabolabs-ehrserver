@@ -74,7 +74,7 @@
 
     <!-- main menu, same as desktop -->
     <div id="main_menu">
-      <g:link controller="person" action="list" class="access ${(controllerName=='person')?'active':''}"><g:message code="desktop.patients" /></g:link>
+      <g:link controller="person" action="list" class="access ${(controllerName=='person')?'active':''}"><g:message code="person.list.title" /></g:link>
       <g:link controller="ehr" action="list" class="access ehr ${(controllerName=='ehr')?'active':''}"><g:message code="desktop.ehrs" /></g:link>
       <g:link controller="contribution" action="list" class="access contributions ${(controllerName=='contribution')?'active':''}"><g:message code="desktop.contributions" /></g:link>
       <a href="#" class="access directory ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></a>
