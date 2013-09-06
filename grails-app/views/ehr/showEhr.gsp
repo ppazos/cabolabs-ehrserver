@@ -174,12 +174,12 @@
         
         <li class="fieldcontain">
         
-          <h2>Registros clínicos</h2>
+          <h2><g:message code="ehr.show.clinicalRecords" /></h2>
           <!-- T0002.1 -->
           <div class="composition_filters">
             <g:form id="${ehr.id}">
-	            <input type="text" name="fromDate" placeholder="from date" readonly="readonly" />
-	            <input type="text" name="toDate" placeholder="to date" readonly="readonly" />
+	            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
+	            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
 	            
 	            type <g:select name="qarchetypeId"
 	                           from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"

@@ -4,7 +4,7 @@
   <head>
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'query.label', default: 'Query')}" />
-    <title>Constructor de consultas</title>
+    <title><g:message code="query.create.title" /></title>
     <style>
       #query_composition, #query_datavalue, #query_common {
         display: none;
@@ -356,11 +356,11 @@
     <div class="nav" role="navigation">
       <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+        <li><g:link class="list" action="list"><g:message code="query.list.title" /></g:link></li>
       </ul>
     </div>
     
-    <h1>Constructor de consultas</h1>
+    <h1><g:message code="query.create.title" /></h1>
       
     <g:if test="${flash.message}">
       <div class="message" role="status">${flash.message}</div>
@@ -492,7 +492,7 @@
         sino se especifica aqui puede pasarse como parametro de la query
         -->
         
-        <h2>Criteria</h2>
+        <h2><g:message code="query.create.criteria" /></h2>
          
         <!-- Indices de nivel 1 -->
         <table>
@@ -550,7 +550,7 @@
         </table>
         
         <a name="criteria"></a>
-        <h3>Condiciones</h3>
+        <h3><g:message code="query.create.conditions" /></h3>
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
           <tr>
@@ -578,14 +578,14 @@
         
         <table>
           <tr>
-            <td><label>add selection</label></td>
+            <td><label>add projection</label></td>
             <td><a href="#" id="addSelection">[+]</a></td>
           </tr>
         </table>
 
-        <h2>Filtros</h2>
+        <h2><g:message code="query.create.filters" /></h2>
 
-        Indices de nivel 1:<br/><br/>
+        <g:message code="query.create.level1indexes" /><br/><br/>
 
         <!--
         ehrId, archetypeId (tipo de doc), rango de fechas, formato
@@ -649,7 +649,7 @@
           </tr>
         </table>
         
-        <h3>Selecci&oacute;n</h3>
+        <h3><g:message code="query.create.projections" /></h3>
         <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
         <a name="selection"></a>
         <table id="selection">

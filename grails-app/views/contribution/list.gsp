@@ -18,7 +18,7 @@
     </div>
     
     <div id="list-contribution" class="content scaffold-list" role="main">
-      <h1>Lista de contribuciones</h1>
+      <h1><g:message code="contribution.list.title" /></h1>
       
       <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
