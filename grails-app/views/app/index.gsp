@@ -77,7 +77,7 @@
 
       /* Test mostrar icon */
       .access {
-        background-image: url('images/icons/access.png');
+        background-image: url('/ehr/static/images/icons/access.png');
         background-repeat: no-repeat;
         background-position: 4px 4px;
         
@@ -102,19 +102,19 @@
       
       /* iconos */
       .ehr {
-        background-image: url('images/icons/unfold-multiple.png');
+        background-image: url('/ehr/static/images/icons/unfold-multiple.png');
       }
       .query {
-        background-image: url('images/icons/zoom.png');
+        background-image: url('/ehr/static/images/icons/zoom.png');
       }
       .directory {
-        background-image: url('images/icons/book-alt-3.png');
+        background-image: url('/ehr/static/images/icons/book-alt-3.png');
       }
       .contributions {
-        background-image: url('images/icons/ftp-alt-2.png');
+        background-image: url('/ehr/static/images/icons/ftp-alt-2.png');
       }
       .indexes {
-        background-image: url('images/icons/list-ordered.png');
+        background-image: url('/ehr/static/images/icons/list-ordered.png');
       }
       
       #panel {
