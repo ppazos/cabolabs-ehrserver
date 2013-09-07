@@ -9,11 +9,18 @@ import query.DataCriteria
 import ehr.clinical_documents.DataIndex
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DataValueIndex
-
+import common.generic.DoctorProxy
+import common.generic.AuditDetails
+import common.change_control.Contribution
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class RestController {
 
+   def xmlService // Utilizado por commit
+
+   // Para acceder a las opciones de localizacion 
+   def config = ApplicationHolder.application.config.app
+   
    /**
     * Auxiliar para consultas por datos (ej. queryCompositions)
     */
@@ -28,8 +35,260 @@ class RestController {
    
    //def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
    //def formatterDate = new SimpleDateFormat("yyyyMMdd")
-   def formatter = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.datetime_format )
-   def formatterDate = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.date_format )
+   def formatter = new SimpleDateFormat( config.l10n.datetime_format )
+   def formatterDate = new SimpleDateFormat( config.l10n.date_format )
+   
+   
+   
+   /**
+    * Envia una lista de versions para commitear al EHR(ehrId)
+    * 
+    * @param String ehrId
+    * @param List versions
+    * @return
+    */
+   def commit(String ehrId)
+   {
+      //println "commit "+ params
+      
+      //new File('params_debug.log') << params.toString()
+      
+      // TODO: todo debe ser transaccional, se hace toda o no se hace nada...
+      
+      // 1. ehrId debe venir
+      if (!ehrId)
+      {
+         //render(text:'<result><code>error</code><message>No viene el parametro ehrId</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AR')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message('El parametro ehrId es obligatorio')
+               code('ISIS_EHR_SERVER::COMMIT::ERRORS::400') // sys::service::concept::code
+            }
+         }
+         
+         return
+      }
+      
+      // 2. versions deben venir 1 por lo menos haber una
+      if (!params.versions)
+      {
+         //render(text:'<result><code>error</code><message>No viene el parametro versions</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AR')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message('El parametro versions es obligatorio')
+               code('ISIS_EHR_SERVER::COMMIT::ERRORS::401') // sys::service::concept::code
+            }
+         }
+         return
+      }
+      
+      def xmlVersions = params.list('versions')
+      if (xmlVersions.size() == 0)
+      {
+         //render(text:'<result><code>error</code><message>No viene ninguna version</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AR')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message('El parametro versions esta vacio y debe enviarse por lo menos una version')
+               code('ISIS_EHR_SERVER::COMMIT::ERRORS::402') // sys::service::concept::code
+            }
+         }
+         return
+      }
+      
+      
+      
+      def ehr = Ehr.findByEhrId(ehrId)
+      
+      // 3. ehr debe existir
+      if (!ehr)
+      {
+         //render(text:'<result><code>error</code><message>EHR no existe</message></result>', contentType:"text/xml", encoding:"UTF-8")
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AR')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message('No existe el EHR con ehrId '+ ehrId)
+               code('ISIS_EHR_SERVER::COMMIT::ERRORS::403') // sys::service::concept::code
+            }
+         }
+         return
+      }
+      
+      
+      // En data esta el XML de la composition recibida
+      List parsedCompositions = [] // List<GPathResult>
+      def versions = []
+      try
+      {
+         versions = xmlService.parseVersions(ehr, xmlVersions, parsedCompositions)
+      }
+      catch (Exception e)
+      {
+         // Parsing error
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AA')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message('Bad content, could not parse compositions')
+               // ok va sin codigo de error
+               //code('ISIS_EHR_SERVER::COMMIT::ERRORS::200') // sys::service::concept::code
+            }
+         }
+         return
+      }
+      
+      // test
+      // muestra los uids en vacio porque el escritor de xml es lazy,
+      // se escribe solo cuando se hace una salida ej. a un stream
+      
+      /*
+      println "ehrController parsedCompositions uids " // + parsedCompositions.uid.value*.text() esto me muestra vacio!!!!
+      parsedCompositions.each { pcomp ->
+         //println pcomp.uid // vacio
+         println new groovy.xml.StreamingMarkupBuilder().bind{ out << pcomp} // mejor que XMLUtil para serializar a String (TODO ver cual es mas rapido)
+         println ""
+      }
+      */
+      
+      // uid se establece automaticamente
+      def contribution = new Contribution(
+         audit: new AuditDetails(
+            systemId:      'ISIS_EHR_SERVER',
+            timeCommitted: new Date(),
+            //,
+            // changeType solo se soporta 'creation' por ahora
+            //
+            // El committer de la contribution es el mismo committer de todas
+            // las versiones, cada version tiene su committer debe ser el mismo.
+            committer: new DoctorProxy(
+               name: versions[0].commitAudit.committer.name //parsedContribution.audit.committer.name.text()
+            )
+         ),
+         versions: versions
+      )
+      
+      // test
+      if (!contribution.audit.validate())
+      {
+         // FIXME: debe ser transaccional, sino salva esto, no salva nada...
+         println contribution.audit.errors
+      }
+      
+      // FIXME: dejar esta tarea a un job
+      // Guarda compositions y crea indices a nivel de documento (nivel 1)
+      def compoFile
+      def compoIndex
+      def startTime
+      contribution.versions.eachWithIndex { version, i ->
+         
+         // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
+         // Guardar la composition en el filesystem
+         // TODO: path configurable
+         // TODO: guardar en repositorio temporal, no en el de commit definitivo
+         // COMPOSITION tiene su uid asignado por el servidor como nombre
+         //compoFile = new File("compositions\\"+version.data.value+".xml")
+         compoFile = new File(config.composition_repo + version.data.uid +".xml")
+         compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
+         
+         
+         // Version -> Contribution
+         version.contribution = contribution
+         
+         
+         // Agrega composition al EHR
+         ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
+         
+         
+         /* 
+          * Codigo movido a XmlService
+          * 
+         // =====================================================================
+         // Crea indice para la composition
+         // =====================================================================
+         
+         // -----------------------
+         // Obligatorios en el XML: lo garantiza xmlService.parseVersions
+         // -----------------------
+         //  - composition.category.value con valor 'event' o 'persistent'
+         //    - si no esta o tiene otro valor, ERROR
+         //  - composition.context.start_time.value
+         //    - DEBE ESTAR SI category = 'event'
+         //    - debe tener formato completo: 20070920T104614,0156+0930
+         //  - composition.@archetype_node_id
+         //    - obligatorio el atributo
+         //  - composition.'@xsi:type' = 'COMPOSITION'
+         // -----------------------
+         if (parsedCompositions[i].context.start_time.value)
+         {
+            // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
+            // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
+            // There is no limit on the number of decimal places for the decimal fraction. However, the number of
+            // decimal places needs to be agreed to by the communicating parties.
+            //
+            // TODO: formato de fecha completa que sea configurable
+            //       ademas la fraccion con . o , depende del locale!!!
+            //startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", parsedCompositions[i].context.start_time.value.text())
+            startTime = Date.parse(config.l10n.datetime_format, parsedCompositions[i].context.start_time.value.text())
+         }
+         
+         compoIndex = new CompositionIndex(
+            uid:         version.data.value, // compositionIndex uid
+            category:    parsedCompositions[i].category.value.text(), // event o persistent
+            startTime:   startTime, // puede ser vacio si category es persistent
+            subjectId:   ehr.subject.value,
+            ehrId:       ehr.ehrId,
+            archetypeId: parsedCompositions[i].@archetype_node_id.text()
+         )
+         
+         if (!compoIndex.save())
+         {
+            // FIXME: debe ser transaccional, sino salva esto, no salva nada...
+            println cindex.errors
+         }
+         
+         // =====================================================================
+         // /Crea indice para la composition
+         // =====================================================================
+         */
+      }
+      
+      
+      // Agrega contribution al EHR
+      // Ehr -> Contribution (ya salva)
+      ehr.addToContributions( contribution )
+      
+      
+      //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
+      render(contentType:"text/xml", encoding:"UTF-8") {
+         result {
+            type {
+               code('AA')                         // application reject
+               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+            }
+            message('Commit exitoso al EHR '+ ehrId)
+            // ok va sin codigo de error
+            //code('ISIS_EHR_SERVER::COMMIT::ERRORS::200') // sys::service::concept::code
+         }
+      }
+      
+   } // commit
+   
    
    def ehrList(String format, int max, int offset)
    {
@@ -358,6 +617,7 @@ class RestController {
                   'queries' {
                      _queries.each { query ->
                         delegate.query {
+                           uid(query.uid)
                            name(query.name) // FIXME: debe tener uid
                            type(query.type)
                            delegate.format(query.format)
@@ -385,14 +645,162 @@ class RestController {
             }
          }
          json {
-           render 'json'
+         
+            def result = [
+               queries: [],
+               pagination: [
+                  max: max,
+                  offset: offset,
+                  nextOffset: offset + max,
+                  prevoffset: ((offset-max < 0) ? 0 : offset-max)
+               ]
+            ]
+            
+            _queries.each { query ->
+            
+               def jquery = [
+                  uid: query.uid,
+                  name: query.name, // FIXME: debe tener uid
+                  type: query.type,
+                  'format': query.format,
+                  qarchetypeId: query.qarchetypeId,
+                  group: query.group,
+                  
+                  select: []
+               ]
+               
+               query.select.each { _dataGet ->
+                  jquery.select << [
+                    archetypeId: _dataGet.archetypeId,
+                    path: _dataGet.path
+                  ]
+               }
+               
+               
+               result.queries << jquery
+            }
+         
+            render(contentType:"application/json", encoding:"UTF-8") {
+               
+               result
+            }
          }
       }
    }
    
-   def queryShow()
+
+   def query(String queryUid, String ehrId, String format)
    {
-      // TODO: query as JSON or XML
+      println "query"
+      println params
+      
+      if (!queryUid)
+      {
+         render "queryUid is mandatory"
+         return
+      }
+      
+      def query = Query.findByUid(queryUid)
+      
+      if (!query)
+      {
+         render "No existe la query con uid = $queryUid"
+         return
+      }
+      
+      if (!ehrId)
+      {
+         render "ehrId is mandatory"
+         return
+      }
+      
+      def ehr = Ehr.findByEhrId(ehrId)
+      
+      if (!ehr)
+      {
+         render "No existe la ehr con uid = $ehrId"
+         return
+      }
+      
+      // TODO: fechas
+      def res = query.execute(ehrId, null, null)
+      
+      // TODO: output
+      //render res as XML
+      
+      if (query.type == 'composition')
+      {
+         def retrieveData = false // TODO: agregar para type=composition
+      
+         // Devuelve CompositionIndex, si quiere el contenido es buscar las
+         // compositions que se apuntan por el index
+         if (!retrieveData)
+         {
+            // TODO: support for JSON
+            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         }
+         else
+         {
+             // FIXME: hay que armar bien el XML: declaracion de xml solo al
+             //        inicio y namespaces en el root.
+             //
+             //  REQUERIMIENTO:
+             //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
+             //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
+             //  para extraer datos con reglas sobre un conjunto de compositions en un
+             //  solo XML.
+             //
+             // FIXME: no genera xml valido porque las compos se guardan con:
+             // <?xml version="1.0" encoding="UTF-8"?>
+             //
+             String buff
+             String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
+             res.each { compoIndex ->
+                
+                // FIXME: verificar que esta en disco, sino esta hay un problema
+                //        de sincronizacion entre la base y el FS, se debe omitir
+                //        el resultado y hacer un log con prioridad alta para ver
+                //        cual fue el error.
+                
+                // Tiene declaracion de xml
+                // Tambien tiene namespace, eso deberia estar en el nodo root
+                //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
+                buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
+                
+                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+                
+                /**
+                 * Composition queda:
+                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+                 */
+                
+                out += buff + "\n"
+            }
+            out += '</list>'
+            
+            render(text: out, contentType:"text/xml", encoding:"UTF-8")
+         }
+      } // type = composition
+      else
+      {
+         // type = datavalue
+         
+         // Format
+         if (!format || format == 'xml')
+         {
+            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         }
+         else if (format == 'json')
+         {
+            render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         }
+         else
+         {
+            render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+         }
+      }
    }
    
    // FIXME: this should receive queryUID, params should be only params of the query
@@ -441,8 +849,8 @@ class RestController {
          }
       }
       
-      println res
-      println "group $group"
+      //println res
+      //println "group $group"
       
       // Group
       if (group == 'composition')

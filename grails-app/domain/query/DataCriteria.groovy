@@ -29,5 +29,19 @@ class DataCriteria {
       value(nullable:true)
    }
    
+   static Map operandMap = [
+     'eq': '=',
+     'lt': '<',
+     'gt': '>',
+     'neq': '<>', // http://stackoverflow.com/questions/723195/should-i-use-or-for-not-equal-in-tsql
+     'le': '<=',
+     'ge': '>='
+   ]
+   
+   def sqlOperand()
+   {
+      return operandMap[this.operand]
+   }
+   
    static belongsTo = [Query]
 }
