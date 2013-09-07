@@ -343,7 +343,7 @@ class QueryController {
      */
     def save(String name, String qarchetypeId, String type, String format, String group)
     {
-       def query = new Query(name:name, qarchetypeId:qarchetypeId, type:type, format:format) // qarchetypeId puede ser vacio
+       def query = new Query(name:name, qarchetypeId:qarchetypeId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
        
        List archetypeIds = params.list('archetypeId')
        List paths = params.list('path')
