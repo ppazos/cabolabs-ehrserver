@@ -20,7 +20,7 @@
 ### Main functionalities:
 
 * Patient management
-* EHR and contributons management
+* EHR and contributions management
 * Query building and testing
 * Usage logs
 
@@ -44,7 +44,7 @@
 ### Out of scope
 
 * EHR/EMR/PHR apps should be written separately as clients of the EHRServer, but use the provided data services to access and send data from/to the EHRServer.
-* Data analysis, data aggregation, business inteligence and other data processing related applications should be written separately from the EHRServer, all those systemas can get data from the EHRServer using the provided data services.
+* Data analysis, data aggregation, business intelligence and other data processing related applications should be written separately from the EHRServer, all those systems can get data from the EHRServer using the provided data services.
 
 
 ### Milestones and deliverables
@@ -97,9 +97,9 @@
 ### Get query definitions
 /rest/queryList(String format:XML|JSON, int max, int offset)
 
-### Query execution by uid (not implemented yet)
-/rest/query(String queryUid, Map params)
+### Query execution by uid
+/rest/query(String queryUid, String ehrId)
 
 ### Commits a set of clinical documents to the EHR (not implemented yet)
-/rest/commit(String ehrUid, Collection<Composition> compositions, Map params)
+/rest/commit(String ehrUid, Collection<Composition> versions)
 
