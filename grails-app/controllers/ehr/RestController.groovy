@@ -535,7 +535,7 @@ class RestController {
             'result' {
                'patients' {
                   subjects.each { person ->
-                     'patient'{
+                     delegate.patient{
                         uid(person.uid)
                         firstName(person.firstName)
                         lastName(person.lastName)
@@ -585,6 +585,61 @@ class RestController {
       }
    } // patientList
    
+   
+   // Get patient data
+   def getPatient(String uid, String format)
+   {
+      println params
+      
+      if (!uid)
+      {
+         render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         return
+      }
+      
+      def person = Person.findByRoleAndUid('pat', uid)
+      
+      if (!person)
+      {
+         render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         return
+      }
+      
+      //println person
+      
+      if (!format || format == "xml")
+      {
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            delegate.patient{
+               delegate.uid(person.uid)
+               firstName(person.firstName)
+               lastName(person.lastName)
+               dob(this.formatterDate.format( person.dob ) )
+               sex(person.sex)
+               idCode(person.idCode)
+               idType(person.idType)
+            }
+         }
+      }
+      else if (format == "json")
+      {
+         def data = [
+            uid: person.uid,
+            firstName: person.firstName,
+            lastName: person.lastName,
+            dob: this.formatterDate.format( person.dob ),
+            sex: person.sex,
+            idCode: person.idCode,
+            idType: person.idType
+         ]
+         
+         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+      }
+   }
    
    /*
     * Servicios sobre consultas.
