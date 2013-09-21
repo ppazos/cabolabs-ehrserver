@@ -7,89 +7,92 @@ class BootStrap {
 
    def init = { servletContext ->
       
-	  // TEST
-	  def ai = new com.cabolabs.archetype.ArchetypeIndexer()
-	  ai.index("openEHR-EHR-COMPOSITION.signos.v1")
-     ai.index("openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1")
-     ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
+     // TEST
+     if (DataIndex.count() == 0)
+     {
+        def ai = new com.cabolabs.archetype.ArchetypeIndexer()
+        ai.index("openEHR-EHR-COMPOSITION.signos.v1")
+        ai.index("openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1")
+        ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
+     }
+     // /TEST
      
-	  // /TEST
-	  
-      def persons = [
-         new Person(
-            firstName: 'Pablo',
-            lastName: 'Pazos',
-            dob: new Date(81, 9, 24),
-            sex: 'M',
-            idCode: '4116238-0',
-            idType: 'CI',
-            role: 'pat'
-         ),
-         new Person(
-            firstName: 'Barbara',
-            lastName: 'Cardozo',
-            dob: new Date(87, 2, 19),
-            sex: 'F',
-            idCode: '1234567-0',
-            idType: 'CI',
-            role: 'pat'
-         ),
-         new Person(
-            firstName: 'Carlos',
-            lastName: 'Cardozo',
-            dob: new Date(80, 2, 20),
-            sex: 'M',
-            idCode: '3453455-0',
-            idType: 'CI',
-            role: 'pat'
-         )
-         ,
-         new Person(
-            firstName: 'Mario',
-            lastName: 'Gomez',
-            dob: new Date(64, 8, 19),
-            sex: 'M',
-            idCode: '5677565-0',
-            idType: 'CI',
-            role: 'pat'
-         )
-         ,
-         new Person(
-            firstName: 'Carla',
-            lastName: 'Martinez',
-            dob: new Date(92, 1, 5),
-            sex: 'F',
-            idCode: '84848884-0',
-            idType: 'CI',
-            role: 'pat'
-         )
-      ]
-      
-      persons.each { p ->
+     def persons = []
+     if (Person.count() == 0)
+     {
+        persons = [
+           new Person(
+               firstName: 'Pablo',
+               lastName: 'Pazos',
+               dob: new Date(81, 9, 24),
+               sex: 'M',
+               idCode: '4116238-0',
+               idType: 'CI',
+               role: 'pat'
+           ),
+           new Person(
+               firstName: 'Barbara',
+               lastName: 'Cardozo',
+               dob: new Date(87, 2, 19),
+               sex: 'F',
+               idCode: '1234567-0',
+               idType: 'CI',
+               role: 'pat'
+           ),
+           new Person(
+               firstName: 'Carlos',
+               lastName: 'Cardozo',
+               dob: new Date(80, 2, 20),
+               sex: 'M',
+               idCode: '3453455-0',
+               idType: 'CI',
+               role: 'pat'
+           ),
+           new Person(
+               firstName: 'Mario',
+               lastName: 'Gomez',
+               dob: new Date(64, 8, 19),
+               sex: 'M',
+               idCode: '5677565-0',
+               idType: 'CI',
+               role: 'pat'
+           ),
+           new Person(
+               firstName: 'Carla',
+               lastName: 'Martinez',
+               dob: new Date(92, 1, 5),
+               sex: 'F',
+               idCode: '84848884-0',
+               idType: 'CI',
+               role: 'pat'
+           )
+        ]
          
-         if (!p.save())
-         {
-            println p.errors
-         }
-      }
-	  
-	  
-	  // Crea EHRs para los pacientes de prueba
-	  // Idem EhrController.createEhr
-	  def ehr
-	  persons.each { p ->
-	  
-	     if (p.role == 'pat')
-		 {
-			ehr = new Ehr(
-			   subject: new PatientProxy(
-			      value: p.uid
-			   )
-		    )
+        persons.each { p ->
+            
+           if (!p.save())
+           {
+              println p.errors
+           }
+        }
+     }
+     
+     // Crea EHRs para los pacientes de prueba
+     // Idem EhrController.createEhr
+     def ehr
+     persons.each { p ->
+     
+        if (p.role == 'pat')
+        {
+           ehr = new Ehr(
+              subject: new PatientProxy(
+                 value: p.uid
+              )
+           )
          
-            if (!ehr.save()) println ehr.errors
-		 }
-	  }
+           if (!ehr.save()) println ehr.errors
+        }
+     }
       
       
       // ================================================
