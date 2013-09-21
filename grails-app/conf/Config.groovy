@@ -65,6 +65,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
+        grails.dbconsole.enabled = true // FIXME: this is for testing in prod
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
 	test {
