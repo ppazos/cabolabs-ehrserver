@@ -29,7 +29,7 @@
       padding: 5px 0px 10px 0px;
       border-bottom: 1px solid #ddd;
     }
-    img.ui-datepicker-trigger {
+    img.ui-datepicker-trigger { /* <<<< datepicker icon adjustments */
       vertical-align: middle;
       height: 1.9em;
       padding-bottom: 6px; /* alinea con el input */
@@ -181,15 +181,18 @@
 	            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
 	            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
 	            
-	            type <g:select name="qarchetypeId"
-	                           from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
-	                           noSelection="['':'']" />
+	            <g:message code="filter.rootArchetypeId" />
+               <g:select name="qarchetypeId"
+	                      from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
+	                      noSelection="['':'']" />
 	                           
 	            <g:submitToRemote
 	               url="[action:'ehrContributions', id:ehr.id]"
 	               update="ehrContributions"
-	               value="filtrar"
+	               value="${message(code:'filer.action.apply')}"
 	               onSuccess="highlight_filtered_data()" />
+               
+               <input type="reset" value="${message(code:'form.action.reset')}" />
             </g:form>
           </div>
           
