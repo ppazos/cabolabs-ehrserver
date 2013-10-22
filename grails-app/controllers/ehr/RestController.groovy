@@ -856,8 +856,9 @@ class RestController {
             render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
          }
       }
-   }
+   } // query
    
+   // To query by queryUID use "query" action.
    // FIXME: this should receive queryUID, params should be only params of the query
    //        like dates or output format, the criteria is defined the Query.   
    def queryData(String qehrId, String qarchetypeId, String fromDate, String toDate, String format, String group)
@@ -955,26 +956,32 @@ class RestController {
       //  ...
       // ]
       
+      // Usa ruta absoluta para agrupar.
+      String absPath
+      
       archetypeIds.eachWithIndex { archId, i ->
+      
+         // Usa ruta absoluta para agrupar.
+         absPath = archId + paths[i]
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
          
-         resHeaders[paths[i]] = [:]
-         resHeaders[paths[i]]['type'] = dataidx.rmTypeName
-         resHeaders[paths[i]]['name'] = dataidx.name
+         resHeaders[absPath] = [:]
+         resHeaders[absPath]['type'] = dataidx.rmTypeName
+         resHeaders[absPath]['name'] = dataidx.name
          
          switch (dataidx.rmTypeName)
          {
             case ['DV_QUANTITY', 'DvQuantity']:
-               resHeaders[paths[i]]['attrs'] = ['magnitude', 'units']
+               resHeaders[absPath]['attrs'] = ['magnitude', 'units']
             break
             case ['DV_CODED_TEXT', 'DvCodedText']:
-               resHeaders[paths[i]]['attrs'] = ['value']
+               resHeaders[absPath]['attrs'] = ['value']
             break
             case ['DV_DATE_TIME', 'DvDateTime']:
-               resHeaders[paths[i]]['attrs'] = ['code', 'value']
+               resHeaders[absPath]['attrs'] = ['code', 'value']
             break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -1012,15 +1019,15 @@ class RestController {
          
          // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
          // Cada columna de la fila
-         resHeaders.each { path, colData -> // colData = [type:'XX', attrs:['cc','vv']]
+         resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
             
             //println "header: " + path + " " + colData
             //resGrouped[compoId]['cols']['type'] = idxtype
             
-            col = [type: colData['type'], path: path] // pongo la path para debug
+            col = [type: colData['type'], path: _absPath] // pongo la path para debug
             
             // dvi para la columna actual
-            dvi = dvis.find{it.path == path && it.owner.id == compoId}
+            dvi = dvis.find{ (it.archetypeId + it.path) == _absPath && it.owner.id == compoId}
             
             if (dvi)
             {
@@ -1052,6 +1059,7 @@ class RestController {
    
    /**
     * Usada por queryData para agrupar por path
+    * FIXME: esta implementada en Query.queryDataGroupPath sin pasarle archetypeIds y paths porque estan en la definicion de la query.
     */
    private queryDataGroupPath(res, archetypeIds, paths)
    {
@@ -1067,47 +1075,50 @@ class RestController {
       //       el mismo indice en distintas series corresponde la misma fecha
       //       la fecha identifica la fila, y cada serie es una columna.
       
-      // FIXME: deberia ser archId+path para que sea absoluta
-      //        seria mas facil si archId y path fueran un solo campo
-      def cols = res.groupBy { it.path }
+
+      // Estructura auxiliar para recorrer y armar la agrupacion en series.
+      def cols = res.groupBy { it.archetypeId + it.path }
       
-      
-      // TODO: cada serie debe tener el nombre de la path (lookup de DataIndex)
+      // Usa ruta absoluta para agrupar.
+      String absPath
       
       archetypeIds.eachWithIndex { archId, i ->
+         
+         // Usa ruta absoluta para agrupar.
+         absPath = archId + paths[i]
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
          
-         resGrouped[paths[i]] = [:]
-         resGrouped[paths[i]]['type'] = dataidx.rmTypeName // type va en cada columna
-         resGrouped[paths[i]]['name'] = dataidx.name // name va en cada columna
+         resGrouped[absPath] = [:]
+         resGrouped[absPath]['type'] = dataidx.rmTypeName // type va en cada columna
+         resGrouped[absPath]['name'] = dataidx.name // name va en cada columna
          
          // FIXME: hay tipos de datos que no deben graficarse
          // TODO: entregar solo valores segun el tipo de dato, en lugar de devolver DataValueIndexes
          //resGrouped[paths[i]]['serie'] = cols[paths[i]]
          
-         resGrouped[paths[i]]['serie'] = []
+         resGrouped[absPath]['serie'] = []
          
-         cols[paths[i]].each { dvi ->
+         cols[absPath].each { dvi ->
             
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
             {
                case ['DV_QUANTITY', 'DvQuantity']: // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
-                  resGrouped[paths[i]]['serie'] << [magnitude: dvi.magnitude,
-                                                    units:     dvi.units,
-                                                    date:      dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
+                                                   units:     dvi.units,
+                                                   date:      dvi.owner.startTime]
                break
                case ['DV_CODED_TEXT', 'DvCodedText']:
-                  resGrouped[paths[i]]['serie'] << [value:     dvi.value,
-                                                    date:      dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [value:     dvi.value,
+                                                   date:      dvi.owner.startTime]
                break
                case ['DV_DATE_TIME', 'DvDateTime']:
-                  resGrouped[paths[i]]['serie'] << [code:      dvi.code,
-                                                    value:     dvi.value,
-                                                    date:      dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [code:      dvi.code,
+                                                   value:     dvi.value,
+                                                   date:      dvi.owner.startTime]
                break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
