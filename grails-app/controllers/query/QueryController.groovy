@@ -7,7 +7,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class QueryController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST"] //, delete: "POST"]
     
     // Para acceder a las opciones de localizacion
     def config = ApplicationHolder.application.config.app
