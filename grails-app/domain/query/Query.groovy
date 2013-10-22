@@ -76,7 +76,7 @@ class Query {
       return executeComposition(ehrId, from, to)
    }
    
-   private executeDatavalue(String ehrId, Date from, Date to)
+   def executeDatavalue(String ehrId, Date from, Date to)
    {
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -124,7 +124,7 @@ class Query {
       return res
    }
    
-     /**
+   /**
     * Usada por queryData para agrupar por composition
     */
    private queryDataGroupComposition(res)
@@ -246,7 +246,9 @@ class Query {
       }
       
       return [resHeaders, resGrouped]
+      
    } // queryDataGroupComposition
+   
    
    /**
     * Usada por queryData para agrupar por path
@@ -324,7 +326,7 @@ class Query {
    } // queryDataGroupPath
    
    
-   private executeComposition(String ehrId, Date from, Date to)
+   def executeComposition(String ehrId, Date from, Date to)
    {
        // Armado de la query
        String q = "FROM CompositionIndex ci WHERE "
