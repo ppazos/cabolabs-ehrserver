@@ -52,14 +52,64 @@
       #results, #show_data {
         display: none;
       }
+      tr td:last-child input[name=toDate], tr td:last-child input[name=fromDate]  {
+        width: 92%;
+      }
+      img.ui-datepicker-trigger { /* <<<<< datepicker icon adjustments */
+        vertical-align: middle;
+        height: 1.9em;
+        padding-bottom: 6px; /* alinea con el input */
+      }
     </style>
+    <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
+    
     <g:javascript src="jquery-1.8.2.min.js" />
+    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <g:javascript src="jquery.form.js" /><!-- xmlToString -->
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
     
-    <g:javascript>
+    <script type="text/javascript">
       $(document).ready(function() {
+     
+     
+        /* ===================================================================================== 
+         * Calendars para filtros de compositions.
+         */
+        $("input[name=fromDate]").datepicker({
+            // Icono para mostrar el calendar 
+            showOn: "button",
+            buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+            buttonImageOnly: true,
+            buttonText: 'pick a date',
+            // Formato
+            dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
+            // Menus para cambiar mes y anio 
+            changeMonth: true,
+            changeYear: true,
+            // La fecha maxima es la que esta seleccionada en toDate si la hay
+            //onClose: function( selectedDate ) {
+            //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
+           // }
+        });
+        $("input[name=toDate]").datepicker({
+            // Icono para mostrar el calendar 
+            showOn: "button",
+            buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+            buttonImageOnly: true,
+            buttonText: 'pick a date',
+            // Formato
+            dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
+            // Menus para cambiar mes y anio 
+            changeMonth: true,
+            changeYear: true,
+            // La fecha minima es la que esta seleccionada en fromDate si la hay
+            //onClose: function( selectedDate ) {
+            //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
+            //}
+        });
+        /* ===================================================================================== */
+      
      
         /*
         FIXME: este JS es el mismo que en test.gsp reutilizar el mismo codigo.
@@ -340,7 +390,7 @@
         // Uso el chartContainer para mostrar la tabla
         table.html( htmlheaders + htmlsubheaders + htmlrows );
         $('#chartContainer').append(table);
-      };
+      }; // queryDataRenderTable
       
       
       var queryDataRenderChart = function(data)
@@ -405,7 +455,7 @@
          // Test chart
          renderchart(series);
          // ========================================
-      };
+      }; // queryDataRenderChart
       
       
       // =======================================================================
@@ -452,9 +502,8 @@
           },
           series: series
         });
-      };
-      
-    </g:javascript>
+      }; //renderchart
+    </script>
   </head>
   <body>
     <div class="nav" role="navigation">
@@ -465,7 +514,7 @@
       </ul>
     </div>
     
-    <h1>Ejecuci&oacute;n de consulta "${query.name}"</h1>
+    <h1><g:message code="query.execute.title" args="['"'+query.name+'"']" /></h1>
       
     <g:if test="${flash.message}">
       <div class="message" role="status">${flash.message}</div>
@@ -473,10 +522,10 @@
     
     <g:if test="${type == 'composition'}">
       
-      <h2>B&uacute;squeda de documentos por datos</h2>
+      <h2><g:message code="query.execute.queryByData" /></h2>
       <form id="form_composition" method="post">
         
-        <h3>Criterio</h3>
+        <h3><g:message code="query.execute.criteria" /></h3>
         <table>
           <tr>
             <th>archetypeId</th>
@@ -512,7 +561,7 @@
           </g:each>
         </table>
           
-        <h3>Filtros</h3>
+        <h3><g:message code="query.create.filters" /></h3>
         <table>
           <tr>
             <td>ehrId</td>
@@ -533,10 +582,10 @@
             </td>
           </tr>
           <tr>
-            <td>dates (yyyymmdd)</td>
+            <td>dates</td>
             <td>
-              from <input type="text" name="fromDate" />
-              to <input type="text" name="toDate" />
+              <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
+              <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
             </td>
           </tr>
           <tr>
@@ -566,10 +615,10 @@
     </g:if>
     <g:else>
     
-      <h2>Búsqueda de datos</h2>
+      <h2><g:message code="query.execute.queryData" /></h2>
       <form id="form_datavalue" method="post">
         
-        <h3>Selección</h3>
+        <h3><g:message code="query.execute.selectedDataPoints" /></h3>
         <table>
           <tr>
             <th>archetypeId</th>
@@ -589,7 +638,7 @@
           </g:each>
         </table>
           
-        <h3>Filtros</h3>
+        <h3><g:message code="query.create.filters" /></h3>
         <table>
           <tr>
             <td>ehrId</td>
@@ -612,10 +661,10 @@
             </td>
           </tr>
           <tr>
-            <td>dates (yyyymmdd)</td>
+            <td>dates</td>
             <td>
-              from <input type="text" name="fromDate" />
-              to <input type="text" name="toDate" />
+              <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
+              <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
             </td>
           </tr>
           <tr>
@@ -640,13 +689,13 @@
         </table>
           
         <fieldset class="buttons">
-          <input type="submit" value="Ejecutar" />
+          <input type="submit" value="${message(code:'query.execute.action.execute')}" />
         </fieldset>
       </form>
     </g:else>
       
-    <h2>Resultado</h2>
-    <a href="#" id="show_data">Ver datos</a>
+    <h2><g:message code="query.execute.results" /></h2>
+    <a href="#" id="show_data"><g:message code="query.execute.showData" /></a>
     <div id="results" class="out"></div>
     <div id="chartContainer"></div>
   </body>
