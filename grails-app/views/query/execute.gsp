@@ -112,7 +112,7 @@
       
      
         /*
-        FIXME: este JS es el mismo que en test.gsp reutilizar el mismo codigo.
+        FIXME: este JS es el mismo que en test.gsp reutilizar el mismo codigo, externalizando el JS.
         */
      
         // ====================================================================
