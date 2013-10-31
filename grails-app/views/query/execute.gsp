@@ -60,6 +60,12 @@
         height: 1.9em;
         padding-bottom: 6px; /* alinea con el input */
       }
+      table.ui-datepicker-calendar th {
+        padding: 0;
+      }
+      table.ui-datepicker-calendar tr td:first-child {
+        width: auto;
+      }
     </style>
     <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
     
