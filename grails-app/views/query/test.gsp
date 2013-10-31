@@ -181,12 +181,7 @@
           $(this).ajaxSubmit({
           
             dataType: type,
-            
-            // ============================================================
-            // TODO: poner el codigo de test/queryData en QueryController
-            // ============================================================
-            
-            url: '${createLink(controller:'test', action:'queryData')}',
+            url: '${createLink(controller:'rest', action:'queryData')}',
             data: {doit:true},
           
             beforeSubmit: function(data, form, options) {

@@ -859,7 +859,19 @@ class RestController {
       }
    } // query
    
-   
+   /**
+    * Busqueda de datos simples dentro de compositions que cumplen cierto criterio.
+    * Datos de nivel 2 por criterio nivel 1.
+    * Se utiliza para mostrar datos tabulados y graficas.
+    * 
+    * @param archetypeId arquetipo donde esta la path al dato que se busca, uno o mas
+    * @param path ruta dentro del arquetipo al dato que se busca, una o mas
+    * @param qehrId id del ehr (obligatorio, los datos deben ser del mismo ehr/paciente)
+    * @param qarchetypeId tipo de composition donde buscar (opcional)
+    * @param format xml o json, xml por defecto
+    * 
+    * @return List<DataValueIndex>
+    */
    // FIXME: verify that this is used only for query testing while creating a
    //        query. Query execution from the UI should use the "query" action.
    // To query by queryUID use "query" action.
