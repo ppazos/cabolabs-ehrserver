@@ -5,6 +5,7 @@ import common.generic.PatientProxy
 import demographic.Person
 import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
+import ehr.clinical_documents.data.DvTextIndex
 import ehr.clinical_documents.data.DvCodedTextIndex
 import ehr.clinical_documents.data.DvDateTimeIndex
 import ehr.clinical_documents.data.DvQuantityIndex

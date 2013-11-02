@@ -145,20 +145,6 @@ class TestController {
       // String archetypeId, String path, String operand, String value
       // El mismo indice en cada lista corresponde con un atributo del mismo criterio de busqueda
       
-      // ya viene el nombre correcto
-//      String op
-//      switch (operand)
-//      {
-//         case '=': op = 'eq'
-//         break
-//         case '<': op = 'lt'
-//         break
-//         case '>': op = 'gt'
-//         break
-//         case '!=': op = 'neq'
-//         break
-//      }
-      
       
       // Datos de criterios
       List archetypeIds = params.list('archetypeId')

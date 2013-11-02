@@ -108,6 +108,7 @@ class Query {
          }
       }
       
+      //println ". "
       //println res
       //println "group $group"
       
@@ -169,10 +170,13 @@ class Query {
                resHeaders[absPath]['attrs'] = ['magnitude', 'units']
             break
             case ['DV_CODED_TEXT', 'DvCodedText']:
+               resHeaders[absPath]['attrs'] = ['value', 'code']
+            break
+            case ['DV_TEXT', 'DvText']:
                resHeaders[absPath]['attrs'] = ['value']
             break
             case ['DV_DATE_TIME', 'DvDateTime']:
-               resHeaders[absPath]['attrs'] = ['code', 'value']
+               resHeaders[absPath]['attrs'] = ['value']
             break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -231,9 +235,12 @@ class Query {
                   break
                   case ['DV_CODED_TEXT', 'DvCodedText']:
                      col['value'] = dvi.value
+                     col['code'] = dvi.code
+                  break
+                  case ['DV_TEXT', 'DvText']:
+                     col['value'] = dvi.value
                   break
                   case ['DV_DATE_TIME', 'DvDateTime']:
-                     col['code'] = dvi.code
                      col['value'] = dvi.value
                   break
                   default:
@@ -271,7 +278,7 @@ class Query {
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
       def cols = res.groupBy { it.archetypeId + it.path }
       
-      
+
       // Usa ruta absoluta para agrupar.
       String absPath
       
@@ -280,10 +287,12 @@ class Query {
          // Usa ruta absoluta para agrupar.
          absPath = dataGet.archetypeId + dataGet.path
          
+
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = DataIndex.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
+
          resGrouped[absPath] = [:]
          resGrouped[absPath]['type'] = dataidx.rmTypeName // type va en cada columna
          resGrouped[absPath]['name'] = dataidx.name // name va en cada columna, nombre asociado a la path por la que se agrupa
@@ -296,6 +305,8 @@ class Query {
          
          cols[absPath].each { dvi ->
             
+            println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
+            
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
             {
@@ -305,12 +316,16 @@ class Query {
                                                    date:      dvi.owner.startTime]
                break
                case ['DV_CODED_TEXT', 'DvCodedText']:
+                  resGrouped[absPath]['serie'] << [code:      dvi.code,
+                                                   value:     dvi.value,
+                                                   date:      dvi.owner.startTime]
+               break
+               case ['DV_TEXT', 'DvText']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
                case ['DV_DATE_TIME', 'DvDateTime']:
-                  resGrouped[absPath]['serie'] << [code:      dvi.code,
-                                                   value:     dvi.value,
+                  resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
                default:
@@ -374,16 +389,19 @@ class Query {
           // Consulta sobre atributos del DataIndex dependiendo de su tipo
           switch (idxtype)
           {
-             case ['DV_DATE_TIME', 'DvDateTime']: // ADL Parser bug: uses Java class names instead of RM Type Names...
-                q += "        AND dvi.value"+ dataCriteria..sqlOperand() + dataCriteria.value // TODO: verificar formato, transformar a SQL
+             // ADL Parser bug: uses Java class names instead of RM Type Names...
+             case ['DV_DATE_TIME', 'DvDateTime']:
+                q += "        AND dvi.value"+ dataCriteria.sqlOperand() + dataCriteria.value // TODO: verificar formato, transformar a SQL
              break
-             case ['DV_QUANTITY', 'DvQuantity']: // ADL Parser bug: uses Java class names instead of RM Type Names...
+             case ['DV_QUANTITY', 'DvQuantity']:
                 q += "        AND dvi.magnitude"+ dataCriteria.sqlOperand() + new Float(dataCriteria.value)
              break
-             case ['DV_CODED_TEXT', 'DvCodedText']: // ADL Parser bug: uses Java class names instead of RM Type Names...
-                q += "        AND dvi.code"+ dataCriteria..sqlOperand() +"'"+ dataCriteria.value+"'"
+             case ['DV_CODED_TEXT', 'DvCodedText']:
+                q += "        AND dvi.code"+ dataCriteria.sqlOperand() +"'"+ dataCriteria.value+"'"
              break
-             // TODO: are more types
+             case ['DV_TEXT', 'DvText']:
+                q += "        AND dvi.value"+ dataCriteria.sqlOperand() +"'"+ dataCriteria.value+"'"
+             break
              default:
                throw new Exception("type $idxtype not supported")
           }

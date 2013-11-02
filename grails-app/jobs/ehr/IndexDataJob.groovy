@@ -3,6 +3,7 @@ package ehr
 import java.util.List;
 
 import ehr.clinical_documents.CompositionIndex;
+import ehr.clinical_documents.data.DvTextIndex;
 import ehr.clinical_documents.data.DvCodedTextIndex;
 import ehr.clinical_documents.data.DvDateTimeIndex;
 import ehr.clinical_documents.data.DvQuantityIndex;
@@ -154,10 +155,12 @@ class IndexDataJob {
             break
             case 'DvCodedText': idxtype = 'DV_CODED_TEXT'
             break
+            case 'DvText': idxtype = 'DV_TEXT'
+            break
          }
          
          // Si es de un tipo de dato indizable por valor
-         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT'].contains(idxtype))
+         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
             def dataIndex = this."$method"(node, archetypeId, idxpath, owner)
@@ -194,6 +197,23 @@ class IndexDataJob {
          owner: owner,
          magnitude: new Float( node.magnitude.text() ), // float a partir de string
          units: node.units.text()
+      )
+   }
+   
+   private DvTextIndex create_DV_TEXT_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   {
+      /*
+       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
+      <value xsi:type="DV_TEXT">
+         <value>Right arm</value>
+      </value>
+      */
+      
+      return new DvTextIndex(
+         archetypeId: archetypeId,
+         path: path,
+         owner: owner,
+         value: node.value.text()
       )
    }
    

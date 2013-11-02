@@ -3,10 +3,10 @@ package ehr.clinical_documents
 /**
  * Definicion de indice para realizar busquedas a nivel de datos (nivel 2).
  * El indice se deriva de la definicion de la estructura de cada arquetipo.
- * A partir de estas definiciones se cren los indices sobre instancias de datos de tipos concretos (DvDate, DvText, DvQuantity, etc).
+ * A partir de estas definiciones se cren los indices sobre instancias de
+ * datos de tipos concretos (DvDate, DvText, DvQuantity, etc).
  * 
  * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
- *
  */
 class DataIndex {
 

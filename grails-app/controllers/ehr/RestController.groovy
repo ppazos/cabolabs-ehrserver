@@ -1017,14 +1017,18 @@ class RestController {
           // Consulta sobre atributos del DataIndex dependiendo de su tipo
           switch (idxtype)
           {
-             case ['DV_DATE_TIME', 'DvDateTime']: // ADL Parser bug: uses Java class names instead of RM Type Names...
+             // ADL Parser bug: uses Java class names instead of RM Type Names...
+             case ['DV_DATE_TIME', 'DvDateTime']:
                 q += "        AND dvi.value"+ operands[i] + values[i] // TODO: verificar formato, transformar a SQL
              break
-             case ['DV_QUANTITY', 'DvQuantity']: // ADL Parser bug: uses Java class names instead of RM Type Names...
+             case ['DV_QUANTITY', 'DvQuantity']:
                 q += "        AND dvi.magnitude"+ operands[i] + new Float(values[i])
              break
-             case ['DV_CODED_TEXT', 'DvCodedText']: // ADL Parser bug: uses Java class names instead of RM Type Names...
+             case ['DV_CODED_TEXT', 'DvCodedText']:
                 q += "        AND dvi.code"+ operands[i] +"'"+ values[i]+"'"
+             break
+             case ['DV_TEXT', 'DvText']:
+                q += "        AND dvi.value"+ operands[i] +"'"+ values[i]+"'"
              break
              // TODO: are more types
              default:
