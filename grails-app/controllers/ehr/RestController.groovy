@@ -1030,7 +1030,9 @@ class RestController {
              case ['DV_TEXT', 'DvText']:
                 q += "        AND dvi.value"+ operands[i] +"'"+ values[i]+"'"
              break
-             // TODO: are more types
+             case ['DV_BOOLEAN', 'DvBoolean']:
+                q += "        AND dvi.value"+ operands[i] + new Boolean(values[i])
+             break
              default:
                throw new Exception("type $idxtype not supported")
           }
@@ -1041,6 +1043,7 @@ class RestController {
           if (i+1 < archetypeIds.size()) q += " AND "
        }
        
+       println "queryCompositions query: "
        println q
        
        /*

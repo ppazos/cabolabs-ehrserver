@@ -2,12 +2,9 @@ package ehr
 
 import java.util.List;
 
-import ehr.clinical_documents.CompositionIndex;
-import ehr.clinical_documents.data.DvTextIndex;
-import ehr.clinical_documents.data.DvCodedTextIndex;
-import ehr.clinical_documents.data.DvDateTimeIndex;
-import ehr.clinical_documents.data.DvQuantityIndex;
-import groovy.util.slurpersupport.GPathResult;
+import ehr.clinical_documents.CompositionIndex
+import ehr.clinical_documents.data.*
+import groovy.util.slurpersupport.GPathResult
 
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
@@ -149,18 +146,20 @@ class IndexDataJob {
          // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
          switch (idxtype)
          {
-            case 'DvDateTime': idxtype = 'DV_DATE_TIME'
+            case 'DvDateTime':  idxtype = 'DV_DATE_TIME'
             break
-            case 'DvQuantity': idxtype = 'DV_QUANTITY'
+            case 'DvQuantity':  idxtype = 'DV_QUANTITY'
             break
             case 'DvCodedText': idxtype = 'DV_CODED_TEXT'
             break
-            case 'DvText': idxtype = 'DV_TEXT'
+            case 'DvText':      idxtype = 'DV_TEXT'
+            break
+            case 'DvBoolean':   idxtype = 'DV_BOOLEAN'
             break
          }
          
          // Si es de un tipo de dato indizable por valor
-         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT'].contains(idxtype))
+         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
             def dataIndex = this."$method"(node, archetypeId, idxpath, owner)
@@ -174,7 +173,6 @@ class IndexDataJob {
             }
          }
       }
-      
       
       // Test: indices como datos
       //indexes << [path: idxpath, value: idxvalue, type: idxtype]
@@ -214,6 +212,23 @@ class IndexDataJob {
          path: path,
          owner: owner,
          value: node.value.text()
+      )
+   }
+   
+   private DvBooleanIndex create_DV_BOOLEAN_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   {
+      /*
+       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
+       * <value xsi:type="DV_BOOLEAN">
+       *   <value>true</value>
+       * </value>
+       */
+      
+      return new DvBooleanIndex(
+         archetypeId: archetypeId,
+         path: path,
+         owner: owner,
+         value: new Boolean(node.value.text())
       )
    }
    

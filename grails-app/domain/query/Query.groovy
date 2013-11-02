@@ -178,6 +178,9 @@ class Query {
             case ['DV_DATE_TIME', 'DvDateTime']:
                resHeaders[absPath]['attrs'] = ['value']
             break
+            case ['DV_BOOLEAN', 'DvBoolean']:
+               resHeaders[absPath]['attrs'] = ['value']
+            break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
          }
@@ -241,6 +244,9 @@ class Query {
                      col['value'] = dvi.value
                   break
                   case ['DV_DATE_TIME', 'DvDateTime']:
+                     col['value'] = dvi.value
+                  break
+                  case ['DV_BOOLEAN', 'DvBoolean']:
                      col['value'] = dvi.value
                   break
                   default:
@@ -328,6 +334,10 @@ class Query {
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
+               case ['DV_BOOLEAN', 'DvBoolean']:
+                  resGrouped[absPath]['serie'] << [value:     dvi.value,
+                                                   date:      dvi.owner.startTime]
+               break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
             }
@@ -401,6 +411,9 @@ class Query {
              break
              case ['DV_TEXT', 'DvText']:
                 q += "        AND dvi.value"+ dataCriteria.sqlOperand() +"'"+ dataCriteria.value+"'"
+             break
+             case ['DV_BOOLEAN', 'DvBoolean']:
+                q += "        AND dvi.value"+ dataCriteria.sqlOperand() + new Boolean(dataCriteria.value)
              break
              default:
                throw new Exception("type $idxtype not supported")
