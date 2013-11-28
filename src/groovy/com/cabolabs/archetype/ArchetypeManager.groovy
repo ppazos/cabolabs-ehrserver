@@ -24,7 +24,7 @@ import org.openehr.am.archetype.constraintmodel.ArchetypeConstraint
  */
 class ArchetypeManager {
 
-   private Logger log = Logger.getLogger(getClass()) 
+   private Logger log = Logger.getLogger(getClass())
    
    // Ruta independiente del SO
    // http://code.google.com/p/open-ehr-gen-framework/issues/detail?id=54
