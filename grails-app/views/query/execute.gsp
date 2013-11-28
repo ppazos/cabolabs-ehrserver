@@ -68,13 +68,14 @@
       }
     </style>
     <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
+    <link rel="stylesheet" href="${resource(dir:'css/highlightjs', file:'xcode.css')}" />
     
     <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
-    <g:javascript src="jquery.form.js" /><!-- xmlToString -->
+    <g:javascript src="jquery.form.js" />
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
-    
+    <g:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
     <script type="text/javascript">
       $(document).ready(function() {
      
@@ -129,7 +130,8 @@
           
           e.preventDefault();
           
-          $('#results').toggle('slow');
+          //$('#results').toggle('slow');
+          $('code').toggle('slow');
         });
         
     
@@ -181,6 +183,11 @@
             //console.log(req);
             //console.log(form);
 
+            
+            // reset code class or highlight
+            $('code').removeClass('xml json');
+            
+            
             // Si devuelve HTML
             if ($('select[name=showUI]').val()=='true')
             {
@@ -188,15 +195,22 @@
             }
             else // Si devuelve el XML
             {
-              $('#results').empty();
+              //$('#results').empty();
              
               // el append devuelve la DIV no el PRE, chidren tiene el PRE
-              var pre = $('#results').append('<pre></pre>').children()[0];
-              $(pre).text( formatXml( xmlToString(responseText) ) );
-               
+              //var pre = $('#results').append('<pre></pre>').children()[0];
+              //$(pre).text( formatXml( xmlToString(responseText) ) );
+              
+              
+              // highlight
+              $('code').addClass('xml');
+              $('code').text(formatXml( xmlToString(responseText) ));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              $('code').show('slow');
+              
               // Como XML no hace render de tabla o grafica, muestro los datos
               // crudos como si hiciera clic en show_data.
-              $('#results').show('slow');
+              //$('#results').show('slow');
             }
             
             // Muestra el boton que permite ver los datos crudos
@@ -252,7 +266,7 @@
               console.log('form_datavalue success');
               
               // Vacia el output de data xml o json
-              $('#results').empty();
+              //$('#results').empty();
               
               // Vacia donde se va a mostrar la tabla o el chart
               $('#chartContainer').empty();
@@ -260,17 +274,23 @@
               
               console.log('form_datavalue success 2');
               
+              // reset code class or highlight
+              $('code').removeClass('xml json');
               
               // Si devuelve JSON (verifica si pedi json)
               if ($('select[name=format]').val()=='json')
               {
                 console.log('form_datavalue success json');
               
-              
                 // http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
-                var pre = $('#results').append('<pre></pre>').children()[0];
-                $(pre).text( JSON.stringify(responseText, undefined, 2) );
+                //var pre = $('#results').append('<pre></pre>').children()[0];
+                //$(pre).text( JSON.stringify(responseText, undefined, 2) );
                 
+                
+                // highlight
+                $('code').addClass('json');
+                $('code').text(JSON.stringify(responseText, undefined, 2));
+                $('code').each(function(i, e) { hljs.highlightBlock(e); });
                 
                 // =================================================================
                 // Si agrupa por composition (muestra tabla)
@@ -283,21 +303,27 @@
                 {
                   queryDataRenderChart(responseText);
                 }
-                
               }
               else // Si devuelve el XML
               {
                 console.log('form_datavalue success XML');
               
                 // el append devuelve la DIV no el PRE, chidren tiene el PRE
-                var pre = $('#results').append('<pre></pre>').children()[0];
-                $(pre).text( formatXml( xmlToString(responseText) ) );
+                //var pre = $('#results').append('<pre></pre>').children()[0];
+                //$(pre).text( formatXml( xmlToString(responseText) ) );
                 
+                // highlight
+                $('code').addClass('xml');
+                $('code').text(formatXml( xmlToString(responseText) ));
+                $('code').each(function(i, e) { hljs.highlightBlock(e); });
                 
                 // Como XML no hace render de tabla o grafica, muestro los datos
                 // crudos como si hiciera clic en show_data.
-                $('#results').toggle('slow');
+                //$('#results').toggle('slow');
               }
+              
+              
+              $('code').show('slow');
               
               
               // Muestra el boton que permite ver los datos crudos
@@ -306,8 +332,8 @@
               
               
               // Hace scroll animado para mostrar el resultado
-              $('html,body').animate({scrollTop:$('#results').offset().top+400}, 500);
-
+              //$('html,body').animate({scrollTop:$('#results').offset().top+400}, 500);
+              $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
             },
             
             error: function(response, textStatus, errorThrown)
@@ -323,7 +349,6 @@
           
         }); // form data_value ajax submit
 
-        
       }); // ready
       
       
@@ -703,6 +728,7 @@
     <h2><g:message code="query.execute.results" /></h2>
     <a href="#" id="show_data"><g:message code="query.execute.showData" /></a>
     <div id="results" class="out"></div>
+    <pre><code id="code"></code></pre>
     <div id="chartContainer"></div>
   </body>
 </html>
