@@ -12,6 +12,6 @@ import org.junit.*
 class AuditDetailsTests {
 
     void testSomething() {
-       fail "Implement me"
+       //fail "Implement me"
     }
 }
