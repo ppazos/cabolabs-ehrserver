@@ -10,6 +10,7 @@ package ehr.clinical_documents
  */
 class DataIndex {
 
+	String templateId
    String archetypeId
    
    String path
@@ -23,5 +24,7 @@ class DataIndex {
    
    static constraints = {
       name(nullable:true)
+		archetypeId(nullable:true) // FIXME: no usar mas porque la path es absoluta al temaplte.
+		path(size:1..1023)
    }
 }
