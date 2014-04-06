@@ -84,13 +84,13 @@
          */
         $('select[name=sarchetypeId]').change(function() {
         
-          var archetypeId = $(this).val(); // arquetipo seleccionado
+          var templateId = $(this).val(); // arquetipo seleccionado
           
           // http://api.jquery.com/jQuery.ajax/
           //
           $.ajax({
               url: '${createLink(controller:"test", action:"getIndexDefinitions")}',
-              data: {archetypeId: archetypeId},
+              data: {templateId: templateId},
               dataType: 'json',
               success: function(data, textStatus) {
               
@@ -104,12 +104,12 @@
                 $('select[name=spath]').empty();
                 
                 // Agrega las options con las paths del arquetipo seleccionado
-                $('select[name=spath]').append('<option value="">Seleccione una path</option>');
+                $('select[name=spath]').append('<option value="">Select a path</option>');
                 
                 $(data).each(function(i, didx) {
                 
                   op = '<option value="'+didx.path+'">';
-                  op += didx.path +' {'+ ((didx.name != null) ? didx.name +': ' : '') + didx.rmTypeName + '}';
+                  op += didx.name +' {'+ didx.rmTypeName + '}' //+' {'+ ((didx.name != null) ? didx.name +': ' : '') + didx.rmTypeName + '}';
                   op += '</option>';
                   
                   $('select[name=spath]').append(op);
@@ -176,7 +176,7 @@
             '<td>'+ $('input[name=svalue]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeCriteria">[-]</a>'+
-              '<input type="hidden" name="archetypeId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
+              '<input type="hidden" name="templateId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
               //'<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
               '<input type="hidden" name="operand" value="'+$('input[name=soperand]:checked').val()+'" />'+
@@ -241,7 +241,7 @@
             '<td>'+ $('select[name=spath]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeSelection">[-]</a>'+
-              '<input type="hidden" name="archetypeId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
+              '<input type="hidden" name="templateId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
             '</td></tr>'
           );
@@ -423,14 +423,11 @@
             <th>value</th>
           </tr>
           <tr>
-            <td>archetypeId</td>
+            <td>document type</td>
             <td>
-              <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
-              <g:set var="dataIndexes" value="${ehr.clinical_documents.DataIndex.list()}" />
-
-              <g:select name="sarchetypeId" size="3"
-                        from="${dataIndexes.archetypeId.unique()}"
-                        noSelection="['':'Elija arquetipo']" />
+              <g:select name="sarchetypeId" size="3" from="${templateIndexes}"
+                        optionKey="templateId" optionValue="concept"
+                        noSelection="['':'Choose document type']" />
             </td>
           </tr>
           <tr>
@@ -452,15 +449,6 @@
             <td><label>operand</label></td>
             <td>
               <%-- TODO: sacar de restriccion inList de DataCriteria.operand --%>
-              <%--
-              <select name="soperand" size="5">
-                <option value="eq">=</option>
-                <option value="neq">!=</option>
-                <option value="gt">&gt;</option>
-                <option value="lt">&lt;</option>
-              </select>
-              --%>
-              
               <!--
               Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
               -->
@@ -468,7 +456,6 @@
               <label><input type="radio" name="soperand" value="neq" />!=</label>
               <label><input type="radio" name="soperand" value="gt" />&gt;</label>
               <label><input type="radio" name="soperand" value="lt" />&lt;</label>
-
             </td>
           </tr>
           <tr>
@@ -554,7 +541,7 @@
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
           <tr>
-            <th>archetypeId</th>
+            <th>templateId</th>
             <th>path</th>
             <th>operand</th>
             <th>value</th>
@@ -654,7 +641,7 @@
         <a name="selection"></a>
         <table id="selection">
           <tr>
-            <th>archetypeId</th>
+            <th>templateId</th>
             <th>path</th>
             <th></th>
           </tr>

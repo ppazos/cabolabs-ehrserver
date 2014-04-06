@@ -23,7 +23,7 @@ class QueryController {
     }
 
     def create() {
-        [queryInstance: new Query(params)]
+        [queryInstance: new Query(params), templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
     }
     
 

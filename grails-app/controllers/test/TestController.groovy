@@ -367,17 +367,17 @@ class TestController {
     * @param archetypeId
     * @return
     */
-   def getIndexDefinitions(String archetypeId)
+   def getIndexDefinitions(String templateId)
    {
       // TODO: checkear params
       
-      def list = DataIndex.findAllByArchetypeId(archetypeId)
+      def list = DataIndex.findAllByTemplateId(templateId)
       
       // Devuelve solo datos necesarios (sin id de DataIndex, ...)
       def rlist = [] 
       
       for(di in list)
-         rlist << [archetypeId: di.archetypeId, path: di.path, rmTypeName: di.rmTypeName, name: di.name]
+         rlist << [templateId: di.templateId, path: di.path, rmTypeName: di.rmTypeName, name: di.name]
       
       
       render(text:(rlist as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
