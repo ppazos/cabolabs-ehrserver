@@ -28,10 +28,10 @@
       
       <ol class="property-list dataIndex">
       
-        <g:if test="${dataIndexInstance?.archetypeId}">
+        <g:if test="${dataIndexInstance?.templateId}">
         <li class="fieldcontain">
-          <span id="archetypeId-label" class="property-label"><g:message code="dataIndex.archetypeId.label" default="Archetype Id" /></span>
-          <span class="property-value" aria-labelledby="archetypeId-label"><g:fieldValue bean="${dataIndexInstance}" field="archetypeId"/></span>
+          <span id="templateId-label" class="property-label"><g:message code="dataIndex.templateId.label" default="Template Id" /></span>
+          <span class="property-value" aria-labelledby="templateId-label"><g:fieldValue bean="${dataIndexInstance}" field="templateId"/></span>
         </li>
         </g:if>
       
@@ -44,7 +44,7 @@
       
         <g:if test="${dataIndexInstance?.rmTypeName}">
         <li class="fieldcontain">
-          <span id="rmTypeName-label" class="property-label"><g:message code="dataIndex.rmTypeName.label" default="Rm Type Name" /></span>
+          <span id="rmTypeName-label" class="property-label"><g:message code="dataIndex.rmTypeName.label" default="Type Name" /></span>
           <span class="property-value" aria-labelledby="rmTypeName-label"><g:fieldValue bean="${dataIndexInstance}" field="rmTypeName"/></span>
         </li>
         </g:if>

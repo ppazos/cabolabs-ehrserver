@@ -29,16 +29,18 @@
       <table>
         <thead>
           <tr>
-            <g:sortableColumn property="archetypeId" title="${message(code: 'dataIndex.archetypeId.label', default: 'Archetype Id')}" />
+            <g:sortableColumn property="templateId" title="${message(code: 'dataIndex.templateId.label', default: 'Tempalte Id')}" />
             <g:sortableColumn property="path" title="${message(code: 'dataIndex.path.label', default: 'Path')}" />
+            <g:sortableColumn property="name" title="${message(code: 'dataIndex.name.label', default: 'Name')}" />
             <g:sortableColumn property="rmTypeName" title="${message(code: 'dataIndex.rmTypeName.label', default: 'Rm Type Name')}" />
           </tr>
         </thead>
         <tbody>
         <g:each in="${dataIndexInstanceList}" status="i" var="dataIndexInstance">
           <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-            <td><g:link action="show" id="${dataIndexInstance.id}">${fieldValue(bean: dataIndexInstance, field: "archetypeId")}</g:link></td>
+            <td><g:link action="show" id="${dataIndexInstance.id}">${fieldValue(bean: dataIndexInstance, field: "templateId")}</g:link></td>
             <td>${fieldValue(bean: dataIndexInstance, field: "path")}</td>
+            <td>${fieldValue(bean: dataIndexInstance, field: "name")}</td>
             <td>${fieldValue(bean: dataIndexInstance, field: "rmTypeName")}</td>
           </tr>
         </g:each>
