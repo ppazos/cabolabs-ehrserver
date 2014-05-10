@@ -5,6 +5,8 @@ import ehr.clinical_documents.DataIndex
 
 class BootStrap {
 
+   private static String PS = System.getProperty("file.separator")
+   
    def init = { servletContext ->
       
      // TEST
@@ -17,7 +19,11 @@ class BootStrap {
         ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
 		  */
 		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-		  ti.indexAll()
+		  //ti.indexAll()
+        
+        def path = "opts" + PS + "Signos.opt"
+        def signos = new File( path )
+        ti.index(signos)
      }
      // /TEST
      
