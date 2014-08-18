@@ -58,19 +58,22 @@
       <ol class="property-list contribution">
       
         <g:if test="${contributionInstance?.audit}">
-        <li class="fieldcontain">
-          <span id="audit-label" class="property-label"><g:message code="contribution.audit.label" default="Audit" /></span>
-          
-          <span class="property-value" aria-labelledby="audit-label"><g:link controller="auditDetails" action="show" id="${contributionInstance?.audit?.id}">${contributionInstance?.audit?.encodeAsHTML()}</g:link></span>
-        </li>
+          <li class="fieldcontain">
+            <span id="audit-label" class="property-label"><g:message code="contribution.audit.label" default="Audit" /></span>
+            <span class="property-value" aria-labelledby="audit-label">
+              system id: ${contributionInstance?.audit?.systemId}<br/>
+              time committed: ${contributionInstance?.audit?.timeCommitted}<br/>
+              change type: ${contributionInstance?.audit?.changeType}<br/>
+              committer ref: ${contributionInstance?.audit?.committer?.value}
+            </span>
+          </li>
         </g:if>
       
         <g:if test="${contributionInstance?.uid}">
-        <li class="fieldcontain">
-          <span id="uid-label" class="property-label"><g:message code="contribution.uid.label" default="Uid" /></span>
-          
-          <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${contributionInstance}" field="uid"/></span>
-        </li>
+          <li class="fieldcontain">
+            <span id="uid-label" class="property-label"><g:message code="contribution.uid.label" default="Uid" /></span>
+            <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${contributionInstance}" field="uid"/></span>
+          </li>
         </g:if>
       
         <g:if test="${contributionInstance?.versions}">
