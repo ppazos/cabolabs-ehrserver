@@ -47,7 +47,7 @@ class RestController {
     * @param List versions
     * @return
     */
-   def commit(String ehrId)
+   def commit(String ehrId, String auditSystemId, String auditTimeCommitted, String auditCommitter)
    {
       //println "commit "+ params
       
@@ -166,18 +166,20 @@ class RestController {
       }
       */
       
+      
       // uid se establece automaticamente
       def contribution = new Contribution(
          audit: new AuditDetails(
-            systemId:      'ISIS_EHR_SERVER',
-            timeCommitted: new Date(),
+            systemId:      auditSystemId,
+            timeCommitted: Date.parse(config.l10n.datetime_format, auditTimeCommitted),
             //,
             // changeType solo se soporta 'creation' por ahora
             //
             // El committer de la contribution es el mismo committer de todas
             // las versiones, cada version tiene su committer debe ser el mismo.
             committer: new DoctorProxy(
-               name: versions[0].commitAudit.committer.name //parsedContribution.audit.committer.name.text()
+               name: auditCommitter
+               // TODO: 'value' con el id
             )
          ),
          versions: versions
