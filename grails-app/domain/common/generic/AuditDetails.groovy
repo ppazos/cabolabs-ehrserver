@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType
 class AuditDetails {
 
    // Identificador del sistema al que fue commiteado el cambio en el EHR
-   String systemId = "ISIS_EHR"
+   String systemId = "ISIS_EHR" // FIXME: debe salir de config
    
    // Lo establece el servidor cuando recibe un commit
    Date timeCommitted
