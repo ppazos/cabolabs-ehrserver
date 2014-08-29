@@ -117,6 +117,12 @@ class IndexDataJob {
       }
       
       def dataidx = ehr.clinical_documents.DataIndex.findByArchetypeIdAndPath(archetypeId, idxpath)
+      
+      if (!dataidx)
+      {
+         println "DataIndex not found for "+ archetypeId +" and "+ idxpath
+      }
+      
       //println archetypeId +' '+ idxpath +' '+ dataidx
       String idxtype = dataidx?.rmTypeName
       
