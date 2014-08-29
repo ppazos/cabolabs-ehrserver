@@ -97,11 +97,12 @@ class XmlService {
          parsedVersion = new XmlSlurper(true, false).parseText(versionXML)
          
          commitAudit = new AuditDetails(
-            systemId:      'ISIS_EHR_SERVER', //parsedVersion.commit_audit.system_id.text(),
-            timeCommitted: new Date(),
+            systemId:      parsedVersion.commit_audit.system_id.text(),
+            timeCommitted: Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
             changeType:    parsedVersion.commit_audit.change_type.value.text(),
             committer: new DoctorProxy(
                name: parsedVersion.commit_audit.committer.name.text()
+               // TODO: id
             )
          )
          

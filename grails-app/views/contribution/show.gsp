@@ -64,7 +64,7 @@
               system id: ${contributionInstance?.audit?.systemId}<br/>
               time committed: ${contributionInstance?.audit?.timeCommitted}<br/>
               change type: ${contributionInstance?.audit?.changeType}<br/>
-              committer ref: ${contributionInstance?.audit?.committer?.value}
+              committer ref: ${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}
             </span>
           </li>
         </g:if>
