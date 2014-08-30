@@ -105,7 +105,8 @@ class IndexDataJob {
          }
          else // Si es un archetypeId
          {
-            idxpath = path + '/' + node.name()
+            //idxpath = path + '/' + node.name()
+            idxpath = path + '/' + node.name() + '[archetype_id='+ node.'@archetype_node_id'.text() +']'
          }
       }
       else // No tiene archetype_node_id

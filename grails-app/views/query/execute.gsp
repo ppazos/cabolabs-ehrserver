@@ -142,7 +142,7 @@
         $('#form_composition').ajaxForm({
         
           //dataType: 'json',
-          url: '${createLink(controller:'rest', action:'queryCompositions')}',
+          url: '${createLink(controller:'rest', action:'query')}',
           data: {},
         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
@@ -238,7 +238,7 @@
         $('#form_datavalue').submit( function(e) {
         
           // Validacion
-          if ($('select[name=qehrId]').val()==null)
+          if ($('select[name=ehrId]').val()==null)
           {
             alert('Seleccione un EHR');
             return false;
@@ -253,7 +253,7 @@
           $(this).ajaxSubmit({
           
             dataType: type,
-            url: '${createLink(controller:'rest', action:'queryData')}',
+            url: '${createLink(controller:'rest', action:'query')}',
             data: {},
           
             beforeSubmit: function(data, form, options) {
@@ -555,7 +555,7 @@
       
       <h2><g:message code="query.execute.queryByData" /></h2>
       <form id="form_composition" method="post">
-        
+        <input type="hidden" name="queryUid" value="${query.uid}" />
         <h3><g:message code="query.execute.criteria" /></h3>
         <table>
           <tr>
@@ -597,7 +597,7 @@
           <tr>
             <td>ehrId</td>
             <td>
-              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
+              <g:select name="ehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
             </td>
           </tr>
           <tr>
@@ -640,7 +640,7 @@
         </table>
         
         <fieldset class="buttons">
-          <input type="submit" value="Ejecutar" />
+          <input type="submit" value="${message(code:'query.execute.action.execute')}" />
         </fieldset>
       </form>
     </g:if>
@@ -648,7 +648,7 @@
     
       <h2><g:message code="query.execute.queryData" /></h2>
       <form id="form_datavalue" method="post">
-        
+        <input type="hidden" name="queryUid" value="${query.uid}" />
         <h3><g:message code="query.execute.selectedDataPoints" /></h3>
         <table>
           <tr>
@@ -674,7 +674,7 @@
           <tr>
             <td>ehrId</td>
             <td>
-              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
+              <g:select name="ehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
             </td>
           </tr>
           <tr>

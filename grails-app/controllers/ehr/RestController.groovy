@@ -748,7 +748,7 @@ class RestController {
    /*
     * REST service to query data and compositions executing an existing Query instance.
     */
-   def query(String queryUid, String ehrId, String format)
+   def query(String queryUid, String ehrId, String format) // TODO: fechas
    {
       println "query"
       println params
