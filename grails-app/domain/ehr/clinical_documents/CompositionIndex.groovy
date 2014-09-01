@@ -21,7 +21,8 @@ class CompositionIndex {
    
    String ehrId // uid del ehr del subjectId
    
-   String archetypeId // se usa como "tipo de documento", es un arquetipo de COMPOSITION
+   String templateId // se usa como "tipo de documento", es un arquetipo de COMPOSITION
+   String archetypeId // archetype that defines the "definition" part of the template
    
    boolean dataIndexed = false // true cuando se crean los indices de DataValue para la composition
    

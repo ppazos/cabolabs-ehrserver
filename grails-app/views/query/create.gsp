@@ -79,10 +79,10 @@
         
         
         /**
-         * Clic en un arquetipo de la lista de arquetipos (select[sarchetypeId])
+         * Clic en un arquetipo de la lista de arquetipos (select[stemplateId])
          * Lista las paths del arquetipo en select[spath]
          */
-        $('select[name=sarchetypeId]').change(function() {
+        $('select[name=stemplateId]').change(function() {
         
           var templateId = $(this).val(); // arquetipo seleccionado
           
@@ -120,7 +120,7 @@
                 console.log(textStatus, errorThrown);
               }
           });
-        }); // click en select sarchetypeId
+        }); // click en select stemplateId
         
         
         /*
@@ -139,7 +139,7 @@
           
           // TODO: verificar que todo tiene valor seleccionado
           
-          if ( $('select[name=sarchetypeId]').val() == null )
+          if ( $('select[name=stemplateId]').val() == null )
           {
             alert('seleccione un arquetipo');
             return;
@@ -169,14 +169,14 @@
           
           $('#criteria').append(
             '<tr>'+
-            '<td>'+ $('select[name=sarchetypeId]').val() +'</td>'+
+            '<td>'+ $('select[name=stemplateId]').val() +'</td>'+
             '<td>'+ $('select[name=spath]').val() +'</td>'+
             //'<td>'+ $('select[name=soperand]').val() +'</td>'+
             '<td>'+ $('input[name=soperand]:checked').val() +'</td>'+
             '<td>'+ $('input[name=svalue]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeCriteria">[-]</a>'+
-              '<input type="hidden" name="templateId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
+              '<input type="hidden" name="templateId" value="'+$('select[name=stemplateId]').val()+'" />'+
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
               //'<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
               '<input type="hidden" name="operand" value="'+$('input[name=soperand]:checked').val()+'" />'+
@@ -225,7 +225,7 @@
           
           // TODO: verificar que todo tiene valor seleccionado
           
-          if ( $('select[name=sarchetypeId]').val() == null )
+          if ( $('select[name=stemplateId]').val() == null )
           {
             alert('seleccione un arquetipo');
             return;
@@ -237,11 +237,11 @@
           }
           
           $('#selection').append(
-            '<tr><td>'+ $('select[name=sarchetypeId]').val() +'</td>'+
+            '<tr><td>'+ $('select[name=stemplateId]').val() +'</td>'+
             '<td>'+ $('select[name=spath]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeSelection">[-]</a>'+
-              '<input type="hidden" name="templateId" value="'+$('select[name=sarchetypeId]').val()+'" />'+
+              '<input type="hidden" name="templateId" value="'+$('select[name=stemplateId]').val()+'" />'+
               '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
             '</td></tr>'
           );
@@ -425,7 +425,7 @@
           <tr>
             <td>document type</td>
             <td>
-              <g:select name="sarchetypeId" size="3" from="${templateIndexes}"
+              <g:select name="stemplateId" size="3" from="${templateIndexes}"
                         optionKey="templateId" optionValue="concept"
                         noSelection="['':'Choose document type']" />
             </td>
@@ -509,8 +509,8 @@
               -->
                       
               <!-- solo arquetipos de composition -->
-              <g:select name="qarchetypeId" size="5"
-                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
+              <g:select name="qtemplateId" size="5"
+                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
             </td>
           </tr>
           <tr>
@@ -588,7 +588,7 @@
         <table>
           <tr>
             <td>
-              composition archetypeId
+              composition templateId
               <span class="info">
                 <img src="${resource(dir:"images/skin", file:"information.png")}" />
                 <span class="content">
@@ -611,8 +611,8 @@
               lo tenga, esta operacion deberia usar el ArchetypeManager.
               -->
               <!-- solo arquetipos de composition -->
-              <g:select name="qarchetypeId" size="5"
-                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
+              <g:select name="qtemplateId" size="5"
+                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
             </td>
           </tr>
           <tr>

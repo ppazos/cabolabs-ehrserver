@@ -50,7 +50,9 @@ class IndexDataJob {
          
          //println "root parent: " + compoParsed.'..' // .. es gpath para parent
          
-         recursiveIndexData( '', compoParsed, indexes, compoIndex.archetypeId, compoIndex )
+         println "templateId 0: "+ compoIndex.templateId
+         
+         recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
          
          indexes.each { didx ->
             
@@ -74,8 +76,24 @@ class IndexDataJob {
       }
    } // execute
    
-   private void recursiveIndexData(String path, GPathResult node, List indexes, String archetypeId, CompositionIndex owner)
+   /**
+    * 
+    * @param path parent node path, absolute to the template, empty for the root node.
+    * @param archetypePath absolute path to a root archetype but not to the template, used for querying.
+    * @param node
+    * @param indexes will contain all the indexes created by the recursion
+    * @param templateId
+    * @param archetypeId
+    * @param owner
+    */
+   private void recursiveIndexData(
+      String path, String archetypePath,
+      GPathResult node, List indexes, 
+      String templateId, String archetypeId,
+      CompositionIndex owner)
    {
+      println "templateId 1: "+ templateId
+      
       // TODO:
       // Como no todos los nodos tienen el tipo de forma explicita (xsi:type)
       // tengo que consultar al arquetipo para saber el tipo del nodo.
@@ -85,44 +103,61 @@ class IndexDataJob {
       // y puedo hacer lookup del tipo usando archetypeId+path.
       
 
-      // Path del arquetipo para el indice
+      // Path del template para el indice (absoluta)
       String idxpath
       
       // La path del root va sin nombre, ej. sin esto el root que es / seria /data
       if (path == '')
       {
          idxpath = '/'
+         archetypePath = '/'
       }
       else if (!node.'@archetype_node_id'.isEmpty()) // Si tiene archetype_node_id
       {
          // Para que los hijos de la raiz no empiecen con //
          if (path == '/') path = ''
+         if (archetypePath == '/') archetypePath = ''
          
          // Si es un nodo atNNNN
          if (node.'@archetype_node_id'.text().startsWith('at'))
          {
             idxpath = path + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
+            archetypePath = archetypePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
          }
          else // Si es un archetypeId
          {
             //idxpath = path + '/' + node.name()
             idxpath = path + '/' + node.name() + '[archetype_id='+ node.'@archetype_node_id'.text() +']'
+            archetypePath = '/' // This node is an archetype root because it has an archetypeId
+            archetypeId = node.'@archetype_node_id'.text()
          }
       }
       else // No tiene archetype_node_id
       {
          // Para que los hijos de la raiz no empiecen con //
          if (path == '/') path = ''
+         if (archetypePath == '/') archetypePath = ''
          
          idxpath = path + '/' + node.name()
+         archetypePath = archetypePath + '/' + node.name()
       }
       
-      def dataidx = ehr.clinical_documents.DataIndex.findByArchetypeIdAndPath(archetypeId, idxpath)
+      println "tempPath: "+ idxpath
+      println "archPath: "+ archetypePath
+      
+      // TODO: instead of calculating the archetypePath, I can use the templateId and path
+      //       to query DataIndex and get the archetypeId and archetypePath from there.
+      // DataIndex uses the archetypeId and archetypePath to search
+      def dataidx = ehr.clinical_documents.DataIndex.findByArchetypeIdAndArchetypePath(archetypeId, archetypePath)
       
       if (!dataidx)
       {
-         println "DataIndex not found for "+ archetypeId +" and "+ idxpath
+         println "DataIndex not found for "+ archetypeId +" and "+ archetypePath
       }
+      
+      // Si dataidx es nulo, idxtype sera nulo y luego idvalue tambien,
+      // pero la recursion sigue. Esos valores solo se necesitan cuando
+      // hay un nodo indexable, no para todos los parents.
       
       //println archetypeId +' '+ idxpath +' '+ dataidx
       String idxtype = dataidx?.rmTypeName
@@ -169,26 +204,28 @@ class IndexDataJob {
          if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
-            def dataIndex = this."$method"(node, archetypeId, idxpath, owner)
+            def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
             indexes << dataIndex
          }
          else // Si no es indizable por valor, sigue la recursion
          {
             node.children().each { subnode ->
                
-               recursiveIndexData( idxpath, subnode, indexes, archetypeId, owner )
+               recursiveIndexData( idxpath, archetypePath, subnode, indexes, templateId, archetypeId, owner )
             }
          }
       }
-      
-      // Test: indices como datos
-      //indexes << [path: idxpath, value: idxvalue, type: idxtype]
-      
    } // recursiveIndexData
    
    
-   private DvQuantityIndex create_DV_QUANTITY_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   private DvQuantityIndex create_DV_QUANTITY_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
    {
+      println "templateId 2: "+ templateId
+      
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
       <value xsi:type="DV_QUANTITY">
@@ -197,15 +234,21 @@ class IndexDataJob {
       </value>
       */
       return new DvQuantityIndex(
+         templateId: templateId,
          archetypeId: archetypeId,
          path: path,
+         archetypePath: archetypePath,
          owner: owner,
          magnitude: new Float( node.magnitude.text() ), // float a partir de string
          units: node.units.text()
       )
    }
    
-   private DvTextIndex create_DV_TEXT_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   private DvTextIndex create_DV_TEXT_index(
+      GPathResult node, 
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
    {
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
@@ -215,14 +258,20 @@ class IndexDataJob {
       */
       
       return new DvTextIndex(
+         templateId: templateId,
          archetypeId: archetypeId,
          path: path,
+         archetypePath: archetypePath,
          owner: owner,
          value: node.value.text()
       )
    }
    
-   private DvBooleanIndex create_DV_BOOLEAN_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   private DvBooleanIndex create_DV_BOOLEAN_index(
+      GPathResult node, 
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
    {
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
@@ -232,14 +281,20 @@ class IndexDataJob {
        */
       
       return new DvBooleanIndex(
+         templateId: templateId,
          archetypeId: archetypeId,
          path: path,
+         archetypePath: archetypePath,
          owner: owner,
          value: new Boolean(node.value.text())
       )
    }
    
-   private DvCodedTextIndex create_DV_CODED_TEXT_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   private DvCodedTextIndex create_DV_CODED_TEXT_index(
+      GPathResult node, 
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
    {
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
@@ -255,8 +310,10 @@ class IndexDataJob {
       */
       
       return new DvCodedTextIndex(
+         templateId: templateId,
          archetypeId: archetypeId,
          path: path,
+         archetypePath: archetypePath,
          owner: owner,
          value: node.value.text(),
          code: node.defining_code.code_string.text(),
@@ -264,7 +321,11 @@ class IndexDataJob {
       )
    }
    
-   private DvDateTimeIndex create_DV_DATE_TIME_index(GPathResult node, String archetypeId, String path, CompositionIndex owner)
+   private DvDateTimeIndex create_DV_DATE_TIME_index(
+      GPathResult node, 
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
    {
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
@@ -273,8 +334,10 @@ class IndexDataJob {
       </time>
       */
       return new DvDateTimeIndex(
+         templateId: templateId,
          archetypeId: archetypeId,
          path: path,
+         archetypePath: archetypePath,
          owner: owner,
          value: Date.parse(config.l10n.datetime_format, node.value.text())
          //value: Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", node.value.text())

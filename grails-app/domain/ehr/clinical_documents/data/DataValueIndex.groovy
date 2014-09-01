@@ -5,8 +5,10 @@ import ehr.clinical_documents.CompositionIndex
 class DataValueIndex {
 
    // index
+   String templateId
    String archetypeId
    String path
+   String archetypePath
    
    CompositionIndex owner
    

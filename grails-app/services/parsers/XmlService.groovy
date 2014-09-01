@@ -152,13 +152,30 @@ class XmlService {
             startTime = Date.parse(config.l10n.datetime_format, parsedVersion.data.context.start_time.value.text())
          }
          
+         /*
+          * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
+          *   <name>
+          *     <value>Signos vitales</value>
+          *   </name>
+          *   <archetype_details>
+          *     <archetype_id>
+          *       <value>openEHR-EHR-COMPOSITION.signos.v1</value>
+          *     </archetype_id>
+          *     <template_id>
+          *       <value>Signos</value>
+          *     </template_id>
+          *     <rm_version>1.0.2</rm_version>
+          *   </archetype_details>
+          *   ...
+          */
          compoIndex = new CompositionIndex(
             uid:         compositionUID,
             category:    parsedVersion.data.category.value.text(), // event o persistent
             startTime:   startTime, // puede ser vacio si category es persistent
             subjectId:   ehr.subject.value,
             ehrId:       ehr.ehrId,
-            archetypeId: parsedVersion.data.@archetype_node_id.text()
+            archetypeId: parsedVersion.data.@archetype_node_id.text(),
+            templateId:  parsedVersion.data.archetype_details.template_id.value.text()
          )
          
          

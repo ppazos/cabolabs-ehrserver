@@ -121,9 +121,11 @@ class QueryController {
      * @param group '' | composition | path agrupamiento por defecto
      * @return
      */
-    def save(String name, String qarchetypeId, String type, String format, String group)
+    def save(String name, String qtemplateId, String type, String format, String group)
     {
-       def query = new Query(name:name, qarchetypeId:qarchetypeId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
+       println params
+       
+       def query = new Query(name:name, qtemplateId:qtemplateId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
        
        List archetypeIds = params.list('archetypeId')
        List paths = params.list('path')
@@ -158,7 +160,9 @@ class QueryController {
        
        if (!query.save())
        {
+          println "================================="
           println "query errors: "+ query.errors
+          query.errors.allErrors.each { println it }
        }
        
        /*

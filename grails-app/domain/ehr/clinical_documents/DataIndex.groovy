@@ -10,10 +10,14 @@ package ehr.clinical_documents
  */
 class DataIndex {
 
+   // Indexes are created by tempalte
 	String templateId
-   String archetypeId
+   String path // absolute to the template
    
-   String path
+   // Queries use archetype ids and paths to be generic (not specific to a template)
+   // See issue #49 
+   String archetypeId   // archetype that defines the data point
+   String archetypePath // absolute to the archetype
    
    String rmTypeName
    

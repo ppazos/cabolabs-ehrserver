@@ -36,7 +36,7 @@ class Query {
    // Si es null, se puede especificar como parametro de la query
    // a modo de "tipo de documento", sino se especifica en ningun
    // caso, pide "cualquier tipo de documento". 
-   String qarchetypeId
+   String qtemplateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
@@ -59,7 +59,7 @@ class Query {
       
       // No creo que le guste null en inList, le pongo ''
       group(nullable:true, inList:['', 'composition', 'path'])
-      qarchetypeId(nullable: true)
+      //qarchetypeId(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
    }
