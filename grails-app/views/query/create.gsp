@@ -79,18 +79,19 @@
         
         
         /**
-         * Clic en un arquetipo de la lista de arquetipos (select[stemplateId])
-         * Lista las paths del arquetipo en select[spath]
+         * Clic en un arquetipo de la lista de arquetipos (select[view_archetype_id])
+         * Lista las paths del arquetipo en select[view_archetype_path]
          */
-        $('select[name=stemplateId]').change(function() {
+        $('select[name=view_archetype_id]').change(function() {
         
-          var templateId = $(this).val(); // arquetipo seleccionado
+          var archetypeId = $(this).val(); // arquetipo seleccionado
           
           // http://api.jquery.com/jQuery.ajax/
           //
           $.ajax({
+              // FIXME: this action should be in QueryController
               url: '${createLink(controller:"test", action:"getIndexDefinitions")}',
-              data: {templateId: templateId},
+              data: {archetypeId: archetypeId},
               dataType: 'json',
               success: function(data, textStatus) {
               
@@ -101,18 +102,18 @@
                 //   rmTypeName: "DV_QUANTITY"
                 
                 // Saca las options que haya
-                $('select[name=spath]').empty();
+                $('select[name=view_archetype_path]').empty();
                 
                 // Agrega las options con las paths del arquetipo seleccionado
-                $('select[name=spath]').append('<option value="">Select a path</option>');
+                $('select[name=view_archetype_path]').append('<option value="">Select a path</option>');
                 
                 $(data).each(function(i, didx) {
                 
-                  op = '<option value="'+didx.path+'">';
+                  op = '<option value="'+ didx.archetypePath +'">';
                   op += didx.name +' {'+ didx.rmTypeName + '}' //+' {'+ ((didx.name != null) ? didx.name +': ' : '') + didx.rmTypeName + '}';
                   op += '</option>';
                   
-                  $('select[name=spath]').append(op);
+                  $('select[name=view_archetype_path]').append(op);
                 });
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -120,7 +121,7 @@
                 console.log(textStatus, errorThrown);
               }
           });
-        }); // click en select stemplateId
+        }); // click en select view_archetype_id
         
         
         /*
@@ -139,14 +140,14 @@
           
           // TODO: verificar que todo tiene valor seleccionado
           
-          if ( $('select[name=stemplateId]').val() == null )
+          if ( $('select[name=view_archetype_id]').val() == null )
           {
-            alert('seleccione un arquetipo');
+            alert('seleccione un concepto'); // TODO: I18N
             return;
           }
-          if ( $('select[name=spath]').val() == null )
+          if ( $('select[name=view_archetype_path]').val() == null )
           {
-            alert('seleccione una path');
+            alert('seleccione una parte'); // TODO: I18N
             return;
           }
           /*
@@ -169,15 +170,15 @@
           
           $('#criteria').append(
             '<tr>'+
-            '<td>'+ $('select[name=stemplateId]').val() +'</td>'+
-            '<td>'+ $('select[name=spath]').val() +'</td>'+
+            '<td>'+ $('select[name=view_archetype_id]').val() +'</td>'+
+            '<td>'+ $('select[name=view_archetype_path]').val() +'</td>'+
             //'<td>'+ $('select[name=soperand]').val() +'</td>'+
             '<td>'+ $('input[name=soperand]:checked').val() +'</td>'+
             '<td>'+ $('input[name=svalue]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeCriteria">[-]</a>'+
-              '<input type="hidden" name="templateId" value="'+$('select[name=stemplateId]').val()+'" />'+
-              '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
+              '<input type="hidden" name="archetypeId" value="'+$('select[name=view_archetype_id]').val()+'" />'+
+              '<input type="hidden" name="archetypePath" value="'+$('select[name=view_archetype_path]').val()+'" />'+
               //'<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
               '<input type="hidden" name="operand" value="'+$('input[name=soperand]:checked').val()+'" />'+
               '<input type="hidden" name="value" value="'+$('input[name=svalue]').val()+'" />'+
@@ -225,24 +226,24 @@
           
           // TODO: verificar que todo tiene valor seleccionado
           
-          if ( $('select[name=stemplateId]').val() == null )
+          if ( $('select[name=view_archetype_id]').val() == null )
           {
-            alert('seleccione un arquetipo');
+            alert('seleccione un concepto'); // TODO: I18N
             return;
           }
-          if ( $('select[name=spath]').val() == null )
+          if ( $('select[name=view_archetype_path]').val() == null )
           {
-            alert('seleccione una path');
+            alert('seleccione una parte'); // TODO: I18N
             return;
           }
           
           $('#selection').append(
-            '<tr><td>'+ $('select[name=stemplateId]').val() +'</td>'+
-            '<td>'+ $('select[name=spath]').val() +'</td>'+
+            '<tr><td>'+ $('select[name=view_archetype_id]').val() +'</td>'+
+            '<td>'+ $('select[name=view_archetype_path]').val() +'</td>'+
             '<td>'+
               '<a href="#" id="removeSelection">[-]</a>'+
-              '<input type="hidden" name="templateId" value="'+$('select[name=stemplateId]').val()+'" />'+
-              '<input type="hidden" name="path" value="'+$('select[name=spath]').val()+'" />'+
+              '<input type="hidden" name="archetypeId" value="'+$('select[name=view_archetype_id]').val()+'" />'+
+              '<input type="hidden" name="archetypePath" value="'+$('select[name=view_archetype_path]').val()+'" />'+
             '</td></tr>'
           );
           
@@ -423,18 +424,22 @@
             <th>value</th>
           </tr>
           <tr>
-            <td>document type</td>
+            <td>concept</td>
             <td>
-              <g:select name="stemplateId" size="3" from="${templateIndexes}"
-                        optionKey="templateId" optionValue="concept"
-                        noSelection="['':'Choose document type']" />
+              <g:set var="concepts" value="${dataIndexes.archetypeId.unique()}" />
+              
+              <%-- optionKey="archetypeId" optionValue="name" --%>
+              <%-- This select is used just to create the condition or projection,
+                   is not saved in the query directly --%>
+              <g:select name="view_archetype_id" size="3" from="${concepts}"
+                        noSelection="['':'Choose a concept']" />
             </td>
           </tr>
           <tr>
-            <td>path</td>
+            <td>part</td>
             <td>
               <%-- Se setean las options al elegir un arquetipo --%>
-              <select name="spath" size="5"></select>
+              <select name="view_archetype_path" size="5"></select>
             </td>
           </tr>
         </table>
@@ -468,7 +473,6 @@
           </tr>
         </table>
         
-        
         <!--
         value puede especificarse aqui como filtro o puede ser un
         parametro de la query sino se especifica aqui.
@@ -483,6 +487,7 @@
          
         <!-- Indices de nivel 1 -->
         <table>
+          <%-- Removed for now...
           <tr>
             <td>
               composition archetypeId
@@ -513,6 +518,7 @@
                         from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
             </td>
           </tr>
+          --%>
           <tr>
             <td>
               show UI?
@@ -541,7 +547,7 @@
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
           <tr>
-            <th>templateId</th>
+            <th>archetypeId</th>
             <th>path</th>
             <th>operand</th>
             <th>value</th>
@@ -586,6 +592,7 @@
         -->
         
         <table>
+          <%-- Removed for now...
           <tr>
             <td>
               composition templateId
@@ -603,6 +610,7 @@
                 </span>
               </span>
             </td>
+            
             <td>
               <!--
               FIXME:
@@ -615,6 +623,7 @@
                         from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
             </td>
           </tr>
+          --%>
           <tr>
              <td>default format</td>
              <td>
@@ -641,7 +650,7 @@
         <a name="selection"></a>
         <table id="selection">
           <tr>
-            <th>templateId</th>
+            <th>archetypeId</th>
             <th>path</th>
             <th></th>
           </tr>

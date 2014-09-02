@@ -36,7 +36,7 @@ class Query {
    // Si es null, se puede especificar como parametro de la query
    // a modo de "tipo de documento", sino se especifica en ningun
    // caso, pide "cualquier tipo de documento". 
-   String qtemplateId
+   //String qtemplateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
@@ -87,7 +87,7 @@ class Query {
                
                and {
                   eq('archetypeId', dataGet.archetypeId)
-                  eq('path', dataGet.path)
+                  eq('archetypePath', dataGet.path)
                }
             }
          }
@@ -157,7 +157,7 @@ class Query {
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = DataIndex.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
+         dataidx = DataIndex.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
@@ -225,7 +225,7 @@ class Query {
             col = [type: colData['type'], path: _absPath] // pongo la path para debug
             
             // dvi para la columna actual
-            dvi = dvis.find{ (it.archetypeId + it.path) == _absPath && it.owner.id == compoId}
+            dvi = dvis.find{ (it.archetypeId + it.archetypePath) == _absPath && it.owner.id == compoId}
             
             if (dvi)
             {
@@ -282,7 +282,7 @@ class Query {
       
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
-      def cols = res.groupBy { it.archetypeId + it.path }
+      def cols = res.groupBy { it.archetypeId + it.archetypePath }
       
 
       // Usa ruta absoluta para agrupar.
@@ -296,7 +296,7 @@ class Query {
 
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = DataIndex.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
+         dataidx = DataIndex.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
          
 
          resGrouped[absPath] = [:]
@@ -383,7 +383,7 @@ class Query {
           
           // Lookup del tipo de objeto en la path para saber los nombres de los atributos
           // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-          dataidx = DataIndex.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
+          dataidx = DataIndex.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
           idxtype = dataidx?.rmTypeName
           
           
@@ -394,7 +394,7 @@ class Query {
           "  FROM DataValueIndex dvi" +
           "  WHERE dvi.owner.id = ci.id" + // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex (los criterios se consideran AND, sin esta condicion es un OR y alcanza que se cumpla uno de los criterios que vienen en params)
           "        AND dvi.archetypeId = '"+ dataCriteria.archetypeId +"'" +
-          "        AND dvi.path = '"+ dataCriteria.path +"'"
+          "        AND dvi.archetypePath = '"+ dataCriteria.path +"'"
           
           // Consulta sobre atributos del DataIndex dependiendo de su tipo
           switch (idxtype)

@@ -42,14 +42,16 @@
           <span class="property-value" aria-labelledby="group-label"><g:fieldValue bean="${queryInstance}" field="group"/></span>
         </li>
         </g:if>
-      
+        
+        <%-- No used for now
         <g:if test="${queryInstance?.qarchetypeId}">
         <li class="fieldcontain">
           <span id="qarchetypeId-label" class="property-label"><g:message code="query.qarchetypeId.label" default="Qarchetype Id" /></span>
           <span class="property-value" aria-labelledby="qarchetypeId-label"><g:fieldValue bean="${queryInstance}" field="qarchetypeId"/></span>
         </li>
         </g:if>
-      
+        --%>
+        
         <g:if test="${queryInstance?.format}">
         <li class="fieldcontain">
           <span id="format-label" class="property-label"><g:message code="query.format.label" default="Format" /></span>

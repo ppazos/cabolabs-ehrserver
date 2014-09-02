@@ -23,7 +23,9 @@ class QueryController {
     }
 
     def create() {
-        [queryInstance: new Query(params), templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
+        [queryInstance: new Query(params),
+         dataIndexes: ehr.clinical_documents.DataIndex.list(), // to create filters or projections
+         templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
     }
     
 
@@ -121,15 +123,17 @@ class QueryController {
      * @param group '' | composition | path agrupamiento por defecto
      * @return
      */
-    def save(String name, String qtemplateId, String type, String format, String group)
+    def save(String name, String type, String format, String group)
     {
        println params
        
-       def query = new Query(name:name, qtemplateId:qtemplateId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
+       def query = new Query(name:name, type:type, format:format, group:group) // qarchetypeId puede ser vacio
        
        List archetypeIds = params.list('archetypeId')
-       List paths = params.list('path')
+       List paths = params.list('archetypePath')
        
+       
+       // FIXME: switch
        if (type == 'composition')
        {
           List operands = params.list('operand')

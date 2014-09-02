@@ -600,6 +600,8 @@
               <g:select name="ehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
             </td>
           </tr>
+          
+          <%-- No used for now
           <tr>
             <td>archetypeId</td>
             <td>
@@ -612,6 +614,8 @@
                         from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
             </td>
           </tr>
+          --%>
+          
           <tr>
             <td>dates</td>
             <td>
@@ -677,6 +681,8 @@
               <g:select name="ehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
             </td>
           </tr>
+          
+          <%-- No used for now
           <tr>
             <td>archetypeId</td>
             <td>
@@ -691,6 +697,8 @@
                         from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
             </td>
           </tr>
+          --%>
+          
           <tr>
             <td>dates</td>
             <td>
