@@ -191,7 +191,10 @@
             // Si devuelve HTML
             if ($('select[name=showUI]').val()=='true')
             {
+              console.log("showUI selected");
+              console.log(responseText);
               $('#results').html( responseText );
+              $('#results').show('slow');
             }
             else // Si devuelve el XML
             {

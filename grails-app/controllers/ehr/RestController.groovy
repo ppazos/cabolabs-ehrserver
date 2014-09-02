@@ -747,12 +747,15 @@ class RestController {
    
    /*
     * REST service to query data and compositions executing an existing Query instance.
+    * @param retrieveData only used for composition queries
+    * @param showUI only used for composition queries to retrieve HTML (FIXME: this might be another output format)
     */
-   def query(String queryUid, String ehrId, String format) // TODO: fechas
+   def query(String queryUid, String ehrId, String format, boolean retrieveData, boolean showUI) // TODO: fechas
    {
-      println "query"
+      println "rest/query"
       println params
       
+      // FIXME: all these returns should have a proper error JSON response. See commit service.
       if (!queryUid)
       {
          render "queryUid is mandatory"
@@ -788,58 +791,66 @@ class RestController {
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
-         def retrieveData = false // TODO: agregar para type=composition
-      
+         // Muestra compositionIndex/list
+         if (showUI)
+         {
+            // FIXME: hay que ver el tema del paginado
+            render(template:'/compositionIndex/listTable',
+                   model:[compositionIndexInstanceList: res, compositionIndexInstanceTotal:res.size()])
+            return
+         }
+         
          // Devuelve CompositionIndex, si quiere el contenido es buscar las
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
             // TODO: support for JSON
             render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            return
          }
-         else
-         {
-             // FIXME: hay que armar bien el XML: declaracion de xml solo al
-             //        inicio y namespaces en el root.
-             //
-             //  REQUERIMIENTO:
-             //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
-             //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
-             //  para extraer datos con reglas sobre un conjunto de compositions en un
-             //  solo XML.
-             //
-             // FIXME: no genera xml valido porque las compos se guardan con:
-             // <?xml version="1.0" encoding="UTF-8"?>
-             //
-             String buff
-             String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-             res.each { compoIndex ->
-                
-                // FIXME: verificar que esta en disco, sino esta hay un problema
-                //        de sincronizacion entre la base y el FS, se debe omitir
-                //        el resultado y hacer un log con prioridad alta para ver
-                //        cual fue el error.
-                
-                // Tiene declaracion de xml
-                // Tambien tiene namespace, eso deberia estar en el nodo root
-                //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
-                buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
-                
-                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
-                
-                /**
-                 * Composition queda:
-                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-                 */
-                
-                out += buff + "\n"
-            }
-            out += '</list>'
-            
-            render(text: out, contentType:"text/xml", encoding:"UTF-8")
+
+          // FIXME: hay que armar bien el XML: declaracion de xml solo al
+          //        inicio y namespaces en el root.
+          //
+          //  REQUERIMIENTO:
+          //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
+          //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
+          //  para extraer datos con reglas sobre un conjunto de compositions en un
+          //  solo XML.
+          //
+          // FIXME: no genera xml valido porque las compos se guardan con:
+          // <?xml version="1.0" encoding="UTF-8"?>
+          //
+          String buff
+          String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
+          res.each { compoIndex ->
+             
+             // FIXME: verificar que esta en disco, sino esta hay un problema
+             //        de sincronizacion entre la base y el FS, se debe omitir
+             //        el resultado y hacer un log con prioridad alta para ver
+             //        cual fue el error.
+             
+             // Tiene declaracion de xml
+             // Tambien tiene namespace, eso deberia estar en el nodo root
+             //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
+             buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
+             
+             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+             buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+             
+             /**
+              * Composition queda:
+              *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+              */
+             
+             out += buff + "\n"
          }
+         out += '</list>'
+         
+         render(text: out, contentType:"text/xml", encoding:"UTF-8")
+         return
+         
       } // type = composition
       else
       {
