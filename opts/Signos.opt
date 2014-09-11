@@ -152,7 +152,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
@@ -792,7 +792,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
@@ -1306,7 +1306,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
@@ -1863,7 +1863,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
@@ -2244,7 +2244,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
@@ -2597,7 +2597,7 @@
                 <upper>1</upper>
               </existence>
               <children xsi:type="C_COMPLEX_OBJECT">
-                <rm_type_name>EVENT</rm_type_name>
+                <rm_type_name>POINT_EVENT</rm_type_name>
                 <occurrences>
                   <lower_included>true</lower_included>
                   <lower_unbounded>false</lower_unbounded>
