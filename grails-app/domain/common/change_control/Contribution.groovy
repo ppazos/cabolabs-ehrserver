@@ -14,7 +14,9 @@ class Contribution {
    Ehr ehr // puntero para atras al ehr que contiene esta contribution
    AuditDetails audit
    
-   String uid = (java.util.UUID.randomUUID() as String)
+   // uid is set by the client:
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/51
+   String uid //= (java.util.UUID.randomUUID() as String)
    
    // Emula CONTRIBUTION.versions(Set<OBJECT_REF>) usando relaciones directas a
    // las versiones contenidas en la Contribution en lugar de OBJECT_REFs
@@ -22,6 +24,7 @@ class Contribution {
    static hasMany = [versions:Version]
    
    static constraints = {
+      uid(nullable: false)
    }
    
    static mapping = {
@@ -31,4 +34,19 @@ class Contribution {
    }
    
    static belongsTo = [Ehr]
+   
+   @Override
+   public boolean equals(Object other)
+   {
+      if (!(other instanceof Contribution)) return false
+
+      return this.uid.equals(that.uid)
+   }
+   
+   @Override
+   public int hashCode()
+   {
+      // http://stackoverflow.com/questions/113511/hash-code-implementation
+      return this.uid.hashCode()
+   }
 }

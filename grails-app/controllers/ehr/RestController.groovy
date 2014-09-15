@@ -24,6 +24,7 @@ class RestController {
    /**
     * Auxiliar para consultas por datos (ej. queryCompositions)
     */
+   // FIXME: must be part of Query
    static Map operandMap = [
      'eq': '=',
      'lt': '<',
@@ -44,6 +45,9 @@ class RestController {
     * Envia una lista de versions para commitear al EHR(ehrId)
     * 
     * @param String ehrId
+    * @param auditSystemId
+    * @param auditTimeCommitted
+    * @param auditCommitter
     * @param List versions
     * @return
     */
@@ -131,13 +135,21 @@ class RestController {
       
       // En data esta el XML de la composition recibida
       List parsedCompositions = [] // List<GPathResult>
-      def versions = []
+      def contributions = []
       try
       {
-         versions = xmlService.parseVersions(ehr, xmlVersions, parsedCompositions)
+         contributions = xmlService.parseVersions(
+            ehr, xmlVersions, 
+            auditSystemId, auditTimeCommitted, auditCommitter,
+            parsedCompositions)
+         
+         // TEST: in general only one contribution will be created from a commit
+         if (contributions.size() > 1) println "WARNING: there is more than one contribution from a commit"
       }
       catch (Exception e)
       {
+         println e.message // FIXME: the error might be more specific, see which errors we can have.
+         
          // Parsing error
          render(contentType:"text/xml", encoding:"UTF-8") {
             result {
@@ -167,6 +179,9 @@ class RestController {
       */
       
       
+      /* 
+       * Now is created by the XmlService ...
+       * 
       // uid se establece automaticamente
       def contribution = new Contribution(
          audit: new AuditDetails(
@@ -184,96 +199,67 @@ class RestController {
          ),
          versions: versions
       )
-      
+            
       // test
       if (!contribution.audit.validate())
       {
          // FIXME: debe ser transaccional, sino salva esto, no salva nada...
          println contribution.audit.errors
       }
+      */
+      
+      // ==============================================================================
+      //
+      // FIXME: parseVersions should return a list of contributions with versions,
+      //        here I don't have the contribution variable...
+      //
+      // ==============================================================================
       
       // FIXME: dejar esta tarea a un job
       // Guarda compositions y crea indices a nivel de documento (nivel 1)
       def compoFile
       def compoIndex
       def startTime
-      contribution.versions.eachWithIndex { version, i ->
-         
-         // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
-         // Guardar la composition en el filesystem
-         // TODO: path configurable
-         // TODO: guardar en repositorio temporal, no en el de commit definitivo
-         // COMPOSITION tiene su uid asignado por el servidor como nombre
-         //compoFile = new File("compositions\\"+version.data.value+".xml")
-         compoFile = new File(config.composition_repo + version.data.uid +".xml")
-         compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
-         
-         
-         // Version -> Contribution
-         version.contribution = contribution
-         
-         
-         // Agrega composition al EHR
-         ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
-         
-         
-         /* 
-          * Codigo movido a XmlService
-          * 
-         // =====================================================================
-         // Crea indice para la composition
-         // =====================================================================
-         
-         // -----------------------
-         // Obligatorios en el XML: lo garantiza xmlService.parseVersions
-         // -----------------------
-         //  - composition.category.value con valor 'event' o 'persistent'
-         //    - si no esta o tiene otro valor, ERROR
-         //  - composition.context.start_time.value
-         //    - DEBE ESTAR SI category = 'event'
-         //    - debe tener formato completo: 20070920T104614,0156+0930
-         //  - composition.@archetype_node_id
-         //    - obligatorio el atributo
-         //  - composition.'@xsi:type' = 'COMPOSITION'
-         // -----------------------
-         if (parsedCompositions[i].context.start_time.value)
-         {
-            // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
-            // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
-            // There is no limit on the number of decimal places for the decimal fraction. However, the number of
-            // decimal places needs to be agreed to by the communicating parties.
-            //
-            // TODO: formato de fecha completa que sea configurable
-            //       ademas la fraccion con . o , depende del locale!!!
-            //startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", parsedCompositions[i].context.start_time.value.text())
-            startTime = Date.parse(config.l10n.datetime_format, parsedCompositions[i].context.start_time.value.text())
-         }
-         
-         compoIndex = new CompositionIndex(
-            uid:         version.data.value, // compositionIndex uid
-            category:    parsedCompositions[i].category.value.text(), // event o persistent
-            startTime:   startTime, // puede ser vacio si category es persistent
-            subjectId:   ehr.subject.value,
-            ehrId:       ehr.ehrId,
-            archetypeId: parsedCompositions[i].@archetype_node_id.text()
-         )
-         
-         if (!compoIndex.save())
-         {
-            // FIXME: debe ser transaccional, sino salva esto, no salva nada...
-            println cindex.errors
-         }
-         
-         // =====================================================================
-         // /Crea indice para la composition
-         // =====================================================================
-         */
-      }
       
-      
-      // Agrega contribution al EHR
-      // Ehr -> Contribution (ya salva)
-      ehr.addToContributions( contribution )
+      contributions.each { contribution ->
+         contribution.versions.eachWithIndex { version, i ->
+            
+            // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
+            // Guardar la composition en el filesystem
+            // TODO: path configurable
+            // TODO: guardar en repositorio temporal, no en el de commit definitivo
+            // COMPOSITION tiene su uid asignado por el servidor como nombre
+            //compoFile = new File("compositions\\"+version.data.value+".xml")
+            compoFile = new File(config.composition_repo + version.data.uid +".xml")
+            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
+            
+            
+            // Agrega composition al EHR
+            ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
+            
+            
+            /* 
+             * Codigo movido a XmlService
+             * 
+            // =====================================================================
+            // Crea indice para la composition
+            // =====================================================================
+            
+            // -----------------------
+            // Obligatorios en el XML: lo garantiza xmlService.parseVersions
+            // -----------------------
+            //  - composition.category.value con valor 'event' o 'persistent'
+            //    - si no esta o tiene otro valor, ERROR
+            //  - composition.context.start_time.value
+            //    - DEBE ESTAR SI category = 'event'
+            //    - debe tener formato completo: 20070920T104614,0156+0930
+            //  - composition.@archetype_node_id
+            //    - obligatorio el atributo
+            //  - composition.'@xsi:type' = 'COMPOSITION'
+            // -----------------------
+            */
+         } // contribution.versions.each
+      } // contributions.each
       
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")

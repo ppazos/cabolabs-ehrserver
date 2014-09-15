@@ -9,6 +9,11 @@ import javax.xml.bind.annotation.XmlAccessType
 //@XmlAccessorType(XmlAccessType.FIELD)
 class Version {
 
+   // Now assigned by the client:
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/50
+   //
+   // FIXME: https://github.com/ppazos/cabolabs-ehrserver/issues/52
+   //
    // Emula ORIGINAL_VERSION.uid, ORIGINAL_VERSION hereda de VERSION
    // owner_id (id del EHR), creating_system_id (identificador del sistema
    // donde se creó la versión) and version_tree_id (es el número del branch
