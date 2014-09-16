@@ -72,12 +72,21 @@
 ### Commits a set of clinical documents to the EHR (not implemented yet)
 /rest/commit(String ehrUid, Collection<Composition> versions, String auditSystemId, String auditTimeCommitted, String auditCommitter)
 
-#### Rules on versions
+#### Rules for VERSIONs
 
 * The XML should be valid against the XSD (see /xsd folder in project).
 * version.uid should have this format: versioned_object_id::creating_system_id::version_tree_id.
 * remember to use the archetype_id in the archetype_node_id attribute, of all the LOCATABLE elements inside version.data, when the node_id is 'at0000' (root node).
 * for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string, and be sure that the XML content is encoded with UTF-8.
+
+#### Rules for CONTRIBUTIONs
+
+* The parameters _auditSystemId_, _auditTimeCommitted_ and _auditCommitter_ are used to create the CONTRIBUTION for each commit.
+ To be compliant with the openEHR specs, the client system should use that data to create the VERSION.commit_audit structure. So
+ this rule is met:
+   * "CONTRIBUTION.audit captures to the time, place and committer of the committal act; these three attributes (system_id,
+     committer, time_committed of AUDIT_DETAILS) should be copied into the corresponding attributes of the commit_audit of each VERSION included in the CONTRIBUTION..."
+
 
 ### Milestones and deliverables
 
