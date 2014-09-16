@@ -46,12 +46,11 @@ class RestController {
     * 
     * @param String ehrId
     * @param auditSystemId
-    * @param auditTimeCommitted
     * @param auditCommitter
     * @param List versions
     * @return
     */
-   def commit(String ehrId, String auditSystemId, String auditTimeCommitted, String auditCommitter)
+   def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
       //println "commit "+ params
       
@@ -140,8 +139,16 @@ class RestController {
       {
          contributions = xmlService.parseVersions(
             ehr, xmlVersions, 
-            auditSystemId, auditTimeCommitted, auditCommitter,
+            auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
             parsedCompositions)
+         
+         /* **
+          * The time_committed attribute in both the Contribution and Version audits
+          * should reflect the time of committal to an EHR server, i.e. the time of
+          * availability to other users in the same system. It should therefore be
+          * computed on the server in implementations where the data are created
+          * in a separate client context.
+          */
          
          // TEST: in general only one contribution will be created from a commit
          if (contributions.size() > 1) println "WARNING: there is more than one contribution from a commit"

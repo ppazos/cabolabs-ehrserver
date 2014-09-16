@@ -69,21 +69,30 @@
 ### Query execution by uid
 /rest/query(String queryUid, String ehrId)
 
-### Commits a set of clinical documents to the EHR (not implemented yet)
-/rest/commit(String ehrUid, Collection<Composition> versions, String auditSystemId, String auditTimeCommitted, String auditCommitter)
+### Commits a set of clinical documents to the EHR
+/rest/commit(String ehrUid, Collection<Composition> versions, String auditSystemId, String auditCommitter)
 
 #### Rules for VERSIONs
 
 * The XML should be valid against the XSD (see /xsd folder in project).
 * version.uid should have this format: versioned_object_id::creating_system_id::version_tree_id.
-* remember to use the archetype_id in the archetype_node_id attribute, of all the LOCATABLE elements inside version.data, when the node_id is 'at0000' (root node).
-* for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string, and be sure that the XML content is encoded with UTF-8.
+* remember to use the archetype_id in the archetype_node_id attribute, of all the LOCATABLE elements
+  inside version.data, when the node_id is 'at0000' (root node).
+* for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string,
+  and be sure that the XML content is encoded with UTF-8.
+* version.commit_audit.time_committed should be set by the client but will be overriden by the server
+  to be compliant with this rule:
+   * The time_committed attribute in both the Contribution and Version audits
+     should reflect the time of committal to an EHR server, i.e. the time of
+     availability to other users in the same system. It should therefore be
+     computed on the server in implementations where the data are created
+     in a separate client context.
 
 #### Rules for CONTRIBUTIONs
 
 * The parameters _auditSystemId_, _auditTimeCommitted_ and _auditCommitter_ are used to create the CONTRIBUTION for each commit.
- To be compliant with the openEHR specs, the client system should use that data to create the VERSION.commit_audit structure. So
- this rule is met:
+  To be compliant with the openEHR specs, the client system should use that data to create the VERSION.commit_audit structure. So
+  this rule is met:
    * "CONTRIBUTION.audit captures to the time, place and committer of the committal act; these three attributes (system_id,
      committer, time_committed of AUDIT_DETAILS) should be copied into the corresponding attributes of the commit_audit of each VERSION included in the CONTRIBUTION..."
 

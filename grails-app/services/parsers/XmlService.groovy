@@ -77,7 +77,7 @@ class XmlService {
    </version>
    */
    def parseVersions(Ehr ehr, List<String> versionsXML,
-      String auditSystemId, String auditTimeCommitted, String auditCommitter,
+      String auditSystemId, Date auditTimeCommitted, String auditCommitter,
       List dataOut)
    {
       //new File('debug_xml.log') << versionsXML.toString()
@@ -101,9 +101,21 @@ class XmlService {
          // Sin esto pone tag0 como namespace en todas las tags!!!
          parsedVersion = new XmlSlurper(true, false).parseText(versionXML)
          
+         // Parse AuditDetails from Version.commit_audit
          commitAudit = new AuditDetails(
             systemId:      parsedVersion.commit_audit.system_id.text(),
-            timeCommitted: Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
+            
+            /* 
+             * version.commit_audit.time_committed is overriden by the server
+             * to be comlpiant with the specs:
+             * 
+             * The time_committed attribute in both the Contribution and Version audits
+             * should reflect the time of committal to an EHR server, i.e. the time of
+             * availability to other users in the same system. It should therefore be
+             * computed on the server in implementations where the data are created
+             * in a separate client context.
+             */
+            timeCommitted: auditTimeCommitted, //Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
             changeType:    parsedVersion.commit_audit.change_type.value.text(),
             committer: new DoctorProxy(
                name: parsedVersion.commit_audit.committer.name.text()
@@ -184,6 +196,7 @@ class XmlService {
          )
          
          
+         // ==============================================================================
          // version.contribution will come frmo the client
          // https://github.com/ppazos/cabolabs-ehrserver/issues/51
          //
@@ -204,7 +217,15 @@ class XmlService {
                ehr: ehr,
                audit: new AuditDetails(
                   systemId:      auditSystemId,
-                  timeCommitted: Date.parse(config.l10n.datetime_format, auditTimeCommitted),
+                  
+                  /*
+                   * The time_committed attribute in both the Contribution and Version audits
+                   * should reflect the time of committal to an EHR server, i.e. the time of
+                   * availability to other users in the same system. It should therefore be
+                   * computed on the server in implementations where the data are created
+                   * in a separate client context.
+                   */
+                  timeCommitted: auditTimeCommitted,
                   //,
                   // changeType solo se soporta 'creation' por ahora
                   //
