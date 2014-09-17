@@ -1,0 +1,491 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.test_all_datatypes.v1
+
+concept
+	[at0000]	-- Test all datatypes
+language
+	original_language = <[ISO_639-1::es]>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Test all datatypes">
+			use = <"Test all datatypes">
+			misuse = <"Test all datatypes">
+			copyright = <"">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"D58AD28659F9C10C06E20CDB41FE1692">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Test all datatypes
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					POINT_EVENT[at0002] occurrences matches {0..1} matches {	-- Cualquier evento
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Arbol
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Free text
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Coded text
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0007, 	-- a
+													at0008, 	-- b
+													at0009]	-- c
+												}
+											}
+										}
+									}
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- Constrained text
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {[ac0001]}		-- Nueva restricción
+											}
+										}
+									}
+									ELEMENT[at0010] occurrences matches {0..1} matches {	-- Quantity
+										value matches {
+											C_DV_QUANTITY <
+												property = <[openehr::127]>
+												list = <
+													["1"] = <
+														units = <"°C">
+														magnitude = <|0.0..40.0|>
+													>
+													["2"] = <
+														units = <"°F">
+														magnitude = <|0.0..100.0|>
+													>
+												>
+											>
+										}
+									}
+									ELEMENT[at0011] occurrences matches {0..1} matches {	-- Count
+										value matches {
+											DV_COUNT matches {
+												magnitude matches {|0..100|}
+											}
+										}
+									}
+									ELEMENT[at0012] occurrences matches {0..1} matches {	-- Datetime
+										value matches {
+											DV_DATE_TIME matches {
+												value matches {yyyy-mm-ddTHH:MM:SS}
+											}
+										}
+									}
+									ELEMENT[at0013] occurrences matches {0..1} matches {	-- Ordinal
+										value matches {
+											1|[local::at0014], 	-- aa
+											2|[local::at0015], 	-- bb
+											3|[local::at0016]  	-- cc
+										}
+									}
+									ELEMENT[at0017] occurrences matches {0..1} matches {	-- Boolean
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0018] occurrences matches {0..1} matches {	-- Duration
+										value matches {
+											DV_DURATION matches {
+												value matches {|PT0H..PT5H|}
+											}
+										}
+									}
+									ELEMENT[at0019] occurrences matches {0..1} matches {	-- Integer interval
+										value matches {
+											DV_INTERVAL<DV_COUNT> matches {
+												upper matches {
+													DV_COUNT matches {
+														magnitude matches {|0..100|}
+													}
+												}
+												lower matches {
+													DV_COUNT matches {
+														magnitude matches {|100..1000|}
+													}
+												}
+											}
+										}
+									}
+									ELEMENT[at0020] occurrences matches {0..1} matches {	-- Quanitty interval
+										value matches {
+											DV_INTERVAL<DV_QUANTITY> matches {
+												upper matches {
+													C_DV_QUANTITY <
+														property = <[openehr::124]>
+														list = <
+															["1"] = <
+																units = <"mg">
+																magnitude = <|1.0..1000.0|>
+																precision = <|1|>
+															>
+															["2"] = <
+																units = <"gm">
+																magnitude = <|1.0..100.0|>
+																precision = <|1|>
+															>
+														>
+													>
+												}
+												lower matches {
+													C_DV_QUANTITY <
+														property = <[openehr::124]>
+														list = <
+															["1"] = <
+																units = <"mg">
+																magnitude = <|1.0..1000.0|>
+																precision = <|1|>
+															>
+															["2"] = <
+																units = <"gm">
+																magnitude = <|1.0..100.0|>
+																precision = <|1|>
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+									ELEMENT[at0021] occurrences matches {0..1} matches {	-- Datetime interval
+										value matches {
+											DV_INTERVAL<DV_DATE_TIME> matches {
+												upper matches {
+													DV_DATE_TIME matches {
+														value matches {yyyy-mm-ddTHH:MM:SS}
+													}
+												}
+												lower matches {
+													DV_DATE_TIME matches {
+														value matches {yyyy-mm-ddTHH:MM:SS}
+													}
+												}
+											}
+										}
+									}
+									ELEMENT[at0022] occurrences matches {0..1} matches {	-- Multimedia
+										value matches {
+											DV_MULTIMEDIA matches {
+												media_type matches {
+													[openEHR::
+													429, 
+													427, 
+													637]
+												}
+											}
+										}
+									}
+									ELEMENT[at0023] occurrences matches {0..1} matches {	-- EHR_URI
+										value matches {
+											DV_EHR_URI matches {*}
+										}
+									}
+									ELEMENT[at0027] occurrences matches {0..1} matches {	-- URI
+										value matches {
+											DV_URI matches {*}
+										}
+									}
+									ELEMENT[at0024] occurrences matches {0..1} matches {	-- Proportion
+										value matches {
+											DV_PROPORTION matches {
+												numerator matches {|0.0..1000.0|}
+												denominator matches {|>0.0..1000.0|}
+											}
+										}
+									}
+									ELEMENT[at0025] occurrences matches {0..1} matches {	-- Identifier
+										value matches {
+											DV_IDENTIFIER matches {
+												issuer matches {/issuerA/}
+												type matches {/typeB/}
+												id matches {/assignerC/}
+											}
+										}
+									}
+									ELEMENT[at0026] occurrences matches {0..1} matches {	-- Parsable
+										value matches {
+											DV_PARSABLE matches {
+												formalism matches {"text/xml"}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Test all datatypes">
+					description = <"unknown">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Free text">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Coded text">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Constrained text">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"a">
+					description = <"a">
+				>
+				["at0008"] = <
+					text = <"b">
+					description = <"b">
+				>
+				["at0009"] = <
+					text = <"c">
+					description = <"c">
+				>
+				["at0010"] = <
+					text = <"Quantity">
+					description = <"*">
+				>
+				["at0011"] = <
+					text = <"Count">
+					description = <"*">
+				>
+				["at0012"] = <
+					text = <"Datetime">
+					description = <"*">
+				>
+				["at0013"] = <
+					text = <"Ordinal">
+					description = <"*">
+				>
+				["at0014"] = <
+					text = <"aa">
+					description = <"aa">
+				>
+				["at0015"] = <
+					text = <"bb">
+					description = <"bb">
+				>
+				["at0016"] = <
+					text = <"cc">
+					description = <"cc">
+				>
+				["at0017"] = <
+					text = <"Boolean">
+					description = <"*">
+				>
+				["at0018"] = <
+					text = <"Duration">
+					description = <"*">
+				>
+				["at0019"] = <
+					text = <"Integer interval">
+					description = <"*">
+				>
+				["at0020"] = <
+					text = <"Quanitty interval">
+					description = <"*">
+				>
+				["at0021"] = <
+					text = <"Datetime interval">
+					description = <"*">
+				>
+				["at0022"] = <
+					text = <"Multimedia">
+					description = <"*">
+				>
+				["at0023"] = <
+					text = <"EHR_URI">
+					description = <"*">
+				>
+				["at0024"] = <
+					text = <"Proportion">
+					description = <"*">
+				>
+				["at0025"] = <
+					text = <"Identifier">
+					description = <"*">
+				>
+				["at0026"] = <
+					text = <"Parsable">
+					description = <"*">
+				>
+				["at0027"] = <
+					text = <"URI">
+					description = <"*">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"*Test all datatypes(es)">
+					description = <"*unknown(es)">
+				>
+				["at0001"] = <
+					text = <"*Event Series(es)">
+					description = <"*@ internal @(es)">
+				>
+				["at0002"] = <
+					text = <"*Cualquier evento(es)">
+					description = <"**(es)">
+				>
+				["at0003"] = <
+					text = <"*Arbol(es)">
+					description = <"*@ internal @(es)">
+				>
+				["at0004"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0005"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0006"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0007"] = <
+					text = <"*a(es)">
+					description = <"*a(es)">
+				>
+				["at0008"] = <
+					text = <"*b(es)">
+					description = <"*b(es)">
+				>
+				["at0009"] = <
+					text = <"*c(es)">
+					description = <"*c(es)">
+				>
+				["at0010"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0011"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0012"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0013"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0014"] = <
+					text = <"*new ordinal(es)">
+					description = <"**(es)">
+				>
+				["at0015"] = <
+					text = <"*new ordinal(es)">
+					description = <"**(es)">
+				>
+				["at0016"] = <
+					text = <"*new ordinal(es)">
+					description = <"**(es)">
+				>
+				["at0017"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0018"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0019"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0020"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0021"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0022"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0023"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0024"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0025"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0026"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0027"] = <
+					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["es"] = <
+			items = <
+				["ac0001"] = <
+					text = <"Nueva restricción">
+					description = <"*">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["ac0001"] = <
+					text = <"*Nueva restricción(es)">
+					description = <"**(es)">
+				>
+			>
+		>
+	>
