@@ -1,0 +1,83 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-COMPOSITION.test_all_datatypes.v1
+
+concept
+	[at0000]	-- Test all datatypes
+language
+	original_language = <[ISO_639-1::es]>
+	translations = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			author = <
+				["name"] = <"?">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Test all datatypes">
+			use = <"Test all datatypes">
+			misuse = <"Test all datatypes">
+			copyright = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"*Test all datatypes(es)">
+			use = <"*Test all datatypes(es)">
+			misuse = <"*Test all datatypes(es)">
+			copyright = <"*(es)">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"BBDC04CD1543F439C62EA440F2A768A6">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Test all datatypes
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		content cardinality matches {0..*; unordered} matches {
+			allow_archetype OBSERVATION[at0001] occurrences matches {0..*} matches {	-- All datatypes observation
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.test_all_datatypes\.v1/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Test all datatypes">
+					description = <"composition root">
+				>
+				["at0001"] = <
+					text = <"All datatypes observation">
+					description = <"obervation slot">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Test all datatypes">
+					description = <"composition root">
+				>
+				["at0001"] = <
+					text = <"All datatypes observation">
+					description = <"test observation">
+				>
+			>
+		>
+	>
