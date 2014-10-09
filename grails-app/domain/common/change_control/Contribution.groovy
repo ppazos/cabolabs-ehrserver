@@ -40,7 +40,7 @@ class Contribution {
    {
       if (!(other instanceof Contribution)) return false
 
-      return this.uid.equals(that.uid)
+      return this.uid.equals(other.uid)
    }
    
    @Override
