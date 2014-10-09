@@ -52,7 +52,7 @@ class RestController {
     */
    def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
-      //println "commit "+ params
+      //println "commit "+ params.versions
       
       //new File('params_debug.log') << params.toString()
       
