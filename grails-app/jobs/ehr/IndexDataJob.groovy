@@ -239,8 +239,146 @@ class IndexDataJob {
          path: path,
          archetypePath: archetypePath,
          owner: owner,
-         magnitude: new Float( node.magnitude.text() ), // float a partir de string
+         magnitude: new Double( node.magnitude.text() ),
          units: node.units.text()
+      )
+   }
+   
+   private DvCountIndex create_DV_COUNT_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      /*
+       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
+      <value xsi:type="DV_COUNT">
+         <magnitude>120</magnitude>
+      </value>
+      */
+      return new DvCountIndex(
+         templateId: templateId,
+         archetypeId: archetypeId,
+         path: path,
+         archetypePath: archetypePath,
+         owner: owner,
+         magnitude: new Long( node.magnitude.text() )
+      )
+   }
+   
+
+   private DvProportionIndex create_DV_PROPORTION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      /**
+       * <xs:complexType name="DV_ORDERED" abstract="true">
+             <xs:complexContent>
+                  <xs:extension base="DATA_VALUE">
+                       <xs:sequence>
+                            <xs:element name="normal_range" type="DV_INTERVAL" minOccurs="0"/>
+                            <xs:element name="other_reference_ranges" type="REFERENCE_RANGE" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="normal_status" type="CODE_PHRASE" minOccurs="0"/>
+                       </xs:sequence>
+                  </xs:extension>
+             </xs:complexContent>
+        </xs:complexType>
+       * <xs:complexType name="DV_QUANTIFIED" abstract="true">
+             <xs:complexContent>
+                  <xs:extension base="DV_ORDERED">
+                       <xs:sequence>
+                            <xs:element name="magnitude_status" type="xs:string" minOccurs="0"/>
+                       </xs:sequence>
+                  </xs:extension>
+             </xs:complexContent>
+        </xs:complexType>
+       * <xs:complexType name="DV_AMOUNT">
+             <xs:complexContent>
+                  <xs:extension base="DV_QUANTIFIED">
+                       <xs:sequence>
+                            <xs:element name="accuracy" type="xs:float" minOccurs="0" default="-1.0"/>
+                            <xs:element name="accuracy_is_percent" type="xs:boolean" minOccurs="0"/>
+                       </xs:sequence>
+                  </xs:extension>
+             </xs:complexContent>
+        </xs:complexType>
+       * <xs:complexType name="DV_PROPORTION">
+             <xs:complexContent>
+                  <xs:extension base="DV_AMOUNT">
+                       <xs:sequence>
+                            <xs:element name="numerator" type="xs:float"/>
+                            <xs:element name="denominator" type="xs:float"/>
+                            <xs:element name="type" type="PROPORTION_KIND"/>
+                            <xs:element name="precision" type="xs:int" default="-1" minOccurs="0"/>
+                       </xs:sequence>
+                  </xs:extension>
+             </xs:complexContent>
+        </xs:complexType>
+        
+        
+        <value xsi:type="DV_PROPORTION">
+          <normal_range>...</normal_range>
+          <other_reference_ranges>...</other_reference_ranges>
+          <normal_status>...</normal_status>
+          <magnitude_status>=</magnitude_status>
+          <accuracy>0.5</accuracy>
+          <accuracy_is_percent>false</accuracy_is_percent>
+          <numerator></numerator>
+          <denominator></denominator>
+          <type></type>
+          <precision></precision>
+        </value>
+       */
+      
+      // 0 = pk_ration: num and denom may be any value so are float
+      int type = ( (node.type.text()) ? (new Integer(node.type.text())) : 0 )
+      
+      // Parsing numerator and denominator considering the type
+      // Some checks are done here instead as constraints of DvProportionIndex,
+      // that's ok because the checks are done for parsing the data correctly,
+      // not to validate the data itself.
+      def numerator
+      def denominator
+      switch (type)
+      {
+         case 0: // pk_ratio = 0 num and denom may be any value
+            numerator = new Float(node.numerator.text())
+            denominator = new Float(node.denominator.text())
+         break
+         case 1: // pk_unitary = 1 denominator must be 1
+            numerator = new Float(node.numerator.text())
+            if (node.denominator.text() != "1") throw new Exception("DV_PROPORTION For proportion kind unitary, denominator should be 1")
+            denominator = 1
+         break
+         case 2: // pk_percent = 2 denominator is 100, numerator is understood as a percentage
+            numerator = new Float(node.numerator.text())
+            if (node.denominator.text() != "100") throw new Exception("DV_PROPORTION For proportion kind percent, denominator should be 100")
+            denominator = 100
+         break
+         case 3: // pk_fraction = 3 num and denum are integral and the presentation method used a slash e.g. 1/2
+            numerator = new Integer(node.numerator.text())
+            denominator = new Integer(node.denominator.text())
+         break
+         case 4: // pk_integer_fraction = 4 num and denom are integral, usual presentation is n/d; if numerator > denominator, display as “a b/c”, i.e. the integer part followed by the remaining fraction part, e.g. 1 1/2;
+            numerator = new Integer(node.numerator.text())
+            denominator = new Integer(node.denominator.text())
+         break
+         default:
+            throw new Exception("DV_PROPORTION type '$type' not valid")
+      }
+      
+      return new DvProportionIndex(
+         templateId: templateId,
+         archetypeId: archetypeId,
+         path: path,
+         archetypePath: archetypePath,
+         owner: owner,
+         numerator: numerator,
+         denominator: denominator,
+         type: type,
+         precision: ((node.precision.text()) ? new Integer(node.precision.text()) : -1)
       )
    }
    
@@ -343,4 +481,6 @@ class IndexDataJob {
          //value: Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", node.value.text())
       )
    }
+   
+   
 }
