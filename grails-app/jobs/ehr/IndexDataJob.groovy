@@ -22,6 +22,8 @@ class IndexDataJob {
    // Para acceder a la config que dice de donde leer las compositions a indexar
    def config = ApplicationHolder.application.config.app
 
+   // FIXME: this logic should be in a separate service
+   
    def execute()
    {
       println "IndexDataJob"
@@ -40,7 +42,7 @@ class IndexDataJob {
       // El compoIndex se crea en el commit
       compoIdxs.each { compoIndex ->
       
-         println "Indexacion de composition: " + compoIndex.uid
+         //println "Indexacion de composition: " + compoIndex.uid
          
          indexes = []
          
@@ -50,7 +52,7 @@ class IndexDataJob {
          
          //println "root parent: " + compoParsed.'..' // .. es gpath para parent
          
-         println "templateId 0: "+ compoIndex.templateId
+         //println "templateId 0: "+ compoIndex.templateId
          
          recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
          
@@ -92,7 +94,7 @@ class IndexDataJob {
       String templateId, String archetypeId,
       CompositionIndex owner)
    {
-      println "templateId 1: "+ templateId
+      //println "templateId 1: "+ templateId
       
       // TODO:
       // Como no todos los nodos tienen el tipo de forma explicita (xsi:type)
@@ -142,8 +144,8 @@ class IndexDataJob {
          archetypePath = archetypePath + '/' + node.name()
       }
       
-      println "tempPath: "+ idxpath
-      println "archPath: "+ archetypePath
+      //println "tempPath: "+ idxpath
+      //println "archPath: "+ archetypePath
       
       // TODO: instead of calculating the archetypePath, I can use the templateId and path
       //       to query DataIndex and get the archetypeId and archetypePath from there.
@@ -188,20 +190,24 @@ class IndexDataJob {
          // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
          switch (idxtype)
          {
-            case 'DvDateTime':  idxtype = 'DV_DATE_TIME'
+            case 'DvDateTime':   idxtype = 'DV_DATE_TIME'
             break
-            case 'DvQuantity':  idxtype = 'DV_QUANTITY'
+            case 'DvQuantity':   idxtype = 'DV_QUANTITY'
             break
-            case 'DvCodedText': idxtype = 'DV_CODED_TEXT'
+            case 'DvCodedText':  idxtype = 'DV_CODED_TEXT'
             break
-            case 'DvText':      idxtype = 'DV_TEXT'
+            case 'DvText':       idxtype = 'DV_TEXT'
             break
-            case 'DvBoolean':   idxtype = 'DV_BOOLEAN'
+            case 'DvBoolean':    idxtype = 'DV_BOOLEAN'
+            break
+            case 'DvCount':      idxtype = 'DV_COUNT'
+            break
+            case 'DvProportion': idxtype = 'DV_PROPORTION'
             break
          }
          
          // Si es de un tipo de dato indizable por valor
-         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN'].contains(idxtype))
+         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
             def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
@@ -224,7 +230,7 @@ class IndexDataJob {
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      println "templateId 2: "+ templateId
+      //println "templateId 2: "+ templateId
       
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
