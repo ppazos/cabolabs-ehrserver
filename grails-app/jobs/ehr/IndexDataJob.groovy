@@ -341,6 +341,8 @@ class IndexDataJob {
       // 0 = pk_ration: num and denom may be any value so are float
       int type = ( (node.type.text()) ? (new Integer(node.type.text())) : 0 )
       
+      println "DvPropotion parse type: "+ type
+      
       // Parsing numerator and denominator considering the type
       // Some checks are done here instead as constraints of DvProportionIndex,
       // that's ok because the checks are done for parsing the data correctly,
@@ -374,6 +376,8 @@ class IndexDataJob {
          default:
             throw new Exception("DV_PROPORTION type '$type' not valid")
       }
+      
+      println "DvPropotion parse: "+ numerator +"/"+ denominator
       
       return new DvProportionIndex(
          templateId: templateId,

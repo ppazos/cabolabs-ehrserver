@@ -17,7 +17,11 @@ import ehr.clinical_documents.data.*
  */
 @TestMixin(GrailsUnitTestMixin)
 @TestFor(RestController)
-@Mock([Ehr,Person,PatientProxy,DoctorProxy,OperationalTemplateIndex,DataIndex,Contribution,Version,CompositionIndex,AuditDetails,DataValueIndex,DvCountIndex])
+@Mock([ Ehr,Person,
+        PatientProxy, DoctorProxy,
+        OperationalTemplateIndex, DataIndex, Contribution, Version, CompositionIndex, AuditDetails,
+        DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex
+      ])
 class RestControllerTests {
 
    private static String PS = System.getProperty("file.separator")
@@ -644,17 +648,14 @@ class RestControllerTests {
    }
 */
    
-   void testCommitWithDvCount()
+   void testCommitWithDvProportion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
       def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
       oti.index(opt)
       
       // Test operational template index created
-      ehr.clinical_documents.OperationalTemplateIndex.list().each { opti ->
-         
-         println "opti: " + opti.templateId
-      }
+      assert ehr.clinical_documents.OperationalTemplateIndex.countByTemplateId('Test all datatypes') == 1
       
       // Test data indexes created
       DataIndex.list().each { di ->
@@ -675,7 +676,7 @@ class RestControllerTests {
 <version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
-      <value>ad6866e1-fb08-4e9b-a93b-5095a2563779</value>
+      <value>ad6866e1-fb08-4e9b-a93b-5095a2563780</value>
     </id>
     <namespace>EHR::COMMON</namespace>
     <type>CONTRIBUTION</type>
@@ -699,7 +700,7 @@ class RestControllerTests {
     </change_type>
   </commit_audit>
   <uid>
-    <value>91cf9ded-e926-4848-aa3f-3257c1d89e37</value>
+    <value>91cf9ded-e926-4848-aa3f-3257c1d89e38</value>
   </uid>
   <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.test_all_datatypes.v1">
     <name>
@@ -710,7 +711,7 @@ class RestControllerTests {
         <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
       </archetype_id>
       <template_id>
-        <value>Signos</value>
+        <value>Test all datatypes</value>
       </template_id>
       <rm_version>1.0.2</rm_version>
     </archetype_details>
@@ -789,22 +790,234 @@ class RestControllerTests {
           <time><value>20140101</value></time>
           <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
             <name>
-              <value>blood pressure</value>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type="ELEMENT" archetype_node_id="at0024">
+              <name>
+                <value>Proportion</value>
+              </name>
+              <value xsi:type="DV_PROPORTION">
+                <numerator>3.5</numerator>
+                <denominator>100</denominator>
+                <type>2</type><!-- pk_percentage -->
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
+      /$
+      
+      //println params.versions
+
+      params.ehrId = Ehr.get(1).ehrId
+      params.auditSystemId = "TEST_SYSTEM_ID"
+      params.auditCommitter = "Mr. Committer"
+      controller.commit()
+      
+      //println controller.response.contentAsString
+      //println controller.response.text
+      
+      Ehr.get(1).contributions.versions.each { version -> // version.data (CompositionIndex)
+      
+         println "template id: "+ version.data.templateId
+      }
+      
+      // Test response ok
+      
+      def resp = new XmlSlurper().parseText( controller.response.contentAsString )
+      
+      assert resp.type.code.text() == "AA"
+      
+      
+      // Test data indexes
+      
+      def indexJob = new ehr.IndexDataJob()
+      indexJob.execute()
+      
+      assert DataValueIndex.count() == 1
+      
+      def countIdx = DataValueIndex.get(1)
+      
+      assert countIdx.path == '/content[archetype_id=openEHR-EHR-OBSERVATION.test_all_datatypes.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0024]/value'
+      
+      assert countIdx.getClass().getSimpleName() == "DvProportionIndex"
+      
+      assert countIdx.numerator == 3.5f
+      assert countIdx.denominator == 100
+      assert countIdx.type == 2
+      
+      println countIdx.numerators
+      
+   } // DvProportion
+   
+   
+   void testCommitWithDvCount()
+   {
+      def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
+      oti.index(opt)
+      
+      // Test operational template index created
+      ehr.clinical_documents.OperationalTemplateIndex.list().each { opti ->
+         
+         println "opti: " + opti.templateId
+      }
+      
+      // Test data indexes created
+      DataIndex.list().each { di ->
+         
+         println "di: " + di.path
+      }
+      
+      
+      // https://github.com/gramant/grails-core-old/blob/master/grails-test/src/main/groovy/org/codehaus/groovy/grails/plugins/testing/GrailsMockHttpServletRequest.groovy
+      //println "req: "+ request.class.toString()
+      
+      request.method = 'POST'
+      controller.request.contentType = 'application/x-www-form-urlencoded'
+      
+      // dolar slashy allows GString variables in multiline Strings
+      params.versions = $/
+<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+  <contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>ad6866e1-fb08-4e9b-a93b-5095a2563779</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <name>Dr. Pablo Pazos</name>
+    </committer>
+    <time_committed>
+      <value>20140901T233114,0065-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>91cf9ded-e926-4848-aa3f-3257c1d89e37</value>
+  </uid>
+  <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.test_all_datatypes.v1">
+    <name>
+      <value>Test all datatypes</value>
+    </name>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>Test all datatypes</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>event</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>443</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <name>Dr. Pablo Pazos</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>20140901T232600,0304-0300</value>
+      </start_time>
+      <setting>
+        <value>Hospital Montevideo</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>229</code_string>
+        </defining_code>
+      </setting>
+    </context>
+    <content xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.test_all_datatypes.v1">
+      <name>
+        <value>Blood Pressure</value>
+      </name>
+      <language>
+         <terminology_id>
+           <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>es</code_string>
+       </language>
+       <encoding>
+         <terminology_id>
+           <value>UNICODE</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_IDENTIFIED">
+        <external_ref>
+          <id xsi:type="HIER_OBJECT_ID"><value>${patientUid}</value></id>
+          <namespace>DEMOGRAPHIC</namespace>
+          <type>PERSON</type>
+        </external_ref>
+      </subject>
+      <data xsi:type="HISTORY" archetype_node_id="at0001">
+        <name>
+          <value>history</value>
+        </name>
+        <origin>
+          <value>20140101</value>
+        </origin>
+        <events xsi:type="POINT_EVENT" archetype_node_id="at0002">
+          <name>
+            <value>any event</value>
+          </name>
+          <time><value>20140101</value></time>
+          <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
+            <name>
+              <value>Arbol</value>
             </name>
             <items xsi:type="ELEMENT" archetype_node_id="at0011">
               <name>
-                <value>Diastolic</value>
+                <value>Count</value>
               </name>
               <value xsi:type="DV_COUNT">
                 <magnitude>3</magnitude>
               </value>
             </items>
           </data>
-          <state xsi:type="ITEM_TREE" archetype_node_id="at0007">
-            <name>
-              <value>state structure</value>
-            </name>
-          </state>
         </events>
       </data>
     </content>
