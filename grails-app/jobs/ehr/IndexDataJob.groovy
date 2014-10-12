@@ -352,26 +352,30 @@ class IndexDataJob {
       switch (type)
       {
          case 0: // pk_ratio = 0 num and denom may be any value
-            numerator = new Float(node.numerator.text())
-            denominator = new Float(node.denominator.text())
+            numerator = new Double(node.numerator.text())
+            denominator = new Double(node.denominator.text())
          break
          case 1: // pk_unitary = 1 denominator must be 1
-            numerator = new Float(node.numerator.text())
+            numerator = new Double(node.numerator.text())
             if (node.denominator.text() != "1") throw new Exception("DV_PROPORTION For proportion kind unitary, denominator should be 1")
             denominator = 1
          break
          case 2: // pk_percent = 2 denominator is 100, numerator is understood as a percentage
-            numerator = new Float(node.numerator.text())
+            numerator = new Double(node.numerator.text())
             if (node.denominator.text() != "100") throw new Exception("DV_PROPORTION For proportion kind percent, denominator should be 100")
             denominator = 100
          break
          case 3: // pk_fraction = 3 num and denum are integral and the presentation method used a slash e.g. 1/2
-            numerator = new Integer(node.numerator.text())
-            denominator = new Integer(node.denominator.text())
+            numerator = new Double(node.numerator.text())
+            denominator = new Double(node.denominator.text())
+            if (!isIntegral(numerator)) throw new Exception("DV_PROPORTION For proportion kind fraction, numerator should be intetral and is ${numerator.getClass()}")
+            if (!isIntegral(denominator)) throw new Exception("DV_PROPORTION For proportion kind fraction, denominator should be intetral and is ${denominator.getClass()}")
          break
          case 4: // pk_integer_fraction = 4 num and denom are integral, usual presentation is n/d; if numerator > denominator, display as “a b/c”, i.e. the integer part followed by the remaining fraction part, e.g. 1 1/2;
-            numerator = new Integer(node.numerator.text())
-            denominator = new Integer(node.denominator.text())
+            numerator = new Double(node.numerator.text())
+            denominator = new Double(node.denominator.text())
+            if (!isIntegral(numerator)) throw new Exception("DV_PROPORTION For proportion kind integer fraction, numerator should be intetral and is ${numerator.getClass()}")
+            if (!isIntegral(denominator)) throw new Exception("DV_PROPORTION For proportion kind integer fraction, denominator should be intetral and is ${denominator.getClass()}")
          break
          default:
             throw new Exception("DV_PROPORTION type '$type' not valid")
@@ -390,6 +394,10 @@ class IndexDataJob {
          type: type,
          precision: ((node.precision.text()) ? new Integer(node.precision.text()) : -1)
       )
+   }
+   
+   private boolean isIntegral(double num) {
+      return (Math.floor(num1) == num1)
    }
    
    private DvTextIndex create_DV_TEXT_index(

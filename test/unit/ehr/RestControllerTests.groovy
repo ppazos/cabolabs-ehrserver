@@ -858,7 +858,7 @@ class RestControllerTests {
       assert countIdx.denominator == 100
       assert countIdx.type == 2
       
-      println countIdx.numerators
+      println countIdx.numerator
       
    } // DvProportion
    

@@ -4,9 +4,8 @@ class DvProportionIndex extends DataValueIndex {
 
    static final float unknownAccuracyValue = -1.0
    
-   // float or integer
-   Number numerator
-   Number denominator
+   double numerator
+   double denominator
    
    // proportion kind controlled values
    // pk_ratio = 0 num and denom may be any value
@@ -40,8 +39,11 @@ class DvProportionIndex extends DataValueIndex {
    // TODO: Maybe saving the magnitude as another data point allows better querying capabilities.
    def magnitude()
    {
-      numerator / denominator
+      if (denominator == 0) return Double.POSITIVE_INFINITY
+      
+      reurn numerator / denominator
    }
+   
    
    
    static constraints = {
