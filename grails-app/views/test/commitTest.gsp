@@ -123,7 +123,7 @@
     <g:link controller="ehr" action="indexData">Index data</g:link> |
     <g:link action="findCompositions">Find Compositions Test</g:link> |
     <g:link controller="rest" action="queryCompositions">Query Compositions by Data</g:link> |
-    <g:link action="queryData">Query Data</g:link>
+    <g:link controller="rest" action="queryData">Query Data</g:link>
     ]
     
     </div>

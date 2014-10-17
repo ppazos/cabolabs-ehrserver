@@ -462,7 +462,7 @@
       
       <h2>B&uacute;queda de documentos por datos</h2>
       <form id="form_composition" method="post">
-      
+        <input type="hidden" name="name" value="${name}" />
         <h3>Criterio</h3>
         <table>
           <tr>
@@ -549,7 +549,6 @@
         <fieldset class="buttons">
           <input type="submit" value="Ejecutar" />
         </fieldset>
-      
       </form>
         
     </g:if>
@@ -557,7 +556,7 @@
     
       <h2>B&uacute;queda de datos</h2>
       <form id="form_datavalue" method="post">
-      
+        <input type="hidden" name="name" value="${name}" />
         <h3>Selecci&oacute;n</h3>
         <table>
           <tr>

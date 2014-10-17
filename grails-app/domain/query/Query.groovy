@@ -181,6 +181,12 @@ class Query {
             case ['DV_BOOLEAN', 'DvBoolean']:
                resHeaders[absPath]['attrs'] = ['value']
             break
+            case ['DV_COUNT', 'DvCount']:
+               resHeaders[absPath]['attrs'] = ['magnitude']
+            break
+            case ['DV_PROPORTION', 'DvProportion']:
+               resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
+            break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
          }
@@ -248,6 +254,15 @@ class Query {
                   break
                   case ['DV_BOOLEAN', 'DvBoolean']:
                      col['value'] = dvi.value
+                  break
+                  case ['DV_COUNT', 'DvCount']:
+                     col['magnitude'] = dvi.magnitude
+                  break
+                  case ['DV_PROPORTION', 'DvProportion']:
+                     col['numerator'] = dvi.numerator
+                     col['denominator'] = dvi.denominator
+                     col['type'] = dvi.type
+                     col['precision'] = dvi.precision
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
@@ -338,6 +353,17 @@ class Query {
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
+               case ['DV_COUNT', 'DvCount']:
+                  resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
+                                                   date:      dvi.owner.startTime]
+               break
+               case ['DV_PROPORTION', 'DvProportion']:
+                  resGrouped[absPath]['serie'] << [numerator:   dvi.numerator,
+                                                   denominator: dvi.denominator,
+                                                   type:        dvi.type,
+                                                   precision:   dvi.precision,
+                                                   date:        dvi.owner.startTime]
+               break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
             }
@@ -414,6 +440,21 @@ class Query {
              break
              case ['DV_BOOLEAN', 'DvBoolean']:
                 q += "        AND dvi.value"+ dataCriteria.sqlOperand() + new Boolean(dataCriteria.value)
+             break
+             case ['DV_COUNT', 'DvCount']:
+                q += "        AND dvi.magnitude"+ dataCriteria.sqlOperand() + new Long(dataCriteria.value)
+             break
+             case ['DV_PROPORTION', 'DvProportion']:
+                q += "        AND dvi.numerator"+ dataCriteria.sqlOperand() + new Double(dataCriteria.numerator)
+                /* 
+                 * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
+                 *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
+                resGrouped[absPath]['serie'] << [numerator:   dvi.,
+                                                 denominator: dvi.denominator,
+                                                 type:        dvi.type,
+                                                 precision:   dvi.precision,
+                                                 date:        dvi.owner.startTime]
+                */
              break
              default:
                throw new Exception("type $idxtype not supported")

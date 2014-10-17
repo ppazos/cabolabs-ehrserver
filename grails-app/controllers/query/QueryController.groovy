@@ -34,6 +34,11 @@ class QueryController {
      * Test query, se ejecuta desde create, solo para ver si se pasan bien los params.
      * 
      * @param type composition | datavalue
+     * @param name nombre de la query a probar, puede no estar creada
+     * @param archetypeId lista de archetype ids para absolutizar las paths
+     * @param path lista de paths para cada archetype id
+     * @param operand
+     * @param value
      * 
      * @return
      */

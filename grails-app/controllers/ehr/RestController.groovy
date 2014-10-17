@@ -24,7 +24,7 @@ class RestController {
    /**
     * Auxiliar para consultas por datos (ej. queryCompositions)
     */
-   // FIXME: must be part of Query
+   // FIXME: remove from here, defined on DataCriteria
    static Map operandMap = [
      'eq': '=',
      'lt': '<',
@@ -952,16 +952,18 @@ class RestController {
        // Datos de criterios
        List archetypeIds = params.list('archetypeId')
        List paths = params.list('path')
-       //List operands = params.list('operand')
        List values = params.list('value')
        
        // Con nombres eq, lt, ...
        // Hay que transformarlo a =, <, ...
        // No vienen los operadores directamente porque rompen en HTML, ej. <, >
        List operands = params.list('operand')
+       
+/*
        operands = operands.collect {
           operandMap[it] // 'gt' => '>'
        }
+*/
        
        DataIndex dataidx
        String idxtype
@@ -978,6 +980,23 @@ class RestController {
           qToDate = Date.parse(config.l10n.date_format, toDate)
        
        
+       // Build temp query
+       // Code from QueryController.save
+       def query = new Query(name:params.name, type:'composition', format:params.format, group:params.group)
+       
+       // Crea criterio
+       archetypeIds.eachWithIndex { archId, i ->
+          
+          query.addToWhere(
+             new DataCriteria(archetypeId:archId, path:paths[i], operand:operands[i], value:values[i])
+          )
+       }
+       
+       def cilist = query.executeComposition(qehrId, qFromDate, toDate)
+       
+       
+       /*
+          
        // Armado de la query
        String q = "FROM CompositionIndex ci WHERE "
        
@@ -996,13 +1015,12 @@ class RestController {
        //
        // ===============================================================
        
-       /**
-        * FIXME: issue #6
-        * si en el create se verifican las condiciones para que a aqui no
-        * llegue una path a un tipo que no corresponde, el error de tipo
-        * no sucederia nunca, asi no hay que tirar except aca.
-        */
-
+       
+//        FIXME: issue #6
+//        si en el create se verifican las condiciones para que a aqui no
+//        llegue una path a un tipo que no corresponde, el error de tipo
+//        no sucederia nunca, asi no hay que tirar except aca.
+        
        archetypeIds.eachWithIndex { archId, i ->
           
           // Lookup del tipo de objeto en la path para saber los nombres de los atributos
@@ -1052,35 +1070,36 @@ class RestController {
        println "queryCompositions query: "
        println q
        
-       /*
-       EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
-               AND dvi.magnitude>140.0
-       ) AND EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
-               AND dvi.magnitude<130.0
-       ) AND EXISTS (
-         SELECT dvi.id
-         FROM DataIndex dvi
-         WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/origin
-               AND dvi.value>20080101
-       )
-       */
+
+//       EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
+//               AND dvi.magnitude>140.0
+//       ) AND EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
+//               AND dvi.magnitude<130.0
+//       ) AND EXISTS (
+//         SELECT dvi.id
+//         FROM DataIndex dvi
+//         WHERE dvi.owner.id = ci.id
+//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+//               AND dvi.path = /content/data[at0001]/origin
+//               AND dvi.value>20080101
+//       )
        
        
        // TODO: criterio por atributos del ci
        def cilist = CompositionIndex.findAll( q )
  
+       */
+       
        println "Resultados (CompositionIndex): " + cilist
        
        
