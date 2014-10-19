@@ -21,16 +21,6 @@ class RestController {
    // Para acceder a las opciones de localizacion 
    def config = ApplicationHolder.application.config.app
    
-   /**
-    * Auxiliar para consultas por datos (ej. queryCompositions)
-    */
-   // FIXME: remove from here, defined on DataCriteria
-   static Map operandMap = [
-     'eq': '=',
-     'lt': '<',
-     'gt': '>',
-     'neq': '<>' // http://stackoverflow.com/questions/723195/should-i-use-or-for-not-equal-in-tsql
-   ]
    
    // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
    
@@ -894,7 +884,7 @@ class RestController {
       
       // En una consulta EQL archetypeId+path seria el SELECT
       List archetypeIds = params.list('archetypeId')
-      List paths = params.list('path')
+      List paths = params.list('archetypePath')
        
       // Crea seleccion para query de type datavaule
       archetypeIds.eachWithIndex { archId, i ->
@@ -951,7 +941,7 @@ class RestController {
        
        // Datos de criterios
        List archetypeIds = params.list('archetypeId')
-       List paths = params.list('path')
+       List paths = params.list('archetypePath')
        List values = params.list('value')
        
        // Con nombres eq, lt, ...
@@ -959,11 +949,6 @@ class RestController {
        // No vienen los operadores directamente porque rompen en HTML, ej. <, >
        List operands = params.list('operand')
        
-/*
-       operands = operands.collect {
-          operandMap[it] // 'gt' => '>'
-       }
-*/
        
        DataIndex dataidx
        String idxtype
@@ -992,113 +977,7 @@ class RestController {
           )
        }
        
-       def cilist = query.executeComposition(qehrId, qFromDate, toDate)
-       
-       
-       /*
-          
-       // Armado de la query
-       String q = "FROM CompositionIndex ci WHERE "
-       
-       // ===============================================================
-       // Criteria nivel 1 ehrId
-       if (qehrId) q += "ci.ehrId = '" + qehrId + "' AND "
-       
-       // Criteria nivel 1 archetypeId (solo de composition)
-       if (qarchetypeId) q += "ci.archetypeId = '" + qarchetypeId +"' AND "
-       
-       // Criterio de rango de fechas para ci.startTime
-       // Formatea las fechas al formato de la DB
-       if (qFromDate) q += "ci.startTime >= '"+ formatterDateDB.format( qFromDate ) +"' AND " // higher or equal
-       if (qToDate) q += "ci.startTime <= '"+ formatterDateDB.format( qToDate ) +"' AND " // lower or equal
-       
-       //
-       // ===============================================================
-       
-       
-//        FIXME: issue #6
-//        si en el create se verifican las condiciones para que a aqui no
-//        llegue una path a un tipo que no corresponde, el error de tipo
-//        no sucederia nunca, asi no hay que tirar except aca.
-        
-       archetypeIds.eachWithIndex { archId, i ->
-          
-          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
-          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-          dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
-          idxtype = dataidx?.rmTypeName
-          
-          
-          // Subqueries sobre los DataValueIndex de los CompositionIndex
-          q +=
-          " EXISTS (" +
-          "  SELECT dvi.id" +
-          "  FROM DataValueIndex dvi" +
-          "  WHERE dvi.owner.id = ci.id" + // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex (los criterios se consideran AND, sin esta condicion es un OR y alcanza que se cumpla uno de los criterios que vienen en params)
-          "        AND dvi.archetypeId = '"+ archId +"'" +
-          "        AND dvi.path = '"+ paths[i] +"'"
-          
-          // Consulta sobre atributos del DataIndex dependiendo de su tipo
-          switch (idxtype)
-          {
-             // ADL Parser bug: uses Java class names instead of RM Type Names...
-             case ['DV_DATE_TIME', 'DvDateTime']:
-                q += "        AND dvi.value"+ operands[i] + values[i] // TODO: verificar formato, transformar a SQL
-             break
-             case ['DV_QUANTITY', 'DvQuantity']:
-                q += "        AND dvi.magnitude"+ operands[i] + new Float(values[i])
-             break
-             case ['DV_CODED_TEXT', 'DvCodedText']:
-                q += "        AND dvi.code"+ operands[i] +"'"+ values[i]+"'"
-             break
-             case ['DV_TEXT', 'DvText']:
-                q += "        AND dvi.value"+ operands[i] +"'"+ values[i]+"'"
-             break
-             case ['DV_BOOLEAN', 'DvBoolean']:
-                q += "        AND dvi.value"+ operands[i] + new Boolean(values[i])
-             break
-             default:
-               throw new Exception("type $idxtype not supported")
-          }
-          q += ")"
-          
-          
-          // Agrega ANDs para los EXISTs, menos el ultimo
-          if (i+1 < archetypeIds.size()) q += " AND "
-       }
-       
-       println "queryCompositions query: "
-       println q
-       
-
-//       EXISTS (
-//         SELECT dvi.id
-//         FROM DataIndex dvi
-//         WHERE dvi.owner.id = ci.id
-//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
-//               AND dvi.magnitude>140.0
-//       ) AND EXISTS (
-//         SELECT dvi.id
-//         FROM DataIndex dvi
-//         WHERE dvi.owner.id = ci.id
-//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-//               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
-//               AND dvi.magnitude<130.0
-//       ) AND EXISTS (
-//         SELECT dvi.id
-//         FROM DataIndex dvi
-//         WHERE dvi.owner.id = ci.id
-//               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-//               AND dvi.path = /content/data[at0001]/origin
-//               AND dvi.value>20080101
-//       )
-       
-       
-       // TODO: criterio por atributos del ci
-       def cilist = CompositionIndex.findAll( q )
- 
-       */
+       def cilist = query.executeComposition(qehrId, qFromDate, qToDate)
        
        println "Resultados (CompositionIndex): " + cilist
        

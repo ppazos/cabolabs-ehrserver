@@ -478,8 +478,8 @@
                 <input type="hidden" name="archetypeId" value="${archId}" />
               </td>
               <td>
-                ${path[i]}
-                <input type="hidden" name="path" value="${path[i]}" />
+                ${archetypePath[i]}
+                <input type="hidden" name="archetypePath" value="${archetypePath[i]}" />
               </td>
               <td>
                 ${operand[i]}
@@ -561,7 +561,7 @@
         <table>
           <tr>
             <th>archetypeId</th>
-            <th>path</th>
+            <th>archetypePath</th>
           </tr>
           <g:each in="${archetypeId}" var="archId" status="i">
             <tr>
@@ -570,8 +570,8 @@
                 <input type="hidden" name="archetypeId" value="${archId}" />
               </td>
               <td>
-                ${path[i]}
-                <input type="hidden" name="path" value="${path[i]}" />
+                ${archetypePath[i]}
+                <input type="hidden" name="archetypePath" value="${archetypePath[i]}" />
               </td>
             </tr>
           </g:each>
