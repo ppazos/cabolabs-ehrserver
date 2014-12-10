@@ -165,7 +165,6 @@ class XmlService {
             //
             // TODO: formato de fecha completa que sea configurable
             //       ademas la fraccion con . o , depende del locale!!!
-            //startTime = Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", parsedCompositions[i].context.start_time.value.text())
             startTime = Date.parse(config.l10n.datetime_format, parsedVersion.data.context.start_time.value.text())
          }
          

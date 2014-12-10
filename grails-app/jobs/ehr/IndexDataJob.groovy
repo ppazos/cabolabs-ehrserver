@@ -486,7 +486,7 @@ class IndexDataJob {
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
       <time>
-         <value>20070920T104614,0156+0930</value>
+         <value>20070920T104614,156+0930</value>
       </time>
       */
       return new DvDateTimeIndex(
@@ -496,7 +496,6 @@ class IndexDataJob {
          archetypePath: archetypePath,
          owner: owner,
          value: Date.parse(config.l10n.datetime_format, node.value.text())
-         //value: Date.parse("yyyyMMdd'T'HHmmss,SSSSZ", node.value.text())
       )
    }
    

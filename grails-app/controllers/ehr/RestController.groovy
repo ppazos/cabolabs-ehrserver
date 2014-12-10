@@ -24,8 +24,6 @@ class RestController {
    
    // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
    
-   //def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
-   //def formatterDate = new SimpleDateFormat("yyyyMMdd")
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
    

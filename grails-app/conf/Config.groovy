@@ -120,7 +120,7 @@ app {
       
       // formatos para procesamiento de fechas
       // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
-      datetime_format = "yyyyMMdd'T'HHmmss,SSSSZ" 
+      datetime_format = "yyyyMMdd'T'HHmmss,SSSZ" 
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
       

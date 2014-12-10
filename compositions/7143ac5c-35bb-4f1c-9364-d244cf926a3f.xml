@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?><data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1" xsi:type="COMPOSITION">
+  <name>
+    <value>Signos vitales</value>
+  </name>
+  <archetype_details>
+    <archetype_id>
+      <value>openEHR-EHR-COMPOSITION.signos.v1</value>
+    </archetype_id>
+    <template_id>
+      <value>Signos</value>
+    </template_id>
+    <rm_version>1.0.2</rm_version>
+  </archetype_details>
+  <language>
+    <terminology_id>
+      <value>ISO_639-1</value>
+    </terminology_id>
+    <code_string>es</code_string>
+  </language>
+  <territory>
+    <terminology_id>
+      <value>ISO_3166-1</value>
+    </terminology_id>
+    <code_string>UY</code_string>
+  </territory>
+  <category>
+    <value>event</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>443</code_string>
+    </defining_code>
+  </category>
+  <composer xsi:type="PARTY_IDENTIFIED">
+    <name>Dr. Pablo Pazos</name>
+  </composer>
+  <context>
+    <start_time>
+      <value>20141210T012850,588-0300</value>
+    </start_time>
+    <setting>
+      <value>Hospital Montevideo</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>229</code_string>
+      </defining_code>
+    </setting>
+  </context>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.blood_pressure.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Blood Pressure</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <protocol archetype_node_id="at0011" xsi:type="ITEM_TREE">
+      <name>
+        <value>Tree</value>
+      </name>
+    </protocol>
+    <data archetype_node_id="at0001" xsi:type="HISTORY">
+      <name>
+        <value>history</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012850,666-0300</value>
+      </origin>
+      <events archetype_node_id="at0006" xsi:type="POINT_EVENT">
+        <name>
+          <value>any event</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012850,684-0300</value>
+        </time>
+        <data archetype_node_id="at0003" xsi:type="ITEM_TREE">
+          <name>
+            <value>blood pressure</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Systolic</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>35.0</magnitude>
+              <units>mm[Hg]</units>
+            </value>
+          </items>
+          <items archetype_node_id="at0005" xsi:type="ELEMENT">
+            <name>
+              <value>Diastolic</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>46.0</magnitude>
+              <units>mm[Hg]</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0007" xsi:type="ITEM_TREE">
+          <name>
+            <value>state structure</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.body_temperature.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Body temperature</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <protocol archetype_node_id="at0020" xsi:type="ITEM_TREE">
+      <name>
+        <value>Protocol</value>
+      </name>
+    </protocol>
+    <data archetype_node_id="at0002" xsi:type="HISTORY">
+      <name>
+        <value>History</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012850,920-0300</value>
+      </origin>
+      <events archetype_node_id="at0003" xsi:type="POINT_EVENT">
+        <name>
+          <value>Any event</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012850,929-0300</value>
+        </time>
+        <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+          <name>
+            <value>Tree</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Temperature</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>57.0</magnitude>
+              <units>°C</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0029" xsi:type="ITEM_TREE">
+          <name>
+            <value>State</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.pulse.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Pulso</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <protocol archetype_node_id="at0010" xsi:type="ITEM_TREE">
+      <name>
+        <value>*List(en)</value>
+      </name>
+    </protocol>
+    <data archetype_node_id="at0002" xsi:type="HISTORY">
+      <name>
+        <value>*history(en)</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012851,007-0300</value>
+      </origin>
+      <events archetype_node_id="at0003" xsi:type="POINT_EVENT">
+        <name>
+          <value>*Any event(en)</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012851,016-0300</value>
+        </time>
+        <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+          <name>
+            <value>*structure(en)</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Frecuencia</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>68.0</magnitude>
+              <units>/min</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0012" xsi:type="ITEM_TREE">
+          <name>
+            <value>*List(en)</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.respiration.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Respirations</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <data archetype_node_id="at0001" xsi:type="HISTORY">
+      <name>
+        <value>history</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012851,104-0300</value>
+      </origin>
+      <events archetype_node_id="at0002" xsi:type="POINT_EVENT">
+        <name>
+          <value>Any event</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012851,112-0300</value>
+        </time>
+        <data archetype_node_id="at0003" xsi:type="ITEM_TREE">
+          <name>
+            <value>List</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Rate</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>79.0</magnitude>
+              <units>/min</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0022" xsi:type="ITEM_TREE">
+          <name>
+            <value>List</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.body_weight.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Peso corporal</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <protocol archetype_node_id="at0015" xsi:type="ITEM_TREE">
+      <name>
+        <value>*protocol structure(en)</value>
+      </name>
+    </protocol>
+    <data archetype_node_id="at0002" xsi:type="HISTORY">
+      <name>
+        <value>*history(en)</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012851,173-0300</value>
+      </origin>
+      <events archetype_node_id="at0003" xsi:type="POINT_EVENT">
+        <name>
+          <value>Cualquier evento.</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012851,182-0300</value>
+        </time>
+        <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+          <name>
+            <value>*Simple(en)</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Peso</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>80.0</magnitude>
+              <units>kg</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0008" xsi:type="ITEM_TREE">
+          <name>
+            <value>*state structure(en)</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <content archetype_node_id="openEHR-EHR-OBSERVATION.height.v1" xsi:type="OBSERVATION">
+    <name>
+      <value>Height/Length</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <encoding>
+      <terminology_id>
+        <value>Unicode</value>
+      </terminology_id>
+      <code_string>UTF-8</code_string>
+    </encoding>
+    <subject xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d8ea7f3e-bb1d-486a-ab14-e9766ba5577d</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+    </subject>
+    <protocol archetype_node_id="at0007" xsi:type="ITEM_TREE">
+      <name>
+        <value>List</value>
+      </name>
+    </protocol>
+    <data archetype_node_id="at0001" xsi:type="HISTORY">
+      <name>
+        <value>history</value>
+      </name>
+      <origin xsi:type="DV_DATE_TIME">
+        <value>20141210T012851,243-0300</value>
+      </origin>
+      <events archetype_node_id="at0002" xsi:type="POINT_EVENT">
+        <name>
+          <value>Any event</value>
+        </name>
+        <time xsi:type="DV_DATE_TIME">
+          <value>20141210T012851,252-0300</value>
+        </time>
+        <data archetype_node_id="at0003" xsi:type="ITEM_TREE">
+          <name>
+            <value>Simple</value>
+          </name>
+          <items archetype_node_id="at0004" xsi:type="ELEMENT">
+            <name>
+              <value>Height/Length</value>
+            </name>
+            <value xsi:type="DV_QUANTITY">
+              <magnitude>56.0</magnitude>
+              <units>cm</units>
+            </value>
+          </items>
+        </data>
+        <state archetype_node_id="at0013" xsi:type="ITEM_TREE">
+          <name>
+            <value>Tree</value>
+          </name>
+        </state>
+      </events>
+    </data>
+  </content>
+  <uid>
+    <value>7143ac5c-35bb-4f1c-9364-d244cf926a3f</value>
+  </uid>
+</data>
