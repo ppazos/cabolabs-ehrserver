@@ -143,6 +143,7 @@ class RestController {
       }
       catch (Exception e)
       {
+         // FIXME: log
          println e.message // FIXME: the error might be more specific, see which errors we can have.
          
          // Parsing error

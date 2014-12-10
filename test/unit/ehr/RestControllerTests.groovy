@@ -20,7 +20,7 @@ import ehr.clinical_documents.data.*
 @Mock([ Ehr,Person,
         PatientProxy, DoctorProxy,
         OperationalTemplateIndex, DataIndex, Contribution, Version, CompositionIndex, AuditDetails,
-        DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex
+        DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
       ])
 class RestControllerTests {
 
@@ -170,7 +170,7 @@ class RestControllerTests {
       <name>Dr. Pablo Pazos</name>
     </committer>
     <time_committed>
-      <value>20140901T233114,0065-0300</value>
+      <value>20140901T233114,065-0300</value>
     </time_committed>
     <change_type>
       <value>creation</value>
@@ -224,7 +224,7 @@ class RestControllerTests {
     </composer>
     <context>
       <start_time>
-        <value>20140901T232600,0304-0300</value>
+        <value>20140901T232600,304-0300</value>
       </start_time>
       <setting>
         <value>Hospital Montevideo</value>
@@ -648,6 +648,7 @@ class RestControllerTests {
    }
 */
    
+   /*
    void testCommitWithDvProportion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
@@ -687,7 +688,7 @@ class RestControllerTests {
       <name>Dr. Pablo Pazos</name>
     </committer>
     <time_committed>
-      <value>20140901T233114,0065-0300</value>
+      <value>20140901T233114,065-0300</value>
     </time_committed>
     <change_type>
       <value>creation</value>
@@ -741,7 +742,7 @@ class RestControllerTests {
     </composer>
     <context>
       <start_time>
-        <value>20140901T232600,0304-0300</value>
+        <value>20140901T232600,304-0300</value>
       </start_time>
       <setting>
         <value>Hospital Montevideo</value>
@@ -861,8 +862,9 @@ class RestControllerTests {
       println countIdx.numerator
       
    } // DvProportion
+   */
    
-   
+   /*
    void testCommitWithDvCount()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
@@ -904,7 +906,7 @@ class RestControllerTests {
       <name>Dr. Pablo Pazos</name>
     </committer>
     <time_committed>
-      <value>20140901T233114,0065-0300</value>
+      <value>20140901T233114,065-0300</value>
     </time_committed>
     <change_type>
       <value>creation</value>
@@ -958,7 +960,7 @@ class RestControllerTests {
     </composer>
     <context>
       <start_time>
-        <value>20140901T232600,0304-0300</value>
+        <value>20140901T232600,304-0300</value>
       </start_time>
       <setting>
         <value>Hospital Montevideo</value>
@@ -1074,6 +1076,930 @@ class RestControllerTests {
       println countIdx.magnitude
       
    } // DvCount
+*/
+   
+   
+   void testCommitUKSample()
+   {
+      def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      def opt = new File( "opts" + PS + "UK AoMRC Community Dental Final Assessment.opt" )
+      oti.index(opt)
+      
+      // Test operational template index created
+      assert ehr.clinical_documents.OperationalTemplateIndex.countByTemplateId('UK AoMRC Community Dental Final Assessment') == 1
+      
+      // Test data indexes created
+      DataIndex.list().each { di ->
+         
+         println "di: " + di.path
+      }
+      
+      
+      
+      // https://github.com/gramant/grails-core-old/blob/master/grails-test/src/main/groovy/org/codehaus/groovy/grails/plugins/testing/GrailsMockHttpServletRequest.groovy
+      //println "req: "+ request.class.toString()
+      
+      request.method = 'POST'
+      controller.request.contentType = 'application/x-www-form-urlencoded'
+      
+      // dolar slashy allows GString variables in multiline Strings
+      params.versions = $/<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../GitHub/cabolabs-ehrserver/xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+  <contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>ad6866e1-fb08-4e9b-a93b-5095a2563780</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <name>Dr. Pablo Pazos</name>
+    </committer>
+    <time_committed>
+      <value>20140901T233114,065-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>91cf9ded-e926-4848-aa3f-3257c1d89e38</value>
+  </uid>
+  <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.report.v1">
+   <name>
+      <value>Community Dental Final Assessment Letter</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-COMPOSITION.report.v1</value>
+      </archetype_id>
+      <template_id>
+         <value>UK AoMRC Community Dental Final Assessment</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <language>
+      <terminology_id>
+         <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>en</code_string>
+   </language>
+   <territory>
+      <terminology_id>
+         <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>GB</code_string>
+   </territory>
+   <category>
+      <value>event</value>
+      <defining_code>
+         <terminology_id>
+            <value>openehr</value>
+         </terminology_id>
+         <code_string>433</code_string>
+      </defining_code>
+   </category>
+   <composer xsi:type="PARTY_IDENTIFIED">
+      <name>Rebecca Wassall</name>
+   </composer>
+   <context>
+      <start_time>
+         <value>20140901T232600,304-0300</value>
+      </start_time>
+      <setting>
+         <value>other care</value>
+         <defining_code>
+            <terminology_id>
+               <value>openehr</value>
+            </terminology_id>
+            <code_string>238</code_string>
+         </defining_code>
+      </setting>
+      <health_care_facility>
+         <external_ref>
+            <id xsi:type="GENERIC_ID">
+               <value>999999-345</value>
+               <scheme>NHS</scheme>
+            </id>
+            <namespace>NHSE</namespace>
+            <type>PARTY</type>
+         </external_ref>
+         <name>Northumbria Community NHS</name>
+      </health_care_facility>
+   </context>
+   <content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.demographics_rcp.v1">
+      <name>
+         <value>Patient demographics</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-SECTION.demographics_rcp.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <items xsi:type="ADMIN_ENTRY" archetype_node_id="openEHR-EHR-ADMIN_ENTRY.key_contacts.v1">
+         <name>
+            <value>Relevant contacts</value>
+         </name>
+         <archetype_details>
+            <archetype_id>
+               <value>openEHR-EHR-ADMIN_ENTRY.key_contacts.v1</value>
+            </archetype_id>
+            <rm_version>1.0.2</rm_version>
+         </archetype_details>
+         <language>
+            <terminology_id>
+               <value>ISO_639-1</value>
+            </terminology_id>
+            <code_string>en</code_string>
+         </language>
+         <encoding>
+            <terminology_id>
+               <value>IANA_character-sets</value>
+            </terminology_id>
+            <code_string>UTF-8</code_string>
+         </encoding>
+         <subject xsi:type="PARTY_SELF"/>
+         <data xsi:type="ITEM_TREE" archetype_node_id="at0001">
+            <name>
+               <value>Tree</value>
+            </name>
+            <items xsi:type="CLUSTER" archetype_node_id="at0014">
+               <name>
+                  <value>Formal carer</value>
+               </name>
+               <items xsi:type="CLUSTER" archetype_node_id="openEHR-EHR-CLUSTER.individual_professional.v1">
+                  <name>
+                     <value>Primary school contact</value>
+                  </name>
+                  <archetype_details>
+                     <archetype_id>
+                        <value>openEHR-EHR-CLUSTER.individual_professional.v1</value>
+                     </archetype_id>
+                     <rm_version>1.0.2</rm_version>
+                  </archetype_details>
+                  <items xsi:type="CLUSTER" archetype_node_id="openEHR-EHR-CLUSTER.person_name.v1">
+                     <name>
+                        <value>Person name</value>
+                     </name>
+                     <archetype_details>
+                        <archetype_id>
+                           <value>openEHR-EHR-CLUSTER.person_name.v1</value>
+                        </archetype_id>
+                        <rm_version>1.0.2</rm_version>
+                     </archetype_details>
+                     <items xsi:type="ELEMENT" archetype_node_id="at0001">
+                        <name>
+                           <value>Contact name</value>
+                        </name>
+                        <value xsi:type="DV_TEXT">
+                           <value>Nurse Baw</value>
+                        </value>
+                     </items>
+                  </items>
+                  <items xsi:type="CLUSTER" archetype_node_id="openEHR-EHR-CLUSTER.telecom_uk.v1">
+                     <name>
+                        <value>Telecom details (UK)</value>
+                     </name>
+                     <archetype_details>
+                        <archetype_id>
+                           <value>openEHR-EHR-CLUSTER.telecom_uk.v1</value>
+                        </archetype_id>
+                        <rm_version>1.0.2</rm_version>
+                     </archetype_details>
+                     <items xsi:type="ELEMENT" archetype_node_id="at0002">
+                        <name>
+                           <value>Contact telecoms</value>
+                        </name>
+                        <value xsi:type="DV_TEXT">
+                           <value>Mobile 0775 343 46547</value>
+                        </value>
+                     </items>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0012">
+                     <name>
+                        <value>Primary school</value>
+                     </name>
+                     <value xsi:type="DV_TEXT">
+                        <value>St Mungo Primary school</value>
+                     </value>
+                  </items>
+               </items>
+            </items>
+         </data>
+      </items>
+   </content>
+   <content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.outpatient_details_rcp.v1">
+      <name>
+         <value>Outpatient details</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-SECTION.outpatient_details_rcp.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <items xsi:type="ADMIN_ENTRY" archetype_node_id="openEHR-EHR-ADMIN_ENTRY.outpatient_details_rcp.v1">
+         <name>
+            <value>Outpatient administration</value>
+         </name>
+         <archetype_details>
+            <archetype_id>
+               <value>openEHR-EHR-ADMIN_ENTRY.outpatient_details_rcp.v1</value>
+            </archetype_id>
+            <rm_version>1.0.2</rm_version>
+         </archetype_details>
+         <language>
+            <terminology_id>
+               <value>ISO_639-1</value>
+            </terminology_id>
+            <code_string>en</code_string>
+         </language>
+         <encoding>
+            <terminology_id>
+               <value>IANA_character-sets</value>
+            </terminology_id>
+            <code_string>UTF-8</code_string>
+         </encoding>
+         <subject xsi:type="PARTY_SELF"/>
+         <data xsi:type="ITEM_TREE" archetype_node_id="at0001">
+            <name>
+               <value>Tree</value>
+            </name>
+            <items xsi:type="ELEMENT" archetype_node_id="at0002">
+               <name>
+                  <value>Contact type</value>
+               </name>
+               <value xsi:type="DV_CODED_TEXT">
+                  <value>Scheduled follow-up contact</value>
+                  <defining_code>
+                     <terminology_id>
+                        <value>local</value>
+                     </terminology_id>
+                     <code_string>at0008</code_string>
+                  </defining_code>
+               </value>
+            </items>
+         </data>
+      </items>
+   </content>
+   <content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.history_rcp.v1">
+   <name>
+      <value>History</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.history_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.story.v1">
+      <name>
+         <value>Story/History</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-OBSERVATION.story.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001">
+         <name>
+            <value>Event Series</value>
+         </name>
+         <origin>
+            <value>20140901T232600,304-0300</value>
+         </origin>
+         <events xsi:type="POINT_EVENT" archetype_node_id="at0002">
+            <name>
+               <value>Any event</value>
+            </name>
+            <time>
+               <value>20140901T232600,304-0300</value>
+            </time>
+            <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
+               <name>
+                  <value>Tree</value>
+               </name>
+               <items xsi:type="CLUSTER" archetype_node_id="openEHR-EHR-CLUSTER.symptom.v1">
+                  <name>
+                     <value>Symptom</value>
+                  </name>
+                  <archetype_details>
+                     <archetype_id>
+                        <value>openEHR-EHR-CLUSTER.symptom.v1</value>
+                     </archetype_id>
+                     <rm_version>1.0.2</rm_version>
+                  </archetype_details>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0001">
+                     <name>
+                        <value>Symptom name</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Painful mouth</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>SNOMED-CT</value>
+                           </terminology_id>
+                           <code_string>102616008</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+               </items>
+            </data>
+         </events>
+      </data>
+   </items>
+</content>
+<content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.examination_findings_rcp.v1">
+   <name>
+      <value>Examination findings</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.examination_findings_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.exam.v1">
+      <name>
+         <value>Physical Examination Findings</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-OBSERVATION.exam.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001">
+         <name>
+            <value>Event Series</value>
+         </name>
+         <origin>
+             <value>20140901T232600,304-0300</value>
+         </origin>
+         <events xsi:type="POINT_EVENT" archetype_node_id="at0002">
+            <name>
+               <value>Any event</value>
+            </name>
+            <time>
+               <value>20140901T232600,304-0300</value>
+            </time>
+            <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
+               <name>
+                  <value>Tree</value>
+               </name>
+               <items xsi:type="CLUSTER" archetype_node_id="openEHR-EHR-CLUSTER.oral_exam_oduk.v1">
+                  <name>
+                     <value>Oral examination</value>
+                  </name>
+                  <archetype_details>
+                     <archetype_id>
+                        <value>openEHR-EHR-CLUSTER.oral_exam_oduk.v1</value>
+                     </archetype_id>
+                     <rm_version>1.0.2</rm_version>
+                  </archetype_details>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0001">
+                     <name>
+                        <value>Plaque control</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Poor plaque control</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>local</value>
+                           </terminology_id>
+                           <code_string>at0003</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0004">
+                     <name>
+                        <value>Dental swelling</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Dental swelling absent</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>local</value>
+                           </terminology_id>
+                           <code_string>at0006</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0007">
+                     <name>
+                        <value>Teeth with decay</value>
+                     </name>
+                     <value xsi:type="DV_COUNT">
+                        <magnitude>3</magnitude>
+                     </value>
+                  </items>
+               </items>
+            </data>
+         </events>
+      </data>
+   </items>
+</content>
+<content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.assessment_scales_rcp.v1">
+   <name>
+      <value>Assessment scales</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.assessment_scales_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.dental_rag_score.v1">
+      <name>
+         <value>Dental RAG score</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-OBSERVATION.dental_rag_score.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001">
+         <name>
+            <value>Event Series</value>
+         </name>
+         <origin>
+       <value>20140901T232600,304-0300</value>
+         </origin>
+         <events xsi:type="POINT_EVENT" archetype_node_id="at0002">
+            <name>
+               <value>Any event</value>
+            </name>
+            <time>
+              <value>20140901T232600,304-0300</value>
+            </time>
+            <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
+               <name>
+                  <value>Tree</value>
+               </name>
+               <items xsi:type="CLUSTER" archetype_node_id="at0006">
+                  <name>
+                     <value>Caries (tooth decay)</value>
+                  </name>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0011">
+                     <name>
+                        <value>Clinical factors</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Teeth with carious lesions</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>local</value>
+                           </terminology_id>
+                           <code_string>at0025</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0010">
+                     <name>
+                        <value>Patient factors</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Unsatisfactory Plaque control</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>local</value>
+                           </terminology_id>
+                           <code_string>at0029</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0010">
+                     <name>
+                        <value>Patient factors #2</value>
+                     </name>
+                     <value xsi:type="DV_CODED_TEXT">
+                        <value>Sibling experience</value>
+                        <defining_code>
+                           <terminology_id>
+                              <value>local</value>
+                           </terminology_id>
+                           <code_string>at0030</code_string>
+                        </defining_code>
+                     </value>
+                  </items>
+                  <items xsi:type="ELEMENT" archetype_node_id="at0018">
+                     <name>
+                        <value>Caries risk</value>
+                     </name>
+                     <value xsi:type="DV_ORDINAL">
+                        <value>2</value>
+                        <symbol>
+                           <value>Red</value>
+                           <defining_code>
+                              <terminology_id>
+                                 <value>local</value>
+                              </terminology_id>
+                              <code_string>at0024</code_string>
+                           </defining_code>
+                        </symbol>
+                     </value>
+                  </items>
+               </items>
+            </data>
+         </events>
+      </data>
+   </items>
+</content>
+<content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.investigations_results_rcp.v1">
+   <name>
+      <value>Investigations and results</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.investigations_results_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.imaging_exam.v1">
+      <name>
+         <value>Imaging examination result</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-OBSERVATION.imaging_exam.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001">
+         <name>
+            <value>Event Series</value>
+         </name>
+         <origin>
+             <value>20140901T232600,304-0300</value>
+         </origin>
+         <events xsi:type="POINT_EVENT" archetype_node_id="at0002">
+            <name>
+               <value>Any event</value>
+            </name>
+            <time>
+          <value>20140901T232600,304-0300</value>
+            </time>
+            <data xsi:type="ITEM_TREE" archetype_node_id="at0003">
+               <name>
+                  <value>Tree</value>
+               </name>
+               <items xsi:type="ELEMENT" archetype_node_id="at0004">
+                  <name>
+                     <value>Examination result name</value>
+                  </name>
+                  <value xsi:type="DV_CODED_TEXT">
+                     <value>Radiography of teeth </value>
+                     <defining_code>
+                        <terminology_id>
+                           <value>SNOMED-CT</value>
+                        </terminology_id>
+                        <code_string>22891007</code_string>
+                     </defining_code>
+                  </value>
+               </items>
+               <items xsi:type="ELEMENT" archetype_node_id="at0007">
+                  <name>
+                     <value>Overall result status</value>
+                  </name>
+                  <value xsi:type="DV_CODED_TEXT">
+                     <value>Final</value>
+                     <defining_code>
+                        <terminology_id>
+                           <value>local</value>
+                        </terminology_id>
+                        <code_string>at0011</code_string>
+                     </defining_code>
+                  </value>
+               </items>
+               <items xsi:type="CLUSTER" archetype_node_id="at0015">
+                  <name>
+                     <value>Result group</value>
+                  </name>
+                  <items xsi:type="CLUSTER" archetype_node_id="at0016">
+                     <name>
+                        <value>Decayed teeth</value>
+                     </name>
+                     <items xsi:type="ELEMENT" archetype_node_id="at0017">
+                        <name>
+                           <value>Decayed teeth</value>
+                        </name>
+                        <value xsi:type="DV_COUNT">
+                           <magnitude>4</magnitude>
+                        </value>
+                     </items>
+                  </items>
+                  <items xsi:type="CLUSTER" archetype_node_id="at0016">
+                     <name>
+                        <value>Teeth with associated abscesses</value>
+                     </name>
+                     <items xsi:type="ELEMENT" archetype_node_id="at0017">
+                        <name>
+                           <value>Teeth with associated abscesses</value>
+                        </name>
+                        <value xsi:type="DV_COUNT">
+                           <magnitude>3</magnitude>
+                        </value>
+                     </items>
+                  </items>
+               </items>
+               <items xsi:type="ELEMENT" archetype_node_id="at0020">
+                  <name>
+                     <value>Radiological diagnosis</value>
+                  </name>
+                  <value xsi:type="DV_CODED_TEXT">
+                     <value>No pathologic diagnosis</value>
+                     <defining_code>
+                        <terminology_id>
+                           <value>SNOMED-CT</value>
+                        </terminology_id>
+                        <code_string>23875004</code_string>
+                     </defining_code>
+                  </value>
+               </items>
+            </data>
+         </events>
+      </data>
+   </items>
+</content>
+<content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.plan_requested_actions_rcp.v1">
+   <name>
+      <value>Plan and requested actions</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.plan_requested_actions_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="EVALUATION" archetype_node_id="openEHR-EHR-EVALUATION.clinical_synopsis.v1">
+      <name>
+         <value>Plan and requested actions synopsis</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-EVALUATION.clinical_synopsis.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data xsi:type="ITEM_TREE" archetype_node_id="at0001">
+         <name>
+            <value>List</value>
+         </name>
+         <items xsi:type="ELEMENT" archetype_node_id="at0002">
+            <name>
+               <value>Synopsis</value>
+            </name>
+            <value xsi:type="DV_TEXT">
+               <value>Preventitive dental care, Dental treatment under GA</value>
+            </value>
+         </items>
+      </data>
+   </items>
+   <items xsi:type="INSTRUCTION" archetype_node_id="openEHR-EHR-INSTRUCTION.request-follow_up.v1">
+      <name>
+         <value>Follow Up Request</value>
+      </name>
+      <uid xsi:type="HIER_OBJECT_ID">
+         <value>f36d8e67-6609-40be-ac0f-35f0fe900d1e</value>
+      </uid>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-INSTRUCTION.request-follow_up.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <narrative>
+         <value>Dental examination</value>
+      </narrative>
+      <activities archetype_node_id="at0001">
+         <name>
+            <value>Request</value>
+         </name>
+         <description xsi:type="ITEM_TREE" archetype_node_id="at0009">
+            <name>
+               <value>Tree</value>
+            </name>
+            <items xsi:type="ELEMENT" archetype_node_id="at0121.1">
+               <name>
+                  <value>Follow up Service Requested</value>
+               </name>
+               <value xsi:type="DV_CODED_TEXT">
+                  <value>Dental examination</value>
+                  <defining_code>
+                     <terminology_id>
+                        <value>SNOMED-CT</value>
+                     </terminology_id>
+                     <code_string>141954009</code_string>
+                  </defining_code>
+               </value>
+            </items>
+            <items xsi:type="ELEMENT" archetype_node_id="at0135.1">
+               <name>
+                  <value>Description of Follow Up</value>
+               </name>
+               <value xsi:type="DV_TEXT">
+                  <value>Review in 4 weeks.</value>
+               </value>
+            </items>
+         </description>
+         <timing>
+            <value>dummy</value>
+            <formalism>dummy</formalism>
+         </timing>
+         <action_archetype_id>/.*/</action_archetype_id>
+      </activities>
+   </items>
+</content>
+<content xsi:type="SECTION" archetype_node_id="openEHR-EHR-SECTION.clinical_summary_rcp.v1">
+   <name>
+      <value>Clinical Summary</value>
+   </name>
+   <archetype_details>
+      <archetype_id>
+         <value>openEHR-EHR-SECTION.clinical_summary_rcp.v1</value>
+      </archetype_id>
+      <rm_version>1.0.2</rm_version>
+   </archetype_details>
+   <items xsi:type="EVALUATION" archetype_node_id="openEHR-EHR-EVALUATION.clinical_synopsis.v1">
+      <name>
+         <value>Clinical Synopsis</value>
+      </name>
+      <archetype_details>
+         <archetype_id>
+            <value>openEHR-EHR-EVALUATION.clinical_synopsis.v1</value>
+         </archetype_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
+      <language>
+         <terminology_id>
+            <value>ISO_639-1</value>
+         </terminology_id>
+         <code_string>en</code_string>
+      </language>
+      <encoding>
+         <terminology_id>
+            <value>IANA_character-sets</value>
+         </terminology_id>
+         <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data xsi:type="ITEM_TREE" archetype_node_id="at0001">
+         <name>
+            <value>Tree</value>
+         </name>
+         <items xsi:type="ELEMENT" archetype_node_id="at0002">
+            <name>
+               <value>Synopsis</value>
+            </name>
+            <value xsi:type="DV_TEXT">
+               <value>Significant dental issues.</value>
+            </value>
+         </items>
+      </data>
+   </items> 
+</content>
+</data>
+<lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
+      /$
+      
+      //println params.versions
+      
+      assert Ehr.count() == 5 : "No hay 5 EHRs como deberia"
+
+      params.ehrId = Ehr.get(1).ehrId
+      params.auditSystemId = "TEST_SYSTEM_ID"
+      params.auditCommitter = "Mr. Committer UK"
+      controller.commit()
+      
+      //println controller.response.contentAsString
+      //println controller.response.text
+      
+      assert Ehr.get(1).contributions.size() > 0 : "No hay contributions"
+      
+      Ehr.get(1).contributions.versions.each { version -> // version.data (CompositionIndex)
+      
+         println "template id: "+ version.data.templateId
+      }
+      
+      // Test response ok
+      
+      def resp = new XmlSlurper().parseText( controller.response.contentAsString )
+      
+      assert resp.type.code.text() == "AA"
+      
+      
+      // Test data indexes
+      
+      def indexJob = new ehr.IndexDataJob()
+      indexJob.execute()
+      
+      assert DataValueIndex.count() == 19 // There are 19 data points indexed
+      
+      DataValueIndex.list().each {
+         println it.getClass().getSimpleName()
+      }
+      
+      
+   } // commit uk sample
+   
    
 	
    void testEhrList()

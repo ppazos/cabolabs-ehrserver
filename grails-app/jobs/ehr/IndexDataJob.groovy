@@ -1,7 +1,5 @@
 package ehr
 
-import java.util.List;
-
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult

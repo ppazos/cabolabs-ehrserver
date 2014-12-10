@@ -22,7 +22,7 @@ class OperationalTemplateIndexerTests {
     }
 
     void testSomething() {
-        def opti = new OperationalTemplateIndexer()
+        def opti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         opti.indexAll()
     }
 }
