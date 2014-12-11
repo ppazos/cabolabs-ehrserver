@@ -648,7 +648,7 @@ class RestControllerTests {
    }
 */
    
-   /*
+
    void testCommitWithDvProportion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
@@ -673,8 +673,7 @@ class RestControllerTests {
       controller.request.contentType = 'application/x-www-form-urlencoded'
       
       // dolar slashy allows GString variables in multiline Strings
-      params.versions = $/
-<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+      params.versions = $/<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
       <value>ad6866e1-fb08-4e9b-a93b-5095a2563780</value>
@@ -862,9 +861,9 @@ class RestControllerTests {
       println countIdx.numerator
       
    } // DvProportion
-   */
    
-   /*
+
+
    void testCommitWithDvCount()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
@@ -891,8 +890,7 @@ class RestControllerTests {
       controller.request.contentType = 'application/x-www-form-urlencoded'
       
       // dolar slashy allows GString variables in multiline Strings
-      params.versions = $/
-<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+      params.versions = $/<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
       <value>ad6866e1-fb08-4e9b-a93b-5095a2563779</value>
@@ -1076,7 +1074,7 @@ class RestControllerTests {
       println countIdx.magnitude
       
    } // DvCount
-*/
+
    
    
    void testCommitUKSample()

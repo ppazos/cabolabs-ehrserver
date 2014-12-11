@@ -70,25 +70,6 @@ class EhrController {
          redirect(controller:'person', action:'list')
          return
       }
-
-      /*
-      // carga lazy
-      ehr.contributions.each { contribRef ->
-         println contribRef.value
-      }
-      
-      ehr.compositions.each { compoRef ->
-         println compoRef.value
-      }
-      
-      XStream xstream = new XStream()
-      xstream.omitField(Ehr.class, "errors")
-      xstream.omitField(PatientProxy.class, "errors")
-      
-      String txt = xstream.toXML(ehr)
-      
-      render(text:txt, contentType:"text/xml", encoding:"UTF-8")
-      */
       
       return [ehr: ehr] 
    }
