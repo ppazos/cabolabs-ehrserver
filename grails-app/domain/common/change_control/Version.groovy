@@ -6,6 +6,7 @@ import ehr.clinical_documents.CompositionIndex
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
+// FIXME: this is the representation of a VERSION<COMPOSITION> not VERSION<T>
 //@XmlAccessorType(XmlAccessType.FIELD)
 class Version {
 
@@ -14,11 +15,13 @@ class Version {
    //
    // FIXME: https://github.com/ppazos/cabolabs-ehrserver/issues/52
    //
+   // object_id, creating_system_id and version_tree_id.
+   //
    // Emula ORIGINAL_VERSION.uid, ORIGINAL_VERSION hereda de VERSION
-   // owner_id (id del EHR), creating_system_id (identificador del sistema
-   // donde se creó la versión) and version_tree_id (es el número del branch
-   // que se crea cuando se piden datos para modificar (no creo que sea necesario
-   // tener asignar números de branch cuando se piden datos solo para leer)).
+   // - object_id (id del VERSIONED_OBJECT),
+   // - creating_system_id (identificador del sistema donde se creó la versión) and
+   // - version_tree_id (es el número de version y branch que se crea cuando se piden datos para modificar
+   // (no creo que sea necesario tener asignar números de branch cuando se piden datos solo para leer)).
    // Como no hay modificaciones (por ahora) el version_tree_id siempre va a ser 1
    // (debe ser asignado por el servidor cuando se hace commit de un documento).
    //
@@ -40,6 +43,37 @@ class Version {
    
    Contribution contribution
    
+   
+   
+   // Auxiliar para marcar la ultima version
+   boolean isLastVersion = true
+   
+   // The isLastVersion field value is copied into the CompositionIndex to avoid queries by old versions.
+   def beforeInsert() {
+      this.data.isLastVersion = this.isLastVersion
+   }
+   def beforeUpdate() {
+      this.data.isLastVersion = this.isLastVersion
+   }
+   
+   
+   /**
+    * +1 on the uid.versionTreeId.trunkVersion, it is used to generate a new uid for the new version.
+    * @return
+    */
+   def addTrunkVersion()
+   {
+      def newUid = this.objectId +"::"+
+                   this.creatingSystemId +"::"+
+                   (new Integer(this.versionTreeId) + 1).toString()
+                   
+      this.uid = newUid
+   }
+   
+   
+   
+   // These methods emulate version.uid.[objectId, creatingSystemId, treeVersionId]
+   
    /**
     * id de la composition que contiene la version
     * 
@@ -60,26 +94,14 @@ class Version {
       return uid.split("::")[1]
    }
    
-   /**
-    * Devuelve el EHR con id getOwnerId()
-    * 
-    * @return
-    */
-   def getEHR()
+   def getVersionTreeId()
    {
-      def ehrId = getOwnerId()
-      def ehr = Ehr.findByEhrId(ehrId)
-      
-      // Caso imposible porque el uid fue establecido segun un EHR existente
-      if (!ehr)
-      {
-         throw new Exception("El EHR con uid '$ehrId' no existe")
-      }
-      
-      return ehr
+      return uid.split("::")[2]
    }
    
-   static transients = ['ownerId', 'creatingSystemId', 'EHR']
+   
+   
+   static transients = ['objectId', 'creatingSystemId', 'versionTreeId']
    
    static belongsTo = [Contribution]
    
