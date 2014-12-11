@@ -12,6 +12,7 @@ import ehr.clinical_documents.data.DataValueIndex
 import common.generic.DoctorProxy
 import common.generic.AuditDetails
 import common.change_control.Contribution
+import common.change_control.VersionedComposition
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class RestController {
@@ -119,6 +120,8 @@ class RestController {
          return
       }
       
+      // ========================================================
+      // FIXME: MOVER ESTA LOGICA A UN SERVICIO
       
       // En data esta el XML de la composition recibida
       List parsedCompositions = [] // List<GPathResult>
@@ -153,7 +156,7 @@ class RestController {
                   code('AA')                         // application reject
                   codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                }
-               message('Bad content, could not parse compositions')
+               message('Bad content, could not parse compositions ('+ e.message +')')
                // ok va sin codigo de error
                //code('ISIS_EHR_SERVER::COMMIT::ERRORS::200') // sys::service::concept::code
             }
@@ -175,47 +178,17 @@ class RestController {
       */
       
       
-      /* 
-       * Now is created by the XmlService ...
-       * 
-      // uid se establece automaticamente
-      def contribution = new Contribution(
-         audit: new AuditDetails(
-            systemId:      auditSystemId,
-            timeCommitted: Date.parse(config.l10n.datetime_format, auditTimeCommitted),
-            //,
-            // changeType solo se soporta 'creation' por ahora
-            //
-            // El committer de la contribution es el mismo committer de todas
-            // las versiones, cada version tiene su committer debe ser el mismo.
-            committer: new DoctorProxy(
-               name: auditCommitter
-               // TODO: 'value' con el id
-            )
-         ),
-         versions: versions
-      )
-            
-      // test
-      if (!contribution.audit.validate())
-      {
-         // FIXME: debe ser transaccional, sino salva esto, no salva nada...
-         println contribution.audit.errors
-      }
-      */
-      
-      // ==============================================================================
-      //
-      // FIXME: parseVersions should return a list of contributions with versions,
-      //        here I don't have the contribution variable...
-      //
-      // ==============================================================================
-      
       // FIXME: dejar esta tarea a un job
       // Guarda compositions y crea indices a nivel de documento (nivel 1)
       def compoFile
       def compoIndex
       def startTime
+      
+      // ===================================================================================
+      // TODO:
+      // Contribution, Version y CompositionIndex ya se guardan en XmlService.parseVersions
+      // Eso mas poner las VersionedComposition dentro de EHR deberia ser transaccional.
+      // ===================================================================================
       
       contributions.each { contribution ->
          contribution.versions.eachWithIndex { version, i ->
@@ -226,34 +199,61 @@ class RestController {
             // TODO: guardar en repositorio temporal, no en el de commit definitivo
             // COMPOSITION tiene su uid asignado por el servidor como nombre
             //compoFile = new File("compositions\\"+version.data.value+".xml")
-            compoFile = new File(config.composition_repo + version.data.uid +".xml")
+            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
             compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
             
             
-            // Agrega composition al EHR
-            ehr.addToCompositions( version.data ) // version.data ~ CompositionRef
-            
-            
-            /* 
-             * Codigo movido a XmlService
-             * 
-            // =====================================================================
-            // Crea indice para la composition
-            // =====================================================================
-            
-            // -----------------------
-            // Obligatorios en el XML: lo garantiza xmlService.parseVersions
-            // -----------------------
-            //  - composition.category.value con valor 'event' o 'persistent'
-            //    - si no esta o tiene otro valor, ERROR
-            //  - composition.context.start_time.value
-            //    - DEBE ESTAR SI category = 'event'
-            //    - debe tener formato completo: 20070920T104614,0156+0930
-            //  - composition.@archetype_node_id
-            //    - obligatorio el atributo
-            //  - composition.'@xsi:type' = 'COMPOSITION'
-            // -----------------------
-            */
+            // ========================================================
+            // Versionado
+            def versionedComposition
+            switch (version.commitAudit.changeType)
+            {
+               case 'creation':
+               
+                  versionedComposition = new VersionedComposition(
+                     uid: version.objectId,
+                     ehrId: ehrId,
+                     isPersistent: (version.data.category == 'persistent'))
+                  
+                  if (!versionedComposition.save())
+                  {
+                     println "VersionedComposition ERRORS: "+ vc.errors
+                  }
+                  
+                  // Agrega composition al EHR
+                  ehr.addToCompositions( versionedComposition )
+                  
+               break
+               case ['amendment', 'modification']:
+                  
+                  versionedComposition = VersionedObject.findByUid(version.objectId)
+                  
+                  assert versionedComposition != null: "ERROR: there is no versionedComposition with uid="+ version.objectId
+
+                  def previousLastVersion = versionedComposition.latestVersion
+                  
+                  assert previousLastVersion != null
+                  
+                  previousLastVersion.lastVersion = false
+                  previousLastVersion.save()
+                  
+                  
+                  // DataValueIndexes for old versions can be deleted
+                  
+                  
+                  // No agrega VersionedComposition porque ya deberia estar
+                  
+                  assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
+                  
+                  // +1 en el version tree id de version.uid
+                  version.addTrunkVersion()
+                  version.save()
+                  
+               break
+               default:
+                  println "change type "+ version.commitAudit.changeType +" not supported yet"
+                  
+            } // switch changeType
          } // contribution.versions.each
       } // contributions.each
       

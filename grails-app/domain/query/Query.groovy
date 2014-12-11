@@ -105,6 +105,8 @@ class Query {
             
             if (from) ge('startTime', from) // greater or equal
             if (to) le('startTime', to) // lower or equal
+            
+            eq('isLastVersion', true) // query only latest versions
          }
       }
       
@@ -380,7 +382,7 @@ class Query {
    def executeComposition(String ehrId, Date from, Date to)
    {
        // Armado de la query
-       String q = "FROM CompositionIndex ci WHERE "
+       String q = "FROM CompositionIndex ci WHERE ci.isLastVersion=true AND " // Query only latest versions
        
        // ===============================================================
        // Criteria nivel 1 ehrId

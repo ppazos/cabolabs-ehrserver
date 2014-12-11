@@ -1,8 +1,7 @@
 package ehr
 
 import common.generic.PatientProxy
-//import support.identification.CompositionRef // T0004 antes compositions era CompositionRef ahora es CompositionIndex
-import ehr.clinical_documents.CompositionIndex
+import common.change_control.VersionedComposition
 import common.change_control.Contribution
 import javax.xml.bind.annotation.*
 
@@ -31,7 +30,7 @@ class Ehr {
    
    List compositions
    List contributions
-   static hasMany = [compositions:CompositionIndex, contributions:Contribution]
+   static hasMany = [compositions:VersionedComposition, contributions:Contribution]
    
    
    static constraints = {
@@ -39,5 +38,17 @@ class Ehr {
    
    static mapping = {
       //subject cascade: 'save-update' // va con belongsTo en PatientProxy
+   }
+   
+   // For testing purposes
+   def containsVersionedComposition(String uid)
+   {
+      def c = this.createCriteria()
+      def res = c.list {
+         compositions {
+            eq('uid', uid)
+         }
+      }
+      return res.size() == 1
    }
 }
