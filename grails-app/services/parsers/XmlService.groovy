@@ -80,9 +80,6 @@ class XmlService {
       String auditSystemId, Date auditTimeCommitted, String auditCommitter,
       List dataOut)
    {
-      //new File('debug_xml.log') << versionsXML.toString()
-      
-      //List<Version> ret = []
       List<Contribution> ret = []
       
       // Uso una lista para no reutilizar la misma variable que sobreescribe
@@ -123,20 +120,11 @@ class XmlService {
             )
          )
          
+         println "XMLSERVICE change_type="+ commitAudit.changeType
+         
          
          // Genera un UID para la composition
          String compositionUID = java.util.UUID.randomUUID() as String
-         
-         
-         /* T0004: CompositionRef se deja de usar y se usa CompositionIndex
-         // A la composition se le asigna un UID en el EHR Server
-         // TODO: cambiar el XML de la composition para ponerle este valor en
-         //         <data xsi:type="COMPOSITION"><uid> que es atributo de LOCATABLE
-         // Actualizar el XML: http://groovy.codehaus.org/Updating+XML+with+XmlSlurper
-         data = new CompositionRef(
-            value: compositionUID
-         )
-         */
          
          
          // T0004
@@ -209,6 +197,10 @@ class XmlService {
             throw new Exception('version.contribution.id.value should not be empty')
          }
          
+         // FIXME: la contribution debe existir solo si la version que proceso esta dentro de ella
+         //        asi como esta este codigo, se mando 2 commits distintos y con el mismo contribution.uid
+         //        va a procesar los 2 commits como si fueran el mismo.
+         
          if (Contribution.countByUid(contributionId) == 0)
          {
             contribution = new Contribution(
@@ -265,13 +257,38 @@ class XmlService {
          // - version_tree_id es 1 (porque el changeType es creation)
          //
          version = new Version(
-            //uid: (java.util.UUID.randomUUID() as String) +'::'+ parsedVersion.commit_audit.committer.name.text() +'::1',
             uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
             lifecycleState: parsedVersion.lifecycle_state.value.text(),
             commitAudit: commitAudit,
             contribution: contribution,
             data: compoIndex
          )
+         
+         
+         // ================================================================
+         // Necesito verificar por el versionado, sino me guarda 2 versions con isLatestVersion en true
+         
+         // TODO: documentar
+         // Si hay una nueva VERSION, del cliente viene con el ID de la version que se esta actualizando
+         // y el servidor actualiza el VERSION.uid con la version nueva en VersionTreeId.
+         // El cliente solo setea el id de la primera version, cuando es creation.
+         
+         // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
+         if (Version.countByUid(version.uid) > 0)
+         {
+            assert version.commitAudit.changeType != "creation"
+            
+            def previousLastVersion = Version.findByUid(version.uid)
+            previousLastVersion.isLastVersion = false
+            
+            // FIXME: si falla, rollback. Este servicio deberia ser transaccional
+            if (!previousLastVersion.save()) println previousLastVersion.errors
+            
+            
+            // +1 en el version tree id de version.uid
+            version.addTrunkVersion()
+            //if (!version.save()) println version.errors // Salva con la contribution
+         }
          
          
          // contribution -> version

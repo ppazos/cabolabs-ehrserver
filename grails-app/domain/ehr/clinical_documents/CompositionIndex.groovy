@@ -30,6 +30,11 @@ class CompositionIndex {
    // TODO: composerName para busquedas like %
    // TODO: name (de Locatable) para busqueda like %
    
+   def getParent()
+   {
+      return Version.findByData(this)
+   }
+   
    // T0004: ahora CIndex se usa en Version
    static belongsTo = [Version]
    
@@ -37,4 +42,6 @@ class CompositionIndex {
       category(inList:['event','persistent'])
       startTime(nullable:true) // persistent no tienen context.startTime
    }
+   
+   static transients = ['parent']
 }

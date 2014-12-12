@@ -193,15 +193,6 @@ class RestController {
       contributions.each { contribution ->
          contribution.versions.eachWithIndex { version, i ->
             
-            // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
-            // Guardar la composition en el filesystem
-            // TODO: path configurable
-            // TODO: guardar en repositorio temporal, no en el de commit definitivo
-            // COMPOSITION tiene su uid asignado por el servidor como nombre
-            //compoFile = new File("compositions\\"+version.data.value+".xml")
-            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
-            
             
             // ========================================================
             // Versionado
@@ -222,38 +213,49 @@ class RestController {
                   
                   // Agrega composition al EHR
                   ehr.addToCompositions( versionedComposition )
+                  if (!ehr.save()) println ehr.errors.allErrors
                   
                break
                case ['amendment', 'modification']:
                   
-                  versionedComposition = VersionedObject.findByUid(version.objectId)
+                  versionedComposition = VersionedComposition.findByUid(version.objectId)
                   
                   assert versionedComposition != null: "ERROR: there is no versionedComposition with uid="+ version.objectId
 
-                  def previousLastVersion = versionedComposition.latestVersion
                   
-                  assert previousLastVersion != null
-                  
-                  previousLastVersion.lastVersion = false
-                  previousLastVersion.save()
+                  // XmlService hace previousLastVersion.isLastVersion = false
+                  // asi la nueva version es la unica con isLastVersion == true
                   
                   
+                  // ======================================================
                   // DataValueIndexes for old versions can be deleted
+                  // ======================================================
                   
-                  
-                  // No agrega VersionedComposition porque ya deberia estar
+                  // No crea el VersionedComposition porque ya deberia estar
                   
                   assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
-                  
-                  // +1 en el version tree id de version.uid
-                  version.addTrunkVersion()
-                  version.save()
                   
                break
                default:
                   println "change type "+ version.commitAudit.changeType +" not supported yet"
-                  
+
             } // switch changeType
+            
+            
+            println "GRABA ARCHIVO"
+            println parsedCompositions[i]
+            
+            // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
+            // Guardar la composition en el filesystem
+            // TODO: path configurable
+            // TODO: guardar en repositorio temporal, no en el de commit definitivo
+            // COMPOSITION tiene su uid asignado por el servidor como nombre
+            //compoFile = new File("compositions\\"+version.data.value+".xml")
+            compoFile = new File(config.composition_repo + version.uid.replaceAll('::', '_') +'.xml') // id de version en el nombre
+            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
+            
+            println "Algo es null en la linea anterior"
+            
          } // contribution.versions.each
       } // contributions.each
       

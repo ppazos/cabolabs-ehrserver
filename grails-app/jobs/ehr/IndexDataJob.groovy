@@ -14,7 +14,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class IndexDataJob {
    
    static triggers = {
-      simple repeatInterval: 60000l // execute job once in 60 seconds
+      simple repeatInterval: 600000l // execute job once in 60 seconds
    }
    
    // Para acceder a la config que dice de donde leer las compositions a indexar
@@ -44,7 +44,7 @@ class IndexDataJob {
          
          indexes = []
          
-         compoFile = new File(config.composition_repo + compoIndex.uid +".xml")
+         compoFile = new File(config.composition_repo + compoIndex.parent.uid.replace('::', '_') +".xml") // id de version en el nombre
          compoXML = compoFile.getText()
          compoParsed = new XmlSlurper(true, false).parseText(compoXML)
          

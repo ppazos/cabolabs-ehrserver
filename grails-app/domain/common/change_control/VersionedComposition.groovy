@@ -18,6 +18,8 @@ class VersionedComposition {
    
    static belongsTo = [Ehr]
    
+   static transients = ['allVersions', 'latestVersion']
+   
    /*
     * Some Methods in the RM
     * 
@@ -35,15 +37,15 @@ class VersionedComposition {
    
    //static transients = ['allVersions']
    
-   List allVersions()
+   List getAllVersions()
    {
       // Return all versions in which the uid prefix is the versioned object uid.
       return Version.findAllByUidLike(this.uid+"::%")
    }
    
-   Version latestVersion()
+   Version getLatestVersion()
    {
-      return Version.findAllByUidLikeAndIsLastVersion(this.uid+"::%", true)
+      return Version.findByUidLikeAndIsLastVersion(this.uid+"::%", true)
    }
    
    /**
