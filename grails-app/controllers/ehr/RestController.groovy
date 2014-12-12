@@ -245,6 +245,8 @@ class RestController {
             println "GRABA ARCHIVO"
             println parsedCompositions[i]
             
+            
+            // FIXME: el archivo no deberia existir!!!
             // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
             // Guardar la composition en el filesystem
             // TODO: path configurable

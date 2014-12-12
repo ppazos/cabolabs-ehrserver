@@ -11,6 +11,8 @@ import common.generic.*
 import org.junit.*
 import org.springframework.mock.web.MockMultipartFile
 import ehr.clinical_documents.data.*
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
@@ -26,6 +28,7 @@ class RestControllerTests {
 
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = 'a86ac702-980a-478c-8f16-927fd4a5e9ae'
+   def config = ApplicationHolder.application.config.app
    
    void setUp()
 	{
@@ -2375,27 +2378,51 @@ class RestControllerTests {
       }
       
       
-      
+      // ====================================================
+      // Verifica cardinalidades de los objetos creados
       assert VersionedComposition.count() == 1
       assert VersionedComposition.get(1).allVersions.size() == 2
-      //assert VersionedComposition.getAt(1).latestVersion.uid == "91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::2"
+      //assert VersionedComposition.get(1).latestVersion.uid == "91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::2"
       
+      
+      
+      // =========================================================
+      // Crea data indexes para los commits previos
+      def indexJob = new ehr.IndexDataJob()
+      indexJob.execute()
+      
+      
+      
+      // ====================================================
+      // Verifica los valores de los objetos creados      
       VersionedComposition.list().each { vc ->
          
          vc.allVersions.each { ver ->
           
-            println ver
+            println ver.uid
+            println ver.commitAudit.changeType
+            println "last version ver and data: "+ ver.isLastVersion +" "+ ver.data.isLastVersion
+            
+            
+            // 1 dvi por compoidx
+            assert DataValueIndex.countByOwner(ver.data) == 1
+            
+            
+            DataValueIndex.findAllByOwner( ver.data ).each { dataIndex ->
+               
+               assert dataIndex.getClass().getSimpleName() == "DvCountIndex"
+               
+               println "count mag: "+ dataIndex.magnitude
+            }
+            println "============================"
          }
       }
       
       
-      // TODO: imprimir el dato que ahora es 5 y antes era 3
-      
-      
-      // Test data indexes
-      
-      //def indexJob = new ehr.IndexDataJob()
-      //indexJob.execute()
+      // Elimina archivos generados en el commit
+      new File(config.composition_repo).eachFile { f ->
+         f.delete()
+      }
       
       
       /*
