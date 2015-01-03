@@ -9,12 +9,12 @@ import ehr.clinical_documents.data.*
  *  - fromDate (<= compoIndex.startDate)
  *  - toDate   (>= compoIndex.startDate)
  *  - archetypeId (es parametro si no se especifica qarchetypeId en Query)
- * 
+ *
  * Parametros n2 de la query:
  *  - valores para cada DataCriteria (el tipo del valor depende del tipo del RM en DataCriteria.path)
- * 
+ *
  * @author pab
- * 
+ *
  * TODO: crear un servicio que devuelva la definicion de una consulta
  *       con nombres, tipos y obligatoriedad de parametros.
  *
@@ -35,7 +35,7 @@ class Query {
    
    // Si es null, se puede especificar como parametro de la query
    // a modo de "tipo de documento", sino se especifica en ningun
-   // caso, pide "cualquier tipo de documento". 
+   // caso, pide "cualquier tipo de documento".
    //String qtemplateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
@@ -434,15 +434,15 @@ class Query {
           q += " EXISTS ("
           
           // dvi.owner.id = ci.id
-          // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex 
+          // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
           // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
           // se cumpla uno de los criterios que vienen en params)
           def subq = "SELECT dvi.id FROM "
           
           //"  FROM DataValueIndex dvi" + // FROM is set below
           def where = $/
-             WHERE dvi.owner.id = ci.id AND 
-                   dvi.archetypeId = '${dataCriteria.archetypeId}' AND 
+             WHERE dvi.owner.id = ci.id AND
+                   dvi.archetypeId = '${dataCriteria.archetypeId}' AND
                    dvi.archetypePath = '${dataCriteria.path}'
           /$
           
@@ -484,7 +484,7 @@ class Query {
                 fromMap['DvProportionIndex'] = 'dpi'
                 where += " AND dpi.id = dvi.id "
                 where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.numerator)
-                /* 
+                /*
                  * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
                  *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
                 resGrouped[absPath]['serie'] << [numerator:   dvi.,
@@ -509,7 +509,7 @@ class Query {
           q += ")"
           
           
-          // TEST 
+          // TEST
           // TEST
           //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
           //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))

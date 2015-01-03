@@ -44,6 +44,8 @@ class TestController {
    
    
    /**
+    * Usada desde EMRAPP para obtener compositions de un paciente.
+    * 
     * Utiliza CompositionIndex para buscar entre las compositions y devuelve el XML de las compositions que matchean.
     * 
     * @param ehrId
@@ -106,6 +108,8 @@ class TestController {
          
          if (dToDate)
             le('startTime', dToDate) // lower or equal
+            
+         eq('isLastVersion', true)
       }
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML

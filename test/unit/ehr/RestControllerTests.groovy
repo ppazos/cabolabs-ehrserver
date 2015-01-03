@@ -12,6 +12,7 @@ import org.junit.*
 import org.springframework.mock.web.MockMultipartFile
 import ehr.clinical_documents.data.*
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import query.*
 
 
 /**
@@ -22,7 +23,8 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 @Mock([ Ehr,Person,
         PatientProxy, DoctorProxy,
         OperationalTemplateIndex, DataIndex, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
-        DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
+        DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
+        Query, DataGet, DataCriteria
       ])
 class RestControllerTests {
 
@@ -115,6 +117,15 @@ class RestControllerTests {
           if (!ehr.save()) println ehr.errors
 		 }
 	  }
+     
+     
+     // Setup queries for testing
+     
+     def compositionQuery = new Query(
+        name: "test query composition",
+        type: "composition",
+        where: [])
+     if (!compositionQuery.save()) println compositionQuery.errors
    }
 
    void tearDown()
@@ -2418,6 +2429,22 @@ class RestControllerTests {
          }
       }
       
+      
+      
+      // Test query versioned compositions
+      assert Query.count() == 1, "A query should exist"
+      
+      def q = Query.get(1)
+      def res = q.executeComposition(Ehr.get(1).ehrId, null, null)
+      res.each { compoidx ->
+         println compoidx
+      }
+      
+      // FROM CompositionIndex ci
+      // WHERE ci.isLastVersion=true AND
+      //       ci.ehrId = '1f95d3bb-a082-41e0-bbba-339d02dff218' AND 
+      
+      assert res.size() == 1, "The query should return just on composition index"
       
       // Elimina archivos generados en el commit
       new File(config.composition_repo).eachFile { f ->

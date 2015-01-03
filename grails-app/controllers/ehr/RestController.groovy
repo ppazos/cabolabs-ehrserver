@@ -14,6 +14,7 @@ import common.generic.AuditDetails
 import common.change_control.Contribution
 import common.change_control.VersionedComposition
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import common.change_control.Version
 
 class RestController {
 
@@ -243,7 +244,7 @@ class RestController {
             
             
             println "GRABA ARCHIVO"
-            println parsedCompositions[i]
+            println groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
             
             
             // FIXME: el archivo no deberia existir!!!
@@ -253,10 +254,13 @@ class RestController {
             // TODO: guardar en repositorio temporal, no en el de commit definitivo
             // COMPOSITION tiene su uid asignado por el servidor como nombre
             //compoFile = new File("compositions\\"+version.data.value+".xml")
-            compoFile = new File(config.composition_repo + version.uid.replaceAll('::', '_') +'.xml') // id de version en el nombre
-            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
             
-            println "Algo es null en la linea anterior"
+            // This uses the version uid with the systemid and tree.
+            //compoFile = new File(config.composition_repo + version.uid.replaceAll('::', '_') +'.xml')
+            
+            // This uses the composition uid that is assigned by the server so it must be unique.
+            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
+            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
             
          } // contribution.versions.each
       } // contributions.each
@@ -276,6 +280,54 @@ class RestController {
       }
       
    } // commit
+   
+   
+   /**
+    * Enpoint for checking out the last version of a composition in order to create a new one.
+    * The query services don't allow versioning the retrieved compositions because don't include
+    * the version id that is necessary to create a new version of a composition. 
+    * 
+    * @param ehrId
+    * @param compositionUid
+    * @return
+    */
+   def checkout(String ehrId, String compositionUid)
+   {
+      println params
+      
+      def versions = Version.withCriteria {
+         data {
+            eq('uid', compositionUid)
+         }
+      }
+      
+      // Error cases, just 1 version should be found
+      if (versions.size() == 0)
+      {
+         // ERROR
+      }
+      
+      if (versions.size() > 1)
+      {
+         // ERROR
+      }
+      
+      def version = versions[0]
+      
+      // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
+      if(version.contribution.ehr.ehrId != ehrId)
+      {
+         // ERROR
+      }
+      
+      //version.data
+      
+      // FIXME: the result Version should have the same XML format as the one used for commit
+      XML.use('deep') {
+         def xml = new XML(version)
+         render text: xml, contentType: 'text/xml', encoding: 'UTF-8'
+      }
+   }
    
    
    def ehrList(String format, int max, int offset)
@@ -967,6 +1019,8 @@ class RestController {
        if (toDate)
           qToDate = Date.parse(config.l10n.date_format, toDate)
        
+       
+       // FIXME: verify that all the mandatory data is not null
        
        // Build temp query
        // Code from QueryController.save
