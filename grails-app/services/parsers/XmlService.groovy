@@ -274,7 +274,7 @@ class XmlService {
          // El cliente solo setea el id de la primera version, cuando es creation.
          
          // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
-         if (Version.countByUid(version.uid) > 0)
+         if (Version.countByUid(version.uid) == 1)
          {
             assert version.commitAudit.changeType != "creation"
             

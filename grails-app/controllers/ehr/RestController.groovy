@@ -182,6 +182,7 @@ class RestController {
       // FIXME: dejar esta tarea a un job
       // Guarda compositions y crea indices a nivel de documento (nivel 1)
       def compoFile
+      def versionFile
       def compoIndex
       def startTime
       
@@ -249,7 +250,7 @@ class RestController {
             
             // FIXME: el archivo no deberia existir!!!
             // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
-            // Guardar la composition en el filesystem
+
             // TODO: path configurable
             // TODO: guardar en repositorio temporal, no en el de commit definitivo
             // COMPOSITION tiene su uid asignado por el servidor como nombre
@@ -258,9 +259,17 @@ class RestController {
             // This uses the version uid with the systemid and tree.
             //compoFile = new File(config.composition_repo + version.uid.replaceAll('::', '_') +'.xml')
             
+            // FIXME: this might br stored in an XML database in the future.
+            
+            // Save compo
             // This uses the composition uid that is assigned by the server so it must be unique.
             compoFile = new File(config.composition_repo + version.data.uid +'.xml')
             compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
+            
+            // Save version as committed
+            // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
+            versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
+            versionFile << xmlVersions[i]
             
          } // contribution.versions.each
       } // contributions.each
@@ -320,13 +329,19 @@ class RestController {
          // ERROR
       }
       
-      //version.data
+      // ======================================================================
+      // The result Version have the same XML format as the one used for commit
       
-      // FIXME: the result Version should have the same XML format as the one used for commit
-      XML.use('deep') {
-         def xml = new XML(version)
-         render text: xml, contentType: 'text/xml', encoding: 'UTF-8'
+      // Get the version file
+      def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
+      if (!vf.exists() || !vf.canRead())
+      {
+         // ERROR
       }
+      
+      def xml = vf.getText()
+      
+      render(text: xml, contentType:"text/xml", encoding:"UTF-8")
    }
    
    

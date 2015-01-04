@@ -96,6 +96,7 @@ log4j = {
 
 app {
    composition_repo = "compositions\\"
+   version_repo = "versions\\"
    
    l10n { // localization
       

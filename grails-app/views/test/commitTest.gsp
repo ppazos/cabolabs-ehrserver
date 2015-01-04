@@ -31,7 +31,7 @@
 	        xmlString = (new XMLSerializer()).serializeToString(xmlData);
 	    }
 	    return xmlString;
-	 }   
+	 }
     
     // http://grails.1312388.n4.nabble.com/Ajax-formRemote-not-working-td4633608.html
     // en el formRemote se tiene que usar "data" como nombre del parametro para el js
