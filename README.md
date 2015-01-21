@@ -101,10 +101,10 @@
 
 #### M1. Basic services in XML and JSON and internal operations
 
-* list and show of EHRs, Compositions, Queries and Contributions (85% done)
-* commit reception (just openEHR XML for now) (95% done)
-* data indexing operation (90% done)
-* openEHR archetype definition indexing (0% done)
+* list and show of EHRs, Compositions, Queries and Contributions
+* commit reception (just openEHR XML for now)
+* data indexing operation
+* openEHR archetype definition indexing
 
 
 #### M2. GUI to manage internal data (list, show, create, edit, delete)
@@ -127,5 +127,13 @@
 * Data syncrhonization between servers
 * Support for AQL/EQL output (openEHR archetype-based query language)
 
+
+### EHRServer workflows to be supported by clients
+
+#### WF1. Commit
+
+#### WF2. Query
+
+#### WF3. Checkout and Commit (versioned clinical documents)
 
 
