@@ -44,7 +44,7 @@ class IndexDataJob {
          
          indexes = []
          
-         compoFile = new File(config.composition_repo + compoIndex.parent.uid.replace('::', '_') +".xml") // id de version en el nombre
+         compoFile = new File(config.composition_repo + compoIndex.uid +".xml") // id de version en el nombre
          compoXML = compoFile.getText()
          compoParsed = new XmlSlurper(true, false).parseText(compoXML)
          

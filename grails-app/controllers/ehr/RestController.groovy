@@ -266,6 +266,9 @@ class RestController {
             compoFile = new File(config.composition_repo + version.data.uid +'.xml')
             compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
             
+            
+            
+            
             // Save version as committed
             // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
             versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')

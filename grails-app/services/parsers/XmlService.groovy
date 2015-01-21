@@ -288,6 +288,23 @@ class XmlService {
             // +1 en el version tree id de version.uid
             version.addTrunkVersion()
             //if (!version.save()) println version.errors // Salva con la contribution
+            
+            
+            // ================================================================
+            // FIXME: this is not updating the version uid
+            
+            
+            // The new version.uid was updated in memory and saved into the DB,
+            // for checkout purposes we need also to update it in the XML version
+            // received, because the version uid received is for the previous version
+            // but the saved version is the one that will be checked out, so should
+            // have the next version uid.
+            
+            // This searches for the version id in the XML string and changes
+            // it with the new version uid. This will be saved to a file by the controller.
+            versionXML.replaceFirst(parsedVersion.uid.value.text(), version.uid)
+            
+            // ================================================================
          }
          
          
