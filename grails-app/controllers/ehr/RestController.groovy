@@ -29,7 +29,13 @@ class RestController {
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
    
-   
+   /*
+   def testVersionedObject()
+   {
+      def vo = VersionedComposition.get(1)
+      render vo.getAllVersions() as JSON
+   }
+   */
    
    /**
     * Envia una lista de versions para commitear al EHR(ehrId)
@@ -215,7 +221,12 @@ class RestController {
                   
                   // Agrega composition al EHR
                   ehr.addToCompositions( versionedComposition )
+                  
+                  println "PRE ehr.save"
+                  
                   if (!ehr.save()) println ehr.errors.allErrors
+                  
+                  println "POST ehr.save"
                   
                break
                case ['amendment', 'modification']:

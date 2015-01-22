@@ -176,6 +176,9 @@ class XmlService {
          // versions se setean abajo
       )
       
+      // TEST: this might save the contrib and there is no need of saving the contrib later
+      ehr.addToContributions( currentContribution )
+      
       return currentContribution
    }
    
@@ -281,6 +284,7 @@ class XmlService {
             
             assert contribution != null
             
+            println "PRE contribution.save"
             
             if (!contribution.save())
             {
@@ -292,16 +296,9 @@ class XmlService {
             }
             else println "Guarda contrib"
             
+            println "POST contribution.save"
+            
             // FIXME: it seems the addtoContributions is executed twice for the same contribution!!!
-            
-            // Agrega contribution al EHR
-            // Ehr -> Contribution (ya salva)
-            
-            // ==========================================================
-            // When currentContribution.save saves the link to the ehr,
-            // it also adds the contrib to the ehr.contributions list.
-            
-            //ehr.addToContributions( currentContribution )
          }
          
 
@@ -341,8 +338,12 @@ class XmlService {
             def previousLastVersion = Version.findByUid(version.uid)
             previousLastVersion.isLastVersion = false
             
+            println "PRE previousVersion.save"
+            
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
             if (!previousLastVersion.save()) println previousLastVersion.errors
+            
+            println "POST previousVersion.save"
             
             
             // +1 en el version tree id de version.uid
