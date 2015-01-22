@@ -28,8 +28,8 @@ class Ehr {
    PatientProxy subject
    
    
-   List compositions
-   List contributions
+   List compositions = []
+   List contributions = []
    static hasMany = [compositions:VersionedComposition, contributions:Contribution]
    
    

@@ -17,6 +17,169 @@ class XmlService {
    def config = ApplicationHolder.application.config.app
    
    
+   
+   private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted)
+   {
+      // Parse AuditDetails from Version.commit_audit
+      return new AuditDetails(
+         systemId:      version.commit_audit.system_id.text(),
+         
+         /*
+          * version.commit_audit.time_committed is overriden by the server
+          * to be comlpiant with the specs:
+          *
+          * The time_committed attribute in both the Contribution and Version audits
+          * should reflect the time of committal to an EHR server, i.e. the time of
+          * availability to other users in the same system. It should therefore be
+          * computed on the server in implementations where the data are created
+          * in a separate client context.
+          */
+         timeCommitted: auditTimeCommitted, //Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
+         changeType:    version.commit_audit.change_type.value.text(),
+         committer: new DoctorProxy(
+            name: version.commit_audit.committer.name.text()
+            // TODO: id
+         )
+      )
+   }
+   
+   private CompositionIndex parseCompositionIndex(GPathResult version, Ehr ehr)
+   {
+      Date startTime
+      
+      // T0004
+      // =====================================================================
+      // Crea indice para la composition
+      // =====================================================================
+      
+      // -----------------------
+      // Obligatorios en el XML: lo garantiza xmlService.parseVersions
+      // -----------------------
+      //  - composition.category.value con valor 'event' o 'persistent'
+      //    - si no esta o tiene otro valor, ERROR
+      //  - composition.context.start_time.value
+      //    - DEBE ESTAR SI category = 'event'
+      //    - debe tener formato completo: 20070920T104614,0156+0930
+      //  - composition.@archetype_node_id
+      //    - obligatorio el atributo
+      //  - composition.'@xsi:type' = 'COMPOSITION'
+      // -----------------------
+      if (version.data.context.start_time.value)
+      {
+         // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
+         // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
+         // There is no limit on the number of decimal places for the decimal fraction. However, the number of
+         // decimal places needs to be agreed to by the communicating parties.
+         //
+         // TODO: formato de fecha completa que sea configurable
+         //       ademas la fraccion con . o , depende del locale!!!
+         startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
+      }
+      
+      /*
+       * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
+       *   <name>
+       *     <value>Signos vitales</value>
+       *   </name>
+       *   <archetype_details>
+       *     <archetype_id>
+       *       <value>openEHR-EHR-COMPOSITION.signos.v1</value>
+       *     </archetype_id>
+       *     <template_id>
+       *       <value>Signos</value>
+       *     </template_id>
+       *     <rm_version>1.0.2</rm_version>
+       *   </archetype_details>
+       *   ...
+       */
+      def compoIndex = new CompositionIndex(
+         uid:         (java.util.UUID.randomUUID() as String), // UID for compos is assigned by the server
+         category:    version.data.category.value.text(), // event o persistent
+         startTime:   startTime, // puede ser vacio si category es persistent
+         subjectId:   ehr.subject.value,
+         ehrId:       ehr.ehrId,
+         archetypeId: version.data.@archetype_node_id.text(),
+         templateId:  version.data.archetype_details.template_id.value.text()
+      )
+      
+      
+      // Modifica XML con uid asignado a la composition
+      // Supongo que la COMPOSITION NO tiene un UID
+      version.data.appendNode {
+         uid {
+            // Sin poner el id explicitamente desde un string asignaba
+            // el mismo uid a todas las compositions.
+            value(compoIndex.uid)
+         }
+      }
+      
+      return compoIndex
+   }
+   
+   
+   private Contribution parseCurrentContribution(GPathResult version, Ehr ehr,
+                                         String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+   {
+      // This instance of XmlService process one contribution at a time
+      // But each version on the version list has a reference to the same contribution,
+      // and the contribution will have a list of all the versions committed.
+      def currentContribution
+      
+      
+      // FIXME: deberia reorrer todas las version y verificar que todas
+      //        tienen una referencia a la misma contribution
+      
+      // ==============================================================================
+      // version.contribution will come from the client
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/51
+      //
+      // 1. If version.contribution.id.value is empty => exception
+      // 2.a. If there is a contribution with the same id, get that from the DB to set into the Version instance
+      // 2.b. If not, create a new contribution and save it
+      
+      def contributionId = version.contribution.id.value.text()
+      if (!contributionId)
+      {
+         throw new Exception('version.contribution.id.value should not be empty')
+      }
+      
+      // FIXME: la contribution debe existir solo si la version que proceso esta dentro de ella
+      //        asi como esta este codigo, si mando 2 commits distintos y con el mismo contribution.uid
+      //        va a procesar los 2 commits como si fueran el mismo.
+      
+      // TODO: verify there is no contribution with the same uid in the db
+      
+      currentContribution = new Contribution(
+         uid: contributionId,
+         ehr: ehr,
+         audit: new AuditDetails(
+            systemId:      auditSystemId,
+            
+            /*
+             * The time_committed attribute in both the Contribution and Version audits
+             * should reflect the time of committal to an EHR server, i.e. the time of
+             * availability to other users in the same system. It should therefore be
+             * computed on the server in implementations where the data are created
+             * in a separate client context.
+             */
+            timeCommitted: auditTimeCommitted,
+            //,
+            // changeType solo se soporta 'creation' por ahora
+            //
+            // El committer de la contribution es el mismo committer de todas
+            // las versiones, cada version tiene su committer debe ser el mismo.
+            committer: new DoctorProxy(
+               name: auditCommitter
+               // TODO: 'value' con el id
+            )
+         )
+         // versions se setean abajo
+      )
+      
+      return currentContribution
+   }
+   
+   
    /*
    <version>
      <!-- OBJECT_REF -->
@@ -99,141 +262,24 @@ class XmlService {
          parsedVersion = new XmlSlurper(true, false).parseText(versionXML)
          
          // Parse AuditDetails from Version.commit_audit
-         commitAudit = new AuditDetails(
-            systemId:      parsedVersion.commit_audit.system_id.text(),
-            
-            /* 
-             * version.commit_audit.time_committed is overriden by the server
-             * to be comlpiant with the specs:
-             * 
-             * The time_committed attribute in both the Contribution and Version audits
-             * should reflect the time of committal to an EHR server, i.e. the time of
-             * availability to other users in the same system. It should therefore be
-             * computed on the server in implementations where the data are created
-             * in a separate client context.
-             */
-            timeCommitted: auditTimeCommitted, //Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
-            changeType:    parsedVersion.commit_audit.change_type.value.text(),
-            committer: new DoctorProxy(
-               name: parsedVersion.commit_audit.committer.name.text()
-               // TODO: id
-            )
-         )
+         commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
+         
          
          println "XMLSERVICE change_type="+ commitAudit.changeType
          
          
-         // Genera un UID para la composition
-         String compositionUID = java.util.UUID.randomUUID() as String
+         compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
-         
-         // T0004
-         // =====================================================================
-         // Crea indice para la composition
-         // =====================================================================
-         
-         // -----------------------
-         // Obligatorios en el XML: lo garantiza xmlService.parseVersions
-         // -----------------------
-         //  - composition.category.value con valor 'event' o 'persistent'
-         //    - si no esta o tiene otro valor, ERROR
-         //  - composition.context.start_time.value
-         //    - DEBE ESTAR SI category = 'event'
-         //    - debe tener formato completo: 20070920T104614,0156+0930
-         //  - composition.@archetype_node_id
-         //    - obligatorio el atributo
-         //  - composition.'@xsi:type' = 'COMPOSITION'
-         // -----------------------
-         if (parsedVersion.data.context.start_time.value)
+         // The contribution is set from the 1st version because is the same
+         // for all the versions committed together
+         if (!contribution)
          {
-            // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
-            // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
-            // There is no limit on the number of decimal places for the decimal fraction. However, the number of
-            // decimal places needs to be agreed to by the communicating parties.
-            //
-            // TODO: formato de fecha completa que sea configurable
-            //       ademas la fraccion con . o , depende del locale!!!
-            startTime = Date.parse(config.l10n.datetime_format, parsedVersion.data.context.start_time.value.text())
-         }
-         
-         /*
-          * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
-          *   <name>
-          *     <value>Signos vitales</value>
-          *   </name>
-          *   <archetype_details>
-          *     <archetype_id>
-          *       <value>openEHR-EHR-COMPOSITION.signos.v1</value>
-          *     </archetype_id>
-          *     <template_id>
-          *       <value>Signos</value>
-          *     </template_id>
-          *     <rm_version>1.0.2</rm_version>
-          *   </archetype_details>
-          *   ...
-          */
-         compoIndex = new CompositionIndex(
-            uid:         compositionUID,
-            category:    parsedVersion.data.category.value.text(), // event o persistent
-            startTime:   startTime, // puede ser vacio si category es persistent
-            subjectId:   ehr.subject.value,
-            ehrId:       ehr.ehrId,
-            archetypeId: parsedVersion.data.@archetype_node_id.text(),
-            templateId:  parsedVersion.data.archetype_details.template_id.value.text()
-         )
-         
-         
-         // ==============================================================================
-         // version.contribution will come frmo the client
-         // https://github.com/ppazos/cabolabs-ehrserver/issues/51
-         //
-         // 1. If version.contribution.id.value is empty => exception
-         // 2.a. If there is a contribution with the same id, get that from the DB to set into the Version instance
-         // 2.b. If not, create a new contribution and save it
-         
-         contributionId = parsedVersion.contribution.id.value.text()
-         if (!contributionId)
-         {
-            throw new Exception('version.contribution.id.value should not be empty')
-         }
-         
-         // FIXME: la contribution debe existir solo si la version que proceso esta dentro de ella
-         //        asi como esta este codigo, se mando 2 commits distintos y con el mismo contribution.uid
-         //        va a procesar los 2 commits como si fueran el mismo.
-         
-         if (Contribution.countByUid(contributionId) == 0)
-         {
-            contribution = new Contribution(
-               uid: contributionId,
-               ehr: ehr,
-               audit: new AuditDetails(
-                  systemId:      auditSystemId,
-                  
-                  /*
-                   * The time_committed attribute in both the Contribution and Version audits
-                   * should reflect the time of committal to an EHR server, i.e. the time of
-                   * availability to other users in the same system. It should therefore be
-                   * computed on the server in implementations where the data are created
-                   * in a separate client context.
-                   */
-                  timeCommitted: auditTimeCommitted,
-                  //,
-                  // changeType solo se soporta 'creation' por ahora
-                  //
-                  // El committer de la contribution es el mismo committer de todas
-                  // las versiones, cada version tiene su committer debe ser el mismo.
-                  committer: new DoctorProxy(
-                     name: auditCommitter
-                     // TODO: 'value' con el id
-                  )
-               )
-               // versions se setean abajo
+            contribution = parseCurrentContribution(
+               parsedVersion, ehr,
+               auditSystemId, auditTimeCommitted, auditCommitter
             )
             
-            
-            // Agrega contribution al EHR
-            // Ehr -> Contribution (ya salva)
-            ehr.addToContributions( contribution )
+            assert contribution != null
             
             
             if (!contribution.save())
@@ -244,12 +290,22 @@ class XmlService {
                   println it
                }
             }
-         }
-         else
-         {
-            contribution = Contribution.findByUid(contributionId)
+            else println "Guarda contrib"
+            
+            // FIXME: it seems the addtoContributions is executed twice for the same contribution!!!
+            
+            // Agrega contribution al EHR
+            // Ehr -> Contribution (ya salva)
+            
+            // ==========================================================
+            // When currentContribution.save saves the link to the ehr,
+            // it also adds the contrib to the ehr.contributions list.
+            
+            //ehr.addToContributions( currentContribution )
          }
          
+
+
          
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
          // - object_id se genera (porque el changeType es creation)
@@ -263,6 +319,10 @@ class XmlService {
             contribution: contribution,
             data: compoIndex
          )
+         
+         
+         // Test to see if the code above also adds the version to currentContribution.versions
+         //assert contribution.versions[i].uid == version.uid
          
          
          // ================================================================
@@ -302,7 +362,7 @@ class XmlService {
             
             // This searches for the version id in the XML string and changes
             // it with the new version uid. This will be saved to a file by the controller.
-            versionXML.replaceFirst(parsedVersion.uid.value.text(), version.uid)
+            parsedVersion.uid.value = version.uid
             
             // ================================================================
          }
@@ -311,42 +371,29 @@ class XmlService {
          // contribution -> version
          contribution.addToVersions( version )
          
-
-         // Modifica XML con uid asignado a la composition
-         // Supongo que la COMPOSITION NO tiene un UID
-         parsedVersion.data.appendNode {
-            uid {
-               // Sin poner el id explicitamente desde un string asignaba
-               // el mismo uid a todas las compositions.
-               value(compositionUID)
-            }
-         }
-
+         assert contribution.versions.size() == i+1
+         
          
          // Aca no lo puedo leer, dice que es vacio !???
          //println "xmlService.parseVersions: compo.uid="+ parsedVersion.data.uid.value.text()
          //println "xmlService.parseVersion: compo.uid="+ data.value
          
-         // Agrega namespaces al nuevo root
-         // Para que no de excepciones al parsear el XML de la composition
-         parsedVersion.data.@xmlns = 'http://schemas.openehr.org/v1'
-         parsedVersion.data.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
          
          // Parametro de salida
-         //compositionOut = parsedVersion.data
-         dataOut[i] = parsedVersion.data // Sin parsedVersions como lista en el siguiente loop sobreescribe todos los nodos que ya se pusieron en la lista (queda el puntero pero no el objeto)
+         dataOut[i] = parsedVersion
          
          // test
          //println "Compo con nuevo UID:"
          //println new groovy.xml.StreamingMarkupBuilder().bind{ out << parsedVersion.data}
          
-         // Agrega la version parseada para retornar
-         //ret[i] = version
-         
-         if (!ret.contains(contribution)) ret << contribution
-      }
+         // FIXME: deberia procesar 1 contribution por vez
+         //if (!ret.contains(currentContribution)) ret << currentContribution
       
+      } // each versionXML
       
+      ret << contribution
+      
+      /*
       // ========================================================
       // Save constribution with versions in cascade
       if (!contribution.save())
@@ -355,7 +402,7 @@ class XmlService {
             println it
          }
       }
-      
+      */
       
       return ret
    }

@@ -125,14 +125,14 @@ class RestController {
       // FIXME: MOVER ESTA LOGICA A UN SERVICIO
       
       // En data esta el XML de la composition recibida
-      List parsedCompositions = [] // List<GPathResult>
+      List parsedVersions = [] // List<GPathResult>
       def contributions = []
       try
       {
          contributions = xmlService.parseVersions(
             ehr, xmlVersions, 
             auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
-            parsedCompositions)
+            parsedVersions)
          
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -244,8 +244,8 @@ class RestController {
             } // switch changeType
             
             
-            println "GRABA ARCHIVO"
-            println groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
+            println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
+            println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
             
             
             // FIXME: el archivo no deberia existir!!!
@@ -263,16 +263,22 @@ class RestController {
             
             // Save compo
             // This uses the composition uid that is assigned by the server so it must be unique.
+            
+            def compoXML = parsedVersions[i].data
+            // Agrega namespaces al nuevo root
+            // Para que no de excepciones al parsear el XML de la composition
+            compoXML.@xmlns = 'http://schemas.openehr.org/v1'
+            compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+            
+            
             compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-            compoFile << groovy.xml.XmlUtil.serialize( parsedCompositions[i] )
-            
-            
+            compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
             
             
             // Save version as committed
             // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
             versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            versionFile << xmlVersions[i]
+            versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
             
          } // contribution.versions.each
       } // contributions.each
