@@ -109,7 +109,7 @@ class TestController {
          if (dToDate)
             le('startTime', dToDate) // lower or equal
             
-         eq('isLastVersion', true)
+         eq('lastVersion', true)
       }
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML

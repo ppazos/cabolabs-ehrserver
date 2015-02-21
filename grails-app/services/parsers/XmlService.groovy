@@ -336,19 +336,23 @@ class XmlService {
             assert version.commitAudit.changeType != "creation"
             
             def previousLastVersion = Version.findByUid(version.uid)
-            previousLastVersion.isLastVersion = false
+            previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
+            
             
             println "PRE previousVersion.save"
+            println (previousLastVersion as grails.converters.XML)
+            
             
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
-            if (!previousLastVersion.save()) println previousLastVersion.errors
+            if (!previousLastVersion.save(flush:true)) println previousLastVersion.errors.allErrors
             
             println "POST previousVersion.save"
+            println (previousLastVersion as grails.converters.XML)
             
             
             // +1 en el version tree id de version.uid
             version.addTrunkVersion()
-            //if (!version.save()) println version.errors // Salva con la contribution
+            // version se salva luego con la contribution
             
             
             // ================================================================

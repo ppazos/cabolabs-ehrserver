@@ -2412,7 +2412,7 @@ class RestControllerTests {
           
             println ver.uid
             println ver.commitAudit.changeType
-            println "last version ver and data: "+ ver.isLastVersion +" "+ ver.data.isLastVersion
+            println "last version ver and data: "+ ver.data.lastVersion
             
             
             // 1 dvi por compoidx
@@ -2441,7 +2441,7 @@ class RestControllerTests {
       }
       
       // FROM CompositionIndex ci
-      // WHERE ci.isLastVersion=true AND
+      // WHERE ci.lastVersion=true AND
       //       ci.ehrId = '1f95d3bb-a082-41e0-bbba-339d02dff218' AND 
       
       assert res.size() == 1, "The query should return just on composition index"

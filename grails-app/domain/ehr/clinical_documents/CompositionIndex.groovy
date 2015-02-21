@@ -25,7 +25,7 @@ class CompositionIndex {
    String archetypeId // archetype that defines the "definition" part of the template
    
    boolean dataIndexed = false // true cuando se crean los indices de DataValue para la composition
-   boolean isLastVersion = true // copy of the latestVersion attribute of the parent Version to avoid the use of old data in queries
+   boolean lastVersion = true // copy of the latestVersion attribute of the parent Version to avoid the use of old data in queries
    
    // TODO: composerName para busquedas like %
    // TODO: name (de Locatable) para busqueda like %
