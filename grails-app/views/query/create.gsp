@@ -45,9 +45,7 @@
         cursor: pointer;
       }
     </style>
-    <%--<r:require module="jquery" />--%>
-    <g:javascript src="jquery-1.8.2.min.js" />
-    <g:javascript src="jquery.blockUI.js" />
+    <asset:javascript src="jquery.blockUI.js" />
     <g:javascript>
       $(document).ready(function() {
       
@@ -195,7 +193,7 @@
          * Clic en [-]
          * Elimina un criterio de la lista de criterios de busqueda.
          */
-        $('#removeCriteria').live("click", function(e) {
+        $(document).on("click", "#removeCriteria", function(e) {
         
           e.preventDefault();
           
@@ -256,7 +254,7 @@
          * Clic en [-]
          * Elimina un criterio de la lista de criterios de busqueda.
          */
-        $('#removeSelection').live("click", function(e) {
+        $(document).on("click", "#removeSelection", function(e) {
         
           e.preventDefault();
           
@@ -400,7 +398,7 @@
               <g:message code="query.type.label" default="Type" />
             </label>
             <span class="info">
-              <img src="${resource(dir:"images/skin", file:"information.png")}" />
+              <asset:image src="skin/information.png" />
               <span class="content">
                 <ul>
                   <li>composition: find clinical documents by criteria over data points</li>
@@ -492,7 +490,7 @@
             <td>
               composition archetypeId
               <span class="info">
-                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                <asset:image src="skin/information.png" />
                  <span class="content">
                    <ul>
                      <li>
@@ -523,7 +521,7 @@
             <td>
               show UI?
               <span class="info">
-                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                <asset:image src="skin/information.png" />
                 <span class="content">
                   <ul>
                     <li>
@@ -597,7 +595,7 @@
             <td>
               composition templateId
               <span class="info">
-                <img src="${resource(dir:"images/skin", file:"information.png")}" />
+                <asset:image src="skin/information.png" />
                 <span class="content">
                   <ul>
                     <li>

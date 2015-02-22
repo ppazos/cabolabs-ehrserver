@@ -36,11 +36,9 @@
     }
     </style>
     
-    <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
-    
-    <g:javascript src="jquery-1.8.2.min.js" />
-    <g:javascript src="jquery.blockUI.js" />
-    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css "/>
+    <asset:javascript src="jquery.blockUI.js" />
+    <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     
     <script type="text/javascript">
     $(document).ready(function() {
@@ -51,7 +49,7 @@
     	$("input[name=fromDate]").datepicker({
     		// Icono para mostrar el calendar 
          showOn: "button",
-         buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+         buttonImage: "${assetPath(src:'calendar.gif')}",
          buttonImageOnly: true,
          buttonText: 'pick a date',
          // Formato
@@ -67,7 +65,7 @@
     	$("input[name=toDate]").datepicker({
     		// Icono para mostrar el calendar 
          showOn: "button",
-         buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
+         buttonImage: "${assetPath(src:'calendar.gif')}",
          buttonImageOnly: true,
          buttonText: 'pick a date',
          // Formato

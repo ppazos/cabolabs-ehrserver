@@ -32,7 +32,6 @@
         padding: 10px;
       }
     </style>
-    <r:require module="jquery" />
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
       
@@ -188,7 +187,7 @@
          * Clic en [-]
          * Elimina un criterio de la lista de criterios de busqueda.
          */
-        $('#removeCriteria').live("click", function(e) {
+        $(document).on("click", "#removeCriteria", function(e) {
         
           e.preventDefault();
           

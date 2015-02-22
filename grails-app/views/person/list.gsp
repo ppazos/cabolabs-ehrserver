@@ -25,7 +25,7 @@
       <table>
         <thead>
           <tr>
-             <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First Name')}" />
+            <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First Name')}" />
             <g:sortableColumn property="sex" title="${message(code: 'person.sex.label', default: 'Sex')}" />
             <g:sortableColumn property="idCode" title="${message(code: 'person.idCode.label', default: 'Id Code')}" />
             <g:sortableColumn property="idType" title="${message(code: 'person.idType.label', default: 'Id Type')}" />
@@ -39,7 +39,7 @@
         <tbody>
         <g:each in="${personInstanceList}" status="i" var="personInstance">
           <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-             <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "firstName")} ${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
+            <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "firstName")} ${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
             <td>${fieldValue(bean: personInstance, field: "sex")}</td>
             <td>${fieldValue(bean: personInstance, field: "idCode")}</td>
             <td>${fieldValue(bean: personInstance, field: "idType")}</td>
@@ -47,8 +47,8 @@
             <td><g:formatDate date="${personInstance.dob}" /></td>
              <td>
                <g:hasEhr patientUID="${personInstance.uid}">
-                      <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
-                    </g:hasEhr>
+                 <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
+               </g:hasEhr>
                <g:dontHasEhr patientUID="${personInstance.uid}">
                  <g:link controller="ehr" action="createEhr" params="[patientUID: personInstance.uid]">Create EHR</g:link>
                </g:dontHasEhr>

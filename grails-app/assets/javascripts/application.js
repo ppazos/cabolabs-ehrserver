@@ -1,3 +1,6 @@
+//= require_self
+//= require jquery
+
 if (typeof jQuery !== 'undefined') {
 	(function($) {
 		$('#spinner').ajaxStart(function() {

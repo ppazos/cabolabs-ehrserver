@@ -70,7 +70,6 @@
     <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
     <link rel="stylesheet" href="${resource(dir:'css/highlightjs', file:'xcode.css')}" />
     
-    <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <g:javascript src="jquery.form.js" />
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->

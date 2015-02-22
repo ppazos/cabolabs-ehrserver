@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Desktop</title>
-
+    <asset:link rel="stylesheet" href="main.css" type="text/css" />
     <style type="text/css">
       html,body{
         height:100%;
@@ -76,8 +76,7 @@
       
 
       /* Test mostrar icon */
-      .access {
-        background-image: url('/ehr/static/images/icons/access.png');
+      #index_menu a {
         background-repeat: no-repeat;
         background-position: 4px 4px;
         
@@ -98,23 +97,6 @@
       
       .access:hover {
         background-color: #ddddff;
-      }
-      
-      /* iconos */
-      .ehr {
-        background-image: url('/ehr/static/images/icons/unfold-multiple.png');
-      }
-      .query {
-        background-image: url('/ehr/static/images/icons/zoom.png');
-      }
-      .directory {
-        background-image: url('/ehr/static/images/icons/book-alt-3.png');
-      }
-      .contributions {
-        background-image: url('/ehr/static/images/icons/ftp-alt-2.png');
-      }
-      .indexes {
-        background-image: url('/ehr/static/images/icons/list-ordered.png');
       }
       
       #panel {
@@ -138,7 +120,7 @@
       </style>
     <![endif]-->
     
-    <g:javascript src="jquery-1.8.2.min.js" />
+    <g:javascript library="jquery" plugin="jquery"/>
 
     <script type="text/javascript">
     $(document).ready(function() {
@@ -153,7 +135,7 @@
         <div id="formwrap">
           <div id="inner">
           
-            <a href="http://cabolabs.com" target="_blank"><img src="images/cabolabs_logo.png" /></a>
+            <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" /></a>
           
             <h1 align="center"><g:message code="desktop.app" /></h1>
             
@@ -161,13 +143,13 @@
               <div class="error"><g:message code="${flash.message}" /></div>
             </g:if>
 
-            <div>
-              <g:link controller="person" action="list" class="access"><g:message code="person.list.title" /></g:link>
-              <g:link controller="ehr" action="list" class="access ehr"><g:message code="desktop.ehrs" /></g:link>
-              <g:link controller="contribution" action="list" class="access contributions"><g:message code="desktop.contributions" /></g:link>
-              <a href="#" class="access directory"><g:message code="desktop.directory" /></a>
-              <g:link controller="query" action="list" class="access query"><g:message code="desktop.queries" /></g:link>
-              <g:link controller="dataIndex" action="list" class="access indexes"><g:message code="desktop.indexes" /></g:link>
+            <div id="index_menu">
+              <g:link controller="person" action="list" class="access_icon"><g:message code="person.list.title" /></g:link>
+              <g:link controller="ehr" action="list" class="ehr_icon"><g:message code="desktop.ehrs" /></g:link>
+              <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
+              <a href="#" class="directory_icon"><g:message code="desktop.directory" /></a>
+              <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
+              <g:link controller="dataIndex" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
             </div>
             <div style="clear: both"></div>
             

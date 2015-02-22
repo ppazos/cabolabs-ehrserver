@@ -51,7 +51,7 @@
         display: none;
       }
     </style>
-    <g:javascript src="jquery-1.8.2.min.js" />
+
     <g:javascript src="jquery.form.js" /><!-- ajax form -->
     <g:javascript src="xml_utils.js" /><!-- xmlToString -->
     <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>

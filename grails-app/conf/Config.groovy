@@ -33,11 +33,12 @@ grails.mime.types = [
 //grails.urlmapping.cache.maxsize = 1000
 
 // What URL patterns should be processed by the resources plugin
-grails.resources.adhoc.patterns = ['/images/*', '/images/icons/*', '/css/*', '/js/*', '/plugins/*']
+//grails.resources.adhoc.patterns = ['/images/*', '/images/icons/*', '/css/*', '/js/*', '/plugins/*']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
 grails.views.gsp.encoding = "UTF-8"
+grails.views.javascript.library="jquery"
 grails.converters.encoding = "UTF-8"
 // enable Sitemesh preprocessing of GSP pages
 grails.views.gsp.sitemesh.preprocess = true

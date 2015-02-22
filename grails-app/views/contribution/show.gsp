@@ -12,7 +12,6 @@
       border: none;
     }
     </style>
-    <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery.blockUI.js" />
     <script type="text/javascript">
     $(document).ready(function() {

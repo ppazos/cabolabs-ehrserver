@@ -11,7 +11,7 @@ import common.generic.*
 import org.junit.*
 import org.springframework.mock.web.MockMultipartFile
 import ehr.clinical_documents.data.*
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 import query.*
 
 
@@ -30,7 +30,7 @@ class RestControllerTests {
 
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = 'a86ac702-980a-478c-8f16-927fd4a5e9ae'
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    void setUp()
 	{
