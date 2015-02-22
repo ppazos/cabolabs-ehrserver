@@ -13,17 +13,17 @@ import query.Query
 import common.generic.DoctorProxy
 import ehr.clinical_documents.data.DataValueIndex
 import java.text.SimpleDateFormat
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class TestController {
 
    def xmlService
    
    // Para acceder a las opciones de localizacion
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    // Para hacer consultas en la base
-   def formatterDateDB = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.db_date_format )
+   def formatterDateDB = new SimpleDateFormat( Holders.config.app.l10n.db_date_format )
    
    
    

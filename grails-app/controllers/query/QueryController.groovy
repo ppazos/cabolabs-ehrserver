@@ -3,7 +3,7 @@ package query
 import ehr.clinical_documents.DataIndex
 import org.springframework.dao.DataIntegrityViolationException
 import ehr.clinical_documents.CompositionIndex
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 import ehr.clinical_documents.data.*
 
 class QueryController {
@@ -11,7 +11,7 @@ class QueryController {
     static allowedMethods = [save: "POST", update: "POST"] //, delete: "POST"]
     
     // Para acceder a las opciones de localizacion
-    def config = ApplicationHolder.application.config.app
+    def config = Holders.config.app
     
 
     def index() {

@@ -9,12 +9,12 @@ import common.generic.DoctorProxy
 import groovy.util.slurpersupport.GPathResult
 //import support.identification.CompositionRef
 import ehr.clinical_documents.CompositionIndex
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class XmlService {
 
    // Para acceder a las opciones de localizacion
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    
    

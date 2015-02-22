@@ -4,7 +4,7 @@ import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 /**
  * Indexa datos de compositions commiteadas.
@@ -18,7 +18,7 @@ class IndexDataJob {
    }
    
    // Para acceder a la config que dice de donde leer las compositions a indexar
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
 
    // FIXME: this logic should be in a separate service
    

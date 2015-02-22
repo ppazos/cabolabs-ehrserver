@@ -13,13 +13,14 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import common.change_control.Contribution
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class EhrController {
 
+   
 
    // Para acceder a las opciones de localizacion 
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    
    def index() { }

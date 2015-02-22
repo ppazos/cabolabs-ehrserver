@@ -13,7 +13,7 @@ import common.generic.DoctorProxy
 import common.generic.AuditDetails
 import common.change_control.Contribution
 import common.change_control.VersionedComposition
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 import common.change_control.Version
 
 class RestController {
@@ -21,7 +21,7 @@ class RestController {
    def xmlService // Utilizado por commit
 
    // Para acceder a las opciones de localizacion 
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    
    // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
