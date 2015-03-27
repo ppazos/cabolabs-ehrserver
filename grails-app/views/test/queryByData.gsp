@@ -32,7 +32,7 @@
         padding: 10px;
       }
     </style>
-    <g:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
       
       /**

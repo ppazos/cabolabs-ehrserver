@@ -12,7 +12,7 @@
       border: none;
     }
     </style>
-    <g:javascript src="jquery.blockUI.js" />
+    <asset:javascript src="jquery.blockUI.js" />
     <script type="text/javascript">
     $(document).ready(function() {
     

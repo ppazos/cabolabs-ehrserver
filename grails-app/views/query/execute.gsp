@@ -67,14 +67,14 @@
         width: auto;
       }
     </style>
-    <link rel="stylesheet" href="${resource(dir:'css', file:'jquery-ui-1.9.2.datepicker.min.css')}" />
-    <link rel="stylesheet" href="${resource(dir:'css/highlightjs', file:'xcode.css')}" />
+    <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
+    <asset:stylesheet src="highlightjs/xcode.css" />
     
-    <g:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
-    <g:javascript src="jquery.form.js" />
-    <g:javascript src="xml_utils.js" /><!-- xmlToString -->
-    <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
-    <g:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
+    <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    <asset:javascript src="jquery.form.js" />
+    <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="highcharts/highcharts.js" />
+    <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
     <script type="text/javascript">
       $(document).ready(function() {
      

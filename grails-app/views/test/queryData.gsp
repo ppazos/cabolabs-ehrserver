@@ -40,7 +40,7 @@
         border: none;
       }
     </style>
-    <g:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.

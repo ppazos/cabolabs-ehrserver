@@ -14,7 +14,7 @@ import grails.util.Holders
 class IndexDataJob {
    
    static triggers = {
-      simple repeatInterval: 600000l // execute job once in 60 seconds
+      simple repeatInterval: 60000l // execute job once in 60 seconds
    }
    
    // Para acceder a la config que dice de donde leer las compositions a indexar
@@ -49,7 +49,6 @@ class IndexDataJob {
          compoParsed = new XmlSlurper(true, false).parseText(compoXML)
          
          //println "root parent: " + compoParsed.'..' // .. es gpath para parent
-         
          //println "templateId 0: "+ compoIndex.templateId
          
          recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
