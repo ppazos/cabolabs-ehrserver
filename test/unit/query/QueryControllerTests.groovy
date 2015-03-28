@@ -3,15 +3,25 @@ package query
 import org.junit.*
 import grails.test.mixin.*
 import ehr.clinical_documents.DataIndex
+import ehr.clinical_documents.OperationalTemplateIndex
 
 @TestFor(QueryController)
-@Mock([Query, DataIndex])
+@Mock([Query, DataIndex, OperationalTemplateIndex])
 class QueryControllerTests {
 
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
         //params["name"] = 'someValidName'
+        params["archetypeId"] = ['openEHR-EHR-OBSERVATION.blood_pressure.v1, openEHR-EHR-OBSERVATION.blood_pressure.v1']
+        params["archetypePath"] = [
+           '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value',
+           '/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
+        ]
+        params["name"] = 'my query'
+        params["format"] = 'json'
+        params["group"] = 'path'
+        params["type"] = 'datavalue'
     }
 
     void testIndex() {
@@ -36,7 +46,7 @@ class QueryControllerTests {
     void testSave() {
         controller.save()
 
-        assert model.queryInstance != null
+        assert model.id != null
         assert view == '/query/create'
 
         response.reset()
@@ -67,6 +77,8 @@ class QueryControllerTests {
         assert model.queryInstance == query
     }
 
+    
+    /* TODO /** TODO https://github.com/ppazos/cabolabs-ehrserver/issues/71
     void testEdit() {
         controller.edit()
 
@@ -129,7 +141,8 @@ class QueryControllerTests {
         assert model.queryInstance.errors.getFieldError('version')
         assert flash.message != null
     }
-
+    */
+    
     void testDelete() {
         controller.delete()
         assert flash.message != null
