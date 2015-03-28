@@ -1,12 +1,11 @@
 package query
 
-
-
 import org.junit.*
 import grails.test.mixin.*
+import ehr.clinical_documents.DataIndex
 
 @TestFor(QueryController)
-@Mock(Query)
+@Mock([Query, DataIndex])
 class QueryControllerTests {
 
     def populateValidParams(params) {
