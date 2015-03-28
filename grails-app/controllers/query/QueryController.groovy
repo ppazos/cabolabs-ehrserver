@@ -295,6 +295,7 @@ class QueryController {
         [queryInstance: queryInstance]
     }
 
+    /** TODO https://github.com/ppazos/cabolabs-ehrserver/issues/71
     def edit(Long id) {
         def queryInstance = Query.get(id)
         if (!queryInstance) {
@@ -306,6 +307,7 @@ class QueryController {
         [queryInstance: queryInstance]
     }
 
+    
     def update(Long id, Long version) {
         def queryInstance = Query.get(id)
         if (!queryInstance) {
@@ -334,6 +336,7 @@ class QueryController {
         flash.message = message(code: 'default.updated.message', args: [message(code: 'query.label', default: 'Query'), queryInstance.id])
         redirect(action: "show", id: queryInstance.id)
     }
+    */
 
     def delete(Long id) {
         def queryInstance = Query.get(id)
