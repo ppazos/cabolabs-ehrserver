@@ -6,8 +6,8 @@ import common.change_control.Contribution
 import common.change_control.Version
 import common.generic.AuditDetails
 import common.generic.DoctorProxy
+import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
-//import support.identification.CompositionRef
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 
@@ -59,7 +59,7 @@ class XmlService {
       //    - si no esta o tiene otro valor, ERROR
       //  - composition.context.start_time.value
       //    - DEBE ESTAR SI category = 'event'
-      //    - debe tener formato completo: 20070920T104614,0156+0930
+      //    - debe tener formato completo: 20070920T104614,156+0930
       //  - composition.@archetype_node_id
       //    - obligatorio el atributo
       //  - composition.'@xsi:type' = 'COMPOSITION'
