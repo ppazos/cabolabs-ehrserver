@@ -260,23 +260,12 @@ class QueryController {
           // Caso no permitido
        }
        
-       if (!query.save())
+       if (!query.save(flush:true))
        {
           println "================================="
           println "query errors: "+ query.errors
           query.errors.allErrors.each { println it }
        }
-       
-       /*
-        def queryInstance = new Query(params)
-        if (!queryInstance.save(flush: true)) {
-            render(view: "create", model: [queryInstance: queryInstance])
-            return
-        }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'query.label', default: 'Query'), queryInstance.id])
-        redirect(action: "show", id: queryInstance.id)
-       */
        
        redirect(action:'show', id:query.id)
     }
