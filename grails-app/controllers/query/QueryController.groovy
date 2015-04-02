@@ -3,7 +3,7 @@ package query
 import ehr.clinical_documents.DataIndex
 import org.springframework.dao.DataIntegrityViolationException
 import ehr.clinical_documents.CompositionIndex
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 import ehr.clinical_documents.data.*
 
 class QueryController {
@@ -11,7 +11,7 @@ class QueryController {
     static allowedMethods = [save: "POST", update: "POST"] //, delete: "POST"]
     
     // Para acceder a las opciones de localizacion
-    def config = ApplicationHolder.application.config.app
+    def config = Holders.config.app
     
 
     def index() {
@@ -260,23 +260,12 @@ class QueryController {
           // Caso no permitido
        }
        
-       if (!query.save())
+       if (!query.save(flush:true))
        {
           println "================================="
           println "query errors: "+ query.errors
           query.errors.allErrors.each { println it }
        }
-       
-       /*
-        def queryInstance = new Query(params)
-        if (!queryInstance.save(flush: true)) {
-            render(view: "create", model: [queryInstance: queryInstance])
-            return
-        }
-
-        flash.message = message(code: 'default.created.message', args: [message(code: 'query.label', default: 'Query'), queryInstance.id])
-        redirect(action: "show", id: queryInstance.id)
-       */
        
        redirect(action:'show', id:query.id)
     }
@@ -306,6 +295,7 @@ class QueryController {
         [queryInstance: queryInstance]
     }
 
+    /** TODO https://github.com/ppazos/cabolabs-ehrserver/issues/71
     def edit(Long id) {
         def queryInstance = Query.get(id)
         if (!queryInstance) {
@@ -317,6 +307,7 @@ class QueryController {
         [queryInstance: queryInstance]
     }
 
+    
     def update(Long id, Long version) {
         def queryInstance = Query.get(id)
         if (!queryInstance) {
@@ -345,6 +336,7 @@ class QueryController {
         flash.message = message(code: 'default.updated.message', args: [message(code: 'query.label', default: 'Query'), queryInstance.id])
         redirect(action: "show", id: queryInstance.id)
     }
+    */
 
     def delete(Long id) {
         def queryInstance = Query.get(id)

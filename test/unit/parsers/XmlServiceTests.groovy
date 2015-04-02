@@ -5,53 +5,34 @@ package parsers
 import grails.test.mixin.*
 import org.junit.*
 
-import common.change_control.Contribution
-import common.change_control.Version
-import common.generic.DoctorProxy
+import common.change_control.*
 import common.generic.AuditDetails
-//import support.identification.VersionRef
-//import support.identification.ContributionRef
-//import support.identification.CompositionRef // T0004
 import ehr.clinical_documents.CompositionIndex
+import ehr.Ehr
+import common.generic.PatientProxy
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(XmlService)
+@Mock([XmlService, Ehr, PatientProxy, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails])
 class XmlServiceTests { //  extends GroovyTestCase
-
-   //def xmlService
-   
-   void testContribution()
-   {
-      //fail "Implement me"
-      def file = new File("test\\resources\\contribution.xml")
-      def xml = file.getText()
-      
-      //def contribution = xmlService.parseConstribution()
-      def contribution = service.parseContribution(xml)
-      
-	  /*
-      XStream xstream = new XStream()
-      xstream.omitField(Contribution.class, "errors")
-      xstream.omitField(DoctorProxy.class, "errors")
-      xstream.omitField(AuditDetails.class, "errors")
-      //xstream.omitField(VersionRef.class, "errors")
-      //xstream.omitField(DoctorProxy.class, "errors")
-      
-      String txt = xstream.toXML(contribution)
-      
-      println txt
-	  */
-   }
    
    void testVersion()
    {
       def file = new File("test\\resources\\version.xml")
       def xml = file.getText()
       
+      def ehr = new Ehr(
+         subject: new PatientProxy(
+            value: '1234-12341-1341'
+         )
+      )
+      if (!ehr.save()) println ehr.errors
+      
       List data = []
-      def version = service.parseVersion(xml, data)
+      def version = service.parseVersions(ehr, [xml],
+          'systemID', new Date(), 'Mr. Committer', data)
       
 	  /*
       XStream xstream = new XStream()

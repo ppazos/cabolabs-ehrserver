@@ -16,7 +16,7 @@
      
      <!-- DV_DATE_TIME -->
      <time_committed>
-       <value>20070920T011901</value>
+       <value>20070920T011901,156+0930</value>
      </time_committed>
      
      <!-- DV_CODED_TEXT -->
@@ -72,7 +72,7 @@
       </composer>
       <context>
          <start_time>
-            <value>20070920T104614,0</value>
+            <value>20070920T104614,156+0930</value>
          </start_time>
          <setting>
             <value>Event</value>
@@ -125,14 +125,14 @@
                <value>data</value>
             </name>
             <origin>
-               <value>20070920T104614,0156+0930</value>
+               <value>20070920T104614,156+0930</value>
             </origin>
             <events xsi:type="POINT_EVENT" archetype_node_id="at0006">
                <name>
                   <value>any event</value>
                </name>
                <time>
-                  <value>20070920T104614,0156+0930</value>
+                  <value>20070920T104614,156+0930</value>
                </time>
                <data xsi:type="ITEM_LIST" archetype_node_id="at0003">
                   <name>

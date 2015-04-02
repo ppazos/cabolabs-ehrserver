@@ -8,8 +8,8 @@
   <td class="contribution_data_date">${cindex.startTime}</td>
   <td class="contribution_data_archid">${cindex.archetypeId}</td>
   <td>
-    <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><img src="${resource(dir: 'images', file: 'xml.png')}" class="icon" /></g:link>
-    <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><img src="${resource(dir: 'images', file: 'doc.png')}" class="icon" /></g:link>
+    <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><asset:image src="xml.png" class="icon" /></g:link>
+    <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><asset:image src="doc.png" class="icon" /></g:link>
   </td>
 </tr>
 <%-- procesa el resto de las compositions si hay alguna --%>
@@ -20,8 +20,8 @@
      <td class="contribution_data_date">${cindex.startTime}</td>
      <td class="contribution_data_archid">${cindex.archetypeId}</td>
      <td>
-       <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><img src="${resource(dir: 'images', file: 'xml.png')}" class="icon" /></g:link>
-       <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><img src="${resource(dir: 'images', file: 'doc.png')}" class="icon" /></g:link>
+       <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><asset:image src="xml.png" class="icon" /></g:link>
+       <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><asset:image src="doc.png" class="icon" /></g:link>
      </td>
    </tr>
   </g:if>

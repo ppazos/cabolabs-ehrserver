@@ -40,8 +40,7 @@
         border: none;
       }
     </style>
-    <r:require module="jquery" />
-    <g:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.
@@ -455,7 +454,7 @@
          * Clic en [-]
          * Elimina un criterio de la lista de criterios de busqueda.
          */
-        $('#removeCriteria').live("click", function(e) {
+        $(document).on("click", "#removeCriteria", function(e) {
         
           e.preventDefault();
           

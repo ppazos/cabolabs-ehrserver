@@ -102,6 +102,49 @@ a:hover, a:active {
 	outline: none; /* prevents outline in webkit on active links but retains it for tab focus */
 }
 
+ /* icons for main layout */
+ #main_menu a {
+  background-repeat: no-repeat;
+  background-position: 4px 4px;
+  
+  padding-left: 56px; /* ancho de la imagen de fondo + un margen */
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  
+  margin: 4px 2px -2px 0px;
+  
+  /*height: 48px; no funciona */
+  line-height: 48px; /* deja el texto en el medio vertical del icono de fondo */
+  
+  /*float: left;*/
+  display: inline-block;
+  /*border: 1px solid #ddd;*/
+ }
+ 
+ .access_icon {
+  background-image: url('icons/access.png');
+ }
+ 
+   /* iconos */
+   .ehr_icon {
+     background-image: url('icons/unfold-multiple.png');
+   }
+   .query_icon{
+     background-image: url('icons/zoom.png');
+   }
+   .directory_icon {
+     background-image: url('icons/book-alt-3.png');
+   }
+   .contributions_icon {
+     background-image: url('icons/ftp-alt-2.png');
+   }
+   .indexes_icon {
+     background-image: url('icons/list-ordered.png');
+   }
+      
+     
+
 h1 {
 	/*color: #48802c; verde grails */
 	color: #232C49;

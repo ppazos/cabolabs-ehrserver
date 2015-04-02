@@ -1,12 +1,14 @@
 package common.change_control
 
-
+import common.generic.AuditDetails
+import ehr.Ehr
+import common.change_control.Version
 
 import org.junit.*
 import grails.test.mixin.*
 
 @TestFor(ContributionController)
-@Mock(Contribution)
+@Mock([Contribution, Ehr, Version, AuditDetails])
 class ContributionControllerTests {
 
     def populateValidParams(params) {
@@ -28,34 +30,13 @@ class ContributionControllerTests {
         assert model.contributionInstanceTotal == 0
     }
 
-    void testCreate() {
-        def model = controller.create()
-
-        assert model.contributionInstance != null
-    }
-
-    void testSave() {
-        controller.save()
-
-        assert model.contributionInstance != null
-        assert view == '/contribution/create'
-
-        response.reset()
-
-        populateValidParams(params)
-        controller.save()
-
-        assert response.redirectedUrl == '/contribution/show/1'
-        assert controller.flash.message != null
-        assert Contribution.count() == 1
-    }
-
     void testShow() {
         controller.show()
 
         assert flash.message != null
         assert response.redirectedUrl == '/contribution/list'
 
+        // FIXME: create a valid Contribution
         populateValidParams(params)
         def contribution = new Contribution(params)
 
@@ -68,88 +49,4 @@ class ContributionControllerTests {
         assert model.contributionInstance == contribution
     }
 
-    void testEdit() {
-        controller.edit()
-
-        assert flash.message != null
-        assert response.redirectedUrl == '/contribution/list'
-
-        populateValidParams(params)
-        def contribution = new Contribution(params)
-
-        assert contribution.save() != null
-
-        params.id = contribution.id
-
-        def model = controller.edit()
-
-        assert model.contributionInstance == contribution
-    }
-
-    void testUpdate() {
-        controller.update()
-
-        assert flash.message != null
-        assert response.redirectedUrl == '/contribution/list'
-
-        response.reset()
-
-        populateValidParams(params)
-        def contribution = new Contribution(params)
-
-        assert contribution.save() != null
-
-        // test invalid parameters in update
-        params.id = contribution.id
-        //TODO: add invalid values to params object
-
-        controller.update()
-
-        assert view == "/contribution/edit"
-        assert model.contributionInstance != null
-
-        contribution.clearErrors()
-
-        populateValidParams(params)
-        controller.update()
-
-        assert response.redirectedUrl == "/contribution/show/$contribution.id"
-        assert flash.message != null
-
-        //test outdated version number
-        response.reset()
-        contribution.clearErrors()
-
-        populateValidParams(params)
-        params.id = contribution.id
-        params.version = -1
-        controller.update()
-
-        assert view == "/contribution/edit"
-        assert model.contributionInstance != null
-        assert model.contributionInstance.errors.getFieldError('version')
-        assert flash.message != null
-    }
-
-    void testDelete() {
-        controller.delete()
-        assert flash.message != null
-        assert response.redirectedUrl == '/contribution/list'
-
-        response.reset()
-
-        populateValidParams(params)
-        def contribution = new Contribution(params)
-
-        assert contribution.save() != null
-        assert Contribution.count() == 1
-
-        params.id = contribution.id
-
-        controller.delete()
-
-        assert Contribution.count() == 0
-        assert Contribution.get(contribution.id) == null
-        assert response.redirectedUrl == '/contribution/list'
-    }
 }

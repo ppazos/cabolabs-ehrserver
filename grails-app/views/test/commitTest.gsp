@@ -15,7 +15,7 @@
       padding: 10px;
     }
     </style>
-    <r:require module="jquery" />
+    
     <g:javascript>
     
     // http://stackoverflow.com/questions/6507293/convert-xml-to-string-with-jquery

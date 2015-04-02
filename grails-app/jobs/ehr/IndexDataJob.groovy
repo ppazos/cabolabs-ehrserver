@@ -4,7 +4,7 @@ import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 /**
  * Indexa datos de compositions commiteadas.
@@ -14,11 +14,11 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class IndexDataJob {
    
    static triggers = {
-      simple repeatInterval: 600000l // execute job once in 60 seconds
+      simple repeatInterval: 60000l // execute job once in 60 seconds
    }
    
    // Para acceder a la config que dice de donde leer las compositions a indexar
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
 
    // FIXME: this logic should be in a separate service
    
@@ -49,7 +49,6 @@ class IndexDataJob {
          compoParsed = new XmlSlurper(true, false).parseText(compoXML)
          
          //println "root parent: " + compoParsed.'..' // .. es gpath para parent
-         
          //println "templateId 0: "+ compoIndex.templateId
          
          recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
