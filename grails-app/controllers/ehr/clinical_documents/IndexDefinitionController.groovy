@@ -110,23 +110,26 @@ class IndexDefinitionController {
      * This is usefull to add archetypes to the repo and index them to generate new queries.    
      */
     def generate() {
-    
-       def manager = ArchetypeManager.getInstance()
-       def archetypes = manager.getArchetypes('composition', '.*')
-       def ai = new ArchetypeIndexer()
-       
-       // FIXME: just reindex if there are no indexes defined for the archetype
-       
+
        // delete current
        def indexes = IndexDefinition.list()
        indexes.each {
          it.delete()
        }
        
+       def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+       ti.indexAll()
+       
+       /*
+       def manager = ArchetypeManager.getInstance()
+       def archetypes = manager.getArchetypes('composition', '.*')
+       def ai = new ArchetypeIndexer()
+       
        // reindex the whole repo
        archetypes.each { archetype ->
           ai.index(archetype)
        }
+       */
        
        redirect(action: "list")
     }
