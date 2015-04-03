@@ -98,7 +98,7 @@ class IndexDataJob {
       // tengo que consultar al arquetipo para saber el tipo del nodo.
       // Necesito el archetype_id (esta en el XML) y la path (es la idxpath).
       
-      // En realidad el tipo lo dice la definicion de los indices (DataIndex),
+      // En realidad el tipo lo dice la definicion de los indices (IndexDefinition),
       // y puedo hacer lookup del tipo usando archetypeId+path.
       
 
@@ -145,13 +145,13 @@ class IndexDataJob {
       //println "archPath: "+ archetypePath
       
       // TODO: instead of calculating the archetypePath, I can use the templateId and path
-      //       to query DataIndex and get the archetypeId and archetypePath from there.
-      // DataIndex uses the archetypeId and archetypePath to search
-      def dataidx = ehr.clinical_documents.DataIndex.findByArchetypeIdAndArchetypePath(archetypeId, archetypePath)
+      //       to query IndexDefinition and get the archetypeId and archetypePath from there.
+      // IndexDefinition uses the archetypeId and archetypePath to search
+      def dataidx = ehr.clinical_documents.IndexDefinition.findByArchetypeIdAndArchetypePath(archetypeId, archetypePath)
       
       if (!dataidx)
       {
-         println "DataIndex not found for "+ archetypeId +" and "+ archetypePath
+         println "IndexDefinition not found for "+ archetypeId +" and "+ archetypePath
       }
       
       // Si dataidx es nulo, idxtype sera nulo y luego idvalue tambien,
@@ -207,8 +207,8 @@ class IndexDataJob {
          if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
-            def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
-            indexes << dataIndex
+            def indexDefinition = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
+            indexes << indexDefinition
          }
          else // Si no es indizable por valor, sigue la recursion
          {

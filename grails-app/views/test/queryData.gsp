@@ -142,7 +142,7 @@
 	            console.log('path y subheaders', path, subheaders);
 	            
 	            // TODO: deberia ser archetype+path para que sea absoluta
-	            // name es el nombre del DataIndex coorespondiente al archId y path del DataValueIndex
+	            // name es el nombre del IndexDefinition coorespondiente al archId y path del DataValueIndex
 	            htmlheaders += '<th colspan="'+ subheaders.attrs.length +'" title="'+ path +'">'+ subheaders.name +'</th>';
 	            
 	            $.each(subheaders.attrs, function(i, attr) {
@@ -486,7 +486,7 @@
           <td><label>archetypeId</label></td>
           <td>
             <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
-            <g:set var="dataIndexes" value="${ehr.clinical_documents.DataIndex.list()}" />
+            <g:set var="dataIndexes" value="${ehr.clinical_documents.IndexDefinition.list()}" />
       
 	         <g:select name="sarchetypeId" size="5"
 	                   from="${dataIndexes.archetypeId.unique()}"

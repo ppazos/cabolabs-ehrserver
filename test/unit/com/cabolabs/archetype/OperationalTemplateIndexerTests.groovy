@@ -10,7 +10,7 @@ import org.junit.*
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
 @TestMixin(GrailsUnitTestMixin)
-@Mock(ehr.clinical_documents.DataIndex) // to allow calls to .save
+@Mock(ehr.clinical_documents.IndexDefinition) // to allow calls to .save
 class OperationalTemplateIndexerTests {
 
     void setUp() {

@@ -216,7 +216,7 @@
           <td><label>archetypeId</label></td>
           <td>
             <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
-            <g:set var="dataIndexes" value="${ehr.clinical_documents.DataIndex.list()}" />
+            <g:set var="dataIndexes" value="${ehr.clinical_documents.IndexDefinition.list()}" />
       
 	         <g:select name="sarchetypeId" size="3"
 	                   from="${dataIndexes.archetypeId.unique()}"

@@ -20,7 +20,7 @@ class DataCriteria {
    String value
    
    // TODO: poner name para mostrar en la definicion
-   //       de la consulta, se saca de DataIndex o del
+   //       de la consulta, se saca de IndexDefinition o del
    //       arquetipo archetypeId para la path (que
    //       tiene el nodeId)
    

@@ -42,7 +42,7 @@
       <g:link controller="contribution" action="list" class="contributions_icon ${(controllerName=='contribution')?'active':''}"><g:message code="desktop.contributions" /></g:link>
       <a href="#" class="directory_icon ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></a>
       <g:link controller="query" action="list" class="query_icon ${(controllerName=='query')?'active':''}"><g:message code="desktop.queries" /></g:link>
-      <g:link controller="dataIndex" action="list" class="indexes_icon ${(controllerName=='dataIndex')?'active':''}"><g:message code="desktop.indexes" /></g:link>
+      <g:link controller="indexDefinition" action="list" class="indexes_icon ${(controllerName=='indexDefinition')?'active':''}"><g:message code="desktop.indexes" /></g:link>
     </div>
     <div style="clear: both"></div>
     

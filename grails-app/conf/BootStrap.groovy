@@ -1,7 +1,7 @@
 import demographic.Person
 import common.generic.PatientProxy
 import ehr.Ehr
-import ehr.clinical_documents.DataIndex
+import ehr.clinical_documents.IndexDefinition
 
 class BootStrap {
 
@@ -10,7 +10,7 @@ class BootStrap {
    def init = { servletContext ->
       
      // TEST
-     if (DataIndex.count() == 0)
+     if (IndexDefinition.count() == 0)
      {
 		  /*
         def ai = new com.cabolabs.archetype.ArchetypeIndexer()
@@ -331,7 +331,7 @@ class BootStrap {
       
       dataIndexes.each { map ->
          
-         def di = new DataIndex(map)
+         def di = new IndexDefinition(map)
          if (!di.save())
          {
             println di.errors

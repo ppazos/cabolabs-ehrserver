@@ -6,7 +6,7 @@ import demographic.Person
 import query.Query
 import query.DataGet
 import query.DataCriteria
-import ehr.clinical_documents.DataIndex
+import ehr.clinical_documents.IndexDefinition
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DataValueIndex
 import common.generic.DoctorProxy
@@ -1040,7 +1040,7 @@ class RestController {
        List operands = params.list('operand')
        
        
-       DataIndex dataidx
+       IndexDefinition dataidx
        String idxtype
  
        

@@ -149,7 +149,7 @@
               <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
               <a href="#" class="directory_icon"><g:message code="desktop.directory" /></a>
               <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
-              <g:link controller="dataIndex" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
+              <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
             </div>
             <div style="clear: both"></div>
             

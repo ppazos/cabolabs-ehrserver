@@ -22,7 +22,7 @@ import query.*
 @TestFor(RestController)
 @Mock([ Ehr,Person,
         PatientProxy, DoctorProxy,
-        OperationalTemplateIndex, DataIndex, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+        OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
         DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
         Query, DataGet, DataCriteria
       ])
@@ -673,7 +673,7 @@ class RestControllerTests {
       assert ehr.clinical_documents.OperationalTemplateIndex.countByTemplateId('Test all datatypes') == 1
       
       // Test data indexes created
-      DataIndex.list().each { di ->
+      IndexDefinition.list().each { di ->
          
          println "di: " + di.path
       }
@@ -891,7 +891,7 @@ class RestControllerTests {
       }
       
       // Test data indexes created
-      DataIndex.list().each { di ->
+      IndexDefinition.list().each { di ->
          
          println "di: " + di.path
       }
@@ -1101,7 +1101,7 @@ class RestControllerTests {
       assert ehr.clinical_documents.OperationalTemplateIndex.countByTemplateId('UK AoMRC Community Dental Final Assessment') == 1
       
       // Test data indexes created
-      DataIndex.list().each { di ->
+      IndexDefinition.list().each { di ->
          
          println "di: " + di.path
       }
@@ -2031,7 +2031,7 @@ class RestControllerTests {
       }
       
       // Test data indexes created
-      DataIndex.list().each { di ->
+      IndexDefinition.list().each { di ->
          
          println "di: " + di.path
       }

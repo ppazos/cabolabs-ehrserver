@@ -5,9 +5,9 @@ package ehr.clinical_documents
 import org.junit.*
 import grails.test.mixin.*
 
-@TestFor(DataIndexController)
-@Mock(DataIndex)
-class DataIndexControllerTests {
+@TestFor(IndexDefinitionController)
+@Mock(IndexDefinition)
+class IndexDefinitionControllerTests {
 
     def populateValidParams(params) {
         assert params != null
@@ -17,139 +17,139 @@ class DataIndexControllerTests {
 
     void testIndex() {
         controller.index()
-        assert "/dataIndex/list" == response.redirectedUrl
+        assert "/indexDefinition/list" == response.redirectedUrl
     }
 
     void testList() {
 
         def model = controller.list()
 
-        assert model.dataIndexInstanceList.size() == 0
-        assert model.dataIndexInstanceTotal == 0
+        assert model.indexDefinitionInstanceList.size() == 0
+        assert model.indexDefinitionInstanceTotal == 0
     }
 
     void testCreate() {
         def model = controller.create()
 
-        assert model.dataIndexInstance != null
+        assert model.indexDefinitionInstance != null
     }
 
     void testSave() {
         controller.save()
 
-        assert model.dataIndexInstance != null
-        assert view == '/dataIndex/create'
+        assert model.indexDefinitionInstance != null
+        assert view == '/indexDefinition/create'
 
         response.reset()
 
         populateValidParams(params)
         controller.save()
 
-        assert response.redirectedUrl == '/dataIndex/show/1'
+        assert response.redirectedUrl == '/indexDefinition/show/1'
         assert controller.flash.message != null
-        assert DataIndex.count() == 1
+        assert IndexDefinition.count() == 1
     }
 
     void testShow() {
         controller.show()
 
         assert flash.message != null
-        assert response.redirectedUrl == '/dataIndex/list'
+        assert response.redirectedUrl == '/indexDefinition/list'
 
         populateValidParams(params)
-        def dataIndex = new DataIndex(params)
+        def indexDefinition = new IndexDefinition(params)
 
-        assert dataIndex.save() != null
+        assert indexDefinition.save() != null
 
-        params.id = dataIndex.id
+        params.id = indexDefinition.id
 
         def model = controller.show()
 
-        assert model.dataIndexInstance == dataIndex
+        assert model.indexDefinitionInstance == indexDefinition
     }
 
     void testEdit() {
         controller.edit()
 
         assert flash.message != null
-        assert response.redirectedUrl == '/dataIndex/list'
+        assert response.redirectedUrl == '/indexDefinition/list'
 
         populateValidParams(params)
-        def dataIndex = new DataIndex(params)
+        def indexDefinition = new IndexDefinition(params)
 
-        assert dataIndex.save() != null
+        assert indexDefinition.save() != null
 
-        params.id = dataIndex.id
+        params.id = indexDefinition.id
 
         def model = controller.edit()
 
-        assert model.dataIndexInstance == dataIndex
+        assert model.indexDefinitionInstance == indexDefinition
     }
 
     void testUpdate() {
         controller.update()
 
         assert flash.message != null
-        assert response.redirectedUrl == '/dataIndex/list'
+        assert response.redirectedUrl == '/indexDefinition/list'
 
         response.reset()
 
         populateValidParams(params)
-        def dataIndex = new DataIndex(params)
+        def indexDefinition = new IndexDefinition(params)
 
-        assert dataIndex.save() != null
+        assert indexDefinition.save() != null
 
         // test invalid parameters in update
-        params.id = dataIndex.id
+        params.id = indexDefinition.id
         //TODO: add invalid values to params object
 
         controller.update()
 
-        assert view == "/dataIndex/edit"
-        assert model.dataIndexInstance != null
+        assert view == "/indexDefinition/edit"
+        assert model.indexDefinitionInstance != null
 
-        dataIndex.clearErrors()
+        indexDefinition.clearErrors()
 
         populateValidParams(params)
         controller.update()
 
-        assert response.redirectedUrl == "/dataIndex/show/$dataIndex.id"
+        assert response.redirectedUrl == "/indexDefinition/show/$indexDefinition.id"
         assert flash.message != null
 
         //test outdated version number
         response.reset()
-        dataIndex.clearErrors()
+        indexDefinition.clearErrors()
 
         populateValidParams(params)
-        params.id = dataIndex.id
+        params.id = indexDefinition.id
         params.version = -1
         controller.update()
 
-        assert view == "/dataIndex/edit"
-        assert model.dataIndexInstance != null
-        assert model.dataIndexInstance.errors.getFieldError('version')
+        assert view == "/indexDefinition/edit"
+        assert model.indexDefinitionInstance != null
+        assert model.indexDefinitionInstance.errors.getFieldError('version')
         assert flash.message != null
     }
 
     void testDelete() {
         controller.delete()
         assert flash.message != null
-        assert response.redirectedUrl == '/dataIndex/list'
+        assert response.redirectedUrl == '/indexDefinition/list'
 
         response.reset()
 
         populateValidParams(params)
-        def dataIndex = new DataIndex(params)
+        def indexDefinition = new IndexDefinition(params)
 
-        assert dataIndex.save() != null
-        assert DataIndex.count() == 1
+        assert indexDefinition.save() != null
+        assert IndexDefinition.count() == 1
 
-        params.id = dataIndex.id
+        params.id = indexDefinition.id
 
         controller.delete()
 
-        assert DataIndex.count() == 0
-        assert DataIndex.get(dataIndex.id) == null
-        assert response.redirectedUrl == '/dataIndex/list'
+        assert IndexDefinition.count() == 0
+        assert IndexDefinition.get(indexDefinition.id) == null
+        assert response.redirectedUrl == '/indexDefinition/list'
     }
 }

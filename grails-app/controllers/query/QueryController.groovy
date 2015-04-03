@@ -1,6 +1,6 @@
 package query
 
-import ehr.clinical_documents.DataIndex
+import ehr.clinical_documents.IndexDefinition
 import org.springframework.dao.DataIntegrityViolationException
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
@@ -25,7 +25,7 @@ class QueryController {
 
     def create() {
         [queryInstance: new Query(params),
-         dataIndexes: ehr.clinical_documents.DataIndex.list(), // to create filters or projections
+         dataIndexes: ehr.clinical_documents.IndexDefinition.list(), // to create filters or projections
          templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
     }
     

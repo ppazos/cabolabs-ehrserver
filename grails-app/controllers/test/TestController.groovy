@@ -3,7 +3,7 @@ package test
 //import com.thoughtworks.xstream.XStream
 import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
-import ehr.clinical_documents.DataIndex
+import ehr.clinical_documents.IndexDefinition
 import common.change_control.Contribution
 import common.change_control.Version
 import common.generic.AuditDetails
@@ -156,7 +156,7 @@ class TestController {
       List operands = params.list('operand')
       List values = params.list('value')
       
-      DataIndex dataidx
+      IndexDefinition dataidx
       String idxtype
 
       
@@ -197,7 +197,7 @@ class TestController {
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = DataIndex.findByArchetypeIdAndPath(archId, paths[i])
+         dataidx = IndexDefinition.findByArchetypeIdAndPath(archId, paths[i])
          idxtype = dataidx?.rmTypeName
          
          println "idxtype: $idxtype"
@@ -211,7 +211,7 @@ class TestController {
          "        AND dvi.archetypeId = '"+ archId +"'" +
          "        AND dvi.path = '"+ paths[i] +"'"
          
-         // Consulta sobre atributos del DataIndex dependiendo de su tipo
+         // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
          switch (idxtype)
          {
             case 'DV_DATE_TIME':
@@ -239,21 +239,21 @@ class TestController {
       
 //      EXISTS (
 //        SELECT dvi.id
-//        FROM DataIndex dvi
+//        FROM IndexDefinition dvi
 //        WHERE dvi.owner.id = ci.id
 //              AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
 //              AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
 //              AND dvi.magnitude>140.0
 //      ) AND EXISTS (
 //        SELECT dvi.id
-//        FROM DataIndex dvi
+//        FROM IndexDefinition dvi
 //        WHERE dvi.owner.id = ci.id
 //              AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
 //              AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
 //              AND dvi.magnitude<130.0
 //      ) AND EXISTS (
 //        SELECT dvi.id
-//        FROM DataIndex dvi
+//        FROM IndexDefinition dvi
 //        WHERE dvi.owner.id = ci.id
 //              AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
 //              AND dvi.path = /content/data[at0001]/origin
@@ -360,7 +360,7 @@ class TestController {
    
    
    /**
-    * Devuelve una lista de DataIndex.
+    * Devuelve una lista de IndexDefinition.
     * 
     * Accion AJAX/JSON, se usa desde queryByData GUI.
     * 
@@ -375,9 +375,9 @@ class TestController {
    {
       // TODO: checkear params
       
-      def list = DataIndex.findAllByArchetypeId(archetypeId)
+      def list = IndexDefinition.findAllByArchetypeId(archetypeId)
       
-      // Devuelve solo datos necesarios (sin id de DataIndex, ...)
+      // Devuelve solo datos necesarios (sin id de IndexDefinition, ...)
       def rlist = [] 
       
       for(di in list)
