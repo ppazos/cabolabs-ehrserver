@@ -38,13 +38,14 @@ class Ehr {
    
    static mapping = {
       //subject cascade: 'save-update' // va con belongsTo en PatientProxy
+      compositions cascade: 'save-update'
    }
    
    // For testing purposes
    def containsVersionedComposition(String uid)
    {
       def c = this.createCriteria()
-      def res = c.list {
+      def res = c.list { // FIXME: use count
          compositions {
             eq('uid', uid)
          }

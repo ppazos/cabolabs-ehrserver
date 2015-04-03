@@ -20,7 +20,7 @@ class Contribution {
    
    // Emula CONTRIBUTION.versions(Set<OBJECT_REF>) usando relaciones directas a
    // las versiones contenidas en la Contribution en lugar de OBJECT_REFs
-   List versions
+   List versions = []
    static hasMany = [versions:Version]
    
    static constraints = {

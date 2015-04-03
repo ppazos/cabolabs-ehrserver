@@ -211,20 +211,20 @@ class RestController {
                
                   versionedComposition = new VersionedComposition(
                      uid: version.objectId,
-                     ehrId: ehrId,
+                     ehrUid: ehrId,
                      isPersistent: (version.data.category == 'persistent'))
                   
-                  if (!versionedComposition.save())
-                  {
-                     println "VersionedComposition ERRORS: "+ vc.errors
-                  }
+//                  if (!versionedComposition.save())
+//                  {
+//                     println "VersionedComposition ERRORS: "+ vc.errors
+//                  }
                   
                   // Agrega composition al EHR
                   ehr.addToCompositions( versionedComposition )
                   
                   println "PRE ehr.save"
                   
-                  if (!ehr.save()) println ehr.errors.allErrors
+                  if (!ehr.save(flush:true)) println ehr.errors.allErrors
                   
                   println "POST ehr.save"
                   

@@ -11,7 +11,7 @@ class VersionedComposition {
    String uid
    
    // This is equivalent to the owner_id attribute in the RM, just gave little more semantics to the name because we know the owner will be always the EHR.
-   String ehrId
+   String ehrUid
    
    // When the first commit of a VERSION is received.
    Date timeCreated = new Date()

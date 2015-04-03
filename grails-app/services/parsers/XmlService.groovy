@@ -183,7 +183,7 @@ class XmlService {
    }
    
    
-   /*
+   /**
    <version>
      <!-- OBJECT_REF -->
      <contribution>
@@ -246,7 +246,10 @@ class XmlService {
       String auditSystemId, Date auditTimeCommitted, String auditCommitter,
       List dataOut)
    {
-      List<Contribution> ret = []
+      List<Contribution> ret = [] // FIXME: una contribution por commit
+      
+      println ":: versionsXML: "+ versionsXML.size()
+      
       
       // Uso una lista para no reutilizar la misma variable que sobreescribe
       // las versions anteriors y me deja varias copias de la misma composition
@@ -260,6 +263,8 @@ class XmlService {
       def contributionId
       def contribution
       versionsXML.eachWithIndex { versionXML, i ->
+      
+      println "************ EACH WITH INDEX ***************** "+ i
       
          // Sin esto pone tag0 como namespace en todas las tags!!!
          parsedVersion = new XmlSlurper(true, false).parseText(versionXML)
@@ -338,13 +343,12 @@ class XmlService {
             def previousLastVersion = Version.findByUid(version.uid)
             previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
             
-            
             println "PRE previousVersion.save"
             println (previousLastVersion as grails.converters.XML)
             
-            
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
-            if (!previousLastVersion.save(flush:true)) println previousLastVersion.errors.allErrors
+            // This is adding (I dont know why) the version to the contribution.versions list
+            if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
             
             println "POST previousVersion.save"
             println (previousLastVersion as grails.converters.XML)
@@ -367,14 +371,21 @@ class XmlService {
             
             // This searches for the version id in the XML string and changes
             // it with the new version uid. This will be saved to a file by the controller.
-            parsedVersion.uid.value = version.uid
+            parsedVersion.uid.value = version.uid // Aca ya agrega la version a contribution.versions!!!! en modification
             
             // ================================================================
          }
-         
-         
-         // contribution -> version
-         contribution.addToVersions( version )
+         else // creation (no previous version exists)
+         {
+            // There is was problem: saving the previousLastVersion added the version to the contribution.versions (weird),
+            // so the contribution.addToVersions when there was a previous version, added the version twice to the
+            // contribution.versions list. This else is to avoid that duplicated addition to contribution.versions.
+             
+            println "***** VERSIONS PREV " +contribution.versions
+            contribution.addToVersions( version )
+            println "***** VERSIONS AFTER " +contribution.versions
+         }
+
          
          assert contribution.versions.size() == i+1
          
