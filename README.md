@@ -127,12 +127,17 @@
 * Support for AQL/EQL output (openEHR archetype-based query language)
 
 
-### EHRServer workflows to be supported by clients
+### EHRServer workflows supported by clients
 
 #### WF1. Commit
 
+A client applicaton can commit one or more versions of different Compositions in one transaction.
+
 #### WF2. Query
+
+Query execution by UID. Queries are created by admins. In the near future we'll add an API to create and manage Queries from client applications. We'll also explore adding support to AQL queries.
 
 #### WF3. Checkout and Commit (versioned clinical documents)
 
+On checkout, the client will receive a copy of an existing version of a Composition, with the current UID. The client can modify, and commit, and the same UID should be used. Then the EHRServer will update the version number in the new Version UID. Then Queries will get data only from the latest Version of the existing Compositions. All the Versions of a Composition are grouped in a VersionedComposition object.
 
