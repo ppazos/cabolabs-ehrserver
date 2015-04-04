@@ -62,8 +62,7 @@
             <span class="property-value" aria-labelledby="audit-label">
               system id: ${contributionInstance?.audit?.systemId}<br/>
               time committed: ${contributionInstance?.audit?.timeCommitted}<br/>
-              change type: ${contributionInstance?.audit?.changeType}<br/>
-              committer ref: ${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}
+              committer: ${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}
             </span>
           </li>
         </g:if>
@@ -85,13 +84,12 @@
             --%>
             <table id="versions">
               <tr>
-                <th>time committed</th>
-                <th>committer</th>
                 <th>creation date</th>
                 <th>type</th>
+                <th>change type</th>
                 <th></th>
               </tr>
-              <g:render template="contributionRow" model="[contribution:contributionInstance]"/>
+              <g:render template="contributionRow" model="[contribution: contributionInstance, hideTimeAndCommitter: true]"/>
             </table>
           </li>
         </g:if>

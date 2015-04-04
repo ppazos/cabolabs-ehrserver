@@ -14,12 +14,13 @@ class AuditDetails {
    // Lo establece el servidor cuando recibe un commit
    Date timeCommitted
    
-   String changeType = "creation" // otros valores: deleted, amendment, modification, attestation, addition
+   String changeType //= "creation" // otros valores: deleted, amendment, modification, attestation, addition
    
    DoctorProxy committer
    
    static constraints = {
-      changeType(inList:["creation","amendment","modification","synthesis","deleted","attestation","unknown"])
+      // is nullable for Contribution.audit
+      changeType(nullable:true, inList:["creation","amendment","modification","synthesis","deleted","attestation","unknown"])
    }
    
    // Para que Contribution salve su AuditDetails en cascada

@@ -21,6 +21,7 @@ y muestra todas las compositions de la contrib:
     <th>committer</th>
     <th>creation date</th>
     <th>type</th>
+    <th>change type</th>
     <th></th>
   </tr>
   <g:each in="${contributions}" var="contribution">

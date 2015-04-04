@@ -27,11 +27,10 @@
       <table>
         <thead>
           <tr>
-            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'Uid')}" />
+            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" />
             <th>EHR</th>
-            <th>Change Type</th>
             <th>Time Committed</th>
-            <th>Versions</th>
+            <th># Versions</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +38,6 @@
           <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
             <td><g:link action="show" id="${contributionInstance.id}">${fieldValue(bean: contributionInstance, field: "uid")}</g:link></td>
             <td>${contributionInstance.ehr.ehrId}</td>
-            <td>${contributionInstance.audit.changeType}</td>
             <td>${contributionInstance.audit.timeCommitted}</td>
             <td>${contributionInstance.versions.size()}</td>
           </tr>
