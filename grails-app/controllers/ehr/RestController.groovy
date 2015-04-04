@@ -146,6 +146,8 @@ class RestController {
           * availability to other users in the same system. It should therefore be
           * computed on the server in implementations where the data are created
           * in a separate client context.
+          * 
+          * Note that this will override the time_committed from the version in the XML received.
           */
          
          // TEST: in general only one contribution will be created from a commit
