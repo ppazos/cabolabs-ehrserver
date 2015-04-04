@@ -80,12 +80,11 @@
   inside version.data, when the node_id is 'at0000' (root node).
 * for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string,
   and be sure that the XML content is encoded with UTF-8.
-* version.commit_audit.time_committed should be set by the client but will be overriden by the server
-  to be compliant with this rule:
-   * The time_committed attribute in both the Contribution and Version audits
-     should reflect the time of committal to an EHR server, i.e. the time of
-     availability to other users in the same system. It should therefore be
-     computed on the server in implementations where the data are created
+* version.commit_audit.time_committed that is set by client apps will be overriden by the server
+  to be compliant with this rule from the openEHR specs:
+   * The time_committed attribute in both the Contribution and Version audits **should reflect the time
+     of committal to an EHR server, i.e. the time of availability to other users** in the same system.
+     It should therefore be computed on the server in implementations where the data are created
      in a separate client context.
 
 #### Rules for CONTRIBUTIONs
