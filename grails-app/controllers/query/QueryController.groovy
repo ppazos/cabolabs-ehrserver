@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 import ehr.clinical_documents.data.*
+import grails.converters.*
 
 class QueryController {
 
@@ -267,7 +268,8 @@ class QueryController {
           query.errors.allErrors.each { println it }
        }
        
-       redirect(action:'show', id:query.id)
+       //redirect(action:'show', id:query.id)
+       render query as JSON
     }
 
     

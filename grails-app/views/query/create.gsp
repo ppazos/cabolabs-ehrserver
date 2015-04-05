@@ -6,11 +6,14 @@
     <g:set var="entityName" value="${message(code: 'query.label', default: 'Query')}" />
     <title><g:message code="query.create.title" /></title>
     <style>
-      #query_composition, #query_datavalue, #query_common {
+      #query_test, #query_composition, #query_datavalue, #query_common {
         display: none;
       }
       .buttons {
         margin: 20px 0 0 0;
+      }
+      .buttons.test, .buttons.create {
+        display: none;
       }
       tr td:last-child select, tr td:last-child input[type=text] {
         width: 100%;
@@ -46,22 +49,247 @@
       }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
-    <g:javascript>
+    
+    <!-- query test -->
+    <asset:stylesheet src="query_execution.css" />
+    <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
+    <asset:stylesheet src="highlightjs/xcode.css" />
+    
+    <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
+    <asset:javascript src="jquery.form.js" /><!-- ajax form -->
+    <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="highcharts/highcharts.js" />
+    <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
+    <!-- /query test -->
+    
+    <script type="text/javascript">
+
+      var ajax_submit = function (action) {
+
+         console.log('ajax_submit', action);
+
+         if (action == 'save') {
+
+            if ($('select[name=type]').val()=='composition')
+            {
+            }
+            else if ($('select[name=type]').val()=='datavalue')
+            {
+            }
+            
+            $('#query_form').ajaxSubmit({
+               url: '${createLink(controller:'query', action:'save')}',
+               type: 'post',
+               success: function(responseText, statusText, req, form) {
+                  console.log(responseText);
+                  // redirect to show!
+                  location.href = '${createLink('action': 'show')}?id='+ responseText.id;
+               },
+               error: function(response, textStatus, errorThrown)
+               {
+                  console.log('error form_datavalue');
+                  console.log(response);
+                  alert(response.responseText); // lo devuelto por el servidor
+               }
+            });
+         }
+         else if (action == 'test') {
+
+console.log('ehrid', $('select[name=qehrId]').val());
+            
+            // Validacion
+            if ($('select[name=qehrId]').val()==null)
+            {
+              alert('Seleccione un EHR');
+              return false;
+            }
+
+            if ($('select[name=type]').val()=='composition')
+            {
+               console.log('test composition query');
+               console.log('query_form', $('#query_form'));
+               
+	            $('#query_form').ajaxSubmit({
+
+		            // datatype = xml for composition
+	               
+	               url: '${createLink(controller:'rest', action:'queryCompositions')}',
+
+	               type: 'post',
+	               
+	               beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
+	                  
+	                  console.log('form_composition beforeSubmit', data);
+	                  
+	                  valid = true;
+	                  
+	                  // Verifica que todos los valores necesarios para la query fueron ingresados
+	                  $('input[type=text][name=value]').each( function(i, elem) {
+	                    
+	                    e = $(elem);
+	                    e.removeClass('errors');
+	                    
+	                    //console.log($(elem).val(), elem.value);
+	
+	                    if (e.val() == '')
+	                    {
+	                      valid = false;
+	                      e.addClass('errors');
+	                    }
+	                  });
+	                  
+	                  if (!valid)
+	                  {
+	                    alert('Introduzca los valores para el criterio de la consulta');
+	                  }
+	                  
+	                  return valid;
+	                },
+	                
+	                success: function(responseText, statusText, req, form) {  // >>> SUCCESS
+	                  
+	                  console.log('form_composition success');
+	                  //console.log(responseText);
+	                  //console.log(statusText);
+	                  //console.log(req);
+	                  //console.log(form);
+	                  
+	                  // reset code class or highlight
+                     $('code').removeClass('xml json');
+	
+	                  // Si devuelve HTML
+	                  if ($('select[name=showUI]').val()=='true')
+	                  {
+	                     $('#results').html( responseText );
+	                     $('#results').show('slow');
+	                  }
+	                  else // Si devuelve el XML
+	                  {
+	                     // highlight
+	                     $('code').addClass('xml');
+	                     $('code').text(formatXml( xmlToString(responseText) ));
+	                     $('code').each(function(i, e) { hljs.highlightBlock(e); });
+	                     $('code').show('slow');
+	                  }
+	                  
+	                  // Muestra el boton que permite ver los datos crudos
+	                  // devueltos por el servidor
+	                  $('#show_data').show();
+	                },
+	                
+	                error: function(response, textStatus, errorThrown) {  // >>> ERROR
+	                
+	                  console.log(response, textStatus, errorThrown);
+	                  
+	                  alert(errorThrown); // lo devuelto por el servidor
+	                }
+	            }); // ajax_submit
+
+	            console.log('after ajax submit');
+	            
+            } // query type = composition
+            else // query type = datavalue
+            {
+               console.log('test datavalue query');
+               
+               $('#query_form').ajaxSubmit({
+                  
+                  dataType: $('select[name=format]').val(), // xml o json
+                  url: '${createLink(controller:'rest', action:'queryData')}',
+                  type: 'post',
+                  data: {doit:true},
+                
+                  beforeSubmit: function(data, form, options) {
+                  
+                    console.log('form_datavalue beforeSubmit');
+                  },
+                  
+                  success: function(responseText, statusText, req, form) {
+                    
+                    console.log('form_datavalue success');
+                    
+                    // Vacia donde se va a mostrar la tabla o el chart
+                    $('#chartContainer').empty();
+                    
+                    console.log('form_datavalue success 2');
+
+                    // reset code class or highlight
+                    $('code').removeClass('xml json');
+
+                    // Si devuelve JSON (verifica si pedi json)
+                    if ($('select[name=format]').val()=='json')
+                    {
+                      console.log('form_datavalue success json');
+                    
+                      // highlight
+                      $('code').addClass('json');
+                      $('code').text(JSON.stringify(responseText, undefined, 2));
+                      $('code').each(function(i, e) { hljs.highlightBlock(e); });
+                      
+                      // =================================================================
+                      // Si agrupa por composition (muestra tabla)
+                      //
+                      if ($('select[name=group]').val() == 'composition')
+                      {
+                        queryDataRenderTable(responseText);
+                      }
+                      else if ($('select[name=group]').val() == 'path')
+                      {
+                        queryDataRenderChart(responseText);
+                      }
+                    }
+                    else // Si devuelve el XML
+                    {
+                      console.log('form_datavalue success XML');
+                    
+                      // highlight
+                      $('code').addClass('xml');
+                      $('code').text(formatXml( xmlToString(responseText) ));
+                      $('code').each(function(i, e) { hljs.highlightBlock(e); });
+                    }
+
+                    $('code').show('slow');
+                    
+                    // Muestra el boton que permite ver los datos crudos
+                    // devueltos por el servidor
+                    $('#show_data').show();
+                    
+                    
+                    // Hace scroll animado para mostrar el resultado
+                    $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+                  },
+                  
+                  error: function(response, textStatus, errorThrown)
+                  {
+                    console.log('error form_datavalue');
+                    console.log(response);
+                    
+                    alert(response.responseText); // lo devuelto por el servidor
+                  }
+                });
+               
+            } // query type = datavalue
+         }
+      };
+    
       $(document).ready(function() {
       
         $('.info img').click(function(e) {
           console.log($('.content', $(this).parent()));
           $('.content', $(this).parent()).toggle('slow');
         });
+
+        
       
         /*
          * Change del tipo de consulta. Muestra campos dependiendo del tipo de consulta a crear.
          */
         $('select[name=type]').change( function() {
-        
+
           // Limpia las tablas de criterios y seleccion cuando
           // se cambia el tipo de la query para evitar errores.
           clearCriteriaAndSelection();
+          clearTest();
           
           // La class query_build marca las divs con campos para crear consultas,
           // tanto los comunes como los particulares para busqueda de compositions
@@ -72,6 +300,7 @@
           {
             $('#query_common').show();
             $('#query_'+ this.value).show();
+            $('.buttons.create').show();
           }
         });
         
@@ -93,11 +322,13 @@
               dataType: 'json',
               success: function(data, textStatus) {
               
-                // didx:
-                //   archetypeId: "openEHR-EHR-COMPOSITION.encounter.v1"
-                //   name: "value"
-                //   path: "/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value"
-                //   rmTypeName: "DV_QUANTITY"
+                /**
+                 didx
+                   archetypeId: "openEHR-EHR-COMPOSITION.encounter.v1"
+                   name: "value"
+                   path: "/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value"
+                   rmTypeName: "DV_QUANTITY"
+                */
                 
                 // Saca las options que haya
                 $('select[name=view_archetype_path]').empty();
@@ -273,7 +504,7 @@
         /*
          * Valida antes de hacer test o guardar.
          */
-        $('form[name=myForm]').submit( function(e) {
+        $('form[name=query_form]').submit( function(e) {
         
           // Valida que haya algun criterio o alguna seleccion,
           // sino hay, retorna false y el submit no se hace.
@@ -300,6 +531,17 @@
         // remueve todos menos el primer TR
         removeTRsFromTable(selectionTable, 1);
         removeTRsFromTable(criteriaTable, 1);
+        
+        $('.buttons.create').hide();
+      };
+      
+      /**
+       * Clears the current test panel when the query type is changed.
+       */
+      var clearTest = function()
+      {
+         $('.buttons.test').hide();
+         $('#query_test').hide();
       };
       
       
@@ -348,7 +590,7 @@
           return true;
         }
       }; // validate
-    </g:javascript>
+    </script>
   </head>
   <body>
     <a href="#create-query" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -374,7 +616,7 @@
     </g:hasErrors>
     
     
-    <g:form name="myForm" controller="query" target="_blank">
+    <g:form name="query_form" controller="query">
 
       <%-- campos comunes a ambos tipos de query --%>
       <table>
@@ -444,17 +686,16 @@
       </div>
         
       <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
       <!-- Campos de queryByData -->
+
       <div id="query_composition" class="query_build">
         <table>
           <tr>
-            <td><label>operand</label></td>
+            <td>operand</td>
             <td>
-              <%-- TODO: sacar de restriccion inList de DataCriteria.operand --%>
-              <!--
+              <%-- TODO: sacar de restriccion inList de DataCriteria.operand 
               Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
-              -->
+              --%>
               <label><input type="radio" name="soperand" value="eq" />=</label>
               <label><input type="radio" name="soperand" value="neq" />!=</label>
               <label><input type="radio" name="soperand" value="gt" />&gt;</label>
@@ -462,11 +703,11 @@
             </td>
           </tr>
           <tr>
-            <td><label>value</label></td>
+            <td>value</td>
             <td><input type="text" name="svalue" /></td>
           </tr>
           <tr>
-            <td><label>add criteria</label></td>
+            <td>add criteria</td>
             <td><a href="#" id="addCriteria">[+]</a></td>
           </tr>
         </table>
@@ -552,12 +793,7 @@
             <th></th>
           </tr>
         </table>
-         
-        <fieldset class="buttons">
-          <g:actionSubmit value="${message(code:'default.button.test.label', default: 'Test')}" action="test" />
-          <g:actionSubmit value="${message(code:'default.button.create.label', default: 'Guardar')}" action="save" />
-        </fieldset>
-      </div>
+      </div><!-- query_composition -->
         
       <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
         
@@ -622,14 +858,15 @@
             </td>
           </tr>
           --%>
+          
           <tr>
-             <td>default format</td>
-             <td>
-               <select name="format">
-                 <option value="xml" selected="selected">XML</option>
-                 <option value="json">JSON</option>
-               </select>
-             </td>
+            <td>default format</td>
+            <td>
+              <select name="format">
+                <option value="xml" selected="selected">XML</option>
+                <option value="json">JSON</option>
+              </select>
+            </td>
           </tr>
           <tr>
             <td>default group</td>
@@ -653,13 +890,43 @@
             <th></th>
           </tr>
         </table>
-
-        <fieldset class="buttons">
-          <g:actionSubmit value="${message(code:'default.button.test.label', default: 'Test')}" action="test" />
-          <g:actionSubmit value="${message(code:'default.button.create.label', default: 'Guardar')}" action="save" />
-        </fieldset>
-      </div>
-    
+        
+      </div><!-- query_datavalue -->
+      
+      <fieldset class="buttons create">
+        <script>
+          // Toggles the query test on and off.
+          var toggle_test = function() { 
+            
+            // Test options for each type of query
+            if ( $('select[name=type]').val() == 'composition' )
+            {
+               $('div#query_test_composition').show();
+               $('div#query_test_datavalue').hide();
+            }
+            else
+            {
+               $('div#query_test_composition').hide();
+               $('div#query_test_datavalue').show();
+            }
+            
+            $('#query_test').toggle('slow');
+            $('.buttons.test').toggle('slow');
+          };
+        </script>
+        <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
+        
+        <a href="javascript:void(0);" onclick="javascript:ajax_submit('save');" >${message(code:'default.button.create.label', default: 'Save')}</a>
+      </fieldset>
+      
+      <!-- test panel -->
+      <div id="query_test">
+	      <g:include action="test" />
+	   </div>
+	   
+	   <fieldset class="buttons test">
+	     <a href="javascript:void(0);" onclick="javascript:ajax_submit('test');" >${message(code:'default.button.execute.label', default: 'Execute')}</a>
+      </fieldset>
     </g:form>
   </body>
 </html>

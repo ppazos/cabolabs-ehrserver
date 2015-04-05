@@ -1,0 +1,62 @@
+tr td:last-child select, tr td:last-child input {
+  width: 100%;
+}
+tr td:first-child {
+  width: 140px;
+}
+tr td:first-child {
+  text-align: right;
+}
+td {
+  font-size: 0.9em;
+}
+#addCriteria {
+  padding: 10px;
+  text-align: right;
+  display: block;
+  font-weight: bold;
+}
+textarea {
+  width: 98%;
+  height: 300px;
+  display: block;
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
+  font-family: courier;
+  font-size: 12px;
+}
+.actions {
+  text-align: right;
+}
+label {
+  font-weight: bold;
+}
+.content_padding {
+  padding: 10px;
+}
+.chartContainer {
+  width: 100%;
+  height: 400px;
+}
+.icon {
+  width: 64px;
+  border: none;
+}
+#results, #show_data {
+  display: none;
+}
+tr td:last-child input[name=toDate], tr td:last-child input[name=fromDate]  {
+  width: 92%;
+}
+img.ui-datepicker-trigger { /* <<<<< datepicker icon adjustments */
+  vertical-align: middle;
+  height: 1.9em;
+  padding-bottom: 6px; /* alinea con el input */
+}
+table.ui-datepicker-calendar th {
+  padding: 0;
+}
+table.ui-datepicker-calendar tr td:first-child {
+  width: auto;
+}

@@ -3,70 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="main">
-    <style>
-      tr td:last-child select, tr td:last-child input {
-        width: 100%;
-      }
-      tr td:first-child {
-        width: 140px;
-      }
-      tr td:first-child {
-        text-align: right;
-      }
-      td {
-        font-size: 0.9em;
-      }
-      #addCriteria {
-        padding: 10px;
-        text-align: right;
-        display: block;
-        font-weight: bold;
-      }
-      textarea {
-        width: 98%;
-        height: 300px;
-        display: block;
-        border: 1px solid black;
-        padding: 5px;
-        margin: 5px;
-        font-family: courier;
-        font-size: 12px;
-      }
-      .actions {
-        text-align: right;
-      }
-      label {
-        font-weight: bold;
-      }
-      .content_padding {
-        padding: 10px;
-      }
-      .chartContainer {
-        width: 100%;
-        height: 400px;
-      }
-      .icon {
-        width: 64px;
-        border: none;
-      }
-      #results, #show_data {
-        display: none;
-      }
-      tr td:last-child input[name=toDate], tr td:last-child input[name=fromDate]  {
-        width: 92%;
-      }
-      img.ui-datepicker-trigger { /* <<<<< datepicker icon adjustments */
-        vertical-align: middle;
-        height: 1.9em;
-        padding-bottom: 6px; /* alinea con el input */
-      }
-      table.ui-datepicker-calendar th {
-        padding: 0;
-      }
-      table.ui-datepicker-calendar tr td:first-child {
-        width: auto;
-      }
-    </style>
+    <asset:stylesheet src="query_execution.css" />
     <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
     <asset:stylesheet src="highlightjs/xcode.css" />
     
@@ -75,65 +12,12 @@
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
+    
+    <asset:javascript src="query_test_and_execution.js" />
+    
     <script type="text/javascript">
       $(document).ready(function() {
      
-     
-        /* ===================================================================================== 
-         * Calendars para filtros de compositions.
-         */
-        $("input[name=fromDate]").datepicker({
-            // Icono para mostrar el calendar 
-            showOn: "button",
-            buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
-            buttonImageOnly: true,
-            buttonText: 'pick a date',
-            // Formato
-            dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-            // Menus para cambiar mes y anio 
-            changeMonth: true,
-            changeYear: true,
-            // La fecha maxima es la que esta seleccionada en toDate si la hay
-            //onClose: function( selectedDate ) {
-            //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
-           // }
-        });
-        $("input[name=toDate]").datepicker({
-            // Icono para mostrar el calendar 
-            showOn: "button",
-            buttonImage: "${resource(dir:'images', file:'calendar.gif')}",
-            buttonImageOnly: true,
-            buttonText: 'pick a date',
-            // Formato
-            dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-            // Menus para cambiar mes y anio 
-            changeMonth: true,
-            changeYear: true,
-            // La fecha minima es la que esta seleccionada en fromDate si la hay
-            //onClose: function( selectedDate ) {
-            //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
-            //}
-        });
-        /* ===================================================================================== */
-      
-     
-        /*
-        FIXME: este JS es el mismo que en test.gsp reutilizar el mismo codigo, externalizando el JS.
-        */
-     
-        // ====================================================================
-        // Muestra los datos crudos devueltos por el servidor
-        // ====================================================================
-        
-        $('#show_data').click( function(e) {
-          
-          e.preventDefault();
-          
-          //$('#results').toggle('slow');
-          $('code').toggle('slow');
-        });
-        
-    
         // ====================================================================
         // Submit ajax para busqueda de compositions por criterios de datos
         // ====================================================================
@@ -197,22 +81,11 @@
             }
             else // Si devuelve el XML
             {
-              //$('#results').empty();
-             
-              // el append devuelve la DIV no el PRE, chidren tiene el PRE
-              //var pre = $('#results').append('<pre></pre>').children()[0];
-              //$(pre).text( formatXml( xmlToString(responseText) ) );
-              
-              
               // highlight
               $('code').addClass('xml');
               $('code').text(formatXml( xmlToString(responseText) ));
               $('code').each(function(i, e) { hljs.highlightBlock(e); });
               $('code').show('slow');
-              
-              // Como XML no hace render de tabla o grafica, muestro los datos
-              // crudos como si hiciera clic en show_data.
-              //$('#results').show('slow');
             }
             
             // Muestra el boton que permite ver los datos crudos
@@ -246,15 +119,10 @@
             return false;
           }
         
-        
-          // xml o json
-          type = $('select[name=format]').val();
-          
-          
           // En lugar de bindear ajaxForm, llamo a ajaxSubmit sobre el form. 
           $(this).ajaxSubmit({
           
-            dataType: type,
+            dataType: $('select[name=format]').val(), // xml o json
             url: '${createLink(controller:'rest', action:'query')}',
             data: {},
           
@@ -267,12 +135,8 @@
               
               console.log('form_datavalue success');
               
-              // Vacia el output de data xml o json
-              //$('#results').empty();
-              
               // Vacia donde se va a mostrar la tabla o el chart
               $('#chartContainer').empty();
-              
               
               console.log('form_datavalue success 2');
               
@@ -284,11 +148,6 @@
               {
                 console.log('form_datavalue success json');
               
-                // http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
-                //var pre = $('#results').append('<pre></pre>').children()[0];
-                //$(pre).text( JSON.stringify(responseText, undefined, 2) );
-                
-                
                 // highlight
                 $('code').addClass('json');
                 $('code').text(JSON.stringify(responseText, undefined, 2));
@@ -310,20 +169,11 @@
               {
                 console.log('form_datavalue success XML');
               
-                // el append devuelve la DIV no el PRE, chidren tiene el PRE
-                //var pre = $('#results').append('<pre></pre>').children()[0];
-                //$(pre).text( formatXml( xmlToString(responseText) ) );
-                
                 // highlight
                 $('code').addClass('xml');
                 $('code').text(formatXml( xmlToString(responseText) ));
                 $('code').each(function(i, e) { hljs.highlightBlock(e); });
-                
-                // Como XML no hace render de tabla o grafica, muestro los datos
-                // crudos como si hiciera clic en show_data.
-                //$('#results').toggle('slow');
               }
-              
               
               $('code').show('slow');
               
