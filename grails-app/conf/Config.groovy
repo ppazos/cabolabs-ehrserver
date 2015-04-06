@@ -98,8 +98,9 @@ log4j = {
 }
 
 app {
-   composition_repo = "compositions\\"
+   composition_repo = "compositions\\" // FIXME: use OS independent file path separator
    version_repo = "versions\\"
+   version_xsd = "xsd\\Version.xsd"
    
    l10n { // localization
       
