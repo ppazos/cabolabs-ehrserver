@@ -97,10 +97,13 @@ log4j = {
            //'net.sf.ehcache.hibernate'
 }
 
+def PS = System.getProperty("file.separator")
+
 app {
-   composition_repo = "compositions\\" // FIXME: use OS independent file path separator
-   version_repo = "versions\\"
-   version_xsd = "xsd\\Version.xsd"
+   composition_repo = "compositions" + PS //"compositions\\" // FIXME: use OS independent file path separator
+   version_repo = "versions" + PS // "versions\\"
+   version_xsd = "xsd"+ PS +"Version.xsd"
+   opt_repo = "opts" + PS
    
    l10n { // localization
       

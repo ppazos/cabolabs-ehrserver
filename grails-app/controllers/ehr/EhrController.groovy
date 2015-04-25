@@ -18,7 +18,6 @@ import grails.util.Holders
 class EhrController {
 
    
-
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
    
