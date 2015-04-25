@@ -23,11 +23,8 @@ class VersionValidator {
    public boolean validate(String xml)
    {
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-      factory.setSchema(
-        schemaFactory.newSchema(
-          [ new StreamSource( Holders.config.app.version_xsd ) ] as Source[]
-        )
-      )
+      Schema schema = schemaFactory.newSchema( [ new StreamSource( Holders.config.app.version_xsd ) ] as Source[] )
+      
       // Validate with validator
       Validator validator = schema.newValidator()
       ErrorHandler errorHandler = new SimpleErrorHandler(xml)
