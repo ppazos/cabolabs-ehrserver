@@ -38,7 +38,8 @@ class BootStrap {
                sex: 'M',
                idCode: '4116238-0',
                idType: 'CI',
-               role: 'pat'
+               role: 'pat',
+               uid: '11111111-1111-1111-1111-111111111111'
            ),
            new Person(
                firstName: 'Barbara',
@@ -47,7 +48,8 @@ class BootStrap {
                sex: 'F',
                idCode: '1234567-0',
                idType: 'CI',
-               role: 'pat'
+               role: 'pat',
+               uid: '22222222-1111-1111-1111-111111111111'
            ),
            new Person(
                firstName: 'Carlos',
@@ -56,7 +58,8 @@ class BootStrap {
                sex: 'M',
                idCode: '3453455-0',
                idType: 'CI',
-               role: 'pat'
+               role: 'pat',
+               uid: '33333333-1111-1111-1111-111111111111'
            ),
            new Person(
                firstName: 'Mario',
@@ -65,7 +68,8 @@ class BootStrap {
                sex: 'M',
                idCode: '5677565-0',
                idType: 'CI',
-               role: 'pat'
+               role: 'pat',
+               uid: '44444444-1111-1111-1111-111111111111'
            ),
            new Person(
                firstName: 'Carla',
@@ -74,7 +78,8 @@ class BootStrap {
                sex: 'F',
                idCode: '84848884-0',
                idType: 'CI',
-               role: 'pat'
+               role: 'pat',
+               uid: '55555555-1111-1111-1111-111111111111'
            )
         ]
          
@@ -95,6 +100,7 @@ class BootStrap {
         if (p.role == 'pat')
         {
            ehr = new Ehr(
+              ehrId: p.uid, // the ehr id is the same as the patient just to simplify testing
               subject: new PatientProxy(
                  value: p.uid
               )
