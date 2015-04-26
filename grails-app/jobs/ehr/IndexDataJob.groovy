@@ -151,7 +151,11 @@ class IndexDataJob {
       
       if (!dataidx)
       {
-         println "IndexDefinition not found for "+ archetypeId +" and "+ archetypePath
+         println "IndexDefinition NOT found for "+ archetypeId +" and "+ archetypePath
+      }
+      else
+      {
+         println "IndexDefinition FOUND for "+ archetypeId +" and "+ archetypePath
       }
       
       // Si dataidx es nulo, idxtype sera nulo y luego idvalue tambien,
@@ -461,6 +465,8 @@ class IndexDataJob {
          </defining_code>
       </value>
       */
+      
+      println "DvCodedTextIndex "+ groovy.xml.XmlUtil.serialize(node)
       
       return new DvCodedTextIndex(
          templateId: templateId,
