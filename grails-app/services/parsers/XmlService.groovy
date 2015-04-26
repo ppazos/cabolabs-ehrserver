@@ -15,7 +15,7 @@ class XmlService {
 
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
-   
+   def validationErrors = [:] // xsd validatios errros for the committed versions
    
    /**
    <version>
@@ -80,13 +80,12 @@ class XmlService {
       String auditSystemId, Date auditTimeCommitted, String auditCommitter,
       List dataOut)
    {
-      def errors = validateVersions(versionsXML) 
-      if (errors.size() > 0)
+      this.validationErrors = validateVersions(versionsXML) // the key is the index of the errored version
+      
+      // There are errors, can't return the contributions
+      // The caller should get the errors and process them
+      if (this.validationErrors.size() > 0)
       {
-         def versionsWithErrors = erros.keySet()
-         
-         // TODO: guardar errores para que se puedan pedir cuando se hace return null
-         
          return null
       }
       
@@ -278,7 +277,7 @@ class XmlService {
       versionsXML.eachWithIndex { versionXML, i ->
          if (!validator.validate(versionXML))
          {
-            errors[i] << validator.getErrors() // Important to keep the correspondence between version index and error reporting.
+            errors[i] = validator.getErrors() // Important to keep the correspondence between version index and error reporting.
          }
       }
       return errors

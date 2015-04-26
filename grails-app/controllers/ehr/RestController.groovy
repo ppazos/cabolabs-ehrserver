@@ -48,7 +48,7 @@ class RestController {
     */
    def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
-      println "commit "+ params.versions
+      println "commit de "+ params.versions.size() +" versions"
       log.info( "commit received "+ params.versions.size() + " versions"  )
       
       //new File('params_debug.log') << params.toString()
@@ -145,6 +145,7 @@ class RestController {
       def contributions = []
       try
       {
+         // null if there are xml validation errors
          contributions = xmlService.parseVersions(
             ehr, xmlVersions, 
             auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
@@ -160,6 +161,31 @@ class RestController {
           * Note that this will override the time_committed from the version in the XML received.
           */
          
+         // There are XML validation errors, the whole commit should fail.
+         if (!contributions)
+         {
+            // Parsing error
+            render(contentType:"text/xml", encoding:"UTF-8") {
+               result {
+                  type {
+                     code('AR')                         // application reject
+                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+                  }
+                  message('Some versions do not validate against the XSD')
+                  details {
+                     
+                     xmlService.validationErrors.each { i, errorList ->
+                        errorList.each { errorText ->
+                           
+                           item('Error for version #'+ i +' '+ errorText)
+                        }
+                     }
+                  }
+               }
+            }
+            return
+         }
+         
          // TEST: in general only one contribution will be created from a commit
          if (contributions.size() > 1)
          {
@@ -170,10 +196,8 @@ class RestController {
       catch (Exception e)
       {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
-         log.error( e.cause.message )
          
          println e.message +" "+ e.getClass().getSimpleName()
-         println e.cause.message
          
          // Parsing error
          render(contentType:"text/xml", encoding:"UTF-8") {
@@ -315,7 +339,6 @@ class RestController {
             
          } // contribution.versions.each
       } // contributions.each
-      
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {

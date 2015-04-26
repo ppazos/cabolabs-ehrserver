@@ -22,6 +22,8 @@ class VersionValidator {
    
    public boolean validate(String xml)
    {
+      this.errors = [] // Reset the errors for reuse
+      
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
       Schema schema = schemaFactory.newSchema( [ new StreamSource( Holders.config.app.version_xsd ) ] as Source[] )
       
@@ -53,18 +55,18 @@ class VersionValidator {
    
       public void warning(SAXParseException e) throws SAXException
       {
-         exceptions << e
+         this.exceptions << e
       }
    
       public void error(SAXParseException e) throws SAXException
       {
-         exceptions << e
+         this.exceptions << e
       }
    
       // if a fatal error occurs, then this stop validating
       public void fatalError(SAXParseException e) throws SAXException
       {
-         exceptions << e
+         this.exceptions << e
       }
       
       public boolean hasErrors()
@@ -77,7 +79,7 @@ class VersionValidator {
          def ret = []
          this.exceptions.each { e ->
             
-            ret << "ERROR "+ i +") "+ e.getMessage() +"\nline #: "+ e.getLineNumber() +"\n>>> "+
+            ret << "ERROR "+ e.getMessage() +"\nline #: "+ e.getLineNumber() +"\n>>> "+
                    this.xml_lines[e.getLineNumber()-1].trim() // line of the problem in the XML
             //        (e.getColumnNumber()-1).times{ print " " } // marks the column
             //        println "^"
