@@ -106,7 +106,7 @@ class XmlService {
       def startTime
       def contributionId
       def contribution
-      def slurper = new XmlSlurper(true, false)
+      def slurper = new XmlSlurper(false, false) //true, false)
       versionsXML.eachWithIndex { versionXML, i ->
       
       println "************ EACH WITH INDEX ***************** "+ i

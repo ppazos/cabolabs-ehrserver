@@ -214,7 +214,7 @@ class RestController {
          return
       }
       
-      log.error( "after parsing" )
+      log.info( "after parsing" )
       println "after parsing"
       
       // test
@@ -330,7 +330,12 @@ class RestController {
             
             compoFile = new File(config.composition_repo + version.data.uid +'.xml')
             compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
-            
+            /*
+             * XmlUtil.serialize genera estos warnings:
+             * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
+               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
+               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
+             */
             
             // Save version as committed
             // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
