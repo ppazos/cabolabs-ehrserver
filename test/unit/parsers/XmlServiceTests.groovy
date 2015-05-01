@@ -18,9 +18,11 @@ import common.generic.PatientProxy
 @Mock([XmlService, Ehr, PatientProxy, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails])
 class XmlServiceTests { //  extends GroovyTestCase
    
+   static string PS = System.getProperty("file.separator")
+   
    void testVersion()
    {
-      def file = new File("test\\resources\\version.xml")
+      def file = new File("test"+ PS +"resources"+ PS +"version.xml")
       def xml = file.getText()
       
       def ehr = new Ehr(

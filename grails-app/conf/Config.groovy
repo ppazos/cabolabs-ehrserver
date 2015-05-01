@@ -101,8 +101,8 @@ log4j = {
 def PS = System.getProperty("file.separator")
 
 app {
-   composition_repo = "compositions" + PS //"compositions\\" // FIXME: use OS independent file path separator
-   version_repo = "versions" + PS // "versions\\"
+   composition_repo = "compositions" + PS
+   version_repo = "versions" + PS
    version_xsd = "xsd"+ PS +"Version.xsd"
    opt_repo = "opts" + PS
    

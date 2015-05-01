@@ -306,17 +306,7 @@ class RestController {
             
             
             // FIXME: el archivo no deberia existir!!!
-            // Cuidado, genera los xmls con <?xml version="1.0" encoding="UTF-8"?>
-
-            // TODO: path configurable
-            // TODO: guardar en repositorio temporal, no en el de commit definitivo
-            // COMPOSITION tiene su uid asignado por el servidor como nombre
-            //compoFile = new File("compositions\\"+version.data.value+".xml")
-            
-            // This uses the version uid with the systemid and tree.
-            //compoFile = new File(config.composition_repo + version.uid.replaceAll('::', '_') +'.xml')
-            
-            // FIXME: this might br stored in an XML database in the future.
+            // TODO: this might br stored in an XML database in the future.
             
             // Save compo
             // This uses the composition uid that is assigned by the server so it must be unique.
@@ -338,6 +328,7 @@ class RestController {
              */
             
             // Save version as committed
+            // This uses the version uid with the systemid and tree.
             // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
             versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
             versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
@@ -955,7 +946,6 @@ class RestController {
              
              // Tiene declaracion de xml
              // Tambien tiene namespace, eso deberia estar en el nodo root
-             //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
              buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
              
              buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
@@ -1164,7 +1154,6 @@ class RestController {
              
              // Tiene declaracion de xml
              // Tambien tiene namespace, eso deberia estar en el nodo root
-             //buff = new File("compositions\\"+compoIndex.uid+".xml").getText()
              buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
              
              buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
