@@ -131,7 +131,7 @@ class Query {
    /**
     * Usada por queryData para agrupar por composition
     */
-   private queryDataGroupComposition(res)
+   private List queryDataGroupComposition(res)
    {
       def resHeaders = [:]
       def dataidx
@@ -284,7 +284,7 @@ class Query {
    /**
     * Usada por queryData para agrupar por path
     */
-   private queryDataGroupPath(res)
+   private Map queryDataGroupPath(res)
    {
       // En este caso los headers son las filas
       //def resHeaders = [:]
@@ -401,150 +401,160 @@ class Query {
        
       //
       // ===============================================================
-       
-      /**
-        * FIXME: issue #6
-        * si en el create se verifican las condiciones para que a aqui no
-        * llegue una path a un tipo que no corresponde, el error de tipo
-        * no sucederia nunca, asi no hay que tirar except aca.
-        */
-      def dataidx
-      def idxtype
-       
-      this.where.eachWithIndex { dataCriteria, i ->
+      
+      // Si no hay criterio, hace la busqueda solo por tipo de documento.
+      // Sin este chequeo, se rompe la query porque sobra un " AND "
+      if (!this.where)
+      {
+         q = q[0..-6] // quita el ultimo " AND ", es -6 porque -1 pone el puntero al final del string y luego hay que sacar 5 chars
+      }
+      else
+      {
+         /**
+           * FIXME: issue #6
+           * si en el create se verifican las condiciones para que a aqui no
+           * llegue una path a un tipo que no corresponde, el error de tipo
+           * no sucederia nunca, asi no hay que tirar except aca.
+           */
+         def dataidx
+         def idxtype
           
-         // Aux to build the query FROM
-         def fromMap = ['DataValueIndex': 'dvi']
-          
-         // Lookup del tipo de objeto en la path para saber los nombres de los atributos
-         // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-          
-         println "archId "+ dataCriteria.archetypeId
-         println "path "+ dataCriteria.path
-          
-         dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
-         idxtype = dataidx?.rmTypeName
-          
-         // ================================================================
-         // TODO:
-         // Since GRAILS 2.4 it seems that exists can be done in Criteria,
-         // should use that instead of HQL.
-         // https://jira.grails.org/browse/GRAILS-9223
-         // ================================================================
-          
-          
-         // Subqueries sobre los DataValueIndex de los CompositionIndex
-         q += " EXISTS ("
-          
-          // dvi.owner.id = ci.id
-          // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
-          // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
-          // se cumpla uno de los criterios que vienen en params)
-         def subq = "SELECT dvi.id FROM "
-          
-         //"  FROM DataValueIndex dvi" + // FROM is set below
-         def where = $/
-             WHERE dvi.owner.id = ci.id AND
-                   dvi.archetypeId = '${dataCriteria.archetypeId}' AND
-                   dvi.archetypePath = '${dataCriteria.path}'
-         /$
-          
-         // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
-         switch (idxtype)
-         {
-             // ADL Parser bug: uses Java class names instead of RM Type Names...
-            case ['DV_DATE_TIME', 'DvDateTime']:
-                fromMap['DvDateTimeIndex'] = 'ddti'
-                where += " AND ddti.id = dvi.id "
-                where += " AND ddti.value "+ dataCriteria.sqlOperand() +" "+  dataCriteria.value // TODO: verificar formato, transformar a SQL
-            break
-            case ['DV_QUANTITY', 'DvQuantity']:
-                fromMap['DvQuantityIndex'] = 'dqi'
-                where += " AND dqi.id = dvi.id "
-                where += " AND dqi.magnitude "+ dataCriteria.sqlOperand() +" "+  new Float(dataCriteria.value)
-            break
-            case ['DV_CODED_TEXT', 'DvCodedText']:
-                fromMap['DvCodedTextIndex'] = 'dcti'
-                where += " AND dcti.id = dvi.id "
-                where += " AND dcti.code "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
-            break
-            case ['DV_TEXT', 'DvText']:
-                fromMap['DvTextIndex'] = 'dti'
-                where += " AND dti.id = dvi.id "
-                where += " AND dti.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
-            break
-            case ['DV_BOOLEAN', 'DvBoolean']:
-                fromMap['DvBooleanIndex'] = 'dbi'
-                where += " AND dbi.id = dvi.id "
-                where += " AND dbi.value "+ dataCriteria.sqlOperand() +" "+  new Boolean(dataCriteria.value)
-            break
-            case ['DV_COUNT', 'DvCount']:
-                fromMap['DvCountIndex'] = 'dci'
-                where += " AND dci.id = dvi.id "
-                where += " AND dci.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
-            break
-            case ['DV_PROPORTION', 'DvProportion']:
-                fromMap['DvProportionIndex'] = 'dpi'
-                where += " AND dpi.id = dvi.id "
-                where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.numerator)
-                /*
-                 * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
-                 *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
-                resGrouped[absPath]['serie'] << [numerator:   dvi.,
-                                                 denominator: dvi.denominator,
-                                                 type:        dvi.type,
-                                                 precision:   dvi.precision,
-                                                 date:        dvi.owner.startTime]
-                */
-            break
-            default:
-               throw new Exception("type $idxtype not supported")
-         }
-         
-         fromMap.each { index, alias ->
+         this.where.eachWithIndex { dataCriteria, i ->
              
-            subq += index +' '+ alias +' , '
+            // Aux to build the query FROM
+            def fromMap = ['DataValueIndex': 'dvi']
+             
+            // Lookup del tipo de objeto en la path para saber los nombres de los atributos
+            // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
+             
+            println "archId "+ dataCriteria.archetypeId
+            println "path "+ dataCriteria.path
+             
+            dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
+            idxtype = dataidx?.rmTypeName
+             
+            // ================================================================
+            // TODO:
+            // Since GRAILS 2.4 it seems that exists can be done in Criteria,
+            // should use that instead of HQL.
+            // https://jira.grails.org/browse/GRAILS-9223
+            // ================================================================
+             
+             
+            // Subqueries sobre los DataValueIndex de los CompositionIndex
+            q += " EXISTS ("
+             
+             // dvi.owner.id = ci.id
+             // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
+             // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
+             // se cumpla uno de los criterios que vienen en params)
+            def subq = "SELECT dvi.id FROM "
+             
+            //"  FROM DataValueIndex dvi" + // FROM is set below
+            def where = $/
+                WHERE dvi.owner.id = ci.id AND
+                      dvi.archetypeId = '${dataCriteria.archetypeId}' AND
+                      dvi.archetypePath = '${dataCriteria.path}'
+            /$
+             
+            // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
+            switch (idxtype)
+            {
+                // ADL Parser bug: uses Java class names instead of RM Type Names...
+               case ['DV_DATE_TIME', 'DvDateTime']:
+                   fromMap['DvDateTimeIndex'] = 'ddti'
+                   where += " AND ddti.id = dvi.id "
+                   where += " AND ddti.value "+ dataCriteria.sqlOperand() +" "+  dataCriteria.value // TODO: verificar formato, transformar a SQL
+               break
+               case ['DV_QUANTITY', 'DvQuantity']:
+                   fromMap['DvQuantityIndex'] = 'dqi'
+                   where += " AND dqi.id = dvi.id "
+                   where += " AND dqi.magnitude "+ dataCriteria.sqlOperand() +" "+  new Float(dataCriteria.value)
+               break
+               case ['DV_CODED_TEXT', 'DvCodedText']:
+                   fromMap['DvCodedTextIndex'] = 'dcti'
+                   where += " AND dcti.id = dvi.id "
+                   where += " AND dcti.code "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
+               break
+               case ['DV_TEXT', 'DvText']:
+                   fromMap['DvTextIndex'] = 'dti'
+                   where += " AND dti.id = dvi.id "
+                   where += " AND dti.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
+               break
+               case ['DV_BOOLEAN', 'DvBoolean']:
+                   fromMap['DvBooleanIndex'] = 'dbi'
+                   where += " AND dbi.id = dvi.id "
+                   where += " AND dbi.value "+ dataCriteria.sqlOperand() +" "+  new Boolean(dataCriteria.value)
+               break
+               case ['DV_COUNT', 'DvCount']:
+                   fromMap['DvCountIndex'] = 'dci'
+                   where += " AND dci.id = dvi.id "
+                   where += " AND dci.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
+               break
+               case ['DV_PROPORTION', 'DvProportion']:
+                   fromMap['DvProportionIndex'] = 'dpi'
+                   where += " AND dpi.id = dvi.id "
+                   where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.numerator)
+                   /*
+                    * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
+                    *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
+                   resGrouped[absPath]['serie'] << [numerator:   dvi.,
+                                                    denominator: dvi.denominator,
+                                                    type:        dvi.type,
+                                                    precision:   dvi.precision,
+                                                    date:        dvi.owner.startTime]
+                   */
+               break
+               default:
+                  throw new Exception("type $idxtype not supported")
+            }
+            
+            fromMap.each { index, alias ->
+                
+               subq += index +' '+ alias +' , '
+            }
+            subq = subq.substring(0, subq.size()-2)
+            subq += where
+            
+            q += subq
+            q += ")"
+            
+            
+            // TEST
+            // TEST
+            //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
+            //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
+            
+   
+            
+            //       EXISTS (
+            //         SELECT dvi.id
+            //         FROM IndexDefinition dvi
+            //         WHERE dvi.owner.id = ci.id
+            //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+            //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
+            //               AND dvi.magnitude>140.0
+            //       ) AND EXISTS (
+            //         SELECT dvi.id
+            //         FROM IndexDefinition dvi
+            //         WHERE dvi.owner.id = ci.id
+            //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+            //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
+            //               AND dvi.magnitude<130.0
+            //       ) AND EXISTS (
+            //         SELECT dvi.id
+            //         FROM IndexDefinition dvi
+            //         WHERE dvi.owner.id = ci.id
+            //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+            //               AND dvi.path = /content/data[at0001]/origin
+            //               AND dvi.value>20080101
+            //       )
+            
+            
+            // Agrega ANDs para los EXISTs, menos el ultimo
+            if (i+1 < this.where.size()) q += " AND "
          }
-         subq = subq.substring(0, subq.size()-2)
-         subq += where
          
-         q += subq
-         q += ")"
-         
-         
-         // TEST
-         // TEST
-         //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
-         //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
-         
-
-         
-         //       EXISTS (
-         //         SELECT dvi.id
-         //         FROM IndexDefinition dvi
-         //         WHERE dvi.owner.id = ci.id
-         //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-         //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
-         //               AND dvi.magnitude>140.0
-         //       ) AND EXISTS (
-         //         SELECT dvi.id
-         //         FROM IndexDefinition dvi
-         //         WHERE dvi.owner.id = ci.id
-         //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-         //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
-         //               AND dvi.magnitude<130.0
-         //       ) AND EXISTS (
-         //         SELECT dvi.id
-         //         FROM IndexDefinition dvi
-         //         WHERE dvi.owner.id = ci.id
-         //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-         //               AND dvi.path = /content/data[at0001]/origin
-         //               AND dvi.value>20080101
-         //       )
-         
-         
-         // Agrega ANDs para los EXISTs, menos el ultimo
-         if (i+1 < this.where.size()) q += " AND "
       }
       
       println "hql query: " + q
