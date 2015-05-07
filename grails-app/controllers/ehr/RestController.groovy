@@ -863,8 +863,9 @@ class RestController {
     * REST service to query data and compositions executing an existing Query instance.
     * @param retrieveData only used for composition queries
     * @param showUI only used for composition queries to retrieve HTML (FIXME: this might be another output format)
+    * @param group grouping of datavalue queries, if not empty/null, will override the query group option ['composition'|'path']
     */
-   def query(String queryUid, String ehrId, String format, boolean retrieveData, boolean showUI) // TODO: fechas
+   def query(String queryUid, String ehrId, String format, boolean retrieveData, boolean showUI, String group) // TODO: fechas
    {
       println "rest/query"
       println params
@@ -899,7 +900,7 @@ class RestController {
       }
       
       // TODO: fechas
-      def res = query.execute(ehrId, null, null)
+      def res = query.execute(ehrId, null, null, group)
       
 
       // Output as XMl or JSON. For type=composition format is always XML.

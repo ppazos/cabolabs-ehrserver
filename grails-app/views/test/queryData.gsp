@@ -41,6 +41,7 @@
       }
     </style>
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
+    <asset:javascript src="highcharts/highcharts.js" />
     <g:javascript>
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.
@@ -468,8 +469,6 @@
     </g:javascript>
   </head>
   <body>
-    <script src="${resource(dir:'js', file:'highcharts/highcharts.js')}" type="text/javascript"></script>
-  
     <div class="content scaffold-list" role="main">
     
       <h1>Search Data</h1>

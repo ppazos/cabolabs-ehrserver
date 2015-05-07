@@ -264,8 +264,8 @@
           
           // links a composition
           htmlrows += '<td>';
-          htmlrows += '<a href="'+ linkCompoXML +'?uid='+ data.uid +'" target="_blank"><img src="${resource(dir: 'images', file: 'xml.png')}" class="icon" /></a>';
-          htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ data.uid +'" target="_blank"><img src="${resource(dir: 'images', file: 'doc.png')}" class="icon" /></a>';
+          htmlrows += '<a href="'+ linkCompoXML +'?uid='+ data.uid +'" target="_blank"><img src="${assetPath(src:'xml.png')}" class="icon" /></a>';
+          htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ data.uid +'" target="_blank"><img src="${assetPath(src:'doc.png')}" class="icon" /></a>';
           htmlrows += '</td></tr>';
         });
         
@@ -278,6 +278,7 @@
       
       var queryDataRenderChart = function(data)
       {
+        console.log("queryDataRenderChart");
         /*
          series: [{
            name: 'Jane',

@@ -280,6 +280,7 @@ class QueryController {
        {
           flash.message = 'No existe la query con uid = $uid'
           redirect(action:'list')
+          return
        }
        
        return [query: query, type: query.type]

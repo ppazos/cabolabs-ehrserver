@@ -71,13 +71,13 @@ class Query {
       where cascade: "all-delete-orphan" // cascade delete
    }
    
-   def execute(String ehrId, Date from, Date to)
+   def execute(String ehrId, Date from, Date to, String group)
    {
-      if (this.type == 'datavalue') return executeDatavalue(ehrId, from, to)
+      if (this.type == 'datavalue') return executeDatavalue(ehrId, from, to, group)
       return executeComposition(ehrId, from, to)
    }
    
-   def executeDatavalue(String ehrId, Date from, Date to)
+   def executeDatavalue(String ehrId, Date from, Date to, String group)
    {
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -116,11 +116,14 @@ class Query {
       //println "group $group"
       
       // Group
-      if (this.group == 'composition')
+      // If group is not empty, use that, if not, use the query grouping
+      if (!group) group = this.group
+      
+      if (group == 'composition')
       {
          res = queryDataGroupComposition(res)
       }
-      else if (this.group == 'path')
+      else if (group == 'path')
       {
          res = queryDataGroupPath(res)
       }
