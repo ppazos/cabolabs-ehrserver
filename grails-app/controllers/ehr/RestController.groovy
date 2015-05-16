@@ -1035,7 +1035,7 @@ class RestController {
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
       
-      def res = query.executeDatavalue(qehrId, qFromDate, qToDate)
+      def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group)
       
 
       // Format
