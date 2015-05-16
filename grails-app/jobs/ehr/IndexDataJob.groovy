@@ -466,7 +466,9 @@ class IndexDataJob {
       </value>
       */
       
-      println "DvCodedTextIndex "+ groovy.xml.XmlUtil.serialize(node)
+      // Throws an exception if the node has xsi:type="..." attribute,
+      // because the xmlns:xsi is not defined in the node.
+      //println "DvCodedTextIndex "+ groovy.xml.XmlUtil.serialize(node)
       
       return new DvCodedTextIndex(
          templateId: templateId,
