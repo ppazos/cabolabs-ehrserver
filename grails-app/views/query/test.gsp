@@ -84,6 +84,7 @@
       
       var queryDataRenderChart = function(data)
       {
+        console.log("queryDataRenderChart test.gsp");
         /*
          series: [{
            name: 'Jane',
@@ -107,6 +108,13 @@
          $.each( data, function(path, dviseries) {
          
            console.log('path y dviseries', path, dviseries);
+
+           // Filter: only chart numeric data
+           if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION']) == -1 )
+           {
+              console.log('type filtered '+ dviseries.type);
+              return;
+           }
            
            /**
             * Estructura:
