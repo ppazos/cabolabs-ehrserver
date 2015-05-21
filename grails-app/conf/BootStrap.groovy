@@ -9,6 +9,12 @@ class BootStrap {
    
    def init = { servletContext ->
       
+     
+     println "------------------------------------------------------------------"
+     println new File(".").getAbsolutePath() // Current working directory
+     println "------------------------------------------------------------------"
+     
+     
      // TEST
      if (IndexDefinition.count() == 0)
      {
@@ -19,11 +25,11 @@ class BootStrap {
         ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
 		  */
 		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-		  //ti.indexAll()
+		  ti.indexAll()
         
-        def path = "opts" + PS + "Signos.opt"
-        def signos = new File( path )
-        ti.index(signos)
+        //def path = "opts" + PS + "Signos.opt"
+        //def signos = new File( path )
+        //ti.index(signos)
      }
      // /TEST
      
