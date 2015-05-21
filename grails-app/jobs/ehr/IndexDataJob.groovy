@@ -24,7 +24,7 @@ class IndexDataJob {
    
    def execute()
    {
-      println "IndexDataJob"
+      //println "IndexDataJob"
       
       // Lista de CompositionIndex para las que no se han creado indices de DataValue
       def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
