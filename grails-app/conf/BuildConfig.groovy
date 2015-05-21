@@ -65,6 +65,8 @@ grails.project.dependency.resolution = {
        dependencies {
         test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        }
+       
+       compile "mysql:mysql-connector-java:5.1.22"
     }
 
     plugins {
@@ -90,5 +92,8 @@ grails.project.dependency.resolution = {
         runtime ':jquery:1.11.0.2'
         
         compile ':quartz:1.0.2'
+        
+        // Load the Uploadr plugin
+        compile ":uploadr:1.0.0"
     }
 }
