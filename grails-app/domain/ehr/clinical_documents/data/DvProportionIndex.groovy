@@ -33,7 +33,7 @@ class DvProportionIndex extends DataValueIndex {
    //  - "<=" value is <= magnitude
    //  - ">=" value is >= magnitude
    //  - "~" value is approximately magnitude
-   String magnitudeStatus = "="
+   String magnitudeStatus = '='
    
    
    // TODO: Maybe saving the magnitude as another data point allows better querying capabilities.
@@ -49,5 +49,10 @@ class DvProportionIndex extends DataValueIndex {
    static constraints = {
       precision(nullable: true)
       type(inList:[0,1,2,3,4])
+   }
+   
+   // precision is a mysql reserved word
+   static mapping = {
+      precision column:'proportion_precision'
    }
 }
