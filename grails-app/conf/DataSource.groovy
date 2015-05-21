@@ -19,6 +19,22 @@ environments {
            //dbCreate = "update"
            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
           // logSql = true
+           
+           
+           driverClassName = 'com.mysql.jdbc.Driver'
+           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+           
+           // ===========================================================
+           // Config for OpenShift ======================================
+           
+           String host = "localhost"
+           String port = 3306
+           String dbName = "ehrserver"
+           
+           url = "jdbc:mysql://$host:$port/$dbName"
+           
+           username = 'root'
+           password = ''
         }
     }
     test {
@@ -30,7 +46,24 @@ environments {
     production {
         dataSource {
             dbCreate = "update"
-            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            
+            driverClassName = 'com.mysql.jdbc.Driver'
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+            
+            // ===========================================================
+            // Config for OpenShift ======================================
+            
+            String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
+            String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
+            String dbName = System.getenv('OPENSHIFT_APP_NAME')
+            
+            url = "jdbc:mysql://$host:$port/$dbName"
+            
+            username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
+            password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
+            
+            // ===========================================================
+            
             pooled = true
             properties {
                // From http://grails.github.io/grails-doc/2.3.7/guide/conf.html
