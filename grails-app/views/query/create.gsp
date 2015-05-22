@@ -95,7 +95,7 @@
          }
          else if (action == 'test') {
 
-console.log('ehrid', $('select[name=qehrId]').val());
+            console.log('ehrid', $('select[name=qehrId]').val());
             
             // Validacion
             if ($('select[name=qehrId]').val()==null)
@@ -321,20 +321,19 @@ console.log('ehrid', $('select[name=qehrId]').val());
               data: {archetypeId: archetypeId},
               dataType: 'json',
               success: function(data, textStatus) {
-              
-                /**
-                 didx
-                   archetypeId: "openEHR-EHR-COMPOSITION.encounter.v1"
-                   name: "value"
-                   path: "/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value"
-                   rmTypeName: "DV_QUANTITY"
-                */
-                
+                 
+//                didx
+//                 archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1
+//                 name: 'value'
+//                 path: '/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
+//                 rmTypeName: "DV_QUANTITY"
+
+
                 // Saca las options que haya
                 $('select[name=view_archetype_path]').empty();
                 
                 // Agrega las options con las paths del arquetipo seleccionado
-                $('select[name=view_archetype_path]').append('<option value="">Select a path</option>');
+                $('select[name=view_archetype_path]').append('<option value="">${g.message(code:'query.create.please_select_datapoint')}</option>');
                 
                 $(data).each(function(i, didx) {
                 
@@ -371,12 +370,12 @@ console.log('ehrid', $('select[name=qehrId]').val());
           
           if ( $('select[name=view_archetype_id]').val() == null )
           {
-            alert('seleccione un concepto'); // TODO: I18N
+            alert('${g.message(code:"query.create.please_select_concept")}');
             return;
           }
           if ( $('select[name=view_archetype_path]').val() == null )
           {
-            alert('seleccione una parte'); // TODO: I18N
+            alert('${g.message(code:"query.create.please_select_datapoint")}');
             return;
           }
           /*
@@ -388,12 +387,12 @@ console.log('ehrid', $('select[name=qehrId]').val());
           */
           if ( $('input[name=soperand]:checked').val() == null )
           {
-            alert('seleccione un operador');
+            alert('${g.message(code:"query.create.please_select_operand")}');
             return;
           }
           if ( $('input[name=svalue]').val() == null )
           {
-            alert('ingrese un valor');
+            alert('${g.message(code:'query.create.please_insert_value')}');
             return;
           }
           
@@ -416,7 +415,10 @@ console.log('ehrid', $('select[name=qehrId]').val());
           
           
           // Notifica que la condicion fue agregada
-          $.growlUI('Condici&oacute;n agregada', '<a href="#criteria">Verifique la condicion agregada</a>'); 
+          $.growlUI(
+            '${g.message(code:"query.create.condition_added")}',
+            '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+          ); 
         });
         
         
@@ -457,12 +459,12 @@ console.log('ehrid', $('select[name=qehrId]').val());
           
           if ( $('select[name=view_archetype_id]').val() == null )
           {
-            alert('seleccione un concepto'); // TODO: I18N
+            alert('${g.message(code:"query.create.please_select_concept")}');
             return;
           }
           if ( $('select[name=view_archetype_path]').val() == null )
           {
-            alert('seleccione una parte'); // TODO: I18N
+            alert('${g.message(code:"query.create.please_select_datapoint")}');
             return;
           }
           
@@ -477,7 +479,7 @@ console.log('ehrid', $('select[name=qehrId]').val());
           );
           
            // Notifica que la condicion fue agregada
-          $.growlUI('Selecci&oacute;n agregada', '<a href="#selection">Verifique la selecci&oacute;n agregada</a>'); 
+          $.growlUI('${g.message(code:"query.create.selection_added")}', '<a href="#selection">Verifique la selecci&oacute;n agregada</a>'); 
         });
         
         
@@ -664,19 +666,19 @@ console.log('ehrid', $('select[name=qehrId]').val());
             <th>value</th>
           </tr>
           <tr>
-            <td>concept</td>
+            <td><g:message code="query.create.concept" /></td>
             <td>
-              <g:set var="concepts" value="${dataIndexes.archetypeId.unique()}" />
+              <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
               
               <%-- optionKey="archetypeId" optionValue="name" --%>
               <%-- This select is used just to create the condition or projection,
                    is not saved in the query directly --%>
-              <g:select name="view_archetype_id" size="3" from="${concepts}"
+              <g:select name="view_archetype_id" size="10" from="${concepts}"
                         noSelection="['':'Choose a concept']" />
             </td>
           </tr>
           <tr>
-            <td>part</td>
+            <td><g:message code="query.create.datapoint" /></td>
             <td>
               <%-- Se setean las options al elegir un arquetipo --%>
               <select name="view_archetype_path" size="5"></select>
@@ -691,7 +693,7 @@ console.log('ehrid', $('select[name=qehrId]').val());
       <div id="query_composition" class="query_build">
         <table>
           <tr>
-            <td>operand</td>
+            <td><g:message code="query.create.operand" /></td>
             <td>
               <%-- TODO: sacar de restriccion inList de DataCriteria.operand 
               Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
@@ -805,7 +807,7 @@ console.log('ehrid', $('select[name=qehrId]').val());
         
         <table>
           <tr>
-            <td><label>add projection</label></td>
+            <td><label><g:message code="query.create.add_projection" /></label></td>
             <td><a href="#" id="addSelection">[+]</a></td>
           </tr>
         </table>
