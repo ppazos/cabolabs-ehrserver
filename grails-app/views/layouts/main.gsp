@@ -32,7 +32,8 @@
       // Used to access the assets root from JS code.
       // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
 	   window.grailsSupport = {
-	      assetsRoot : '${ raw(asset.assetPath(src: '')) }'
+	      assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
+	      baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
 	   };
 	 </g:javascript>
   </head>

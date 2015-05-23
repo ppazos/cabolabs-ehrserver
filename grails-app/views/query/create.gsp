@@ -60,6 +60,8 @@
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
+    
+    <asset:javascript src="query_test_and_execution.js" />
     <!-- /query test -->
     
     <script type="text/javascript">
@@ -270,7 +272,7 @@
                
             } // query type = datavalue
          }
-      };
+      }; // ajax_submit
     
       $(document).ready(function() {
       
@@ -280,7 +282,6 @@
         });
 
         
-      
         /*
          * Change del tipo de consulta. Muestra campos dependiendo del tipo de consulta a crear.
          */
@@ -370,12 +371,12 @@
           
           if ( $('select[name=view_archetype_id]').val() == null )
           {
-            alert('${g.message(code:"query.create.please_select_concept")}');
+            alert('${g.message(code:'query.create.please_select_concept')}');
             return;
           }
           if ( $('select[name=view_archetype_path]').val() == null )
           {
-            alert('${g.message(code:"query.create.please_select_datapoint")}');
+            alert('${g.message(code:'query.create.please_select_datapoint')}');
             return;
           }
           /*
@@ -387,7 +388,7 @@
           */
           if ( $('input[name=soperand]:checked').val() == null )
           {
-            alert('${g.message(code:"query.create.please_select_operand")}');
+            alert('${g.message(code:'query.create.please_select_operand')}');
             return;
           }
           if ( $('input[name=svalue]').val() == null )
