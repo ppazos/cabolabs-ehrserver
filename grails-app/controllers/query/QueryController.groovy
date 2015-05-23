@@ -127,7 +127,7 @@ class QueryController {
     
     
     /**
-     * Test query, se ejecuta desde create, solo para ver si se pasan bien los params.
+     * Test query, se ejecuta desde create, para probar la query.
      * 
      * @param type composition | datavalue
      * @param name nombre de la query a probar, puede no estar creada
@@ -140,10 +140,6 @@ class QueryController {
      */
     def test(String type)
     {
-       println "test"
-       println params
-
-
        // ==================================================================
        // asegura que archetypeId, path, value y operand son siempre listas,
        // el gsp espera listas.
@@ -206,8 +202,6 @@ class QueryController {
         *  showUI:false, 
         *  action:save, controller:query]
         */
-       
-       //render "ok"
        
        return params
     }
