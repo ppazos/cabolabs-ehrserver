@@ -10,16 +10,16 @@
     
     <div id="query_test_composition">
       
-      <h2>B&uacute;queda de documentos</h2>
+      <h2><g:message code="query.test.search_documents" /></h2>
 
-      <h3>Filtros</h3>
+      <h3><g:message code="query.test.filters" /></h3>
       <table>
         <tr>
-          <td>retrieve data?</td>
+          <td><g:message code="query.test.retrieve_data" /></td>
           <td>
             <select name="retrieveData">
-              <option value="false" selected="selected">no</option>
-              <option value="true">yes</option>
+              <option value="false" selected="selected"><g:message code="query.test.no" /></option>
+              <option value="true"><g:message code="query.test.yes" /></option>
             </select>
           </td>
         </tr>
@@ -27,22 +27,23 @@
     </div><!-- test_by_composition -->
 
     <div id="query_test_datavalue">
-      <h2>B&uacute;queda de datos</h2>
-      <h3>Filtros</h3>
+      <h2><g:message code="query.test.search_data" /></h2>
+      <h3><g:message code="query.test.filters" /></h3>
     </div><!-- query_test_datavalues -->
     
     <div id="query_test_common">
       ehrId <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" /><br />
-      from <input type="text" name="fromDate" />
-      to <input type="text" name="toDate" /><br />
+      <g:message code="query.test.from" /> <input type="text" name="fromDate" />
+      <g:message code="query.test.to" /> <input type="text" name="toDate" /><br />
       
       <!-- FIXME: busco los arquetipos de composition en los indices porque
                   el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
                   tenga, esta operacion deberia usar el ArchetypeManager. -->
 
       <!-- solo arquetipos de composition -->
-      document type <g:select name="qarchetypeId" size="4"
-                              from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
+      <g:message code="query.test.document_type" />
+      <g:select name="qarchetypeId" size="4"
+                from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
     </div>
     
     <h2><g:message code="query.execute.results" /></h2>
