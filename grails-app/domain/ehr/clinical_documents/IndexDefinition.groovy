@@ -11,7 +11,7 @@ package ehr.clinical_documents
 class IndexDefinition {
 
    // Indexes are created by template
-	String templateId
+   String templateId
    String path // absolute to the template
    
    // Queries use archetype ids and paths to be generic (not specific to a template)
@@ -28,7 +28,7 @@ class IndexDefinition {
    
    static constraints = {
       name(nullable:true)
-		archetypeId(nullable:true) // FIXME: no usar mas porque la path es absoluta al temaplte.
-		path(size:1..1023)
+      archetypeId(nullable:true) // FIXME: no usar mas porque la path es absoluta al temaplte.
+      path(size:1..1023)
    }
 }
