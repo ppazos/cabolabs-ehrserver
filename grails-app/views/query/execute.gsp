@@ -115,7 +115,7 @@
           // Validacion
           if ($('select[name=ehrId]').val()==null)
           {
-            alert('Seleccione un EHR');
+            alert('${g.message(code:'query.execute.select_ehr')}');
             return false;
           }
         
