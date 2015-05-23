@@ -52,4 +52,9 @@ class Ehr {
       }
       return res.size() == 1
    }
+   
+   String toString()
+   {
+      return "EHR of "+ this.subject.getPerson().toString()
+   }
 }

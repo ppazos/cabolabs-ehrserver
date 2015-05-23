@@ -36,4 +36,9 @@ class Person {
       idType(inList:['CI','DNI','Passport'], nullable:true)
       role(inList:['pat','doc'])
    }
+   
+   String toString()
+   {
+      return lastName +', '+ firstName
+   }
 }
