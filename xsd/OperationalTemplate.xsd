@@ -1,0 +1,1258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.openehr.org/v1"
+           elementFormDefault="qualified"
+           targetNamespace="http://schemas.openehr.org/v1"
+           id="OperationalTemplate.xsd">
+   <xs:element name="template" type="OPERATIONAL_TEMPLATE"/>
+   <xs:complexType name="OPERATIONAL_TEMPLATE">
+      <xs:sequence>
+         <xs:element name="language" type="CODE_PHRASE" minOccurs="0"/>
+         <xs:element name="description" type="RESOURCE_DESCRIPTION" minOccurs="0"/>
+         <xs:element name="uid" type="HIER_OBJECT_ID" minOccurs="0"/>
+         <xs:element name="template_id" type="TEMPLATE_ID"/>
+         <xs:element type="xs:string" name="concept"/>
+         <xs:element name="definition" type="C_ARCHETYPE_ROOT"/>
+         <xs:element name="view">
+            <xs:complexType>
+               <xs:sequence>
+                  <xs:element name="constraints" maxOccurs="unbounded" minOccurs="0">
+                     <xs:complexType>
+                        <xs:sequence>
+                           <xs:element name="items">
+                              <xs:complexType>
+                                 <xs:sequence>
+                                    <xs:element type="xs:string" name="value"/>
+                                 </xs:sequence>
+                                 <xs:attribute type="xs:string" name="id" use="optional"/>
+                              </xs:complexType>
+                           </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="path" use="optional"/>
+                     </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="C_ARCHETYPE_ROOT">
+      <xs:complexContent>
+        <xs:extension base="C_COMPLEX_OBJECT">
+          <xs:sequence>
+            <xs:element name="archetype_id" type="ARCHETYPE_ID"/>
+            <xs:element name="template_id" type="TEMPLATE_ID" minOccurs="0"/>
+            <xs:element name="default_values" type="DEFAULT_VALUE" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="term_definitions" type="ARCHETYPE_TERM" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="term_bindings" type="TermBindingSet" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="C_CODE_REFERENCE">
+      <xs:complexContent>
+        <xs:extension base="C_CODE_PHRASE">
+          <xs:sequence>
+            <xs:element name="referenceSetUri" type="xs:anyURI"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_VALUE" abstract="true">
+      <xs:sequence>
+        <xs:element name="path" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_BOOLEAN">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_STRING">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="xs:string"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_INTEGER">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="xs:int"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_REAL">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="xs:float"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DATE">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="Iso8601Date"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DATE_TIME">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="Iso8601DateTime"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_TIME">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="Iso8601Time"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DURATION">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="Iso8601Duration"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <!-- OpenEHR Template Default Values-->
+    <xs:complexType name="DEFAULT_CODE_PHRASE">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="CODE_PHRASE"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DV_ORDINAL">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="DV_ORDINAL"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DV_QUANTITY">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="DV_QUANTITY"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DEFAULT_DV_STATE">
+      <xs:complexContent>
+        <xs:extension base="DEFAULT_VALUE">
+          <xs:sequence>
+            <xs:element name="value" type="DV_STATE"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    
+    
+   <xs:element name="archetype" type="ARCHETYPE"/>
+   <xs:simpleType name="OPERATOR_KIND">
+		    <xs:restriction base="xs:integer">
+			      <xs:enumeration value="2001" id="equal"/>
+			      <xs:enumeration value="2002" id="not_equal"/>
+			      <xs:enumeration value="2003" id="less_than_or_equal"/>
+			      <xs:enumeration value="2004" id="less_than"/>
+			      <xs:enumeration value="2005" id="greater_than_or_equal"/>
+			      <xs:enumeration value="2006" id="greater_than"/>
+			      <xs:enumeration value="2007" id="matches"/>
+			      <xs:enumeration value="2010" id="not"/>
+			      <xs:enumeration value="2011" id="and"/>
+			      <xs:enumeration value="2012" id="or"/>
+			      <xs:enumeration value="2013" id="xor"/>
+			      <xs:enumeration value="2014" id="implies"/>
+			      <xs:enumeration value="2015" id="for_all"/>
+			      <xs:enumeration value="2016" id="exists"/>
+			      <xs:enumeration value="2020" id="plus"/>
+			      <xs:enumeration value="2021" id="minus"/>
+			      <xs:enumeration value="2022" id="multiply"/>
+			      <xs:enumeration value="2023" id="divide"/>
+			      <xs:enumeration value="2024" id="exponent"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="VALIDITY_KIND">
+		    <xs:restriction base="xs:integer">
+			      <xs:enumeration value="1001" id="mandatory"/>
+			      <xs:enumeration value="1002" id="optional"/>
+			      <xs:enumeration value="1003" id="disallowed"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="DateConstraintPattern">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="DateTimeConstraintPattern">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][T][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="TimeConstraintPattern">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="DurationConstraintPattern">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="(P[yY]?[mM]?[wW]?[dD]?T[hH]?[mM]?[sS]?)|(P[yY]?[mM]?[wW]?[dD]?)"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="PROPORTION_KIND">
+		    <xs:restriction base="xs:integer">
+			      <xs:enumeration value="0" id="pk_ratio"/>
+			      <xs:enumeration value="1" id="pk_unitary"/>
+			      <xs:enumeration value="2" id="pk_percent"/>
+			      <xs:enumeration value="3" id="pk_fraction"/>
+			      <xs:enumeration value="4" id="pk_integer_fraction"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="Iso8601DateTime">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="\d{4}((0[1-9]|1[0-2])((0[1-9]|[12]\d|3[01])(T?([01]\d|2[0-3])([0-5]\d([0-5]\d([,.]\d+)?)?)?(Z|([+\-]((0\d)|(1[0-2]))(00|30)?))?)?)?)?|\d{4}(\-(0[1-9]|1[0-2])(\-(0[1-9]|[12]\d|3[01])(T([01]\d|2[0-3])(:[0-5]\d(:[0-5]\d([,.]\d+)?)?)?(Z|([+\-]((0\d)|(1[0-2]))(:(00|30))?))?)?)?)?"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="Iso8601Date">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="\d{4}((((0[1-9])|(1[0-2]))((0[1-9])|([12]\d)|(3[01]))?)?|(\-(((0[1-9])|(1[0-2]))(\-((0[1-9])|([12]\d)|(3[01])))?)?)?)"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="Iso8601Time">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="([01]\d|2[0-3])([0-5]\d([0-5]\d([,.]\d+)?)?)?(Z|([+\-]((0\d)|(1[0-2]))(00|30)?))?|([01]\d|2[0-3])(:[0-5]\d(:[0-5]\d([,.]\d+)?)?)?(Z|([+\-]((0\d)|(1[0-2]))(:(00|30))?))?"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="Iso8601Duration">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="P(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d+)?S)?)?"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="matchString">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="\?"/>
+			      <xs:pattern value="&lt;"/>
+			      <xs:pattern value="&gt;"/>
+			      <xs:pattern value="="/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="archetypeNodeId">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="([a-zA-Z][\w_]*-[\w][\w_]*-[\w][\w_]*\.[\w][\w_]*(-[\w][\w_]*)*\.v\d+(\.\d)*)|(at(0\.[0-9]{1,4}|[0-9]{4})(\.[0-9]{1,3})*)"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:simpleType name="atCode">
+		    <xs:restriction base="xs:string">
+			      <xs:pattern value="at(0\.[0-9]{1,4}|[0-9]{4})(\.[0-9]{1,3})*"/>
+		    </xs:restriction>
+	  </xs:simpleType>
+   <xs:complexType name="C_CODE_PHRASE">
+		    <xs:complexContent>
+			      <xs:extension base="C_DOMAIN_TYPE">
+				        <xs:sequence>
+					          <xs:element name="assumed_value" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="terminology_id" type="TERMINOLOGY_ID" minOccurs="0"/>
+					          <xs:element name="code_list" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DV_ORDINAL">
+		    <xs:complexContent>
+			      <xs:extension base="C_DOMAIN_TYPE">
+				        <xs:sequence>
+					          <xs:element name="assumed_value" type="DV_ORDINAL" minOccurs="0"/>
+					          <xs:element name="list" type="DV_ORDINAL" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DV_QUANTITY">
+		    <xs:complexContent>
+			      <xs:extension base="C_DOMAIN_TYPE">
+				        <xs:sequence>
+					          <xs:element name="assumed_value" type="DV_QUANTITY" minOccurs="0"/>
+					          <xs:element name="property" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="list" type="C_QUANTITY_ITEM" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_QUANTITY_ITEM">
+		    <xs:sequence>
+			      <xs:element name="magnitude" type="IntervalOfReal" minOccurs="0"/>
+			      <xs:element name="precision" type="IntervalOfInteger" minOccurs="0"/>
+			      <xs:element name="units" type="xs:string"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="C_DV_STATE">
+		    <xs:complexContent>
+			      <xs:extension base="C_DOMAIN_TYPE">
+				        <xs:sequence>
+					          <xs:element name="assumed_value" type="DV_STATE" minOccurs="0"/>
+					          <xs:element name="value" type="STATE_MACHINE"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="STATE_MACHINE">
+		    <xs:sequence>
+			      <xs:element name="states" type="STATE" maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="STATE" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="name" type="xs:string"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="NON_TERMINAL_STATE">
+		    <xs:complexContent>
+			      <xs:extension base="STATE">
+				        <xs:sequence>
+					          <xs:element name="transitions" type="TRANSITION" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="TERMINAL_STATE">
+		    <xs:complexContent>
+			      <xs:extension base="STATE"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="TRANSITION">
+		    <xs:sequence>
+			      <xs:element name="event" type="xs:string"/>
+			      <xs:element name="action" type="xs:string" minOccurs="0"/>
+			      <xs:element name="guard" type="xs:string" minOccurs="0"/>
+			      <xs:element name="next_state" type="STATE" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE">
+		    <xs:complexContent>
+			      <xs:extension base="AUTHORED_RESOURCE">
+				        <xs:sequence>
+					          <xs:element name="uid" type="HIER_OBJECT_ID" minOccurs="0"/>
+					          <xs:element name="archetype_id" type="ARCHETYPE_ID"/>
+					          <xs:element name="adl_version" type="xs:string" minOccurs="0"/>
+					          <xs:element name="concept" type="xs:string"/>
+					          <xs:element name="parent_archetype_id" type="ARCHETYPE_ID" minOccurs="0"/>
+					          <xs:element name="definition" type="C_COMPLEX_OBJECT"/>
+					          <xs:element name="invariants" type="ASSERTION" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="ontology" type="ARCHETYPE_ONTOLOGY"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_CONSTRAINT" abstract="true">
+		    <xs:sequence/>
+	  </xs:complexType>
+   <xs:complexType name="C_OBJECT" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="ARCHETYPE_CONSTRAINT">
+				        <xs:sequence>
+					          <xs:element name="rm_type_name" type="xs:string"/>
+					          <xs:element name="occurrences" type="IntervalOfInteger"/>
+					          <xs:element name="node_id" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_ATTRIBUTE" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="ARCHETYPE_CONSTRAINT">
+				        <xs:sequence>
+					          <xs:element name="rm_attribute_name" type="xs:string"/>
+					          <xs:element name="existence" type="IntervalOfInteger"/>
+					          <xs:element name="children" type="C_OBJECT" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_SINGLE_ATTRIBUTE">
+		    <xs:complexContent>
+			      <xs:extension base="C_ATTRIBUTE">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_MULTIPLE_ATTRIBUTE">
+		    <xs:complexContent>
+			      <xs:extension base="C_ATTRIBUTE">
+				        <xs:sequence>
+					          <xs:element name="cardinality" type="CARDINALITY"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="CARDINALITY">
+		    <xs:sequence>
+			      <xs:element name="is_ordered" type="xs:boolean"/>
+			      <xs:element name="is_unique" type="xs:boolean"/>
+			      <xs:element name="interval" type="IntervalOfInteger"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="C_COMPLEX_OBJECT">
+		    <xs:complexContent>
+			      <xs:extension base="C_DEFINED_OBJECT">
+				        <xs:sequence>
+					          <xs:element name="attributes" type="C_ATTRIBUTE" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_SLOT">
+		    <xs:complexContent>
+			      <xs:extension base="C_OBJECT">
+				        <xs:sequence>
+					          <xs:element name="includes" type="ASSERTION" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="excludes" type="ASSERTION" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="CONSTRAINT_REF">
+		    <xs:complexContent>
+			      <xs:extension base="C_OBJECT">
+				        <xs:sequence>
+					          <xs:element name="reference" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DEFINED_OBJECT">
+		    <xs:complexContent>
+			      <xs:extension base="C_OBJECT">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_PRIMITIVE_OBJECT">
+		    <xs:complexContent>
+			      <xs:extension base="C_DEFINED_OBJECT">
+				        <xs:sequence>
+					          <xs:element name="item" type="C_PRIMITIVE" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DOMAIN_TYPE" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="C_DEFINED_OBJECT">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_INTERNAL_REF">
+		    <xs:complexContent>
+			      <xs:extension base="C_OBJECT">
+				        <xs:sequence>
+					          <xs:element name="target_path" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ASSERTION">
+		    <xs:sequence>
+			      <xs:element name="tag" type="xs:string" minOccurs="0"/>
+			      <xs:element name="string_expression" type="xs:string" minOccurs="0"/>
+			      <xs:element name="expression" type="EXPR_ITEM"/>
+			      <xs:element name="variables" type="ASSERTION_VARIABLE" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="EXPR_ITEM" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="type" type="xs:string"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="ASSERTION_VARIABLE">
+		    <xs:sequence>
+			      <xs:element name="name" type="xs:string"/>
+			      <xs:element name="definition" type="xs:string"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="EXPR_LEAF">
+		    <xs:complexContent>
+			      <xs:extension base="EXPR_ITEM">
+				        <xs:sequence>
+					          <xs:element name="item" type="xs:anyType"/>
+					          <xs:element name="reference_type" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="EXPR_OPERATOR" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="EXPR_ITEM">
+				        <xs:sequence>
+					          <xs:element name="operator" type="OPERATOR_KIND"/>
+					          <xs:element name="precedence_overridden" type="xs:boolean"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="EXPR_UNARY_OPERATOR">
+		    <xs:complexContent>
+			      <xs:extension base="EXPR_OPERATOR">
+				        <xs:sequence>
+					          <xs:element name="operand" type="EXPR_ITEM"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="EXPR_BINARY_OPERATOR">
+		    <xs:complexContent>
+			      <xs:extension base="EXPR_OPERATOR">
+				        <xs:sequence>
+					          <xs:element name="left_operand" type="EXPR_ITEM"/>
+					          <xs:element name="right_operand" type="EXPR_ITEM"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_PRIMITIVE" abstract="true">
+		    <xs:sequence/>
+	  </xs:complexType>
+   <xs:complexType name="C_BOOLEAN">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="true_valid" type="xs:boolean"/>
+					          <xs:element name="false_valid" type="xs:boolean"/>
+					          <xs:element name="assumed_value" type="xs:boolean" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_STRING">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="pattern" type="xs:string" minOccurs="0"/>
+					          <xs:element name="list" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="list_open" type="xs:boolean" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="xs:string" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_INTEGER">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="list" type="xs:int" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="range" type="IntervalOfInteger" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="xs:int" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_REAL">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="list" type="xs:float" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="range" type="IntervalOfReal" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="xs:float" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DATE">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="pattern" type="DateConstraintPattern" minOccurs="0"/>
+					          <xs:element name="timezone_validity" type="VALIDITY_KIND" minOccurs="0"/>
+					          <xs:element name="range" type="IntervalOfDate" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="Iso8601Date" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DATE_TIME">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="pattern" type="DateTimeConstraintPattern" minOccurs="0"/>
+					          <xs:element name="timezone_validity" type="VALIDITY_KIND" minOccurs="0"/>
+					          <xs:element name="range" type="IntervalOfDateTime" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="Iso8601DateTime" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_TIME">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="pattern" type="TimeConstraintPattern" minOccurs="0"/>
+					          <xs:element name="timezone_validity" type="VALIDITY_KIND" minOccurs="0"/>
+					          <xs:element name="range" type="IntervalOfTime" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="Iso8601Time" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="C_DURATION">
+		    <xs:complexContent>
+			      <xs:extension base="C_PRIMITIVE">
+				        <xs:sequence>
+					          <xs:element name="pattern" type="DurationConstraintPattern" minOccurs="0"/>
+					          <xs:element name="range" type="IntervalOfDuration" minOccurs="0"/>
+					          <xs:element name="assumed_value" type="Iso8601Duration" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_ONTOLOGY">
+		    <xs:sequence>
+			      <xs:element name="term_definitions" type="CodeDefinitionSet" maxOccurs="unbounded"/>
+			      <xs:element name="constraint_definitions" type="CodeDefinitionSet" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="term_bindings" type="TermBindingSet" minOccurs="0" maxOccurs="unbounded"/>
+			      <xs:element name="constraint_bindings" type="ConstraintBindingSet" minOccurs="0"
+                     maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="CodeDefinitionSet">
+		    <xs:sequence>
+			      <xs:element name="items" type="ARCHETYPE_TERM" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="language" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_TERM">
+		    <xs:sequence>
+			      <xs:element name="items" type="StringDictionaryItem" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="code" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="TermBindingSet">
+		    <xs:sequence>
+			      <xs:element name="items" type="TERM_BINDING_ITEM" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="terminology" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="TERM_BINDING_ITEM">
+		    <xs:sequence>
+			      <xs:element name="value" type="CODE_PHRASE"/>
+		    </xs:sequence>
+		    <xs:attribute name="code" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="ConstraintBindingSet">
+		    <xs:sequence>
+			      <xs:element name="items" type="CONSTRAINT_BINDING_ITEM" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+		    <xs:attribute name="terminology" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="CONSTRAINT_BINDING_ITEM">
+		    <xs:sequence>
+			      <xs:element name="value" type="xs:anyURI"/>
+		    </xs:sequence>
+		    <xs:attribute name="code" type="xs:string" use="required"/>
+	  </xs:complexType>
+   <xs:complexType name="AUTHORED_RESOURCE" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="original_language" type="CODE_PHRASE"/>
+			      <xs:element name="is_controlled" type="xs:boolean" minOccurs="0"/>
+			      <xs:element name="description" type="RESOURCE_DESCRIPTION" minOccurs="0"/>
+			      <xs:element name="translations" type="TRANSLATION_DETAILS" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="revision_history" type="REVISION_HISTORY" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="TRANSLATION_DETAILS">
+		    <xs:sequence>
+			      <xs:element name="language" type="CODE_PHRASE"/>
+			      <xs:element name="author" type="StringDictionaryItem" minOccurs="1" maxOccurs="unbounded"/>
+			      <xs:element name="accreditation" type="xs:string" minOccurs="0"/>
+			      <xs:element name="other_details" type="StringDictionaryItem" minOccurs="0"
+                     maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="RESOURCE_DESCRIPTION">
+		    <xs:sequence>
+			      <xs:element name="original_author" type="StringDictionaryItem" maxOccurs="unbounded"/>
+			      <xs:element name="other_contributors" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			      <xs:element name="lifecycle_state" type="xs:string"/>
+			      <xs:element name="resource_package_uri" type="xs:string" minOccurs="0"/>
+			      <xs:element name="other_details" type="StringDictionaryItem" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="details" type="RESOURCE_DESCRIPTION_ITEM" maxOccurs="unbounded"/>
+			      <xs:element name="parent_resource" type="AUTHORED_RESOURCE" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="RESOURCE_DESCRIPTION_ITEM">
+		    <xs:sequence>
+			      <xs:element name="language" type="CODE_PHRASE"/>
+			      <xs:element name="purpose" type="xs:string"/>
+			      <xs:element name="keywords" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			      <xs:element name="use" type="xs:string" minOccurs="0"/>
+			      <xs:element name="misuse" type="xs:string" minOccurs="0"/>
+			      <xs:element name="copyright" type="xs:string" minOccurs="0"/>
+			      <xs:element name="original_resource_uri" type="StringDictionaryItem" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="other_details" type="StringDictionaryItem" minOccurs="0"
+                     maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="StringDictionaryItem">
+		    <xs:simpleContent>
+			      <xs:extension base="xs:string">
+				        <xs:attribute name="id" type="xs:string" use="required"/>
+			      </xs:extension>
+		    </xs:simpleContent>
+	  </xs:complexType>
+   <xs:complexType name="DATA_VALUE" abstract="true">
+		    <xs:sequence/>
+	  </xs:complexType>
+   <xs:complexType name="DV_BOOLEAN">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="value" type="xs:boolean"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_IDENTIFIER">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="issuer" type="xs:string"/>
+					          <xs:element name="assigner" type="xs:string"/>
+					          <xs:element name="id" type="xs:string"/>
+					          <xs:element name="type" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_STATE">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="value" type="DV_CODED_TEXT"/>
+					          <xs:element name="is_terminal" type="xs:boolean"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_ORDERED" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="normal_range" type="DV_INTERVAL" minOccurs="0"/>
+					          <xs:element name="other_reference_ranges" type="REFERENCE_RANGE" minOccurs="0"
+                           maxOccurs="unbounded"/>
+					          <xs:element name="normal_status" type="CODE_PHRASE" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_INTERVAL">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="lower" type="DV_ORDERED" minOccurs="0"/>
+					          <xs:element name="upper" type="DV_ORDERED" minOccurs="0"/>
+					          <xs:element name="lower_included" type="xs:boolean" minOccurs="0"/>
+					          <xs:element name="upper_included" type="xs:boolean" minOccurs="0"/>
+					          <xs:element name="lower_unbounded" type="xs:boolean"/>
+					          <xs:element name="upper_unbounded" type="xs:boolean"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="REFERENCE_RANGE">
+		    <xs:sequence>
+			      <xs:element name="meaning" type="DV_TEXT"/>
+			      <xs:element name="range" type="DV_INTERVAL"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="DV_QUANTIFIED" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="DV_ORDERED">
+				        <xs:sequence>
+					          <xs:element name="magnitude_status" type="xs:string" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_COUNT">
+		    <xs:complexContent>
+			      <xs:extension base="DV_AMOUNT">
+				        <xs:sequence>
+					          <xs:element name="magnitude" type="xs:long"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_AMOUNT">
+		    <xs:complexContent>
+			      <xs:extension base="DV_QUANTIFIED">
+				        <xs:sequence>
+					          <xs:element name="accuracy" type="xs:float" minOccurs="0" default="-1.0"/>
+					          <xs:element name="accuracy_is_percent" type="xs:boolean" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_TEMPORAL">
+		    <xs:complexContent>
+			      <xs:extension base="DV_QUANTIFIED">
+				        <xs:sequence>
+					          <xs:element name="accuracy" type="DV_DURATION" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_QUANTITY">
+		    <xs:complexContent>
+			      <xs:extension base="DV_AMOUNT">
+				        <xs:sequence>
+					          <xs:element name="magnitude" type="xs:double"/>
+					          <xs:element name="units" type="xs:string"/>
+					          <xs:element name="precision" type="xs:int" default="-1" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_ORDINAL">
+		    <xs:complexContent>
+			      <xs:extension base="DV_ORDERED">
+				        <xs:sequence>
+					          <xs:element name="value" type="xs:int"/>
+					          <xs:element name="symbol" type="DV_CODED_TEXT"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_PROPORTION">
+		    <xs:complexContent>
+			      <xs:extension base="DV_AMOUNT">
+				        <xs:sequence>
+					          <xs:element name="numerator" type="xs:float"/>
+					          <xs:element name="denominator" type="xs:float"/>
+					          <xs:element name="type" type="PROPORTION_KIND"/>
+					          <xs:element name="precision" type="xs:int" default="-1" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_PARAGRAPH">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="items" type="DV_TEXT" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_TEXT">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="value" type="xs:string"/>
+					          <xs:element name="hyperlink" type="DV_URI" minOccurs="0"/>
+					          <xs:element name="formatting" type="xs:string" minOccurs="0"/>
+					          <xs:element name="mappings" type="TERM_MAPPING" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="language" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="encoding" type="CODE_PHRASE" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_CODED_TEXT">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TEXT">
+				        <xs:sequence>
+					          <xs:element name="defining_code" type="CODE_PHRASE"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="CODE_PHRASE">
+		    <xs:sequence>
+			      <xs:element name="terminology_id" type="TERMINOLOGY_ID"/>
+			      <xs:element name="code_string" type="xs:string"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="TERM_MAPPING">
+		    <xs:sequence>
+			      <xs:element name="match" type="matchString" default="?"/>
+			      <xs:element name="purpose" type="DV_CODED_TEXT" minOccurs="0"/>
+			      <xs:element name="target" type="CODE_PHRASE"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="DV_DATE_TIME">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TEMPORAL">
+				        <xs:sequence>
+					          <xs:element name="value" type="Iso8601DateTime"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_TIME">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TEMPORAL">
+				        <xs:sequence>
+					          <xs:element name="value" type="Iso8601Time"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_DATE">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TEMPORAL">
+				        <xs:sequence>
+					          <xs:element name="value" type="Iso8601Date"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_DURATION">
+		    <xs:complexContent>
+			      <xs:extension base="DV_AMOUNT">
+				        <xs:sequence>
+					          <xs:element name="value" type="Iso8601Duration"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_TIME_SPECIFICATION" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="value" type="DV_PARSABLE"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_PERIODIC_TIME_SPECIFICATION">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TIME_SPECIFICATION">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_GENERAL_TIME_SPECIFICATION">
+		    <xs:complexContent>
+			      <xs:extension base="DV_TIME_SPECIFICATION">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_ENCAPSULATED" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="charset" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="language" type="CODE_PHRASE" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_MULTIMEDIA">
+		    <xs:complexContent>
+			      <xs:extension base="DV_ENCAPSULATED">
+				        <xs:sequence>
+					          <xs:element name="alternate_text" type="xs:string" minOccurs="0"/>
+					          <xs:element name="uri" type="DV_URI" minOccurs="0"/>
+					          <xs:element name="data" type="xs:base64Binary" minOccurs="0"/>
+					          <xs:element name="media_type" type="CODE_PHRASE"/>
+					          <xs:element name="compression_algorithm" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="integrity_check" type="xs:base64Binary" minOccurs="0"/>
+					          <xs:element name="integrity_check_algorithm" type="CODE_PHRASE" minOccurs="0"/>
+					          <xs:element name="size" type="xs:int"/>
+					          <xs:element name="thumbnail" type="DV_MULTIMEDIA" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_PARSABLE">
+		    <xs:complexContent>
+			      <xs:extension base="DV_ENCAPSULATED">
+				        <xs:sequence>
+					          <xs:element name="value" type="xs:string"/>
+					          <xs:element name="formalism" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_URI">
+		    <xs:complexContent>
+			      <xs:extension base="DATA_VALUE">
+				        <xs:sequence>
+					          <xs:element name="value" type="xs:anyURI" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="DV_EHR_URI">
+		    <xs:complexContent>
+			      <xs:extension base="DV_URI">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="OBJECT_ID" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="value" type="xs:token"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="UID_BASED_ID" abstract="true">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_ID">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="OBJECT_VERSION_ID">
+		    <xs:complexContent>
+			      <xs:extension base="UID_BASED_ID"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ARCHETYPE_ID">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_ID"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="TEMPLATE_ID">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_ID"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="TERMINOLOGY_ID">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_ID"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="HIER_OBJECT_ID">
+		    <xs:complexContent>
+			      <xs:extension base="UID_BASED_ID"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="GENERIC_ID">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_ID">
+				        <xs:sequence>
+					          <xs:element name="scheme" type="xs:string"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="OBJECT_REF">
+		    <xs:sequence>
+			      <xs:element name="id" type="OBJECT_ID"/>
+			      <xs:element name="namespace" type="xs:token"/>
+			      <xs:element name="type" type="xs:token"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="PARTY_REF">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_REF"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="ACCESS_GROUP_REF">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_REF"/>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="LOCATABLE_REF">
+		    <xs:complexContent>
+			      <xs:extension base="OBJECT_REF">
+				        <xs:sequence>
+					          <xs:element name="path" type="xs:string" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="REVISION_HISTORY_ITEM">
+		    <xs:sequence>
+			      <xs:element name="version_id" type="OBJECT_VERSION_ID"/>
+			      <xs:element name="audits" type="AUDIT_DETAILS" maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="REVISION_HISTORY">
+		    <xs:sequence>
+			      <xs:element name="items" type="REVISION_HISTORY_ITEM" minOccurs="0" maxOccurs="unbounded"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="AUDIT_DETAILS">
+		    <xs:sequence>
+			      <xs:element name="system_id" type="xs:string"/>
+			      <xs:element name="committer" type="PARTY_PROXY"/>
+			      <xs:element name="time_committed" type="DV_DATE_TIME"/>
+			      <xs:element name="change_type" type="DV_CODED_TEXT"/>
+			      <xs:element name="description" type="DV_TEXT" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="ATTESTATION">
+		    <xs:complexContent>
+			      <xs:extension base="AUDIT_DETAILS">
+				        <xs:sequence>
+					          <xs:element name="attested_view" type="DV_MULTIMEDIA" minOccurs="0"/>
+					          <xs:element name="proof" type="xs:string" minOccurs="0"/>
+					          <xs:element name="items" type="DV_EHR_URI" minOccurs="0" maxOccurs="unbounded"/>
+					          <xs:element name="reason" type="DV_TEXT"/>
+					          <xs:element name="is_pending" type="xs:boolean" default="false"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="PARTY_PROXY" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="external_ref" type="PARTY_REF" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="PARTY_IDENTIFIED">
+		    <xs:complexContent>
+			      <xs:extension base="PARTY_PROXY">
+				        <xs:sequence>
+					          <xs:element name="name" type="xs:string" minOccurs="0"/>
+					          <xs:element name="identifiers" type="DV_IDENTIFIER" minOccurs="0" maxOccurs="unbounded"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="PARTY_RELATED">
+		    <xs:complexContent>
+			      <xs:extension base="PARTY_IDENTIFIED">
+				        <xs:sequence>
+					          <xs:element name="relationship" type="DV_CODED_TEXT"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="PARTY_SELF">
+		    <xs:complexContent>
+			      <xs:extension base="PARTY_PROXY">
+				        <xs:sequence/>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="PARTICIPATION">
+		    <xs:sequence>
+			      <xs:element name="function" type="DV_TEXT"/>
+			      <xs:element name="performer" type="PARTY_PROXY"/>
+			      <xs:element name="time" type="DV_INTERVAL" minOccurs="0"/>
+			      <xs:element name="mode" type="DV_CODED_TEXT"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="FEEDER_AUDIT">
+		    <xs:sequence>
+			      <xs:element name="originating_system_item_ids" type="DV_IDENTIFIER" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="feeder_system_item_ids" type="DV_IDENTIFIER" minOccurs="0"
+                     maxOccurs="unbounded"/>
+			      <xs:element name="original_content" type="DV_ENCAPSULATED" minOccurs="0"/>
+			      <xs:element name="originating_system_audit" type="FEEDER_AUDIT_DETAILS"/>
+			      <xs:element name="feeder_system_audit" type="FEEDER_AUDIT_DETAILS" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="FEEDER_AUDIT_DETAILS">
+		    <xs:sequence>
+			      <xs:element name="system_id" type="xs:string"/>
+			      <xs:element name="location" type="PARTY_IDENTIFIED" minOccurs="0"/>
+			      <xs:element name="provider" type="PARTY_IDENTIFIED" minOccurs="0"/>
+			      <xs:element name="subject" type="PARTY_PROXY" minOccurs="0"/>
+			      <xs:element name="time" type="DV_DATE_TIME" minOccurs="0"/>
+			      <xs:element name="version_id" type="xs:string" minOccurs="0"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="Interval" abstract="true">
+		    <xs:sequence>
+			      <xs:element name="lower_included" type="xs:boolean" minOccurs="0"/>
+			      <xs:element name="upper_included" type="xs:boolean" minOccurs="0"/>
+			      <xs:element name="lower_unbounded" type="xs:boolean"/>
+			      <xs:element name="upper_unbounded" type="xs:boolean"/>
+		    </xs:sequence>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfInteger">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="xs:int" minOccurs="0"/>
+					          <xs:element name="upper" type="xs:int" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfReal">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="xs:float" minOccurs="0"/>
+					          <xs:element name="upper" type="xs:float" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfDate">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="Iso8601Date" minOccurs="0"/>
+					          <xs:element name="upper" type="Iso8601Date" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfDateTime">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="Iso8601DateTime" minOccurs="0"/>
+					          <xs:element name="upper" type="Iso8601DateTime" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfTime">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="Iso8601Time" minOccurs="0"/>
+					          <xs:element name="upper" type="Iso8601Time" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+   <xs:complexType name="IntervalOfDuration">
+		    <xs:complexContent>
+			      <xs:extension base="Interval">
+				        <xs:sequence>
+					          <xs:element name="lower" type="Iso8601Duration" minOccurs="0"/>
+					          <xs:element name="upper" type="Iso8601Duration" minOccurs="0"/>
+				        </xs:sequence>
+			      </xs:extension>
+		    </xs:complexContent>
+	  </xs:complexType>
+</xs:schema>
