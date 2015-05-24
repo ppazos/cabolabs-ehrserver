@@ -1,0 +1,9 @@
+Desde el directorio que incluya:
+
+- opts
+- versions
+- compositions
+- commits
+- xsd
+
+Correr: H:\apache-tomcat-8.0.21\bin\startup
