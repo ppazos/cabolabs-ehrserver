@@ -92,8 +92,5 @@ grails.project.dependency.resolution = {
         runtime ':jquery:1.11.0.2'
         
         compile ':quartz:1.0.2'
-        
-        // Load the Uploadr plugin
-        compile ":uploadr:1.0.0"
     }
 }

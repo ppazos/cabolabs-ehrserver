@@ -26,6 +26,44 @@ class TestController {
    def formatterDateDB = new SimpleDateFormat( Holders.config.app.l10n.db_date_format )
    
    
+   def upload()
+   {
+      println "upload "+ params
+      
+      println "destination "+ config.opt_repo
+      
+      if (params.doit)
+      {
+         
+         
+         // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html
+         def f = request.getFile('opt')
+         def xml = new String( f.getBytes() )
+         
+         //println xml
+         
+         // Validate
+         def validator = new parsers.OPTValidator()
+         def errors = []
+         
+
+         if (!validator.validate(xml))
+         {
+            errors = validator.getErrors() // Important to keep the correspondence between version index and error reporting.
+         }
+
+         
+         println errors
+         
+         // FIXME: rename to avoid collisions or say that the file already exists...
+         File fileDest = new File(config.opt_repo + System.getProperty("file.separator") + f.getOriginalFilename() ) // puedo cambiarle el nombre del archivo agregandolo a la ruta ...
+         
+         if (errors.size() == 0) f.transferTo(fileDest)
+      }
+      
+      render (view: "upload")
+   }
+   
    
    /**
     * UI test

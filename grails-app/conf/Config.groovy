@@ -11,6 +11,9 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
+def PS = System.getProperty("file.separator")
+
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -61,17 +64,23 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.hibernate.cache.queries = false
 
 environments {
-    development {
-        grails.logging.jul.usebridge = true
+  development {
+    grails.logging.jul.usebridge = true
+    app {
+      //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
     }
-    production {
-        grails.logging.jul.usebridge = false
-        grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-        // TODO: grails.serverURL = "http://www.changeme.com"
+  }
+  production {
+    grails.logging.jul.usebridge = false
+    grails.dbconsole.enabled = true // FIXME: this is for testing in prod
+    // TODO: grails.serverURL = "http://www.changeme.com"
+    app {
+      //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
     }
-	test {
-	   grails.converters.default.pretty.print = true
-	}
+  }
+  test {
+    grails.converters.default.pretty.print = true
+  }
 }
 
 // log4j configuration
@@ -98,12 +107,11 @@ log4j = {
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
 }
 
-def PS = System.getProperty("file.separator")
-
 app {
    composition_repo = "compositions" + PS
    version_repo = "versions" + PS
    version_xsd = "xsd"+ PS +"Version.xsd"
+   opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
    opt_repo = "opts" + PS
    
    l10n { // localization
