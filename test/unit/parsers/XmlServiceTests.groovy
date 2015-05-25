@@ -18,7 +18,7 @@ import common.generic.PatientProxy
 @Mock([XmlService, Ehr, PatientProxy, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails])
 class XmlServiceTests { //  extends GroovyTestCase
    
-   static string PS = System.getProperty("file.separator")
+   static String PS = System.getProperty("file.separator")
    
    void testVersion()
    {
