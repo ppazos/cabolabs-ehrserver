@@ -26,42 +26,73 @@ class TestController {
    def formatterDateDB = new SimpleDateFormat( Holders.config.app.l10n.db_date_format )
    
    
-   def upload()
+   def upload(boolean overwrite)
    {
-      println "upload "+ params
-      
-      println "destination "+ config.opt_repo
+      //println "upload "+ params
+      //println "destination folder "+ config.opt_repo
       
       if (params.doit)
       {
-         
+         def errors = []
          
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html
          def f = request.getFile('opt')
+         
+         // Add file empty check
+         // if(!file.empty){ //do something }
+         // else { //do something }
+         
          def xml = new String( f.getBytes() )
          
          //println xml
          
+         // Destination
+         // Puedo cambiarle el nombre del archivo agregandolo a la ruta ...
+         // FIXME: no deberia depender del nombre y los nombres en disco deberian ser generados,
+         //        cuando se sube un OPT, habria que crear un opt_index en la bd con el nombre / id original
+         //        y ver contra eso si ya lo tenemos, no contra el archivo fisico en disco como aqui.
+         def destination = config.opt_repo + f.getOriginalFilename() 
+         
+         //println "destination: "+ destination
+         
+         File fileDest = new File( destination )
+         
+         if (!overwrite && fileDest.exists())
+         {
+            // FIXME: overwrite might cause inconsistencies with currently saved data for the previous version of the template
+            errors << "The OPT already exists, do you want to overwrite?"
+            return [errors: errors, ask_overwrite: true]
+         }
+         
          // Validate
          def validator = new parsers.OPTValidator()
-         def errors = []
-         
-
          if (!validator.validate(xml))
          {
             errors = validator.getErrors() // Important to keep the correspondence between version index and error reporting.
+            return [errors: errors]
          }
-
          
-         println errors
-         
-         // FIXME: rename to avoid collisions or say that the file already exists...
-         File fileDest = new File(config.opt_repo + System.getProperty("file.separator") + f.getOriginalFilename() ) // puedo cambiarle el nombre del archivo agregandolo a la ruta ...
-         
-         if (errors.size() == 0) f.transferTo(fileDest)
+         if (errors.size() == 0)
+         {
+            // Hago lo mismo que el transferTo pero a mano.
+            if (overwrite) // file exists and the user wants to overwrite
+            {
+               def copy = new File(destination + ".old")
+               fileDest.renameTo(copy)
+               copy.delete()
+            }
+            
+            fileDest << xml
+            
+            // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
+            // If the file exists, it will be deleted first
+            //f.transferTo(fileDest)
+            // Tira excepcion si el archivo existe: 
+            // Message: opts\Signos.opt (Access is denied)
+            //    Line | Method
+            //->>  221 | <init>    in java.io.FileOutputStream
+         }
       }
-      
-      render (view: "upload")
    }
    
    

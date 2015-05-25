@@ -150,6 +150,7 @@
               <a href="#" class="directory_icon"><g:message code="desktop.directory" /></a>
               <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
               <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
+              <g:link controller="operationalTemplate" action="list" class="templates_icon"><g:message code="desktop.templates" /></g:link>
             </div>
             <div style="clear: both"></div>
             

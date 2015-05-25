@@ -126,22 +126,25 @@ a:hover, a:active {
   background-image: url('icons/access.png');
  }
  
-   /* iconos */
-   .ehr_icon {
-     background-image: url('icons/unfold-multiple.png');
-   }
-   .query_icon{
-     background-image: url('icons/zoom.png');
-   }
-   .directory_icon {
-     background-image: url('icons/book-alt-3.png');
-   }
-   .contributions_icon {
-     background-image: url('icons/ftp-alt-2.png');
-   }
-   .indexes_icon {
-     background-image: url('icons/list-ordered.png');
-   }
+/* iconos */
+.ehr_icon {
+  background-image: url('icons/unfold-multiple.png');
+}
+.query_icon{
+  background-image: url('icons/zoom.png');
+}
+.directory_icon {
+  background-image: url('icons/book-alt-3.png');
+}
+.contributions_icon {
+  background-image: url('icons/ftp-alt-2.png');
+}
+.indexes_icon {
+  background-image: url('icons/list-ordered.png');
+}
+.templates_icon {
+  background-image: url('icons/file.png');
+}
       
      
 

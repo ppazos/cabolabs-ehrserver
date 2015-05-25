@@ -38,7 +38,7 @@ class OPTValidator {
       }
       catch (org.xml.sax.SAXParseException e) // XML not valid
       {
-         this.exceptions << e
+         errorHandler.exceptions << e
       }
       
       this.errors = errorHandler.getErrors()
