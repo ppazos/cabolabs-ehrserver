@@ -102,29 +102,28 @@ a:hover, a:active {
 	outline: none; /* prevents outline in webkit on active links but retains it for tab focus */
 }
 
- /* icons for main layout */
- #main_menu a {
+/* icons for main layout */
+#main_menu a {
   background-repeat: no-repeat;
-  background-position: 4px 4px;
+  background-position: 4px 10px;
   
-  padding-left: 56px; /* ancho de la imagen de fondo + un margen */
+  padding-left: 36px; /* ancho para la imagen de fondo + un margen */
   padding-right: 8px;
   padding-top: 4px;
-  padding-bottom: 4px;
   
-  margin: 4px 2px -2px 0px;
+  /* Se usan para dar el efecto de tab activo al item del menu */
+  padding-bottom: 6px;
+  margin: 2px 0 -2px 0;
   
-  /*height: 48px; no funciona */
-  line-height: 48px; /* deja el texto en el medio vertical del icono de fondo */
+  line-height: 38px; /* deja el texto en el medio vertical del icono de fondo */
   
-  /*float: left;*/
   display: inline-block;
-  /*border: 1px solid #ddd;*/
- }
+  background-size: 28px; /* iconos mas chicos */
+}
  
- .access_icon {
+.access_icon {
   background-image: url('icons/access.png');
- }
+}
  
 /* iconos */
 .ehr_icon {
@@ -173,7 +172,7 @@ h4 {
 }
 
 ul {
-	padding: 0;
+	/* padding: 0; */
 }
 
 img {
