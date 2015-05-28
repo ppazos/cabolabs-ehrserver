@@ -16,6 +16,15 @@ import common.change_control.VersionedComposition
 import grails.util.Holders
 import common.change_control.Version
 
+/**
+ * TODO:
+ * 
+ * Make a list of all the error types and assign an error code, publish that list, and make an endpoint to get the list.
+ * 
+ * @author pab
+ *
+ */
+
 class RestController {
 
    def xmlService // Utilizado por commit
@@ -36,6 +45,51 @@ class RestController {
       render vo.getAllVersions() as JSON
    }
    */
+   
+   private void renderError(String msg, String errorCode)
+   {
+      // Format comes from current request
+      withFormat {
+         xml {
+            render(contentType:"text/xml", encoding:"UTF-8") {
+               result {
+                  type {
+                     code('AR')                         // application reject
+                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+                  }
+                  message(msg)
+                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode) // sys::service::concept::code
+               }
+            }
+         }
+         json {
+            def error = [
+               result: [
+                  type: [
+                     code: 'AR',
+                     codeSystem: 'HL7::TABLES::TABLE_8'
+                  ],
+                  message: msg,
+                  code: 'ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode
+               ]
+            ]
+            render error as JSON
+         }
+         html {
+            render(contentType:"text/xml", encoding:"UTF-8") {
+               result {
+                  type {
+                     code('AR')                         // application reject
+                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+                  }
+                  message(message(code:'rest.error.formatNotSupported'))
+                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::499') // sys::service::concept::code
+               }
+            }
+         }
+      }
+   }
+   
    
    /**
     * Envia una lista de versions para commitear al EHR(ehrId)
@@ -58,17 +112,7 @@ class RestController {
       // 1. ehrId debe venir
       if (!ehrId)
       {
-         //render(text:'<result><code>error</code><message>No viene el parametro ehrId</message></result>', contentType:"text/xml", encoding:"UTF-8")
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message('El parametro ehrId es obligatorio')
-               code('ISIS_EHR_SERVER::COMMIT::ERRORS::400') // sys::service::concept::code
-            }
-         }
+         renderError(message(code:'rest.error.ehrIdRequired'), '400')
          return
       }
       
@@ -78,17 +122,7 @@ class RestController {
       // 2. versions deben venir 1 por lo menos haber una
       if (!params.versions)
       {
-         //render(text:'<result><code>error</code><message>No viene el parametro versions</message></result>', contentType:"text/xml", encoding:"UTF-8")
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message('El parametro versions es obligatorio')
-               code('ISIS_EHR_SERVER::COMMIT::ERRORS::401') // sys::service::concept::code
-            }
-         }
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401')
          return
       }
       
@@ -98,17 +132,7 @@ class RestController {
       def xmlVersions = params.list('versions')
       if (xmlVersions.size() == 0)
       {
-         //render(text:'<result><code>error</code><message>No viene ninguna version</message></result>', contentType:"text/xml", encoding:"UTF-8")
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message('El parametro versions esta vacio y debe enviarse por lo menos una version')
-               code('ISIS_EHR_SERVER::COMMIT::ERRORS::402') // sys::service::concept::code
-            }
-         }
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402')
          return
       }
       
@@ -120,17 +144,7 @@ class RestController {
       // 3. ehr debe existir
       if (!ehr)
       {
-         //render(text:'<result><code>error</code><message>EHR no existe</message></result>', contentType:"text/xml", encoding:"UTF-8")
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message('No existe el EHR con ehrId '+ ehrId)
-               code('ISIS_EHR_SERVER::COMMIT::ERRORS::403') // sys::service::concept::code
-            }
-         }
+         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
          return
       }
       
@@ -171,7 +185,7 @@ class RestController {
                      code('AR')                         // application reject
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
-                  message('Some versions do not validate against the XSD')
+                  message(message(code:'rest.commit.error.versionsDontValidate'))
                   details {
                      
                      xmlService.validationErrors.each { i, errorList ->
@@ -196,26 +210,11 @@ class RestController {
       catch (Exception e)
       {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
-         
          println e.message +" "+ e.getClass().getSimpleName()
          
-         // Parsing error
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message('Bad content, could not parse compositions ('+ e.message +')')
-               // ok va sin codigo de error
-               //code('ISIS_EHR_SERVER::COMMIT::ERRORS::200') // sys::service::concept::code
-            }
-         }
+         renderError(message(code:'rest.commit.error.couldntParseCompositions', args:[e.message]), '468')
          return
       }
-      
-      log.info( "after parsing" )
-      println "after parsing"
       
       // test
       // muestra los uids en vacio porque el escritor de xml es lazy,
@@ -231,7 +230,7 @@ class RestController {
       */
       
       
-      // FIXME: dejar esta tarea a un job
+      // FIXME: dejar esta tarea a un job y la logica debe ir a un servicio
       // Guarda compositions y crea indices a nivel de documento (nivel 1)
       def compoFile
       def versionFile
@@ -268,11 +267,7 @@ class RestController {
                   // Agrega composition al EHR
                   ehr.addToCompositions( versionedComposition )
                   
-                  println "PRE ehr.save"
-                  
                   if (!ehr.save(flush:true)) println ehr.errors.allErrors
-                  
-                  println "POST ehr.save"
                   
                break
                case ['amendment', 'modification']:
@@ -345,10 +340,8 @@ class RestController {
             }
             message('Commit exitoso al EHR '+ ehrId)
             // ok va sin codigo de error
-            //code('ISIS_EHR_SERVER::COMMIT::ERRORS::200') // sys::service::concept::code
          }
       }
-      
    } // commit
    
    
@@ -374,12 +367,15 @@ class RestController {
       // Error cases, just 1 version should be found
       if (versions.size() == 0)
       {
-         // ERROR
+         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412')
+         return
       }
       
       if (versions.size() > 1)
       {
-         // ERROR
+         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413')
+         // LOG a disco este caso no se deberia dar
+         return
       }
       
       def version = versions[0]
@@ -387,7 +383,8 @@ class RestController {
       // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
       if(version.contribution.ehr.ehrId != ehrId)
       {
-         // ERROR
+         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414')
+         return
       }
       
       // ======================================================================
@@ -397,7 +394,8 @@ class RestController {
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
-         // ERROR
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415')
+         return
       }
       
       def xml = vf.getText()
@@ -867,27 +865,26 @@ class RestController {
     */
    def query(String queryUid, String ehrId, String format, boolean retrieveData, boolean showUI, String group) // TODO: fechas
    {
-      println "rest/query"
-      println params
+      //println "rest/query"
+      //println params
       
-      // FIXME: all these returns should have a proper error JSON response. See commit service.
       if (!queryUid)
       {
-         render "queryUid is mandatory"
+         renderError(message(code:'query.execute.error.queryUidMandatory'), '455')
          return
       }
+      if (!ehrId)
+      {
+         renderError(message(code:'rest.error.ehrIdRequired'), '400')
+         return
+      }
+      
       
       def query = Query.findByUid(queryUid)
       
       if (!query)
       {
-         render "No existe la query con uid = $queryUid"
-         return
-      }
-      
-      if (!ehrId)
-      {
-         render "ehrId is mandatory"
+         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456')
          return
       }
       
@@ -895,14 +892,16 @@ class RestController {
       
       if (!ehr)
       {
-         render "No existe la ehr con uid = $ehrId"
+         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
          return
       }
+      
+      
+      // FIXME: do query execution and output processing in a service
       
       // TODO: fechas
       def res = query.execute(ehrId, null, null, group)
       
-
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {

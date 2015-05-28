@@ -31,9 +31,9 @@ class QueryController {
     }
     
 
-    /*
+    /** FIXME: move this to a test
      * Diagnostic tests for some HQL queries that didn't seems to work well.
-     */
+     *
     def hql() {
        
        println "dvi count: "+ DataValueIndex.count()
@@ -43,59 +43,58 @@ class QueryController {
        def archetypeId = 'openEHR-EHR-OBSERVATION.blood_pressure.v1'
        def archetypePath = '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value'
        
-       /*
-        * $/
-          SELECT dvi.id
-          FROM DataValueIndex dvi
-          WHERE dvi.owner.id = ci.id
-            AND dvi.archetypeId = '${dataCriteria.archetypeId}' 
-            AND dvi.archetypePath = '${dataCriteria.path}'
-          /$
-        */
+       
+//        $/
+//        SELECT dvi.id
+//        FROM DataValueIndex dvi
+//        WHERE dvi.owner.id = ci.id
+//          AND dvi.archetypeId = '${dataCriteria.archetypeId}' 
+//          AND dvi.archetypePath = '${dataCriteria.path}'
+//        /$
+        
        
        def subq
        
-       /*
-       subq = $/
-          SELECT dvi.id
-          FROM DataValueIndex dvi
-          WHERE
-            dvi.archetypeId = '${archetypeId}' AND
-            dvi.archetypePath = '${archetypePath}'
-       /$
-       println "SUBQ DVI: "+ subq
-       println DataValueIndex.executeQuery(subq)
-       
-       
-       // JOINs dvi and dqi to compare the field value.
-       // THIS DOESNT WORK I NEED TO JOIN THE SUBCLASS EXPLICITLY!!!
-       subq = $/
-          SELECT dvi.id
-          FROM DataValueIndex dvi
-          WHERE
-            dvi.archetypeId = '${archetypeId}' AND
-            dvi.archetypePath = '${archetypePath}' AND
-            dvi.magnitude > 10.0
-       /$
-       println "SUBQ DVI: "+ subq
-       println DataValueIndex.executeQuery(subq)
-       
-       
-       
-       
-       // JOINs dvi and dqi to compare the field value.
-       subq = $/
-          SELECT dvi.id 
-          FROM DataValueIndex dvi, DvQuantityIndex dqi 
-          WHERE 
-            dvi.archetypeId = '${archetypeId}' AND
-            dvi.archetypePath = '${archetypePath}' AND
-            dvi.id = dqi.id AND
-            dqi.magnitude > 10.0
-       /$
-       println "SUBQ DVI: "+ subq
-       println DataValueIndex.executeQuery(subq)
-       */
+//       subq = $/
+//          SELECT dvi.id
+//          FROM DataValueIndex dvi
+//          WHERE
+//            dvi.archetypeId = '${archetypeId}' AND
+//            dvi.archetypePath = '${archetypePath}'
+//       /$
+//       println "SUBQ DVI: "+ subq
+//       println DataValueIndex.executeQuery(subq)
+//       
+//       
+//       // JOINs dvi and dqi to compare the field value.
+//       // THIS DOESNT WORK I NEED TO JOIN THE SUBCLASS EXPLICITLY!!!
+//       subq = $/
+//          SELECT dvi.id
+//          FROM DataValueIndex dvi
+//          WHERE
+//            dvi.archetypeId = '${archetypeId}' AND
+//            dvi.archetypePath = '${archetypePath}' AND
+//            dvi.magnitude > 10.0
+//       /$
+//       println "SUBQ DVI: "+ subq
+//       println DataValueIndex.executeQuery(subq)
+//       
+//       
+//       
+//       
+//       // JOINs dvi and dqi to compare the field value.
+//       subq = $/
+//          SELECT dvi.id 
+//          FROM DataValueIndex dvi, DvQuantityIndex dqi 
+//          WHERE 
+//            dvi.archetypeId = '${archetypeId}' AND
+//            dvi.archetypePath = '${archetypePath}' AND
+//            dvi.id = dqi.id AND
+//            dqi.magnitude > 10.0
+//       /$
+//       println "SUBQ DVI: "+ subq
+//       println DataValueIndex.executeQuery(subq)
+//       
        
        subq = $/
           SELECT dvi.id FROM DataValueIndex dvi ,DvQuantityIndex dqi
@@ -124,6 +123,7 @@ class QueryController {
        
        render "done"
     }
+    */
     
     
     /**
@@ -266,13 +266,26 @@ class QueryController {
        render query as JSON
     }
 
-    
+    /**
+     * This action shows the query UI on the server.
+     * The query itself is executed agains the REST API: rest/query(queryUID)
+     * @param uid
+     * @return
+     */
     def execute(String uid)
     {
+       if (!uid)
+       {
+          flash.message = 'query.execute.error.queryUidMandatory'
+          redirect(action:'list')
+          return
+       }
+       
        def query = Query.findByUid(uid)
        if (!query)
        {
-          flash.message = 'No existe la query con uid = $uid'
+          flash.message = 'query.execute.error.queryDoesntExists'
+          flash.args = [uid]
           redirect(action:'list')
           return
        }
