@@ -1,7 +1,9 @@
 package query
 
 import ehr.clinical_documents.IndexDefinition
+
 import org.springframework.dao.DataIntegrityViolationException
+
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 import ehr.clinical_documents.data.*
@@ -28,6 +30,18 @@ class QueryController {
         [queryInstance: new Query(params),
          dataIndexes: ehr.clinical_documents.IndexDefinition.list(), // to create filters or projections
          templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
+    }
+    
+    def edit (Long id) {
+       render (
+          view: 'create',
+          model: [
+             queryInstance: Query.get(id),
+             dataIndexes: ehr.clinical_documents.IndexDefinition.list(), // to create filters or projections
+             templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list(),
+             mode: 'edit'
+          ]
+       )
     }
     
 
@@ -205,28 +219,50 @@ class QueryController {
        
        return params
     }
-
-
-    /**
-     * 
-     * @param name
-     * @param qarchetypeId
-     * @param type composition | datavalue
-     * @param format xml | json formato por defecto
-     * @param group '' | composition | path agrupamiento por defecto
-     * @return
-     */
-    def save(String name, String type, String format, String group)
+    
+    private Query createOrUpdateQuery(Long id)
     {
-       println params
+       def query
+       String name = params.name
+       String type = params.type
+       String format = params.format
+       String group = params.group
+
+       if (id)
+       {
+          query = Query.get(id) // update
+          type = query.type // type doesnt change
+          
+          // update attrs
+          query.group = group
+          query.format = format
+          query.name = name
+          
+          // delete current data
+          
+          if (type == 'composition')
+          {
+             query.where.each {
+                it.delete()
+             }
+             query.where.clear()
+          }
+          else if (type == 'datavalue')
+          {
+             query.select.each {
+                it.delete()
+             }
+             query.select.clear()
+          }
+       }
+       else query = new Query(name:name, type:type, format:format, group:group) // create
        
-       def query = new Query(name:name, type:type, format:format, group:group) // qarchetypeId puede ser vacio
+       
+       // Query builder
        
        List archetypeIds = params.list('archetypeId')
        List paths = params.list('archetypePath')
        
-       
-       // FIXME: switch
        if (type == 'composition')
        {
           List operands = params.list('operand')
@@ -262,9 +298,40 @@ class QueryController {
           query.errors.allErrors.each { println it }
        }
        
+       return query
+       
+    } // createOrUpdateQuery
+
+
+    /**
+     * 
+     * @param name
+     * @param qarchetypeId
+     * @param type composition | datavalue
+     * @param format xml | json formato por defecto
+     * @param group '' | composition | path agrupamiento por defecto
+     * @return
+     */
+    def save(String name, String type, String format, String group)
+    {
+       println params
+       
+       def query = createOrUpdateQuery()
+       
        //redirect(action:'show', id:query.id)
        render query as JSON
     }
+    
+    
+    def update(Long id)
+    {
+       println 'update '+ params
+       
+       def query = createOrUpdateQuery(id)
+       
+       render query as JSON
+    }
+    
 
     /**
      * This action shows the query UI on the server.
@@ -365,5 +432,45 @@ class QueryController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'query.label', default: 'Query'), id])
             redirect(action: "show", id: id)
         }
+    }
+    
+    
+    /**
+     * Devuelve una lista de IndexDefinition.
+     *
+     * Accion AJAX/JSON, se usa desde queryByData GUI.
+     *
+     * se usa en query create cuando el usuario selecciona el arquetipo
+     * esta accion le devuelve los indices definidos para ese arquetipo
+     * con: path, nombre, tipo rm, ...
+     *
+     * @param archetypeId
+     * @return
+     */
+    def getIndexDefinitions(String archetypeId)
+    {
+       // TODO: checkear params
+       
+       // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
+       //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
+       //        then is we get the IndexDefinitions for an archetype we can get duplicated records.
+       //        The code below (hack) avoids returning duplicated archetype/path, BUT WE NEED TO CREATE
+       //        INDEXES DIFFERENTLY, like having the OPT data in a different record and the archetype/path
+       //        in IndexDefinition, and a N-N relationship between OPTs and the referenced arch/path.
+       //        Current fix is for https://github.com/ppazos/cabolabs-ehrserver/issues/102
+       
+       //def list = IndexDefinition.findAllByArchetypeId(archetypeId)
+       def list = IndexDefinition.withCriteria {
+          resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
+          projections {
+            groupProperty('archetypeId', 'archetypeId')
+            groupProperty('archetypePath', 'archetypePath')
+            property('rmTypeName', 'rmTypeName')
+            property('name', 'name')
+          }
+          eq 'archetypeId', archetypeId
+       }
+       
+       render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
 }

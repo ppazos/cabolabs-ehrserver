@@ -1,7 +1,9 @@
 package ehr
 
 import grails.converters.*
+
 import java.text.SimpleDateFormat
+
 import demographic.Person
 import query.Query
 import query.DataGet

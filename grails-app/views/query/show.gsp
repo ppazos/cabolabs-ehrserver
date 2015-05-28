@@ -120,7 +120,8 @@
           <g:link class="edit" action="edit" id="${queryInstance?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
           <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
           -->
-          <g:link class="edit" action="execute" params="[uid:queryInstance?.uid]"><g:message code="query.execute.action.execute" /></g:link>
+          <g:link class="list" action="execute" params="[uid:queryInstance?.uid]"><g:message code="query.execute.action.execute" /></g:link>
+          <g:link class="edit" action="edit" params="[id:queryInstance?.id]"><g:message code="query.execute.action.edit" /></g:link>
           <g:link class="delete" action="delete" params="[id:queryInstance?.id]" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><g:message code="query.execute.action.delete" /></g:link>
         </fieldset>
       </g:form>

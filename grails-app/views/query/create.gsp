@@ -47,6 +47,9 @@
       .info img {
         cursor: pointer;
       }
+      #update_button {
+        display: none;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -66,34 +69,217 @@
     
     <script type="text/javascript">
 
-      var ajax_submit = function (action) {
+      // =================================
+      // TEST OR SAVE ====================
+      // =================================
+    
+      var save_query = function() {
+        
+        $('#query_form').ajaxSubmit({
+          url: '${createLink(controller:'query', action:'save')}',
+          type: 'post',
+          success: function(responseText, statusText, req, form) {
+            console.log(responseText);
+            // redirect to show!
+            location.href = '${createLink('action': 'show')}?id='+ responseText.id;
+          },
+          error: function(response, textStatus, errorThrown)
+          {
+            console.log('error form_datavalue');
+            console.log(response);
+            alert(response.responseText); // lo devuelto por el servidor
+          }
+        });
+      };
+
+      var update_query = function() {
+         
+         $('#query_form').ajaxSubmit({
+           url: '${createLink(controller:'query', action:'update')}',
+           type: 'post',
+           success: function(responseText, statusText, req, form) {
+             console.log(responseText);
+             // redirect to show!
+             location.href = '${createLink('action': 'show')}?id='+ responseText.id;
+           },
+           error: function(response, textStatus, errorThrown)
+           {
+             console.log('error form_datavalue');
+             console.log(response);
+             alert(response.responseText); // lo devuelto por el servidor
+           }
+         });
+       };
+
+      var test_query_composition = function () {
+
+        console.log('test composition query');
+        console.log('query_form', $('#query_form'));
+        
+        $('#query_form').ajaxSubmit({
+
+          // datatype = xml for composition
+         
+          url: '${createLink(controller:'rest', action:'queryCompositions')}',
+
+          type: 'post',
+         
+          beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
+            
+            console.log('form_composition beforeSubmit', data);
+            
+            valid = true;
+            
+            // Verifica que todos los valores necesarios para la query fueron ingresados
+            $('input[type=text][name=value]').each( function(i, elem) {
+              
+              e = $(elem);
+              e.removeClass('errors');
+              
+              //console.log($(elem).val(), elem.value);
+
+              if (e.val() == '')
+              {
+                valid = false;
+                e.addClass('errors');
+              }
+            });
+            
+            if (!valid)
+            {
+              alert('Introduzca los valores para el criterio de la consulta');
+            }
+            
+            return valid;
+          },
+          success: function(responseText, statusText, req, form) {  // >>> SUCCESS
+            
+            console.log('form_composition success');
+            //console.log(responseText);
+            //console.log(statusText);
+            //console.log(req);
+            //console.log(form);
+            
+            // reset code class or highlight
+            $('code').removeClass('xml json');
+
+            // Si devuelve HTML
+            if ($('select[name=showUI]').val()=='true')
+            {
+              $('#results').html( responseText );
+              $('#results').show('slow');
+            }
+            else // Si devuelve el XML
+            {
+              // highlight
+              $('code').addClass('xml');
+              $('code').text(formatXml( xmlToString(responseText) ));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              $('code').show('slow');
+            }
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
+          },
+          error: function(response, textStatus, errorThrown) {  // >>> ERROR
+          
+            console.log(response, textStatus, errorThrown);
+            alert(errorThrown); // lo devuelto por el servidor
+          }
+        }); // ajax_submit
+
+        console.log('after ajax submit');
+      };
+      
+      var test_query_datavalue = function () {
+
+        console.log('test datavalue query');
+        
+        $('#query_form').ajaxSubmit({
+            
+          dataType: $('select[name=format]').val(), // xml o json
+          url: '${createLink(controller:'rest', action:'queryData')}',
+          type: 'post',
+          data: {doit:true},
+        
+          beforeSubmit: function(data, form, options) {
+          
+            console.log('form_datavalue beforeSubmit');
+          },
+          
+          success: function(responseText, statusText, req, form) {
+            
+            console.log('form_datavalue success');
+            
+            // Vacia donde se va a mostrar la tabla o el chart
+            $('#chartContainer').empty();
+            
+            console.log('form_datavalue success 2');
+
+            // reset code class or highlight
+            $('code').removeClass('xml json');
+
+            // Si devuelve JSON (verifica si pedi json)
+            if ($('select[name=format]').val()=='json')
+            {
+              console.log('form_datavalue success json');
+            
+              // highlight
+              $('code').addClass('json');
+              $('code').text(JSON.stringify(responseText, undefined, 2));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              
+              // =================================================================
+              // Si agrupa por composition (muestra tabla)
+              //
+              if ($('select[name=group]').val() == 'composition')
+              {
+                queryDataRenderTable(responseText);
+              }
+              else if ($('select[name=group]').val() == 'path')
+              {
+                queryDataRenderChart(responseText);
+              }
+            }
+            else // Si devuelve el XML
+            {
+              console.log('form_datavalue success XML');
+            
+              // highlight
+              $('code').addClass('xml');
+              $('code').text(formatXml( xmlToString(responseText) ));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+            }
+
+            $('code').show('slow');
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
+            
+            
+            // Hace scroll animado para mostrar el resultado
+            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+          },
+          
+          error: function(response, textStatus, errorThrown)
+          {
+            console.log('error form_datavalue');
+            console.log(response);
+            
+            alert(response.responseText); // lo devuelto por el servidor
+          }
+        });
+      }; // test_query_datavalue
+    
+      var ajax_submit_test_or_save = function (action) {
 
          console.log('ajax_submit', action);
 
          if (action == 'save') {
 
-            if ($('select[name=type]').val()=='composition')
-            {
-            }
-            else if ($('select[name=type]').val()=='datavalue')
-            {
-            }
-            
-            $('#query_form').ajaxSubmit({
-               url: '${createLink(controller:'query', action:'save')}',
-               type: 'post',
-               success: function(responseText, statusText, req, form) {
-                  console.log(responseText);
-                  // redirect to show!
-                  location.href = '${createLink('action': 'show')}?id='+ responseText.id;
-               },
-               error: function(response, textStatus, errorThrown)
-               {
-                  console.log('error form_datavalue');
-                  console.log(response);
-                  alert(response.responseText); // lo devuelto por el servidor
-               }
-            });
+            save_query();
          }
          else if (action == 'test') {
 
@@ -108,173 +294,293 @@
 
             if ($('select[name=type]').val()=='composition')
             {
-               console.log('test composition query');
-               console.log('query_form', $('#query_form'));
-               
-	            $('#query_form').ajaxSubmit({
-
-		            // datatype = xml for composition
-	               
-	               url: '${createLink(controller:'rest', action:'queryCompositions')}',
-
-	               type: 'post',
-	               
-	               beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
-	                  
-	                  console.log('form_composition beforeSubmit', data);
-	                  
-	                  valid = true;
-	                  
-	                  // Verifica que todos los valores necesarios para la query fueron ingresados
-	                  $('input[type=text][name=value]').each( function(i, elem) {
-	                    
-	                    e = $(elem);
-	                    e.removeClass('errors');
-	                    
-	                    //console.log($(elem).val(), elem.value);
-	
-	                    if (e.val() == '')
-	                    {
-	                      valid = false;
-	                      e.addClass('errors');
-	                    }
-	                  });
-	                  
-	                  if (!valid)
-	                  {
-	                    alert('Introduzca los valores para el criterio de la consulta');
-	                  }
-	                  
-	                  return valid;
-	                },
-	                
-	                success: function(responseText, statusText, req, form) {  // >>> SUCCESS
-	                  
-	                  console.log('form_composition success');
-	                  //console.log(responseText);
-	                  //console.log(statusText);
-	                  //console.log(req);
-	                  //console.log(form);
-	                  
-	                  // reset code class or highlight
-                     $('code').removeClass('xml json');
-	
-	                  // Si devuelve HTML
-	                  if ($('select[name=showUI]').val()=='true')
-	                  {
-	                     $('#results').html( responseText );
-	                     $('#results').show('slow');
-	                  }
-	                  else // Si devuelve el XML
-	                  {
-	                     // highlight
-	                     $('code').addClass('xml');
-	                     $('code').text(formatXml( xmlToString(responseText) ));
-	                     $('code').each(function(i, e) { hljs.highlightBlock(e); });
-	                     $('code').show('slow');
-	                  }
-	                  
-	                  // Muestra el boton que permite ver los datos crudos
-	                  // devueltos por el servidor
-	                  $('#show_data').show();
-	                },
-	                
-	                error: function(response, textStatus, errorThrown) {  // >>> ERROR
-	                
-	                  console.log(response, textStatus, errorThrown);
-	                  
-	                  alert(errorThrown); // lo devuelto por el servidor
-	                }
-	            }); // ajax_submit
-
-	            console.log('after ajax submit');
-	            
-            } // query type = composition
+               test_query_composition();
+            }
             else // query type = datavalue
             {
-               console.log('test datavalue query');
-               
-               $('#query_form').ajaxSubmit({
-                  
-                  dataType: $('select[name=format]').val(), // xml o json
-                  url: '${createLink(controller:'rest', action:'queryData')}',
-                  type: 'post',
-                  data: {doit:true},
-                
-                  beforeSubmit: function(data, form, options) {
-                  
-                    console.log('form_datavalue beforeSubmit');
-                  },
-                  
-                  success: function(responseText, statusText, req, form) {
-                    
-                    console.log('form_datavalue success');
-                    
-                    // Vacia donde se va a mostrar la tabla o el chart
-                    $('#chartContainer').empty();
-                    
-                    console.log('form_datavalue success 2');
+               test_query_datavalue();
+            }
+         } // test query
+         else if (action == 'update') {
 
-                    // reset code class or highlight
-                    $('code').removeClass('xml json');
-
-                    // Si devuelve JSON (verifica si pedi json)
-                    if ($('select[name=format]').val()=='json')
-                    {
-                      console.log('form_datavalue success json');
-                    
-                      // highlight
-                      $('code').addClass('json');
-                      $('code').text(JSON.stringify(responseText, undefined, 2));
-                      $('code').each(function(i, e) { hljs.highlightBlock(e); });
-                      
-                      // =================================================================
-                      // Si agrupa por composition (muestra tabla)
-                      //
-                      if ($('select[name=group]').val() == 'composition')
-                      {
-                        queryDataRenderTable(responseText);
-                      }
-                      else if ($('select[name=group]').val() == 'path')
-                      {
-                        queryDataRenderChart(responseText);
-                      }
-                    }
-                    else // Si devuelve el XML
-                    {
-                      console.log('form_datavalue success XML');
-                    
-                      // highlight
-                      $('code').addClass('xml');
-                      $('code').text(formatXml( xmlToString(responseText) ));
-                      $('code').each(function(i, e) { hljs.highlightBlock(e); });
-                    }
-
-                    $('code').show('slow');
-                    
-                    // Muestra el boton que permite ver los datos crudos
-                    // devueltos por el servidor
-                    $('#show_data').show();
-                    
-                    
-                    // Hace scroll animado para mostrar el resultado
-                    $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
-                  },
-                  
-                  error: function(response, textStatus, errorThrown)
-                  {
-                    console.log('error form_datavalue');
-                    console.log(response);
-                    
-                    alert(response.responseText); // lo devuelto por el servidor
-                  }
-                });
-               
-            } // query type = datavalue
+            update_query();
          }
       }; // ajax_submit
+
+      // =================================
+      // /TEST OR SAVE ===================
+      // =================================
+      
+      // =================================
+      // COMPO QUERY CREATE/EDIT =========
+      // =================================
+      
+      var dom_add_criteria = function (archetype_id, path, operand, value) {
+
+        $('#criteria').append(
+          '<tr>'+
+          '<td>'+ archetype_id +'</td>'+
+          '<td>'+ path +'</td>'+
+          '<td>'+ operand +'</td>'+
+          '<td>'+ value +'</td>'+
+          '<td>'+
+            '<a href="#" class="removeCriteria">[-]</a>'+
+            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
+            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
+            '<input type="hidden" name="operand" value="'+ operand +'" />'+
+            '<input type="hidden" name="value" value="'+ value +'" />'+
+          '</td></tr>'
+        );
+      };
+      
+      var query_datavalue_add_criteria = function () {
+
+        console.log('query_datavalue_add_selection');
+         
+        // TODO: verificar que todo tiene valor seleccionado
+         
+        if ( $('select[name=view_archetype_id]').val() == null )
+        {
+          alert('${g.message(code:'query.create.please_select_concept')}');
+          return;
+        }
+        if ( $('select[name=view_archetype_path]').val() == null )
+        {
+          alert('${g.message(code:'query.create.please_select_datapoint')}');
+          return;
+        }
+        if ( $('input[name=soperand]:checked').val() == null )
+        {
+          alert('${g.message(code:'query.create.please_select_operand')}');
+          return;
+        }
+        if ( $('input[name=svalue]').val() == null )
+        {
+          alert('${g.message(code:'query.create.please_insert_value')}');
+          return;
+        }
+        
+        dom_add_criteria(
+          $('select[name=view_archetype_id]').val(),
+          $('select[name=view_archetype_path]').val(),
+          $('input[name=soperand]:checked').val(),
+          $('input[name=svalue]').val()
+        );
+        
+        // Notifica que la condicion fue agregada
+        $.growlUI(
+          '${g.message(code:"query.create.condition_added")}',
+          '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+        );
+      };
+
+      // =================================
+      // /COMPO QUERY CREATE/EDIT ========
+      // =================================
+      
+      // =================================
+      // DATA QUERY CREATE/EDIT =========
+      // =================================
+      
+      var dom_add_selection = function (archetype_id, path) {
+
+        $('#selection').append(
+          '<tr><td>'+ archetype_id +'</td><td>'+ path +'</td>'+
+          '<td>'+
+            '<a href="#" class="removeSelection">[-]</a>'+
+            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
+            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
+          '</td></tr>'
+        );
+      };
+      
+      var query_datavalue_add_selection = function () {
+
+        // TODO: verificar que todo tiene valor seleccionado
+         
+        if ( $('select[name=view_archetype_id]').val() == null )
+        {
+          alert('${g.message(code:"query.create.please_select_concept")}');
+          return;
+        }
+        if ( $('select[name=view_archetype_path]').val() == null )
+        {
+          alert('${g.message(code:"query.create.please_select_datapoint")}');
+          return;
+        }
+
+        dom_add_selection($('select[name=view_archetype_id]').val(), $('select[name=view_archetype_path]').val());
+        
+        
+         // Notifica que la condicion fue agregada
+        $.growlUI('${g.message(code:"query.create.selection_added")}', '<a href="#selection">${g.message(code:"query.create.verify_selection")}</a>'); 
+      };
+
+      // =================================
+      // /DATA QUERY CREATE/EDIT =========
+      // =================================
+      
+      // =================================
+      // COMMON QUERY CREATE/EDIT ========
+      // =================================
+      
+      var get_and_render_archetype_paths = function (archetype_id) {
+
+        $.ajax({
+          url: '${createLink(controller:"query", action:"getIndexDefinitions")}',
+          data: {archetypeId: archetype_id},
+          dataType: 'json',
+          success: function(data, textStatus) {
+          
+            /*
+            didx
+             archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1
+             name: 'value'
+             path: '/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
+             rmTypeName: "DV_QUANTITY"
+            */
+
+
+            // Saca las options que haya
+            $('select[name=view_archetype_path]').empty();
+            
+            // Agrega las options con las paths del arquetipo seleccionado
+            $('select[name=view_archetype_path]').append('<option value="">${g.message(code:"query.create.please_select_datapoint")}</option>');
+            
+            // Adds options to the select
+            $(data).each(function(i, didx) {
+            
+              $('select[name=view_archetype_path]').append(
+                '<option value="'+ didx.archetypePath +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
+              );
+            });
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            
+            console.log(textStatus, errorThrown);
+          }
+        });
+      };
+      
+      // =================================
+      // /COMMON QUERY CREATE/EDIT =======
+      // =================================
+      
+      var show_controls = function (query_type) {
+
+        $('#query_common').show();
+        $('#query_'+ query_type).show();
+        $('.buttons.create').show();
+      };
+      
     
       $(document).ready(function() {
+      
+      
+        <%-- EDIT QUERY SETUP --%>
+        <%
+        if (mode == 'edit')
+        {
+          //print 'alert("edit");'
+          
+          // dont allow to change type
+          print '$("select[name=type]").prop("disabled", "disabled");'
+          
+          print 'show_controls("'+ queryInstance.type +'");'
+          
+          print '$("select[name=format]").val("'+ queryInstance.format +'");'
+          
+          print '$("select[name=group]").val("'+ queryInstance.group +'");'
+          
+          if (queryInstance.type == 'composition')
+          {
+             //print 'alert("composition");'
+             queryInstance.where.each { data_criteria ->
+                
+                print 'dom_add_criteria("'+ 
+                  data_criteria.archetypeId +'", "'+ 
+                  data_criteria.path +'", "'+
+                  data_criteria.operand +'", "'+ 
+                  data_criteria.value +'");'
+             }
+          }
+          else
+          {
+             //print 'alert("datavalue");'
+             queryInstance.select.each { data_get ->
+                
+                print 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
+             }
+          }
+          
+          // add id of query to form
+          print '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
+          
+          // show update button, hide create button
+          print '$("#update_button").show();'
+          print '$("#create_button").hide();'
+        }
+        %>
+        
+        
+        // ========================================================
+        // Los registros de eventos deben estar en document.ready
+        
+        /**
+	      * Clic en [+]
+	      * Agregar una condicion al criterio de busqueda.
+	      */
+	     $('#addCriteria').on('click', function(e) {
+	
+	        e.preventDefault();
+	        
+	        query_datavalue_add_criteria();
+	     });
+	      
+	      
+	     /**
+	      * Clic en [-]
+	      * Elimina un criterio de la lista de criterios de busqueda.
+	      */
+	     $(document).on("click", "a.removeCriteria", function(e) {
+	      
+	        e.preventDefault();
+	        
+	        // parent es la td y parent.parent es la TR a eliminar
+	        //console.log($(e.target).parent().parent());
+	        //
+	        $(e.target).parent().parent().remove();
+	     });
+	     
+	     /**
+	      * Clic en [+]
+	      * Agregar una seleccion.
+	      */
+	     $('#addSelection').click( function(e) {
+	      
+	        e.preventDefault();
+	        
+	        query_datavalue_add_selection();
+	     });
+	      
+	      
+	     /**
+	      * Clic en [-]
+	      * Elimina una seleccion de la lista.
+	      */
+	     $(document).on("click", "a.removeSelection", function(e) {
+	      
+	        e.preventDefault();
+	        
+	        // parent es la td y parent.parent es la TR a eliminar
+	        //console.log($(e.target).parent().parent());
+	        //
+	        $(e.target).parent().parent().remove();
+	     });
+	     
+	     // ========================================================
+	      
+      
       
         $('.info img').click(function(e) {
           console.log($('.content', $(this).parent()));
@@ -299,9 +605,7 @@
           
           if (this.value != '')
           {
-            $('#query_common').show();
-            $('#query_'+ this.value).show();
-            $('.buttons.create').show();
+            show_controls(this.value);
           }
         });
         
@@ -312,196 +616,10 @@
          */
         $('select[name=view_archetype_id]').change(function() {
         
-          var archetypeId = $(this).val(); // arquetipo seleccionado
+          var archetype_id = $(this).val(); // arquetipo seleccionado
+          get_and_render_archetype_paths(archetype_id);
           
-          // http://api.jquery.com/jQuery.ajax/
-          //
-          $.ajax({
-              // FIXME: this action should be in QueryController
-              url: '${createLink(controller:"test", action:"getIndexDefinitions")}',
-              data: {archetypeId: archetypeId},
-              dataType: 'json',
-              success: function(data, textStatus) {
-                 
-//                didx
-//                 archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1
-//                 name: 'value'
-//                 path: '/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
-//                 rmTypeName: "DV_QUANTITY"
-
-
-                // Saca las options que haya
-                $('select[name=view_archetype_path]').empty();
-                
-                // Agrega las options con las paths del arquetipo seleccionado
-                $('select[name=view_archetype_path]').append('<option value="">${g.message(code:'query.create.please_select_datapoint')}</option>');
-                
-                $(data).each(function(i, didx) {
-                
-                  op = '<option value="'+ didx.archetypePath +'">';
-                  op += didx.name +' {'+ didx.rmTypeName + '}' //+' {'+ ((didx.name != null) ? didx.name +': ' : '') + didx.rmTypeName + '}';
-                  op += '</option>';
-                  
-                  $('select[name=view_archetype_path]').append(op);
-                });
-              },
-              error: function(XMLHttpRequest, textStatus, errorThrown) {
-                
-                console.log(textStatus, errorThrown);
-              }
-          });
         }); // click en select view_archetype_id
-        
-        
-        /*
-         * ======================================================
-         * queryByData add and remove criteria
-         * ======================================================
-         */
-        
-        /**
-         * Clic en [+]
-         * Agregar una condicion al criterio de busqueda.
-         */
-        $('#addCriteria').click( function(e) {
-        
-          e.preventDefault();
-          
-          // TODO: verificar que todo tiene valor seleccionado
-          
-          if ( $('select[name=view_archetype_id]').val() == null )
-          {
-            alert('${g.message(code:'query.create.please_select_concept')}');
-            return;
-          }
-          if ( $('select[name=view_archetype_path]').val() == null )
-          {
-            alert('${g.message(code:'query.create.please_select_datapoint')}');
-            return;
-          }
-          /*
-          if ( $('select[name=soperand]').val() == null )
-          {
-            alert('seleccione un operador');
-            return;
-          }
-          */
-          if ( $('input[name=soperand]:checked').val() == null )
-          {
-            alert('${g.message(code:'query.create.please_select_operand')}');
-            return;
-          }
-          if ( $('input[name=svalue]').val() == null )
-          {
-            alert('${g.message(code:'query.create.please_insert_value')}');
-            return;
-          }
-          
-          $('#criteria').append(
-            '<tr>'+
-            '<td>'+ $('select[name=view_archetype_id]').val() +'</td>'+
-            '<td>'+ $('select[name=view_archetype_path]').val() +'</td>'+
-            //'<td>'+ $('select[name=soperand]').val() +'</td>'+
-            '<td>'+ $('input[name=soperand]:checked').val() +'</td>'+
-            '<td>'+ $('input[name=svalue]').val() +'</td>'+
-            '<td>'+
-              '<a href="#" id="removeCriteria">[-]</a>'+
-              '<input type="hidden" name="archetypeId" value="'+$('select[name=view_archetype_id]').val()+'" />'+
-              '<input type="hidden" name="archetypePath" value="'+$('select[name=view_archetype_path]').val()+'" />'+
-              //'<input type="hidden" name="operand" value="'+$('select[name=soperand]').val()+'" />'+
-              '<input type="hidden" name="operand" value="'+$('input[name=soperand]:checked').val()+'" />'+
-              '<input type="hidden" name="value" value="'+$('input[name=svalue]').val()+'" />'+
-            '</td></tr>'
-          );
-          
-          
-          // Notifica que la condicion fue agregada
-          $.growlUI(
-            '${g.message(code:"query.create.condition_added")}',
-            '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
-          ); 
-        });
-        
-        
-        /**
-         * Clic en [-]
-         * Elimina un criterio de la lista de criterios de busqueda.
-         */
-        $(document).on("click", "#removeCriteria", function(e) {
-        
-          e.preventDefault();
-          
-          // parent es la td y parent.parent es la TR a eliminar
-          //console.log($(e.target).parent().parent());
-          //
-          $(e.target).parent().parent().remove();
-        });
-        
-        /* ======================================================
-         * /queryByData (query composition)
-         * ======================================================
-         */
-        
-        
-        /*
-         * ======================================================
-         * queryData add and remove selection
-         * ======================================================
-         */
-        /**
-         * Clic en [+]
-         * Agregar una condicion al criterio de busqueda.
-         */
-        $('#addSelection').click( function(e) {
-        
-          e.preventDefault();
-          
-          // TODO: verificar que todo tiene valor seleccionado
-          
-          if ( $('select[name=view_archetype_id]').val() == null )
-          {
-            alert('${g.message(code:"query.create.please_select_concept")}');
-            return;
-          }
-          if ( $('select[name=view_archetype_path]').val() == null )
-          {
-            alert('${g.message(code:"query.create.please_select_datapoint")}');
-            return;
-          }
-          
-          $('#selection').append(
-            '<tr><td>'+ $('select[name=view_archetype_id]').val() +'</td>'+
-            '<td>'+ $('select[name=view_archetype_path]').val() +'</td>'+
-            '<td>'+
-              '<a href="#" id="removeSelection">[-]</a>'+
-              '<input type="hidden" name="archetypeId" value="'+$('select[name=view_archetype_id]').val()+'" />'+
-              '<input type="hidden" name="archetypePath" value="'+$('select[name=view_archetype_path]').val()+'" />'+
-            '</td></tr>'
-          );
-          
-           // Notifica que la condicion fue agregada
-          $.growlUI('${g.message(code:"query.create.selection_added")}', '<a href="#selection">Verifique la selecci&oacute;n agregada</a>'); 
-        });
-        
-        
-        /**
-         * Clic en [-]
-         * Elimina un criterio de la lista de criterios de busqueda.
-         */
-        $(document).on("click", "#removeSelection", function(e) {
-        
-          e.preventDefault();
-          
-          // parent es la td y parent.parent es la TR a eliminar
-          //console.log($(e.target).parent().parent());
-          //
-          $(e.target).parent().parent().remove();
-        });
-        
-        /* ======================================================
-         * /queryData (query datavalue)
-         * ======================================================
-         */
         
         
         /*
@@ -670,12 +788,9 @@
             <td><g:message code="query.create.concept" /></td>
             <td>
               <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
-              
               <%-- optionKey="archetypeId" optionValue="name" --%>
-              <%-- This select is used just to create the condition or projection,
-                   is not saved in the query directly --%>
-              <g:select name="view_archetype_id" size="10" from="${concepts}"
-                        noSelection="['':'Choose a concept']" />
+              <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
+              <g:select name="view_archetype_id" size="10" from="${concepts}" noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
             </td>
           </tr>
           <tr>
@@ -919,7 +1034,8 @@
         </script>
         <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
         
-        <a href="javascript:void(0);" onclick="javascript:ajax_submit('save');" >${message(code:'default.button.create.label', default: 'Save')}</a>
+        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">${message(code:'default.button.create.label', default: 'Save')}</a>
+        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">${message(code:'default.button.update.label', default: 'Update')}</a>
       </fieldset>
       
       <!-- test panel -->
@@ -928,7 +1044,7 @@
 	   </div>
 	   
 	   <fieldset class="buttons test">
-	     <a href="javascript:void(0);" onclick="javascript:ajax_submit('test');" >${message(code:'default.button.execute.label', default: 'Execute')}</a>
+	     <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('test');" >${message(code:'default.button.execute.label', default: 'Execute')}</a>
       </fieldset>
     </g:form>
   </body>

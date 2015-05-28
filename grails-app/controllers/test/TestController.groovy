@@ -130,46 +130,7 @@ class TestController {
       render( query as grails.converters.XML )
    }
    
-   
-   /**
-    * Devuelve una lista de IndexDefinition.
-    * 
-    * Accion AJAX/JSON, se usa desde queryByData GUI.
-    * 
-    * Cuando el usuario selecciona el arquetipo, esta accion
-    * le devuelve la informacion de los indices definidos para
-    * ese arquetipo; path, nombre, tipo rm, ...
-    * 
-    * @param archetypeId
-    * @return
-    */
-   def getIndexDefinitions(String archetypeId)
-   {
-      // TODO: checkear params
-      
-      // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
-      //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
-      //        then is we get the IndexDefinitions for an archetype we can get duplicated records.
-      //        The code below (hack) avoids returning duplicated archetype/path, BUT WE NEED TO CREATE
-      //        INDEXES DIFFERENTLY, like having the OPT data in a different record and the archetype/path
-      //        in IndexDefinition, and a N-N relationship between OPTs and the referenced arch/path.
-      //        Current fix is for https://github.com/ppazos/cabolabs-ehrserver/issues/102
-      
-      //def list = IndexDefinition.findAllByArchetypeId(archetypeId)
-      def list = IndexDefinition.withCriteria {
-         resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
-         projections {
-           groupProperty('archetypeId', 'archetypeId')
-           groupProperty('archetypePath', 'archetypePath')
-           property('rmTypeName', 'rmTypeName')
-           property('name', 'name')
-         }
-         eq 'archetypeId', archetypeId
-      }
-      
-      render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-   }
-   
+
    
    def commitTest()
    {

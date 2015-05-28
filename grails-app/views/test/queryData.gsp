@@ -375,10 +375,8 @@
         
           var archetypeId = $(this).val(); // arquetipo seleccionado
 		    
-		    // http://api.jquery.com/jQuery.ajax/
-		    //
           $.ajax({
-				  url: '${createLink(controller:"test", action:"getIndexDefinitions")}',
+				  url: '${createLink(controller:"query", action:"getIndexDefinitions")}',
 				  data: {archetypeId: archetypeId},
 				  dataType: 'json',
 				  success: function(data, textStatus) {
