@@ -69,6 +69,9 @@
     
     <script type="text/javascript">
 
+      // TODO: put this in a singleton
+      //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
+
       // =================================
       // TEST OR SAVE ====================
       // =================================
@@ -349,6 +352,16 @@
           alert('${g.message(code:'query.create.please_select_datapoint')}');
           return;
         }
+
+        // Indexes can be defined over complex attributes but criteria is only for
+        /*
+        if ( ! $.inArray( $('select[name=view_archetype_path]').data('type'), datatypes ) )
+        {
+          alert('${g.message(code:'query.create.criteriaIsOnlyForDatatypes')}');
+          return;
+        }
+        */
+        
         if ( $('input[name=soperand]:checked').val() == null )
         {
           alert('${g.message(code:'query.create.please_select_operand')}');
@@ -359,6 +372,8 @@
           alert('${g.message(code:'query.create.please_insert_value')}');
           return;
         }
+        
+
         
         dom_add_criteria(
           $('select[name=view_archetype_id]').val(),
@@ -428,7 +443,7 @@
 
         $.ajax({
           url: '${createLink(controller:"query", action:"getIndexDefinitions")}',
-          data: {archetypeId: archetype_id},
+          data: {archetypeId: archetype_id, datatypesOnly: true},
           dataType: 'json',
           success: function(data, textStatus) {
           
@@ -451,7 +466,7 @@
             $(data).each(function(i, didx) {
             
               $('select[name=view_archetype_path]').append(
-                '<option value="'+ didx.archetypePath +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
+                '<option value="'+ didx.archetypePath +'" data-type="'+ didx.rmTypeName +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
               );
             });
           },

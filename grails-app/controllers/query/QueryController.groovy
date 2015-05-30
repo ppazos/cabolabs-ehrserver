@@ -447,9 +447,12 @@ class QueryController {
      * @param archetypeId
      * @return
      */
-    def getIndexDefinitions(String archetypeId)
+    def getIndexDefinitions(String archetypeId, boolean datatypesOnly)
     {
        // TODO: checkear params
+       
+       // TODO: define supported DVs in a singleton
+       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION']
        
        // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
        //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
@@ -469,6 +472,11 @@ class QueryController {
             property('name', 'name')
           }
           eq 'archetypeId', archetypeId
+          
+          if (datatypesOnly)
+          {
+             'in'('rmTypeName', datatypes)
+          }
        }
        
        render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
@@ -478,12 +486,8 @@ class QueryController {
     {
        def q = Query.get(id)
        
-       
        withFormat {
           xml {
-             //XML.use('deep')
-             //render query_structure as XML
-             
              render(contentType: "text/xml") {
                 query {
                    uid(q.uid)
@@ -519,62 +523,28 @@ class QueryController {
              }
           }
           json {
-             //JSON.use('deep')
-             //render query_structure as JSON
-             
+
              render(contentType: "application/json") {
-                   delegate.query = {
-                      uid = q.uid
-                      name = q.name
-                      format = q.format
-                      type = q.type
-                      
-                      if (q.type == 'composition')
-                      {
-//                         for (criteria in q.where)
-//                         {
-//                            criteria = {
-//                               archetypeId = criteria.archetypeId
-//                               path        = criteria.path
-//                               operand     = criteria.operand
-//                               value       = criteria.value
-//                            }
-//                         }
-                         criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
-                      }
-                      else
-                      {
-                         group = q.group // Group is only for datavalue
-                         
-                         /*
-                          "projections": [
-                             {
-                               "archetypeId": "openEHR-EHR-EVALUATION.problem_diagnosis.v1",
-                               "path": "/data[at0001]/items[at0009]/value"
-                             },
-                             {
-                               "archetypeId": "openEHR-EHR-EVALUATION.problem_diagnosis.v1",
-                               "path": "/data[at0001]/items[at0012]/value"
-                             }
-                           ]
-                         */
-
-                         projections = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-
-                         
-//                         for (proj in q.select)
-//                         {
-//                            projections << {
-//                               archetypeId = proj.archetypeId
-//                               path        = proj.path
-//                            }
-//                         }
-                      }
-                   } // query
+                delegate.query = {
+                   uid = q.uid
+                   name = q.name
+                   format = q.format
+                   type = q.type
+                   
+                   if (q.type == 'composition')
+                   {
+                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+                   }
+                   else
+                   {
+                      group = q.group // Group is only for datavalue
+                      projections = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+                   }
+                } // query
              }
           }
           html {
-             
+             return "format not supported"
           }
        }
     }
