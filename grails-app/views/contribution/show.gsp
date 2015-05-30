@@ -50,42 +50,40 @@
       </ul>
     </div>
     <div id="show-contribution" class="content scaffold-show" role="main">
-      <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+      <h1>
+        <g:message code="default.show.label" args="[entityName]" />
+        <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${contributionInstance}" field="uid"/></span>
+      </h1>
       <g:if test="${flash.message}">
         <div class="message" role="status">${flash.message}</div>
       </g:if>
       <ol class="property-list contribution">
       
-        <g:if test="${contributionInstance?.audit}">
-          <li class="fieldcontain">
-            <span id="audit-label" class="property-label"><g:message code="contribution.audit.label" default="Audit" /></span>
-            <span class="property-value" aria-labelledby="audit-label">
-              system id: ${contributionInstance?.audit?.systemId}<br/>
-              time committed: ${contributionInstance?.audit?.timeCommitted}<br/>
-              committer: ${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}
-            </span>
-          </li>
-        </g:if>
-      
-        <g:if test="${contributionInstance?.uid}">
-          <li class="fieldcontain">
-            <span id="uid-label" class="property-label"><g:message code="contribution.uid.label" default="Uid" /></span>
-            <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${contributionInstance}" field="uid"/></span>
-          </li>
-        </g:if>
+        <li class="fieldcontain">
+          <span id="uid-label" class="property-label"><g:message code="contribution.uid.label" default="Uid" /></span>
+          
+        </li>
+
+        <li class="fieldcontain">
+          <span id="audit-label" class="property-label"><g:message code="contribution.audit.label" default="Audit details" /></span>
+          <span class="property-value" aria-labelledby="audit-label">
+            system id: ${contributionInstance?.audit?.systemId}<br/>
+            time committed: ${contributionInstance?.audit?.timeCommitted}<br/>
+            committer: ${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}
+          </span>
+        </li>
       
         <g:if test="${contributionInstance?.versions}">
           <li class="fieldcontain">
-            <span id="versions-label" class="property-label"><g:message code="contribution.versions.label" default="Versions" /></span>
-            <%--
-            <g:each in="${contributionInstance.versions}" var="v">
-              <span class="property-value" aria-labelledby="versions-label"><g:link controller="version" action="show" id="${v.id}">${v?.encodeAsHTML()}</g:link></span>
-            </g:each>
-            --%>
+            <span id="versions-label" class="property-label">
+              <g:message code="contribution.versions.label" default="Versions" />
+              (${contributionInstance.versions.size()})
+            </span>
             <table id="versions">
               <tr>
-                <th>creation date</th>
-                <th>type</th>
+                <th>uid</th>
+                <th>start time</th>
+                <th>data</th>
                 <th>change type</th>
                 <th></th>
               </tr>
