@@ -4,6 +4,7 @@
   <g:each in="${contribution.versions}" var="version" status="i">
     <g:set var="cindex" value="${version.data}" />
     <tr>
+      <td>${version.uid}</td>
       <td>${cindex.startTime}</td>
       <td>${cindex.archetypeId}</td>
       <td>${version.commitAudit.changeType}</td>
