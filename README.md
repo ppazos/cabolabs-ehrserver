@@ -70,12 +70,21 @@
 /rest/query(String queryUid, String ehrId)
 
 ### Commits a set of clinical documents to the EHR
-/rest/commit(String ehrUid, Collection<Composition> versions, String auditSystemId, String auditCommitter)
+/rest/commit(String ehrUid, Version[] versions, String auditSystemId, String auditCommitter)
 
-#### Rules for VERSIONs
+Versions should be committed in XML, following this XSD: https://github.com/ppazos/cabolabs-ehrserver/blob/master/xsd/Version.xsd
+
+
+#### Rules for VERSIONs (commit, checkout and version control)
 
 * The XML should be valid against the XSD (see /xsd folder in project).
 * version.uid should have this format: versioned_object_id::creating_system_id::version_tree_id.
+   * The 3 fields of the version.uid attribute should be set by the client.
+   * When committing a new Version, the client should assign: a_generated_uid::client_system_id::1
+   * The first commit of a Version will generate on the EHRServer a new VersionedObject that contains that Version.
+   * The versionedObject.uid will be equal to the first part of the version.uid
+   * When committing a change to an existing VersionedObject, the version.uid should be equal to the uid of the version that was checked out and to which the changes were apply.
+   * When receiving a new Version for an existing VersionedObject, the EHRServer will update the versio_tree_id, generating uid::system::1, uid::system::2, uid::system::3, ... for each version.uid of the same VersionedObject.
 * remember to use the archetype_id in the archetype_node_id attribute, of all the LOCATABLE elements
   inside version.data, when the node_id is 'at0000' (root node).
 * for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string,
