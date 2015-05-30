@@ -14,7 +14,12 @@
     <asset:link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-retina.png" />
     <asset:link rel="stylesheet" href="main.css" type="text/css" />
     <asset:link rel="stylesheet" href="mobile.css" type="text/css" />
+    
     <g:javascript library="jquery" plugin="jquery" />
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    
     <g:layoutHead/>
     <style type="text/css">
     #main_menu {

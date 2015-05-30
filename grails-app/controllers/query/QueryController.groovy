@@ -473,4 +473,109 @@ class QueryController {
        
        render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
+    
+    def export(Long id)
+    {
+       def q = Query.get(id)
+       
+       
+       withFormat {
+          xml {
+             //XML.use('deep')
+             //render query_structure as XML
+             
+             render(contentType: "text/xml") {
+                query {
+                   uid(q.uid)
+                   name(q.name)
+                   format(q.format)
+                   type(q.type)
+                   
+                   if (q.type == 'composition')
+                   {
+                      for (criteria in q.where)
+                      {
+                         delegate.criteria {
+                            archetypeId(criteria.archetypeId)
+                            path(criteria.path)
+                            operand(criteria.operand)
+                            value(criteria.value)
+                         }
+                      }
+                   }
+                   else
+                   {
+                      group(q.group) // Group is only for datavalue
+                      
+                      for (proj in q.select)
+                      {
+                         projection {
+                            archetypeId(proj.archetypeId)
+                            path(proj.path)
+                         }
+                      }
+                   }
+                }
+             }
+          }
+          json {
+             //JSON.use('deep')
+             //render query_structure as JSON
+             
+             render(contentType: "application/json") {
+                   delegate.query = {
+                      uid = q.uid
+                      name = q.name
+                      format = q.format
+                      type = q.type
+                      
+                      if (q.type == 'composition')
+                      {
+//                         for (criteria in q.where)
+//                         {
+//                            criteria = {
+//                               archetypeId = criteria.archetypeId
+//                               path        = criteria.path
+//                               operand     = criteria.operand
+//                               value       = criteria.value
+//                            }
+//                         }
+                         criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+                      }
+                      else
+                      {
+                         group = q.group // Group is only for datavalue
+                         
+                         /*
+                          "projections": [
+                             {
+                               "archetypeId": "openEHR-EHR-EVALUATION.problem_diagnosis.v1",
+                               "path": "/data[at0001]/items[at0009]/value"
+                             },
+                             {
+                               "archetypeId": "openEHR-EHR-EVALUATION.problem_diagnosis.v1",
+                               "path": "/data[at0001]/items[at0012]/value"
+                             }
+                           ]
+                         */
+
+                         projections = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+
+                         
+//                         for (proj in q.select)
+//                         {
+//                            projections << {
+//                               archetypeId = proj.archetypeId
+//                               path        = proj.path
+//                            }
+//                         }
+                      }
+                   } // query
+             }
+          }
+          html {
+             
+          }
+       }
+    }
 }
