@@ -34,6 +34,9 @@
       height: 1.9em;
       padding-bottom: 6px; /* alinea con el input */
     }
+    .folder {
+      padding-left: 1em;
+    }
     </style>
     
     <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css "/>
@@ -157,17 +160,17 @@
       <ol class="property-list ehr">
         
         <g:if test="${ehr?.dateCreated}">
-        <li class="fieldcontain">
-          <span id="dateCreated-label" class="property-label"><g:message code="ehr.dateCreated.label" default="Date Created" /></span>
-          <span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${ehr?.dateCreated}" /></span>
-        </li>
+	        <li class="fieldcontain">
+	          <span id="dateCreated-label" class="property-label"><g:message code="ehr.dateCreated.label" default="Date Created" /></span>
+	          <span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${ehr?.dateCreated}" /></span>
+	        </li>
         </g:if>
       
         <g:if test="${ehr?.systemId}">
-        <li class="fieldcontain">
-          <span id="systemId-label" class="property-label"><g:message code="ehr.systemId.label" default="System Id" /></span>
-          <span class="property-value" aria-labelledby="systemId-label"><g:fieldValue bean="${ehr}" field="systemId"/></span>
-        </li>
+	        <li class="fieldcontain">
+	          <span id="systemId-label" class="property-label"><g:message code="ehr.systemId.label" default="System Id" /></span>
+	          <span class="property-value" aria-labelledby="systemId-label"><g:fieldValue bean="${ehr}" field="systemId"/></span>
+	        </li>
         </g:if>
         
         <li class="fieldcontain">
@@ -176,27 +179,35 @@
           <!-- T0002.1 -->
           <div class="composition_filters">
             <g:form id="${ehr.id}">
-	            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
-	            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
-	            
-	            <g:message code="filter.rootArchetypeId" />
-               <g:select name="qarchetypeId"
-	                      from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
-	                      noSelection="['':'']" />
-	                           
-	            <g:submitToRemote
-	               url="[action:'ehrContributions', id:ehr.id]"
-	               update="ehrContributions"
-	               value="${message(code:'filer.action.apply')}"
-	               onSuccess="highlight_filtered_data()" />
+               <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
+               <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
                
-               <input type="reset" value="${message(code:'form.action.reset')}" />
+               <g:message code="filter.rootArchetypeId" />
+               <g:select name="qarchetypeId"
+                         from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
+                         noSelection="['':'']" />
+                              
+               <g:submitToRemote
+                  url="[action:'ehrContributions', id:ehr.id]"
+                  update="ehrContributions"
+                  value="${message(code:'filer.action.apply')}"
+                  onSuccess="highlight_filtered_data()" />
+               
+               <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:this.form.submit();" />
             </g:form>
           </div>
           
           <div id="ehrContributions">
             <g:include action="ehrContributions" id="${ehr.id}" />
           </div>
+          
+        </li>
+        
+        <li class="fieldcontain">
+        
+          <h2><g:message code="ehr.show.directory" /></h2>
+
+          <g:ehr_directory directory="${ehr.directory}" />
           
         </li>
       </ol>

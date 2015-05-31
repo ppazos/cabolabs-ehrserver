@@ -39,7 +39,6 @@
         <g:if test="${ehrInstance?.contributions}">
         <li class="fieldcontain">
           <span id="contributions-label" class="property-label"><g:message code="ehr.contributions.label" default="Contributions" /></span>
-          
           <g:each in="${ehrInstance.contributions}" var="c">
             <span class="property-value" aria-labelledby="contributions-label"><g:link controller="contributionRef" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
           </g:each>
@@ -49,7 +48,6 @@
         <g:if test="${ehrInstance?.dateCreated}">
         <li class="fieldcontain">
           <span id="dateCreated-label" class="property-label"><g:message code="ehr.dateCreated.label" default="Date Created" /></span>
-          
           <span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${ehrInstance?.dateCreated}" /></span>
         </li>
         </g:if>
@@ -57,7 +55,6 @@
         <g:if test="${ehrInstance?.ehrId}">
         <li class="fieldcontain">
           <span id="ehrId-label" class="property-label"><g:message code="ehr.ehrId.label" default="Ehr Id" /></span>
-          
           <span class="property-value" aria-labelledby="ehrId-label"><g:fieldValue bean="${ehrInstance}" field="ehrId"/></span>
         </li>
         </g:if>
@@ -65,7 +62,6 @@
         <g:if test="${ehrInstance?.subject}">
         <li class="fieldcontain">
           <span id="subject-label" class="property-label"><g:message code="ehr.subject.label" default="Subject" /></span>
-          
           <span class="property-value" aria-labelledby="subject-label"><g:link controller="patientProxy" action="show" id="${ehrInstance?.subject?.id}">${ehrInstance?.subject?.encodeAsHTML()}</g:link></span>
         </li>
         </g:if>
@@ -73,11 +69,9 @@
         <g:if test="${ehrInstance?.systemId}">
         <li class="fieldcontain">
           <span id="systemId-label" class="property-label"><g:message code="ehr.systemId.label" default="System Id" /></span>
-          
           <span class="property-value" aria-labelledby="systemId-label"><g:fieldValue bean="${ehrInstance}" field="systemId"/></span>
         </li>
         </g:if>
-      
       </ol>
       <!--
       <g:form>

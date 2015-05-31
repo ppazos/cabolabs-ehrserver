@@ -147,7 +147,7 @@
               <g:link controller="person" action="list" class="access_icon"><g:message code="person.list.title" /></g:link>
               <g:link controller="ehr" action="list" class="ehr_icon"><g:message code="desktop.ehrs" /></g:link>
               <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
-              <a href="#" class="directory_icon"><g:message code="desktop.directory" /></a>
+              <g:link controller="folder" action="list" class="directory_icon"><g:message code="desktop.directory" /></g:link>
               <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
               <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
               <g:link controller="operationalTemplate" action="list" class="templates_icon"><g:message code="desktop.templates" /></g:link>

@@ -3,6 +3,7 @@ package ehr
 import common.generic.PatientProxy
 import common.change_control.VersionedComposition
 import common.change_control.Contribution
+import directory.Folder
 import javax.xml.bind.annotation.*
 
 /**
@@ -27,6 +28,11 @@ class Ehr {
    // Emula EHR.ehr_status...<OBJECT_REF>...subject
    PatientProxy subject
    
+   // Root of the directory tree
+   Folder directory
+   // Causes errors when creating Folders with ehr null
+   //static hasOne = [directory: Folder] // needed to set 1 to 1 rel with Folder, Folder has: Ehr ehr. See http://grails.github.io/grails-doc/2.2.1/ref/Domain%20Classes/hasOne.html
+   
    
    List compositions = []
    List contributions = []
@@ -34,6 +40,7 @@ class Ehr {
    
    
    static constraints = {
+      directory(nullable: true) // directory is optional
    }
    
    static mapping = {

@@ -191,7 +191,7 @@ img {
 
 .content h1 {
  border-bottom: 1px solid #CCCCCC;
- margin: 0.8em 1em 0.3em;
+ /*margin: 0.8em 1em 0.3em;*/
  /*padding: 0 0.25em;*/
 }
 
@@ -575,7 +575,7 @@ th:hover, tr:hover {
 
 /* PAGINATION */
 
-.pagination {
+div.pagination {
  border-top: 0;
  margin: 0;
  padding: 0.3em 0.2em;
@@ -584,6 +584,7 @@ th:hover, tr:hover {
  -webkit-box-shadow: 0 0 3px 1px #AAAAAA;
    box-shadow: 0 0 3px 1px #AAAAAA;
  background-color: #EFEFEF;
+ display: block;
 }
 
 .pagination a,

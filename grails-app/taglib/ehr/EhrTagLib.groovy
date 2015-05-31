@@ -1,5 +1,7 @@
 package ehr
 
+import directory.Folder
+
 class EhrTagLib {
 
    def hasEhr = { attrs, body ->
@@ -38,5 +40,25 @@ class EhrTagLib {
       //println ehr
       
       if (!ehr) out << body()
+   }
+   
+   def ehr_directory = { attrs, body ->
+      
+      if (!attrs.directory) return
+      
+      out << recursive_directory(attrs.directory)
+   }
+   
+   private String recursive_directory(Folder folder)
+   {
+      def html = '<div class="folder"><div class="folder_name">'+ folder.name +'('+ folder.items.size() +')</div><div class="folder_folders">'
+      
+      folder.folders.each {
+         html += recursive_directory(it)
+      }
+      
+      html += '</div></div>'
+      
+      return html
    }
 }
