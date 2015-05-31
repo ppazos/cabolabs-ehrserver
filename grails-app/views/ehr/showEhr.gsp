@@ -193,7 +193,7 @@
                   value="${message(code:'filer.action.apply')}"
                   onSuccess="highlight_filtered_data()" />
                
-               <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:this.form.submit();" />
+               <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:location.reload()" />
             </g:form>
           </div>
           
