@@ -173,6 +173,8 @@
 	        </li>
         </g:if>
         
+        <br/>
+        
         <li class="fieldcontain">
         
           <h2><g:message code="ehr.show.clinicalRecords" /></h2>
@@ -204,13 +206,63 @@
         </li>
         
         <li class="fieldcontain">
-        
           <h2><g:message code="ehr.show.directory" /></h2>
-
           <g:ehr_directory directory="${ehr.directory}" />
-          
         </li>
       </ol>
+      
+      <fieldset class="buttons create" style="display: block;">
+        <script type="text/javascript">
+          $(document).ready(function() {
+             
+            $('#add_versioned_objects').on('click', function () {
+
+              
+              var versioned_object_uids = [];
+              $.each( $('input[name="versioned_object.uid"]:checked'), function () {
+                versioned_object_uids.push($(this).val());
+              });
+              var folder_id = $('input[name="folder.id"]:checked').val();
+
+              if (versioned_object_uids.length == 0)
+              {
+                alert('Select one or more documents');
+                return;
+              }
+              if (folder_id == undefined)
+              {
+                alert('Select a folder');
+                return;
+              }
+              
+              console.log(versioned_object_uids, folder_id);
+
+              $.ajax({
+                url: '${createLink(controller:"folder", action:"addItems")}',
+                type: "POST",
+                traditional: true, // Avoids adding suffix [] to the versioned_object_uids param.
+                data: {id: folder_id, versioned_object_uids: versioned_object_uids},
+                success: function(data, textStatus) {
+                    
+                  console.log(data);
+
+                  /*
+                    $('#json').addClass('json');
+                    $('#json').text(JSON.stringify(data, undefined, 2));
+                    $('#json').each(function(i, e) { hljs.highlightBlock(e); });
+                  */
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    
+                  console.log(textStatus, errorThrown);
+                }
+              });
+            });
+          });
+        </script>
+        
+        <a href="javascript:void(0);" id="add_versioned_objects">Add documents to folders</a>
+      </fieldset>
       
       <!--
       <g:form>

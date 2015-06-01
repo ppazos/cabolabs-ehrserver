@@ -129,7 +129,6 @@
 	     </div>
 	   </div>
       
-      
       <g:form>
         <fieldset class="buttons">
           <g:hiddenField name="id" value="${queryInstance?.id}" />
@@ -155,7 +154,7 @@ console.log(data);
 	         
 	         console.log(textStatus, errorThrown);
 	       }
-	     });
+	    });
 	    $.ajax({
           url: '${createLink(controller:"query", action:"export")}',
           data: {id: ${queryInstance?.id}, format: 'xml'},

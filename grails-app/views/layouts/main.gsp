@@ -54,7 +54,7 @@
       <g:link controller="person" action="list" class="access_icon ${(controllerName=='person')?'active':''}"><g:message code="person.list.title" /></g:link>
       <g:link controller="ehr" action="list" class="ehr_icon ${(controllerName=='ehr')?'active':''}"><g:message code="desktop.ehrs" /></g:link>
       <g:link controller="contribution" action="list" class="contributions_icon ${(controllerName=='contribution')?'active':''}"><g:message code="desktop.contributions" /></g:link>
-      <g:link controller="folder" action="list" class="directory_icon ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></g:link>
+      <g:link controller="folder" action="index" class="directory_icon ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></g:link>
       <g:link controller="query" action="list" class="query_icon ${(controllerName=='query')?'active':''}"><g:message code="desktop.queries" /></g:link>
       <g:link controller="indexDefinition" action="list" class="indexes_icon ${(controllerName=='indexDefinition')?'active':''}"><g:message code="desktop.indexes" /></g:link>
       <g:link controller="operationalTemplate" action="list" class="templates_icon ${(controllerName=='operationalTemplate')?'active':''}"><g:message code="desktop.templates" /></g:link>

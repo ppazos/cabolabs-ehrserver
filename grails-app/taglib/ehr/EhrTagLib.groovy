@@ -51,13 +51,26 @@ class EhrTagLib {
    
    private String recursive_directory(Folder folder)
    {
-      def html = '<div class="folder"><div class="folder_name">'+ folder.name +'('+ folder.items.size() +')</div><div class="folder_folders">'
+      def html = $/
+      |<div class="folder">
+      |  <div class="folder_name">
+      |    <input type="radio" name="folder.id" value="${folder.id}" />
+      |    ${folder.name} (${folder.items.size()})
+      |  </div>
+      |  <div class="folder_items">
+      /$.stripMargin()
+
+      folder.items.each {
+         html += '<div class="folder_item">'+ g.link(controller:'versionedComposition', action:'show', params:[uid:it], it) +'</div>'
+      }
+      
+      html += '</div><div class="folder_folders">'
       
       folder.folders.each {
          html += recursive_directory(it)
       }
       
-      html += '</div></div>'
+      html += '</div></div>' // /folder_folders, /folder
       
       return html
    }

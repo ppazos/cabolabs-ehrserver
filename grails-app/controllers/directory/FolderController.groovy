@@ -107,4 +107,27 @@ class FolderController {
             '*'{ render status: NOT_FOUND }
         }
     }
+    
+    @Transactional
+    def addItems(Long id)
+    {
+       println params
+       
+       List vouids = params.list('versioned_object_uids')
+       
+       println vouids
+       
+       def folder = Folder.get(id)
+       
+       vouids.each {
+          if (!folder.items.contains(it)) // avoid adding the same item twice
+          {
+             folder.items.add(it) // addToItems dont work over simple type hasMany
+          }
+       }
+       
+       if (!folder.save(flush:true)) println folder.errors
+       
+       render "ok"
+    }
 }

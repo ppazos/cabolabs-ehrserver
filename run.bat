@@ -1,1 +1,1 @@
-grails -Dserver.port=8090 -reloading run-app
+grails -reloading -Dserver.port=8090 run-app

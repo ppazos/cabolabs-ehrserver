@@ -4,6 +4,18 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
+
+grails.reload.enabled = true
+
+forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 512]
+grails.project.fork = [
+   test: forkConfig, // configure settings for the test-app JVM
+   run: forkConfig, // configure settings for the run-app JVM
+   war: forkConfig, // configure settings for the run-war JVM
+   console: forkConfig // configure settings for the Swing console JVM
+]
+
+
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 grails.server.port.http = 8090
 grails.project.dependency.resolver = "maven"

@@ -15,6 +15,7 @@ class Folder {
    */
    
    Folder parent
+   List items = []
    static hasMany = [folders: Folder, items: String] // items is a list of UIDs of the VERSIONED_OBJECTS contained.
    
    // EHR in which the Folder is contained

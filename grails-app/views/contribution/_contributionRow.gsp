@@ -1,5 +1,5 @@
 <%-- usado desde ehr/_ehrContributions.gsp y contribution/show --%>
-<g:if test="${hideTimeAndCommitter}">
+<g:if test="${hideTimeAndCommitter}"><!-- para listar las versions sin agrupacion de contribution -->
 
   <g:each in="${contribution.versions}" var="version" status="i">
     <g:set var="cindex" value="${version.data}" />
@@ -9,6 +9,7 @@
       <td>${cindex.archetypeId}</td>
       <td>${version.commitAudit.changeType}</td>
       <td>
+        <input type="checkbox" name="versioned_object.uid" value="${version.objectId}" />
         <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><asset:image src="xml.png" class="icon" /></g:link>
         <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><asset:image src="doc.png" class="icon" /></g:link>
       </td>
@@ -27,6 +28,7 @@
 	  <td class="contribution_data_archid">${cindex.archetypeId}</td>
 	  <td>${contribution.versions[0].commitAudit.changeType}</td>
 	  <td>
+	    <input type="checkbox" name="versioned_object.uid" value="${contribution.versions[0].objectId}" />
 	    <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><asset:image src="xml.png" class="icon" /></g:link>
 	    <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><asset:image src="doc.png" class="icon" /></g:link>
 	  </td>
@@ -40,6 +42,7 @@
 	     <td class="contribution_data_archid">${cindex.archetypeId}</td>
 	     <td>${version.commitAudit.changeType}</td>
 	     <td>
+	       <input type="checkbox" name="versioned_object.uid" value="${version.objectId}" />
 	       <g:link controller="ehr" action="showComposition" params="[uid:cindex.uid]" title="Ver XML ${cindex.uid}" target="_blank"><asset:image src="xml.png" class="icon" /></g:link>
 	       <g:link controller="ehr" action="showCompositionUI" params="[uid:cindex.uid]" title="Ver Documento ${cindex.uid}" class="showCompo"><asset:image src="doc.png" class="icon" /></g:link>
 	     </td>
