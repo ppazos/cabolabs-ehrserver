@@ -176,7 +176,14 @@ class Query {
                resHeaders[absPath]['attrs'] = ['magnitude', 'units']
             break
             case ['DV_CODED_TEXT', 'DvCodedText']:
+               // code => defining_code.code_string
+               // FIXME: add defining_code.terminology_id
                resHeaders[absPath]['attrs'] = ['value', 'code']
+            break
+            case ['DV_ORDINAL', 'DvOrdinal ']:
+               // value: integer, symbol.value: string, symbol.code: string
+               // FIXME: add symbol.defining_code.terminology_id
+               resHeaders[absPath]['attrs'] = ['value', 'symbol_value', 'symbol_code']
             break
             case ['DV_TEXT', 'DvText']:
                resHeaders[absPath]['attrs'] = ['value']
@@ -270,6 +277,12 @@ class Query {
                      col['type'] = dvi.type
                      col['precision'] = dvi.precision
                   break
+                  case ['DV_ORDINAL', 'DvOrdinal']:
+                     col['value'] = dvi.value
+                     col['symbol_value'] = dvi.symbol_value
+                     col['symbol_code'] = dvi.symbol_code
+                     col['symbol_terminology_id'] = dvi.symbol_terminology_id
+                  break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
@@ -346,6 +359,13 @@ class Query {
                   resGrouped[absPath]['serie'] << [code:      dvi.code,
                                                    value:     dvi.value,
                                                    date:      dvi.owner.startTime]
+               break
+               case ['DV_ORDINAL', 'DvOrdinal']:
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   symbol_value: dvi.symbol_value,
+                                                   symbol_code:  dvi.symbol_code,
+                                                   symbol_terminology_id: dvi.symbol_terminology_id,
+                                                   date:         dvi.owner.startTime]
                break
                case ['DV_TEXT', 'DvText']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
@@ -483,6 +503,12 @@ class Query {
                    fromMap['DvTextIndex'] = 'dti'
                    where += " AND dti.id = dvi.id "
                    where += " AND dti.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
+               break
+               case ['DV_ORDINAL', 'DvOrdinal']:
+                   fromMap['DvOrdinalIndex'] = 'dvol'
+                   where += " AND dvol.id = dvi.id "
+                   where += " AND dvol.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
+                   // TODO: search by code/terminology_id
                break
                case ['DV_BOOLEAN', 'DvBoolean']:
                    fromMap['DvBooleanIndex'] = 'dbi'

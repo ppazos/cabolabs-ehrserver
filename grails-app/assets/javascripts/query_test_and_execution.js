@@ -74,6 +74,7 @@ var queryDataRenderChart = function(data)
    }]
    */
    var series = [];
+   var point;
    
    /*
    data = {
@@ -89,7 +90,7 @@ var queryDataRenderChart = function(data)
      console.log('path y dviseries', path, dviseries);
 
      // Filter: only chart numeric data
-     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION']) == -1)
+     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL']) == -1)
      {
         console.log('type filtered '+ dviseries.type);
         return;
@@ -103,21 +104,42 @@ var queryDataRenderChart = function(data)
       *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
       */
      var serie = { name: dviseries.name, data: [] };
-  
 
-     // FIXME: cuidado, esto es solo para DvQuantity!!!!!
      $.each( dviseries.serie, function(ii, dvi) {
       
-       //console.log('ii y dvi', ii, dvi);
+       console.log('ii y dvi', ii, dvi);
       
-       // FIXME: el valor depende del tipo de dato, y para graficar se necesitan ordinales
+       // El valor depende del tipo de dato, y para graficar se necesitan ordinales
        // TODO: ver si se pueden graficar textos y fechas
        // TODO: prevenir internar graficar tipos de datos que no se pueden graficar
        //serie.data.push( dvi.magnitude );
+        
+        
        
-       // para que la etiqueta muestre las unidades
-       point = {name: dvi.magnitude+' '+dvi.units,
-                y: dvi.magnitude}
+        if (dviseries.type == 'DV_ORDINAL')
+        {
+           point = {name: dvi.value +' ('+ dvi.symbol_value +')',
+                    y:    dvi.value};
+        }
+        else if (dviseries.type == 'DV_COUNT')
+        {
+           point = {name: dvi.magnitude,
+                    y:    dvi.magnitude};
+        }
+        else if (dviseries.type == 'DV_PROPORTION')
+        {
+           point = {name: dvi.numerator+' '+dvi.denominator, // TODO: show proportion kind: percentage, etc.
+                    y:    dvi.numerator / dvi.denominator};
+        }
+        else // DV_QUANTITY
+        {
+           // para que la etiqueta muestre las unidades
+           point = {name: dvi.magnitude+' '+dvi.units,
+                    y:    dvi.magnitude};
+        }
+        
+       
+       
        serie.data.push(point);
 
      });
