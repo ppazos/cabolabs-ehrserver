@@ -50,7 +50,7 @@ class Query {
    // Sirve para agrupar datos:
    //  composition: sirve para mostrar tablas, donde cada fila es una composition
    //  path: sirve para armar series de valores para graficar
-   String group
+   String group = 'none'
    
    
    static constraints = {
@@ -59,7 +59,7 @@ class Query {
       name(nullable:false, blank:false)
       
       // No creo que le guste null en inList, le pongo ''
-      group(nullable:true, inList:['', 'composition', 'path'])
+      group(inList:['none', 'composition', 'path'])
       //qarchetypeId(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])

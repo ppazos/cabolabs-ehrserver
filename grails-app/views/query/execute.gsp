@@ -388,7 +388,7 @@
             <td>default group</td>
             <td>
               <select name="group" size="3">
-                <option value="" ${((query.group=='') ? 'selected="selected"':'')}>none</option>
+                <option value="none" ${((query.group=='none') ? 'selected="selected"':'')}>none</option>
                 <option value="composition" ${((query.group=='composition') ? 'selected="selected"':'')}>composition</option>
                 <option value="path" ${((query.group=='path') ? 'selected="selected"':'')}>path</option>
               </select>

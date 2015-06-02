@@ -309,7 +309,7 @@ class QueryController {
      * @param qarchetypeId
      * @param type composition | datavalue
      * @param format xml | json formato por defecto
-     * @param group '' | composition | path agrupamiento por defecto
+     * @param group none | composition | path agrupamiento por defecto
      * @return
      */
     def save(String name, String type, String format, String group)
@@ -523,7 +523,6 @@ class QueryController {
              }
           }
           json {
-
              render(contentType: "application/json") {
                 delegate.query = {
                    uid = q.uid

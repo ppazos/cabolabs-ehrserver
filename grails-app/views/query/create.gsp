@@ -1005,7 +1005,7 @@
             <td>default group</td>
             <td>
               <select name="group" size="3">
-                <option value="" selected="selected">none</option>
+                <option value="none" selected="selected">none</option>
                 <option value="composition">composition</option>
                 <option value="path">path</option>
               </select>
