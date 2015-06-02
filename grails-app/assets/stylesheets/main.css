@@ -721,3 +721,9 @@ a.skip {
   display: inline;
 }
 /* =============================>>>>>> /Estilo para _patientData.gsp */
+
+/* For XML and file images on _versionRow.gsp*/
+.icon {
+  width: 48px;
+  border: none;
+}

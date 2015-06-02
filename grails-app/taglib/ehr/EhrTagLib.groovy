@@ -61,7 +61,8 @@ class EhrTagLib {
       /$.stripMargin()
 
       folder.items.each {
-         html += '<div class="folder_item">'+ g.link(controller:'versionedComposition', action:'show', params:[uid:it], it) +'</div>'
+         // Versioned Composition: UID
+         html += '<div class="folder_item">Versioned Composition: '+ g.link(controller:'versionedComposition', action:'show', params:[uid:it], it) +'</div>'
       }
       
       html += '</div><div class="folder_folders">'

@@ -83,11 +83,13 @@
               <tr>
                 <th>uid</th>
                 <th>start time</th>
-                <th>data</th>
+                <th>type</th>
                 <th>change type</th>
                 <th></th>
               </tr>
-              <g:render template="contributionRow" model="[contribution: contributionInstance, hideTimeAndCommitter: true]"/>
+              <g:each in="${contributionInstance.versions}" var="version">
+				    <g:render template="../version/versionRow" model="[version:version]"/>
+				  </g:each>
             </table>
           </li>
         </g:if>

@@ -6,10 +6,6 @@
     <g:set var="entityName" value="${message(code: 'ehr.label', default: 'Ehr')}" />
     <title><g:message code="default.show.label" args="[entityName]" /></title>
     <style>
-    .icon {
-      width: 48px;
-      border: none;
-    }
     tr:hover {
      background: none;
     }
@@ -177,7 +173,7 @@
         
         <li class="fieldcontain">
         
-          <h2><g:message code="ehr.show.clinicalRecords" /></h2>
+          <h2><g:message code="ehr.show.contributions" /></h2>
           <!-- T0002.1 -->
           <div class="composition_filters">
             <g:form id="${ehr.id}">
@@ -245,6 +241,10 @@
                 success: function(data, textStatus) {
                     
                   console.log(data);
+
+                  if (data == "ok") location.reload();
+
+                  // TODO: update the directory panel to see the added versioned_objects.
 
                   /*
                     $('#json').addClass('json');
