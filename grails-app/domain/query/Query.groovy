@@ -200,6 +200,9 @@ class Query {
             case ['DV_PROPORTION', 'DvProportion']:
                resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
             break
+            case ['DV_DURATION', 'DvDuration']:
+               resHeaders[absPath]['attrs'] = ['value', 'magnitude']
+            break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
          }
@@ -283,6 +286,10 @@ class Query {
                      col['symbol_code'] = dvi.symbol_code
                      col['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
+                  case ['DV_DURATION', 'DvDuration']:
+                     col['value'] = dvi.value
+                     col['magnitude'] = dvi.magnitude
+                  break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
@@ -345,7 +352,7 @@ class Query {
          
          cols[absPath].each { dvi ->
             
-            println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
+            //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
@@ -389,6 +396,10 @@ class Query {
                                                    type:        dvi.type,
                                                    precision:   dvi.precision,
                                                    date:        dvi.owner.startTime]
+               break
+               case ['DV_DURATION', 'DvDuration']:
+                  resGrouped[absPath]['serie'] << [value:   dvi.value,
+                                                   magnitude: dvi.magnitude]
                break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -523,7 +534,7 @@ class Query {
                case ['DV_PROPORTION', 'DvProportion']:
                    fromMap['DvProportionIndex'] = 'dpi'
                    where += " AND dpi.id = dvi.id "
-                   where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.numerator)
+                   where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.value)
                    /*
                     * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
                     *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
@@ -533,6 +544,11 @@ class Query {
                                                     precision:   dvi.precision,
                                                     date:        dvi.owner.startTime]
                    */
+               break
+               case ['DV_DURATION', 'DvDuration']:
+                  fromMap['DvDurationIndex'] = 'dduri'
+                  where += " AND dduri.id = dvi.id "
+                  where += " AND dduri.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
                break
                default:
                   throw new Exception("type $idxtype not supported")

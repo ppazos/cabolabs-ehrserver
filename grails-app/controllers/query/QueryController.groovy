@@ -452,7 +452,8 @@ class QueryController {
        // TODO: checkear params
        
        // TODO: define supported DVs in a singleton
-       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL']
+       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME',
+           'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']
        
        // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
        //        If 2 templates have the same arch/path, two IndexDefinitions will be created,

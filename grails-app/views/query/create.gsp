@@ -455,7 +455,6 @@
              rmTypeName: "DV_QUANTITY"
             */
 
-
             // Saca las options que haya
             $('select[name=view_archetype_path]').empty();
             

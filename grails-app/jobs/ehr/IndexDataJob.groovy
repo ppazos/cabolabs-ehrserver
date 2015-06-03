@@ -210,7 +210,7 @@ class IndexDataJob {
          }
          
          // Si es de un tipo de dato indizable por valor
-         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL'].contains(idxtype))
+         if (['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION'].contains(idxtype))
          {
             def method = 'create_'+idxtype+'_index' // ej. create_DV_CODED_TEXT_index(...)
             def indexDefinition = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
@@ -272,6 +272,29 @@ class IndexDataJob {
          archetypePath: archetypePath,
          owner: owner,
          magnitude: new Long( node.magnitude.text() )
+      )
+   }
+   
+   private DvDurationIndex create_DV_DURATION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      /*
+       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
+      <value xsi:type="DV_DURATION">
+         <value>PT30M</value> // 30 mins
+      </value>
+      */
+      return new DvDurationIndex(
+         templateId: templateId,
+         archetypeId: archetypeId,
+         path: path,
+         archetypePath: archetypePath,
+         owner: owner,
+         value: node.value.text()
+         //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
       )
    }
    
