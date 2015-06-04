@@ -7,4 +7,8 @@ class DvDurationIndex extends DataValueIndex {
 
    String value
    Double magnitude // calculated, duration in seconds
+   
+   static constraints =  {
+      magnitude(nullable:true) // JUST FOR TESING
+   }
 }

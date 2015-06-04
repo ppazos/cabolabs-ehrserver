@@ -207,6 +207,8 @@ class IndexDataJob {
             break
             case 'DvOrdinal': idxtype = 'DV_ORDINAL'
             break
+            case 'DvDuration': idxtype = 'DV_DURATION'
+            break
          }
          
          // Si es de un tipo de dato indizable por valor
@@ -260,7 +262,6 @@ class IndexDataJob {
       CompositionIndex owner)
    {
       /*
-       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
       <value xsi:type="DV_COUNT">
          <magnitude>120</magnitude>
       </value>
@@ -281,6 +282,7 @@ class IndexDataJob {
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
+      println "DV_DURATION "+ node.toString()
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
       <value xsi:type="DV_DURATION">
