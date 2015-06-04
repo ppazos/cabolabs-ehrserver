@@ -103,6 +103,12 @@ var queryDataRenderChart = function(data)
             name: dvi.magnitude+' '+dvi.units,
                y: dvi.magnitude
          };
+      },
+      DV_DURATION: function (dvi) {
+         return {
+            name: dvi.magnitude+' seconds',
+               y: dvi.magnitude
+         };
       }
    };
    
@@ -120,7 +126,7 @@ var queryDataRenderChart = function(data)
      //console.log('path y dviseries', path, dviseries);
 
      // Filter: only chart numeric data
-     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL']) == -1)
+     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']) == -1)
      {
         //console.log('type filtered '+ dviseries.type);
         return;
