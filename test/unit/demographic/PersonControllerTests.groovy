@@ -39,6 +39,7 @@ class PersonControllerTests {
     }
 
     void testSave() {
+        controller.request.method = 'POST'
         controller.save() // creates invalid person, redirects to create
         assert model.personInstance != null
         assert view == '/person/create'
