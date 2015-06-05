@@ -1,7 +1,7 @@
 package demographic
 
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAccessType
+//import javax.xml.bind.annotation.XmlAccessorType
+//import javax.xml.bind.annotation.XmlAccessType
 
 /**
  * Emula la clase demographic.PERSON.
@@ -33,7 +33,7 @@ class Person {
    static constraints = {
       sex(inList:['M','F','U'])
       idCode(nullable:true)
-      idType(inList:['CI','DNI','Passport'], nullable:true)
+      idType(inList:['CI','DNI','Passport','SSN','UID','OID'], nullable:true)
       role(inList:['pat','doc'])
    }
    

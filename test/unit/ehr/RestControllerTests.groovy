@@ -2,7 +2,6 @@ package ehr
 
 import static org.junit.Assert.*
 import demographic.Person
-import ehr.Ehr
 import grails.test.mixin.*
 import grails.test.mixin.support.*
 import ehr.clinical_documents.*
@@ -30,7 +29,10 @@ class RestControllerTests {
 
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = 'a86ac702-980a-478c-8f16-927fd4a5e9ae'
-   def config = Holders.config.app
+   
+   // grailsApplication is injected by the controller test mixin
+   // http://stackoverflow.com/questions/18614893/how-to-access-grailsapplication-and-applicationcontext-in-functional-tests
+   def config = grailsApplication.config.app //Holders.config.app
    
    void setUp()
 	{
@@ -2021,7 +2023,7 @@ class RestControllerTests {
    void testCommitNewVersion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
+      def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
       oti.index(opt)
       
       // Test operational template index created
@@ -2049,7 +2051,7 @@ class RestControllerTests {
       
       // dolar slashy allows GString variables in multiline Strings
       params.versions = $/<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
       <value>ad6866e1-fb08-4e9b-a93b-5095a2563779</value>
@@ -2219,7 +2221,7 @@ class RestControllerTests {
       
       
       params.versions = $/<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.openehr.org/v1 ../xsd/Version.xsd" xsi:type="ORIGINAL_VERSION">
+<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
       <value>ad6866e1-fb08-4e9b-a93b-5095a2562626</value>
@@ -2399,7 +2401,7 @@ class RestControllerTests {
       
       // =========================================================
       // Crea data indexes para los commits previos
-      def indexJob = new ehr.IndexDataJob()
+      def indexJob = new IndexDataJob()
       indexJob.execute()
       
       
@@ -2513,7 +2515,13 @@ class RestControllerTests {
 		params.format = 'text'
 		controller.ehrList()
 		//println controller.response.text
-		println groovy.xml.XmlUtil.serialize( controller.response.text )
+		//println groovy.xml.XmlUtil.serialize( controller.response.text )
+      /*
+       * <?xml version="1.0" encoding="UTF-8"?><result>
+           <code>error</code>
+           <message>formato 'text' no reconocido, debe ser exactamente 'xml' o 'json'</message>
+         </result>
+       */
 		assert controller.response.xml.code.text() == "error"
 		response.reset()
 		

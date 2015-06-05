@@ -1,7 +1,5 @@
 package demographic
 
-
-
 import org.junit.*
 import grails.test.mixin.*
 
@@ -12,7 +10,13 @@ class PersonControllerTests {
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["firstName"] = 'Pablo'
+        params["lastName"] = 'Pazos'
+        params["dob"] = new Date()
+        params["sex"] = 'M'
+        params["idCode"] = '23542354'
+        params["idType"] = 'CI'
+        params["role"] = 'pat'
     }
 
     void testIndex() {
@@ -35,8 +39,7 @@ class PersonControllerTests {
     }
 
     void testSave() {
-        controller.save()
-
+        controller.save() // creates invalid person, redirects to create
         assert model.personInstance != null
         assert view == '/person/create'
 

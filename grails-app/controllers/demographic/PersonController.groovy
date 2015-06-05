@@ -21,10 +21,14 @@ class PersonController {
 
     def save() {
         def personInstance = new Person(params)
+        log.info "A"
         if (!personInstance.save(flush: true)) {
+            log.info "B"
             render(view: "create", model: [personInstance: personInstance])
             return
         }
+        
+        log.info "C"
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
         redirect(action: "show", id: personInstance.id)

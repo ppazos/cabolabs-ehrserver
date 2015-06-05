@@ -32,7 +32,6 @@ class RestControllerCommitXSDValidationTests {
 
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = '11111111-1111-1111-1111-111111111111'
-   def config = Holders.config.app
    
    void setUp()
 	{
@@ -139,7 +138,7 @@ class RestControllerCommitXSDValidationTests {
    void testCommitInvalidVersion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
+      def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
       oti.index(opt)
       
       
@@ -346,7 +345,7 @@ class RestControllerCommitXSDValidationTests {
    void testCommit2InvalidVersion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
+      def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
       oti.index(opt)
       
       
@@ -700,7 +699,7 @@ $/<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
    void testCommit1Invalid1InvalidVersion()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      def opt = new File( "opts" + PS + "Test all datatypes_es.opt" )
+      def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
       oti.index(opt)
       
       

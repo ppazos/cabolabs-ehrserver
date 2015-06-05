@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">
+<version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" xsi:type="ORIGINAL_VERSION">
    <!-- OBJECT_REF -->
    <contribution>
-     <id>
+     <id xsi:type="HIER_OBJECT_ID">
        <value>10aec661-5458-4ff6-8e63-c22655371234</value>
      </id>
      <namespace>isis.ehr.contributions</namespace>
@@ -13,6 +13,11 @@
    <commit_audit>
      <!-- Identity of the system where the change was committed -->
      <system_id>ISIS EHR SERVER</system_id>
+     <!-- PARTY_IDENTIFIED -->
+     
+     <committer xsi:type="PARTY_IDENTIFIED">
+       <name>Dr. Pablo Pazos</name>
+     </committer>
      
      <!-- DV_DATE_TIME -->
      <time_committed>
@@ -29,11 +34,6 @@
          <code_string>249</code_string>
        </defining_code>
      </change_type>
-     
-     <!-- PARTY_IDENTIFIED -->
-     <committer>
-       <name>Dr. Pablo Pazos</name>
-     </committer>
    </commit_audit>
    
    <!-- OBJECT_VERSION_ID -->
