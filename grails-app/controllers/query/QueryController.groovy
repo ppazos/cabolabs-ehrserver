@@ -11,7 +11,7 @@ import grails.converters.*
 
 class QueryController {
 
-    static allowedMethods = [save: "POST", update: "POST"] //, delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
     
     // Para acceder a las opciones de localizacion
     def config = Holders.config.app
@@ -293,6 +293,7 @@ class QueryController {
        
        if (!query.save(flush:true))
        {
+          // TODO: return errors to user
           println "================================="
           println "query errors: "+ query.errors
           query.errors.allErrors.each { println it }

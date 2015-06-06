@@ -104,8 +104,8 @@ class RestController {
     */
    def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
-      println "commit de "+ params.versions.size() +" versions"
-      log.info( "commit received "+ params.versions.size() + " versions"  )
+      println "commit de "+ params.list('versions').size() +" versions"
+      log.info( "commit received "+ params.list('versions').size() + " versions"  )
       
       //new File('params_debug.log') << params.toString()
       

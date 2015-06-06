@@ -9,7 +9,7 @@ class PersonControllerTests {
 
     def populateValidParams(params) {
         assert params != null
-        // TODO: Populate valid properties like...
+        
         params["firstName"] = 'Pablo'
         params["lastName"] = 'Pazos'
         params["dob"] = new Date()
@@ -17,6 +17,7 @@ class PersonControllerTests {
         params["idCode"] = '23542354'
         params["idType"] = 'CI'
         params["role"] = 'pat'
+        params["uid"] = '345634634563456'
     }
 
     void testIndex() {
@@ -39,7 +40,11 @@ class PersonControllerTests {
     }
 
     void testSave() {
+        controller.request.method = 'POST' // removing this will get response.status 405 method not allowed
         controller.save() // creates invalid person, redirects to create
+        
+        //println "status "+ response.status
+        
         assert model.personInstance != null
         assert view == '/person/create'
 
@@ -90,6 +95,9 @@ class PersonControllerTests {
     }
 
     void testUpdate() {
+       
+        // no instance to update, redirect to list -----------------
+        controller.request.method = 'POST'
         controller.update()
 
         assert flash.message != null
@@ -97,14 +105,18 @@ class PersonControllerTests {
 
         response.reset()
 
+        
         populateValidParams(params)
         def person = new Person(params)
 
         assert person.save() != null
 
-        // test invalid parameters in update
+        
+        // test invalid parameters in update -----------------------
         params.id = person.id
-        //TODO: add invalid values to params object
+        
+        // adds invalid values to params object
+        params.uid = ''
 
         controller.update()
 
@@ -113,6 +125,8 @@ class PersonControllerTests {
 
         person.clearErrors()
 
+        
+        // valid update -------------------------------------------
         populateValidParams(params)
         controller.update()
 
@@ -135,6 +149,7 @@ class PersonControllerTests {
     }
 
     void testDelete() {
+        controller.request.method = 'POST'
         controller.delete()
         assert flash.message != null
         assert response.redirectedUrl == '/person/list'

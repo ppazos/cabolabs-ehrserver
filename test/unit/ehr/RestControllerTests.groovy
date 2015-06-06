@@ -2390,6 +2390,9 @@ class RestControllerTests {
          println "template id: "+ version.data.templateId
       }
       
+      println "versioned compositions "+ VersionedComposition.count()
+      println "versions "+ Version.count()
+      println "cotribs "+ Contribution.count()
       
       // ====================================================
       // Verifica cardinalidades de los objetos creados
