@@ -133,6 +133,17 @@ class RestControllerTests {
    void tearDown()
 	{
       // Tear down logic here
+      def version_repo = new File(config.version_repo)
+      
+      version_repo.eachFile {
+         it.delete()
+      }
+      
+      def compo_repo = new File(config.composition_repo)
+      
+      compo_repo.eachFile {
+         it.delete()
+      }
    }
 
 	void testPatientList()
@@ -2409,9 +2420,22 @@ class RestControllerTests {
       indexJob.execute()
       
       
+      // For each version, there are 2 datavalue indexes created
+      // one for /category and one for the DV_COUNT ELEMENT.
+      VersionedComposition.get(1).allVersions.each { version ->
+         assert DataValueIndex.countByOwner(version.data) == 2
+         
+         /*
+         DataValueIndex.findAllByOwner(version.data).each { dvi ->
+            println dvi.path
+         }
+         */
+      }
+      
       
       // ====================================================
-      // Verifica los valores de los objetos creados      
+      // Verifica los valores de los objetos creados     
+      /* 
       VersionedComposition.list().each { vc ->
          
          vc.allVersions.each { ver ->
@@ -2434,9 +2458,9 @@ class RestControllerTests {
             println "============================"
          }
       }
+      */
       
-      
-      
+      /* Can't test this because 
       // Test query versioned compositions
       assert Query.count() == 1, "A query should exist"
       
