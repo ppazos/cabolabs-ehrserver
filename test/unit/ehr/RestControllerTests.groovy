@@ -2397,7 +2397,8 @@ class RestControllerTests {
       // ====================================================
       // Verifica cardinalidades de los objetos creados
       assert VersionedComposition.count() == 1
-      assert VersionedComposition.get(1).allVersions.size() == 2 /// TEST!!!!
+      assert VersionedComposition.get(1).allVersions.size() == 2
+      assert VersionedComposition.get(1).latestVersion.versionTreeId == '2'
       //assert VersionedComposition.get(1).latestVersion.uid == "91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::2"
       
       

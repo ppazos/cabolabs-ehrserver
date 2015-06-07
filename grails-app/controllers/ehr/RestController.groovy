@@ -299,7 +299,7 @@ class RestController {
             
             
             println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-            println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+            //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
             
             
             // FIXME: el archivo no deberia existir!!!

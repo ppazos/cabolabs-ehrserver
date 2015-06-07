@@ -109,7 +109,7 @@ class XmlService {
       def slurper = new XmlSlurper(false, false) //true, false)
       versionsXML.eachWithIndex { versionXML, i ->
       
-      println "************ EACH WITH INDEX ***************** "+ i
+         println "************ EACH WITH INDEX ***************** "+ i
       
          // Sin esto pone tag0 como namespace en todas las tags!!!
          parsedVersion = slurper.parseText(versionXML)
@@ -135,8 +135,9 @@ class XmlService {
             
             assert contribution != null
             
-            println "PRE contribution.save"
+            //println "PRE contribution.save"
             
+            // FIXME: rollback transaction
             if (!contribution.save())
             {
                println "XmlService parse Versions"
@@ -147,7 +148,7 @@ class XmlService {
             }
             else println "Guarda contrib"
             
-            println "POST contribution.save"
+            //println "POST contribution.save"
             
             // FIXME: it seems the addtoContributions is executed twice for the same contribution!!!
          }
@@ -206,9 +207,8 @@ class XmlService {
             
             
             // ================================================================
-            // FIXME: this is not updating the version uid
-            
-            
+            // Update the XML with the new version uid.
+            //
             // The new version.uid was updated in memory and saved into the DB,
             // for checkout purposes we need also to update it in the XML version
             // received, because the version uid received is for the previous version
@@ -221,6 +221,7 @@ class XmlService {
             
             // ================================================================
          }
+/* TEST
          else // creation (no previous version exists)
          {
             // ================================================================
@@ -237,7 +238,15 @@ class XmlService {
             contribution.addToVersions( version )
             println "***** VERSIONS AFTER " +contribution.versions
          }
-
+*/
+         
+// TEST
+         // Because the relationship between Contribution and Version is bidirectional
+         // when the Version is saved, it is added automatically to the Version.contribution.versions list.
+         println "***** VERSIONS PREV " +contribution.versions
+if (!version.save()) println version.errors
+//contribution.addToVersions( version )
+println "***** VERSIONS AFTER " +contribution.versions
          
          //assert contribution.versions.size() == i+1
          
