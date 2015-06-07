@@ -133,28 +133,7 @@ class XmlService {
                parsedVersion, ehr,
                auditSystemId, auditTimeCommitted, auditCommitter
             )
-            
-            assert contribution != null
-            
-            //println "PRE contribution.save"
-            
-            // FIXME: rollback transaction
-            if (!contribution.save())
-            {
-               println "XmlService parse Versions"
-               println "Contribution errors"
-               contribution.errors.allErrors.each {
-                  println it
-               }
-            }
-            else println "Guarda contrib"
-            
-            //println "POST contribution.save"
-            
-            // FIXME: it seems the addtoContributions is executed twice for the same contribution!!!
          }
-         
-
 
          
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
@@ -166,7 +145,7 @@ class XmlService {
             uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
             lifecycleState: parsedVersion.lifecycle_state.value.text(),
             commitAudit: commitAudit,
-            contribution: contribution,
+            //contribution: contribution, // contribution.addToVersions(version) saves the backlink automatically
             data: compoIndex
          )
          
@@ -199,7 +178,7 @@ class XmlService {
             if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
             
             println "POST previousVersion.save"
-            println (previousLastVersion as grails.converters.XML)
+            //println (previousLastVersion as grails.converters.XML)
             
             
             // +1 en el version tree id de version.uid
@@ -222,53 +201,30 @@ class XmlService {
             
             // ================================================================
          }
-/* TEST
-         else // creation (no previous version exists)
-         {
-            // ================================================================
-            // Grails error adds version twice:
-            //
-            // There is a problem: saving the previousLastVersion added the version to the contribution.versions (weird),
-            // so the contribution.addToVersions when there was a previous version, added the version twice to the
-            // contribution.versions list. This else is to avoid that duplicated addition to contribution.versions.
-            //
-            // The weirdest thing is that on test mode, the new version is not added to the contribution, so the assertion below fails. 
-            // ================================================================
-            
-            println "***** VERSIONS PREV " +contribution.versions
-            contribution.addToVersions( version )
-            println "***** VERSIONS AFTER " +contribution.versions
-         }
-*/
-         
-// TEST
-         // Because the relationship between Contribution and Version is bidirectional
-         // when the Version is saved, it is added automatically to the Version.contribution.versions list.
-         println "***** VERSIONS PREV " +contribution.versions
-         if (!version.save()) println version.errors
-         //contribution.addToVersions( version )
-         println "***** VERSIONS AFTER " +contribution.versions
-         
-         //assert contribution.versions.size() == i+1
-         
-         
-         // Aca no lo puedo leer, dice que es vacio !???
-         //println "xmlService.parseVersions: compo.uid="+ parsedVersion.data.uid.value.text()
-         //println "xmlService.parseVersion: compo.uid="+ data.value
-         
-         
-         // Parametro de salida
+
          dataOut[i] = parsedVersion
          
-         // test
-         //println "Compo con nuevo UID:"
-         //println new groovy.xml.StreamingMarkupBuilder().bind{ out << parsedVersion.data}
+         contribution.addToVersions(version)
          
-         // FIXME: deberia procesar 1 contribution por vez
-         //if (!ret.contains(currentContribution)) ret << currentContribution
-      
       } // each versionXML
-
+      
+      
+      // Saves versions in cascade and saves the relationship contribution - versions
+      // FIXME: rollback transaction
+      if (!contribution.save(flush:true))
+      {
+         println "XmlService parse Versions"
+         println "Contribution errors"
+         contribution.errors.allErrors.each {
+            println it
+         }
+      }
+      else println "Guarda contrib"
+      
+      println "***** VERSIONS AFTER "
+      println "***** VERSIONS AFTER " +contribution.versions
+      println "***** VERSIONS AFTER "
+      
       return contribution
    }
    

@@ -35,6 +35,8 @@ class XmlServiceTests { //  extends GroovyTestCase
       List data = []
       def contribution = service.parseVersions(ehr, [xml], 'systemID', new Date(), 'Mr. Committer', data)
       
+      println "contribution.versions "+ contribution.versions
+      
       if (contribution == null) println service.validationErrors
       
       assert contribution != null
