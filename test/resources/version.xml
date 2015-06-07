@@ -46,6 +46,15 @@
       <name>
          <value>Blood Pressure</value>
       </name>
+      <archetype_details>
+         <archetype_id>
+           <value>openEHR-EHR-COMPOSITION.encounter.v1</value>
+         </archetype_id>
+         <template_id>
+           <value>Encounter</value>
+         </template_id>
+         <rm_version>1.0.2</rm_version>
+      </archetype_details>
       <language>
          <terminology_id>
             <value/>
@@ -59,7 +68,7 @@
          <code_string>036</code_string>
       </territory>
       <category>
-         <value>Event</value>
+         <value>event</value>
          <defining_code>
             <terminology_id>
                <value>openehr</value>

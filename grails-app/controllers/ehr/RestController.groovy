@@ -29,6 +29,8 @@ import common.change_control.Version
 
 class RestController {
 
+   static allowedMethods = [commit: "POST"]
+   
    def xmlService // Utilizado por commit
 
    // Para acceder a las opciones de localizacion 
@@ -158,11 +160,12 @@ class RestController {
       
       // En data esta el XML de la composition recibida
       List parsedVersions = [] // List<GPathResult>
-      def contributions = []
+      //def contributions = []
+      Contribution contribution
       try
       {
          // null if there are xml validation errors
-         contributions = xmlService.parseVersions(
+         contribution = xmlService.parseVersions(
             ehr, xmlVersions, 
             auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
             parsedVersions)
@@ -178,7 +181,7 @@ class RestController {
           */
          
          // There are XML validation errors, the whole commit should fail.
-         if (!contributions)
+         if (!contribution)
          {
             // Parsing error
             render(contentType:"text/xml", encoding:"UTF-8") {
@@ -200,13 +203,6 @@ class RestController {
                }
             }
             return
-         }
-         
-         // TEST: in general only one contribution will be created from a commit
-         if (contributions.size() > 1)
-         {
-            log.info("WARNING: there is more than one contribution from a commit")
-            println "WARNING: there is more than one contribution from a commit"
          }
       }
       catch (Exception e)
@@ -245,7 +241,7 @@ class RestController {
       // Eso mas poner las VersionedComposition dentro de EHR deberia ser transaccional.
       // ===================================================================================
       
-      contributions.each { contribution ->
+      //contributions.each { contribution ->
          contribution.versions.eachWithIndex { version, i ->
             
             
@@ -331,7 +327,7 @@ class RestController {
             versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
             
          } // contribution.versions.each
-      } // contributions.each
+      //} // contributions.each
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {

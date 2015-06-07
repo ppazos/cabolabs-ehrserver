@@ -89,10 +89,11 @@ class XmlService {
          return null
       }
       
-      
-      List<Contribution> ret = [] // FIXME: una contribution por commit
-      
       println ":: versionsXML: "+ versionsXML.size()
+      
+      
+      // TODO: verify that all the versions reference the same contribution
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/124
       
       
       // Uso una lista para no reutilizar la misma variable que sobreescribe
@@ -105,7 +106,7 @@ class XmlService {
       def compoIndex
       def startTime
       def contributionId
-      def contribution
+      Contribution contribution // to be returned: 1 contribution per commit
       def slurper = new XmlSlurper(false, false) //true, false)
       versionsXML.eachWithIndex { versionXML, i ->
       
@@ -244,9 +245,9 @@ class XmlService {
          // Because the relationship between Contribution and Version is bidirectional
          // when the Version is saved, it is added automatically to the Version.contribution.versions list.
          println "***** VERSIONS PREV " +contribution.versions
-if (!version.save()) println version.errors
-//contribution.addToVersions( version )
-println "***** VERSIONS AFTER " +contribution.versions
+         if (!version.save()) println version.errors
+         //contribution.addToVersions( version )
+         println "***** VERSIONS AFTER " +contribution.versions
          
          //assert contribution.versions.size() == i+1
          
@@ -267,21 +268,8 @@ println "***** VERSIONS AFTER " +contribution.versions
          //if (!ret.contains(currentContribution)) ret << currentContribution
       
       } // each versionXML
-      
-      ret << contribution
-      
-      /*
-      // ========================================================
-      // Save constribution with versions in cascade
-      if (!contribution.save())
-      {
-         contribution.errors.allErrors.each {
-            println it
-         }
-      }
-      */
-      
-      return ret
+
+      return contribution
    }
    
    

@@ -33,12 +33,13 @@ class XmlServiceTests { //  extends GroovyTestCase
       if (!ehr.save()) println ehr.errors
       
       List data = []
-      def contributions = service.parseVersions(ehr, [xml], 'systemID', new Date(), 'Mr. Committer', data)
+      def contribution = service.parseVersions(ehr, [xml], 'systemID', new Date(), 'Mr. Committer', data)
       
-      if (contributions == null) println service.validationErrors
+      if (contribution == null) println service.validationErrors
       
-      assert contributions != null
-      assert contributions.size() == 1
+      assert contribution != null
+      assert contribution.versions != null
+      assert contribution.versions.size() == 1
       assert data.size() == 1
       
 	  /*
