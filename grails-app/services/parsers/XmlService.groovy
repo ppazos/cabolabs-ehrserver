@@ -331,8 +331,10 @@ class XmlService {
       
       // Modifica XML con uid asignado a la composition
       // Supongo que la COMPOSITION NO tiene un UID
-      version.data.appendNode {
-         uid {
+      // With + groovy adds the new node after the name node to be compliant with the XSD
+      // http://stackoverflow.com/questions/5022353/groovy-xmlslurper-and-inserting-child-nodes
+      version.data.name + {
+         uid('xsi:type': 'HIER_OBJECT_ID') {
             // Sin poner el id explicitamente desde un string asignaba
             // el mismo uid a todas las compositions.
             value(compoIndex.uid)
