@@ -241,93 +241,105 @@ class RestController {
       // Eso mas poner las VersionedComposition dentro de EHR deberia ser transaccional.
       // ===================================================================================
       
-      //contributions.each { contribution ->
-         contribution.versions.eachWithIndex { version, i ->
+      def errorbreak = false
+      
+      contribution.versions.eachWithIndex { version, i ->
+         
+         // ========================================================
+         // Versionado
+         // FIXME: deberia ser transaccional junto a el contribution.save de XmlService
+         
+         def versionedComposition
+         switch (version.commitAudit.changeType)
+         {
+            case 'creation':
             
-            
-            // ========================================================
-            // Versionado
-            def versionedComposition
-            switch (version.commitAudit.changeType)
-            {
-               case 'creation':
+               versionedComposition = new VersionedComposition(
+                  uid: version.objectId,
+                  ehrUid: ehrId,
+                  isPersistent: (version.data.category == 'persistent'))
                
-                  versionedComposition = new VersionedComposition(
-                     uid: version.objectId,
-                     ehrUid: ehrId,
-                     isPersistent: (version.data.category == 'persistent'))
-                  
 //                  if (!versionedComposition.save())
 //                  {
 //                     println "VersionedComposition ERRORS: "+ vc.errors
 //                  }
+               
+               // Agrega composition al EHR
+               ehr.addToCompositions( versionedComposition )
+               
+               if (!ehr.save(flush:true)) println ehr.errors.allErrors
+               
+            break
+            case ['amendment', 'modification']:
+               
+               versionedComposition = VersionedComposition.findByUid(version.objectId)
+               
+               // VersionedObject should exist for change type modification or amendment
+               if (!versionedComposition)
+               {
+                  renderError(message(code:'rest.commit.error.noVersionedCompositionForChangeType', args:[version.commitAudit.changeType, version.objectId]), '472')
                   
-                  // Agrega composition al EHR
-                  ehr.addToCompositions( versionedComposition )
-                  
-                  if (!ehr.save(flush:true)) println ehr.errors.allErrors
-                  
-               break
-               case ['amendment', 'modification']:
-                  
-                  versionedComposition = VersionedComposition.findByUid(version.objectId)
-                  
-                  assert versionedComposition != null: "ERROR: there is no versionedComposition with uid="+ version.objectId
+                  errorbreak = true
+                  return true // just returns from the each
+               }
+               
+               // XmlService hace previousLastVersion.isLastVersion = false
+               // asi la nueva version es la unica con isLastVersion == true
+               
+               
+               // ======================================================
+               // DataValueIndexes for old versions can be deleted
+               // ======================================================
+               
+               // No crea el VersionedComposition porque ya deberia estar
+               
+               assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
+               
+            break
+            default:
+               println "change type "+ version.commitAudit.changeType +" not supported yet"
 
-                  
-                  // XmlService hace previousLastVersion.isLastVersion = false
-                  // asi la nueva version es la unica con isLastVersion == true
-                  
-                  
-                  // ======================================================
-                  // DataValueIndexes for old versions can be deleted
-                  // ======================================================
-                  
-                  // No crea el VersionedComposition porque ya deberia estar
-                  
-                  assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
-                  
-               break
-               default:
-                  println "change type "+ version.commitAudit.changeType +" not supported yet"
-
-            } // switch changeType
-            
-            
-            println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-            //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-            
-            
-            // FIXME: el archivo no deberia existir!!!
-            // TODO: this might br stored in an XML database in the future.
-            
-            // Save compo
-            // This uses the composition uid that is assigned by the server so it must be unique.
-            
-            def compoXML = parsedVersions[i].data
-            // Agrega namespaces al nuevo root
-            // Para que no de excepciones al parsear el XML de la composition
-            compoXML.@xmlns = 'http://schemas.openehr.org/v1'
-            compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
-            
-            
-            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-            compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
-            /*
-             * XmlUtil.serialize genera estos warnings:
-             * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
-             */
-            
-            // Save version as committed
-            // This uses the version uid with the systemid and tree.
-            // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
-            versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-            
-         } // contribution.versions.each
-      //} // contributions.each
+         } // switch changeType
+         
+         
+         println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
+         //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         
+         
+         // FIXME: el archivo no deberia existir!!!
+         // TODO: this might br stored in an XML database in the future.
+         
+         // Save compo
+         // This uses the composition uid that is assigned by the server so it must be unique.
+         
+         def compoXML = parsedVersions[i].data
+         // Agrega namespaces al nuevo root
+         // Para que no de excepciones al parsear el XML de la composition
+         compoXML.@xmlns = 'http://schemas.openehr.org/v1'
+         compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+         
+         
+         compoFile = new File(config.composition_repo + version.data.uid +'.xml')
+         compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
+         /*
+          * XmlUtil.serialize genera estos warnings:
+          * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
+            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
+            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
+          */
+         
+         // Save version as committed
+         // This uses the version uid with the systemid and tree.
+         // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
+         versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
+         versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         
+      } // contribution.versions.each
+      
+      
+      // error: versioned composition doesnt exists
+      if (errorbreak) return
+      
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {
