@@ -18,6 +18,7 @@ import common.change_control.VersionedComposition
 import grails.util.Holders
 import common.change_control.Version
 
+
 /**
  * TODO:
  * 
@@ -210,7 +211,7 @@ class RestController {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          
-         renderError(message(code:'rest.commit.error.couldntParseCompositions', args:[e.message]), '468')
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468')
          return
       }
       

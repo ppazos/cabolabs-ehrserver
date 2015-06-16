@@ -92,14 +92,54 @@ class XmlService {
       println ":: versionsXML: "+ versionsXML.size()
       
       
-      // TODO: verify that all the versions reference the same contribution
-      // https://github.com/ppazos/cabolabs-ehrserver/issues/124
+      // 3 loops:
+      //  1. parse versions: String to GPathResult
+      //  2. verify all parsed versions reference the same contribution
+      //  3. create model from GPathResult and save
       
+      // FIXME: hay que parsear los versionXML para ver el contribution id
+      
+      // GPathResult of all the parsed versions
+      def parsedVersions = []
+      def slurper = new XmlSlurper(false, false) //true, false)
+      
+      versionsXML.eachWithIndex { versionXML, i ->
+         
+         parsedVersions << slurper.parseText(versionXML) // String to GPathResult
+      }
+      
+      
+      // Verification that all the versions reference the same contribution
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/124
+      if (parsedVersions.size() > 1)
+      {
+         def firstContributionId
+         def loopContributionId
+         parsedVersions.eachWithIndex { parsedVersion, i ->
+            
+            loopContributionId = parsedVersion.contribution.id.value.text()
+            if (!loopContributionId)
+            {
+               throw new Exception('version.contribution.id.value should not be empty')
+            }
+            
+            // Set the first contribution uid, then compare the first with the rest,
+            // one is different, throw an exception.
+            if (!firstContributionId) firstContributionId = loopContributionId
+            else
+            {
+               if (firstContributionId != loopContributionId)
+               {
+                  throw new Exception("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+               }
+            }
+         }
+      }
       
       // Uso una lista para no reutilizar la misma variable que sobreescribe
       // las versions anteriors y me deja varias copias de la misma composition
       // en dataOut (quedan todos los punteros a la ultima que se procesa)
-      def parsedVersion
+
       def commitAudit
       def data
       def version
@@ -107,21 +147,15 @@ class XmlService {
       def startTime
       def contributionId
       Contribution contribution // to be returned: 1 contribution per commit
-      def slurper = new XmlSlurper(false, false) //true, false)
-      versionsXML.eachWithIndex { versionXML, i ->
+
+      parsedVersions.eachWithIndex { parsedVersion, i ->
       
          println "************ EACH WITH INDEX ***************** "+ i
       
-         // Sin esto pone tag0 como namespace en todas las tags!!!
-         parsedVersion = slurper.parseText(versionXML)
-
-         
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
          
-         
          println "XMLSERVICE change_type="+ commitAudit.changeType
-         
          
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
@@ -222,9 +256,9 @@ class XmlService {
       }
       else println "Guarda contrib"
       
-      println "***** VERSIONS AFTER "
+      println "***** VERSIONS AFTER ******"
       println "***** VERSIONS AFTER " +contribution.versions
-      println "***** VERSIONS AFTER "
+      println "***** VERSIONS AFTER ******"
       
       return contribution
    }
@@ -352,10 +386,6 @@ class XmlService {
       // and the contribution will have a list of all the versions committed.
       def currentContribution
       
-      
-      // FIXME: deberia reorrer todas las version y verificar que todas
-      //        tienen una referencia a la misma contribution
-      
       // ==============================================================================
       // version.contribution will come from the client
       // https://github.com/ppazos/cabolabs-ehrserver/issues/51
@@ -403,6 +433,7 @@ class XmlService {
          // versions se setean abajo
       )
       
+      // FIXME: dont do this here, do it in the main process that saves all the data, because this should be transactional, if it fails, no contrib should be added
       // TEST: this might save the contrib and there is no need of saving the contrib later
       ehr.addToContributions( currentContribution )
       
