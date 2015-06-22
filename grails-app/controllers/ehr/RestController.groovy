@@ -304,7 +304,7 @@ class RestController {
          
          
          println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-         //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
          
          // FIXME: el archivo no deberia existir!!!
@@ -524,9 +524,12 @@ class RestController {
                systemId: _ehr.systemId
             ]
          }
+
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
          
-         //render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-         render data as JSON
       }
       else
       {
@@ -702,7 +705,10 @@ class RestController {
                idType: person.idType
             ]
          }
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
