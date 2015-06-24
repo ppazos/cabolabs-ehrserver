@@ -51,12 +51,12 @@ class RestController {
    }
    */
    
-   private void renderError(String msg, String errorCode)
+   private void renderError(String msg, String errorCode, int status)
    {
       // Format comes from current request
       withFormat {
          xml {
-            render(contentType:"text/xml", encoding:"UTF-8") {
+            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
                      code('AR')                         // application reject
@@ -68,6 +68,8 @@ class RestController {
             }
          }
          json {
+            println "error json"
+            
             def error = [
                result: [
                   type: [
@@ -78,10 +80,21 @@ class RestController {
                   code: 'ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode
                ]
             ]
-            render error as JSON
+            
+            println "error json struct"
+            
+            //render error as JSON
+            def result = error as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            
+            // with the status in render doesnt return the json to the client
+            // http://stackoverflow.com/questions/10726318/easy-way-to-render-json-with-http-status-code-in-grails
+            response.status = status
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          html {
-            render(contentType:"text/xml", encoding:"UTF-8") {
+            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
                      code('AR')                         // application reject
@@ -117,7 +130,7 @@ class RestController {
       // 1. ehrId debe venir
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400')
+         renderError(message(code:'rest.error.ehrIdRequired'), '400', 400)
          return
       }
       
@@ -127,7 +140,7 @@ class RestController {
       // 2. versions deben venir 1 por lo menos haber una
       if (!params.versions)
       {
-         renderError(message(code:'rest.commit.error.versionsRequired'), '401')
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
@@ -137,7 +150,7 @@ class RestController {
       def xmlVersions = params.list('versions')
       if (xmlVersions.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402')
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       
@@ -149,7 +162,7 @@ class RestController {
       // 3. ehr debe existir
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
+         renderError(message(code:'rest.error.ehrDoesntExists', args:[ehrId]), '403', 404)
          return
       }
       
@@ -211,7 +224,7 @@ class RestController {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          
-         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468')
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400)
          return
       }
       
@@ -278,7 +291,7 @@ class RestController {
                // VersionedObject should exist for change type modification or amendment
                if (!versionedComposition)
                {
-                  renderError(message(code:'rest.commit.error.noVersionedCompositionForChangeType', args:[version.commitAudit.changeType, version.objectId]), '472')
+                  renderError(message(code:'rest.commit.error.noVersionedCompositionForChangeType', args:[version.commitAudit.changeType, version.objectId]), '472', 404)
                   
                   errorbreak = true
                   return true // just returns from the each
@@ -378,13 +391,13 @@ class RestController {
       // Error cases, just 1 version should be found
       if (versions.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412')
+         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412', 404)
          return
       }
       
       if (versions.size() > 1)
       {
-         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413')
+         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413', 500)
          // LOG a disco este caso no se deberia dar
          return
       }
@@ -394,7 +407,7 @@ class RestController {
       // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
       if(version.contribution.ehr.ehrId != ehrId)
       {
-         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414')
+         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414', 500)
          return
       }
       
@@ -405,7 +418,7 @@ class RestController {
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415')
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
          return
       }
       
@@ -529,7 +542,6 @@ class RestController {
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
-         
       }
       else
       {
@@ -540,13 +552,20 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
+      if (!subjectUid)
+      {
+         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
+         return
+      }
+      
       // ===========================================================================
       // 1. Paciente existe?
       //
       def _subject = Person.findByUidAndRole(subjectUid, 'pat')
       if (!_subject)
       {
-         render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
          return
       }
       
@@ -587,7 +606,11 @@ class RestController {
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
          ]
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -631,7 +654,11 @@ class RestController {
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
          ]
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -724,15 +751,16 @@ class RestController {
       
       if (!uid)
       {
-         render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
          return
       }
       
       def person = Person.findByRoleAndUid('pat', uid)
-      
       if (!person)
       {
-         render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
          return
       }
       
@@ -764,7 +792,10 @@ class RestController {
             idType: person.idType
          ]
          
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -807,7 +838,7 @@ class RestController {
                            name(query.name) // FIXME: debe tener uid
                            type(query.type)
                            delegate.format(query.format)
-                           qarchetypeId(query.qarchetypeId)
+                           //qarchetypeId(query.qarchetypeId)
                            group(query.group)
                            
                            delegate.select {
@@ -832,7 +863,7 @@ class RestController {
          }
          json {
          
-            def result = [
+            def data = [
                queries: [],
                pagination: [
                   max: max,
@@ -849,9 +880,8 @@ class RestController {
                   name: query.name, // FIXME: debe tener uid
                   type: query.type,
                   'format': query.format,
-                  qarchetypeId: query.qarchetypeId,
+                  //qarchetypeId: query.qarchetypeId,
                   group: query.group,
-                  
                   select: []
                ]
                
@@ -862,14 +892,14 @@ class RestController {
                   ]
                }
                
-               
-               result.queries << jquery
+               data.queries << jquery
             }
          
-            render(contentType:"application/json", encoding:"UTF-8") {
-               
-               result
-            }
+            
+            def result = data as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
       }
    }
@@ -887,12 +917,12 @@ class RestController {
       
       if (!queryUid)
       {
-         renderError(message(code:'query.execute.error.queryUidMandatory'), '455')
+         renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400')
+         renderError(message(code:'rest.error.ehrIdRequired'), '400', 400)
          return
       }
       
@@ -901,7 +931,7 @@ class RestController {
       
       if (!query)
       {
-         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456')
+         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456', 404)
          return
       }
       
@@ -909,7 +939,7 @@ class RestController {
       
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
+         renderError(message(code:'rest.error.ehrDoesntExists', args:[ehrId]), '403', 404)
          return
       }
       
