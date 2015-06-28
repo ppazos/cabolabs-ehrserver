@@ -488,6 +488,7 @@ class QueryController {
     {
        def q = Query.get(id)
        
+       // TODO: this code should be reused in RestConrtoller.queryList
        withFormat {
           xml {
              render(contentType: "text/xml") {

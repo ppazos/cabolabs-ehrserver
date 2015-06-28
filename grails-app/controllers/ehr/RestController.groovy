@@ -130,7 +130,7 @@ class RestController {
       // 1. ehrId debe venir
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400', 400)
+         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       
@@ -162,7 +162,7 @@ class RestController {
       // 3. ehr debe existir
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists', args:[ehrId]), '403', 404)
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
@@ -621,14 +621,21 @@ class RestController {
    
    def ehrGet(String ehrUid, String format)
    {
+      if (!ehrUid)
+      {
+         renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
+         return
+      }
+      
       // 1. EHR existe?
       def c = Ehr.createCriteria()
       def _ehr = c.get {
          eq ('ehrId', ehrUid)
       }
+      
       if (!_ehr)
       {
-         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el ehrUid $ehrUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
          return
       }
       
@@ -760,7 +767,7 @@ class RestController {
       if (!person)
       {
          //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
-         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
+         renderError(message(code:'rest.error.patient_doesnt_exists', args:[uid]), "477", 404)
          return
       }
       
@@ -836,18 +843,32 @@ class RestController {
                         delegate.query {
                            uid(query.uid)
                            name(query.name) // FIXME: debe tener uid
-                           type(query.type)
                            delegate.format(query.format)
-                           //qarchetypeId(query.qarchetypeId)
-                           group(query.group)
+                           type(query.type)
                            
-                           delegate.select {
-                             query.select.each { _dataGet ->
-                                get {
-                                  archetypeId(_dataGet.archetypeId)
-                                  path(_dataGet.path)
-                                }
-                             }
+                           if (query.type == 'composition')
+                           {
+                              for (criteria in query.where)
+                              {
+                                 delegate.criteria {
+                                    archetypeId(criteria.archetypeId)
+                                    path(criteria.path)
+                                    operand(criteria.operand)
+                                    value(criteria.value)
+                                 }
+                              }
+                           }
+                           else
+                           {
+                              group(query.group) // Group is only for datavalue
+                              
+                              for (proj in query.select)
+                              {
+                                 projection {
+                                    archetypeId(proj.archetypeId)
+                                    path(proj.path)
+                                 }
+                              }
                            }
                         }
                      }
@@ -878,18 +899,18 @@ class RestController {
                def jquery = [
                   uid: query.uid,
                   name: query.name, // FIXME: debe tener uid
-                  type: query.type,
                   'format': query.format,
-                  //qarchetypeId: query.qarchetypeId,
-                  group: query.group,
-                  select: []
+                  type: query.type
                ]
                
-               query.select.each { _dataGet ->
-                  jquery.select << [
-                    archetypeId: _dataGet.archetypeId,
-                    path: _dataGet.path
-                  ]
+               if (query.type == 'composition')
+               {
+                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+               }
+               else
+               {
+                  jquery.group = query.group // Group is only for datavalue
+                  jquery.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
                }
                
                data.queries << jquery
@@ -922,7 +943,7 @@ class RestController {
       }
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400', 400)
+         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       
@@ -939,7 +960,7 @@ class RestController {
       
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists', args:[ehrId]), '403', 404)
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
