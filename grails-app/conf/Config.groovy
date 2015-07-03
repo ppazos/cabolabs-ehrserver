@@ -109,7 +109,7 @@ log4j = {
            'org.springframework'
            //'org.hibernate',
            //'net.sf.ehcache.hibernate'
-           
+    //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
 }
 

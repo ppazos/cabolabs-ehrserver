@@ -1,5 +1,7 @@
 package query
 
+import query.datatypes.*
+
 import ehr.clinical_documents.IndexDefinition
 
 import org.springframework.dao.DataIntegrityViolationException
@@ -482,6 +484,40 @@ class QueryController {
        }
        
        render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+    }
+    
+    /**
+     * Get criteria spec to create condition for composition queries.
+     * @param datatype
+     * @return
+     */
+    def getCriteriaSpec(String datatype)
+    {
+       def res = []
+       switch (datatype) {
+          case 'DV_QUANTITY':
+            res = DataCriteriaDV_QUANTITY.criteriaSpec()
+          break
+          case 'DV_CODED_TEXT':
+            res = DataCriteriaDV_CODED_TEXT.criteriaSpec()
+          break
+          case 'DV_TEXT':
+          break
+          case 'DV_DATE_TIME':
+          break
+          case 'DV_BOOLEAN':
+          break
+          case 'DV_COUNT':
+          break
+          case 'DV_PROPORTION':
+          break
+          case 'DV_ORDINAL':
+          break
+          case 'DV_DURATION':
+          break
+       }
+       
+       render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
     
     def export(Long id)

@@ -50,6 +50,9 @@
       #update_button {
         display: none;
       }
+      fieldset {
+        border: 1px solid #ddd;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -475,6 +478,83 @@
           }
         });
       };
+
+
+      // For composition criteria builder
+      var get_criteria_specs = function (datatype) {
+
+        $.ajax({
+          url: '${createLink(controller:"query", action:"getCriteriaSpec")}',
+          data: {datatype: datatype},
+          dataType: 'json',
+          success: function(spec, textStatus) {
+
+            console.log(spec);
+
+            $('#composition_criteria_builder').empty();
+            
+            var criteria = '';
+
+            // render criteria spec
+            for (i in spec) {
+                
+              aspec = spec[i];
+              
+              console.log(aspec);
+              
+              criteria += '<fieldset><input type="radio" name="criteria" />';
+                
+              for (attr in aspec) {
+                
+                criteria += attr;
+                  
+                conditions = aspec[attr]; // spec[0][code][eq] == value
+                criteria += '<select>';
+                for (cond in conditions) {
+                  
+                   criteria += '<option>'+ cond +'</option>';
+                }
+                criteria += '</select>';
+                  
+                  
+                // indexes of operand and value should be linked.
+
+                for (cond in conditions) {
+                  
+                   criteria += '<span id="operand_value_'+ cond +'">';
+                   
+                   // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
+                   switch ( conditions[cond] ) {
+                     case 'value': criteria += 'value';
+                       break
+                     case 'list': criteria += 'list';
+                       break
+                     case 'range': criteria += 'range';
+                       break
+                   }
+                     
+                   criteria += '</span>';
+                }
+                
+                criteria += ' | ';
+                
+              } // for aspec
+              
+              criteria += '</fieldset>';
+              
+              //console.log(criteria);
+                
+            }; // for render criteria spec
+            
+            $('#composition_criteria_builder').append( criteria );
+            
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            
+            console.log(textStatus, errorThrown);
+          }
+        });
+      };
       
       // =================================
       // /COMMON QUERY CREATE/EDIT =======
@@ -634,6 +714,17 @@
           get_and_render_archetype_paths(archetype_id);
           
         }); // click en select view_archetype_id
+        
+        
+        /**
+         * Clic en una path de la lista (select[view_archetype_path])
+         */
+        $('select[name=view_archetype_path]').change(function() {
+        
+          var datatype = $(this).find(':selected').data('type');
+          get_criteria_specs(datatype);
+          
+        }); // click en select view_archetype_path
         
         
         /*
@@ -821,6 +912,7 @@
       <!-- Campos de queryByData -->
 
       <div id="query_composition" class="query_build">
+        <div id="composition_criteria_builder"></div>
         <table>
           <tr>
             <td><g:message code="query.create.operand" /></td>
