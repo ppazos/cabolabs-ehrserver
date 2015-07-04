@@ -53,6 +53,13 @@
       fieldset {
         border: 1px solid #ddd;
       }
+      /* hide all criteria vales but the first */
+      .criteria_value {
+        display: none;
+      }
+      .criteria_value:first-child {
+        display: inline;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -338,6 +345,64 @@
           '</td></tr>'
         );
       };
+
+      var dom_add_criteria_2 = function (fieldset) {
+
+         $.each( $('.criteria_attribute', fieldset), function (i, e) {
+
+           console.log('criteria attribute', e, $(e).serialize());
+
+           /*
+           <span class="criteria_attribute">
+             code
+             <input type="hidden" name="attribute" value="code">
+             <select class="operand" data-criteria="1" name="operand">
+               <option value="eq">eq</option>               <<< one of these is selected, need to grab the values 
+               <option value="in_list">in_list</option>     <<< from the correspondent index of criteria_value
+             </select>
+             <span class="criteria_value_container">
+               <span class="criteria_value">
+                 <input type="text" name="value" class="value">
+               </span>
+               <span class="criteria_value">
+                 <input type="text" name="list" class="value list">
+                 <!-- <span class="criteria_list_add_value">[+]</span> -->
+               </span>
+             </span>
+           </span>
+           */
+         });
+
+         /*
+         $('#criteria').append(
+           '<tr>'+
+           '<td>'+ archetype_id +'</td>'+
+           '<td>'+ path +'</td>'+
+           '<td>'+ operand +'</td>'+
+           '<td>'+ value +'</td>'+
+           '<td>'+
+             '<a href="#" class="removeCriteria">[-]</a>'+
+             '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
+             '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
+             '<input type="hidden" name="operand" value="'+ operand +'" />'+
+             '<input type="hidden" name="value" value="'+ value +'" />'+
+           '</td></tr>'
+         );
+         */
+       };
+
+      var query_datavalue_add_criteria_2 = function () {
+        
+        dom_add_criteria_2(
+          $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
+        );
+        
+        // Notifica que la condicion fue agregada
+        $.growlUI(
+          '${g.message(code:"query.create.condition_added")}',
+          '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+        );
+      };
       
       var query_datavalue_add_criteria = function () {
 
@@ -481,6 +546,7 @@
 
 
       // For composition criteria builder
+      var global_criteria_id = 0; // used to link data for the same criteria
       var get_criteria_specs = function (datatype) {
 
         $.ajax({
@@ -495,48 +561,53 @@
             
             var criteria = '';
 
+            // spec is an array of criteria spec
             // render criteria spec
             for (i in spec) {
                 
               aspec = spec[i];
               
-              console.log(aspec);
+              global_criteria_id++;
               
-              criteria += '<fieldset><input type="radio" name="criteria" />';
-                
+              // All fields of the same criteria will have the same id in the data-criteria attribute
+              criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" />';
+              
               for (attr in aspec) {
                 
-                criteria += attr;
-                  
+                criteria += '<span class="criteria_attribute">';
+                criteria += attr + '<input type="hidden" name="attribute" value="'+ attr +'" />';
+                
+                
                 conditions = aspec[attr]; // spec[0][code][eq] == value
-                criteria += '<select>';
+                criteria += '<select class="operand" data-criteria="'+ global_criteria_id +'" name="operand">';
                 for (cond in conditions) {
                   
-                   criteria += '<option>'+ cond +'</option>';
+                  criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
                 criteria += '</select>';
-                  
-                  
+                
+                
                 // indexes of operand and value should be linked.
 
+                criteria += '<span class="criteria_value_container">';
                 for (cond in conditions) {
                   
-                   criteria += '<span id="operand_value_'+ cond +'">';
+                   criteria += '<span class="criteria_value">';
                    
                    // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
                    switch ( conditions[cond] ) {
-                     case 'value': criteria += 'value';
+                     case 'value': criteria += '<input type="text" name="value" class="value" />';
                        break
-                     case 'list': criteria += 'list';
+                     case 'list': criteria += '<input type="text" name="list" class="value list" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                        break
-                     case 'range': criteria += 'range';
+                     case 'range': criteria += '<input type="text" name="range" class="value min" />..<input type="text" name="range" class="value max" />';
                        break
                    }
                      
-                   criteria += '</span>';
+                   criteria += '</span>'; // criteria value
                 }
-                
-                criteria += ' | ';
+                criteria += '</span>'; // criteria value container
+                criteria += '</span>'; // criteria attribute
                 
               } // for aspec
               
@@ -555,6 +626,39 @@
           }
         });
       };
+      
+      // attachs onchange for operand selects created by the 'get_criteria_specs' function.
+      $(document).on('change', 'select.operand', function(evt) {
+         
+        console.log('operand change', this.selectedIndex, $(this).data('criteria'));
+        
+        var criteria_value_container = $(this).next();
+        
+        // All criteria values hidden
+        criteria_value_container.children().css('display', 'none');
+        
+        // criteria value [i] should be displayed
+        $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline');
+        
+        console.log( $('#query_form').serialize() );
+      });
+      
+      // Add multiple input values for value list criteria when enter is pressed
+      $(document).on('keypress', 'input.value.list', function(evt) {
+      
+		    if (!evt) evt = window.event;
+		    var keyCode = evt.keyCode || evt.which;
+		    
+		    console.log(keyCode);
+		    
+		    if (keyCode == '13') { // Enter pressed
+		    
+		      $(this).after( $(this).clone().val('') );
+		      $(this).next().focus();
+		      return false;
+		    }
+      });
+     
       
       // =================================
       // /COMMON QUERY CREATE/EDIT =======
@@ -628,7 +732,8 @@
 	
 	        e.preventDefault();
 	        
-	        query_datavalue_add_criteria();
+	        //query_datavalue_add_criteria();
+	        query_datavalue_add_criteria_2();
 	     });
 	      
 	      

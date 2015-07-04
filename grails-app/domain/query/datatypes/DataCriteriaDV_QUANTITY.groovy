@@ -31,17 +31,14 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
        return [
           [
              magnitude: [
-                eq:  'value',
+                eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
                 lt:  'value',
                 gt:  'value',
                 neq: 'value',
                 le:  'value',
-                ge:  'value'
-             ], // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
-             units: [eq: 'value']
-          ],
-          [
-             magnitude: [between: 'range'], // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
+                ge:  'value',
+                between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
+             ], 
              units: [eq: 'value']
           ]
        ]
