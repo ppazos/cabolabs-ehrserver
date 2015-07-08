@@ -348,51 +348,83 @@
 
       var dom_add_criteria_2 = function (fieldset) {
 
-         $.each( $('.criteria_attribute', fieldset), function (i, e) {
+        var archetype_id = $('select[name=view_archetype_id]').val();
+        var path = $('select[name=view_archetype_path]').val();
+        var type = $('select[name=view_archetype_path] option:selected').data('type');
 
-           console.log('criteria attribute', e, $(e).serialize());
+        var criteria = '';
+         
+        $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
-           /*
-           <span class="criteria_attribute">
-             code
-             <input type="hidden" name="attribute" value="code">
-             <select class="operand" data-criteria="1" name="operand">
-               <option value="eq">eq</option>               <<< one of these is selected, need to grab the values 
-               <option value="in_list">in_list</option>     <<< from the correspondent index of criteria_value
-             </select>
-             <span class="criteria_value_container">
-               <span class="criteria_value">
-                 <input type="text" name="value" class="value">
-               </span>
-               <span class="criteria_value">
-                 <input type="text" name="list" class="value list">
-                 <!-- <span class="criteria_list_add_value">[+]</span> -->
-               </span>
-             </span>
-           </span>
-           */
-         });
+          console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
 
-         /*
-         $('#criteria').append(
-           '<tr>'+
-           '<td>'+ archetype_id +'</td>'+
-           '<td>'+ path +'</td>'+
-           '<td>'+ operand +'</td>'+
-           '<td>'+ value +'</td>'+
-           '<td>'+
-             '<a href="#" class="removeCriteria">[-]</a>'+
-             '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
-             '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
-             '<input type="hidden" name="operand" value="'+ operand +'" />'+
-             '<input type="hidden" name="value" value="'+ value +'" />'+
-           '</td></tr>'
-         );
-         */
-       };
+          criteria += $('input[name=attribute]', e).val();
+          criteria += '<input type="hidden" name="attribute" value="'+ $('input[name=attribute]', e).val() +'" data-atttibute="'+ $('input[name=attribute]', e).val() +'" /> ';
+          
+          criteria += $('select[name=operand]', e).val() +' ';
+          criteria += '<input type="hidden" name="operand" value="'+ $('select[name=operand]', e).val() +'" /> ';
+
+          // for each criteria value (can be 1 for value, 2 for range or N for list)
+          $.each( $('input.selected.value', e), function (j, v) {
+          
+             criteria += $(v).val();
+             criteria += '<input type="hidden" name="value" value="'+ $(v).val() +'" data-atttibute="'+ $('input[name=attribute]', e).val() +'" />' + ', ';
+          });
+
+          criteria = criteria.substring(0, criteria.length-2); // remove last ', '
+          
+          criteria += ' AND ';
+        });
+
+        criteria = criteria.substring(0, criteria.length-5); // remove last ' AND '
+
+        console.log( criteria );
+
+        $('#criteria').append(
+            '<tr>'+
+            '<td>'+ archetype_id +'</td>'+
+            '<td>'+ path +'</td>'+
+            '<td>'+ type +'</td>'+
+            '<td>'+ criteria +'</td>'+
+            '<td>'+
+              '<a href="#" class="removeCriteria">[-]</a>'+
+              '<input type="hidden" name="archetype_id" value="'+ archetype_id +'" />'+
+              '<input type="hidden" name="path" value="'+ path +'" />'+
+              '<input type="hidden" name="type" value="'+ type +'" />'+
+            '</td></tr>'
+        );
+
+
+        console.log('serialized criteria', $('#criteria input').serialize() );
+
+        /* the values tied to to an attribute have the same data-attribute. Use that to bind the criteria and to submit it to the server.
+        <td>
+          code
+          <input type="hidden" name="attribute" value="code" data-atttibute="code"> 
+          in_list 
+          <input type="hidden" name="operand" value="in_list"> 
+          aaa
+          <input type="hidden" name="value" value="aaa" data-atttibute="code">, 
+          bbb
+          <input type="hidden" name="value" value="bbb" data-atttibute="code">, 
+          ccc
+          <input type="hidden" name="value" value="ccc" data-atttibute="code"> 
+
+          AND 
+
+          terminologyId
+          <input type="hidden" name="attribute" value="terminologyId" data-atttibute="terminologyId"> 
+          eq 
+          <input type="hidden" name="operand" value="eq"> 
+          snomed
+          <input type="hidden" name="value" value="snomed" data-atttibute="terminologyId">
+          </td>
+        */
+      };
 
       var query_datavalue_add_criteria_2 = function () {
-        
+
+        // data for the selected criteria
         dom_add_criteria_2(
           $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
         );
@@ -590,21 +622,26 @@
                 // indexes of operand and value should be linked.
 
                 criteria += '<span class="criteria_value_container">';
+                var i = 0;
                 for (cond in conditions) {
                   
-                   criteria += '<span class="criteria_value">';
+                  //console.log('cond', cond);
+                  
+                  criteria += '<span class="criteria_value">';
+                  
+                  // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
+                  switch ( conditions[cond] ) {
+                    case 'value': criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +'" />';
+                      break
+                    case 'list': criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                      break
+                    case 'range': criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +'" />';
+                      break
+                  }
+                  
+                  criteria += '</span>'; // criteria value
                    
-                   // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
-                   switch ( conditions[cond] ) {
-                     case 'value': criteria += '<input type="text" name="value" class="value" />';
-                       break
-                     case 'list': criteria += '<input type="text" name="list" class="value list" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
-                       break
-                     case 'range': criteria += '<input type="text" name="range" class="value min" />..<input type="text" name="range" class="value max" />';
-                       break
-                   }
-                     
-                   criteria += '</span>'; // criteria value
+                  i++;
                 }
                 criteria += '</span>'; // criteria value container
                 criteria += '</span>'; // criteria attribute
@@ -636,9 +673,11 @@
         
         // All criteria values hidden
         criteria_value_container.children().css('display', 'none');
+        $(':input', criteria_value_container).removeClass('selected'); // unselect the current selected criteria values
         
         // criteria value [i] should be displayed
-        $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline');
+        var value_container = $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline')
+        $(':input', value_container).addClass('selected'); // add selected to all the inputs, textareas and selects, this is to add the correct values to the criteria
         
         console.log( $('#query_form').serialize() );
       });
@@ -646,17 +685,17 @@
       // Add multiple input values for value list criteria when enter is pressed
       $(document).on('keypress', 'input.value.list', function(evt) {
       
-		    if (!evt) evt = window.event;
-		    var keyCode = evt.keyCode || evt.which;
-		    
-		    console.log(keyCode);
-		    
-		    if (keyCode == '13') { // Enter pressed
-		    
-		      $(this).after( $(this).clone().val('') );
-		      $(this).next().focus();
-		      return false;
-		    }
+		  if (!evt) evt = window.event;
+		  var keyCode = evt.keyCode || evt.which;
+		  
+		  console.log(keyCode);
+		  
+		  if (keyCode == '13') { // Enter pressed
+		  
+		    $(this).after( $(this).clone().val('') );
+		    $(this).next().focus();
+		    return false;
+		  }
       });
      
       
@@ -695,6 +734,7 @@
              //print 'alert("composition");'
              queryInstance.where.each { data_criteria ->
                 
+                // FIXME FOR THE CHANGES TO CRITERIA...
                 print 'dom_add_criteria("'+ 
                   data_criteria.archetypeId +'", "'+ 
                   data_criteria.path +'", "'+
@@ -1018,13 +1058,15 @@
 
       <div id="query_composition" class="query_build">
         <div id="composition_criteria_builder"></div>
+        
+        <%--
         <table>
           <tr>
             <td><g:message code="query.create.operand" /></td>
             <td>
-              <%-- TODO: sacar de restriccion inList de DataCriteria.operand 
+              < % - - TODO: sacar de restriccion inList de DataCriteria.operand 
               Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
-              --%>
+              - - % >
               <label><input type="radio" name="soperand" value="eq" />=</label>
               <label><input type="radio" name="soperand" value="neq" />!=</label>
               <label><input type="radio" name="soperand" value="gt" />&gt;</label>
@@ -1040,6 +1082,10 @@
             <td><a href="#" id="addCriteria">[+]</a></td>
           </tr>
         </table>
+        --%>
+        
+        <a href="#" id="addCriteria">[+]</a>
+        
         
         <!--
         value puede especificarse aqui como filtro o puede ser un
@@ -1117,8 +1163,8 @@
           <tr>
             <th>archetypeId</th>
             <th>path</th>
-            <th>operand</th>
-            <th>value</th>
+            <th>type</th>
+            <th>criteria</th>
             <th></th>
           </tr>
         </table>
