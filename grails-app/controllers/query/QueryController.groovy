@@ -317,7 +317,9 @@ class QueryController {
      */
     def save(String name, String type, String format, String group)
     {
-       println params
+       println ">> save: " + params
+       
+       println request.JSON
        
        def query = createOrUpdateQuery()
        

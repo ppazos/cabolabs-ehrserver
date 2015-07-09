@@ -82,12 +82,81 @@
       // TODO: put this in a singleton
       //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
 
+      var query = {
+        id_gen: 0,
+        name: undefined,
+        type: undefined,
+        format: undefined,
+        where: [], // DataCriteria
+        select: [], // DataGet
+        group: 'none',
+        set_type: function (type) { this.type = type; }, // composition or datavalue
+        set_name: function (name) { this.name = name; }, // TODO: set name
+        add_criteria: function (archetype_id, path, rm_type_name, criteria)
+        {
+          if (this.type != 'composition') return false;
+
+          this.id_gen++;
+
+          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name};
+
+          // copy attributes
+          for (a in criteria) c[a] = criteria[a];
+          
+          this.where.push( c );
+          
+          return this.id_gen;
+        },
+        add_projection: function (archetype_id, path)
+        {
+          if (this.type != 'datavalue') return false;
+
+          this.id_gen++;
+          
+          this.select.push( {id: this.id_gen, archetype_id: archetype_id, path: path} );
+          
+          return this.id_gen;
+        },
+        remove_criteria: function (id)
+        {
+        },
+        remove_projection: function (id)
+        {
+        },
+        log: function () { console.log(this);  }
+      };
+
+      function Criteria() {
+
+        this.conditions = [];
+
+        this.add_condition = function (attr, operand, values) {
+          var cond = {};
+          cond[attr+'Values'] = values;
+          cond[attr+'Operand'] = operand;
+          
+          this.conditions.push( cond );
+        };
+      };
+    
       // =================================
       // TEST OR SAVE ====================
       // =================================
     
       var save_query = function() {
+
+        // TODO: add format and group to query
+        $.ajax({ 
+          method: 'POST',
+          url: '${createLink(controller:'query', action:'save')}',
+          contentType : 'application/json',
+          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+           console.log(data);
+        });
         
+        /*
         $('#query_form').ajaxSubmit({
           url: '${createLink(controller:'query', action:'save')}',
           type: 'post',
@@ -103,6 +172,7 @@
             alert(response.responseText); // lo devuelto por el servidor
           }
         });
+        */
       };
 
       var update_query = function() {
@@ -352,40 +422,65 @@
         var path = $('select[name=view_archetype_path]').val();
         var type = $('select[name=view_archetype_path] option:selected').data('type');
 
-        var criteria = '';
-         
+
+        var attribute, operand, value, values = [];
+        var criteria_str = '';
+        
+        // criteria js object
+        var criteria = new Criteria();
+          
+          
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
           console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
 
-          criteria += $('input[name=attribute]', e).val();
-          criteria += '<input type="hidden" name="attribute" value="'+ $('input[name=attribute]', e).val() +'" data-atttibute="'+ $('input[name=attribute]', e).val() +'" /> ';
+          attribute = $('input[name=attribute]', e).val()
           
-          criteria += $('select[name=operand]', e).val() +' ';
-          criteria += '<input type="hidden" name="operand" value="'+ $('select[name=operand]', e).val() +'" /> ';
+          criteria_str += attribute;
+          criteria_str += '<input type="hidden" name="attribute" value="'+ attribute +'" data-atttibute="'+ attribute +'" /> ';
+
+          operand = $('select[name=operand]', e).val();
+          
+          criteria_str += operand +' ';
+          criteria_str += '<input type="hidden" name="operand" value="'+ operand +'" /> ';
 
           // for each criteria value (can be 1 for value, 2 for range or N for list)
-          $.each( $('input.selected.value', e), function (j, v) {
-          
-             criteria += $(v).val();
-             criteria += '<input type="hidden" name="value" value="'+ $(v).val() +'" data-atttibute="'+ $('input[name=attribute]', e).val() +'" />' + ', ';
+          // the class with the name of the attribute is needed to filter values for each attribute
+          $.each( $('input.selected.value.'+attribute, e), function (j, v) {
+
+             value = $(v).val();
+             values.push(value);
+             
+             criteria_str += value;
+             criteria_str += '<input type="hidden" name="value" value="'+ value +'" data-atttibute="'+ attribute +'" />' + ', ';
           });
 
-          criteria = criteria.substring(0, criteria.length-2); // remove last ', '
           
-          criteria += ' AND ';
+          // query object mgt
+          criteria.add_condition(attribute, operand, values);
+          
+          values = [];
+          
+          criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
+          criteria_str += ' AND ';
         });
+        
+        
+        // query object mgt
+        query.add_criteria(archetype_id, path, type, criteria);
+        query.log();
 
-        criteria = criteria.substring(0, criteria.length-5); // remove last ' AND '
 
-        console.log( criteria );
+        criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
+
+        console.log( criteria_str );
 
         $('#criteria').append(
             '<tr>'+
             '<td>'+ archetype_id +'</td>'+
             '<td>'+ path +'</td>'+
             '<td>'+ type +'</td>'+
-            '<td>'+ criteria +'</td>'+
+            '<td>'+ criteria_str +'</td>'+
             '<td>'+
               '<a href="#" class="removeCriteria">[-]</a>'+
               '<input type="hidden" name="archetype_id" value="'+ archetype_id +'" />'+
@@ -631,11 +726,11 @@
                   
                   // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
                   switch ( conditions[cond] ) {
-                    case 'value': criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +'" />';
+                    case 'value': criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                       break
-                    case 'list': criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                    case 'list': criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                       break
-                    case 'range': criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +'" />';
+                    case 'range': criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                       break
                   }
                   
@@ -687,8 +782,6 @@
       
 		  if (!evt) evt = window.event;
 		  var keyCode = evt.keyCode || evt.which;
-		  
-		  console.log(keyCode);
 		  
 		  if (keyCode == '13') { // Enter pressed
 		  
@@ -845,6 +938,10 @@
           if (this.value != '')
           {
             show_controls(this.value);
+            
+            // query management
+            query.set_type(this.value);
+            query.set_name($('input[name=name]').val());
           }
         });
         
