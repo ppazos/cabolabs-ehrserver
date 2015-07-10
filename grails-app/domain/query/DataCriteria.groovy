@@ -60,4 +60,10 @@ class DataCriteria {
    }
    
    static belongsTo = [Query]
+   
+   
+   String toString()
+   {
+      return "archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName()
+   }
 }

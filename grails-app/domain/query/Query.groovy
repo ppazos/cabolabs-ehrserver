@@ -53,6 +53,12 @@ class Query {
    String group = 'none'
    
    
+   String toString ()
+   {
+      return "name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
+   }
+   
+   
    static constraints = {
       
       // para guardar la query debe tener nombre

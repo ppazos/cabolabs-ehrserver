@@ -321,6 +321,13 @@ class QueryController {
        
        println request.JSON
        
+       println "-----------------------------------------"
+       def q = new Query(request.JSON.query)
+       println q
+       println q.where
+       println "-----------------------------------------"
+       
+       
        def query = createOrUpdateQuery()
        
        //redirect(action:'show', id:query.id)

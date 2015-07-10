@@ -90,15 +90,17 @@
         where: [], // DataCriteria
         select: [], // DataGet
         group: 'none',
-        set_type: function (type) { this.type = type; }, // composition or datavalue
-        set_name: function (name) { this.name = name; }, // TODO: set name
+        set_type:     function (type) { this.type = type; }, // composition or datavalue
+        set_name:     function (name) { this.name = name; },
+        set_format:   function (format) { this.format = format; },
+        set_group:    function (group) { this.group = group; },
         add_criteria: function (archetype_id, path, rm_type_name, criteria)
         {
           if (this.type != 'composition') return false;
 
           this.id_gen++;
 
-          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name};
+          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
 
           // copy attributes
           for (a in criteria) c[a] = criteria[a];
@@ -123,7 +125,7 @@
         remove_projection: function (id)
         {
         },
-        log: function () { console.log(this);  }
+        log: function () { console.log(this); }
       };
 
       function Criteria() {
@@ -145,6 +147,11 @@
     
       var save_query = function() {
 
+        // query management
+        query.set_name($('input[name=name]').val());
+        //query.set_format( $('select[name=format]').val() ); // always xml for composition query 
+        //query.set_group( $('select[name=group]').val() ); // for datavalue query
+        
         // TODO: add format and group to query
         $.ajax({ 
           method: 'POST',
@@ -940,8 +947,8 @@
             show_controls(this.value);
             
             // query management
+            // this needs to be here because it is needed to add_criteria and add_projection
             query.set_type(this.value);
-            query.set_name($('input[name=name]').val());
           }
         });
         
