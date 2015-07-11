@@ -64,6 +64,6 @@ class DataCriteria {
    
    String toString()
    {
-      return "archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName()
+      return "(archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName() +")"
    }
 }

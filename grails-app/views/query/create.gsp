@@ -103,7 +103,7 @@
           var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
 
           // copy attributes
-          for (a in criteria) c[a] = criteria[a];
+          for (a in criteria.conditions) c[a] = criteria.conditions[a];
           
           this.where.push( c );
           
@@ -133,11 +133,15 @@
         this.conditions = [];
 
         this.add_condition = function (attr, operand, values) {
+          /*
           var cond = {};
           cond[attr+'Values'] = values;
           cond[attr+'Operand'] = operand;
           
           this.conditions.push( cond );
+          */
+          this.conditions[attr+'Values'] = values;
+          this.conditions[attr+'Operand'] = operand;
         };
       };
     
