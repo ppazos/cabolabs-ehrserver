@@ -511,18 +511,23 @@ class QueryController {
             res = DataCriteriaDV_CODED_TEXT.criteriaSpec()
           break
           case 'DV_TEXT':
+            res = DataCriteriaDV_TEXT.criteriaSpec()
           break
           case 'DV_DATE_TIME':
+            res = DataCriteriaDV_DATE_TIME.criteriaSpec()
           break
           case 'DV_BOOLEAN':
           break
           case 'DV_COUNT':
+            res = DataCriteriaDV_COUNT.criteriaSpec()
           break
           case 'DV_PROPORTION':
+          
           break
           case 'DV_ORDINAL':
           break
           case 'DV_DURATION':
+            res = DataCriteriaDV_DURATION.criteriaSpec()
           break
        }
        

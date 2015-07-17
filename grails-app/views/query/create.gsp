@@ -100,7 +100,7 @@
 
           this.id_gen++;
 
-          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
+          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'query.datatypes.DataCriteria'+rm_type_name};
 
           // copy attributes
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
