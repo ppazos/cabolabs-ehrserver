@@ -100,7 +100,7 @@
 
           this.id_gen++;
 
-          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'query.datatypes.DataCriteria'+rm_type_name};
+          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
 
           // copy attributes
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
@@ -443,7 +443,7 @@
           
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
-          console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
+          //console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
 
           attribute = $('input[name=attribute]', e).val()
           
@@ -457,7 +457,9 @@
 
           // for each criteria value (can be 1 for value, 2 for range or N for list)
           // the class with the name of the attribute is needed to filter values for each attribute
-          $.each( $('input.selected.value.'+attribute, e), function (j, v) {
+          $.each( $(':input.selected.value.'+attribute, e), function (j, v) {
+
+             console.log(v);
 
              value = $(v).val();
              values.push(value);
@@ -731,18 +733,36 @@
                 var i = 0;
                 for (cond in conditions) {
                   
-                  //console.log('cond', cond);
+                  //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
                   
                   criteria += '<span class="criteria_value">';
                   
-                  // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
-                  switch ( conditions[cond] ) {
-                    case 'value': criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                  if (cond == 'eq_one')
+                  {
+                    criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'">';
+                    
+                    // each value from the list of possible values
+                    for (v in conditions[cond])
+                    {
+                      criteria += '<option value="'+ conditions[cond][v] +'">'+ conditions[cond][v] +'</option>'; // TODO: get texts for values
+                    }
+                    
+                    criteria += '</select>';
+                  }
+                  else
+                  {
+                    // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
+                    switch ( conditions[cond] ) {
+                      case 'value':
+                        criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                       break
-                    case 'list': criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                      case 'list':
+                        criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                       break
-                    case 'range': criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                      case 'range':
+                        criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                       break
+                    }
                   }
                   
                   criteria += '</span>'; // criteria value
@@ -816,6 +836,8 @@
       
     
       $(document).ready(function() {
+      
+        $('select[name=type]').val(""); // select empty option by default
       
       
         <%-- EDIT QUERY SETUP --%>

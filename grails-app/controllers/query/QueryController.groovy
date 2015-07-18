@@ -319,10 +319,11 @@ class QueryController {
     {
        println ">> save: " + params
        
-       println request.JSON
+       println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
+       println request.JSON.query.getClass()
        
        println "-----------------------------------------"
-       def q = new Query(request.JSON.query)
+       def q = Query.newInstance(request.JSON.query)
        println q
        println q.where
        println "-----------------------------------------"
@@ -502,6 +503,7 @@ class QueryController {
      */
     def getCriteriaSpec(String datatype)
     {
+       // TODO: simplificar a metodo dinamico + try catch por si pide cualquier cosa.
        def res = []
        switch (datatype) {
           case 'DV_QUANTITY':
@@ -522,9 +524,10 @@ class QueryController {
             res = DataCriteriaDV_COUNT.criteriaSpec()
           break
           case 'DV_PROPORTION':
-          
+            res = DataCriteriaDV_PROPORTION.criteriaSpec()
           break
           case 'DV_ORDINAL':
+            res = DataCriteriaDV_ORDINAL.criteriaSpec()
           break
           case 'DV_DURATION':
             res = DataCriteriaDV_DURATION.criteriaSpec()

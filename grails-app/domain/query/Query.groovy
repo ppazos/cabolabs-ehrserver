@@ -53,6 +53,56 @@ class Query {
    String group = 'none'
    
    
+   // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
+   static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      println "Query.construct JSON: "+ json.toString()
+      def query = new Query()
+      
+      query.name = json.name
+      query.type = json.type
+      
+      
+      if (query.type == 'composition')
+      {
+         json.where.each { criteria ->
+            
+            println criteria
+            switch (criteria['class']) {
+               case 'DataCriteriaDV_QUANTITY':
+               break
+               case 'DataCriteriaDV_CODED_TEXT':
+               break
+               case 'DataCriteriaDV_TEXT':
+               break
+               case 'DataCriteriaDV_DATE_TIME':
+               break
+               case 'DataCriteriaDV_BOOLEAN':
+               break
+               case 'DataCriteriaDV_COUNT':
+               break
+               case 'DataCriteriaDV_PROPORTION':
+               break
+               case 'DataCriteriaDV_ORDINAL':
+               break
+               case 'DataCriteriaDV_DURATION':
+               break
+            }
+         }
+      }
+      else
+      {
+         query.format = json.format
+         
+         json.select.each { projection ->
+            println projection
+         }
+      }
+      
+      return query
+   }
+   
+   
    String toString ()
    {
       return "name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
