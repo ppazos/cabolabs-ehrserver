@@ -65,29 +65,41 @@ class Query {
       
       if (query.type == 'composition')
       {
+         def condition
          json.where.each { criteria ->
             
             println criteria
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
+                  condition = new DataCriteriaDV_QUANTITY(criteria)
                break
                case 'DataCriteriaDV_CODED_TEXT':
+                  condition = new DataCriteriaDV_CODED_TEXT(criteria)
                break
                case 'DataCriteriaDV_TEXT':
+                  condition = new DataCriteriaDV_TEXT(criteria)
                break
                case 'DataCriteriaDV_DATE_TIME':
+                  condition = new DataCriteriaDV_DATE_TIME(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':
+                  condition = new DataCriteriaDV_BOOLEAN(criteria)
                break
                case 'DataCriteriaDV_COUNT':
+                  condition = new DataCriteriaDV_COUNT(criteria)
                break
                case 'DataCriteriaDV_PROPORTION':
+                  condition = new DataCriteriaDV_PROPORTION(criteria)
                break
                case 'DataCriteriaDV_ORDINAL':
+                  condition = new DataCriteriaDV_ORDINAL(criteria)
                break
                case 'DataCriteriaDV_DURATION':
+                  condition = new DataCriteriaDV_DURATION(criteria)
                break
             }
+
+            query.addToWhere(condition)
          }
       }
       else
