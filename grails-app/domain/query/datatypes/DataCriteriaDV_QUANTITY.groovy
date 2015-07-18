@@ -19,6 +19,7 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     static hasMany = [magnitudeValues: String]
     
     static constraints = {
+       
     }
     
     /**
@@ -47,5 +48,10 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     static List attributes()
     {
        return ['magnitude', 'units']
+    }
+    
+    String toString()
+    {
+       return this.getClass().getSimpleName() +": "+ this.magnitudeOperand +" "+ this.magnitudeValues.toString() +" "+ this.unitsOperand +" "+ this.unitsValue
     }
 }

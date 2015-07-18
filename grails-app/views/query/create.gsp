@@ -140,7 +140,11 @@
           
           this.conditions.push( cond );
           */
-          this.conditions[attr+'Values'] = values;
+          if (values.length > 1)
+            this.conditions[attr+'Values'] = values;
+          else
+            this.conditions[attr+'Value'] = values[0];
+          
           this.conditions[attr+'Operand'] = operand;
         };
       };

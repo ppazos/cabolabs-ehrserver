@@ -22,6 +22,11 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
     static hasMany = [codeValues: String]
     
     static constraints = {
+       codeOperand(nullable:true)
+       terminologyIdOperand(nullable:true)
+       valueOperand(nullable:true)
+       terminologyIdValue(nullable:true)
+       valueValue(nullable:true)
     }
     
     /**
@@ -48,5 +53,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
     static List attributes()
     {
        return ['value', 'code', 'terminologyId']
+    }
+    
+    String toString()
+    {
+       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValues.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue
     }
 }

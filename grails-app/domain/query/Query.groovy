@@ -3,6 +3,7 @@ package query
 import ehr.clinical_documents.*
 import ehr.clinical_documents.data.*
 import grails.util.Holders
+import query.datatypes.*
 
 /**
  * Parametros n1 de la query:
@@ -56,11 +57,35 @@ class Query {
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      println "Query.construct JSON: "+ json.toString()
+      println '=++++=+++++ QUERY newInstance =+++++=++++='
+      //println "Query.construct JSON: "+ json.toString()
+      /*
+       * Query.construct JSON:
+       * {
+       *   "select":[],
+       *   "name":"popoop",
+       *   "group":"none",
+       *   "where":[
+       *     {"id":1,"magnitudeValues":["1","2"],
+       *      "archetypeId":"openEHR-EHR-OBSERVATION.blood_pressure.v1",
+       *      "path":"/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value",
+       *      "unitsOperand":"eq","class":"DataCriteriaDV_QUANTITY",
+       *      "magnitudeOperand":"between","rmTypeName":"DV_QUANTITY",
+       *      "unitsValues":["mmHg"]
+       *     }
+       *   ],
+       *   "type":"composition","id_gen":1
+       * }
+       */
+      
+      //println json.name
+      //println json.get('name')
+      //println json['name']
+      
       def query = new Query()
       
-      query.name = json.name
-      query.type = json.type
+      query.name = json['name']
+      query.type = json['type']
       
       
       if (query.type == 'composition')
@@ -68,7 +93,7 @@ class Query {
          def condition
          json.where.each { criteria ->
             
-            println criteria
+            //println criteria
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
                   condition = new DataCriteriaDV_QUANTITY(criteria)
@@ -83,7 +108,7 @@ class Query {
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':
-                  condition = new DataCriteriaDV_BOOLEAN(criteria)
+                  //condition = new DataCriteriaDV_BOOLEAN(criteria)
                break
                case 'DataCriteriaDV_COUNT':
                   condition = new DataCriteriaDV_COUNT(criteria)

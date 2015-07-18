@@ -24,6 +24,12 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
     static hasMany = [valueValues: int, symbol_codeValues: String]
     
     static constraints = {
+       valueOperand(nullable:true)
+       symbol_valueOperand(nullable:true)
+       symbol_codeOperand(nullable:true)
+       symbol_terminology_idOperand(nullable:true)
+       symbol_terminology_idValue(nullable:true)
+       symbol_valueValues(nullable:true)
     }
     
     /**

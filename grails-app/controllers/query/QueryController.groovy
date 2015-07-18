@@ -319,19 +319,22 @@ class QueryController {
     {
        println ">> save: " + params
        
-       println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
-       println request.JSON.query.getClass()
+       //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
+       //println request.JSON.query.getClass()
        
        println "-----------------------------------------"
-       def q = Query.newInstance(request.JSON.query)
-       println q
-       println q.where
+       def query = Query.newInstance(request.JSON.query)
+       //println query
+       println query.where
+       if (!query.save(flush:true)) println query.errors.allErrors
        println "-----------------------------------------"
        
        
-       def query = createOrUpdateQuery()
+       //def query = createOrUpdateQuery()
        
        //redirect(action:'show', id:query.id)
+       
+       JSON.use('deep')
        render query as JSON
     }
     
