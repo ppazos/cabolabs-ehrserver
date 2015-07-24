@@ -1,6 +1,7 @@
 package ehr
 
 import grails.util.Holders
+import groovy.xml.MarkupBuilder
 
 class OperationalTemplateController {
 
@@ -98,4 +99,13 @@ class OperationalTemplateController {
           }
        }
     }
+	/**
+	 * 
+	 * @return
+	 */
+	def show(String concept)
+	{
+	  def compo = new File(config.opt_repo + concept +".opt")
+    render(text:compo.getText(), contentType:"text/xml", encoding:"UTF-8")
+	}
 }
