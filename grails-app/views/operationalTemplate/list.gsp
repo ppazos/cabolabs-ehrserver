@@ -36,7 +36,7 @@
         <g:each in="${opts}" status="i" var="templateInstance">
           <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
             <td>
-              <g:link action="show" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+              <g:link action="show" params="[concept:templateInstance.concept]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
             </td>
             <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
             <td>${fieldValue(bean: templateInstance, field: "language")}</td>
