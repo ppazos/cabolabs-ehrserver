@@ -4,8 +4,8 @@ import query.DataCriteria
 
 class DataCriteriaDV_PROPORTION extends DataCriteria {
 
-    List numeratorValues
-    List denominatorValues
+    List numeratorValue
+    List denominatorValue
     int typeValue
 
     // Comparison operands
@@ -17,9 +17,10 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
     DataCriteriaDV_PROPORTION()
     {
        rmTypeName = 'DV_PROPORTION'
+       alias = 'dpi'
     }
     
-    static hasMany = [numeratorValues: double, denominatorValues: double]
+    static hasMany = [numeratorValue: double, denominatorValue: double]
     
     static constraints = {
     }

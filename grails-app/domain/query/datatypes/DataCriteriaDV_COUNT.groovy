@@ -4,7 +4,7 @@ import query.DataCriteria
 
 class DataCriteriaDV_COUNT extends DataCriteria {
 
-    List magnitudeValues
+    List magnitudeValue
 
     // Comparison operands
     String magnitudeOperand
@@ -13,9 +13,10 @@ class DataCriteriaDV_COUNT extends DataCriteria {
     DataCriteriaDV_COUNT()
     {
        rmTypeName = 'DV_COUNT'
+       alias = 'dci'
     }
     
-    static hasMany = [magnitudeValues: long]
+    static hasMany = [magnitudeValue: long]
     
     static constraints = {
     }

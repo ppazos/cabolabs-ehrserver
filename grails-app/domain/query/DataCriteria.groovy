@@ -36,6 +36,10 @@ class DataCriteria {
    //       arquetipo archetypeId para la path (que
    //       tiene el nodeId)
    
+   int spec // index of the criteria spec selected
+   
+   String alias // for the query
+   
    static constraints = {
       //operand(inList:['eq','neq','lt','gt','le','ge','in_list','contains','between'])
       //value(nullable:true)
@@ -65,5 +69,57 @@ class DataCriteria {
    String toString()
    {
       return "(archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName() +")"
+   }
+   
+   String toSQL()
+   {
+      def specs = criteriaSpec()
+      def spec = specs[this.spec] // spec used Map
+      def attributes = spec.keySet()
+      def sql = ""
+      def operand
+      def operandField
+      def valueField
+      def criteriaValueType // value, list, range ...
+      //def listValue
+      //def singleValue
+      
+      attributes.each { attr ->
+         operandField = attr+'Operand'
+         operand = this."$operandField"
+         valueField = attr+'Value'
+         
+         criteriaValueType = spec[attr][operand]
+         
+         
+         // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
+         if (criteriaValueType == 'value')
+         {
+            sql += this.alias +'.'+ attr +' '+ operand +' '+ this."$valueField"
+         }
+         else if (criteriaValueType == 'list')
+         {
+            assert operand == 'in_list'
+            
+            sql += this.alias +'.'+ attr +' IN ('
+            
+            this."$valueField".each { value ->
+               slq += '"'+ value +'",'
+            }
+            sql = sql[0..-2] + ')' // removes last ,
+         }
+         else if (criteriaValueType == 'range')
+         {
+            assert operand == 'between'
+            
+            sql += this.alias +'.'+ attr +' '+ operand +' '+ this."$valueField"[0] +' AND '+ this."$valueField"[1]
+         }
+         
+         sql += ' AND '
+      }
+      
+      sql = sql[0..-6] // removes the last AND
+      
+      return sql
    }
 }

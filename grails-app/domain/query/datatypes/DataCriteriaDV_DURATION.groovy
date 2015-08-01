@@ -7,7 +7,7 @@ class DataCriteriaDV_DURATION extends DataCriteria {
     // magnitude is not an attribute from the IM but is an EHRServer
     // shorthand to know how many seconds are expressed in the duration.value
     // Also is easier to search by a number and not by an ISO 8601 duration string
-    List magnitudeValues
+    List magnitudeValue
 
     // Comparison operands
     String magnitudeOperand
@@ -16,9 +16,10 @@ class DataCriteriaDV_DURATION extends DataCriteria {
     DataCriteriaDV_DURATION()
     {
        rmTypeName = 'DV_DURATION'
+       alias = 'dduri'
     }
     
-    static hasMany = [magnitudeValues: int]
+    static hasMany = [magnitudeValue: int]
     
     static constraints = {
     }

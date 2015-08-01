@@ -4,7 +4,7 @@ import query.DataCriteria
 
 class DataCriteriaDV_TEXT extends DataCriteria {
 
-    List valueValues
+    String valueValue
 
     // Comparison operands
     String valueOperand
@@ -13,9 +13,10 @@ class DataCriteriaDV_TEXT extends DataCriteria {
     DataCriteriaDV_TEXT()
     {
        rmTypeName = 'DV_TEXT'
+       alias = 'dti'
     }
     
-    static hasMany = [valueValues: String]
+    //static hasMany = [valueValues: String] // FIXME: this should be one value since no spec requires a in_list or range.
     
     static constraints = {
     }

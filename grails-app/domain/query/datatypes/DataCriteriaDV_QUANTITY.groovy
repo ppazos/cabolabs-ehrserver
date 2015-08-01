@@ -4,7 +4,7 @@ import query.DataCriteria
 
 class DataCriteriaDV_QUANTITY extends DataCriteria {
 
-    List magnitudeValues
+    List magnitudeValue
     String unitsValue
    
     // Comparison operands
@@ -13,10 +13,12 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
    
     DataCriteriaDV_QUANTITY()
     {
+       println "CREATE DV QUANTITY CRITERIA"
        rmTypeName = 'DV_QUANTITY'
+       alias = 'dqi'
     }
     
-    static hasMany = [magnitudeValues: String]
+    static hasMany = [magnitudeValue: String]
     
     static constraints = {
        
@@ -52,6 +54,6 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     
     String toString()
     {
-       return this.getClass().getSimpleName() +": "+ this.magnitudeOperand +" "+ this.magnitudeValues.toString() +" "+ this.unitsOperand +" "+ this.unitsValue
+       return this.getClass().getSimpleName() +": "+ this.magnitudeOperand +" "+ this.magnitudeValue.toString() +" "+ this.unitsOperand +" "+ this.unitsValue
     }
 }

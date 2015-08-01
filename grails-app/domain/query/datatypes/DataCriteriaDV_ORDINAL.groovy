@@ -5,10 +5,10 @@ import query.DataCriteria
 class DataCriteriaDV_ORDINAL extends DataCriteria {
 
     // Comparison values
-    List valueValues // int
-    List symbol_codeValues // coded text
+    List valueValue // int
+    List symbol_codeValue // coded text
     String symbol_terminology_idValue // coded text
-    String symbol_valueValues // text
+    String symbol_valueValue // text
     
     // Comparison operands
     String valueOperand
@@ -19,9 +19,10 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
     DataCriteriaDV_ORDINAL()
     {
        rmTypeName = 'DV_ORDINAL'
+       alias = 'dvol'
     }
    
-    static hasMany = [valueValues: int, symbol_codeValues: String]
+    static hasMany = [valueValue: int, symbol_codeValue: String]
     
     static constraints = {
        valueOperand(nullable:true)
@@ -29,7 +30,7 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
        symbol_codeOperand(nullable:true)
        symbol_terminology_idOperand(nullable:true)
        symbol_terminology_idValue(nullable:true)
-       symbol_valueValues(nullable:true)
+       symbol_valueValue(nullable:true)
     }
     
     /**
@@ -62,7 +63,9 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
                 eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
                 in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
              ],
-             symbol_terminology_id: [eq: 'value']
+             symbol_terminology_id: [
+                eq: 'value'
+             ]
           ]
        ]
     }

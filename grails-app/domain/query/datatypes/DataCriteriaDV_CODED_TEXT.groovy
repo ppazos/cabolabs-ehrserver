@@ -5,7 +5,7 @@ import query.DataCriteria
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
     // Comparison values
-    List codeValues
+    List codeValue
     String terminologyIdValue
     String valueValue
     
@@ -19,7 +19,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        rmTypeName = 'DV_CODED_TEXT'
     }
    
-    static hasMany = [codeValues: String]
+    static hasMany = [codeValue: String]
     
     static constraints = {
        codeOperand(nullable:true)
@@ -57,6 +57,6 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
     
     String toString()
     {
-       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValues.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue
+       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValue.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue
     }
 }

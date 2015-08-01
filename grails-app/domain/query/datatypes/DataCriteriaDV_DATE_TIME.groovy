@@ -4,7 +4,7 @@ import query.DataCriteria
 
 class DataCriteriaDV_DATE_TIME extends DataCriteria {
 
-    List valueValues
+    List valueValue
 
     // Comparison operands
     String valueOperand
@@ -13,9 +13,10 @@ class DataCriteriaDV_DATE_TIME extends DataCriteria {
     DataCriteriaDV_DATE_TIME()
     {
        rmTypeName = 'DV_DATE_TIME'
+       alias = 'ddti'
     }
     
-    static hasMany = [valueValues: Date]
+    static hasMany = [valueValue: Date]
     
     static constraints = {
     }

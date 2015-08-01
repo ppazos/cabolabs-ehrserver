@@ -104,6 +104,8 @@
 
           // copy attributes
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
+
+          c['spec'] = criteria.spec;
           
           this.where.push( c );
           
@@ -128,20 +130,15 @@
         log: function () { console.log(this); }
       };
 
-      function Criteria() {
+      function Criteria(spec) {
 
         this.conditions = [];
+        this.spec = spec;
 
         this.add_condition = function (attr, operand, values) {
-          /*
-          var cond = {};
-          cond[attr+'Values'] = values;
-          cond[attr+'Operand'] = operand;
-          
-          this.conditions.push( cond );
-          */
+
           if (values.length > 1)
-            this.conditions[attr+'Values'] = values;
+            this.conditions[attr+'Value'] = values;
           else
             this.conditions[attr+'Value'] = values[0];
           
@@ -436,13 +433,15 @@
         var archetype_id = $('select[name=view_archetype_id]').val();
         var path = $('select[name=view_archetype_path]').val();
         var type = $('select[name=view_archetype_path] option:selected').data('type');
-
+        var spec = $('input[name=criteria]', fieldset).data('spec');
+        
+        console.log('spec', spec);
 
         var attribute, operand, value, values = [];
         var criteria_str = '';
         
         // criteria js object
-        var criteria = new Criteria();
+        var criteria = new Criteria(spec);
           
           
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
@@ -714,7 +713,7 @@
               global_criteria_id++;
               
               // All fields of the same criteria will have the same id in the data-criteria attribute
-              criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" />';
+              criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
               
               for (attr in aspec) {
                 

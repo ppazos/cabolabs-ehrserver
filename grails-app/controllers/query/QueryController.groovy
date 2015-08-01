@@ -330,6 +330,9 @@ class QueryController {
        println "-----------------------------------------"
        
        
+       query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
+       
+       
        //def query = createOrUpdateQuery()
        
        //redirect(action:'show', id:query.id)
