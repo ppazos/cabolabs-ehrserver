@@ -324,18 +324,15 @@ class QueryController {
        
        println "-----------------------------------------"
        def query = Query.newInstance(request.JSON.query)
-       //println query
-       println query.where
        if (!query.save(flush:true)) println query.errors.allErrors
        println "-----------------------------------------"
        
        
-       def r = query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
-       println r
+       //def r = query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
+       //println r
        
        
        //def query = createOrUpdateQuery()
-       
        //redirect(action:'show', id:query.id)
        
        JSON.use('deep')
@@ -347,7 +344,10 @@ class QueryController {
     {
        println 'update '+ params
        
-       def query = createOrUpdateQuery(id)
+       def query = Query.get(id)
+       query.updateInstance(request.JSON.query)
+       if (!query.save(flush:true)) println query.errors.allErrors
+       //def query = createOrUpdateQuery(id)
        
        render query as JSON
     }
@@ -547,6 +547,7 @@ class QueryController {
     def export(Long id)
     {
        def q = Query.get(id)
+       def criteriaMap, _value
        
        // TODO: this code should be reused in RestConrtoller.queryList
        withFormat {
@@ -565,8 +566,34 @@ class QueryController {
                          delegate.criteria {
                             archetypeId(criteria.archetypeId)
                             path(criteria.path)
-                            operand(criteria.operand)
-                            value(criteria.value)
+                            //operand(criteria.operand)
+                            //value(criteria.value)
+                            
+                            criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+                            
+                            conditions {
+                               criteriaMap.each { attr, cond ->
+                                  
+                                  _value = cond.find{true}.value // can be a list
+                                  
+                                  "$attr" {
+                                     operand(cond.find{true}.key) // first entry of the operand: value map
+                                     
+                                     if (_value instanceof List)
+                                     {
+                                        list {
+                                           _value.each { val ->
+                                              item(val)
+                                           }
+                                        }
+                                     }
+                                     else
+                                     {
+                                        value(_value)
+                                     }
+                                  }
+                               }
+                            }
                          }
                       }
                    }
@@ -586,6 +613,7 @@ class QueryController {
              }
           }
           json {
+             
              render(contentType: "application/json") {
                 delegate.query = {
                    uid = q.uid
@@ -595,7 +623,7 @@ class QueryController {
                    
                    if (q.type == 'composition')
                    {
-                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
                    }
                    else
                    {
