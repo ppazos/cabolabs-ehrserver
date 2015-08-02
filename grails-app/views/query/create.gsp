@@ -1,4 +1,4 @@
-<%@ page import="query.Query" %>
+<%@ page import="query.Query" %><%@ page import="grails.converters.JSON" %>
 <!doctype html>
 <html>
   <head>
@@ -413,6 +413,8 @@
       // COMPO QUERY CREATE/EDIT =========
       // =================================
       
+      // NOT USED
+      /*
       var dom_add_criteria = function (archetype_id, path, operand, value) {
 
         $('#criteria').append(
@@ -430,6 +432,9 @@
           '</td></tr>'
         );
       };
+      */
+      
+      
 
       var dom_add_criteria_2 = function (fieldset) {
 
@@ -510,30 +515,6 @@
 
 
         console.log('serialized criteria', $('#criteria input').serialize() );
-
-        /* the values tied to to an attribute have the same data-attribute. Use that to bind the criteria and to submit it to the server.
-        <td>
-          code
-          <input type="hidden" name="attribute" value="code" data-atttibute="code"> 
-          in_list 
-          <input type="hidden" name="operand" value="in_list"> 
-          aaa
-          <input type="hidden" name="value" value="aaa" data-atttibute="code">, 
-          bbb
-          <input type="hidden" name="value" value="bbb" data-atttibute="code">, 
-          ccc
-          <input type="hidden" name="value" value="ccc" data-atttibute="code"> 
-
-          AND 
-
-          terminologyId
-          <input type="hidden" name="attribute" value="terminologyId" data-atttibute="terminologyId"> 
-          eq 
-          <input type="hidden" name="operand" value="eq"> 
-          snomed
-          <input type="hidden" name="value" value="snomed" data-atttibute="terminologyId">
-          </td>
-        */
       };
 
       var query_datavalue_add_criteria_2 = function () {
@@ -853,25 +834,83 @@
           //print 'alert("edit");'
           
           // dont allow to change type
-          print '$("select[name=type]").prop("disabled", "disabled");'
+          println '$("select[name=type]").prop("disabled", "disabled");'
           
-          print 'show_controls("'+ queryInstance.type +'");'
+          println 'show_controls("'+ queryInstance.type +'");'
           
-          print '$("select[name=format]").val("'+ queryInstance.format +'");'
+          println '$("select[name=format]").val("'+ queryInstance.format +'");'
           
-          print '$("select[name=group]").val("'+ queryInstance.group +'");'
+          println '$("select[name=group]").val("'+ queryInstance.group +'");'
+          
+          
+          println 'query.set_name("'+ queryInstance.name +'");'
+          println 'query.set_type("'+ queryInstance.type +'");'
+          println 'query.set_format("'+ queryInstance.format +'");'
+          println 'query.set_group("'+ queryInstance.group +'");'
+          println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
+          
           
           if (queryInstance.type == 'composition')
           {
+             def attrs, attrValueField, attrOperandField, value
+             println 'var criteria;'
+             
              //print 'alert("composition");'
              queryInstance.where.each { data_criteria ->
                 
+                attrs = data_criteria.criteriaSpec()[data_criteria.spec].keySet() // attribute names of the datacriteria
+                
+                println 'criteria = new Criteria('+ data_criteria.spec +');'
+                
+                
+                // ***************************************************************************
+                // ***************************************************************************
+                // FIXME: solo usar attrs que estan en la spec seleccionada, sino pone nulls...
+                // ***************************************************************************
+                // ***************************************************************************
+                
+                // TODO: load spec and format no the query object from the query domain
+                
+                
+                attrs.each { attr ->
+                
+                   attrValueField = attr + 'Value' 
+                   attrOperandField = attr + 'Operand'
+                   value = data_criteria."$attrValueField"
+                   
+                   if (value instanceof List)
+                   {
+                      println 'criteria.add_condition("'+
+                         attr +'", "'+
+                         data_criteria."$attrOperandField" +'", '+
+                         (data_criteria."$attrValueField" as JSON) +');'
+                   }
+                   else // value is an array of 1 element
+                   {
+                      // FIXME: if the value is not string or date, dont include the quotes
+                      println 'criteria.add_condition("'+
+                         attr +'", "'+
+                         data_criteria."$attrOperandField" +'", [ "'+
+                         data_criteria."$attrValueField" +'" ]);'
+                   }
+                }
+                
+                println 'console.log(criteria);'
+                
                 // FIXME FOR THE CHANGES TO CRITERIA...
-                print 'dom_add_criteria("'+ 
-                  data_criteria.archetypeId +'", "'+ 
+                //print 'dom_add_criteria("'+ 
+                //  data_criteria.archetypeId +'", "'+ 
+                //  data_criteria.path +'", "'+
+                //  data_criteria.operand +'", "'+ 
+                //  data_criteria.value +'");'
+                
+                println 'query.add_criteria("'+
+                  data_criteria.archetypeId +'", "'+
                   data_criteria.path +'", "'+
-                  data_criteria.operand +'", "'+ 
-                  data_criteria.value +'");'
+                  data_criteria.rmTypeName +'", '+
+                  'criteria);'
+                  
+                println 'console.log(query);'
              }
           }
           else
@@ -879,16 +918,17 @@
              //print 'alert("datavalue");'
              queryInstance.select.each { data_get ->
                 
-                print 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
+                //print 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
+                // TODO
              }
           }
           
           // add id of query to form
-          print '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
+          println '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
           
           // show update button, hide create button
-          print '$("#update_button").show();'
-          print '$("#create_button").hide();'
+          println '$("#update_button").show();'
+          println '$("#create_button").hide();'
         }
         %>
         

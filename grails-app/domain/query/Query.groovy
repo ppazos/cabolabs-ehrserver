@@ -87,6 +87,9 @@ class Query {
       
       def query = new Query()
       
+      query.updateInstance(json)
+      
+      /*
       query.name = json['name']
       query.type = json['type']
       
@@ -140,8 +143,69 @@ class Query {
             println projection
          }
       }
+      */
       
       return query
+   }
+   
+   /**
+    * For edit/update.
+    */
+   def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      this.name = json['name']
+      this.type = json['type']
+      
+      
+      if (this.type == 'composition')
+      {
+         this.criteriaLogic = json.criteriaLogic
+         
+         def condition
+         json.where.each { criteria ->
+            
+            //println criteria
+            switch (criteria['class']) {
+               case 'DataCriteriaDV_QUANTITY':
+                  condition = new DataCriteriaDV_QUANTITY(criteria)
+               break
+               case 'DataCriteriaDV_CODED_TEXT':
+                  condition = new DataCriteriaDV_CODED_TEXT(criteria)
+               break
+               case 'DataCriteriaDV_TEXT':
+                  condition = new DataCriteriaDV_TEXT(criteria)
+               break
+               case 'DataCriteriaDV_DATE_TIME':
+                  condition = new DataCriteriaDV_DATE_TIME(criteria)
+               break
+               case 'DataCriteriaDV_BOOLEAN':
+                  //condition = new DataCriteriaDV_BOOLEAN(criteria)
+               break
+               case 'DataCriteriaDV_COUNT':
+                  condition = new DataCriteriaDV_COUNT(criteria)
+               break
+               case 'DataCriteriaDV_PROPORTION':
+                  condition = new DataCriteriaDV_PROPORTION(criteria)
+               break
+               case 'DataCriteriaDV_ORDINAL':
+                  condition = new DataCriteriaDV_ORDINAL(criteria)
+               break
+               case 'DataCriteriaDV_DURATION':
+                  condition = new DataCriteriaDV_DURATION(criteria)
+               break
+            }
+
+            this.addToWhere(condition)
+         }
+      }
+      else
+      {
+         this.format = json.format
+         
+         json.select.each { projection ->
+            println projection // TODO
+         }
+      }
    }
    
    

@@ -38,7 +38,7 @@ class DataCriteria {
    
    int spec // index of the criteria spec selected
    
-   String alias // for the query
+   String alias // for the query, private
    
    static constraints = {
       //operand(inList:['eq','neq','lt','gt','le','ge','in_list','contains','between'])
@@ -71,6 +71,50 @@ class DataCriteria {
       return "(archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName() +")"
    }
    
+   Map getCriteriaMap()
+   {
+      def criteria = [:] // attr -> [ operand : values ]
+      
+      def specs = criteriaSpec()
+      def spec = specs[this.spec] // spec used Map
+      def attributes = spec.keySet()
+      def operand
+      def operandField
+      def valueField
+      def criteriaValueType // value, list, range ...
+      def value
+      
+      attributes.each { attr ->
+         operandField = attr+'Operand'
+         operand = this."$operandField"
+         valueField = attr+'Value'
+         value = this."$valueField" // can be a list
+         
+         criteriaValueType = spec[attr][operand]
+         
+         
+         // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
+         if (criteriaValueType == 'value')
+         {
+            criteria[attr] =  [(operand): value]
+         }
+         else if (criteriaValueType == 'list')
+         {
+            assert operand == 'in_list'
+            
+            criteria[attr] =  [(operand): value]
+         }
+         else if (criteriaValueType == 'range')
+         {
+            assert operand == 'between'
+            
+            criteria[attr] =  [(operand): value]
+         }
+      }
+      
+      return criteria
+   }
+   
    String toSQL()
    {
       def specs = criteriaSpec()
@@ -87,7 +131,7 @@ class DataCriteria {
          operandField = attr+'Operand'
          operand = this."$operandField"
          valueField = attr+'Value'
-         value = this."$valueField"
+         value = this."$valueField" // can be a list
          
          criteriaValueType = spec[attr][operand]
          
