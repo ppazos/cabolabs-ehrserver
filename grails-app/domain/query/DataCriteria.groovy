@@ -58,9 +58,9 @@ class DataCriteria {
      'between': 'BETWEEN'
    ]
    
-   def sqlOperand()
+   def sqlOperand(String operandString)
    {
-      return operandMap[this.operand]
+      return operandMap[operandString]
    }
    
    static belongsTo = [Query]
@@ -81,21 +81,26 @@ class DataCriteria {
       def operandField
       def valueField
       def criteriaValueType // value, list, range ...
-      //def listValue
-      //def singleValue
+      def value
       
       attributes.each { attr ->
          operandField = attr+'Operand'
          operand = this."$operandField"
          valueField = attr+'Value'
+         value = this."$valueField"
          
          criteriaValueType = spec[attr][operand]
+         
+         println this.getClass().getSimpleName()
          
          
          // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
          if (criteriaValueType == 'value')
          {
-            sql += this.alias +'.'+ attr +' '+ operand +' '+ this."$valueField"
+            if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
+               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue()
+            else
+               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue()
          }
          else if (criteriaValueType == 'list')
          {
@@ -103,8 +108,8 @@ class DataCriteria {
             
             sql += this.alias +'.'+ attr +' IN ('
             
-            this."$valueField".each { value ->
-               slq += '"'+ value +'",'
+            value.each { singleValue ->
+               sql += singleValue.asSQLValue() +','
             }
             sql = sql[0..-2] + ')' // removes last ,
          }
@@ -112,7 +117,7 @@ class DataCriteria {
          {
             assert operand == 'between'
             
-            sql += this.alias +'.'+ attr +' '+ operand +' '+ this."$valueField"[0] +' AND '+ this."$valueField"[1]
+            sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue() +' AND '+ value[1].asSQLValue()
          }
          
          sql += ' AND '

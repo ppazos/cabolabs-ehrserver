@@ -330,7 +330,8 @@ class QueryController {
        println "-----------------------------------------"
        
        
-       query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
+       def r = query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
+       println r
        
        
        //def query = createOrUpdateQuery()

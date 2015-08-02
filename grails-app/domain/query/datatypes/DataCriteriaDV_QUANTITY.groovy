@@ -18,7 +18,7 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
        alias = 'dqi'
     }
     
-    static hasMany = [magnitudeValue: String]
+    static hasMany = [magnitudeValue: Double]
     
     static constraints = {
        

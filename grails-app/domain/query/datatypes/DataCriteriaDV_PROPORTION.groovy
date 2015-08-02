@@ -6,7 +6,7 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
 
     List numeratorValue
     List denominatorValue
-    int typeValue
+    Integer typeValue
 
     // Comparison operands
     String numeratorOperand
@@ -20,7 +20,7 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
        alias = 'dpi'
     }
     
-    static hasMany = [numeratorValue: double, denominatorValue: double]
+    static hasMany = [numeratorValue: Double, denominatorValue: Double]
     
     static constraints = {
     }

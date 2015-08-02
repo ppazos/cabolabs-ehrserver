@@ -2,14 +2,34 @@ import demographic.Person
 import common.generic.PatientProxy
 import ehr.Ehr
 import ehr.clinical_documents.IndexDefinition
+import grails.util.Holders
 
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
    
    def init = { servletContext ->
-      
      
+     
+     // Used by query builder, all return String
+     String.metaClass.asSQLValue = { ->
+        return "'"+ delegate +"'"
+     }
+     Double.metaClass.asSQLValue = { ->
+        return delegate.toString()
+     }
+     Integer.metaClass.asSQLValue = { ->
+        return delegate.toString()
+     }
+     Long.metaClass.asSQLValue = { ->
+        return delegate.toString()
+     }
+     Date.metaClass.asSQLValue = { ->
+        def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
+        return "'"+ formatterDateDB.format( delegate ) +"'" 
+     }
+     
+      
      println "------------------------------------------------------------------"
      println new File(".").getAbsolutePath() // Current working directory
      println "------------------------------------------------------------------"

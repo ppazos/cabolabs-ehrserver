@@ -16,7 +16,7 @@ class DataCriteriaDV_COUNT extends DataCriteria {
        alias = 'dci'
     }
     
-    static hasMany = [magnitudeValue: long]
+    static hasMany = [magnitudeValue: Long]
     
     static constraints = {
     }

@@ -87,10 +87,12 @@
         name: undefined,
         type: undefined,
         format: undefined,
+        criteriaLogic: undefined,
         where: [], // DataCriteria
         select: [], // DataGet
         group: 'none',
         set_type:     function (type) { this.type = type; }, // composition or datavalue
+        set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
         set_format:   function (format) { this.format = format; },
         set_group:    function (group) { this.group = group; },
@@ -154,6 +156,7 @@
 
         // query management
         query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
         //query.set_format( $('select[name=format]').val() ); // always xml for composition query 
         //query.set_group( $('select[name=group]').val() ); // for datavalue query
         
@@ -1241,14 +1244,10 @@
               <span class="info">
                 <asset:image src="skin/information.png" />
                  <span class="content">
-                   <ul>
-                     <li>
-                       Selecting an archetype here will narrow the query to get only data for this archetype id.
-                       This makes sense if criteria is defined over archetypes that are not the root composition archetype.
-                       Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
-                       This is here only for demo/test purposes.
-                     </li>
-                   </ul>
+                   Selecting an archetype here will narrow the query to get only data for this archetype id.
+                   This makes sense if criteria is defined over archetypes that are not the root composition archetype.
+                   Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
+                   This is here only for demo/test purposes.
                  </span>
               </span>
             </td>
@@ -1266,17 +1265,14 @@
             </td>
           </tr>
           --%>
+          
           <tr>
             <td>
               show UI?
               <span class="info">
                 <asset:image src="skin/information.png" />
                 <span class="content">
-                  <ul>
-                    <li>
-                      Select between showing the clinical document as a web view or retrieve it as XML.
-                    </li>
-                  </ul>
+                  Select between showing the clinical document as a web view or retrieve it as XML.
                 </span>
               </span>
             </td>
@@ -1284,6 +1280,22 @@
               <select name="showUI">
                 <option value="false" selected="selected">no</option>
                 <option value="true">yes</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Criteria logic
+              <span class="info">
+                <span class="content">
+                  Specifies how the conditions should be evaluated.
+                </span>
+              </span>
+            </td>
+            <td>
+              <select name="criteriaLogic">
+                <option value="AND" selected="selected">AND</option>
+                <option value="OR">OR</option>
               </select>
             </td>
           </tr>

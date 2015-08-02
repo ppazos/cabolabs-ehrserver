@@ -22,7 +22,7 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
        alias = 'dvol'
     }
    
-    static hasMany = [valueValue: int, symbol_codeValue: String]
+    static hasMany = [valueValue: Integer, symbol_codeValue: String]
     
     static constraints = {
        valueOperand(nullable:true)

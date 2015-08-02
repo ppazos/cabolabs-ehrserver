@@ -19,7 +19,7 @@ class DataCriteriaDV_DURATION extends DataCriteria {
        alias = 'dduri'
     }
     
-    static hasMany = [magnitudeValue: int]
+    static hasMany = [magnitudeValue: Integer]
     
     static constraints = {
     }

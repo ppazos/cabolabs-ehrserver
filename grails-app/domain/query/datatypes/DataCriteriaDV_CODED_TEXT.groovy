@@ -17,6 +17,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
     DataCriteriaDV_CODED_TEXT()
     {
        rmTypeName = 'DV_CODED_TEXT'
+       alias = 'dcti'
     }
    
     static hasMany = [codeValue: String]

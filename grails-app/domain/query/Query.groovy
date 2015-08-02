@@ -47,6 +47,9 @@ class Query {
    List where
    static hasMany = [select: DataGet, where: DataCriteria]
    
+   // For composition queries with criteria in where
+   String criteriaLogic = 'AND' // AND or OR
+   
    // null, composition o path
    // Sirve para agrupar datos:
    //  composition: sirve para mostrar tablas, donde cada fila es una composition
@@ -90,6 +93,8 @@ class Query {
       
       if (query.type == 'composition')
       {
+         query.criteriaLogic = json.criteriaLogic
+         
          def condition
          json.where.each { criteria ->
             
@@ -695,7 +700,7 @@ class Query {
             
             
             // Agrega ANDs para los EXISTs, menos el ultimo
-            if (i+1 < this.where.size()) q += " AND "
+            if (i+1 < this.where.size()) q += ' '+ criteriaLogic +' ' // AND or OR
          }
          
       }
