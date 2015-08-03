@@ -340,12 +340,13 @@ class QueryController {
     }
     
     
-    def update(Long id)
+    def update()
     {
        println 'update '+ params
        
-       def query = Query.get(id)
-       query.updateInstance(request.JSON.query)
+       def json = request.JSON.query
+       def query = Query.get(json.id) // the id comes in the json object
+       query.updateInstance(json)
        if (!query.save(flush:true)) println query.errors.allErrors
        //def query = createOrUpdateQuery(id)
        
@@ -558,6 +559,7 @@ class QueryController {
                    name(q.name)
                    format(q.format)
                    type(q.type)
+                   criteriaLogic(q.criteriaLogic)
                    
                    if (q.type == 'composition')
                    {
@@ -620,6 +622,7 @@ class QueryController {
                    name = q.name
                    format = q.format
                    type = q.type
+                   criteriaLogic = q.criteriaLogic
                    
                    if (q.type == 'composition')
                    {

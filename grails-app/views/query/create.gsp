@@ -83,6 +83,7 @@
       //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
 
       var query = {
+        id: undefined, // used for edit/update
         id_gen: 0,
         name: undefined,
         type: undefined,
@@ -91,6 +92,7 @@
         where: [], // DataCriteria
         select: [], // DataGet
         group: 'none',
+        set_id:       function (id) { this.id = id; },
         set_type:     function (type) { this.type = type; }, // composition or datavalue
         set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
@@ -169,6 +171,7 @@
         })
         .done(function( data ) {
            console.log(data);
+           location.href = '${createLink('action': 'show')}?id='+ data.id;
         });
         
         /*
@@ -191,7 +194,22 @@
       };
 
       var update_query = function() {
+
+         // values might be updated
+         query.set_name($('input[name=name]').val());
+         query.set_criteria_logic($('select[name=criteriaLogic]').val());
          
+         $.ajax({ 
+            method: 'POST',
+            url: '${createLink(controller:'query', action:'update')}',
+            contentType : 'application/json',
+            data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+          })
+          .done(function( data ) {
+             console.log(data);
+          });
+
+         /*
          $('#query_form').ajaxSubmit({
            url: '${createLink(controller:'query', action:'update')}',
            type: 'post',
@@ -207,6 +225,7 @@
              alert(response.responseText); // lo devuelto por el servidor
            }
          });
+         */
        };
 
       var test_query_composition = function () {
@@ -457,11 +476,11 @@
           //console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
 
           attribute = $('input[name=attribute]', e).val()
+          operand = $('select[name=operand]', e).val();
           
+          // FIXME: are we using the hidden fields?
           criteria_str += attribute;
           criteria_str += '<input type="hidden" name="attribute" value="'+ attribute +'" data-atttibute="'+ attribute +'" /> ';
-
-          operand = $('select[name=operand]', e).val();
           
           criteria_str += operand +' ';
           criteria_str += '<input type="hidden" name="operand" value="'+ operand +'" /> ';
@@ -834,15 +853,17 @@
           //print 'alert("edit");'
           
           // dont allow to change type
+          println '$("select[name=type]").val("'+ queryInstance.type +'");'
           println '$("select[name=type]").prop("disabled", "disabled");'
           
           println 'show_controls("'+ queryInstance.type +'");'
           
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
-          
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
+          println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           
           
+          println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
           println 'query.set_format("'+ queryInstance.format +'");'
@@ -852,7 +873,7 @@
           
           if (queryInstance.type == 'composition')
           {
-             def attrs, attrValueField, attrOperandField, value
+             def attrs, attrValueField, attrOperandField, value, operand
              println 'var criteria;'
              
              //print 'alert("composition");'
@@ -862,47 +883,54 @@
                 
                 println 'criteria = new Criteria('+ data_criteria.spec +');'
                 
-                
-                // ***************************************************************************
-                // ***************************************************************************
-                // FIXME: solo usar attrs que estan en la spec seleccionada, sino pone nulls...
-                // ***************************************************************************
-                // ***************************************************************************
-                
-                // TODO: load spec and format no the query object from the query domain
-                
-                
                 attrs.each { attr ->
                 
                    attrValueField = attr + 'Value' 
                    attrOperandField = attr + 'Operand'
+                   operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
                    
                    if (value instanceof List)
                    {
                       println 'criteria.add_condition("'+
                          attr +'", "'+
-                         data_criteria."$attrOperandField" +'", '+
-                         (data_criteria."$attrValueField" as JSON) +');'
+                         operand +'", '+
+                         (value as JSON) +');'
                    }
                    else // value is an array of 1 element
                    {
                       // FIXME: if the value is not string or date, dont include the quotes
                       println 'criteria.add_condition("'+
                          attr +'", "'+
-                         data_criteria."$attrOperandField" +'", [ "'+
-                         data_criteria."$attrValueField" +'" ]);'
+                         operand +'", [ "'+
+                         value +'" ]);'
                    }
-                }
+                   
+                } // each attr
+                
+                
+                println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
+                
+                println """
+	                \$('#criteria').append(
+				            '<tr>'+
+				            '<td>${data_criteria.archetypeId}</td>'+
+				            '<td>${data_criteria.path}</td>'+
+				            '<td>${data_criteria.rmTypeName}</td>'+
+				            '<td>'+ criteria_str +'</td>'+
+				            '<td>'+
+				              '<a href="#" class="removeCriteria">[-]</a>'+
+				              '<input type="hidden" name="archetype_id" value="${data_criteria.archetypeId}" />'+
+				              '<input type="hidden" name="path" value="${data_criteria.path}" />'+
+				              '<input type="hidden" name="type" value="${data_criteria.rmTypeName}" />'+
+				            '</td></tr>'
+				       );
+			       """
+			        
+			       criteria_str = ""
+                
                 
                 println 'console.log(criteria);'
-                
-                // FIXME FOR THE CHANGES TO CRITERIA...
-                //print 'dom_add_criteria("'+ 
-                //  data_criteria.archetypeId +'", "'+ 
-                //  data_criteria.path +'", "'+
-                //  data_criteria.operand +'", "'+ 
-                //  data_criteria.value +'");'
                 
                 println 'query.add_criteria("'+
                   data_criteria.archetypeId +'", "'+

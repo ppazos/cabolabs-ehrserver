@@ -70,6 +70,13 @@
           <span class="property-value" aria-labelledby="type-label"><g:fieldValue bean="${queryInstance}" field="type"/></span>
         </li>
         </g:if>
+        
+        <g:if test="${queryInstance?.criteriaLogic}">
+        <li class="fieldcontain">
+          <span id="criteriaLogic-label" class="property-label"><g:message code="query.criteriaLogic.label" default="Criteria logic" /></span>
+          <span class="property-value" aria-labelledby="criteriaLogic-label"><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></span>
+        </li>
+        </g:if>
       
         <g:if test="${queryInstance?.select}">
         <li class="fieldcontain">
