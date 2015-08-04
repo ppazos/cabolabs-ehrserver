@@ -104,14 +104,19 @@
 
           this.id_gen++;
 
-          var c = {id: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
+          var c = {cid: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
 
           // copy attributes
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
 
           c['spec'] = criteria.spec;
           
-          this.where.push( c );
+          //this.where.push( c );
+          this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
+
+          // when items are removed and then added, there are undefined entries in the array
+          // this cleans the undefined items so the server doesnt receive empty values.
+          this.where = this.where.filter(function(n){ return n != undefined }); 
           
           return this.id_gen;
         },
@@ -121,15 +126,32 @@
 
           this.id_gen++;
           
-          this.select.push( {id: this.id_gen, archetype_id: archetype_id, path: path} );
+          this.select[this.id_gen - 1] = {sid: this.id_gen, archetype_id: archetype_id, path: path};
+
+          // when items are removed and then added, there are undefined entries in the array
+          // this cleans the undefined items so the server doesnt receive empty values.
+          this.select = this.select.filter(function(n){ return n != undefined }); 
           
           return this.id_gen;
         },
         remove_criteria: function (id)
         {
+          // lookup: TODO put this in array prototype
+          //var result = $.grep(myArray, function(e){ return e.id == id; });
+          var pos;
+          for (var i = 0, len = this.where.length; i < len; i++) {
+             if (this.where[i].cid == id)
+             {
+                pos = i;
+                break;
+             }
+          }
+
+          this.where.splice(pos, 1); // removes 1 item in from the id-1 position
         },
         remove_projection: function (id)
         {
+           this.select.splice(id - 1, 1);
         },
         log: function () { console.log(this); }
       };
@@ -163,7 +185,7 @@
         //query.set_group( $('select[name=group]').val() ); // for datavalue query
         
         // TODO: add format and group to query
-        $.ajax({ 
+        $.ajax({
           method: 'POST',
           url: '${createLink(controller:'query', action:'save')}',
           contentType : 'application/json',
@@ -173,24 +195,6 @@
            console.log(data);
            location.href = '${createLink('action': 'show')}?id='+ data.id;
         });
-        
-        /*
-        $('#query_form').ajaxSubmit({
-          url: '${createLink(controller:'query', action:'save')}',
-          type: 'post',
-          success: function(responseText, statusText, req, form) {
-            console.log(responseText);
-            // redirect to show!
-            location.href = '${createLink('action': 'show')}?id='+ responseText.id;
-          },
-          error: function(response, textStatus, errorThrown)
-          {
-            console.log('error form_datavalue');
-            console.log(response);
-            alert(response.responseText); // lo devuelto por el servidor
-          }
-        });
-        */
       };
 
       var update_query = function() {
@@ -199,7 +203,7 @@
          query.set_name($('input[name=name]').val());
          query.set_criteria_logic($('select[name=criteriaLogic]').val());
          
-         $.ajax({ 
+         $.ajax({
             method: 'POST',
             url: '${createLink(controller:'query', action:'update')}',
             contentType : 'application/json',
@@ -208,24 +212,6 @@
           .done(function( data ) {
              console.log(data);
           });
-
-         /*
-         $('#query_form').ajaxSubmit({
-           url: '${createLink(controller:'query', action:'update')}',
-           type: 'post',
-           success: function(responseText, statusText, req, form) {
-             console.log(responseText);
-             // redirect to show!
-             location.href = '${createLink('action': 'show')}?id='+ responseText.id;
-           },
-           error: function(response, textStatus, errorThrown)
-           {
-             console.log('error form_datavalue');
-             console.log(response);
-             alert(response.responseText); // lo devuelto por el servidor
-           }
-         });
-         */
        };
 
       var test_query_composition = function () {
@@ -432,29 +418,10 @@
       // COMPO QUERY CREATE/EDIT =========
       // =================================
       
-      // NOT USED
-      /*
-      var dom_add_criteria = function (archetype_id, path, operand, value) {
-
-        $('#criteria').append(
-          '<tr>'+
-          '<td>'+ archetype_id +'</td>'+
-          '<td>'+ path +'</td>'+
-          '<td>'+ operand +'</td>'+
-          '<td>'+ value +'</td>'+
-          '<td>'+
-            '<a href="#" class="removeCriteria">[-]</a>'+
-            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
-            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
-            '<input type="hidden" name="operand" value="'+ operand +'" />'+
-            '<input type="hidden" name="value" value="'+ value +'" />'+
-          '</td></tr>'
-        );
-      };
-      */
       
-      
-
+      /**
+       * Creates the criteria, adds it to the query, updates the UI.
+       */
       var dom_add_criteria_2 = function (fieldset) {
 
         var archetype_id = $('select[name=view_archetype_id]').val();
@@ -464,26 +431,21 @@
         
         console.log('spec', spec);
 
-        var attribute, operand, value, values = [];
+        var attribute, operand, value, values;
         var criteria_str = '';
         
         // criteria js object
         var criteria = new Criteria(spec);
-          
-          
+        
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
-          //console.log('criteria attribute', e, $(e).serialize(), $('input.selected.value', e));
-
+          values = [];
           attribute = $('input[name=attribute]', e).val()
           operand = $('select[name=operand]', e).val();
           
           // FIXME: are we using the hidden fields?
-          criteria_str += attribute;
-          criteria_str += '<input type="hidden" name="attribute" value="'+ attribute +'" data-atttibute="'+ attribute +'" /> ';
-          
+          criteria_str += attribute +' ';
           criteria_str += operand +' ';
-          criteria_str += '<input type="hidden" name="operand" value="'+ operand +'" /> ';
 
           // for each criteria value (can be 1 for value, 2 for range or N for list)
           // the class with the name of the attribute is needed to filter values for each attribute
@@ -494,47 +456,39 @@
              value = $(v).val();
              values.push(value);
              
-             criteria_str += value;
-             criteria_str += '<input type="hidden" name="value" value="'+ value +'" data-atttibute="'+ attribute +'" />' + ', ';
+             criteria_str += value + ', ';
           });
 
+          criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
+          criteria_str += ' AND ';
+          
           
           // query object mgt
           criteria.add_condition(attribute, operand, values);
-          
-          values = [];
-          
-          criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
-          criteria_str += ' AND ';
         });
+        
+        criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
         
         
         // query object mgt
-        query.add_criteria(archetype_id, path, type, criteria);
+        cid = query.add_criteria(archetype_id, path, type, criteria);
         query.log();
 
 
-        criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
-
-        console.log( criteria_str );
-
+        // updates UI
         $('#criteria').append(
-            '<tr>'+
-            '<td>'+ archetype_id +'</td>'+
-            '<td>'+ path +'</td>'+
-            '<td>'+ type +'</td>'+
-            '<td>'+ criteria_str +'</td>'+
-            '<td>'+
-              '<a href="#" class="removeCriteria">[-]</a>'+
-              '<input type="hidden" name="archetype_id" value="'+ archetype_id +'" />'+
-              '<input type="hidden" name="path" value="'+ path +'" />'+
-              '<input type="hidden" name="type" value="'+ type +'" />'+
-            '</td></tr>'
+           '<tr data-id="'+ cid +'">'+
+           '<td>'+ archetype_id +'</td>'+
+           '<td>'+ path +'</td>'+
+           '<td>'+ type +'</td>'+
+           '<td>'+ criteria_str +'</td>'+
+           '<td>'+
+             '<a href="#" class="removeCriteria">[-]</a>'+
+           '</td></tr>'
         );
+        
+      }; // dom_add_criteria_2
 
-
-        console.log('serialized criteria', $('#criteria input').serialize() );
-      };
 
       var query_datavalue_add_criteria_2 = function () {
 
@@ -845,13 +799,12 @@
       
         $('select[name=type]').val(""); // select empty option by default
       
-      
-        <%-- EDIT QUERY SETUP --%>
         <%
+        // =====================================================================
+        // a little groovy code to setup the edit/update ...
+        
         if (mode == 'edit')
         {
-          //print 'alert("edit");'
-          
           // dont allow to change type
           println '$("select[name=type]").val("'+ queryInstance.type +'");'
           println '$("select[name=type]").prop("disabled", "disabled");'
@@ -861,7 +814,6 @@
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
-          
           
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
@@ -873,10 +825,11 @@
           
           if (queryInstance.type == 'composition')
           {
+             // similar code to dom_add_criteria_2 in JS
+             
              def attrs, attrValueField, attrOperandField, value, operand
              println 'var criteria;'
              
-             //print 'alert("composition");'
              queryInstance.where.each { data_criteria ->
                 
                 attrs = data_criteria.criteriaSpec()[data_criteria.spec].keySet() // attribute names of the datacriteria
@@ -895,7 +848,7 @@
                       println 'criteria.add_condition("'+
                          attr +'", "'+
                          operand +'", '+
-                         (value as JSON) +');'
+                         ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
                    }
                    else // value is an array of 1 element
                    {
@@ -909,36 +862,28 @@
                 } // each attr
                 
                 
-                println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
-                
-                println """
-	                \$('#criteria').append(
-				            '<tr>'+
-				            '<td>${data_criteria.archetypeId}</td>'+
-				            '<td>${data_criteria.path}</td>'+
-				            '<td>${data_criteria.rmTypeName}</td>'+
-				            '<td>'+ criteria_str +'</td>'+
-				            '<td>'+
-				              '<a href="#" class="removeCriteria">[-]</a>'+
-				              '<input type="hidden" name="archetype_id" value="${data_criteria.archetypeId}" />'+
-				              '<input type="hidden" name="path" value="${data_criteria.path}" />'+
-				              '<input type="hidden" name="type" value="${data_criteria.rmTypeName}" />'+
-				            '</td></tr>'
-				       );
-			       """
-			        
-			       criteria_str = ""
-                
-                
-                println 'console.log(criteria);'
-                
-                println 'query.add_criteria("'+
+                println 'cid = query.add_criteria("'+
                   data_criteria.archetypeId +'", "'+
                   data_criteria.path +'", "'+
                   data_criteria.rmTypeName +'", '+
                   'criteria);'
-                  
-                println 'console.log(query);'
+                
+                println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
+                
+                println """
+                  \$('#criteria').append(
+                     '<tr data-id="'+ cid +'">'+
+                     '<td>${data_criteria.archetypeId}</td>'+
+                     '<td>${data_criteria.path}</td>'+
+                     '<td>${data_criteria.rmTypeName}</td>'+
+                     '<td>'+ criteria_str +'</td>'+
+                     '<td>'+
+                       '<a href="#" class="removeCriteria">[-]</a>'+
+                     '</td></tr>'
+                  );
+                """
+                 
+                criteria_str = ""
              }
           }
           else
@@ -985,10 +930,14 @@
 	      
 	        e.preventDefault();
 	        
-	        // parent es la td y parent.parent es la TR a eliminar
+	        // parent = TD y parent.parent = TR a eliminar
 	        //console.log($(e.target).parent().parent());
 	        //
-	        $(e.target).parent().parent().remove();
+	        row = $(e.target).parent().parent();
+	        id = row.data('id');
+	        row.remove(); // deletes from DOM
+	        
+	        query.remove_criteria( id ); // updates the query
 	     });
 	     
 	     /**

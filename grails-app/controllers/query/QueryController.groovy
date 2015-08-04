@@ -222,6 +222,7 @@ class QueryController {
        return params
     }
     
+    /*
     private Query createOrUpdateQuery(Long id)
     {
        def query
@@ -304,6 +305,7 @@ class QueryController {
        return query
        
     } // createOrUpdateQuery
+    */
 
 
     /**

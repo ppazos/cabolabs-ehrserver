@@ -43,8 +43,8 @@ class Query {
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
-   List select
-   List where
+   List select = []
+   List where = []
    static hasMany = [select: DataGet, where: DataCriteria]
    
    // For composition queries with criteria in where
@@ -89,62 +89,6 @@ class Query {
       
       query.updateInstance(json)
       
-      /*
-      query.name = json['name']
-      query.type = json['type']
-      
-      
-      if (query.type == 'composition')
-      {
-         query.criteriaLogic = json.criteriaLogic
-         
-         def condition
-         json.where.each { criteria ->
-            
-            //println criteria
-            switch (criteria['class']) {
-               case 'DataCriteriaDV_QUANTITY':
-                  condition = new DataCriteriaDV_QUANTITY(criteria)
-               break
-               case 'DataCriteriaDV_CODED_TEXT':
-                  condition = new DataCriteriaDV_CODED_TEXT(criteria)
-               break
-               case 'DataCriteriaDV_TEXT':
-                  condition = new DataCriteriaDV_TEXT(criteria)
-               break
-               case 'DataCriteriaDV_DATE_TIME':
-                  condition = new DataCriteriaDV_DATE_TIME(criteria)
-               break
-               case 'DataCriteriaDV_BOOLEAN':
-                  //condition = new DataCriteriaDV_BOOLEAN(criteria)
-               break
-               case 'DataCriteriaDV_COUNT':
-                  condition = new DataCriteriaDV_COUNT(criteria)
-               break
-               case 'DataCriteriaDV_PROPORTION':
-                  condition = new DataCriteriaDV_PROPORTION(criteria)
-               break
-               case 'DataCriteriaDV_ORDINAL':
-                  condition = new DataCriteriaDV_ORDINAL(criteria)
-               break
-               case 'DataCriteriaDV_DURATION':
-                  condition = new DataCriteriaDV_DURATION(criteria)
-               break
-            }
-
-            query.addToWhere(condition)
-         }
-      }
-      else
-      {
-         query.format = json.format
-         
-         json.select.each { projection ->
-            println projection
-         }
-      }
-      */
-      
       return query
    }
    
@@ -155,16 +99,20 @@ class Query {
    {
       this.name = json['name']
       this.type = json['type']
-      
+      this.format = ( json['format'] ) ? json['format'] : 'xml' 
       
       if (this.type == 'composition')
       {
          this.criteriaLogic = json.criteriaLogic
          
+         this.where.each {
+            it.delete()
+         }
+         this.where.clear() // remove criterias before adding current ones
+         
          def condition
          json.where.each { criteria ->
             
-            //println criteria
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
                   condition = new DataCriteriaDV_QUANTITY(criteria)
@@ -200,10 +148,20 @@ class Query {
       }
       else
       {
-         this.format = json.format
+         this.group = json['group']
+         
+         this.select.each {
+            it.delete()
+         }
+         this.select.clear()
          
          json.select.each { projection ->
+            
             println projection // TODO
+            
+            this.addToSelect(
+               new DataGet(archetypeId: projection.archetype_id, path: projection.path)
+            )
          }
       }
    }

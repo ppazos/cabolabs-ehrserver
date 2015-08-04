@@ -13,7 +13,6 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
    
     DataCriteriaDV_QUANTITY()
     {
-       println "CREATE DV QUANTITY CRITERIA"
        rmTypeName = 'DV_QUANTITY'
        alias = 'dqi'
     }
