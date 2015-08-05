@@ -18,6 +18,15 @@ import common.change_control.VersionedComposition
 import grails.util.Holders
 import common.change_control.Version
 
+import de.odysseus.staxon.json.JsonXMLConfig
+import de.odysseus.staxon.json.JsonXMLConfigBuilder
+import de.odysseus.staxon.json.JsonXMLOutputFactory
+
+import javax.xml.stream.XMLEventReader
+import javax.xml.stream.XMLEventWriter
+import javax.xml.stream.XMLInputFactory
+import javax.xml.stream.XMLStreamException
+
 /**
  * TODO:
  * 
@@ -329,6 +338,11 @@ class RestController {
             // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
             versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
             versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+
+            //Save version as Json
+            log.info('Llama a función para crear archivo Json apartir de '+config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
+            def jsonFile = new File(config.version_repo + version.uid.replaceAll('::', '_')+'.txt')
+            jsonFile << xmlToJson(groovy.xml.XmlUtil.serialize( parsedVersions[i] ))
             
          } // contribution.versions.each
       } // contributions.each
@@ -345,8 +359,51 @@ class RestController {
          }
       }
    } // commit
-   
-   
+   /***
+   *Función encargada de convertir a json un string en xml
+   * @param contenidoXml: Texto xml a pasar a Json
+   * @rerturn texto enformato json que es devuelto por la función. 
+   ***/
+   def xmlToJson(String contenidoXml){
+      log.info("Entra en función xmlToJson")
+      InputStream input = new ByteArrayInputStream(contenidoXml.getBytes())
+      ByteArrayOutputStream output = new ByteArrayOutputStream()
+      JsonXMLConfig config = new JsonXMLConfigBuilder()
+            .autoArray(true)
+            .autoPrimitive(true)
+            .prettyPrint(true)
+            .build()
+         try {
+            /*
+             * Create reader (XML).
+             */
+            XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(input)
+            /*
+             * Create writer (JSON).
+             */
+            XMLEventWriter writer = new JsonXMLOutputFactory(config).createXMLEventWriter(output)
+            //writer.toString();
+            /*
+             * Copy events from reader to writer.
+             */
+            writer.add(reader)          
+            return output.toString()
+            /*
+             * Close reader/writer.
+             */
+            reader.close()
+            writer.close()          
+         } finally {           
+            /*
+             * As per StAX specification, XMLEventReader/Writer.close() doesn't close
+             * the underlying stream.
+             */
+            output.close()
+            input.close()
+            log.info("Sale de función xmlToJson")
+         } 
+   }
+
    /**
     * Enpoint for checking out the last version of a composition in order to create a new one.
     * The query services don't allow versioning the retrieved compositions because don't include
