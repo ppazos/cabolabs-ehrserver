@@ -219,6 +219,12 @@
         // values might be updated
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
+
+        if (query.get_type() == 'datavalue')
+        {
+           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
         
         $.ajax({
           method: 'POST',
@@ -520,50 +526,6 @@
           '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
         );
       };
-
-/* NOT USED
-      var query_datavalue_add_criteria = function () {
-
-        console.log('query_datavalue_add_selection');
-         
-        // TODO: verificar que todo tiene valor seleccionado
-         
-        if ( $('select[name=view_archetype_id]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_concept')}');
-          return;
-        }
-        if ( $('select[name=view_archetype_path]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_datapoint')}');
-          return;
-        }
-        
-        if ( $('input[name=soperand]:checked').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_operand')}');
-          return;
-        }
-        if ( $('input[name=svalue]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_insert_value')}');
-          return;
-        }
-        
-        dom_add_criteria(
-          $('select[name=view_archetype_id]').val(),
-          $('select[name=view_archetype_path]').val(),
-          $('input[name=soperand]:checked').val(),
-          $('input[name=svalue]').val()
-        );
-        
-        // Notifica que la condicion fue agregada
-        $.growlUI(
-          '${g.message(code:"query.create.condition_added")}',
-          '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
-        );
-      };
-*/
 
       // =================================
       // /COMPO QUERY CREATE/EDIT ========
@@ -979,7 +941,13 @@
 	        // parent es la td y parent.parent es la TR a eliminar
 	        //console.log($(e.target).parent().parent());
 	        //
-	        $(e.target).parent().parent().remove();
+	        //$(e.target).parent().parent().remove();
+	        
+	        row = $(e.target).parent().parent();
+           id = row.data('id');
+           row.remove(); // deletes from DOM
+           
+           query.remove_projection( id ); // updates the query
 	     });
 	     
 	     // ========================================================

@@ -103,7 +103,7 @@ class Query {
       
       if (this.type == 'composition')
       {
-         this.criteriaLogic = json.criteriaLogic
+         this.criteriaLogic = json['criteriaLogic']
          
          this.where.each {
             it.delete()
@@ -157,8 +157,6 @@ class Query {
          
          json.select.each { projection ->
             
-            println projection // TODO
-            
             this.addToSelect(
                new DataGet(archetypeId: projection.archetype_id, path: projection.path)
             )
@@ -169,7 +167,7 @@ class Query {
    
    String toString ()
    {
-      return "name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
+      return "id: "+ this.id +", name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
    }
    
    
@@ -560,6 +558,7 @@ class Query {
       // Sin este chequeo, se rompe la query porque sobra un " AND "
       if (!this.where)
       {
+         println "dice que WHERE es vacio "+ this.toString()
          q = q[0..-6] // quita el ultimo " AND ", es -6 porque -1 pone el puntero al final del string y luego hay que sacar 5 chars
       }
       else
@@ -674,7 +673,6 @@ class Query {
                   throw new Exception("type $idxtype not supported")
             }
             
-            
             where += " AND " + dataCriteria.toSQL()
             
             println where
@@ -695,7 +693,6 @@ class Query {
             //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
             //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
             
-   
             
             //       EXISTS (
             //         SELECT dvi.id

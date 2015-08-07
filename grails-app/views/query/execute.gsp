@@ -244,7 +244,7 @@
                 <input type="hidden" name="path" value="${criteria.path}" />
               </td>
               <td>
-                ${criteria.operand}
+                ${criteria.toSQL()}
                 <input type="hidden" name="operand" value="${criteria.operand}" />
               </td>
               <td>
