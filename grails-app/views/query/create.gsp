@@ -92,8 +92,9 @@
         where: [], // DataCriteria
         select: [], // DataGet
         group: 'none',
-        set_id:       function (id) { this.id = id; },
+        set_id:       function (id) { this.id = id; }, // for edit/update
         set_type:     function (type) { this.type = type; }, // composition or datavalue
+        get_type:     function () { return this.type; }, // composition or datavalue
         set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
         set_format:   function (format) { this.format = format; },
@@ -126,7 +127,7 @@
 
           this.id_gen++;
           
-          this.select[this.id_gen - 1] = {sid: this.id_gen, archetype_id: archetype_id, path: path};
+          this.select[this.id_gen - 1] = {pid: this.id_gen, archetype_id: archetype_id, path: path};
 
           // when items are removed and then added, there are undefined entries in the array
           // this cleans the undefined items so the server doesnt receive empty values.
@@ -147,11 +148,22 @@
              }
           }
 
-          this.where.splice(pos, 1); // removes 1 item in from the id-1 position
+          this.where.splice(pos, 1); // removes 1 item in from the position
         },
         remove_projection: function (id)
         {
-           this.select.splice(id - 1, 1);
+           // lookup: TODO put this in array prototype
+           //var result = $.grep(myArray, function(e){ return e.id == id; });
+           var pos;
+           for (var i = 0, len = this.select.length; i < len; i++) {
+              if (this.select[i].pid == id)
+              {
+                 pos = i;
+                 break;
+              }
+           }
+           
+           this.select.splice(pos, 1); // removes 1 item in from the position
         },
         log: function () { console.log(this); }
       };
@@ -171,20 +183,25 @@
           this.conditions[attr+'Operand'] = operand;
         };
       };
-    
-      // =================================
-      // TEST OR SAVE ====================
-      // =================================
+
+      
+      // ==============================================================================================
+      // SAVE OR UPDATE
+      // TODO: put these methods in the query object
+      // ==============================================================================================
     
       var save_query = function() {
 
         // query management
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
-        //query.set_format( $('select[name=format]').val() ); // always xml for composition query 
-        //query.set_group( $('select[name=group]').val() ); // for datavalue query
+
+        if (query.get_type() == 'datavalue')
+        {
+           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
         
-        // TODO: add format and group to query
         $.ajax({
           method: 'POST',
           url: '${createLink(controller:'query', action:'save')}',
@@ -199,20 +216,26 @@
 
       var update_query = function() {
 
-         // values might be updated
-         query.set_name($('input[name=name]').val());
-         query.set_criteria_logic($('select[name=criteriaLogic]').val());
-         
-         $.ajax({
-            method: 'POST',
-            url: '${createLink(controller:'query', action:'update')}',
-            contentType : 'application/json',
-            data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
-          })
-          .done(function( data ) {
-             console.log(data);
-          });
-       };
+        // values might be updated
+        query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
+        
+        $.ajax({
+          method: 'POST',
+          url: '${createLink(controller:'query', action:'update')}',
+          contentType : 'application/json',
+          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+          console.log(data);
+        });
+      };
+
+      
+      // ==============================================================================================
+      // TEST COMPOSITION and DATAVALUE
+      // ==============================================================================================
+    
 
       var test_query_composition = function () {
 
@@ -221,12 +244,9 @@
         
         $('#query_form').ajaxSubmit({
 
-          // datatype = xml for composition
-         
-          url: '${createLink(controller:'rest', action:'queryCompositions')}',
-
+          // datatype = xml for composition (for now)
+          url: '${createLink(controller:"rest", action:"queryCompositions")}',
           type: 'post',
-         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
             
             console.log('form_composition beforeSubmit', data);
@@ -258,10 +278,6 @@
           success: function(responseText, statusText, req, form) {  // >>> SUCCESS
             
             console.log('form_composition success');
-            //console.log(responseText);
-            //console.log(statusText);
-            //console.log(req);
-            //console.log(form);
             
             // reset code class or highlight
             $('code').removeClass('xml json');
@@ -302,15 +318,13 @@
         $('#query_form').ajaxSubmit({
             
           dataType: $('select[name=format]').val(), // xml o json
-          url: '${createLink(controller:'rest', action:'queryData')}',
+          url: '${createLink(controller:"rest", action:"queryData")}',
           type: 'post',
           data: {doit:true},
-        
           beforeSubmit: function(data, form, options) {
           
             console.log('form_datavalue beforeSubmit');
           },
-          
           success: function(responseText, statusText, req, form) {
             
             console.log('form_datavalue success');
@@ -365,7 +379,6 @@
             // Hace scroll animado para mostrar el resultado
             $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
           },
-          
           error: function(response, textStatus, errorThrown)
           {
             console.log('error form_datavalue');
@@ -376,6 +389,10 @@
         });
       }; // test_query_datavalue
     
+      
+      /*
+       * Called from the save/update buttons
+       */
       var ajax_submit_test_or_save = function (action) {
 
          console.log('ajax_submit', action);
@@ -410,14 +427,14 @@
          }
       }; // ajax_submit
 
-      // =================================
-      // /TEST OR SAVE ===================
-      // =================================
+      // ==================================================================
+      // / TEST QUERIES
+      // ==================================================================
+      
       
       // =================================
       // COMPO QUERY CREATE/EDIT =========
       // =================================
-      
       
       /**
        * Creates the criteria, adds it to the query, updates the UI.
@@ -475,7 +492,7 @@
         query.log();
 
 
-        // updates UI
+        // shows the criteria in the UI
         $('#criteria').append(
            '<tr data-id="'+ cid +'">'+
            '<td>'+ archetype_id +'</td>'+
@@ -490,7 +507,7 @@
       }; // dom_add_criteria_2
 
 
-      var query_datavalue_add_criteria_2 = function () {
+      var query_composition_add_criteria_2 = function () {
 
         // data for the selected criteria
         dom_add_criteria_2(
@@ -503,7 +520,8 @@
           '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
         );
       };
-      
+
+/* NOT USED
       var query_datavalue_add_criteria = function () {
 
         console.log('query_datavalue_add_selection');
@@ -520,15 +538,6 @@
           alert('${g.message(code:'query.create.please_select_datapoint')}');
           return;
         }
-
-        // Indexes can be defined over complex attributes but criteria is only for
-        /*
-        if ( ! $.inArray( $('select[name=view_archetype_path]').data('type'), datatypes ) )
-        {
-          alert('${g.message(code:'query.create.criteriaIsOnlyForDatatypes')}');
-          return;
-        }
-        */
         
         if ( $('input[name=soperand]:checked').val() == null )
         {
@@ -540,8 +549,6 @@
           alert('${g.message(code:'query.create.please_insert_value')}');
           return;
         }
-        
-
         
         dom_add_criteria(
           $('select[name=view_archetype_id]').val(),
@@ -556,6 +563,7 @@
           '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
         );
       };
+*/
 
       // =================================
       // /COMPO QUERY CREATE/EDIT ========
@@ -567,12 +575,16 @@
       
       var dom_add_selection = function (archetype_id, path) {
 
+        // query object mgt
+        pid = query.add_projection(archetype_id, path);
+        query.log();
+
+        // shows the projection in the UI
         $('#selection').append(
-          '<tr><td>'+ archetype_id +'</td><td>'+ path +'</td>'+
+          '<tr data-id="'+ pid +'">'+
+          '<td>'+ archetype_id +'</td><td>'+ path +'</td>'+
           '<td>'+
             '<a href="#" class="removeSelection">[-]</a>'+
-            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
-            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
           '</td></tr>'
         );
       };
@@ -645,6 +657,9 @@
       };
 
 
+      /**
+       * TODO: put the criteria builder functions in a criteria builder object.
+       */
       // For composition criteria builder
       var global_criteria_id = 0; // used to link data for the same criteria
       var get_criteria_specs = function (datatype) {
@@ -688,7 +703,6 @@
                 
                 
                 // indexes of operand and value should be linked.
-
                 criteria += '<span class="criteria_value_container">';
                 var i = 0;
                 for (cond in conditions) {
@@ -735,8 +749,6 @@
               } // for aspec
               
               criteria += '</fieldset>';
-              
-              //console.log(criteria);
                 
             }; // for render criteria spec
             
@@ -749,6 +761,7 @@
           }
         });
       };
+      
       
       // attachs onchange for operand selects created by the 'get_criteria_specs' function.
       $(document).on('change', 'select.operand', function(evt) {
@@ -814,14 +827,12 @@
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
-          
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
           println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
-          
           
           if (queryInstance.type == 'composition')
           {
@@ -891,8 +902,8 @@
              //print 'alert("datavalue");'
              queryInstance.select.each { data_get ->
                 
-                //print 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
-                // TODO
+                // Updates the UI and the query object
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
              }
           }
           
@@ -903,9 +914,15 @@
           println '$("#update_button").show();'
           println '$("#create_button").hide();'
         }
+        
+        // EDIT SERVER-SIDE LOGIC
         %>
         
         
+        /** ***************************************************************
+         * ACTIONS ASSOCIATED TO ELEMENTS OF THE UI
+         */
+         
         // ========================================================
         // Los registros de eventos deben estar en document.ready
         
@@ -917,8 +934,7 @@
 	
 	        e.preventDefault();
 	        
-	        //query_datavalue_add_criteria();
-	        query_datavalue_add_criteria_2();
+	        query_composition_add_criteria_2();
 	     });
 	      
 	      
