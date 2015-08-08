@@ -229,9 +229,6 @@ class Query {
          }
       }
       
-      //println ". "
-      //println res
-      //println "group $group"
       
       // Group
       // If group is not empty, use that, if not, use the query grouping

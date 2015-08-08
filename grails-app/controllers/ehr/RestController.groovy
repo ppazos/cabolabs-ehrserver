@@ -1074,25 +1074,6 @@ class RestController {
       println "queryData"
       println params
       
-      def type = 'datavalue'
-      
-      // =================================================================
-      // Crea query temporal para ejecutar (idem QueryController.save)
-      def query = new Query(qarchetypeId:qarchetypeId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
-      
-      // En una consulta EQL archetypeId+path seria el SELECT
-      List archetypeIds = params.list('archetypeId')
-      List paths = params.list('archetypePath')
-       
-      // Crea seleccion para query de type datavaule
-      archetypeIds.eachWithIndex { archId, i ->
-          
-         query.addToSelect(
-            new DataGet(archetypeId:archId, path:paths[i])
-         )
-      }
-      // =================================================================
-      
       
       // parse de dates
       Date qFromDate
@@ -1101,7 +1082,7 @@ class RestController {
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
-      
+      def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group)
       
 
@@ -1124,59 +1105,38 @@ class RestController {
    
    /**
     * Previo QueryController.testQueryByData
+    * Para ejecutar queries desde la UI, recibe un objeto json con la query y los parametros.
     * Solo soporta XML.
     * @return
     */
-   def queryCompositions(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
+   def queryCompositions()
    {
        println "queryCompositions"
-       println params
+       println params.toString()
        
+       // all params come in the JSON object from the UI
+       // all are strings
+       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
+       boolean showUI = request.JSON.showUI.toBoolean()
+       String qehrId = request.JSON.qehrId
+       String fromDate = request.JSON.fromDate
+       String toDate = request.JSON.toDate
+       String qarchetypeId = request.JSON.qarchetypeId
        
-       // Viene una lista de cada parametro
-       // String archetypeId, String path, String operand, String value
-       // El mismo indice en cada lista corresponde con un atributo del mismo criterio de busqueda
-       
-       // Datos de criterios
-       List archetypeIds = params.list('archetypeId')
-       List paths = params.list('archetypePath')
-       List values = params.list('value')
-       
-       // Con nombres eq, lt, ...
-       // Hay que transformarlo a =, <, ...
-       // No vienen los operadores directamente porque rompen en HTML, ej. <, >
-       List operands = params.list('operand')
-       
-       
-       IndexDefinition dataidx
-       String idxtype
- 
+       /*
+       println request.JSON.retrieveData.getClass().getSimpleName()
+       println request.JSON.showUI.getClass().getSimpleName()
+       */
+       println retrieveData.toString() +" "+ showUI.toString()
        
        // parse de dates
        Date qFromDate
        Date qToDate
  
-       if (fromDate)
-          qFromDate = Date.parse(config.l10n.date_format, fromDate)
+       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
+       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
        
-       if (toDate)
-          qToDate = Date.parse(config.l10n.date_format, toDate)
-       
-       
-       // FIXME: verify that all the mandatory data is not null
-       
-       // Build temp query
-       // Code from QueryController.save
-       def query = new Query(name:params.name, type:'composition', format:params.format, group:params.group)
-       
-       // Crea criterio
-       archetypeIds.eachWithIndex { archId, i ->
-          
-          query.addToWhere(
-             new DataCriteria(archetypeId:archId, path:paths[i], operand:operands[i], value:values[i])
-          )
-       }
-       
+       def query = Query.newInstance(request.JSON.query)
        def cilist = query.executeComposition(qehrId, qFromDate, qToDate)
        
        println "Resultados (CompositionIndex): " + cilist
@@ -1186,7 +1146,7 @@ class RestController {
        if (showUI)
        {
           // FIXME: hay que ver el tema del paginado
-          render(view:'/compositionIndex/list',
+          render(template:'/compositionIndex/listTable',
                  model:[compositionIndexInstanceList: cilist, compositionIndexInstanceTotal:cilist.size()])
           return
        }

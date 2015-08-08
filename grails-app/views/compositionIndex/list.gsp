@@ -27,7 +27,7 @@
         <div class="message" role="status">${flash.message}</div>
       </g:if>
       
-      <g:render template="listTable"/>
+      <g:render template="/compositionIndex/listTable"/>
       
       <div class="pagination">
         <g:paginate total="${compositionIndexInstanceTotal}" />

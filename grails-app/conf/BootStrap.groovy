@@ -12,19 +12,20 @@ class BootStrap {
      
      
      // Used by query builder, all return String
-     String.metaClass.asSQLValue = { ->
+     String.metaClass.asSQLValue = { operand ->
+        if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
         return "'"+ delegate +"'"
      }
-     Double.metaClass.asSQLValue = { ->
+     Double.metaClass.asSQLValue = { operand ->
         return delegate.toString()
      }
-     Integer.metaClass.asSQLValue = { ->
+     Integer.metaClass.asSQLValue = { operand ->
         return delegate.toString()
      }
-     Long.metaClass.asSQLValue = { ->
+     Long.metaClass.asSQLValue = { operand ->
         return delegate.toString()
      }
-     Date.metaClass.asSQLValue = { ->
+     Date.metaClass.asSQLValue = { operand ->
         def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
         return "'"+ formatterDateDB.format( delegate ) +"'" 
      }

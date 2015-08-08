@@ -12,7 +12,6 @@ class DataCriteria {
 
    String archetypeId
    String path
-   //String operand
    
    // value va a depender del tipo del RM en la path
    // value es parametro de la query sino se setea aqui
@@ -42,7 +41,6 @@ class DataCriteria {
    
    static constraints = {
       //operand(inList:['eq','neq','lt','gt','le','ge','in_list','contains','between'])
-      //value(nullable:true)
       rmTypeName(inList:['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_ORDINAL', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_DURATION'])
    }
    
@@ -54,7 +52,7 @@ class DataCriteria {
      'le': '<=',
      'ge': '>=',
      'in_list': 'IN',
-     'contains': 'ILIKE',
+     'contains': 'LIKE', // TODO: for MySQL is LIKE, for postgres is ILIKE (for MySQL we might need to use ucase(fieldName) like 'ucase(value)%')
      'between': 'BETWEEN'
    ]
    
@@ -71,6 +69,9 @@ class DataCriteria {
       return "(archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName() +")"
    }
    
+   /*
+    * Used to show the query as JSON and XML on the UI.
+    */
    Map getCriteriaMap()
    {
       def criteria = [:] // attr -> [ operand : values ]
@@ -142,9 +143,11 @@ class DataCriteria {
          if (criteriaValueType == 'value')
          {
             if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
-               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue()
+               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
             else
-               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue()
+            {
+               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
+            }
          }
          else if (criteriaValueType == 'list')
          {
@@ -153,7 +156,7 @@ class DataCriteria {
             sql += this.alias +'.'+ attr +' IN ('
             
             value.each { singleValue ->
-               sql += singleValue.asSQLValue() +','
+               sql += singleValue.asSQLValue(operand) +','
             }
             sql = sql[0..-2] + ')' // removes last ,
          }
@@ -161,7 +164,7 @@ class DataCriteria {
          {
             assert operand == 'between'
             
-            sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue() +' AND '+ value[1].asSQLValue()
+            sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
          }
          
          sql += ' AND '

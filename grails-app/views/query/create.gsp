@@ -247,7 +247,59 @@
 
         console.log('test composition query');
         console.log('query_form', $('#query_form'));
+
+        // query management
+        query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
+
+        if (query.get_type() == 'datavalue')
+        {
+           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
+
+        qehrId = $('select[name=qehrId]').val();
+        fromDate = $('input[name=fromDate]').val();
+        toDate = $('input[name=toDate]').val();
+        retrieveData = $('select[name=retrieveData]').val();
+        showUI = $('select[name=showUI]').val();
+
+        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) );
         
+        $.ajax({
+          method: 'POST',
+          url: '${createLink(controller:'rest', action:'queryCompositions')}',
+          contentType : 'application/json',
+          data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+           console.log(data);
+           
+           // reset code class or highlight
+           $('code').removeClass('xml json');
+
+           // Si devuelve HTML
+           if ($('select[name=showUI]').val()=='true')
+           {
+             $('#results').html( data );
+             $('#results').show('slow');
+           }
+           else // Si devuelve el XML
+           {
+             // highlight
+             $('code').addClass('xml');
+             $('code').text(formatXml( xmlToString(data) ));
+             $('code').each(function(i, e) { hljs.highlightBlock(e); });
+             $('code').show('slow');
+           }
+           
+           // Muestra el boton que permite ver los datos crudos
+           // devueltos por el servidor
+           $('#show_data').show();
+        });
+
+
+/*
         $('#query_form').ajaxSubmit({
 
           // datatype = xml for composition (for now)
@@ -313,6 +365,7 @@
             alert(errorThrown); // lo devuelto por el servidor
           }
         }); // ajax_submit
+*/
 
         console.log('after ajax submit');
       };
