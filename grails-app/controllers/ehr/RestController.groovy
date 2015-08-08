@@ -18,17 +18,6 @@ import common.change_control.VersionedComposition
 import grails.util.Holders
 import common.change_control.Version
 
-<<<<<<< HEAD
-=======
-import de.odysseus.staxon.json.JsonXMLConfig
-import de.odysseus.staxon.json.JsonXMLConfigBuilder
-import de.odysseus.staxon.json.JsonXMLOutputFactory
-
-import javax.xml.stream.XMLEventReader
-import javax.xml.stream.XMLEventWriter
-import javax.xml.stream.XMLInputFactory
-import javax.xml.stream.XMLStreamException
->>>>>>> origin/pr/143
 
 /**
  * TODO:
@@ -324,7 +313,6 @@ class RestController {
             default:
                println "change type "+ version.commitAudit.changeType +" not supported yet"
 
-<<<<<<< HEAD
          } // switch changeType
          
          
@@ -366,50 +354,7 @@ class RestController {
       // error: versioned composition doesnt exists
       if (errorbreak) return
       
-=======
-            } // switch changeType
-            
-            
-            println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-            println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-            
-            
-            // FIXME: el archivo no deberia existir!!!
-            // TODO: this might br stored in an XML database in the future.
-            
-            // Save compo
-            // This uses the composition uid that is assigned by the server so it must be unique.
-            
-            def compoXML = parsedVersions[i].data
-            // Agrega namespaces al nuevo root
-            // Para que no de excepciones al parsear el XML de la composition
-            compoXML.@xmlns = 'http://schemas.openehr.org/v1'
-            compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
-            
-            
-            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-            compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
-            /*
-             * XmlUtil.serialize genera estos warnings:
-             * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
-             */
-            
-            // Save version as committed
-            // This uses the version uid with the systemid and tree.
-            // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
-            versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
 
-            //Save version as Json
-            log.info('Llama a función para crear archivo Json apartir de '+config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            def jsonFile = new File(config.version_repo + version.uid.replaceAll('::', '_')+'.txt')
-            jsonFile << xmlToJson(groovy.xml.XmlUtil.serialize( parsedVersions[i] ))
-            
-         } // contribution.versions.each
-      } // contributions.each
->>>>>>> origin/pr/143
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {
@@ -423,50 +368,7 @@ class RestController {
          }
       }
    } // commit
-   /***
-   *Función encargada de convertir a json un string en xml
-   * @param contenidoXml: Texto xml a pasar a Json
-   * @rerturn texto enformato json que es devuelto por la función. 
-   ***/
-   def xmlToJson(String contenidoXml){
-      log.info("Entra en función xmlToJson")
-      InputStream input = new ByteArrayInputStream(contenidoXml.getBytes())
-      ByteArrayOutputStream output = new ByteArrayOutputStream()
-      JsonXMLConfig config = new JsonXMLConfigBuilder()
-            .autoArray(true)
-            .autoPrimitive(true)
-            .prettyPrint(true)
-            .build()
-         try {
-            /*
-             * Create reader (XML).
-             */
-            XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(input)
-            /*
-             * Create writer (JSON).
-             */
-            XMLEventWriter writer = new JsonXMLOutputFactory(config).createXMLEventWriter(output)
-            //writer.toString();
-            /*
-             * Copy events from reader to writer.
-             */
-            writer.add(reader)          
-            return output.toString()
-            /*
-             * Close reader/writer.
-             */
-            reader.close()
-            writer.close()          
-         } finally {           
-            /*
-             * As per StAX specification, XMLEventReader/Writer.close() doesn't close
-             * the underlying stream.
-             */
-            output.close()
-            input.close()
-            log.info("Sale de función xmlToJson")
-         } 
-   }
+
 
    /**
     * Enpoint for checking out the last version of a composition in order to create a new one.
