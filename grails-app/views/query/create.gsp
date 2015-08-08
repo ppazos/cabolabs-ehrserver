@@ -18,15 +18,18 @@
       tr td:last-child select, tr td:last-child input[type=text] {
         width: 100%;
       }
-      tr td:first-child {
+      
+      table#query_setup tr td:first-child {
         width: 140px;
       }
+      /**
       tr td:first-child {
         text-align: right;
       }
       tr td:first-child label {
         float: right;
       }
+      **/
       td {
         font-size: 0.9em;
       }
@@ -582,22 +585,32 @@
        */
       var dom_add_criteria_2 = function (fieldset) {
 
-        console.log('dom_add_criteria_2');
+        console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
         
         // =======================================================================================
         // Criteria is complete? https://github.com/ppazos/cabolabs-ehrserver/issues/141
         //
         // for each value in the criteria
-        complete = true;
-        $.each( $('input.value.selected', fieldset), function (index, value_input) {
         
-          if ( $(value_input).val() == '' )
-          {
-             complete = false;
-             return false; // breaks each
-          }
-        });
+        criteria_fields = $('input.value.selected', fieldset);
         
+        if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
+        {
+          alert('Please select a datapoint to define a query criteria');
+          return false;
+        }
+        else // case when criteria spec is selected and maybe some values are not filled in
+        {
+          complete = true;
+	       $.each( criteria_fields, function (index, value_input) {
+	        
+	         if ( $(value_input).val() == '' )
+	         {
+	           complete = false;
+	           return false; // breaks each
+	         }
+	       });
+        }
         if (!complete)
         {
           alert('Please fill all the criteria values');
@@ -1403,7 +1416,7 @@
         <h2><g:message code="query.create.criteria" /></h2>
          
         <!-- Indices de nivel 1 -->
-        <table>
+        <table id="query_setup">
           <%-- Removed for now...
           <tr>
             <td>
