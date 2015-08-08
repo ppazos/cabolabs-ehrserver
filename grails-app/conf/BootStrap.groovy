@@ -29,6 +29,9 @@ class BootStrap {
         def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
         return "'"+ formatterDateDB.format( delegate ) +"'" 
      }
+     Boolean.metaClass.asSQLValue = { operand ->
+        return delegate.toString()
+     }
      
       
      println "------------------------------------------------------------------"

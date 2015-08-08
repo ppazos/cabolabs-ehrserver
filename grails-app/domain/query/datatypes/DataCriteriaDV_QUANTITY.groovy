@@ -20,7 +20,9 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     static hasMany = [magnitudeValue: Double]
     
     static constraints = {
-       
+    }
+    static mapping = {
+       unitsValue column: "dv_qty_units"
     }
     
     /**

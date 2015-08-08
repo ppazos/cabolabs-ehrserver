@@ -24,6 +24,9 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
     
     static constraints = {
     }
+    static mapping = {
+       typeValue column: "dv_proportion_type"
+    }
     
     /**
      * Metadata that defines the types of criteria supported to search

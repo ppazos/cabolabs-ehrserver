@@ -20,6 +20,9 @@ class DataCriteriaDV_COUNT extends DataCriteria {
     
     static constraints = {
     }
+    static mapping = {
+       magnitudeOperand column: "dv_count_operand"
+    }
     
     /**
      * Metadata that defines the types of criteria supported to search

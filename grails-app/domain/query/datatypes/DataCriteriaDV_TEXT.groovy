@@ -20,6 +20,9 @@ class DataCriteriaDV_TEXT extends DataCriteria {
     
     static constraints = {
     }
+    static mapping = {
+       valueValue column: "dv_text_value"
+    }
     
     /**
      * Metadata that defines the types of criteria supported to search

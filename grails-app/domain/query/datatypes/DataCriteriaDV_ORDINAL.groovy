@@ -32,6 +32,10 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
        symbol_terminology_idValue(nullable:true)
        symbol_valueValue(nullable:true)
     }
+    static mapping = {
+       symbol_terminology_idValue column: "dv_ordinal_terminology_id"
+       symbol_valueValue column: "dv_ordinal_value"
+    }
     
     /**
      * Metadata that defines the types of criteria supported to search 

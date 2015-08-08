@@ -402,6 +402,7 @@ class QueryController {
             res = DataCriteriaDV_DATE_TIME.criteriaSpec()
           break
           case 'DV_BOOLEAN':
+            res = DataCriteriaDV_BOOLEAN.criteriaSpec()
           break
           case 'DV_COUNT':
             res = DataCriteriaDV_COUNT.criteriaSpec()

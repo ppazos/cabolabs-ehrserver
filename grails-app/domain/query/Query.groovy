@@ -127,7 +127,7 @@ class Query {
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':
-                  //condition = new DataCriteriaDV_BOOLEAN(criteria)
+                  condition = new DataCriteriaDV_BOOLEAN(criteria)
                break
                case 'DataCriteriaDV_COUNT':
                   condition = new DataCriteriaDV_COUNT(criteria)
@@ -623,63 +623,44 @@ class Query {
                case ['DV_DATE_TIME', 'DvDateTime']:
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
-                   //where += " AND ddti.value "+ dataCriteria.sqlOperand() +" "+  dataCriteria.value // TODO: verificar formato, transformar a SQL
                break
                case ['DV_QUANTITY', 'DvQuantity']:
                    fromMap['DvQuantityIndex'] = 'dqi'
                    where += " AND dqi.id = dvi.id "
-                   //where += " AND dqi.magnitude "+ dataCriteria.sqlOperand() +" "+  new Float(dataCriteria.value)
                break
                case ['DV_CODED_TEXT', 'DvCodedText']:
                    fromMap['DvCodedTextIndex'] = 'dcti'
                    where += " AND dcti.id = dvi.id "
-                   //where += " AND dcti.code "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
                break
                case ['DV_TEXT', 'DvText']:
                    fromMap['DvTextIndex'] = 'dti'
                    where += " AND dti.id = dvi.id "
-                   //where += " AND dti.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
                break
                case ['DV_ORDINAL', 'DvOrdinal']:
                    fromMap['DvOrdinalIndex'] = 'dvol'
                    where += " AND dvol.id = dvi.id "
-                   //where += " AND dvol.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
-                   // TODO: search by code/terminology_id
                break
                case ['DV_BOOLEAN', 'DvBoolean']:
                    fromMap['DvBooleanIndex'] = 'dbi'
                    where += " AND dbi.id = dvi.id "
-                   //where += " AND dbi.value "+ dataCriteria.sqlOperand() +" "+  new Boolean(dataCriteria.value)
                break
                case ['DV_COUNT', 'DvCount']:
                    fromMap['DvCountIndex'] = 'dci'
                    where += " AND dci.id = dvi.id "
-                   //where += " AND dci.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
                break
                case ['DV_PROPORTION', 'DvProportion']:
                    fromMap['DvProportionIndex'] = 'dpi'
                    where += " AND dpi.id = dvi.id "
-                   //where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.value)
-                   /*
-                    * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
-                    *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
-                   resGrouped[absPath]['serie'] << [numerator:   dvi.,
-                                                    denominator: dvi.denominator,
-                                                    type:        dvi.type,
-                                                    precision:   dvi.precision,
-                                                    date:        dvi.owner.startTime]
-                   */
                break
                case ['DV_DURATION', 'DvDuration']:
                   fromMap['DvDurationIndex'] = 'dduri'
                   where += " AND dduri.id = dvi.id "
-                  //where += " AND dduri.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
                break
                default:
                   throw new Exception("type $idxtype not supported")
             }
             
-            where += " AND " + dataCriteria.toSQL()
+            where += " AND " + dataCriteria.toSQL() // important part: complex criteria to SQL, depends on the datatype
             
             println where
             

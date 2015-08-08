@@ -29,6 +29,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        terminologyIdValue(nullable:true)
        valueValue(nullable:true)
     }
+    static mapping = {
+       valueValue column: "dv_codedtext_value"
+       terminologyIdValue column: "dv_codedtext_terminology_id"
+    }
     
     /**
      * Metadata that defines the types of criteria supported to search 
