@@ -25,10 +25,10 @@ class DataCriteria {
     *   values = [code::terminology, code::terminology, ...] se puede usar para saber si un dato esta dentro de una lista.
     */
    
+   // TODO: add negation to UI 
    boolean negation = false // Negation = true agrega un NOT al inicio de la condicion.
    
    String rmTypeName
-   //String rmAttrName // atributo paticular del datatype al que se le aplica la condicion ej.DV_PROPORTION.enumerator
    
    // TODO: poner name para mostrar en la definicion
    //       de la consulta, se saca de IndexDefinition o del
