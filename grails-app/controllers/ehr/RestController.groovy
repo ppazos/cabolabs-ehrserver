@@ -1069,11 +1069,17 @@ class RestController {
    // FIXME: verify that this is used only for query testing while creating a
    //        query. Query execution from the UI should use the "query" action.
    // To query by queryUID use "query" action.
-   def queryData(String qehrId, String qarchetypeId, String fromDate, String toDate, String format, String group)
+   def queryData()
    {
       println "queryData"
       println params
       
+      String qehrId = request.JSON.qehrId
+      String fromDate = request.JSON.fromDate
+      String toDate = request.JSON.toDate
+      String qarchetypeId = request.JSON.qarchetypeId
+      String format = request.JSON.format
+      String group = request.JSON.group
       
       // parse de dates
       Date qFromDate

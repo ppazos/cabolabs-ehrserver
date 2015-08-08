@@ -234,6 +234,7 @@
         })
         .done(function( data ) {
           console.log(data);
+          location.href = '${createLink('action': 'show')}?id='+ data.id;
         });
       };
 
@@ -248,15 +249,11 @@
         console.log('test composition query');
         console.log('query_form', $('#query_form'));
 
+        
         // query management
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
 
-        if (query.get_type() == 'datavalue')
-        {
-           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
-           query.set_group( $('select[name=group]').val() ); // for datavalue query
-        }
 
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
@@ -264,6 +261,7 @@
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
 
+        
         console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) );
         
         $.ajax({
@@ -369,11 +367,93 @@
 
         console.log('after ajax submit');
       };
+
+
+
       
       var test_query_datavalue = function () {
 
         console.log('test datavalue query');
+
         
+        // query management
+        query.set_name($('input[name=name]').val());
+        query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+        query.set_group( $('select[name=group]').val() ); // for datavalue query
+
+        
+        qehrId = $('select[name=qehrId]').val();
+        fromDate = $('input[name=fromDate]').val();
+        toDate = $('input[name=toDate]').val();
+        format = $('select[name=format]').val();
+        group = $('select[name=group]').val();
+
+        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) );
+        
+        
+        $.ajax({
+           method: 'POST',
+           url: '${createLink(controller:'rest', action:'queryData')}',
+           contentType : 'application/json',
+           dataType: $('select[name=format]').val(), // xml o json
+           data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) // JSON.parse(  avoid puting functions, just data
+         })
+         .done(function( data ) {
+            console.log(data);
+            
+            // Vacia donde se va a mostrar la tabla o el chart
+            $('#chartContainer').empty();
+            
+            console.log('form_datavalue success 2');
+
+            // reset code class or highlight
+            $('code').removeClass('xml json');
+
+            // Si devuelve JSON (verifica si pedi json)
+            if ($('select[name=format]').val()=='json')
+            {
+              console.log('form_datavalue success json');
+            
+              // highlight
+              $('code').addClass('json');
+              $('code').text(JSON.stringify(data, undefined, 2));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              
+              // =================================================================
+              // Si agrupa por composition (muestra tabla)
+              //
+              if ($('select[name=group]').val() == 'composition')
+              {
+                queryDataRenderTable(data);
+              }
+              else if ($('select[name=group]').val() == 'path')
+              {
+                queryDataRenderChart(data);
+              }
+            }
+            else // Si devuelve el XML
+            {
+              console.log('form_datavalue success XML');
+            
+              // highlight
+              $('code').addClass('xml');
+              $('code').text(formatXml( xmlToString(data) ));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+            }
+
+            $('code').show('slow');
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
+            
+            
+            // Hace scroll animado para mostrar el resultado
+            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+         });
+        
+
+/*
         $('#query_form').ajaxSubmit({
             
           dataType: $('select[name=format]').val(), // xml o json
@@ -446,6 +526,8 @@
             alert(response.responseText); // lo devuelto por el servidor
           }
         });
+*/
+
       }; // test_query_datavalue
     
       

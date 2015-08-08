@@ -16,7 +16,7 @@
     <div class="nav" role="navigation">
       <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="list">Consultas</g:link></li>
+        <li><g:link class="list" action="list"><g:message code="query.list.title" /></g:link></li>
       </ul>
     </div>
     <div id="show-query" class="content scaffold-show" role="main">
@@ -137,7 +137,6 @@
       <g:form>
         <fieldset class="buttons">
           <g:hiddenField name="id" value="${queryInstance?.id}" />
-          <g:link class="list" action="execute" params="[uid:queryInstance?.uid]"><g:message code="query.execute.action.execute" /></g:link>
           <g:link class="edit" action="edit" params="[id:queryInstance?.id]"><g:message code="query.execute.action.edit" /></g:link>
           <g:link class="delete" action="delete" params="[id:queryInstance?.id]" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><g:message code="query.execute.action.delete" /></g:link>
         </fieldset>
