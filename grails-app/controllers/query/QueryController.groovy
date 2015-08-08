@@ -35,6 +35,14 @@ class QueryController {
     }
     
     def edit (Long id) {
+       
+       if (!id || !Query.exists(id))
+       {
+          flash.message = "Query doesn't exists"
+          redirect(action: "list", params: params)
+          return
+       }
+       
        render (
           view: 'create',
           model: [
