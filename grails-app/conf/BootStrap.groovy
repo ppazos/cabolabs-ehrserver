@@ -42,12 +42,6 @@ class BootStrap {
      // TEST
      if (IndexDefinition.count() == 0)
      {
-		  /*
-        def ai = new com.cabolabs.archetype.ArchetypeIndexer()
-        ai.index("openEHR-EHR-COMPOSITION.signos.v1")
-        ai.index("openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1")
-        ai.index("openEHR-EHR-COMPOSITION.orden_de_estudios_imagenologicos.v1")
-		  */
 		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 		  ti.indexAll()
         
