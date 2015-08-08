@@ -178,15 +178,24 @@ class Query {
       
       // No creo que le guste null en inList, le pongo ''
       group(inList:['none', 'composition', 'path'])
-      //qarchetypeId(nullable: true)
+      criteriaLogic(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
+      
    }
    
    static mapping = {
       group column: 'dg_group' // group es palabra reservada de algun dbms
       select cascade: "all-delete-orphan" // cascade delete
       where cascade: "all-delete-orphan" // cascade delete
+   }
+   
+   def beforeInsert() {
+      if (this.type == 'datavalue') this.criteriaLogic = null
+   }
+
+   def beforeUpdate() {
+      if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
    def execute(String ehrId, Date from, Date to, String group)

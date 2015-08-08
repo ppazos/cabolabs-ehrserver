@@ -434,10 +434,11 @@ class QueryController {
                    name(q.name)
                    format(q.format)
                    type(q.type)
-                   criteriaLogic(q.criteriaLogic)
                    
                    if (q.type == 'composition')
                    {
+                      criteriaLogic(q.criteriaLogic)
+                      
                       for (criteria in q.where)
                       {
                          delegate.criteria {
@@ -497,10 +498,10 @@ class QueryController {
                    name = q.name
                    format = q.format
                    type = q.type
-                   criteriaLogic = q.criteriaLogic
                    
                    if (q.type == 'composition')
                    {
+                      criteriaLogic = q.criteriaLogic
                       criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
                    }
                    else
