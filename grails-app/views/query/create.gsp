@@ -582,6 +582,29 @@
        */
       var dom_add_criteria_2 = function (fieldset) {
 
+        console.log('dom_add_criteria_2');
+        
+        // =======================================================================================
+        // Criteria is complete? https://github.com/ppazos/cabolabs-ehrserver/issues/141
+        //
+        // for each value in the criteria
+        complete = true;
+        $.each( $('input.value.selected', fieldset), function (index, value_input) {
+        
+          if ( $(value_input).val() == '' )
+          {
+             complete = false;
+             return false; // breaks each
+          }
+        });
+        
+        if (!complete)
+        {
+          alert('Please fill all the criteria values');
+          return false;
+        }
+        // =======================================================================================
+
         var archetype_id = $('select[name=view_archetype_id]').val();
         var path = $('select[name=view_archetype_path]').val();
         var type = $('select[name=view_archetype_path] option:selected').data('type');
@@ -645,21 +668,26 @@
            '</td></tr>'
         );
         
+        return true;
+        
       }; // dom_add_criteria_2
 
 
       var query_composition_add_criteria_2 = function () {
 
         // data for the selected criteria
-        dom_add_criteria_2(
+        ok = dom_add_criteria_2(
           $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
         );
         
-        // Notifica que la condicion fue agregada
-        $.growlUI(
-          '${g.message(code:"query.create.condition_added")}',
-          '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
-        );
+        if (ok)
+        {
+          // Notifica que la condicion fue agregada
+          $.growlUI(
+            '${g.message(code:"query.create.condition_added")}',
+            '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+          );
+        }
       };
 
       // =================================
