@@ -782,7 +782,10 @@
               global_criteria_id++;
               
               // All fields of the same criteria will have the same id in the data-criteria attribute
-              criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
+              if (i == 0)
+                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" checked="checked" />';
+              else
+                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
               
               for (attr in aspec) {
                 
