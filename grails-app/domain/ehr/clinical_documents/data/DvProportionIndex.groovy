@@ -41,7 +41,7 @@ class DvProportionIndex extends DataValueIndex {
    {
       if (denominator == 0) return Double.POSITIVE_INFINITY
       
-      reurn numerator / denominator
+      return numerator / denominator
    }
    
    

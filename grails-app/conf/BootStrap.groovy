@@ -2,14 +2,35 @@ import demographic.Person
 import common.generic.PatientProxy
 import ehr.Ehr
 import ehr.clinical_documents.IndexDefinition
+import grails.util.Holders
 
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
    
    def init = { servletContext ->
-      
      
+     
+     // Used by query builder, all return String
+     String.metaClass.asSQLValue = { operand ->
+        if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
+        return "'"+ delegate +"'"
+     }
+     Double.metaClass.asSQLValue = { operand ->
+        return delegate.toString()
+     }
+     Integer.metaClass.asSQLValue = { operand ->
+        return delegate.toString()
+     }
+     Long.metaClass.asSQLValue = { operand ->
+        return delegate.toString()
+     }
+     Date.metaClass.asSQLValue = { operand ->
+        def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
+        return "'"+ formatterDateDB.format( delegate ) +"'" 
+     }
+     
+      
      println "------------------------------------------------------------------"
      println new File(".").getAbsolutePath() // Current working directory
      println "------------------------------------------------------------------"

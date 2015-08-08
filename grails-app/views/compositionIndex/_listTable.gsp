@@ -20,8 +20,8 @@
        <td>${fieldValue(bean: compositionIndexInstance, field: "subjectId")}</td>
        <td>${fieldValue(bean: compositionIndexInstance, field: "uid")}</td>
        <td>
-         <g:link controller="ehr" action="showComposition" params="[uid:compositionIndexInstance.uid]" title="Ver XML ${compositionIndexInstance.uid}"><img src="${assetPath(src:'xml.png')}" class="icon" /></g:link>
-         <g:link controller="ehr" action="showCompositionUI" params="[uid:compositionIndexInstance.uid]" title="Ver Documento ${compositionIndexInstance.uid}"><img src="${assetPath(src:'doc.png')}" class="icon" /></g:link>
+         <g:link controller="ehr" action="showComposition" params="[uid:compositionIndexInstance.uid]" title="Ver XML ${compositionIndexInstance.uid}" target="_blank"><img src="${assetPath(src:'xml.png')}" class="icon" /></g:link>
+         <g:link controller="ehr" action="showCompositionUI" params="[uid:compositionIndexInstance.uid]" title="Ver Documento ${compositionIndexInstance.uid}" target="_blank"><img src="${assetPath(src:'doc.png')}" class="icon" /></g:link>
        </td>
      </tr>
    </g:each>

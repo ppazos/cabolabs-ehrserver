@@ -30,6 +30,8 @@ class Person {
    // Emula ACTOR.roles<ROLE> (uno solo)
    String role         // Paciente o Medico
    
+   boolean deleted = false // logical delete
+   
    static constraints = {
       sex(inList:['M','F','U'])
       idCode(nullable:true)
