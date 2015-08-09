@@ -32,7 +32,7 @@
     </div><!-- query_test_datavalues -->
     
     <div id="query_test_common">
-      ehrId <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" /><br />
+      <g:message code="query.test.ehr_id" /> <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" /><br />
       <g:message code="query.test.from" /> <input type="text" name="fromDate" />
       <g:message code="query.test.to" /> <input type="text" name="toDate" /><br />
       

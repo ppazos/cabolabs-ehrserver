@@ -1330,8 +1330,8 @@
               <asset:image src="skin/information.png" />
               <span class="content">
                 <ul>
-                  <li>composition: find clinical documents by criteria over data points</li>
-                  <li>datavalue: find data points by context based criteria</li>
+                  <li><g:message code="query.create.help_composition" /></li>
+                  <li><g:message code="query.create.help_datavalue" /></li>
                 </ul>
               </span>
             </span>
@@ -1347,8 +1347,8 @@
       <div id="query_common" class="query_build">
         <table>
           <tr>
-            <th>attribute</th>
-            <th>value</th>
+            <th><g:message code="query.create.attribute" /></th>
+            <th><g:message code="query.create.value" /></th>
           </tr>
           <tr>
             <td><g:message code="query.create.concept" /></td>
@@ -1448,27 +1448,27 @@
           
           <tr>
             <td>
-              show UI?
+              <g:message code="query.create.show_ui" />
               <span class="info">
                 <asset:image src="skin/information.png" />
                 <span class="content">
-                  Select between showing the clinical document as a web view or retrieve it as XML.
+                  <g:message code="query.create.show_ui_help" />
                 </span>
               </span>
             </td>
             <td>
               <select name="showUI">
-                <option value="false" selected="selected">no</option>
-                <option value="true">yes</option>
+                <option value="false" selected="selected"><g:message code="default.no" /></option>
+                <option value="true"><g:message code="default.yes" /></option>
               </select>
             </td>
           </tr>
           <tr>
             <td>
-              Criteria logic
+              <g:message code="query.create.criteria_logic" />
               <span class="info">
                 <span class="content">
-                  Specifies how the conditions should be evaluated.
+                  <g:message code="query.create.criteria_logic_help" />
                 </span>
               </span>
             </td>
@@ -1486,10 +1486,10 @@
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
           <tr>
-            <th>archetypeId</th>
-            <th>path</th>
-            <th>type</th>
-            <th>criteria</th>
+            <th><g:message code="query.create.archetype_id" /></th>
+            <th><g:message code="query.create.path" /></th>
+            <th><g:message code="query.create.type" /></th>
+            <th><g:message code="query.create.criteria" /></th>
             <th></th>
           </tr>
         </table>
@@ -1529,7 +1529,7 @@
           <%-- Removed for now...
           <tr>
             <td>
-              composition templateId
+              <g:message code="query.create.template_id" />
               <span class="info">
                 <asset:image src="skin/information.png" />
                 <span class="content">
@@ -1560,7 +1560,7 @@
           --%>
           
           <tr>
-            <td>default format</td>
+            <td><g:message code="query.create.default_format" /></td>
             <td>
               <select name="format">
                 <option value="xml" selected="selected">XML</option>
@@ -1569,12 +1569,12 @@
             </td>
           </tr>
           <tr>
-            <td>default group</td>
+            <td><g:message code="query.create.default_group" /></td>
             <td>
               <select name="group" size="3">
-                <option value="none" selected="selected">none</option>
-                <option value="composition">composition</option>
-                <option value="path">path</option>
+                <option value="none" selected="selected"><g:message code="query.create.none" /></option>
+                <option value="composition"><g:message code="query.create.composition" /></option>
+                <option value="path"><g:message code="query.create.path" /></option>
               </select>
             </td>
           </tr>
@@ -1585,8 +1585,8 @@
         <a name="selection"></a>
         <table id="selection">
           <tr>
-            <th>archetypeId</th>
-            <th>path</th>
+            <th><g:message code="query.create.archetype_id" /></th>
+            <th><g:message code="query.create.path" /></th>
             <th></th>
           </tr>
         </table>
