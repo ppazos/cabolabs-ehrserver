@@ -14,6 +14,12 @@
 def PS = System.getProperty("file.separator")
 
 
+// CORS
+cors.url.pattern = '/rest/*'
+cors.headers = ['Access-Control-Allow-Origin': '*']
+cors.enabled = true
+
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -103,7 +109,7 @@ log4j = {
            'org.springframework'
            //'org.hibernate',
            //'net.sf.ehcache.hibernate'
-           
+    //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
 }
 
@@ -111,6 +117,7 @@ app {
    composition_repo = "compositions" + PS
    version_repo = "versions" + PS
    version_xsd = "xsd"+ PS +"Version.xsd"
+   xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
    opt_repo = "opts" + PS
    

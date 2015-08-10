@@ -50,14 +50,24 @@
           <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${versionedCompositionInstance}" field="uid"/></span>
         </li>
         </g:if>
+        
+        <li class="fieldcontain">
+	        <h2>Versions</h2>
+	        <table><!-- versioned composition versions -->
+	          <tr>
+	            <th>uid</th>
+	            <th>creation date</th>
+	            <th>type</th>
+	            <th>change type</th>
+	            <th></th>
+	          </tr>
+	          <g:each in="${versionedCompositionInstance.allVersions}" var="version">
+	            <%-- ${version.uid}<br/> --%><!-- TODO: version row template + diff -->
+	            <g:render template="../version/versionRow" model="[version:version]"/>
+	          </g:each>
+	        </table>
+	      </li>
       </ol>
-      
-      <li class="fieldcontain">
-        <h2>Versions</h2>
-        <g:each in="${versionedCompositionInstance.allVersions}" var="version">
-          ${version.uid}<br/><!-- TODO: version row template + diff -->
-        </g:each>
-      </li>
 
     </div>
   </body>

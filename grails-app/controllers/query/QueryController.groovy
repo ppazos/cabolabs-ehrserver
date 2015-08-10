@@ -1,5 +1,7 @@
 package query
 
+import query.datatypes.*
+
 import ehr.clinical_documents.IndexDefinition
 
 import org.springframework.dao.DataIntegrityViolationException
@@ -11,7 +13,7 @@ import grails.converters.*
 
 class QueryController {
 
-    static allowedMethods = [save: "POST", update: "POST"] //, delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
     
     // Para acceder a las opciones de localizacion
     def config = Holders.config.app
@@ -33,6 +35,14 @@ class QueryController {
     }
     
     def edit (Long id) {
+       
+       if (!id || !Query.exists(id))
+       {
+          flash.message = "Query doesn't exists"
+          redirect(action: "list", params: params)
+          return
+       }
+       
        render (
           view: 'create',
           model: [
@@ -167,140 +177,8 @@ class QueryController {
           params['value'] = params.list('value')
        }
        
-       /*
-        * [
-        *  sarchetypeId:openEHR-EHR-COMPOSITION.encounter.v1, 
-        *  archetypeId: [ 
-        *   openEHR-EHR-COMPOSITION.encounter.v1, 
-        *   openEHR-EHR-COMPOSITION.encounter.v1
-        *  ], 
-        *  svalue:, 
-        *  _action_test:Test, 
-        *  soperand:<, 
-        *  spath: /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value, 
-        *  name:ewe, 
-        *  value: [
-        *   123, 
-        *  ], 
-        *  path: [ 
-        *    /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value, 
-        *    /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value], 
-        *    operand:[>, <], 
-        *    type:composition, 
-        *    showUI:false, 
-        *    action:save, controller:query
-        *  ]
-        * 
-        * [
-        *  sarchetypeId:openEHR-EHR-COMPOSITION.encounter.v1, 
-        *  archetypeId: [
-        *   openEHR-EHR-COMPOSITION.encounter.v1, 
-        *   openEHR-EHR-COMPOSITION.encounter.v1, 
-        *   openEHR-EHR-COMPOSITION.encounter.v1
-        *  ], 
-        *  svalue:20000101, 
-        *  _action_test:Test, 
-        *  soperand:=, 
-        *  spath:/content/data[at0001]/events[at0006]/time, 
-        *  name:ewe, 
-        *  value: [
-        *   234, , 20000101  << prueba para mandar 2 valores sin uno en el medio, OK!
-        *  ], 
-        *  path: [
-        *   /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value, 
-        *   /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value, 
-        *   /content/data[at0001]/events[at0006]/time
-        *  ], 
-        *  operand:[=, >, =], 
-        *  type:composition, 
-        *  showUI:false, 
-        *  action:save, controller:query]
-        */
-       
        return params
     }
-    
-    private Query createOrUpdateQuery(Long id)
-    {
-       def query
-       String name = params.name
-       String type = params.type
-       String format = params.format
-       String group = params.group
-
-       if (id)
-       {
-          query = Query.get(id) // update
-          type = query.type // type doesnt change
-          
-          // update attrs
-          query.group = group
-          query.format = format
-          query.name = name
-          
-          // delete current data
-          
-          if (type == 'composition')
-          {
-             query.where.each {
-                it.delete()
-             }
-             query.where.clear()
-          }
-          else if (type == 'datavalue')
-          {
-             query.select.each {
-                it.delete()
-             }
-             query.select.clear()
-          }
-       }
-       else query = new Query(name:name, type:type, format:format, group:group) // create
-       
-       
-       // Query builder
-       
-       List archetypeIds = params.list('archetypeId')
-       List paths = params.list('archetypePath')
-       
-       if (type == 'composition')
-       {
-          List operands = params.list('operand')
-          List values = params.list('value') // Pueden haber values vacios
-          
-          // Crea criterio
-          archetypeIds.eachWithIndex { archId, i ->
-             
-             query.addToWhere(
-                new DataCriteria(archetypeId:archId, path:paths[i], operand:operands[i], value:values[i])
-             )
-          }
-       }
-       else if (type == 'datavalue')
-       {
-          // Crea seleccion
-          archetypeIds.eachWithIndex { archId, i ->
-             
-             query.addToSelect(
-                new DataGet(archetypeId:archId, path:paths[i])
-             )
-          }
-       }
-       else
-       {
-          // Caso no permitido
-       }
-       
-       if (!query.save(flush:true))
-       {
-          println "================================="
-          println "query errors: "+ query.errors
-          query.errors.allErrors.each { println it }
-       }
-       
-       return query
-       
-    } // createOrUpdateQuery
 
 
     /**
@@ -309,25 +187,43 @@ class QueryController {
      * @param qarchetypeId
      * @param type composition | datavalue
      * @param format xml | json formato por defecto
-     * @param group '' | composition | path agrupamiento por defecto
+     * @param group none | composition | path agrupamiento por defecto
      * @return
      */
     def save(String name, String type, String format, String group)
     {
-       println params
+       println ">> save: " + params
        
-       def query = createOrUpdateQuery()
+       //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
+       //println request.JSON.query.getClass()
        
+       println "-----------------------------------------"
+       def query = Query.newInstance(request.JSON.query)
+       if (!query.save(flush:true)) println query.errors.allErrors
+       println "-----------------------------------------"
+       
+       
+       //def r = query.executeComposition('11111111-1111-1111-1111-111111111111', null, null)
+       //println r
+       
+       
+       //def query = createOrUpdateQuery()
        //redirect(action:'show', id:query.id)
+       
+       JSON.use('deep')
        render query as JSON
     }
     
     
-    def update(Long id)
+    def update()
     {
-       println 'update '+ params
+       println '>> update '+ params
        
-       def query = createOrUpdateQuery(id)
+       def json = request.JSON.query
+       def query = Query.get(json.id) // the id comes in the json object
+       query.updateInstance(json)
+       if (!query.save(flush:true)) println query.errors.allErrors
+       //def query = createOrUpdateQuery(id)
        
        render query as JSON
     }
@@ -452,7 +348,8 @@ class QueryController {
        // TODO: checkear params
        
        // TODO: define supported DVs in a singleton
-       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION']
+       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME',
+           'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']
        
        // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
        //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
@@ -482,10 +379,54 @@ class QueryController {
        render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
     
+    /**
+     * Get criteria spec to create condition for composition queries.
+     * @param datatype
+     * @return
+     */
+    def getCriteriaSpec(String datatype)
+    {
+       // TODO: simplificar a metodo dinamico + try catch por si pide cualquier cosa.
+       def res = []
+       switch (datatype) {
+          case 'DV_QUANTITY':
+            res = DataCriteriaDV_QUANTITY.criteriaSpec()
+          break
+          case 'DV_CODED_TEXT':
+            res = DataCriteriaDV_CODED_TEXT.criteriaSpec()
+          break
+          case 'DV_TEXT':
+            res = DataCriteriaDV_TEXT.criteriaSpec()
+          break
+          case 'DV_DATE_TIME':
+            res = DataCriteriaDV_DATE_TIME.criteriaSpec()
+          break
+          case 'DV_BOOLEAN':
+            res = DataCriteriaDV_BOOLEAN.criteriaSpec()
+          break
+          case 'DV_COUNT':
+            res = DataCriteriaDV_COUNT.criteriaSpec()
+          break
+          case 'DV_PROPORTION':
+            res = DataCriteriaDV_PROPORTION.criteriaSpec()
+          break
+          case 'DV_ORDINAL':
+            res = DataCriteriaDV_ORDINAL.criteriaSpec()
+          break
+          case 'DV_DURATION':
+            res = DataCriteriaDV_DURATION.criteriaSpec()
+          break
+       }
+       
+       render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+    }
+    
     def export(Long id)
     {
        def q = Query.get(id)
+       def criteriaMap, _value
        
+       // TODO: this code should be reused in RestConrtoller.queryList
        withFormat {
           xml {
              render(contentType: "text/xml") {
@@ -497,13 +438,41 @@ class QueryController {
                    
                    if (q.type == 'composition')
                    {
+                      criteriaLogic(q.criteriaLogic)
+                      
                       for (criteria in q.where)
                       {
                          delegate.criteria {
                             archetypeId(criteria.archetypeId)
                             path(criteria.path)
-                            operand(criteria.operand)
-                            value(criteria.value)
+                            //operand(criteria.operand)
+                            //value(criteria.value)
+                            
+                            criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+                            
+                            conditions {
+                               criteriaMap.each { attr, cond ->
+                                  
+                                  _value = cond.find{true}.value // can be a list
+                                  
+                                  "$attr" {
+                                     operand(cond.find{true}.key) // first entry of the operand: value map
+                                     
+                                     if (_value instanceof List)
+                                     {
+                                        list {
+                                           _value.each { val ->
+                                              item(val)
+                                           }
+                                        }
+                                     }
+                                     else
+                                     {
+                                        value(_value)
+                                     }
+                                  }
+                               }
+                            }
                          }
                       }
                    }
@@ -523,7 +492,7 @@ class QueryController {
              }
           }
           json {
-
+             
              render(contentType: "application/json") {
                 delegate.query = {
                    uid = q.uid
@@ -533,7 +502,8 @@ class QueryController {
                    
                    if (q.type == 'composition')
                    {
-                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+                      criteriaLogic = q.criteriaLogic
+                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
                    }
                    else
                    {

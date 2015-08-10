@@ -45,13 +45,15 @@
             <td>${fieldValue(bean: personInstance, field: "idType")}</td>
             <td>${fieldValue(bean: personInstance, field: "role")}</td>
             <td><g:formatDate date="${personInstance.dob}" /></td>
-             <td>
-               <g:hasEhr patientUID="${personInstance.uid}">
-                 <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
-               </g:hasEhr>
-               <g:dontHasEhr patientUID="${personInstance.uid}">
-                 <g:link controller="ehr" action="createEhr" params="[patientUID: personInstance.uid]">Create EHR</g:link>
-               </g:dontHasEhr>
+            <td>
+              <g:if test="${personInstance.role == 'pat'}">
+                 <g:hasEhr patientUID="${personInstance.uid}">
+                   <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
+                 </g:hasEhr>
+                 <g:dontHasEhr patientUID="${personInstance.uid}">
+                   <g:link controller="ehr" action="createEhr" params="[patientUID: personInstance.uid]">Create EHR</g:link>
+                 </g:dontHasEhr>
+               </g:if>
              </td>
           </tr>
         </g:each>

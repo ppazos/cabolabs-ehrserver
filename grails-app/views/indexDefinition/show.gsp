@@ -49,6 +49,19 @@
         </li>
         </g:if>
         
+        <g:if test="${indexDefinitionInstance?.archetypeId}">
+        <li class="fieldcontain">
+          <span id="archetypeId-label" class="property-label"><g:message code="indexDefinition.archetypeId.label" default="Archetype Id" /></span>
+          <span class="property-value" aria-labelledby="archetypeId-label"><g:fieldValue bean="${indexDefinitionInstance}" field="archetypeId"/></span>
+        </li>
+        </g:if>
+        <g:if test="${indexDefinitionInstance?.archetypePath}">
+        <li class="fieldcontain">
+          <span id="archetypePath-label" class="property-label"><g:message code="indexDefinition.archetypePath.label" default="Archetype Path" /></span>
+          <span class="property-value" aria-labelledby="archetypePath-label"><g:fieldValue bean="${indexDefinitionInstance}" field="archetypePath"/></span>
+        </li>
+        </g:if>
+        
         <g:if test="${indexDefinitionInstance?.name}">
         <li class="fieldcontain">
           <span id="name-label" class="property-label"><g:message code="indexDefinition.name.label" default="Name" /></span>

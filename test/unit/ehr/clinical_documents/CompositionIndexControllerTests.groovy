@@ -1,7 +1,5 @@
 package ehr.clinical_documents
 
-
-
 import org.junit.*
 import grails.test.mixin.*
 
@@ -12,7 +10,13 @@ class CompositionIndexControllerTests {
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["uid"] = 'sfgsdfgssdgf'
+        params["category"] = 'event'
+        params["startTime"] = new Date()
+        params["subjectId"] = '34563456345'
+        params["ehrId"] = '345634563534'
+        params["templateId"] = 'Signos'
+        params["archetypeId"] = 'openEHR-EHR-COMPOSITION.signos.v1'
     }
 
     void testIndex() {

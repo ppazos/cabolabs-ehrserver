@@ -26,9 +26,15 @@ class IndexDefinition {
    // sino tiene definicion dentro del arquetipo, tambien es vacio
    String name
    
+   // if rmTypeName is DV_CODED_TEXT, it might define a reference to a terminology, for it's definition_code attribute.
+   // In the OPT that value is in the referenceSetUri element, inside the defininig_code children element.
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/137
+   String terminologyRef
+   
    static constraints = {
       name(nullable:true)
       archetypeId(nullable:true) // FIXME: no usar mas porque la path es absoluta al temaplte.
       path(size:1..1023)
+      terminologyRef(nullable:true)
    }
 }

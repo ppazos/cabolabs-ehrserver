@@ -16,7 +16,7 @@
     <div class="nav" role="navigation">
       <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="list">Consultas</g:link></li>
+        <li><g:link class="list" action="list"><g:message code="query.list.title" /></g:link></li>
       </ul>
     </div>
     <div id="show-query" class="content scaffold-show" role="main">
@@ -27,10 +27,10 @@
       
       <ol class="property-list query">
       
-        <g:if test="${queryInstance?.name}">
+        <g:if test="${queryInstance?.uid}">
         <li class="fieldcontain">
-          <span id="name-label" class="property-label"><g:message code="query.uid.label" default="UID" /></span>
-          <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${queryInstance}" field="uid"/></span>
+          <span id="uid-label" class="property-label"><g:message code="query.uid.label" default="UID" /></span>
+          <span class="property-value" aria-labelledby="uid-label"><g:fieldValue bean="${queryInstance}" field="uid"/></span>
         </li>
         </g:if>
       
@@ -70,6 +70,13 @@
           <span class="property-value" aria-labelledby="type-label"><g:fieldValue bean="${queryInstance}" field="type"/></span>
         </li>
         </g:if>
+        
+        <g:if test="${queryInstance?.criteriaLogic}">
+        <li class="fieldcontain">
+          <span id="criteriaLogic-label" class="property-label"><g:message code="query.criteriaLogic.label" default="Criteria logic" /></span>
+          <span class="property-value" aria-labelledby="criteriaLogic-label"><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></span>
+        </li>
+        </g:if>
       
         <g:if test="${queryInstance?.select}">
         <li class="fieldcontain">
@@ -101,16 +108,14 @@
             <tr>
               <th>archetypeId</th>
               <th>path</th>
-              <th>operand</th>
-              <th>value</th>
+              <th>conditions</th>
             </tr>
             <g:each in="${queryInstance.where}" var="w">
               <!-- <span class="property-value" aria-labelledby="where-label"><g:link controller="dataCriteria" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></span> -->
               <tr>
                 <td>${w.archetypeId}</td>
                 <td>${w.path}</td>
-                <td>${w.operand}</td>
-                <td>${w.value}</td>
+                <td>${w.toSQL()}</td>
               </tr>
             </g:each>
           </table>
@@ -132,7 +137,6 @@
       <g:form>
         <fieldset class="buttons">
           <g:hiddenField name="id" value="${queryInstance?.id}" />
-          <g:link class="list" action="execute" params="[uid:queryInstance?.uid]"><g:message code="query.execute.action.execute" /></g:link>
           <g:link class="edit" action="edit" params="[id:queryInstance?.id]"><g:message code="query.execute.action.edit" /></g:link>
           <g:link class="delete" action="delete" params="[id:queryInstance?.id]" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><g:message code="query.execute.action.delete" /></g:link>
         </fieldset>

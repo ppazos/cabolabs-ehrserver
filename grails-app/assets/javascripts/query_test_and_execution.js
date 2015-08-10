@@ -74,6 +74,43 @@ var queryDataRenderChart = function(data)
    }]
    */
    var series = [];
+   var point;
+   
+   // El punto a graficar depende del tipo de dato, se usa
+   // point_builders para resolver la construccion del punto.
+   var point_builders = {
+      DV_ORDINAL: function (dvi) {
+         return {
+            name: dvi.value +' ('+ dvi.symbol_value +')',
+               y: dvi.value
+         };
+      },
+      DV_COUNT: function (dvi) {
+         return {
+            name: dvi.magnitude,
+               y: dvi.magnitude
+         };
+      },
+      DV_PROPORTION: function (dvi) {
+         // TODO: show proportion kind: percentage, etc.
+         return {
+            name: dvi.numerator+' '+dvi.denominator,
+               y: dvi.numerator / dvi.denominator
+         };
+      },
+      DV_QUANTITY: function (dvi) {
+         return {
+            name: dvi.magnitude+' '+dvi.units,
+               y: dvi.magnitude
+         };
+      },
+      DV_DURATION: function (dvi) {
+         return {
+            name: dvi.magnitude+' seconds',
+               y: dvi.magnitude
+         };
+      }
+   };
    
    /*
    data = {
@@ -86,12 +123,12 @@ var queryDataRenderChart = function(data)
    */
    $.each( data, function(path, dviseries) {
    
-     console.log('path y dviseries', path, dviseries);
+     //console.log('path y dviseries', path, dviseries);
 
      // Filter: only chart numeric data
-     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION']) == -1)
+     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']) == -1)
      {
-        console.log('type filtered '+ dviseries.type);
+        //console.log('type filtered '+ dviseries.type);
         return;
      }
      
@@ -103,23 +140,14 @@ var queryDataRenderChart = function(data)
       *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
       */
      var serie = { name: dviseries.name, data: [] };
-  
 
-     // FIXME: cuidado, esto es solo para DvQuantity!!!!!
      $.each( dviseries.serie, function(ii, dvi) {
       
        //console.log('ii y dvi', ii, dvi);
       
-       // FIXME: el valor depende del tipo de dato, y para graficar se necesitan ordinales
-       // TODO: ver si se pueden graficar textos y fechas
-       // TODO: prevenir internar graficar tipos de datos que no se pueden graficar
-       //serie.data.push( dvi.magnitude );
-       
-       // para que la etiqueta muestre las unidades
-       point = {name: dvi.magnitude+' '+dvi.units,
-                y: dvi.magnitude}
-       serie.data.push(point);
+       point = point_builders[dviseries.type](dvi);
 
+       serie.data.push(point);
      });
      
      series.push(serie);

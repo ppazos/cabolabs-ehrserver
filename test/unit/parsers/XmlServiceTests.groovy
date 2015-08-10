@@ -33,8 +33,16 @@ class XmlServiceTests { //  extends GroovyTestCase
       if (!ehr.save()) println ehr.errors
       
       List data = []
-      def version = service.parseVersions(ehr, [xml],
-          'systemID', new Date(), 'Mr. Committer', data)
+      def contribution = service.parseVersions(ehr, [xml], 'systemID', new Date(), 'Mr. Committer', data)
+      
+      println "contribution.versions "+ contribution.versions
+      
+      if (contribution == null) println service.validationErrors
+      
+      assert contribution != null
+      assert contribution.versions != null
+      assert contribution.versions.size() == 1
+      assert data.size() == 1
       
 	  /*
       XStream xstream = new XStream()
@@ -55,6 +63,6 @@ class XmlServiceTests { //  extends GroovyTestCase
       println stringWriter.toString()
       */
       
-      println groovy.xml.XmlUtil.serialize( data[0] )
+      //println groovy.xml.XmlUtil.serialize( data[0] )
    }
 }

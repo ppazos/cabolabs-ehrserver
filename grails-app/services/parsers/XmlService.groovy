@@ -89,38 +89,73 @@ class XmlService {
          return null
       }
       
-      
-      List<Contribution> ret = [] // FIXME: una contribution por commit
-      
       println ":: versionsXML: "+ versionsXML.size()
       
+      
+      // 3 loops:
+      //  1. parse versions: String to GPathResult
+      //  2. verify all parsed versions reference the same contribution
+      //  3. create model from GPathResult and save
+      
+      // FIXME: hay que parsear los versionXML para ver el contribution id
+      
+      // GPathResult of all the parsed versions
+      def parsedVersions = []
+      def slurper = new XmlSlurper(false, false) //true, false)
+      
+      versionsXML.eachWithIndex { versionXML, i ->
+         
+         parsedVersions << slurper.parseText(versionXML) // String to GPathResult
+      }
+      
+      
+      // Verification that all the versions reference the same contribution
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/124
+      if (parsedVersions.size() > 1)
+      {
+         def firstContributionId
+         def loopContributionId
+         parsedVersions.eachWithIndex { parsedVersion, i ->
+            
+            loopContributionId = parsedVersion.contribution.id.value.text()
+            if (!loopContributionId)
+            {
+               throw new Exception('version.contribution.id.value should not be empty')
+            }
+            
+            // Set the first contribution uid, then compare the first with the rest,
+            // one is different, throw an exception.
+            if (!firstContributionId) firstContributionId = loopContributionId
+            else
+            {
+               if (firstContributionId != loopContributionId)
+               {
+                  throw new Exception("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+               }
+            }
+         }
+      }
       
       // Uso una lista para no reutilizar la misma variable que sobreescribe
       // las versions anteriors y me deja varias copias de la misma composition
       // en dataOut (quedan todos los punteros a la ultima que se procesa)
-      def parsedVersion
+
       def commitAudit
       def data
       def version
       def compoIndex
       def startTime
       def contributionId
-      def contribution
-      def slurper = new XmlSlurper(false, false) //true, false)
-      versionsXML.eachWithIndex { versionXML, i ->
-      
-      println "************ EACH WITH INDEX ***************** "+ i
-      
-         // Sin esto pone tag0 como namespace en todas las tags!!!
-         parsedVersion = slurper.parseText(versionXML)
+      Contribution contribution // to be returned: 1 contribution per commit
 
-         
+      parsedVersions.eachWithIndex { parsedVersion, i ->
+      
+         println "************ EACH WITH INDEX ***************** "+ i
+      
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
          
-         
          println "XMLSERVICE change_type="+ commitAudit.changeType
-         
          
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
@@ -132,27 +167,7 @@ class XmlService {
                parsedVersion, ehr,
                auditSystemId, auditTimeCommitted, auditCommitter
             )
-            
-            assert contribution != null
-            
-            println "PRE contribution.save"
-            
-            if (!contribution.save())
-            {
-               println "XmlService parse Versions"
-               println "Contribution errors"
-               contribution.errors.allErrors.each {
-                  println it
-               }
-            }
-            else println "Guarda contrib"
-            
-            println "POST contribution.save"
-            
-            // FIXME: it seems the addtoContributions is executed twice for the same contribution!!!
          }
-         
-
 
          
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
@@ -164,7 +179,7 @@ class XmlService {
             uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
             lifecycleState: parsedVersion.lifecycle_state.value.text(),
             commitAudit: commitAudit,
-            contribution: contribution,
+            //contribution: contribution, // contribution.addToVersions(version) saves the backlink automatically
             data: compoIndex
          )
          
@@ -197,7 +212,7 @@ class XmlService {
             if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
             
             println "POST previousVersion.save"
-            println (previousLastVersion as grails.converters.XML)
+            //println (previousLastVersion as grails.converters.XML)
             
             
             // +1 en el version tree id de version.uid
@@ -206,9 +221,8 @@ class XmlService {
             
             
             // ================================================================
-            // FIXME: this is not updating the version uid
-            
-            
+            // Update the XML with the new version uid.
+            //
             // The new version.uid was updated in memory and saved into the DB,
             // for checkout purposes we need also to update it in the XML version
             // received, because the version uid received is for the previous version
@@ -221,52 +235,32 @@ class XmlService {
             
             // ================================================================
          }
-         else // creation (no previous version exists)
-         {
-            // There is was problem: saving the previousLastVersion added the version to the contribution.versions (weird),
-            // so the contribution.addToVersions when there was a previous version, added the version twice to the
-            // contribution.versions list. This else is to avoid that duplicated addition to contribution.versions.
-             
-            println "***** VERSIONS PREV " +contribution.versions
-            contribution.addToVersions( version )
-            println "***** VERSIONS AFTER " +contribution.versions
-         }
 
-         
-         assert contribution.versions.size() == i+1
-         
-         
-         // Aca no lo puedo leer, dice que es vacio !???
-         //println "xmlService.parseVersions: compo.uid="+ parsedVersion.data.uid.value.text()
-         //println "xmlService.parseVersion: compo.uid="+ data.value
-         
-         
-         // Parametro de salida
          dataOut[i] = parsedVersion
          
-         // test
-         //println "Compo con nuevo UID:"
-         //println new groovy.xml.StreamingMarkupBuilder().bind{ out << parsedVersion.data}
+         contribution.addToVersions(version)
          
-         // FIXME: deberia procesar 1 contribution por vez
-         //if (!ret.contains(currentContribution)) ret << currentContribution
-      
       } // each versionXML
       
-      ret << contribution
       
-      /*
-      // ========================================================
-      // Save constribution with versions in cascade
-      if (!contribution.save())
+      // FIXME: deberia ser transaccional junto al codigo de versionado de RestController.commit
+      // Saves versions in cascade and saves the relationship contribution - versions
+      // FIXME: rollback transaction
+      if (!contribution.save(flush:true))
       {
+         println "XmlService parse Versions"
+         println "Contribution errors"
          contribution.errors.allErrors.each {
             println it
          }
       }
-      */
+      else println "Guarda contrib"
       
-      return ret
+      println "***** VERSIONS AFTER ******"
+      println "***** VERSIONS AFTER " +contribution.versions
+      println "***** VERSIONS AFTER ******"
+      
+      return contribution
    }
    
    
@@ -371,8 +365,10 @@ class XmlService {
       
       // Modifica XML con uid asignado a la composition
       // Supongo que la COMPOSITION NO tiene un UID
-      version.data.appendNode {
-         uid {
+      // With + groovy adds the new node after the name node to be compliant with the XSD
+      // http://stackoverflow.com/questions/5022353/groovy-xmlslurper-and-inserting-child-nodes
+      version.data.name + {
+         uid('xsi:type': 'HIER_OBJECT_ID') {
             // Sin poner el id explicitamente desde un string asignaba
             // el mismo uid a todas las compositions.
             value(compoIndex.uid)
@@ -389,10 +385,6 @@ class XmlService {
       // But each version on the version list has a reference to the same contribution,
       // and the contribution will have a list of all the versions committed.
       def currentContribution
-      
-      
-      // FIXME: deberia reorrer todas las version y verificar que todas
-      //        tienen una referencia a la misma contribution
       
       // ==============================================================================
       // version.contribution will come from the client
@@ -441,6 +433,7 @@ class XmlService {
          // versions se setean abajo
       )
       
+      // FIXME: dont do this here, do it in the main process that saves all the data, because this should be transactional, if it fails, no contrib should be added
       // TEST: this might save the contrib and there is no need of saving the contrib later
       ehr.addToContributions( currentContribution )
       

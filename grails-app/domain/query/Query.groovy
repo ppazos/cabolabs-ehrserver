@@ -3,6 +3,7 @@ package query
 import ehr.clinical_documents.*
 import ehr.clinical_documents.data.*
 import grails.util.Holders
+import query.datatypes.*
 
 /**
  * Parametros n1 de la query:
@@ -42,15 +43,132 @@ class Query {
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
-   List select
-   List where
+   List select = []
+   List where = []
    static hasMany = [select: DataGet, where: DataCriteria]
+   
+   // For composition queries with criteria in where
+   String criteriaLogic = 'AND' // AND or OR
    
    // null, composition o path
    // Sirve para agrupar datos:
    //  composition: sirve para mostrar tablas, donde cada fila es una composition
    //  path: sirve para armar series de valores para graficar
-   String group
+   String group = 'none'
+   
+   
+   // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
+   static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      println '=++++=+++++ QUERY newInstance =+++++=++++='
+      //println "Query.construct JSON: "+ json.toString()
+      /*
+       * Query.construct JSON:
+       * {
+       *   "select":[],
+       *   "name":"popoop",
+       *   "group":"none",
+       *   "where":[
+       *     {"id":1,"magnitudeValues":["1","2"],
+       *      "archetypeId":"openEHR-EHR-OBSERVATION.blood_pressure.v1",
+       *      "path":"/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value",
+       *      "unitsOperand":"eq","class":"DataCriteriaDV_QUANTITY",
+       *      "magnitudeOperand":"between","rmTypeName":"DV_QUANTITY",
+       *      "unitsValues":["mmHg"]
+       *     }
+       *   ],
+       *   "type":"composition","id_gen":1
+       * }
+       */
+      
+      //println json.name
+      //println json.get('name')
+      //println json['name']
+      
+      def query = new Query()
+      
+      query.updateInstance(json)
+      
+      return query
+   }
+   
+   /**
+    * For edit/update.
+    */
+   def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      this.name = json['name']
+      this.type = json['type']
+      this.format = ( json['format'] ) ? json['format'] : 'xml' 
+      
+      if (this.type == 'composition')
+      {
+         this.criteriaLogic = json['criteriaLogic']
+         
+         this.where.each {
+            it.delete()
+         }
+         this.where.clear() // remove criterias before adding current ones
+         
+         def condition
+         json.where.each { criteria ->
+            
+            switch (criteria['class']) {
+               case 'DataCriteriaDV_QUANTITY':
+                  condition = new DataCriteriaDV_QUANTITY(criteria)
+               break
+               case 'DataCriteriaDV_CODED_TEXT':
+                  condition = new DataCriteriaDV_CODED_TEXT(criteria)
+               break
+               case 'DataCriteriaDV_TEXT':
+                  condition = new DataCriteriaDV_TEXT(criteria)
+               break
+               case 'DataCriteriaDV_DATE_TIME':
+                  condition = new DataCriteriaDV_DATE_TIME(criteria)
+               break
+               case 'DataCriteriaDV_BOOLEAN':
+                  condition = new DataCriteriaDV_BOOLEAN(criteria)
+               break
+               case 'DataCriteriaDV_COUNT':
+                  condition = new DataCriteriaDV_COUNT(criteria)
+               break
+               case 'DataCriteriaDV_PROPORTION':
+                  condition = new DataCriteriaDV_PROPORTION(criteria)
+               break
+               case 'DataCriteriaDV_ORDINAL':
+                  condition = new DataCriteriaDV_ORDINAL(criteria)
+               break
+               case 'DataCriteriaDV_DURATION':
+                  condition = new DataCriteriaDV_DURATION(criteria)
+               break
+            }
+
+            this.addToWhere(condition)
+         }
+      }
+      else
+      {
+         this.group = json['group']
+         
+         this.select.each {
+            it.delete()
+         }
+         this.select.clear()
+         
+         json.select.each { projection ->
+            
+            this.addToSelect(
+               new DataGet(archetypeId: projection.archetype_id, path: projection.path)
+            )
+         }
+      }
+   }
+   
+   
+   String toString ()
+   {
+      return "id: "+ this.id +", name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
+   }
    
    
    static constraints = {
@@ -59,16 +177,25 @@ class Query {
       name(nullable:false, blank:false)
       
       // No creo que le guste null en inList, le pongo ''
-      group(nullable:true, inList:['', 'composition', 'path'])
-      //qarchetypeId(nullable: true)
+      group(inList:['none', 'composition', 'path'])
+      criteriaLogic(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
+      
    }
    
    static mapping = {
       group column: 'dg_group' // group es palabra reservada de algun dbms
       select cascade: "all-delete-orphan" // cascade delete
       where cascade: "all-delete-orphan" // cascade delete
+   }
+   
+   def beforeInsert() {
+      if (this.type == 'datavalue') this.criteriaLogic = null
+   }
+
+   def beforeUpdate() {
+      if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
    def execute(String ehrId, Date from, Date to, String group)
@@ -111,9 +238,6 @@ class Query {
          }
       }
       
-      //println ". "
-      //println res
-      //println "group $group"
       
       // Group
       // If group is not empty, use that, if not, use the query grouping
@@ -176,7 +300,14 @@ class Query {
                resHeaders[absPath]['attrs'] = ['magnitude', 'units']
             break
             case ['DV_CODED_TEXT', 'DvCodedText']:
+               // code => defining_code.code_string
+               // FIXME: add defining_code.terminology_id
                resHeaders[absPath]['attrs'] = ['value', 'code']
+            break
+            case ['DV_ORDINAL', 'DvOrdinal ']:
+               // value: integer, symbol.value: string, symbol.code: string
+               // FIXME: add symbol.defining_code.terminology_id
+               resHeaders[absPath]['attrs'] = ['value', 'symbol_value', 'symbol_code']
             break
             case ['DV_TEXT', 'DvText']:
                resHeaders[absPath]['attrs'] = ['value']
@@ -192,6 +323,9 @@ class Query {
             break
             case ['DV_PROPORTION', 'DvProportion']:
                resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
+            break
+            case ['DV_DURATION', 'DvDuration']:
+               resHeaders[absPath]['attrs'] = ['value', 'magnitude']
             break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -270,6 +404,16 @@ class Query {
                      col['type'] = dvi.type
                      col['precision'] = dvi.precision
                   break
+                  case ['DV_ORDINAL', 'DvOrdinal']:
+                     col['value'] = dvi.value
+                     col['symbol_value'] = dvi.symbol_value
+                     col['symbol_code'] = dvi.symbol_code
+                     col['symbol_terminology_id'] = dvi.symbol_terminology_id
+                  break
+                  case ['DV_DURATION', 'DvDuration']:
+                     col['value'] = dvi.value
+                     col['magnitude'] = dvi.magnitude
+                  break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
@@ -332,7 +476,7 @@ class Query {
          
          cols[absPath].each { dvi ->
             
-            println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
+            //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
@@ -346,6 +490,13 @@ class Query {
                   resGrouped[absPath]['serie'] << [code:      dvi.code,
                                                    value:     dvi.value,
                                                    date:      dvi.owner.startTime]
+               break
+               case ['DV_ORDINAL', 'DvOrdinal']:
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   symbol_value: dvi.symbol_value,
+                                                   symbol_code:  dvi.symbol_code,
+                                                   symbol_terminology_id: dvi.symbol_terminology_id,
+                                                   date:         dvi.owner.startTime]
                break
                case ['DV_TEXT', 'DvText']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
@@ -369,6 +520,10 @@ class Query {
                                                    type:        dvi.type,
                                                    precision:   dvi.precision,
                                                    date:        dvi.owner.startTime]
+               break
+               case ['DV_DURATION', 'DvDuration']:
+                  resGrouped[absPath]['serie'] << [value:   dvi.value,
+                                                   magnitude: dvi.magnitude]
                break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -409,6 +564,7 @@ class Query {
       // Sin este chequeo, se rompe la query porque sobra un " AND "
       if (!this.where)
       {
+         println "dice que WHERE es vacio "+ this.toString()
          q = q[0..-6] // quita el ultimo " AND ", es -6 porque -1 pone el puntero al final del string y luego hay que sacar 5 chars
       }
       else
@@ -467,50 +623,46 @@ class Query {
                case ['DV_DATE_TIME', 'DvDateTime']:
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
-                   where += " AND ddti.value "+ dataCriteria.sqlOperand() +" "+  dataCriteria.value // TODO: verificar formato, transformar a SQL
                break
                case ['DV_QUANTITY', 'DvQuantity']:
                    fromMap['DvQuantityIndex'] = 'dqi'
                    where += " AND dqi.id = dvi.id "
-                   where += " AND dqi.magnitude "+ dataCriteria.sqlOperand() +" "+  new Float(dataCriteria.value)
                break
                case ['DV_CODED_TEXT', 'DvCodedText']:
                    fromMap['DvCodedTextIndex'] = 'dcti'
                    where += " AND dcti.id = dvi.id "
-                   where += " AND dcti.code "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
                break
                case ['DV_TEXT', 'DvText']:
                    fromMap['DvTextIndex'] = 'dti'
                    where += " AND dti.id = dvi.id "
-                   where += " AND dti.value "+ dataCriteria.sqlOperand() +" '"+ dataCriteria.value+"'"
+               break
+               case ['DV_ORDINAL', 'DvOrdinal']:
+                   fromMap['DvOrdinalIndex'] = 'dvol'
+                   where += " AND dvol.id = dvi.id "
                break
                case ['DV_BOOLEAN', 'DvBoolean']:
                    fromMap['DvBooleanIndex'] = 'dbi'
                    where += " AND dbi.id = dvi.id "
-                   where += " AND dbi.value "+ dataCriteria.sqlOperand() +" "+  new Boolean(dataCriteria.value)
                break
                case ['DV_COUNT', 'DvCount']:
                    fromMap['DvCountIndex'] = 'dci'
                    where += " AND dci.id = dvi.id "
-                   where += " AND dci.magnitude "+ dataCriteria.sqlOperand() +" "+  new Long(dataCriteria.value)
                break
                case ['DV_PROPORTION', 'DvProportion']:
                    fromMap['DvProportionIndex'] = 'dpi'
                    where += " AND dpi.id = dvi.id "
-                   where += " AND dpi.numerator "+ dataCriteria.sqlOperand() +" "+ new Double(dataCriteria.numerator)
-                   /*
-                    * FIXME: data criteria sobre proportion deberia decir si es sobre numerator o denominator.
-                    *        https://github.com/ppazos/cabolabs-ehrserver/issues/53
-                   resGrouped[absPath]['serie'] << [numerator:   dvi.,
-                                                    denominator: dvi.denominator,
-                                                    type:        dvi.type,
-                                                    precision:   dvi.precision,
-                                                    date:        dvi.owner.startTime]
-                   */
+               break
+               case ['DV_DURATION', 'DvDuration']:
+                  fromMap['DvDurationIndex'] = 'dduri'
+                  where += " AND dduri.id = dvi.id "
                break
                default:
                   throw new Exception("type $idxtype not supported")
             }
+            
+            where += " AND " + dataCriteria.toSQL() // important part: complex criteria to SQL, depends on the datatype
+            
+            println where
             
             fromMap.each { index, alias ->
                 
@@ -528,7 +680,6 @@ class Query {
             //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
             //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
             
-   
             
             //       EXISTS (
             //         SELECT dvi.id
@@ -555,7 +706,7 @@ class Query {
             
             
             // Agrega ANDs para los EXISTs, menos el ultimo
-            if (i+1 < this.where.size()) q += " AND "
+            if (i+1 < this.where.size()) q += ' '+ criteriaLogic +' ' // AND or OR
          }
          
       }

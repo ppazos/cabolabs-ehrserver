@@ -3,6 +3,9 @@
 # web application files
 #/web-app/WEB-INF
 
+/versions
+/compositions
+
 # IDE support files
 /.classpath
 /.launch

@@ -32,30 +32,33 @@ class FolderControllerSpec extends Specification {
     }
 
     void "Test the save action correctly persists an instance"() {
-
-       /*
+       
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
+            request.format = 'form'
+            controller.request.method = "POST"
             def folder = new Folder()
             folder.validate()
-            def model = controller.save(folder)
-            println folder.errors
-            println model
-            println view
+            controller.save(folder)
+            //println folder.errors // error null name
+            //println model // null
+            //println view // create
+            //println "status "+ response.status
 
         then:"The create view is rendered again with the correct model"
             model.folderInstance!= null
             view == 'create'
-*/
+
        
         when:"The save action is executed with a valid instance"
             response.reset()
             populateValidParams(params)
-            def folder = new Folder(params)
-
+            folder = new Folder(params)
+            
             controller.save(folder)
-            println folder.errors
-            println model
+            //println folder.errors
+            //println model
+            //println "status "+ response.status
 
         then:"A redirect is issued to the show action"
             response.redirectedUrl == '/folder/show/1'
@@ -98,6 +101,7 @@ class FolderControllerSpec extends Specification {
     void "Test the update action performs an update on a valid domain instance"() {
         when:"Update is called for a domain instance that doesn't exist"
             request.contentType = FORM_CONTENT_TYPE
+            controller.request.method = "PUT"
             controller.update(null)
 
         then:"A 404 error is returned"
@@ -129,6 +133,7 @@ class FolderControllerSpec extends Specification {
     void "Test that the delete action deletes an instance if it exists"() {
         when:"The delete action is called for a null instance"
             request.contentType = FORM_CONTENT_TYPE
+            controller.request.method = "DELETE"
             controller.delete(null)
 
         then:"A 404 is returned"

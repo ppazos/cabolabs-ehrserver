@@ -37,7 +37,7 @@ class FolderController {
         }
 
         if (folderInstance.hasErrors()) {
-            respond folderInstance.errors, view:'create' //, model: [folderInstance: folderInstance]
+            respond folderInstance, view:'create'
             return
         }
 

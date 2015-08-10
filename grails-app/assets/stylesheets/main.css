@@ -52,7 +52,7 @@ body {
 
 #grailsLogo {
   /*background-color: #abbf78; verde grails*/
-  background-color: #232C49; /*#0D2937;*/
+  background-color: #D6DBEB; /* #232C49 */
   vertical-align: middle;
   padding: 10px;
 }
@@ -67,7 +67,7 @@ body {
 #grailsLogo #cb_app {
   font-size: 2.8em;
   font-weight: bold;
-  color: #C4CAE0;
+  color: #232C49;
   margin: 5px 5px;
 }
 #grailsLogo #cb_logo img {
@@ -77,7 +77,7 @@ body {
   float: right;
 }
 #grailsLogo #cb_link img {
-  height: 1.6em;
+  /*height: 1.6em;*/
   margin: 0.8em 0;
 }
 
@@ -721,3 +721,9 @@ a.skip {
   display: inline;
 }
 /* =============================>>>>>> /Estilo para _patientData.gsp */
+
+/* For XML and file images on _versionRow.gsp*/
+.icon {
+  width: 48px;
+  border: none;
+}

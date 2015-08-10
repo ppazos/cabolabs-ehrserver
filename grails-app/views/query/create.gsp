@@ -1,4 +1,4 @@
-<%@ page import="query.Query" %>
+<%@ page import="query.Query" %><%@ page import="grails.converters.JSON" %>
 <!doctype html>
 <html>
   <head>
@@ -18,15 +18,18 @@
       tr td:last-child select, tr td:last-child input[type=text] {
         width: 100%;
       }
-      tr td:first-child {
+      
+      table#query_setup tr td:first-child {
         width: 140px;
       }
+      /**
       tr td:first-child {
         text-align: right;
       }
       tr td:first-child label {
         float: right;
       }
+      **/
       td {
         font-size: 0.9em;
       }
@@ -50,6 +53,16 @@
       #update_button {
         display: none;
       }
+      fieldset {
+        border: 1px solid #ddd;
+      }
+      /* hide all criteria vales but the first */
+      .criteria_value {
+        display: none;
+      }
+      .criteria_value:first-child {
+        display: inline;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -72,61 +85,227 @@
       // TODO: put this in a singleton
       //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
 
-      // =================================
-      // TEST OR SAVE ====================
-      // =================================
+      var query = {
+        id: undefined, // used for edit/update
+        id_gen: 0,
+        name: undefined,
+        type: undefined,
+        format: undefined,
+        criteriaLogic: undefined,
+        where: [], // DataCriteria
+        select: [], // DataGet
+        group: 'none',
+        set_id:       function (id) { this.id = id; }, // for edit/update
+        set_type:     function (type) { this.type = type; }, // composition or datavalue
+        get_type:     function () { return this.type; }, // composition or datavalue
+        set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
+        set_name:     function (name) { this.name = name; },
+        set_format:   function (format) { this.format = format; },
+        set_group:    function (group) { this.group = group; },
+        add_criteria: function (archetype_id, path, rm_type_name, criteria)
+        {
+          if (this.type != 'composition') return false;
+
+          this.id_gen++;
+
+          var c = {cid: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
+
+          // copy attributes
+          for (a in criteria.conditions) c[a] = criteria.conditions[a];
+
+          c['spec'] = criteria.spec;
+          
+          //this.where.push( c );
+          this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
+
+          // when items are removed and then added, there are undefined entries in the array
+          // this cleans the undefined items so the server doesnt receive empty values.
+          this.where = this.where.filter(function(n){ return n != undefined }); 
+          
+          return this.id_gen;
+        },
+        add_projection: function (archetype_id, path)
+        {
+          if (this.type != 'datavalue') return false;
+
+          this.id_gen++;
+          
+          this.select[this.id_gen - 1] = {pid: this.id_gen, archetype_id: archetype_id, path: path};
+
+          // when items are removed and then added, there are undefined entries in the array
+          // this cleans the undefined items so the server doesnt receive empty values.
+          this.select = this.select.filter(function(n){ return n != undefined }); 
+          
+          return this.id_gen;
+        },
+        remove_criteria: function (id)
+        {
+          // lookup: TODO put this in array prototype
+          //var result = $.grep(myArray, function(e){ return e.id == id; });
+          var pos;
+          for (var i = 0, len = this.where.length; i < len; i++) {
+             if (this.where[i].cid == id)
+             {
+                pos = i;
+                break;
+             }
+          }
+
+          this.where.splice(pos, 1); // removes 1 item in from the position
+        },
+        remove_projection: function (id)
+        {
+           // lookup: TODO put this in array prototype
+           //var result = $.grep(myArray, function(e){ return e.id == id; });
+           var pos;
+           for (var i = 0, len = this.select.length; i < len; i++) {
+              if (this.select[i].pid == id)
+              {
+                 pos = i;
+                 break;
+              }
+           }
+           
+           this.select.splice(pos, 1); // removes 1 item in from the position
+        },
+        log: function () { console.log(this); }
+      };
+
+      function Criteria(spec) {
+
+        this.conditions = [];
+        this.spec = spec;
+
+        this.add_condition = function (attr, operand, values) {
+
+          if (values.length > 1)
+            this.conditions[attr+'Value'] = values;
+          else
+            this.conditions[attr+'Value'] = values[0];
+          
+          this.conditions[attr+'Operand'] = operand;
+        };
+      };
+
+      
+      // ==============================================================================================
+      // SAVE OR UPDATE
+      // TODO: put these methods in the query object
+      // ==============================================================================================
     
       var save_query = function() {
+
+        // query management
+        query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
+
+        if (query.get_type() == 'datavalue')
+        {
+           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
         
-        $('#query_form').ajaxSubmit({
+        $.ajax({
+          method: 'POST',
           url: '${createLink(controller:'query', action:'save')}',
-          type: 'post',
-          success: function(responseText, statusText, req, form) {
-            console.log(responseText);
-            // redirect to show!
-            location.href = '${createLink('action': 'show')}?id='+ responseText.id;
-          },
-          error: function(response, textStatus, errorThrown)
-          {
-            console.log('error form_datavalue');
-            console.log(response);
-            alert(response.responseText); // lo devuelto por el servidor
-          }
+          contentType : 'application/json',
+          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+           console.log(data);
+           location.href = '${createLink('action': 'show')}?id='+ data.id;
         });
       };
 
       var update_query = function() {
-         
-         $('#query_form').ajaxSubmit({
-           url: '${createLink(controller:'query', action:'update')}',
-           type: 'post',
-           success: function(responseText, statusText, req, form) {
-             console.log(responseText);
-             // redirect to show!
-             location.href = '${createLink('action': 'show')}?id='+ responseText.id;
-           },
-           error: function(response, textStatus, errorThrown)
-           {
-             console.log('error form_datavalue');
-             console.log(response);
-             alert(response.responseText); // lo devuelto por el servidor
-           }
-         });
-       };
+
+        // values might be updated
+        query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
+
+        if (query.get_type() == 'datavalue')
+        {
+           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
+        
+        $.ajax({
+          method: 'POST',
+          url: '${createLink(controller:'query', action:'update')}',
+          contentType : 'application/json',
+          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+          console.log(data);
+          location.href = '${createLink('action': 'show')}?id='+ data.id;
+        });
+      };
+
+      
+      // ==============================================================================================
+      // TEST COMPOSITION and DATAVALUE
+      // ==============================================================================================
+    
 
       var test_query_composition = function () {
 
         console.log('test composition query');
         console.log('query_form', $('#query_form'));
+
         
+        // query management
+        query.set_name($('input[name=name]').val());
+        query.set_criteria_logic($('select[name=criteriaLogic]').val());
+
+
+        qehrId = $('select[name=qehrId]').val();
+        fromDate = $('input[name=fromDate]').val();
+        toDate = $('input[name=toDate]').val();
+        retrieveData = $('select[name=retrieveData]').val();
+        showUI = $('select[name=showUI]').val();
+
+        
+        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) );
+        
+        $.ajax({
+          method: 'POST',
+          url: '${createLink(controller:'rest', action:'queryCompositions')}',
+          contentType : 'application/json',
+          data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) // JSON.parse(  avoid puting functions, just data
+        })
+        .done(function( data ) {
+           console.log(data);
+           
+           // reset code class or highlight
+           $('code').removeClass('xml json');
+
+           // Si devuelve HTML
+           if ($('select[name=showUI]').val()=='true')
+           {
+             $('#results').html( data );
+             $('#results').show('slow');
+           }
+           else // Si devuelve el XML
+           {
+             // highlight
+             $('code').addClass('xml');
+             $('code').text(formatXml( xmlToString(data) ));
+             $('code').each(function(i, e) { hljs.highlightBlock(e); });
+             $('code').show('slow');
+           }
+           
+           // Muestra el boton que permite ver los datos crudos
+           // devueltos por el servidor
+           $('#show_data').show();
+        });
+
+
+/*
         $('#query_form').ajaxSubmit({
 
-          // datatype = xml for composition
-         
-          url: '${createLink(controller:'rest', action:'queryCompositions')}',
-
+          // datatype = xml for composition (for now)
+          url: '${createLink(controller:"rest", action:"queryCompositions")}',
           type: 'post',
-         
           beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
             
             console.log('form_composition beforeSubmit', data);
@@ -158,10 +337,6 @@
           success: function(responseText, statusText, req, form) {  // >>> SUCCESS
             
             console.log('form_composition success');
-            //console.log(responseText);
-            //console.log(statusText);
-            //console.log(req);
-            //console.log(form);
             
             // reset code class or highlight
             $('code').removeClass('xml json');
@@ -191,26 +366,107 @@
             alert(errorThrown); // lo devuelto por el servidor
           }
         }); // ajax_submit
+*/
 
         console.log('after ajax submit');
       };
+
+
+
       
       var test_query_datavalue = function () {
 
         console.log('test datavalue query');
+
         
+        // query management
+        query.set_name($('input[name=name]').val());
+        query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+        query.set_group( $('select[name=group]').val() ); // for datavalue query
+
+        
+        qehrId = $('select[name=qehrId]').val();
+        fromDate = $('input[name=fromDate]').val();
+        toDate = $('input[name=toDate]').val();
+        format = $('select[name=format]').val();
+        group = $('select[name=group]').val();
+
+        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) );
+        
+        
+        $.ajax({
+           method: 'POST',
+           url: '${createLink(controller:'rest', action:'queryData')}',
+           contentType : 'application/json',
+           dataType: $('select[name=format]').val(), // xml o json
+           data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) // JSON.parse(  avoid puting functions, just data
+         })
+         .done(function( data ) {
+            console.log(data);
+            
+            // Vacia donde se va a mostrar la tabla o el chart
+            $('#chartContainer').empty();
+            
+            console.log('form_datavalue success 2');
+
+            // reset code class or highlight
+            $('code').removeClass('xml json');
+
+            // Si devuelve JSON (verifica si pedi json)
+            if ($('select[name=format]').val()=='json')
+            {
+              console.log('form_datavalue success json');
+            
+              // highlight
+              $('code').addClass('json');
+              $('code').text(JSON.stringify(data, undefined, 2));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              
+              // =================================================================
+              // Si agrupa por composition (muestra tabla)
+              //
+              if ($('select[name=group]').val() == 'composition')
+              {
+                queryDataRenderTable(data);
+              }
+              else if ($('select[name=group]').val() == 'path')
+              {
+                queryDataRenderChart(data);
+              }
+            }
+            else // Si devuelve el XML
+            {
+              console.log('form_datavalue success XML');
+            
+              // highlight
+              $('code').addClass('xml');
+              $('code').text(formatXml( xmlToString(data) ));
+              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+            }
+
+            $('code').show('slow');
+            
+            // Muestra el boton que permite ver los datos crudos
+            // devueltos por el servidor
+            $('#show_data').show();
+            
+            
+            // Hace scroll animado para mostrar el resultado
+            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+         });
+        
+
+/*
         $('#query_form').ajaxSubmit({
             
           dataType: $('select[name=format]').val(), // xml o json
-          url: '${createLink(controller:'rest', action:'queryData')}',
+          url: '${createLink(controller:"rest", action:"queryData")}',
           type: 'post',
           data: {doit:true},
-        
           beforeSubmit: function(data, form, options) {
           
             console.log('form_datavalue beforeSubmit');
           },
-          
           success: function(responseText, statusText, req, form) {
             
             console.log('form_datavalue success');
@@ -265,7 +521,6 @@
             // Hace scroll animado para mostrar el resultado
             $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
           },
-          
           error: function(response, textStatus, errorThrown)
           {
             console.log('error form_datavalue');
@@ -274,8 +529,14 @@
             alert(response.responseText); // lo devuelto por el servidor
           }
         });
+*/
+
       }; // test_query_datavalue
     
+      
+      /*
+       * Called from the save/update buttons
+       */
       var ajax_submit_test_or_save = function (action) {
 
          console.log('ajax_submit', action);
@@ -310,83 +571,136 @@
          }
       }; // ajax_submit
 
-      // =================================
-      // /TEST OR SAVE ===================
-      // =================================
+      // ==================================================================
+      // / TEST QUERIES
+      // ==================================================================
+      
       
       // =================================
       // COMPO QUERY CREATE/EDIT =========
       // =================================
       
-      var dom_add_criteria = function (archetype_id, path, operand, value) {
+      /**
+       * Creates the criteria, adds it to the query, updates the UI.
+       */
+      var dom_add_criteria_2 = function (fieldset) {
 
+        console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
+        
+        // =======================================================================================
+        // Criteria is complete? https://github.com/ppazos/cabolabs-ehrserver/issues/141
+        //
+        // for each value in the criteria
+        
+        criteria_fields = $('input.value.selected', fieldset);
+        
+        if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
+        {
+          alert('Please select a datapoint to define a query criteria');
+          return false;
+        }
+        else // case when criteria spec is selected and maybe some values are not filled in
+        {
+          complete = true;
+	       $.each( criteria_fields, function (index, value_input) {
+	        
+	         if ( $(value_input).val() == '' )
+	         {
+	           complete = false;
+	           return false; // breaks each
+	         }
+	       });
+        }
+        if (!complete)
+        {
+          alert('Please fill all the criteria values');
+          return false;
+        }
+        // =======================================================================================
+
+        var archetype_id = $('select[name=view_archetype_id]').val();
+        var path = $('select[name=view_archetype_path]').val();
+        var type = $('select[name=view_archetype_path] option:selected').data('type');
+        var spec = $('input[name=criteria]', fieldset).data('spec');
+        
+        console.log('spec', spec);
+
+        var attribute, operand, value, values;
+        var criteria_str = '';
+        
+        // criteria js object
+        var criteria = new Criteria(spec);
+        
+        $.each( $('.criteria_attribute', fieldset), function (i, e) {
+
+          values = [];
+          attribute = $('input[name=attribute]', e).val()
+          operand = $('select[name=operand]', e).val();
+          
+          // FIXME: are we using the hidden fields?
+          criteria_str += attribute +' ';
+          criteria_str += operand +' ';
+
+          // for each criteria value (can be 1 for value, 2 for range or N for list)
+          // the class with the name of the attribute is needed to filter values for each attribute
+          $.each( $(':input.selected.value.'+attribute, e), function (j, v) {
+
+             console.log(v);
+
+             value = $(v).val();
+             values.push(value);
+             
+             criteria_str += value + ', ';
+          });
+
+          criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
+          criteria_str += ' AND ';
+          
+          
+          // query object mgt
+          criteria.add_condition(attribute, operand, values);
+        });
+        
+        criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
+        
+        
+        // query object mgt
+        cid = query.add_criteria(archetype_id, path, type, criteria);
+        query.log();
+
+
+        // shows the criteria in the UI
         $('#criteria').append(
-          '<tr>'+
-          '<td>'+ archetype_id +'</td>'+
-          '<td>'+ path +'</td>'+
-          '<td>'+ operand +'</td>'+
-          '<td>'+ value +'</td>'+
-          '<td>'+
-            '<a href="#" class="removeCriteria">[-]</a>'+
-            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
-            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
-            '<input type="hidden" name="operand" value="'+ operand +'" />'+
-            '<input type="hidden" name="value" value="'+ value +'" />'+
-          '</td></tr>'
-        );
-      };
-      
-      var query_datavalue_add_criteria = function () {
-
-        console.log('query_datavalue_add_selection');
-         
-        // TODO: verificar que todo tiene valor seleccionado
-         
-        if ( $('select[name=view_archetype_id]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_concept')}');
-          return;
-        }
-        if ( $('select[name=view_archetype_path]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_datapoint')}');
-          return;
-        }
-
-        // Indexes can be defined over complex attributes but criteria is only for
-        /*
-        if ( ! $.inArray( $('select[name=view_archetype_path]').data('type'), datatypes ) )
-        {
-          alert('${g.message(code:'query.create.criteriaIsOnlyForDatatypes')}');
-          return;
-        }
-        */
-        
-        if ( $('input[name=soperand]:checked').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_select_operand')}');
-          return;
-        }
-        if ( $('input[name=svalue]').val() == null )
-        {
-          alert('${g.message(code:'query.create.please_insert_value')}');
-          return;
-        }
-        
-
-        
-        dom_add_criteria(
-          $('select[name=view_archetype_id]').val(),
-          $('select[name=view_archetype_path]').val(),
-          $('input[name=soperand]:checked').val(),
-          $('input[name=svalue]').val()
+           '<tr data-id="'+ cid +'">'+
+           '<td>'+ archetype_id +'</td>'+
+           '<td>'+ path +'</td>'+
+           '<td>'+ type +'</td>'+
+           '<td>'+ criteria_str +'</td>'+
+           '<td>'+
+             '<a href="#" class="removeCriteria">[-]</a>'+
+           '</td></tr>'
         );
         
-        // Notifica que la condicion fue agregada
-        $.growlUI(
-          '${g.message(code:"query.create.condition_added")}',
-          '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+        return true;
+        
+      }; // dom_add_criteria_2
+
+
+      var query_composition_add_criteria_2 = function () {
+
+        // data for the selected criteria
+        ok = dom_add_criteria_2(
+          $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
         );
+        
+        if (ok)
+        {
+          // Notifica que la condicion fue agregada
+          $.growlUI(
+            '${g.message(code:"query.create.condition_added")}',
+            '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
+          );
+        }
       };
 
       // =================================
@@ -399,12 +713,16 @@
       
       var dom_add_selection = function (archetype_id, path) {
 
+        // query object mgt
+        pid = query.add_projection(archetype_id, path);
+        query.log();
+
+        // shows the projection in the UI
         $('#selection').append(
-          '<tr><td>'+ archetype_id +'</td><td>'+ path +'</td>'+
+          '<tr data-id="'+ pid +'">'+
+          '<td>'+ archetype_id +'</td><td>'+ path +'</td>'+
           '<td>'+
             '<a href="#" class="removeSelection">[-]</a>'+
-            '<input type="hidden" name="archetypeId" value="'+ archetype_id +'" />'+
-            '<input type="hidden" name="archetypePath" value="'+ path +'" />'+
           '</td></tr>'
         );
       };
@@ -455,7 +773,6 @@
              rmTypeName: "DV_QUANTITY"
             */
 
-
             // Saca las options que haya
             $('select[name=view_archetype_path]').empty();
             
@@ -476,6 +793,149 @@
           }
         });
       };
+
+
+      /**
+       * TODO: put the criteria builder functions in a criteria builder object.
+       */
+      // For composition criteria builder
+      var global_criteria_id = 0; // used to link data for the same criteria
+      var get_criteria_specs = function (datatype) {
+
+        $.ajax({
+          url: '${createLink(controller:"query", action:"getCriteriaSpec")}',
+          data: {datatype: datatype},
+          dataType: 'json',
+          success: function(spec, textStatus) {
+
+            console.log(spec);
+
+            $('#composition_criteria_builder').empty();
+            
+            var criteria = '';
+
+            // spec is an array of criteria spec
+            // render criteria spec
+            for (i in spec) {
+                
+              aspec = spec[i];
+              
+              global_criteria_id++;
+              
+              // All fields of the same criteria will have the same id in the data-criteria attribute
+              if (i == 0)
+                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" checked="checked" />';
+              else
+                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
+              
+              for (attr in aspec) {
+                
+                criteria += '<span class="criteria_attribute">';
+                criteria += attr + '<input type="hidden" name="attribute" value="'+ attr +'" />';
+                
+                
+                conditions = aspec[attr]; // spec[0][code][eq] == value
+                criteria += '<select class="operand" data-criteria="'+ global_criteria_id +'" name="operand">';
+                for (cond in conditions) {
+                  
+                  criteria += '<option value="'+ cond +'">'+ cond +'</option>';
+                }
+                criteria += '</select>';
+                
+                
+                // indexes of operand and value should be linked.
+                criteria += '<span class="criteria_value_container">';
+                var i = 0;
+                for (cond in conditions) {
+                  
+                  //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
+                  
+                  criteria += '<span class="criteria_value">';
+                  
+                  if (cond == 'eq_one')
+                  {
+                    criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'">';
+                    
+                    // each value from the list of possible values
+                    for (v in conditions[cond])
+                    {
+                      criteria += '<option value="'+ conditions[cond][v] +'">'+ conditions[cond][v] +'</option>'; // TODO: get texts for values
+                    }
+                    
+                    criteria += '</select>';
+                  }
+                  else
+                  {
+                    // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
+                    switch ( conditions[cond] ) {
+                      case 'value':
+                        criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                      break
+                      case 'list':
+                        criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                      break
+                      case 'range':
+                        criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                      break
+                    }
+                  }
+                  
+                  criteria += '</span>'; // criteria value
+                   
+                  i++;
+                }
+                criteria += '</span>'; // criteria value container
+                criteria += '</span>'; // criteria attribute
+                
+              } // for aspec
+              
+              criteria += '</fieldset>';
+                
+            }; // for render criteria spec
+            
+            $('#composition_criteria_builder').append( criteria );
+            
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            
+            console.log(textStatus, errorThrown);
+          }
+        });
+      };
+      
+      
+      // attachs onchange for operand selects created by the 'get_criteria_specs' function.
+      $(document).on('change', 'select.operand', function(evt) {
+         
+        console.log('operand change', this.selectedIndex, $(this).data('criteria'));
+        
+        var criteria_value_container = $(this).next();
+        
+        // All criteria values hidden
+        criteria_value_container.children().css('display', 'none');
+        $(':input', criteria_value_container).removeClass('selected'); // unselect the current selected criteria values
+        
+        // criteria value [i] should be displayed
+        var value_container = $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline')
+        $(':input', value_container).addClass('selected'); // add selected to all the inputs, textareas and selects, this is to add the correct values to the criteria
+        
+        console.log( $('#query_form').serialize() );
+      });
+      
+      // Add multiple input values for value list criteria when enter is pressed
+      $(document).on('keypress', 'input.value.list', function(evt) {
+      
+		  if (!evt) evt = window.event;
+		  var keyCode = evt.keyCode || evt.which;
+		  
+		  if (keyCode == '13') { // Enter pressed
+		  
+		    $(this).after( $(this).clone().val('') );
+		    $(this).next().focus();
+		    return false;
+		  }
+      });
+     
       
       // =================================
       // /COMMON QUERY CREATE/EDIT =======
@@ -491,32 +951,91 @@
     
       $(document).ready(function() {
       
+        $('select[name=type]').val(""); // select empty option by default
       
-        <%-- EDIT QUERY SETUP --%>
         <%
+        // =====================================================================
+        // a little groovy code to setup the edit/update ...
+        
         if (mode == 'edit')
         {
-          //print 'alert("edit");'
-          
           // dont allow to change type
-          print '$("select[name=type]").prop("disabled", "disabled");'
+          println '$("select[name=type]").val("'+ queryInstance.type +'");'
+          println '$("select[name=type]").prop("disabled", "disabled");'
           
-          print 'show_controls("'+ queryInstance.type +'");'
+          println 'show_controls("'+ queryInstance.type +'");'
           
-          print '$("select[name=format]").val("'+ queryInstance.format +'");'
-          
-          print '$("select[name=group]").val("'+ queryInstance.group +'");'
+          println '$("select[name=format]").val("'+ queryInstance.format +'");'
+          println '$("select[name=group]").val("'+ queryInstance.group +'");'
+          println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
+          println 'query.set_id("'+ queryInstance.id +'");'
+          println 'query.set_name("'+ queryInstance.name +'");'
+          println 'query.set_type("'+ queryInstance.type +'");'
+          println 'query.set_format("'+ queryInstance.format +'");'
+          println 'query.set_group("'+ queryInstance.group +'");'
+          println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
           
           if (queryInstance.type == 'composition')
           {
-             //print 'alert("composition");'
+             // similar code to dom_add_criteria_2 in JS
+             
+             def attrs, attrValueField, attrOperandField, value, operand
+             println 'var criteria;'
+             
              queryInstance.where.each { data_criteria ->
                 
-                print 'dom_add_criteria("'+ 
-                  data_criteria.archetypeId +'", "'+ 
+                attrs = data_criteria.criteriaSpec()[data_criteria.spec].keySet() // attribute names of the datacriteria
+                
+                println 'criteria = new Criteria('+ data_criteria.spec +');'
+                
+                attrs.each { attr ->
+                
+                   attrValueField = attr + 'Value' 
+                   attrOperandField = attr + 'Operand'
+                   operand = data_criteria."$attrOperandField"
+                   value = data_criteria."$attrValueField"
+                   
+                   if (value instanceof List)
+                   {
+                      println 'criteria.add_condition("'+
+                         attr +'", "'+
+                         operand +'", '+
+                         ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                   }
+                   else // value is an array of 1 element
+                   {
+                      // FIXME: if the value is not string or date, dont include the quotes
+                      println 'criteria.add_condition("'+
+                         attr +'", "'+
+                         operand +'", [ "'+
+                         value +'" ]);'
+                   }
+                   
+                } // each attr
+                
+                
+                println 'cid = query.add_criteria("'+
+                  data_criteria.archetypeId +'", "'+
                   data_criteria.path +'", "'+
-                  data_criteria.operand +'", "'+ 
-                  data_criteria.value +'");'
+                  data_criteria.rmTypeName +'", '+
+                  'criteria);'
+                
+                println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
+                
+                println """
+                  \$('#criteria').append(
+                     '<tr data-id="'+ cid +'">'+
+                     '<td>${data_criteria.archetypeId}</td>'+
+                     '<td>${data_criteria.path}</td>'+
+                     '<td>${data_criteria.rmTypeName}</td>'+
+                     '<td>'+ criteria_str +'</td>'+
+                     '<td>'+
+                       '<a href="#" class="removeCriteria">[-]</a>'+
+                     '</td></tr>'
+                  );
+                """
+                 
+                criteria_str = ""
              }
           }
           else
@@ -524,20 +1043,27 @@
              //print 'alert("datavalue");'
              queryInstance.select.each { data_get ->
                 
-                print 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
+                // Updates the UI and the query object
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
              }
           }
           
           // add id of query to form
-          print '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
+          println '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
           
           // show update button, hide create button
-          print '$("#update_button").show();'
-          print '$("#create_button").hide();'
+          println '$("#update_button").show();'
+          println '$("#create_button").hide();'
         }
+        
+        // EDIT SERVER-SIDE LOGIC
         %>
         
         
+        /** ***************************************************************
+         * ACTIONS ASSOCIATED TO ELEMENTS OF THE UI
+         */
+         
         // ========================================================
         // Los registros de eventos deben estar en document.ready
         
@@ -549,7 +1075,7 @@
 	
 	        e.preventDefault();
 	        
-	        query_datavalue_add_criteria();
+	        query_composition_add_criteria_2();
 	     });
 	      
 	      
@@ -561,10 +1087,14 @@
 	      
 	        e.preventDefault();
 	        
-	        // parent es la td y parent.parent es la TR a eliminar
+	        // parent = TD y parent.parent = TR a eliminar
 	        //console.log($(e.target).parent().parent());
 	        //
-	        $(e.target).parent().parent().remove();
+	        row = $(e.target).parent().parent();
+	        id = row.data('id');
+	        row.remove(); // deletes from DOM
+	        
+	        query.remove_criteria( id ); // updates the query
 	     });
 	     
 	     /**
@@ -590,7 +1120,13 @@
 	        // parent es la td y parent.parent es la TR a eliminar
 	        //console.log($(e.target).parent().parent());
 	        //
-	        $(e.target).parent().parent().remove();
+	        //$(e.target).parent().parent().remove();
+	        
+	        row = $(e.target).parent().parent();
+           id = row.data('id');
+           row.remove(); // deletes from DOM
+           
+           query.remove_projection( id ); // updates the query
 	     });
 	     
 	     // ========================================================
@@ -621,6 +1157,10 @@
           if (this.value != '')
           {
             show_controls(this.value);
+            
+            // query management
+            // this needs to be here because it is needed to add_criteria and add_projection
+            query.set_type(this.value);
           }
         });
         
@@ -635,6 +1175,17 @@
           get_and_render_archetype_paths(archetype_id);
           
         }); // click en select view_archetype_id
+        
+        
+        /**
+         * Clic en una path de la lista (select[view_archetype_path])
+         */
+        $('select[name=view_archetype_path]').change(function() {
+        
+          var datatype = $(this).find(':selected').data('type');
+          get_criteria_specs(datatype);
+          
+        }); // click en select view_archetype_path
         
         
         /*
@@ -779,8 +1330,8 @@
               <asset:image src="skin/information.png" />
               <span class="content">
                 <ul>
-                  <li>composition: find clinical documents by criteria over data points</li>
-                  <li>datavalue: find data points by context based criteria</li>
+                  <li><g:message code="query.create.help_composition" /></li>
+                  <li><g:message code="query.create.help_datavalue" /></li>
                 </ul>
               </span>
             </span>
@@ -796,8 +1347,8 @@
       <div id="query_common" class="query_build">
         <table>
           <tr>
-            <th>attribute</th>
-            <th>value</th>
+            <th><g:message code="query.create.attribute" /></th>
+            <th><g:message code="query.create.value" /></th>
           </tr>
           <tr>
             <td><g:message code="query.create.concept" /></td>
@@ -822,13 +1373,16 @@
       <!-- Campos de queryByData -->
 
       <div id="query_composition" class="query_build">
+        <div id="composition_criteria_builder"></div>
+        
+        <%--
         <table>
           <tr>
             <td><g:message code="query.create.operand" /></td>
             <td>
-              <%-- TODO: sacar de restriccion inList de DataCriteria.operand 
+              < % - - TODO: sacar de restriccion inList de DataCriteria.operand 
               Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
-              --%>
+              - - % >
               <label><input type="radio" name="soperand" value="eq" />=</label>
               <label><input type="radio" name="soperand" value="neq" />!=</label>
               <label><input type="radio" name="soperand" value="gt" />&gt;</label>
@@ -844,6 +1398,10 @@
             <td><a href="#" id="addCriteria">[+]</a></td>
           </tr>
         </table>
+        --%>
+        
+        <a href="#" id="addCriteria">[+]</a>
+        
         
         <!--
         value puede especificarse aqui como filtro o puede ser un
@@ -858,7 +1416,7 @@
         <h2><g:message code="query.create.criteria" /></h2>
          
         <!-- Indices de nivel 1 -->
-        <table>
+        <table id="query_setup">
           <%-- Removed for now...
           <tr>
             <td>
@@ -866,14 +1424,10 @@
               <span class="info">
                 <asset:image src="skin/information.png" />
                  <span class="content">
-                   <ul>
-                     <li>
-                       Selecting an archetype here will narrow the query to get only data for this archetype id.
-                       This makes sense if criteria is defined over archetypes that are not the root composition archetype.
-                       Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
-                       This is here only for demo/test purposes.
-                     </li>
-                   </ul>
+                   Selecting an archetype here will narrow the query to get only data for this archetype id.
+                   This makes sense if criteria is defined over archetypes that are not the root composition archetype.
+                   Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
+                   This is here only for demo/test purposes.
                  </span>
               </span>
             </td>
@@ -891,24 +1445,37 @@
             </td>
           </tr>
           --%>
+          
           <tr>
             <td>
-              show UI?
+              <g:message code="query.create.show_ui" />
               <span class="info">
                 <asset:image src="skin/information.png" />
                 <span class="content">
-                  <ul>
-                    <li>
-                      Select between showing the clinical document as a web view or retrieve it as XML.
-                    </li>
-                  </ul>
+                  <g:message code="query.create.show_ui_help" />
                 </span>
               </span>
             </td>
             <td>
               <select name="showUI">
-                <option value="false" selected="selected">no</option>
-                <option value="true">yes</option>
+                <option value="false" selected="selected"><g:message code="default.no" /></option>
+                <option value="true"><g:message code="default.yes" /></option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <g:message code="query.create.criteria_logic" />
+              <span class="info">
+                <span class="content">
+                  <g:message code="query.create.criteria_logic_help" />
+                </span>
+              </span>
+            </td>
+            <td>
+              <select name="criteriaLogic">
+                <option value="AND" selected="selected">AND</option>
+                <option value="OR">OR</option>
               </select>
             </td>
           </tr>
@@ -919,10 +1486,10 @@
         <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
         <table id="criteria">
           <tr>
-            <th>archetypeId</th>
-            <th>path</th>
-            <th>operand</th>
-            <th>value</th>
+            <th><g:message code="query.create.archetype_id" /></th>
+            <th><g:message code="query.create.path" /></th>
+            <th><g:message code="query.create.type" /></th>
+            <th><g:message code="query.create.criteria" /></th>
             <th></th>
           </tr>
         </table>
@@ -962,7 +1529,7 @@
           <%-- Removed for now...
           <tr>
             <td>
-              composition templateId
+              <g:message code="query.create.template_id" />
               <span class="info">
                 <asset:image src="skin/information.png" />
                 <span class="content">
@@ -993,7 +1560,7 @@
           --%>
           
           <tr>
-            <td>default format</td>
+            <td><g:message code="query.create.default_format" /></td>
             <td>
               <select name="format">
                 <option value="xml" selected="selected">XML</option>
@@ -1002,12 +1569,12 @@
             </td>
           </tr>
           <tr>
-            <td>default group</td>
+            <td><g:message code="query.create.default_group" /></td>
             <td>
               <select name="group" size="3">
-                <option value="" selected="selected">none</option>
-                <option value="composition">composition</option>
-                <option value="path">path</option>
+                <option value="none" selected="selected"><g:message code="query.create.none" /></option>
+                <option value="composition"><g:message code="query.create.composition" /></option>
+                <option value="path"><g:message code="query.create.path" /></option>
               </select>
             </td>
           </tr>
@@ -1018,8 +1585,8 @@
         <a name="selection"></a>
         <table id="selection">
           <tr>
-            <th>archetypeId</th>
-            <th>path</th>
+            <th><g:message code="query.create.archetype_id" /></th>
+            <th><g:message code="query.create.path" /></th>
             <th></th>
           </tr>
         </table>

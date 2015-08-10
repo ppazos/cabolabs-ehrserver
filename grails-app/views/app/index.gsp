@@ -1,7 +1,16 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Desktop</title>
     <asset:link rel="stylesheet" href="main.css" type="text/css" />
+    <g:javascript library="jquery" plugin="jquery" />
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    
     <style type="text/css">
       html,body{
         height:100%;
@@ -134,9 +143,10 @@
       <div id="outer">
         <div id="formwrap">
           <div id="inner">
-          
-            <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" /></a>
-          
+            <div style="padding: 15px;">
+              <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+            </div>
+            
             <h1 align="center"><g:message code="desktop.app" /></h1>
             
             <g:if test="${flash.message}">
