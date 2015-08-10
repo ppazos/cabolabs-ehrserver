@@ -117,6 +117,7 @@ app {
    composition_repo = "compositions" + PS
    version_repo = "versions" + PS
    version_xsd = "xsd"+ PS +"Version.xsd"
+   xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
    opt_repo = "opts" + PS
    

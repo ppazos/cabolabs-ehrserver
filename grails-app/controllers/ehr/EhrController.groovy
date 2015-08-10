@@ -14,6 +14,9 @@ import groovy.xml.MarkupBuilder
 import common.change_control.Contribution
 
 import grails.util.Holders
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.stream.StreamSource
 
 class EhrController {
 
@@ -183,22 +186,39 @@ class EhrController {
    def showCompositionUI(String uid)
    {
       def compoFile
-      def compoXML
-      def compoParsed
+      def xml
+      //def compoParsed
    
 
       compoFile = new File(config.composition_repo + uid +".xml")
-      compoXML = compoFile.getText()
+      xml = compoFile.getText()
+      
+      // Transform to HTML
+      def xslt= new File(config.xslt).getText()
+      
+      // Create transformer
+      def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt)))
+      
+      // Set output file
+      //def html = new FileOutputStream("temp.html")
+      def html = new StringWriter()
+      
+      // Perform transformation
+      transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(html))
+      
+      /*
       compoParsed = new XmlSlurper(true, false).parseText(compoXML)
       
-      def writer = new StringWriter()
+      def html = new StringWriter()
       def xml = new MarkupBuilder(writer)
       toHtml(compoParsed, xml, 'composition')
+      */
       
       //render(text: writer.toString(), contentType:"text/html", encoding:"UTF-8")
-      return [compositionHtml: writer.toString()]
+      return [compositionHtml: html.toString()]
    }
-   
+
+/*
    private void toHtml(GPathResult n, MarkupBuilder builder, String classPath)
    {
       // TODO: clases que sean clase.atributo del RM
@@ -224,6 +244,7 @@ class EhrController {
          }
       }
    }
+*/
    
    // /test: showCompositionUI
    // ===========================================================
