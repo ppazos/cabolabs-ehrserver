@@ -18,14 +18,6 @@ import common.change_control.VersionedComposition
 import grails.util.Holders
 import common.change_control.Version
 
-import de.odysseus.staxon.json.JsonXMLConfig
-import de.odysseus.staxon.json.JsonXMLConfigBuilder
-import de.odysseus.staxon.json.JsonXMLOutputFactory
-
-import javax.xml.stream.XMLEventReader
-import javax.xml.stream.XMLEventWriter
-import javax.xml.stream.XMLInputFactory
-import javax.xml.stream.XMLStreamException
 
 /**
  * TODO:
@@ -38,6 +30,8 @@ import javax.xml.stream.XMLStreamException
 
 class RestController {
 
+   static allowedMethods = [commit: "POST"]
+   
    def xmlService // Utilizado por commit
 
    // Para acceder a las opciones de localizacion 
@@ -57,12 +51,12 @@ class RestController {
    }
    */
    
-   private void renderError(String msg, String errorCode)
+   private void renderError(String msg, String errorCode, int status)
    {
       // Format comes from current request
       withFormat {
          xml {
-            render(contentType:"text/xml", encoding:"UTF-8") {
+            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
                      code('AR')                         // application reject
@@ -74,6 +68,8 @@ class RestController {
             }
          }
          json {
+            println "error json"
+            
             def error = [
                result: [
                   type: [
@@ -84,10 +80,21 @@ class RestController {
                   code: 'ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode
                ]
             ]
-            render error as JSON
+            
+            println "error json struct"
+            
+            //render error as JSON
+            def result = error as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            
+            // with the status in render doesnt return the json to the client
+            // http://stackoverflow.com/questions/10726318/easy-way-to-render-json-with-http-status-code-in-grails
+            response.status = status
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          html {
-            render(contentType:"text/xml", encoding:"UTF-8") {
+            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
                      code('AR')                         // application reject
@@ -113,8 +120,8 @@ class RestController {
     */
    def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
-      println "commit de "+ params.versions.size() +" versions"
-      log.info( "commit received "+ params.versions.size() + " versions"  )
+      println "commit de "+ params.list('versions').size() +" versions"
+      log.info( "commit received "+ params.list('versions').size() + " versions"  )
       
       //new File('params_debug.log') << params.toString()
       
@@ -123,7 +130,7 @@ class RestController {
       // 1. ehrId debe venir
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400')
+         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       
@@ -133,7 +140,7 @@ class RestController {
       // 2. versions deben venir 1 por lo menos haber una
       if (!params.versions)
       {
-         renderError(message(code:'rest.commit.error.versionsRequired'), '401')
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
@@ -143,7 +150,7 @@ class RestController {
       def xmlVersions = params.list('versions')
       if (xmlVersions.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402')
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       
@@ -155,7 +162,7 @@ class RestController {
       // 3. ehr debe existir
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
@@ -167,11 +174,12 @@ class RestController {
       
       // En data esta el XML de la composition recibida
       List parsedVersions = [] // List<GPathResult>
-      def contributions = []
+      //def contributions = []
+      Contribution contribution
       try
       {
          // null if there are xml validation errors
-         contributions = xmlService.parseVersions(
+         contribution = xmlService.parseVersions(
             ehr, xmlVersions, 
             auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
             parsedVersions)
@@ -187,7 +195,7 @@ class RestController {
           */
          
          // There are XML validation errors, the whole commit should fail.
-         if (!contributions)
+         if (!contribution)
          {
             // Parsing error
             render(contentType:"text/xml", encoding:"UTF-8") {
@@ -210,20 +218,13 @@ class RestController {
             }
             return
          }
-         
-         // TEST: in general only one contribution will be created from a commit
-         if (contributions.size() > 1)
-         {
-            log.info("WARNING: there is more than one contribution from a commit")
-            println "WARNING: there is more than one contribution from a commit"
-         }
       }
       catch (Exception e)
       {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          
-         renderError(message(code:'rest.commit.error.couldntParseCompositions', args:[e.message]), '468')
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400)
          return
       }
       
@@ -254,98 +255,106 @@ class RestController {
       // Eso mas poner las VersionedComposition dentro de EHR deberia ser transaccional.
       // ===================================================================================
       
-      contributions.each { contribution ->
-         contribution.versions.eachWithIndex { version, i ->
+      def errorbreak = false
+      
+      contribution.versions.eachWithIndex { version, i ->
+         
+         // ========================================================
+         // Versionado
+         // FIXME: deberia ser transaccional junto a el contribution.save de XmlService
+         
+         def versionedComposition
+         switch (version.commitAudit.changeType)
+         {
+            case 'creation':
             
-            
-            // ========================================================
-            // Versionado
-            def versionedComposition
-            switch (version.commitAudit.changeType)
-            {
-               case 'creation':
+               versionedComposition = new VersionedComposition(
+                  uid: version.objectId,
+                  ehrUid: ehrId,
+                  isPersistent: (version.data.category == 'persistent'))
                
-                  versionedComposition = new VersionedComposition(
-                     uid: version.objectId,
-                     ehrUid: ehrId,
-                     isPersistent: (version.data.category == 'persistent'))
-                  
 //                  if (!versionedComposition.save())
 //                  {
 //                     println "VersionedComposition ERRORS: "+ vc.errors
 //                  }
+               
+               // Agrega composition al EHR
+               ehr.addToCompositions( versionedComposition )
+               
+               if (!ehr.save(flush:true)) println ehr.errors.allErrors
+               
+            break
+            case ['amendment', 'modification']:
+               
+               versionedComposition = VersionedComposition.findByUid(version.objectId)
+               
+               // VersionedObject should exist for change type modification or amendment
+               if (!versionedComposition)
+               {
+                  renderError(message(code:'rest.commit.error.noVersionedCompositionForChangeType', args:[version.commitAudit.changeType, version.objectId]), '472', 404)
                   
-                  // Agrega composition al EHR
-                  ehr.addToCompositions( versionedComposition )
-                  
-                  if (!ehr.save(flush:true)) println ehr.errors.allErrors
-                  
-               break
-               case ['amendment', 'modification']:
-                  
-                  versionedComposition = VersionedComposition.findByUid(version.objectId)
-                  
-                  assert versionedComposition != null: "ERROR: there is no versionedComposition with uid="+ version.objectId
+                  errorbreak = true
+                  return true // just returns from the each
+               }
+               
+               // XmlService hace previousLastVersion.isLastVersion = false
+               // asi la nueva version es la unica con isLastVersion == true
+               
+               
+               // ======================================================
+               // DataValueIndexes for old versions can be deleted
+               // ======================================================
+               
+               // No crea el VersionedComposition porque ya deberia estar
+               
+               assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
+               
+            break
+            default:
+               println "change type "+ version.commitAudit.changeType +" not supported yet"
 
-                  
-                  // XmlService hace previousLastVersion.isLastVersion = false
-                  // asi la nueva version es la unica con isLastVersion == true
-                  
-                  
-                  // ======================================================
-                  // DataValueIndexes for old versions can be deleted
-                  // ======================================================
-                  
-                  // No crea el VersionedComposition porque ya deberia estar
-                  
-                  assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
-                  
-               break
-               default:
-                  println "change type "+ version.commitAudit.changeType +" not supported yet"
+         } // switch changeType
+         
+         
+         println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
+         println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         
+         
+         // FIXME: el archivo no deberia existir!!!
+         // TODO: this might br stored in an XML database in the future.
+         
+         // Save compo
+         // This uses the composition uid that is assigned by the server so it must be unique.
+         
+         def compoXML = parsedVersions[i].data
+         // Agrega namespaces al nuevo root
+         // Para que no de excepciones al parsear el XML de la composition
+         compoXML.@xmlns = 'http://schemas.openehr.org/v1'
+         compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+         
+         
+         compoFile = new File(config.composition_repo + version.data.uid +'.xml')
+         compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
+         /*
+          * XmlUtil.serialize genera estos warnings:
+          * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
+            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
+            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
+          */
+         
+         // Save version as committed
+         // This uses the version uid with the systemid and tree.
+         // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
+         versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
+         versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         
+      } // contribution.versions.each
+      
+      
+      // error: versioned composition doesnt exists
+      if (errorbreak) return
+      
 
-            } // switch changeType
-            
-            
-            println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-            println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-            
-            
-            // FIXME: el archivo no deberia existir!!!
-            // TODO: this might br stored in an XML database in the future.
-            
-            // Save compo
-            // This uses the composition uid that is assigned by the server so it must be unique.
-            
-            def compoXML = parsedVersions[i].data
-            // Agrega namespaces al nuevo root
-            // Para que no de excepciones al parsear el XML de la composition
-            compoXML.@xmlns = 'http://schemas.openehr.org/v1'
-            compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
-            
-            
-            compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-            compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
-            /*
-             * XmlUtil.serialize genera estos warnings:
-             * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
-               | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
-             */
-            
-            // Save version as committed
-            // This uses the version uid with the systemid and tree.
-            // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
-            versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-
-            //Save version as Json
-            log.info('Llama a función para crear archivo Json apartir de '+config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-            def jsonFile = new File(config.version_repo + version.uid.replaceAll('::', '_')+'.txt')
-            jsonFile << xmlToJson(groovy.xml.XmlUtil.serialize( parsedVersions[i] ))
-            
-         } // contribution.versions.each
-      } // contributions.each
       
       //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {
@@ -359,50 +368,7 @@ class RestController {
          }
       }
    } // commit
-   /***
-   *Función encargada de convertir a json un string en xml
-   * @param contenidoXml: Texto xml a pasar a Json
-   * @rerturn texto enformato json que es devuelto por la función. 
-   ***/
-   def xmlToJson(String contenidoXml){
-      log.info("Entra en función xmlToJson")
-      InputStream input = new ByteArrayInputStream(contenidoXml.getBytes())
-      ByteArrayOutputStream output = new ByteArrayOutputStream()
-      JsonXMLConfig config = new JsonXMLConfigBuilder()
-            .autoArray(true)
-            .autoPrimitive(true)
-            .prettyPrint(true)
-            .build()
-         try {
-            /*
-             * Create reader (XML).
-             */
-            XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(input)
-            /*
-             * Create writer (JSON).
-             */
-            XMLEventWriter writer = new JsonXMLOutputFactory(config).createXMLEventWriter(output)
-            //writer.toString();
-            /*
-             * Copy events from reader to writer.
-             */
-            writer.add(reader)          
-            return output.toString()
-            /*
-             * Close reader/writer.
-             */
-            reader.close()
-            writer.close()          
-         } finally {           
-            /*
-             * As per StAX specification, XMLEventReader/Writer.close() doesn't close
-             * the underlying stream.
-             */
-            output.close()
-            input.close()
-            log.info("Sale de función xmlToJson")
-         } 
-   }
+
 
    /**
     * Enpoint for checking out the last version of a composition in order to create a new one.
@@ -426,13 +392,13 @@ class RestController {
       // Error cases, just 1 version should be found
       if (versions.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412')
+         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412', 404)
          return
       }
       
       if (versions.size() > 1)
       {
-         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413')
+         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413', 500)
          // LOG a disco este caso no se deberia dar
          return
       }
@@ -442,7 +408,7 @@ class RestController {
       // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
       if(version.contribution.ehr.ehrId != ehrId)
       {
-         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414')
+         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414', 500)
          return
       }
       
@@ -453,7 +419,7 @@ class RestController {
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415')
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
          return
       }
       
@@ -572,9 +538,11 @@ class RestController {
                systemId: _ehr.systemId
             ]
          }
-         
-         //render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-         render data as JSON
+
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -585,13 +553,20 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
+      if (!subjectUid)
+      {
+         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
+         return
+      }
+      
       // ===========================================================================
       // 1. Paciente existe?
       //
       def _subject = Person.findByUidAndRole(subjectUid, 'pat')
       if (!_subject)
       {
-         render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
          return
       }
       
@@ -632,7 +607,11 @@ class RestController {
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
          ]
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -643,14 +622,21 @@ class RestController {
    
    def ehrGet(String ehrUid, String format)
    {
+      if (!ehrUid)
+      {
+         renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
+         return
+      }
+      
       // 1. EHR existe?
       def c = Ehr.createCriteria()
       def _ehr = c.get {
          eq ('ehrId', ehrUid)
       }
+      
       if (!_ehr)
       {
-         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el ehrUid $ehrUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
          return
       }
       
@@ -676,7 +662,11 @@ class RestController {
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
          ]
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -750,7 +740,10 @@ class RestController {
                idType: person.idType
             ]
          }
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -766,15 +759,16 @@ class RestController {
       
       if (!uid)
       {
-         render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
          return
       }
       
       def person = Person.findByRoleAndUid('pat', uid)
-      
       if (!person)
       {
-         render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_exists', args:[uid]), "477", 404)
          return
       }
       
@@ -806,7 +800,10 @@ class RestController {
             idType: person.idType
          ]
          
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -847,18 +844,32 @@ class RestController {
                         delegate.query {
                            uid(query.uid)
                            name(query.name) // FIXME: debe tener uid
-                           type(query.type)
                            delegate.format(query.format)
-                           qarchetypeId(query.qarchetypeId)
-                           group(query.group)
+                           type(query.type)
                            
-                           delegate.select {
-                             query.select.each { _dataGet ->
-                                get {
-                                  archetypeId(_dataGet.archetypeId)
-                                  path(_dataGet.path)
-                                }
-                             }
+                           if (query.type == 'composition')
+                           {
+                              for (criteria in query.where)
+                              {
+                                 delegate.criteria {
+                                    archetypeId(criteria.archetypeId)
+                                    path(criteria.path)
+                                    operand(criteria.operand)
+                                    value(criteria.value)
+                                 }
+                              }
+                           }
+                           else
+                           {
+                              group(query.group) // Group is only for datavalue
+                              
+                              for (proj in query.select)
+                              {
+                                 projection {
+                                    archetypeId(proj.archetypeId)
+                                    path(proj.path)
+                                 }
+                              }
                            }
                         }
                      }
@@ -874,7 +885,7 @@ class RestController {
          }
          json {
          
-            def result = [
+            def data = [
                queries: [],
                pagination: [
                   max: max,
@@ -889,29 +900,28 @@ class RestController {
                def jquery = [
                   uid: query.uid,
                   name: query.name, // FIXME: debe tener uid
-                  type: query.type,
                   'format': query.format,
-                  qarchetypeId: query.qarchetypeId,
-                  group: query.group,
-                  
-                  select: []
+                  type: query.type
                ]
                
-               query.select.each { _dataGet ->
-                  jquery.select << [
-                    archetypeId: _dataGet.archetypeId,
-                    path: _dataGet.path
-                  ]
+               if (query.type == 'composition')
+               {
+                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+               }
+               else
+               {
+                  jquery.group = query.group // Group is only for datavalue
+                  jquery.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
                }
                
-               
-               result.queries << jquery
+               data.queries << jquery
             }
          
-            render(contentType:"application/json", encoding:"UTF-8") {
-               
-               result
-            }
+            
+            def result = data as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
       }
    }
@@ -929,12 +939,12 @@ class RestController {
       
       if (!queryUid)
       {
-         renderError(message(code:'query.execute.error.queryUidMandatory'), '455')
+         renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
       if (!ehrId)
       {
-         renderError(message(code:'rest.error.ehrIdRequired'), '400')
+         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       
@@ -943,7 +953,7 @@ class RestController {
       
       if (!query)
       {
-         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456')
+         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456', 404)
          return
       }
       
@@ -951,7 +961,7 @@ class RestController {
       
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehrDoesntExists'), '403')
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
@@ -1060,30 +1070,17 @@ class RestController {
    // FIXME: verify that this is used only for query testing while creating a
    //        query. Query execution from the UI should use the "query" action.
    // To query by queryUID use "query" action.
-   def queryData(String qehrId, String qarchetypeId, String fromDate, String toDate, String format, String group)
+   def queryData()
    {
       println "queryData"
       println params
       
-      def type = 'datavalue'
-      
-      // =================================================================
-      // Crea query temporal para ejecutar (idem QueryController.save)
-      def query = new Query(qarchetypeId:qarchetypeId, type:type, format:format, group:group) // qarchetypeId puede ser vacio
-      
-      // En una consulta EQL archetypeId+path seria el SELECT
-      List archetypeIds = params.list('archetypeId')
-      List paths = params.list('archetypePath')
-       
-      // Crea seleccion para query de type datavaule
-      archetypeIds.eachWithIndex { archId, i ->
-          
-         query.addToSelect(
-            new DataGet(archetypeId:archId, path:paths[i])
-         )
-      }
-      // =================================================================
-      
+      String qehrId = request.JSON.qehrId
+      String fromDate = request.JSON.fromDate
+      String toDate = request.JSON.toDate
+      String qarchetypeId = request.JSON.qarchetypeId
+      String format = request.JSON.format
+      String group = request.JSON.group
       
       // parse de dates
       Date qFromDate
@@ -1092,7 +1089,7 @@ class RestController {
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
-      
+      def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group)
       
 
@@ -1115,59 +1112,38 @@ class RestController {
    
    /**
     * Previo QueryController.testQueryByData
+    * Para ejecutar queries desde la UI, recibe un objeto json con la query y los parametros.
     * Solo soporta XML.
     * @return
     */
-   def queryCompositions(String qehrId, String qarchetypeId, String fromDate, String toDate, boolean retrieveData, boolean showUI)
+   def queryCompositions()
    {
        println "queryCompositions"
-       println params
+       println params.toString()
        
+       // all params come in the JSON object from the UI
+       // all are strings
+       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
+       boolean showUI = request.JSON.showUI.toBoolean()
+       String qehrId = request.JSON.qehrId
+       String fromDate = request.JSON.fromDate
+       String toDate = request.JSON.toDate
+       String qarchetypeId = request.JSON.qarchetypeId
        
-       // Viene una lista de cada parametro
-       // String archetypeId, String path, String operand, String value
-       // El mismo indice en cada lista corresponde con un atributo del mismo criterio de busqueda
-       
-       // Datos de criterios
-       List archetypeIds = params.list('archetypeId')
-       List paths = params.list('archetypePath')
-       List values = params.list('value')
-       
-       // Con nombres eq, lt, ...
-       // Hay que transformarlo a =, <, ...
-       // No vienen los operadores directamente porque rompen en HTML, ej. <, >
-       List operands = params.list('operand')
-       
-       
-       IndexDefinition dataidx
-       String idxtype
- 
+       /*
+       println request.JSON.retrieveData.getClass().getSimpleName()
+       println request.JSON.showUI.getClass().getSimpleName()
+       */
+       println retrieveData.toString() +" "+ showUI.toString()
        
        // parse de dates
        Date qFromDate
        Date qToDate
  
-       if (fromDate)
-          qFromDate = Date.parse(config.l10n.date_format, fromDate)
+       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
+       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
        
-       if (toDate)
-          qToDate = Date.parse(config.l10n.date_format, toDate)
-       
-       
-       // FIXME: verify that all the mandatory data is not null
-       
-       // Build temp query
-       // Code from QueryController.save
-       def query = new Query(name:params.name, type:'composition', format:params.format, group:params.group)
-       
-       // Crea criterio
-       archetypeIds.eachWithIndex { archId, i ->
-          
-          query.addToWhere(
-             new DataCriteria(archetypeId:archId, path:paths[i], operand:operands[i], value:values[i])
-          )
-       }
-       
+       def query = Query.newInstance(request.JSON.query)
        def cilist = query.executeComposition(qehrId, qFromDate, qToDate)
        
        println "Resultados (CompositionIndex): " + cilist
@@ -1177,7 +1153,7 @@ class RestController {
        if (showUI)
        {
           // FIXME: hay que ver el tema del paginado
-          render(view:'/compositionIndex/list',
+          render(template:'/compositionIndex/listTable',
                  model:[compositionIndexInstanceList: cilist, compositionIndexInstanceTotal:cilist.size()])
           return
        }

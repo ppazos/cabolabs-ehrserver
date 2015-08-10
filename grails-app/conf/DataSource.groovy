@@ -1,8 +1,8 @@
 dataSource {
     pooled = true
     driverClassName = "org.h2.Driver"
-    username = "sa"
-    password = ""
+    username = "root"
+    password = "root"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -34,7 +34,7 @@ environments {
            url = "jdbc:mysql://$host:$port/$dbName"
            
            username = 'root'
-           password = ''
+           password = 'root'
         }
     }
     test {
