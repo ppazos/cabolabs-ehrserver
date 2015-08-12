@@ -12,7 +12,7 @@
       .buttons {
         margin: 20px 0 0 0;
       }
-      .buttons.test, .buttons.create {
+      .buttons.create {
         display: none;
       }
       tr td:last-child select, tr td:last-child input[type=text] {
@@ -1227,7 +1227,6 @@
        */
       var clearTest = function()
       {
-         $('.buttons.test').hide();
          $('#query_test').hide();
       };
       
@@ -1611,7 +1610,6 @@
             }
             
             $('#query_test').toggle('slow');
-            $('.buttons.test').toggle('slow');
           };
         </script>
         <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
@@ -1625,9 +1623,7 @@
 	      <g:include action="test" />
 	   </div>
 	   
-	   <fieldset class="buttons test">
-	     <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('test');" >${message(code:'default.button.execute.label', default: 'Execute')}</a>
-      </fieldset>
+	   
     </g:form>
   </body>
 </html>
