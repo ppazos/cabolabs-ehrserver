@@ -99,8 +99,7 @@
           $.blockUI({
             message: modal,
             css: {
-              width: '960px',
-              height: '600px',
+              width: '980px', // content is 960px width
               top: '10px',
               left:'auto',
               padding: '10px'
