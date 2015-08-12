@@ -32,18 +32,28 @@
     </div><!-- query_test_datavalues -->
     
     <div id="query_test_common">
-      <g:message code="query.test.ehr_id" /> <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" /><br />
-      <g:message code="query.test.from" /> <input type="text" name="fromDate" />
-      <g:message code="query.test.to" /> <input type="text" name="toDate" /><br />
-      
+      <label>
+        <span><g:message code="query.test.ehr_id" /></span>
+        <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
+      </label><br />
+      <label>
+        <span><g:message code="query.test.from" /></span>
+        <input type="text" name="fromDate" />
+      </label><br />
+      <label>
+        <span><g:message code="query.test.to" /></span>
+        <input type="text" name="toDate" /><br />
+      </label><br />
       <!-- FIXME: busco los arquetipos de composition en los indices porque
                   el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
                   tenga, esta operacion deberia usar el ArchetypeManager. -->
 
       <!-- solo arquetipos de composition -->
-      <g:message code="query.test.document_type" />
-      <g:select name="qarchetypeId" size="4"
-                from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
+      <label>
+        <span><g:message code="query.test.document_type" /></span>
+        <g:select name="qarchetypeId" size="4"
+                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
+      </label>
     </div>
     
     <h2><g:message code="query.execute.results" /></h2>
@@ -51,5 +61,18 @@
     <div id="results" class="out"></div>
     <pre><code id="code"></code></pre>
     <div id="chartContainer"></div>
+    
+    <style>
+      #query_test_common label {
+        display: block;
+      }
+      #query_test_common span {
+        display: inline-block;
+        width: 22%;
+        text-align: right;
+        padding-right: 1em;
+        vertical-align: top;
+      }
+    </style>
   </body>
 </html>
