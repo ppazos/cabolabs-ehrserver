@@ -47,7 +47,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                 eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
                 in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
              ],
-             terminologyId: [eq: 'value']
+             terminologyId: [
+                eq: 'value',
+                contains: 'value'
+             ]
           ],
           [
              value: [contains: 'value']

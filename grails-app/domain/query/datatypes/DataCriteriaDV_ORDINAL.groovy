@@ -45,7 +45,7 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
     static List criteriaSpec()
     {
        return [
-          [
+          [ // for the ordinal number
              value: [
                 eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
                 lt:  'value',
@@ -68,7 +68,8 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
                 in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
              ],
              symbol_terminology_id: [
-                eq: 'value'
+                eq: 'value',
+                contains: 'value'
              ]
           ]
        ]
