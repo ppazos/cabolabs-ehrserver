@@ -13,7 +13,7 @@
          <xs:element name="template_id" type="TEMPLATE_ID"/>
          <xs:element type="xs:string" name="concept"/>
          <xs:element name="definition" type="C_ARCHETYPE_ROOT"/>
-         <xs:element name="view">
+         <xs:element name="view" minOccurs="0">
             <xs:complexType>
                <xs:sequence>
                   <xs:element name="constraints" maxOccurs="unbounded" minOccurs="0">
