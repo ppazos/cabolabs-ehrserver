@@ -34,7 +34,7 @@ environments {
            url = "jdbc:mysql://$host:$port/$dbName"
            
            username = 'root'
-           password = 'root'
+           password = ''
         }
     }
     test {

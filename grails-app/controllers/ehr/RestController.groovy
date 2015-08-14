@@ -33,6 +33,7 @@ class RestController {
    static allowedMethods = [commit: "POST"]
    
    def xmlService // Utilizado por commit
+   def jsonService // Query composition with format = json
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -1129,6 +1130,7 @@ class RestController {
        String fromDate = request.JSON.fromDate
        String toDate = request.JSON.toDate
        String qarchetypeId = request.JSON.qarchetypeId
+       String format = request.JSON.format
        
        /*
        println request.JSON.retrieveData.getClass().getSimpleName()
@@ -1162,7 +1164,10 @@ class RestController {
        // compositions que se apuntan por el index
        if (!retrieveData)
        {
-          render(text:(cilist as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+          if (format == 'json')
+             render(text:(cilist as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+          else
+             render(text:(cilist as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
        }
        else
        {
@@ -1204,7 +1209,11 @@ class RestController {
           }
           out += '</list>'
           
-          render(text: out, contentType:"text/xml", encoding:"UTF-8")
+          
+          if (format == 'json')
+             render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+          else
+             render(text: out, contentType:"text/xml", encoding:"UTF-8")
        }
    }
 }

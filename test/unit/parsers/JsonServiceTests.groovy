@@ -13,11 +13,13 @@ import org.junit.*
 class JsonServiceTests { //  extends GroovyTestCase
    
    static String PS = System.getProperty("file.separator")
-   void testVersion(){
-            //def file = new File("test"+ PS +"resources"+ PS +"pruebaXmlToJson.xml")
-           // def xml = file.getText()
-            String xml = new File("test"+ PS +"resources"+ PS +"pruebaXmlToJson.xml").getText('UTF-8')
-            def json=service.xmlToJson(xml)  
-            assert json != null
+   
+   void testVersion()
+   {
+      //def file = new File("test"+ PS +"resources"+ PS +"pruebaXmlToJson.xml")
+      // def xml = file.getText()
+      String xml = new File("test"+ PS +"resources"+ PS +"pruebaXmlToJson.xml").getText('UTF-8')
+      def json=service.xmlToJson(xml)  
+      assert json != null
    }
 }

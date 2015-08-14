@@ -201,8 +201,12 @@
 
         if (query.get_type() == 'datavalue')
         {
-           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+           query.set_format( $('select[name=format]').val() );
            query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
+        else
+        {
+           query.set_format( $('select[name=composition_format]').val() );
         }
         
         $.ajax({
@@ -227,6 +231,10 @@
         {
            query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
            query.set_group( $('select[name=group]').val() ); // for datavalue query
+        }
+        else
+        {
+           query.set_format( $('select[name=composition_format]').val() );
         }
         
         $.ajax({
@@ -256,22 +264,23 @@
         // query management
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
-
+        query.set_format( $('select[name=composition_format]').val() );
 
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
-
+        format = $('select[name=composition_format]').val();
         
-        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) );
+        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format } ) );
         
         $.ajax({
           method: 'POST',
           url: '${createLink(controller:'rest', action:'queryCompositions')}',
+          dataType: format, // xml o json
           contentType : 'application/json',
-          data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI } ) // JSON.parse(  avoid puting functions, just data
+          data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format } ) // JSON.parse(  avoid puting functions, just data
         })
         .done(function( data ) {
            console.log(data);
@@ -285,12 +294,22 @@
              $('#results').html( data );
              $('#results').show('slow');
            }
-           else // Si devuelve el XML
+           else // Si devuelve XML o JSON
            {
-             // highlight
-             $('code').addClass('xml');
-             $('code').text(formatXml( xmlToString(data) ));
-             $('code').each(function(i, e) { hljs.highlightBlock(e); });
+             if (format == 'json')
+             {
+                $('code').addClass('json');
+                $('code').text(JSON.stringify(data, undefined, 2));
+                $('code').each(function(i, e) { hljs.highlightBlock(e); });
+             }
+             else
+             { 
+               // highlight
+               $('code').addClass('xml');
+               $('code').text(formatXml( xmlToString(data) ));
+               $('code').each(function(i, e) { hljs.highlightBlock(e); });
+             }
+
              $('code').show('slow');
            }
            
@@ -381,7 +400,7 @@
         
         // query management
         query.set_name($('input[name=name]').val());
-        query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
+        query.set_format( $('select[name=format]').val() );
         query.set_group( $('select[name=group]').val() ); // for datavalue query
 
         
@@ -398,7 +417,7 @@
            method: 'POST',
            url: '${createLink(controller:'rest', action:'queryData')}',
            contentType : 'application/json',
-           dataType: $('select[name=format]').val(), // xml o json
+           dataType: format, // xml o json
            data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) // JSON.parse(  avoid puting functions, just data
          })
          .done(function( data ) {
@@ -413,7 +432,7 @@
             $('code').removeClass('xml json');
 
             // Si devuelve JSON (verifica si pedi json)
-            if ($('select[name=format]').val()=='json')
+            if (format == 'json')
             {
               console.log('form_datavalue success json');
             
@@ -966,6 +985,8 @@
           println 'show_controls("'+ queryInstance.type +'");'
           
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
+          println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
+          
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           println 'query.set_id("'+ queryInstance.id +'");'
@@ -1478,6 +1499,15 @@
               </select>
             </td>
           </tr>
+          <tr>
+            <td><g:message code="query.create.default_format" /></td>
+            <td>
+              <select name="composition_format">
+                <option value="xml" selected="selected">XML</option>
+                <option value="json">JSON</option>
+              </select>
+            </td>
+          </tr>
         </table>
         
         <a name="criteria"></a>
@@ -1510,8 +1540,6 @@
         </table>
 
         <h2><g:message code="query.create.filters" /></h2>
-
-        <g:message code="query.create.level1indexes" /><br/><br/>
 
         <!--
         ehrId, archetypeId (tipo de doc), rango de fechas, formato
