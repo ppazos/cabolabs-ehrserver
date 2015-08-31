@@ -823,7 +823,11 @@
 
         $.ajax({
           url: '${createLink(controller:"query", action:"getCriteriaSpec")}',
-          data: {datatype: datatype},
+          data: {
+             archetypeId: $('select[name=view_archetype_id]').val(),
+             path:        $('select[name=view_archetype_path]').val(),
+             datatype:    datatype
+          },
           dataType: 'json',
           success: function(spec, textStatus) {
 

@@ -4,6 +4,8 @@ import ehr.Ehr
 import ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
 
+import com.cabolabs.openehr.opt.manager.OptManager // load opts
+
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
@@ -34,23 +36,21 @@ class BootStrap {
      }
      
       
-     println "------------------------------------------------------------------"
-     println new File(".").getAbsolutePath() // Current working directory
-     println "------------------------------------------------------------------"
+     log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
      
      
-     // TEST
+     // Initial index loading
      if (IndexDefinition.count() == 0)
      {
 		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 		  ti.indexAll()
-        
-        //def path = "opts" + PS + "Signos.opt"
-        //def signos = new File( path )
-        //ti.index(signos)
      }
-     // /TEST
      
+     // OPT loading
+     def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
+     optMan.loadAll()
+     
+     // Fake persons and roles
      def persons = []
      if (Person.count() == 0)
      {
@@ -116,7 +116,7 @@ class BootStrap {
         }
      }
      
-     // Crea EHRs para los pacientes de prueba
+     // Fake EHRs for patients
      // Idem EhrController.createEhr
      def ehr
      persons.each { p ->
@@ -134,6 +134,7 @@ class BootStrap {
         }
      }
    }
+   
    def destroy = {
    }
 }

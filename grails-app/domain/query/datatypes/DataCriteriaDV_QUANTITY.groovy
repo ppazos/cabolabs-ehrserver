@@ -1,6 +1,7 @@
 package query.datatypes
 
 import query.DataCriteria
+import com.cabolabs.openehr.opt.manager.OptManager
 
 class DataCriteriaDV_QUANTITY extends DataCriteria {
 
@@ -30,8 +31,16 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
      * by conditions over DV_QUANTITY.
      * @return
      */
-    static List criteriaSpec()
+    static List criteriaSpec(String archetypeId, String path)
     {
+       def optMan = OptManager.getInstance()
+       def arch = optMan.getReferencedArchetype(archetypeId)
+       
+       def units = []
+       arch.getNode(path).xmlNode.list.each {
+          units << it.units.text() // mm[Hg]
+       }
+       
        return [
           [
              magnitude: [
@@ -43,7 +52,10 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
                 ge:  'value',
                 between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
              ], 
-             units: [eq: 'value']
+             units: [
+                eq: 'value',
+                units: units
+             ]
           ]
        ]
     }

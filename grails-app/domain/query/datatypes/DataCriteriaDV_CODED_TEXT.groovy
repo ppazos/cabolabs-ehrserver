@@ -1,6 +1,7 @@
 package query.datatypes
 
 import query.DataCriteria
+import com.cabolabs.openehr.opt.manager.OptManager
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
@@ -39,13 +40,36 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
      * by conditions over DV_CODED_TEXT.
      * @return
      */
-    static List criteriaSpec()
+    static List criteriaSpec(String archetypeId, String path)
     {
+       def optMan = OptManager.getInstance()
+       def arch = optMan.getReferencedArchetype(archetypeId)
+       
+       /*
+       println "path "+ path
+       println "arch 1 "+ arch
+       println "arch "+ arch.archetypeId
+       //println "arch nodes "+ arch.nodes
+       println "node "+ arch.getNode(path).xmlNode.rm_type_name.text()
+       
+       println "text nodes "+ arch.getNode(path).nodes
+       
+       println "node codes "+ arch.getNode(path + '/defining_code').xmlNode.code_list.text()
+       */
+       
+       // List of valid codes for the code criteria
+       // The path received points to the DV_CODED_TEXT, the codes are in the child CODE_PRHASE
+       def codes = []
+       arch.getNode(path + '/defining_code').xmlNode.code_list.each {
+          codes << it.text() // at00XX // TODO: use a map with the code as key and the term as value
+       }
+       
        return [
           [
              code: [
                 eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
-                in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
+                in_list: 'list', // operand in_list can be applied to attribute code and the reference value is a list of values
+                codes: codes
              ],
              terminologyId: [
                 eq: 'value',

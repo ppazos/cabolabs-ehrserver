@@ -384,16 +384,16 @@ class QueryController {
      * @param datatype
      * @return
      */
-    def getCriteriaSpec(String datatype)
+    def getCriteriaSpec(String archetypeId, String path, String datatype)
     {
        // TODO: simplificar a metodo dinamico + try catch por si pide cualquier cosa.
        def res = []
        switch (datatype) {
           case 'DV_QUANTITY':
-            res = DataCriteriaDV_QUANTITY.criteriaSpec()
+            res = DataCriteriaDV_QUANTITY.criteriaSpec(archetypeId, path)
           break
           case 'DV_CODED_TEXT':
-            res = DataCriteriaDV_CODED_TEXT.criteriaSpec()
+            res = DataCriteriaDV_CODED_TEXT.criteriaSpec(archetypeId, path)
           break
           case 'DV_TEXT':
             res = DataCriteriaDV_TEXT.criteriaSpec()
