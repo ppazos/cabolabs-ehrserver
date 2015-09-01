@@ -42,7 +42,7 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
      * by conditions over DV_CODED_TEXT.
      * @return
      */
-    static List criteriaSpec()
+    static List criteriaSpec(String archetypeId, String path)
     {
        return [
           [ // for the ordinal number

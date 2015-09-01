@@ -33,7 +33,7 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
      * by conditions over DV_QUANTITY.
      * @return
      */
-    static List criteriaSpec()
+    static List criteriaSpec(String archetypeId, String path)
     {
        return [
           [

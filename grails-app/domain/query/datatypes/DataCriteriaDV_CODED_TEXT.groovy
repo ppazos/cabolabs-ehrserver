@@ -59,17 +59,19 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        
        // List of valid codes for the code criteria
        // The path received points to the DV_CODED_TEXT, the codes are in the child CODE_PRHASE
-       def codes = []
+       def codes = [:]
+       def code
        arch.getNode(path + '/defining_code').xmlNode.code_list.each {
-          codes << it.text() // at00XX // TODO: use a map with the code as key and the term as value
+          
+          code = it.text()
+          codes[code] = arch.getText(code) // at00XX -> name
        }
        
-       return [
+       def spec = [
           [
              code: [
                 eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
-                in_list: 'list', // operand in_list can be applied to attribute code and the reference value is a list of values
-                codes: codes
+                in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
              ],
              terminologyId: [
                 eq: 'value',
@@ -80,6 +82,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
              value: [contains: 'value']
           ]
        ]
+       
+       if (codes.size() > 0) spec[0].code.codes = codes
+        
+       return spec
     }
     
     static List attributes()

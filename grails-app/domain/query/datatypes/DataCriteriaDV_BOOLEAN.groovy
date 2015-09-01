@@ -26,7 +26,7 @@ class DataCriteriaDV_BOOLEAN extends DataCriteria {
      * by conditions over DV_QUANTITY.
      * @return
      */
-    static List criteriaSpec()
+    static List criteriaSpec(String archetypeId, String path)
     {
        return [
           [

@@ -36,12 +36,14 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
        def optMan = OptManager.getInstance()
        def arch = optMan.getReferencedArchetype(archetypeId)
        
-       def units = []
+       def units = [:]
+       def u
        arch.getNode(path).xmlNode.list.each {
-          units << it.units.text() // mm[Hg]
+          u = it.units.text() 
+          units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
        }
        
-       return [
+       def spec = [
           [
              magnitude: [
                 eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
@@ -53,11 +55,14 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
                 between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
              ], 
              units: [
-                eq: 'value',
-                units: units
+                eq: 'value'
              ]
           ]
        ]
+       
+       if (units.size() > 0) spec[0].units.units = units
+       
+       return spec
     }
     
     static List attributes()

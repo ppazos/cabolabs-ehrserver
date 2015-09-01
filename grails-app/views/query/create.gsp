@@ -839,8 +839,8 @@
 
             // spec is an array of criteria spec
             // render criteria spec
-            for (i in spec) {
-                
+            for (i in spec)
+            {
               aspec = spec[i];
               
               global_criteria_id++;
@@ -851,16 +851,37 @@
               else
                 criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
               
-              for (attr in aspec) {
-                
+              for (attr in aspec)
+              {
                 criteria += '<span class="criteria_attribute">';
                 criteria += attr + '<input type="hidden" name="attribute" value="'+ attr +'" />';
                 
-                
                 conditions = aspec[attr]; // spec[0][code][eq] == value
                 criteria += '<select class="operand" data-criteria="'+ global_criteria_id +'" name="operand">';
-                for (cond in conditions) {
-                  
+                
+                
+                // =======================================================================================================
+                // If this has possible values from the template
+                var possible_values;
+                switch (datatype)
+                {
+                  case 'DV_CODED_TEXT':
+                    possible_values = conditions['codes'];
+                    delete conditions['codes']; // Deletes the codes attribute
+                  break;
+                  case 'DV_QUANTITY':
+                    possible_values = conditions['units'];
+                    delete conditions['units']; // Deletes the codes attribute
+                  break;
+                }
+                
+                console.log('possible values', datatype, possible_values);
+                console.log('conditions', conditions);
+                // =======================================================================================================
+                
+                
+                for (cond in conditions)
+                {
                   criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
                 criteria += '</select>';
@@ -869,37 +890,63 @@
                 // indexes of operand and value should be linked.
                 criteria += '<span class="criteria_value_container">';
                 var i = 0;
-                for (cond in conditions) {
-                  
+                for (cond in conditions)
+                {
                   //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
-                  
                   criteria += '<span class="criteria_value">';
                   
                   if (cond == 'eq_one')
                   {
                     criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'">';
-                    
-                    // each value from the list of possible values
-                    for (v in conditions[cond])
+                    for (v in conditions[cond]) // each value from the list of possible values
                     {
                       criteria += '<option value="'+ conditions[cond][v] +'">'+ conditions[cond][v] +'</option>'; // TODO: get texts for values
                     }
-                    
                     criteria += '</select>';
                   }
                   else
                   {
-                    // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
-                    switch ( conditions[cond] ) {
-                      case 'value':
-                        criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
-                      break
-                      case 'list':
-                        criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
-                      break
-                      case 'range':
-                        criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
-                      break
+                    if (possible_values == undefined)
+                    {
+                      // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
+                      switch ( conditions[cond] )
+                      {
+                        case 'value':
+                          criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                        break
+                        case 'list':
+                          criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                        break
+                        case 'range':
+                          criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                        break
+                      }
+                    }
+                    else // we have possible_values for this criteria
+                    {
+                      switch ( conditions[cond] )
+                      {
+                        case 'value':
+                          criteria += '<select name="value" class="value '+ ((i==0)?' selected':'') +' '+ attr +'">';
+                          for (k in possible_values)
+                          {
+                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                          }
+                          criteria += '</select>';
+                        break
+                        case 'list':
+                          criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +'">';
+                          for (k in possible_values)
+                          {
+                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                          }
+                          criteria += '</select>';
+                        break
+                        case 'range':
+                          // this case deosnt happen for now...
+                          //criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                        break
+                      }
                     }
                   }
                   
@@ -946,7 +993,7 @@
       });
       
       // Add multiple input values for value list criteria when enter is pressed
-      $(document).on('keypress', 'input.value.list', function(evt) {
+      $(document).on('keypress', ':input.value.list', function(evt) {
       
 		  if (!evt) evt = window.event;
 		  var keyCode = evt.keyCode || evt.which;

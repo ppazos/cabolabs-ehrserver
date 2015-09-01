@@ -396,25 +396,25 @@ class QueryController {
             res = DataCriteriaDV_CODED_TEXT.criteriaSpec(archetypeId, path)
           break
           case 'DV_TEXT':
-            res = DataCriteriaDV_TEXT.criteriaSpec()
+            res = DataCriteriaDV_TEXT.criteriaSpec(archetypeId, path)
           break
           case 'DV_DATE_TIME':
-            res = DataCriteriaDV_DATE_TIME.criteriaSpec()
+            res = DataCriteriaDV_DATE_TIME.criteriaSpec(archetypeId, path)
           break
           case 'DV_BOOLEAN':
-            res = DataCriteriaDV_BOOLEAN.criteriaSpec()
+            res = DataCriteriaDV_BOOLEAN.criteriaSpec(archetypeId, path)
           break
           case 'DV_COUNT':
-            res = DataCriteriaDV_COUNT.criteriaSpec()
+            res = DataCriteriaDV_COUNT.criteriaSpec(archetypeId, path)
           break
           case 'DV_PROPORTION':
-            res = DataCriteriaDV_PROPORTION.criteriaSpec()
+            res = DataCriteriaDV_PROPORTION.criteriaSpec(archetypeId, path)
           break
           case 'DV_ORDINAL':
-            res = DataCriteriaDV_ORDINAL.criteriaSpec()
+            res = DataCriteriaDV_ORDINAL.criteriaSpec(archetypeId, path)
           break
           case 'DV_DURATION':
-            res = DataCriteriaDV_DURATION.criteriaSpec()
+            res = DataCriteriaDV_DURATION.criteriaSpec(archetypeId, path)
           break
        }
        

@@ -76,7 +76,7 @@ class DataCriteria {
    {
       def criteria = [:] // attr -> [ operand : values ]
       
-      def specs = criteriaSpec()
+      def specs = criteriaSpec(this.archetypeId, this.path)
       def spec = specs[this.spec] // spec used Map
       def attributes = spec.keySet()
       def operand
@@ -118,7 +118,7 @@ class DataCriteria {
    
    String toSQL()
    {
-      def specs = criteriaSpec()
+      def specs = criteriaSpec(this.archetypeId, this.path)
       def spec = specs[this.spec] // spec used Map
       def attributes = spec.keySet()
       def sql = ""
