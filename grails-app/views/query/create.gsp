@@ -611,7 +611,9 @@
         //
         // for each value in the criteria
         
-        criteria_fields = $('input.value.selected', fieldset);
+        
+        // inputs or selects with values
+        criteria_fields = $(':input.value.selected', fieldset);
         
         if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
         {
@@ -707,7 +709,7 @@
 
       var query_composition_add_criteria_2 = function () {
 
-        // data for the selected criteria
+        // data for the selected criteria (input[name=criteria] is the radio button)
         ok = dom_add_criteria_2(
           $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
         );

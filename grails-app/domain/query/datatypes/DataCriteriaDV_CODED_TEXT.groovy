@@ -83,7 +83,11 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           ]
        ]
        
-       if (codes.size() > 0) spec[0].code.codes = codes
+       if (codes.size() > 0)
+       {
+          spec[0].code.codes = codes
+          spec[0].terminologyId.codes = ['local': 'local'] // if the terms are defined in the archetype, the terminology is local
+       }
         
        return spec
     }
