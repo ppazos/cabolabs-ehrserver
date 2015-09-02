@@ -2,6 +2,7 @@ package ehr
 
 import grails.util.Holders
 import groovy.xml.MarkupBuilder
+import com.cabolabs.openehr.opt.manager.OptManager
 
 class OperationalTemplateController {
 
@@ -96,6 +97,12 @@ class OperationalTemplateController {
              
              def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
              ti.indexAll()
+             
+             
+             // load opt in manager
+             def optMan = OptManager.getInstance()
+             optMan.unloadAll()
+             optMan.loadAll()
           }
        }
     }
