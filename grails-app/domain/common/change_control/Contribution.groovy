@@ -2,6 +2,7 @@ package common.change_control
 
 import common.generic.AuditDetails
 import ehr.Ehr
+import java.text.SimpleDateFormat
 
 /**
  * La contribution queda pendiente/incompleta hasta que no se envien todas las versiones referenciadas.
@@ -23,6 +24,11 @@ class Contribution {
    List versions = []
    static hasMany = [versions:Version]
    
+   // Internal to simplify querying and grouping
+   int dateGroup      // yyyymmdd to group by day
+   int yearMonthGroup // yyyymm to group by month
+   int yearGroup      // yyyy to group by year
+   
    static constraints = {
       uid(nullable: false)
    }
@@ -34,6 +40,16 @@ class Contribution {
    }
    
    static belongsTo = [Ehr]
+   
+   
+   def beforeInsert()
+   {
+      def d = this.audit.timeCommitted
+      this.dateGroup      = Integer.parseInt( new SimpleDateFormat("yyyyMMdd").format(d) )
+      this.yearMonthGroup = Integer.parseInt( new SimpleDateFormat("yyyyMM").format(d) )
+      this.yearGroup      = Integer.parseInt( new SimpleDateFormat("yyyy").format(d) )
+   }
+   
    
    @Override
    public boolean equals(Object other)

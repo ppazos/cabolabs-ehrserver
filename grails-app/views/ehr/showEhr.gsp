@@ -195,28 +195,9 @@
             </g:form>
           </div>
           
-          <script type="text/javascript">
-            console.log("queryDataRenderChart");
-            console.log('chart contribs nnn');
-            $(document).ready(function() {
-            
-               
-               console.log('chart contribs ccc');
-             });
-          </script>
-          
           <div id="ehrContributions">
             <g:include action="ehrContributions" id="${ehr.id}" />
           </div>
-          
-          <script type="text/javascript">
-				console.log('chart contribs aaa');
-				$(document).ready(function() {
-				
-				   
-				   console.log('chart contribs bbb');
-				 });
-          </script>
           
         </li>
         

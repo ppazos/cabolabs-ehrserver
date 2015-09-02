@@ -24,27 +24,17 @@
 			<table>
 				<thead>
 					<tr>
-					
-						<g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" />
-					
 						<g:sortableColumn property="ehrId" title="${message(code: 'ehr.ehrId.label', default: 'Ehr Id')}" />
-					
+					   <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" />
 						<th><g:message code="ehr.subject.label" default="Subject" /></th>
-					
-						<g:sortableColumn property="systemId" title="${message(code: 'ehr.systemId.label', default: 'System Id')}" />
 					</tr>
 				</thead>
 				<tbody>
 				<g:each in="${list}" status="i" var="ehrInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-					
-						<td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "dateCreated")}</g:link></td>
-					
-						<td>${fieldValue(bean: ehrInstance, field: "ehrId")}</td>
-					
+					   <td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "ehrId")}</g:link></td>
+						<td>${fieldValue(bean: ehrInstance, field: "dateCreated")}</td>
 						<td><g:link controller="person" action="show" params="[uid:ehrInstance.subject.value]">${ehrInstance.subject.value}</g:link></td>
-					
-						<td>${fieldValue(bean: ehrInstance, field: "systemId")}</td>
 					</tr>
 				</g:each>
 				</tbody>

@@ -5,6 +5,76 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'contribution.label', default: 'Contribution')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <asset:javascript src="highcharts/highcharts.js" />
+    <script type="text/javascript">
+
+      var series = [];
+      var serie = { name: 'contributions', data: [] };
+    
+	   <%
+      println 'var start = Date.UTC('+ (start.year + 1900) +','+ start.month +','+ start.date +');'
+	   data.each { point ->
+	       
+	       println 'serie.data.push('+ point[0] +');' // point[0] is the count, point[1] is teh group date
+	   }
+	   %>
+
+	   series.push(serie);
+    
+	   $(function () {
+	      var chart = new Highcharts.Chart({
+           chart: {
+              renderTo: 'contributionsChartContainer',
+              type: 'column',
+              zoomType: 'x'
+           },
+           title: {
+               text: 'Contributions'
+           },
+           subtitle: {
+               text: ''
+           },
+           xAxis: {
+               type: 'datetime',
+               dateTimeLabelFormats: {
+                   second: '%H:%M:%S',
+                   minute: '%H:%M',
+                   hour: '%H:%M',
+                   day: '%e. %b',
+                   week: '%e. %b',
+                   month: '%b \'%y',
+                   year: '%Y'
+               },
+               tickInterval: 24 * 3600 * 1000 * 30 //= 1 month // 24 * 3600 * 1000 //= 1 day
+           },
+           yAxis: {
+               min: 0,
+               allowDecimals: false, // no decimals on y, just integers
+               title: {
+                   text: 'Count'
+               }
+           },
+           tooltip: {
+               headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+               pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                   '<td style="padding:0"><b>{point.y}</b></td></tr>',
+               footerFormat: '</table>',
+               shared: true,
+               useHTML: true,
+               xDateFormat: '%Y-%m-%d'
+           },
+           plotOptions: {
+               column: {
+                   pointPadding: 0,
+                   borderWidth: 0,
+                   groupPadding: 0.1,
+                   pointStart: start
+               }
+           },
+           series: series
+	     });
+	   });
+    </script>
   </head>
   <body>
     <a href="#list-contribution" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -16,6 +86,9 @@
          -->
       </ul>
     </div>
+    
+    <div id="contributionsChartContainer"></div>
+    
     
     <div id="list-contribution" class="content scaffold-list" role="main">
       <h1><g:message code="contribution.list.title" /></h1>

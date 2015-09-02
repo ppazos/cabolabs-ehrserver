@@ -39,9 +39,7 @@ y muestra todas las compositions de la contrib:
 
 <script type="text/javascript">
 
-
 //$(document).ready(function() {
-
 
    var series = [];
    var serie = { name: 'contributions', data: [] };
@@ -104,7 +102,8 @@ y muestra todas las compositions de la contrib:
      yAxis: {
         title: {
           text: 'Contributions'
-        }
+        },
+        allowDecimals: false, // no decimals on y, just integers
      },
      tooltip: {
        //headerFormat: '<b>{series.name}</b><br>',

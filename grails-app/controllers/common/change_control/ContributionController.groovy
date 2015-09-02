@@ -14,11 +14,30 @@ class ContributionController {
    {
       params.max = Math.min(max ?: 10, 100)
      
-     def lst = Contribution.list(params)
-     def cnt = Contribution.count()
+      def lst = Contribution.list(params)
+      def cnt = Contribution.count()
      
-      return [contributionInstanceList: lst,
-           contributionInstanceTotal: cnt]
+      // =========================================================================
+      // For charting
+      
+      // Show 1 year by month
+      def now = new Date()
+      def oneyearbehind = now - 365
+      
+      def data = Contribution.withCriteria {
+          projections {
+              count('id')
+              groupProperty('yearMonthGroup') // count contributions in the same month
+          }
+          audit {
+             between('timeCommitted', oneyearbehind, now)
+          }
+      }
+      
+      println data
+      // =========================================================================
+
+      return [contributionInstanceList: lst, contributionInstanceTotal: cnt, data: data, start: oneyearbehind, end: now]
    }
 
    def show(Long id) {
