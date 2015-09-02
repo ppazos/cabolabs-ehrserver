@@ -240,7 +240,7 @@ var queryDataRenderTable = function(data)
   linkCompoUI = window.grailsSupport.baseURL + "ehr/showCompositionUI";
   
   // itera por filas
-  $.each(rows, function(compoId, data) { // data [date, uid, cols [ {type, path, attrs dep. del type}, {...}] ]
+  $.each(rows, function(compoUid, data) { // data [date, uid, cols [ {type, path, attrs dep. del type}, {...}] ]
   
     // itera por columnas (headesrs = paths)
     htmlrows += '<tr>';
@@ -261,8 +261,8 @@ var queryDataRenderTable = function(data)
     
     // links a composition
     htmlrows += '<td>';
-    htmlrows += '<a href="'+ linkCompoXML +'?uid='+ data.uid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'xml.png" class="icon" /></a>';
-    htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ data.uid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'doc.png" class="icon" /></a>';
+    htmlrows += '<a href="'+ linkCompoXML +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'xml.png" class="icon" /></a>';
+    htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'doc.png" class="icon" /></a>';
     htmlrows += '</td></tr>';
   });
   

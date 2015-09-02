@@ -181,6 +181,7 @@ class Query {
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
       
+      templateId(nullable:true)
    }
    
    static mapping = {
@@ -348,17 +349,18 @@ class Query {
       
       def dvi
       def col // lista de valores de una columna
+      def uid
       rows.each { compoId, dvis ->
          
-         //println compoId + ": " + dvis
+         uid = dvis[0].owner.uid
          
-         resGrouped[compoId] = [:]
+         resGrouped[uid] = [:]
          
          // Datos de la composition
          // FIXME: deberia haber por lo menos un dvi, sino esto da error
-         resGrouped[compoId]['date'] = dvis[0].owner.startTime
-         resGrouped[compoId]['uid']  = dvis[0].owner.uid
-         resGrouped[compoId]['cols'] = []
+         resGrouped[uid]['date'] = dvis[0].owner.startTime
+         //resGrouped[compoId]['uid']  = dvis[0].owner.uid
+         resGrouped[uid]['cols'] = []
          
          // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
          // Cada columna de la fila
@@ -417,7 +419,7 @@ class Query {
                      throw new Exception("type "+colData['type']+" not supported")
                }
                
-               resGrouped[compoId]['cols'] << col
+               resGrouped[uid]['cols'] << col
             }
          }
       }
