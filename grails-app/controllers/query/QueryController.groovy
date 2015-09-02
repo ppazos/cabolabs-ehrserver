@@ -439,6 +439,7 @@ class QueryController {
                    if (q.type == 'composition')
                    {
                       criteriaLogic(q.criteriaLogic)
+                      templateId(q.templateId)
                       
                       for (criteria in q.where)
                       {
@@ -492,23 +493,23 @@ class QueryController {
              }
           }
           json {
-             
              render(contentType: "application/json") {
                 delegate.query = {
-                   uid = q.uid
-                   name = q.name
+                   uid    = q.uid
+                   name   = q.name
                    format = q.format
-                   type = q.type
+                   type   = q.type
                    
                    if (q.type == 'composition')
                    {
                       criteriaLogic = q.criteriaLogic
-                      criteria = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
+                      templateId    = q.templateId
+                      criteria      = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
                    }
                    else
                    {
-                      group = q.group // Group is only for datavalue
-                      projections = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+                      group         = q.group // Group is only for datavalue
+                      projections   = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
                    }
                 } // query
              }

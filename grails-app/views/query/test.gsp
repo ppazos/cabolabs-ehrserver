@@ -39,16 +39,6 @@
         <span><g:message code="query.test.to" /></span>
         <input type="text" name="toDate" />
       </label>
-      <!-- FIXME: busco los arquetipos de composition en los indices porque
-                  el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
-                  tenga, esta operacion deberia usar el ArchetypeManager. -->
-
-      <!-- solo arquetipos de composition -->
-      <label>
-        <span><g:message code="query.test.document_type" /></span>
-        <g:select name="qarchetypeId"
-                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
-      </label>
     </div>
     
     <fieldset class="buttons test">

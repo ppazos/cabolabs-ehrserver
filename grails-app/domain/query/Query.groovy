@@ -35,10 +35,8 @@ class Query {
    // Sino se especifica, por defecto es xml
    String format = 'xml'
    
-   // Si es null, se puede especificar como parametro de la query
-   // a modo de "tipo de documento", sino se especifica en ningun
-   // caso, pide "cualquier tipo de documento".
-   //String qtemplateId
+   // Filter by templateId (this is the document type)
+   String templateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
@@ -97,13 +95,14 @@ class Query {
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      this.name = json['name']
-      this.type = json['type']
+      this.name   = json['name']
+      this.type   = json['type']
       this.format = ( json['format'] ) ? json['format'] : 'xml' 
       
       if (this.type == 'composition')
       {
          this.criteriaLogic = json['criteriaLogic']
+         this.templateId    = json['template_id']
          
          this.where.each {
             it.delete()
@@ -549,8 +548,8 @@ class Query {
       // Criteria nivel 1 ehrId
       if (ehrId) q += "ci.ehrId = '" + ehrId + "' AND "
        
-      // Criteria nivel 1 archetypeId (solo de composition)
-      //if (qarchetypeId) q += "ci.archetypeId = '" + qarchetypeId +"' AND "
+      // Filter by templateId
+      if (this.templateId) q += "ci.templateId = '" + this.templateId +"' AND "
        
       // Criterio de rango de fechas para ci.startTime
       // Formatea las fechas al formato de la DB

@@ -91,6 +91,7 @@
         name: undefined,
         type: undefined,
         format: undefined,
+        template_id: undefined,
         criteriaLogic: undefined,
         where: [], // DataCriteria
         select: [], // DataGet
@@ -102,6 +103,7 @@
         set_name:     function (name) { this.name = name; },
         set_format:   function (format) { this.format = format; },
         set_group:    function (group) { this.group = group; },
+        set_template_id: function (template_id) { this.template_id = template_id; },
         add_criteria: function (archetype_id, path, rm_type_name, criteria)
         {
           if (this.type != 'composition') return false;
@@ -193,9 +195,10 @@
       // TODO: put these methods in the query object
       // ==============================================================================================
     
-      var save_query = function() {
+      var save_or_update_query = function(action) {
 
-        // query management
+        if (action != 'save' && action != 'updated') throw "Action is not save or update";
+      
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
 
@@ -207,53 +210,47 @@
         else
         {
            query.set_format( $('select[name=composition_format]').val() );
+           query.set_template_id( $('select[name=templateId]').val() );
         }
         
-        $.ajax({
-          method: 'POST',
-          url: '${createLink(controller:'query', action:'save')}',
-          contentType : 'application/json',
-          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
-        })
-        .done(function( data ) {
-           console.log(data);
-           location.href = '${createLink('action': 'show')}?id='+ data.id;
-        });
-      };
-
-      var update_query = function() {
-
-        // values might be updated
-        query.set_name($('input[name=name]').val());
-        query.set_criteria_logic($('select[name=criteriaLogic]').val());
-
-        if (query.get_type() == 'datavalue')
-        {
-           query.set_format( $('select[name=format]').val() ); // always xml for composition query (for now, we'll support JSON in the future)
-           query.set_group( $('select[name=group]').val() ); // for datavalue query
-        }
-        else
-        {
-           query.set_format( $('select[name=composition_format]').val() );
-        }
+        // We need these functions because the URLs are created on the server.
+        var s_o_u = {
+           save_query: function() {
+             $.ajax({
+               method: 'POST',
+               url: '${createLink(controller:"query", action:"save")}',
+               contentType : 'application/json',
+               data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+             })
+             .done(function( data ) {
+               console.log(data);
+               location.href = '${createLink("action": "show")}?id='+ data.id;
+             });
+           },
+           update_query: function() {
+             $.ajax({
+               method: 'POST',
+               url: '${createLink(controller:"query", action:"update")}',
+               contentType : 'application/json',
+               data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+             })
+             .done(function( data ) {
+               console.log(data);
+               location.href = '${createLink("action": "show")}?id='+ data.id;
+             });
+           }
+        };
         
-        $.ajax({
-          method: 'POST',
-          url: '${createLink(controller:'query', action:'update')}',
-          contentType : 'application/json',
-          data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
-        })
-        .done(function( data ) {
-          console.log(data);
-          location.href = '${createLink('action': 'show')}?id='+ data.id;
-        });
+        // save_query() or update_query()
+        s_o_u[action+'_query']();
       };
-
+      
+      
+      
       
       // ==============================================================================================
       // TEST COMPOSITION and DATAVALUE
       // ==============================================================================================
-    
 
       var test_query_composition = function () {
 
@@ -265,6 +262,7 @@
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
         query.set_format( $('select[name=composition_format]').val() );
+        query.set_template_id( $('select[name=templateId]').val() );
 
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
@@ -317,75 +315,6 @@
            // devueltos por el servidor
            $('#show_data').show();
         });
-
-
-/*
-        $('#query_form').ajaxSubmit({
-
-          // datatype = xml for composition (for now)
-          url: '${createLink(controller:"rest", action:"queryCompositions")}',
-          type: 'post',
-          beforeSubmit: function(data, form, options) {            // >>> BEFORE SUBMIT
-            
-            console.log('form_composition beforeSubmit', data);
-            
-            valid = true;
-            
-            // Verifica que todos los valores necesarios para la query fueron ingresados
-            $('input[type=text][name=value]').each( function(i, elem) {
-              
-              e = $(elem);
-              e.removeClass('errors');
-              
-              //console.log($(elem).val(), elem.value);
-
-              if (e.val() == '')
-              {
-                valid = false;
-                e.addClass('errors');
-              }
-            });
-            
-            if (!valid)
-            {
-              alert('Introduzca los valores para el criterio de la consulta');
-            }
-            
-            return valid;
-          },
-          success: function(responseText, statusText, req, form) {  // >>> SUCCESS
-            
-            console.log('form_composition success');
-            
-            // reset code class or highlight
-            $('code').removeClass('xml json');
-
-            // Si devuelve HTML
-            if ($('select[name=showUI]').val()=='true')
-            {
-              $('#results').html( responseText );
-              $('#results').show('slow');
-            }
-            else // Si devuelve el XML
-            {
-              // highlight
-              $('code').addClass('xml');
-              $('code').text(formatXml( xmlToString(responseText) ));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
-              $('code').show('slow');
-            }
-            
-            // Muestra el boton que permite ver los datos crudos
-            // devueltos por el servidor
-            $('#show_data').show();
-          },
-          error: function(response, textStatus, errorThrown) {  // >>> ERROR
-          
-            console.log(response, textStatus, errorThrown);
-            alert(errorThrown); // lo devuelto por el servidor
-          }
-        }); // ajax_submit
-*/
 
         console.log('after ajax submit');
       };
@@ -473,82 +402,6 @@
             // Hace scroll animado para mostrar el resultado
             $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
          });
-        
-
-/*
-        $('#query_form').ajaxSubmit({
-            
-          dataType: $('select[name=format]').val(), // xml o json
-          url: '${createLink(controller:"rest", action:"queryData")}',
-          type: 'post',
-          data: {doit:true},
-          beforeSubmit: function(data, form, options) {
-          
-            console.log('form_datavalue beforeSubmit');
-          },
-          success: function(responseText, statusText, req, form) {
-            
-            console.log('form_datavalue success');
-            
-            // Vacia donde se va a mostrar la tabla o el chart
-            $('#chartContainer').empty();
-            
-            console.log('form_datavalue success 2');
-
-            // reset code class or highlight
-            $('code').removeClass('xml json');
-
-            // Si devuelve JSON (verifica si pedi json)
-            if ($('select[name=format]').val()=='json')
-            {
-              console.log('form_datavalue success json');
-            
-              // highlight
-              $('code').addClass('json');
-              $('code').text(JSON.stringify(responseText, undefined, 2));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
-              
-              // =================================================================
-              // Si agrupa por composition (muestra tabla)
-              //
-              if ($('select[name=group]').val() == 'composition')
-              {
-                queryDataRenderTable(responseText);
-              }
-              else if ($('select[name=group]').val() == 'path')
-              {
-                queryDataRenderChart(responseText);
-              }
-            }
-            else // Si devuelve el XML
-            {
-              console.log('form_datavalue success XML');
-            
-              // highlight
-              $('code').addClass('xml');
-              $('code').text(formatXml( xmlToString(responseText) ));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
-            }
-
-            $('code').show('slow');
-            
-            // Muestra el boton que permite ver los datos crudos
-            // devueltos por el servidor
-            $('#show_data').show();
-            
-            
-            // Hace scroll animado para mostrar el resultado
-            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
-          },
-          error: function(response, textStatus, errorThrown)
-          {
-            console.log('error form_datavalue');
-            console.log(response);
-            
-            alert(response.responseText); // lo devuelto por el servidor
-          }
-        });
-*/
 
       }; // test_query_datavalue
     
@@ -562,7 +415,11 @@
 
          if (action == 'save') {
 
-            save_query();
+            save_or_update_query(action);
+         }
+         else if (action == 'update') {
+
+            save_or_update_query(action);
          }
          else if (action == 'test') {
 
@@ -584,10 +441,7 @@
                test_query_datavalue();
             }
          } // test query
-         else if (action == 'update') {
-
-            update_query();
-         }
+         
       }; // ajax_submit
 
       // ==================================================================
@@ -1039,6 +893,7 @@
           
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
+          println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
           
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
@@ -1047,7 +902,9 @@
           println 'query.set_type("'+ queryInstance.type +'");'
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
+          println 'query.set_template_id("'+ queryInstance.templateId +'");'
           println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
+          
           
           if (queryInstance.type == 'composition')
           {
@@ -1490,34 +1347,21 @@
          
         <!-- Indices de nivel 1 -->
         <table id="query_setup">
-          <%-- Removed for now...
           <tr>
             <td>
-              composition archetypeId
+              <g:message code="query.create.criteria.filterByDocumentType" />
               <span class="info">
                 <asset:image src="skin/information.png" />
                  <span class="content">
-                   Selecting an archetype here will narrow the query to get only data for this archetype id.
-                   This makes sense if criteria is defined over archetypes that are not the root composition archetype.
-                   Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
-                   This is here only for demo/test purposes.
+                   Selecting a document type will narrow the query to get only this type of document as a result.
                  </span>
               </span>
             </td>
             <td>
-              <!--
-               FIXME:
-               busco los arquetipos de composition en los indices porque
-               el EHRServer aun no tiene repositorio de arquetipos. Cuando
-               lo tenga, esta operacion deberia usar el ArchetypeManager.
-              -->
-                      
-              <!-- solo arquetipos de composition -->
-              <g:select name="qtemplateId" size="5"
-                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
+              <g:select name="templateId" size="5"
+                        from="${ehr.clinical_documents.OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
             </td>
           </tr>
-          --%>
           
           <tr>
             <td>
@@ -1606,39 +1450,6 @@
         -->
         
         <table>
-          <%-- Removed for now...
-          <tr>
-            <td>
-              <g:message code="query.create.template_id" />
-              <span class="info">
-                <asset:image src="skin/information.png" />
-                <span class="content">
-                  <ul>
-                    <li>
-                      Selecting an archetype here will narrow the query to get only data for this archetype id.
-                      This makes sense if criteria is defined over archetypes that are not the root composition archetype.
-                      Right now, criteria is defined over root compositions archetypes, so this archetype should not be selected.
-                      This is here only for demo/test purposes.
-                    </li>
-                  </ul>
-                </span>
-              </span>
-            </td>
-            
-            <td>
-              <!--
-              FIXME:
-              busco los arquetipos de composition en los indices porque
-              el EHRServer aun no tiene repositorio de arquetipos. Cuando
-              lo tenga, esta operacion deberia usar el ArchetypeManager.
-              -->
-              <!-- solo arquetipos de composition -->
-              <g:select name="qtemplateId" size="5"
-                        from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "templateId"}} }" />
-            </td>
-          </tr>
-          --%>
-          
           <tr>
             <td><g:message code="query.create.default_format" /></td>
             <td>
