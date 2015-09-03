@@ -13,9 +13,14 @@
     
 	   <%
       println 'var start = Date.UTC('+ (start.year + 1900) +','+ start.month +','+ start.date +');'
+      def match
 	   data.each { point ->
 	       
-	       println 'serie.data.push('+ point[0] +');' // point[0] is the count, point[1] is teh group date
+         match = (point[1].toString() =~ /(\d{4})(\d{2})/) //=match for year and month, /(\d{4})(\d{2})(\d{2})/ match for ymd
+
+	      println 'serie.data.push(['+
+          'Date.UTC('+ match[0][1] +', '+ match[0][2] +', 1), '+ point[0] +
+         ']);' // point[0] is the count, point[1] is the group date
 	   }
 	   %>
 
@@ -45,7 +50,7 @@
                    month: '%b \'%y',
                    year: '%Y'
                },
-               tickInterval: 24 * 3600 * 1000 * 30 //= 1 month // 24 * 3600 * 1000 //= 1 day
+               //tickInterval: 24 * 3600 * 1000 * 30 //= 1 month // 24 * 3600 * 1000 //= 1 day
            },
            yAxis: {
                min: 0,
@@ -61,14 +66,14 @@
                footerFormat: '</table>',
                shared: true,
                useHTML: true,
-               xDateFormat: '%Y-%m-%d'
+               xDateFormat: '%b \'%y' //'%Y-%m-%d'
            },
            plotOptions: {
                column: {
                    pointPadding: 0,
                    borderWidth: 0,
                    groupPadding: 0.1,
-                   pointStart: start
+                   //pointStart: start
                }
            },
            series: series
