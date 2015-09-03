@@ -50,7 +50,7 @@
                    month: '%b \'%y',
                    year: '%Y'
                },
-               //tickInterval: 24 * 3600 * 1000 * 30 //= 1 month // 24 * 3600 * 1000 //= 1 day
+               tickInterval: 24 * 3600 * 1000 * 30 //= 1 month // 24 * 3600 * 1000 //= 1 day
            },
            yAxis: {
                min: 0,
