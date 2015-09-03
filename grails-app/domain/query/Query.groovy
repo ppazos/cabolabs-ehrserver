@@ -565,11 +565,12 @@ class Query {
       // Sin este chequeo, se rompe la query porque sobra un " AND "
       if (!this.where)
       {
-         println "dice que WHERE es vacio "+ this.toString()
          q = q[0..-6] // quita el ultimo " AND ", es -6 porque -1 pone el puntero al final del string y luego hay que sacar 5 chars
       }
       else
       {
+         q += '(' // exists blocks should be isolated to avoid bad AND/OR association
+         
          /**
            * FIXME: issue #6
            * si en el create se verifican las condiciones para que a aqui no
@@ -578,7 +579,7 @@ class Query {
            */
          def dataidx
          def idxtype
-          
+         
          this.where.eachWithIndex { dataCriteria, i ->
              
             // Aux to build the query FROM
@@ -587,8 +588,8 @@ class Query {
             // Lookup del tipo de objeto en la path para saber los nombres de los atributos
             // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
              
-            println "archId "+ dataCriteria.archetypeId
-            println "path "+ dataCriteria.path
+            //println "archId "+ dataCriteria.archetypeId
+            //println "path "+ dataCriteria.path
              
             dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
             idxtype = dataidx?.rmTypeName
@@ -673,7 +674,7 @@ class Query {
             subq += where
             
             q += subq
-            q += ")"
+            q += ")" // closes exists (...
             
             
             // TEST
@@ -710,6 +711,7 @@ class Query {
             if (i+1 < this.where.size()) q += ' '+ criteriaLogic +' ' // AND or OR
          }
          
+         q += ')' // exists blocks should be isolated to avoid bad AND/OR association
       }
       
       println "hql query: " + q

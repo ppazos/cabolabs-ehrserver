@@ -915,7 +915,7 @@
              
              queryInstance.where.each { data_criteria ->
                 
-                attrs = data_criteria.criteriaSpec()[data_criteria.spec].keySet() // attribute names of the datacriteria
+                attrs = data_criteria.criteriaSpec(data_criteria.archetypeId, data_criteria.path)[data_criteria.spec].keySet() // attribute names of the datacriteria
                 
                 println 'criteria = new Criteria('+ data_criteria.spec +');'
                 
