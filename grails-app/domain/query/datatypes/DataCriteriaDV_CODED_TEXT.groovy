@@ -88,6 +88,19 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           spec[0].code.codes = codes
           spec[0].terminologyId.codes = ['local': 'local'] // if the terms are defined in the archetype, the terminology is local
        }
+       else
+       {
+          // https://github.com/ppazos/cabolabs-ehrserver/issues/154
+          def idef = ehr.clinical_documents.IndexDefinition.findByArchetypeIdAndArchetypePath(archetypeId, path)
+          if (idef && idef.terminologyRef)
+          {
+             // terminology:WHO?subset=ATC&amp;language=en-GB
+             // WHO
+             def terminology = idef.terminologyRef.split('\\?')[0].split(':')[1]
+             
+             spec[0].terminologyId.codes = [(terminology): terminology]
+          }
+       }
         
        return spec
     }
