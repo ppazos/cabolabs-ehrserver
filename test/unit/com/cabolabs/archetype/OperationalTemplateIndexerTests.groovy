@@ -33,6 +33,7 @@ class OperationalTemplateIndexerTests {
         def opti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         opti.indexAll()
         
+        // FIXME: this depends on the number of opts in the opts folder
         assert IndexDefinition.count() > 0
         assert OperationalTemplateIndex.count() > 0
     }

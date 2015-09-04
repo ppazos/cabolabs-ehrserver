@@ -16,6 +16,7 @@ class XmlService {
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
    def validationErrors = [:] // xsd validatios errros for the committed versions
+   def xmlValidationService
    
    /**
    <version>
@@ -267,11 +268,12 @@ class XmlService {
    private Map validateVersions(List<String> versionsXML)
    {
       def errors = [:] // The index is the index of the version, the value is the list of errors for each version
-      def validator = new VersionValidator()
+
       versionsXML.eachWithIndex { versionXML, i ->
-         if (!validator.validate(versionXML))
+
+         if (!xmlValidationService.validateVersion(versionXML))
          {
-            errors[i] = validator.getErrors() // Important to keep the correspondence between version index and error reporting.
+            errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
          }
       }
       return errors
