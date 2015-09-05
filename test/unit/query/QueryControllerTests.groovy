@@ -10,18 +10,27 @@ import ehr.clinical_documents.OperationalTemplateIndex
 class QueryControllerTests {
 
     def populateValidParams(params) {
+       
         assert params != null
-        // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
-        params["archetypeId"] = ['openEHR-EHR-OBSERVATION.blood_pressure.v1, openEHR-EHR-OBSERVATION.blood_pressure.v1']
-        params["archetypePath"] = [
-           '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value',
-           '/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
+        
+        controller.request.JSON = [
+           query: [
+              name: 'my query',
+              type: 'datavalue',
+              format: 'json',
+              group: 'path',
+              select: [
+                [
+                  archetype_id: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                  path: '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value'
+                ],
+               [
+                  archetype_id: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                  path: '/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
+                ]
+              ]
+           ]
         ]
-        params["name"] = 'my query'
-        params["format"] = 'json'
-        params["group"] = 'path'
-        params["type"] = 'datavalue'
     }
 
     void testIndex() {
@@ -75,7 +84,8 @@ class QueryControllerTests {
         assert response.redirectedUrl == '/query/list'
 
         populateValidParams(params)
-        def query = new Query(params)
+        //def query = new Query(params)
+        def query = Query.newInstance(controller.request.JSON.query)
 
         assert query.save() != null
 
@@ -161,7 +171,8 @@ class QueryControllerTests {
         response.reset()
 
         populateValidParams(params)
-        def query = new Query(params)
+        // def query = new Query(params)
+        def query = Query.newInstance(controller.request.JSON.query)
 
         assert query.save() != null
         assert Query.count() == 1

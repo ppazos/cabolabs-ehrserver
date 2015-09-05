@@ -38,8 +38,9 @@ class RestControllerTests {
 	{
       println "setUp"
       
-      
+
       controller.xmlService = new parsers.XmlService()
+      controller.xmlService.xmlValidationService = new parsers.XmlValidationService()
       
       
 	    // Copiado de bootstrap porque no agarra las instancias en testing.
@@ -136,12 +137,6 @@ class RestControllerTests {
       def version_repo = new File(config.version_repo)
       
       version_repo.eachFile {
-         it.delete()
-      }
-      
-      def compo_repo = new File(config.composition_repo)
-      
-      compo_repo.eachFile {
          it.delete()
       }
    }
@@ -2476,10 +2471,6 @@ class RestControllerTests {
       
       assert res.size() == 1, "The query should return just on composition index"
       
-      // Elimina archivos generados en el commit
-      new File(config.composition_repo).eachFile { f ->
-         f.delete()
-      }
       
       
       /*

@@ -22,6 +22,8 @@ class XmlServiceTests { //  extends GroovyTestCase
    
    void testVersion()
    {
+      service.xmlValidationService = new parsers.XmlValidationService()
+      
       def file = new File("test"+ PS +"resources"+ PS +"version.xml")
       def xml = file.getText()
       

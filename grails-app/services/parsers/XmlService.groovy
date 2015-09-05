@@ -338,6 +338,27 @@ class XmlService {
          startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
       }
       
+      // Check if the committed compo has an uid, if not, the server assigns one
+      def compoUid = (java.util.UUID.randomUUID() as String)
+      if (version.data.uid.size() == 0)
+      {
+         // Add the compo uid to the XML
+         // Supongo que la COMPOSITION NO tiene un UID
+         // With + groovy adds the new node after the name node to be compliant with the XSD
+         // http://stackoverflow.com/questions/5022353/groovy-xmlslurper-and-inserting-child-nodes
+         version.data.name + {
+            uid('xsi:type': 'HIER_OBJECT_ID') {
+               // Sin poner el id explicitamente desde un string asignaba
+               // el mismo uid a todas las compositions.
+               value(compoUid)
+            }
+         }
+      }
+      else
+      {
+         compoUid = version.data.uid.value.text() // takes the existing compo uid
+      }
+      
       /*
        * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
        *   <name>
@@ -355,7 +376,7 @@ class XmlService {
        *   ...
        */
       def compoIndex = new CompositionIndex(
-         uid:         (java.util.UUID.randomUUID() as String), // UID for compos is assigned by the server
+         uid:         compoUid, // UID for compos is assigned by the server
          category:    version.data.category.value.text(), // event o persistent
          startTime:   startTime, // puede ser vacio si category es persistent
          subjectId:   ehr.subject.value,
@@ -363,19 +384,6 @@ class XmlService {
          archetypeId: version.data.@archetype_node_id.text(),
          templateId:  version.data.archetype_details.template_id.value.text()
       )
-      
-      
-      // Modifica XML con uid asignado a la composition
-      // Supongo que la COMPOSITION NO tiene un UID
-      // With + groovy adds the new node after the name node to be compliant with the XSD
-      // http://stackoverflow.com/questions/5022353/groovy-xmlslurper-and-inserting-child-nodes
-      version.data.name + {
-         uid('xsi:type': 'HIER_OBJECT_ID') {
-            // Sin poner el id explicitamente desde un string asignaba
-            // el mismo uid a todas las compositions.
-            value(compoIndex.uid)
-         }
-      }
       
       return compoIndex
    }

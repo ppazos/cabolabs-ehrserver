@@ -121,7 +121,6 @@ class RestController {
     */
    def commit(String ehrId, String auditSystemId, String auditCommitter)
    {
-      println "commit de "+ params.list('versions').size() +" versions"
       log.info( "commit received "+ params.list('versions').size() + " versions"  )
       
       //new File('params_debug.log') << params.toString()
@@ -136,7 +135,6 @@ class RestController {
       }
       
       log.info( "ehrid present" )
-      println "ehrid present"
       
       // 2. versions deben venir 1 por lo menos haber una
       if (!params.versions)
@@ -146,7 +144,6 @@ class RestController {
       }
       
       log.info( "versions param present" )
-      println "versions param present"
       
       def xmlVersions = params.list('versions')
       if (xmlVersions.size() == 0)
@@ -156,7 +153,6 @@ class RestController {
       }
       
       log.info( "some versions committed" )
-      println "some versions committed"
       
       def ehr = Ehr.findByEhrId(ehrId)
       
@@ -168,7 +164,6 @@ class RestController {
       }
       
       log.info( "ehr exists" )
-      println "ehr exists"
       
       // ========================================================
       // FIXME: MOVER ESTA LOGICA A UN SERVICIO
@@ -318,24 +313,15 @@ class RestController {
          
          
          println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-         println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
+         //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
          
          // FIXME: el archivo no deberia existir!!!
-         // TODO: this might br stored in an XML database in the future.
-         
+
+
          // Save compo
          // This uses the composition uid that is assigned by the server so it must be unique.
          
-         def compoXML = parsedVersions[i].data
-         // Agrega namespaces al nuevo root
-         // Para que no de excepciones al parsear el XML de la composition
-         compoXML.@xmlns = 'http://schemas.openehr.org/v1'
-         compoXML.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
-         
-         
-         compoFile = new File(config.composition_repo + version.data.uid +'.xml')
-         compoFile << groovy.xml.XmlUtil.serialize( compoXML ) // version.data es compositionIndex
          /*
           * XmlUtil.serialize genera estos warnings:
           * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
@@ -1005,6 +991,7 @@ class RestController {
           // FIXME: no genera xml valido porque las compos se guardan con:
           // <?xml version="1.0" encoding="UTF-8"?>
           //
+          def version
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
           res.each { compoIndex ->
@@ -1014,10 +1001,10 @@ class RestController {
              //        el resultado y hacer un log con prioridad alta para ver
              //        cual fue el error.
              
-             // Tiene declaracion de xml
-             // Tambien tiene namespace, eso deberia estar en el nodo root
-             buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
-             
+             // adds the version, not just the composition
+             version = compoIndex.getParent()
+             buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+
              buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
              buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
              buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
@@ -1030,9 +1017,12 @@ class RestController {
              out += buff + "\n"
          }
          out += '</list>'
+
          
-         render(text: out, contentType:"text/xml", encoding:"UTF-8")
-         return
+         if (format == 'json')
+            render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+         else
+            render(text: out, contentType:"text/xml", encoding:"UTF-8")
          
       } // type = composition
       else
@@ -1183,6 +1173,7 @@ class RestController {
           // FIXME: no genera xml valido porque las compos se guardan con:
           // <?xml version="1.0" encoding="UTF-8"?>
           //
+          def version
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
           cilist.each { compoIndex ->
@@ -1192,9 +1183,10 @@ class RestController {
              //        el resultado y hacer un log con prioridad alta para ver
              //        cual fue el error.
              
-             // Tiene declaracion de xml
-             // Tambien tiene namespace, eso deberia estar en el nodo root
-             buff = new File(config.composition_repo + compoIndex.uid +".xml").getText()
+             // adds the version, not just the composition
+             version = compoIndex.getParent()
+             buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+
              
              buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
              buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')

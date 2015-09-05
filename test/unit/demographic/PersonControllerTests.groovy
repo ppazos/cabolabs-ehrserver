@@ -164,10 +164,12 @@ class PersonControllerTests {
 
         params.id = person.id
 
-        controller.delete()
+        controller.delete() // logical delete
 
-        assert Person.count() == 0
-        assert Person.get(person.id) == null
+        assert Person.count() == 1
+        assert Person.get(person.id) != null
+        assert Person.countByIdAndDeleted(person.id, true) == 1
+        assert Person.countByIdAndDeleted(person.id, false) == 0
         assert response.redirectedUrl == '/person/list'
     }
 }

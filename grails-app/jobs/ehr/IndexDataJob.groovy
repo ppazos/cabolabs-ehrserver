@@ -24,7 +24,9 @@ class IndexDataJob {
    
    def execute()
    {
-      //println "IndexDataJob"
+      // ==================================================================
+      // DATA INDEXES
+      //
       
       // Lista de CompositionIndex para las que no se han creado indices de DataValue
       def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
@@ -32,9 +34,9 @@ class IndexDataJob {
       // Donde se van a ir guardando los indices
       def indexes = []
       
-      def compoFile
-      def compoXML
-      def compoParsed
+      //def compoFile
+      //def compoXML
+      def version, versionFile, versionXml, parsedVersion, compoParsed
       
       // Para cada composition
       // El compoIndex se crea en el commit
@@ -44,12 +46,11 @@ class IndexDataJob {
          
          indexes = []
          
-         compoFile = new File(config.composition_repo + compoIndex.uid +".xml") // id de version en el nombre
-         compoXML = compoFile.getText()
-         compoParsed = new XmlSlurper(true, false).parseText(compoXML)
-         
-         //println "root parent: " + compoParsed.'..' // .. es gpath para parent
-         //println "templateId 0: "+ compoIndex.templateId
+         version = compoIndex.getParent()
+         versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
+         versionXml = versionFile.getText()
+         parsedVersion = new XmlSlurper(true, false).parseText(versionXml)
+         compoParsed = parsedVersion.data
          
          recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
          

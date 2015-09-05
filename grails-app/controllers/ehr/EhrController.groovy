@@ -50,9 +50,11 @@ class EhrController {
     */
    def showComposition(String uid)
    {
-      def compo = new File(config.composition_repo + uid +".xml")
+      def compoIndex = CompositionIndex.findByUid(uid)
+      def version = compoIndex.getParent()
+      def versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       
-      render(text:compo.getText(), contentType:"text/xml", encoding:"UTF-8")
+      render(text: versionFile.getText(), contentType: "text/xml", encoding:"UTF-8")
    }
    
    // GUI debug
@@ -185,16 +187,13 @@ class EhrController {
    //
    def showCompositionUI(String uid)
    {
-      def compoFile
-      def xml
-      //def compoParsed
-   
-
-      compoFile = new File(config.composition_repo + uid +".xml")
-      xml = compoFile.getText()
+      def compoIndex = CompositionIndex.findByUid(uid)
+      def version = compoIndex.getParent()
+      def versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
+      def xml = versionFile.getText()
       
       // Transform to HTML
-      def xslt= new File(config.xslt).getText()
+      def xslt = new File(config.xslt).getText()
       
       // Create transformer
       def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt)))
@@ -206,15 +205,6 @@ class EhrController {
       // Perform transformation
       transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(html))
       
-      /*
-      compoParsed = new XmlSlurper(true, false).parseText(compoXML)
-      
-      def html = new StringWriter()
-      def xml = new MarkupBuilder(writer)
-      toHtml(compoParsed, xml, 'composition')
-      */
-      
-      //render(text: writer.toString(), contentType:"text/html", encoding:"UTF-8")
       return [compositionHtml: html.toString()]
    }
 
