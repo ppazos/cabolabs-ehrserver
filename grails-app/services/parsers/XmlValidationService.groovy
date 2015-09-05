@@ -1,31 +1,47 @@
 package parsers
 
-import javax.xml.parsers.SAXParserFactory
-import javax.xml.validation.SchemaFactory
-import org.xml.sax.SAXException
-import org.xml.sax.SAXParseException
-import org.xml.sax.ErrorHandler
 import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
-import javax.xml.parsers.SAXParser
-import org.xml.sax.XMLReader
-import org.xml.sax.InputSource
-import javax.xml.XMLConstants
 import javax.xml.validation.Schema
+import javax.xml.validation.SchemaFactory
 import javax.xml.validation.Validator
+import javax.xml.XMLConstants
+
+import org.xml.sax.ErrorHandler
+import org.xml.sax.SAXException
+import org.xml.sax.SAXParseException
 
 import grails.util.Holders
 
-class OPTValidator {
+class XmlValidationService {
 
    def errors = []
    
-   public boolean validate(String xml)
+   
+   public boolean validateOPT(String xml)
+   {
+      return this.validate(xml, Holders.config.app.opt_xsd)
+   }
+   
+   
+   public boolean validateVersion(String xml)
+   {
+      return this.validate(xml, Holders.config.app.version_xsd)
+   }
+   
+   
+   public List<String> getErrors()
+   {
+      return this.errors
+   }
+   
+   
+   private boolean validate(String xml, String xsdPath)
    {
       this.errors = [] // Reset the errors for reuse
       
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-      Schema schema = schemaFactory.newSchema( [ new StreamSource( Holders.config.app.opt_xsd ) ] as Source[] )
+      Schema schema = schemaFactory.newSchema( [ new StreamSource( xsdPath ) ] as Source[] )
       
       // Validate with validator
       Validator validator = schema.newValidator()
@@ -46,10 +62,6 @@ class OPTValidator {
       return !errorHandler.hasErrors() // If validates is false, then the user can .getErrors()
    }
    
-   public List<String> getErrors()
-   {
-      return this.errors
-   }
    
    private class SimpleErrorHandler implements ErrorHandler {
      
