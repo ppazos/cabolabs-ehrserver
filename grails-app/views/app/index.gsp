@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Desktop</title>
-    <asset:link rel="stylesheet" href="main.css" type="text/css" />
-    <g:javascript library="jquery" plugin="jquery" />
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    
+    <meta name="layout" content="admin">
     <style type="text/css">
       html,body{
         height:100%;
@@ -128,8 +119,6 @@
         }
       </style>
     <![endif]-->
-    
-    <g:javascript library="jquery" plugin="jquery"/>
 
     <script type="text/javascript">
     $(document).ready(function() {
@@ -139,33 +128,32 @@
     
   </head>
   <body>
-    <div id="wrapper">
-      <div id="outer">
-        <div id="formwrap">
-          <div id="inner">
-            <div style="padding: 15px;">
-              <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
-            </div>
-            
-            <h1 align="center"><g:message code="desktop.app" /></h1>
-            
-            <g:if test="${flash.message}">
-              <div class="error"><g:message code="${flash.message}" /></div>
-            </g:if>
+    <div class="row">
+      <div class="col-lg-12">
+		    <div id="wrapper">
+		      <div id="outer">
+		        <div id="formwrap">
+		          <div id="inner">
+		            <div style="padding: 15px;">
+		              <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+		            </div>
+		            
+		            <h1 align="center"><g:message code="desktop.app" /></h1>
 
-            <div id="index_menu">
-              <g:link controller="person" action="list" class="access_icon"><g:message code="person.list.title" /></g:link>
-              <g:link controller="ehr" action="list" class="ehr_icon"><g:message code="desktop.ehrs" /></g:link>
-              <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
-              <g:link controller="folder" action="index" class="directory_icon"><g:message code="desktop.directory" /></g:link>
-              <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
-              <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
-              <g:link controller="operationalTemplate" action="list" class="templates_icon"><g:message code="desktop.templates" /></g:link>
-            </div>
-            <div style="clear: both"></div>
-            
-          </div>
-        </div>
+		            <div id="index_menu">
+		              <g:link controller="person" action="list" class="access_icon"><g:message code="person.list.title" /></g:link>
+		              <g:link controller="ehr" action="list" class="ehr_icon"><g:message code="desktop.ehrs" /></g:link>
+		              <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
+		              <g:link controller="folder" action="index" class="directory_icon"><g:message code="desktop.directory" /></g:link>
+		              <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
+		              <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
+		              <g:link controller="operationalTemplate" action="list" class="templates_icon"><g:message code="desktop.templates" /></g:link>
+		            </div>
+		            
+		          </div>
+		        </div>
+		      </div>
+		    </div>
       </div>
     </div>
   </body>

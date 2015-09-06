@@ -92,71 +92,28 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <li>
-                            <a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <g:link controller="app" action="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</g:link>
                         </li>
                         <li>
-                            <a href="tables.html"><i class="fa fa-table fa-fw"></i> <g:message code="person.list.title" /></a>
+                            <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
                         </li>
                         <li>
-                            <a href="forms.html"><i class="fa fa-edit fa-fw"></i> <g:message code="desktop.ehrs" /></a>
+                            <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> <g:message code="desktop.contributions" /><span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="panels-wells.html">Panels and Wells</a>
-                                </li>
-                                <li>
-                                    <a href="buttons.html">Buttons</a>
-                                </li>
-                                <li>
-                                    <a href="notifications.html">Notifications</a>
-                                </li>
-                            </ul>
+                            <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> <g:message code="desktop.directory" /><span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Third Level <span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
+                            <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
                         </li>
                         <li>
-                            <a href="#"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /><span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="blank.html"><i class="glyphicon glyphicon-plus-sign"></i> <g:message code="query.create.title" /></a>
-                                </li>
-                            </ul>
+                            <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
                         </li>
                         <li>
-                            <a href="forms.html"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></a>
+                            <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
                         </li>
                         <li>
-                            <a href="forms.html"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></a>
+                            <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
                         </li>
                     </ul>
                 </div>
