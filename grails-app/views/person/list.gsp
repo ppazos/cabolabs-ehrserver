@@ -9,17 +9,17 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-		    <div class="nav" role="navigation">
-		      <ul>
-		        <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-		      </ul>
-		    </div>
+		  <div class="nav" role="navigation">
+		    <ul>
+		      <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+		    </ul>
+		  </div>
       </div>
     </div>
     
     <div class="row">
       <div class="col-lg-12">
-		      <h1><g:message code="person.list.title" /></h1>
+		  <h1><g:message code="person.list.title" /></h1>
       </div>
     </div>
     
@@ -28,7 +28,7 @@
 	      <g:if test="${flash.message}">
 	        <div class="message" role="status">${flash.message}</div>
 	      </g:if>
-		      
+		   
          <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
 		        <thead>

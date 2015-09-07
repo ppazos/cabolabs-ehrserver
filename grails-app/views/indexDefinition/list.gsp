@@ -9,13 +9,18 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	     <div class="nav" role="navigation">
-	      <ul>
-	        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	        <li><g:link class="create" action="generate"><g:message code="indexDefinition.generate.label" /></g:link></li>
-	        <li><g:link class="list" controller="compositionIndex" action="list"><g:message code="compositionIndex.list.title" /></g:link></li>
-	      </ul>
-	     </div>
+        <div class="btn-toolbar" role="toolbar">
+          <g:link action="generate">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="indexDefinition.generate.label" />
+            </button>
+          </g:link>
+          <g:link controller="compositionIndex" action="list">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="compositionIndex.list.title" />
+            </button>
+          </g:link>
+        </div>
       </div>
     </div>
     

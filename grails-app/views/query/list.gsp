@@ -34,13 +34,8 @@
 		        <thead>
 		          <tr>
 		            <g:sortableColumn property="name" title="${message(code: 'query.name.label', default: 'Name')}" />
-		          
 		            <g:sortableColumn property="group" title="${message(code: 'query.group.label', default: 'Group')}" />
-		          <%-- wont use this for now
-		            <g:sortableColumn property="qarchetypeId" title="${message(code: 'query.qarchetypeId.label', default: 'Qarchetype Id')}" />
-		          --%>
 		            <g:sortableColumn property="format" title="${message(code: 'query.format.label', default: 'Format')}" />
-		          
 		            <g:sortableColumn property="type" title="${message(code: 'query.type.label', default: 'Type')}" />
 		          </tr>
 		        </thead>
@@ -48,13 +43,8 @@
 			        <g:each in="${queryInstanceList}" status="i" var="queryInstance">
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 			            <td><g:link action="show" id="${queryInstance.id}">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
-			          
 			            <td>${fieldValue(bean: queryInstance, field: "group")}</td>
-			          <%-- wont use this for now
-			            <td>${fieldValue(bean: queryInstance, field: "qarchetypeId")}</td>
-			          --%>
 			            <td>${fieldValue(bean: queryInstance, field: "format")}</td>
-			          
 			            <td>${fieldValue(bean: queryInstance, field: "type")}</td>
 			          </tr>
 			        </g:each>
