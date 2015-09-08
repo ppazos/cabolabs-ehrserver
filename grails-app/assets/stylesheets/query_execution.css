@@ -10,11 +10,9 @@ tr td:first-child {
 td {
   font-size: 0.9em;
 }
-#addCriteria {
+.btn-toolbar {
   padding: 10px;
   text-align: right;
-  display: block;
-  font-weight: bold;
 }
 textarea {
   width: 98%;

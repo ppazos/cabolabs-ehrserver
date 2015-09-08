@@ -9,11 +9,13 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	    <div class="nav" role="navigation">
-	      <ul>
-	        <li><g:link class="create" action="create"><g:message code="query.create.title" /></g:link></li>
-	      </ul>
-	    </div>
+        <div class="btn-toolbar" role="toolbar">
+          <g:link action="create">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.title" />
+            </button>
+          </g:link>
+        </div>
       </div>
     </div>
     

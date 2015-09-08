@@ -7,11 +7,13 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	    <div class="nav" role="navigation">
-	      <ul>
-	        <li><g:link class="create" action="upload"><g:message code="opt.upload.label" /></g:link></li>
-	      </ul>
-	    </div>
+        <div class="btn-toolbar" role="toolbar">
+          <g:link action="upload">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <g:message code="opt.upload.label" />
+            </button>
+          </g:link>
+        </div>
       </div>
     </div>
     

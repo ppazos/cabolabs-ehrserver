@@ -2,17 +2,14 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="main">
+    <meta name="layout" content="admin">
     <g:set var="entityName" value="${message(code: 'query.label', default: 'Query')}" />
     <title><g:message code="query.create.title" /></title>
     <style>
       #query_test, #query_composition, #query_datavalue, #query_common {
         display: none;
       }
-      .buttons {
-        margin: 20px 0 0 0;
-      }
-      .buttons.create {
+      .btn-toolbar.bottom {
         display: none;
       }
       tr td:last-child select, tr td:last-child input[type=text] {
@@ -103,7 +100,9 @@
         set_name:     function (name) { this.name = name; },
         set_format:   function (format) { this.format = format; },
         set_group:    function (group) { this.group = group; },
-        set_template_id: function (template_id) { this.template_id = template_id; },
+        set_template_id: function (template_id) {
+          if (template_id != null) this.template_id = template_id;
+        },
         add_criteria: function (archetype_id, path, rm_type_name, criteria)
         {
           if (this.type != 'composition') return false;
@@ -321,18 +320,15 @@
 
 
 
-      
       var test_query_datavalue = function () {
 
         console.log('test datavalue query');
 
-        
         // query management
         query.set_name($('input[name=name]').val());
-        query.set_format( $('select[name=format]').val() );
-        query.set_group( $('select[name=group]').val() ); // for datavalue query
+        query.set_format($('select[name=format]').val());
+        query.set_group($('select[name=group]').val()); // for datavalue query
 
-        
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
@@ -428,7 +424,7 @@
             // Validacion
             if ($('select[name=qehrId]').val()==null)
             {
-              alert('Seleccione un EHR');
+              alert('Please select an EHR');
               return false;
             }
 
@@ -552,7 +548,13 @@
            '<td>'+ type +'</td>'+
            '<td>'+ criteria_str +'</td>'+
            '<td>'+
-             '<a href="#" class="removeCriteria">[-]</a>'+
+             '<div class="btn-toolbar" role="toolbar">'+
+               '<a href="#" class="removeCriteria">'+
+                 '<button type="button" class="btn btn-default btn-sm">'+
+                   '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
+                 '</button>'+
+               '</a>'+
+             '</div>'+
            '</td></tr>'
         );
         
@@ -597,7 +599,13 @@
           '<tr data-id="'+ pid +'">'+
           '<td>'+ archetype_id +'</td><td>'+ path +'</td>'+
           '<td>'+
-            '<a href="#" class="removeSelection">[-]</a>'+
+            '<div class="btn-toolbar" role="toolbar">'+
+              '<a href="#" class="removeSelection">'+
+                '<button type="button" class="btn btn-default btn-sm">'+
+                  '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
+                '</button>'+
+              '</a>'+
+            '</div>'+
           '</td></tr>'
         );
       };
@@ -871,7 +879,7 @@
 
         $('#query_common').show();
         $('#query_'+ query_type).show();
-        $('.buttons.create').show();
+        $('.btn-toolbar.bottom').show();
       };
       
     
@@ -961,7 +969,13 @@
                      '<td>${data_criteria.rmTypeName}</td>'+
                      '<td>'+ criteria_str +'</td>'+
                      '<td>'+
-                       '<a href="#" class="removeCriteria">[-]</a>'+
+                       '<div class="btn-toolbar" role="toolbar">'+
+                         '<a href="#" class="removeCriteria">'+
+                           '<button type="button" class="btn btn-default btn-sm">'+
+                             '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
+                           '</button>'+
+                         '</a>'+
+                       '</div>'+
                      '</td></tr>'
                   );
                 """
@@ -1018,10 +1032,11 @@
 	      
 	        e.preventDefault();
 	        
-	        // parent = TD y parent.parent = TR a eliminar
-	        //console.log($(e.target).parent().parent());
+	        // parent=DIV, parent.parent = TD y parent.parent.parent = TR a eliminar
+           //console.log(this); // a href=#
+	        //console.log($(this).parent().parent().parent());
 	        //
-	        row = $(e.target).parent().parent();
+	        row = $(this).parent().parent().parent();
 	        id = row.data('id');
 	        row.remove(); // deletes from DOM
 	        
@@ -1048,12 +1063,7 @@
 	      
 	        e.preventDefault();
 	        
-	        // parent es la td y parent.parent es la TR a eliminar
-	        //console.log($(e.target).parent().parent());
-	        //
-	        //$(e.target).parent().parent().remove();
-	        
-	        row = $(e.target).parent().parent();
+	        row = $(this).parent().parent().parent();
            id = row.data('id');
            row.remove(); // deletes from DOM
            
@@ -1150,7 +1160,7 @@
         removeTRsFromTable(selectionTable, 1);
         removeTRsFromTable(criteriaTable, 1);
         
-        $('.buttons.create').hide();
+        $('.btn-toolbar.bottom').hide();
       };
       
       /**
@@ -1210,311 +1220,320 @@
     </script>
   </head>
   <body>
-    <div class="nav" role="navigation">
-      <ul>
-        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="list"><g:message code="query.list.title" /></g:link></li>
-      </ul>
-    </div>
-    
-    <h1><g:message code="query.create.title" /></h1>
-      
-    <g:if test="${flash.message}">
-      <div class="message" role="status">${flash.message}</div>
-    </g:if>
-      
-    <g:hasErrors bean="${queryInstance}">
-      <ul class="errors" role="alert">
-        <g:eachError bean="${queryInstance}" var="error">
-          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-        </g:eachError>
-      </ul>
-    </g:hasErrors>
-    
-    
-    <g:form name="query_form" controller="query">
 
-      <%-- campos comunes a ambos tipos de query --%>
-      <table>
-        <%-- nombre de la query --%>
-        <tr>
-          <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
-            <label for="name">
-              <g:message code="query.name.label" default="Name" /> *
-            </label>
-          </td>
-          <td>
-            <g:textField name="name" required="" value="${queryInstance?.name}"/>
-          </td>
-        </tr>
-          
-        <%-- se hace como wizard, primero poner el tipo luego va el contenido --%>
-        <%-- type de la query, el contenid va a depender del tipo --%>
-        <tr>
-          <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
-            <label for="type">
-              <g:message code="query.type.label" default="Type" />
-            </label>
-            <span class="info">
-              <asset:image src="skin/information.png" />
-              <span class="content">
-                <ul>
-                  <li><g:message code="query.create.help_composition" /></li>
-                  <li><g:message code="query.create.help_datavalue" /></li>
-                </ul>
-              </span>
-            </span>
-          </td>
-          <td>
-            <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']"/>
-          </td>
-        </tr>
-      </table>
-
-      
-      <!-- Aqui van los campos comunes a ambos tipos de query -->
-      <div id="query_common" class="query_build">
-        <table>
-          <tr>
-            <th><g:message code="query.create.attribute" /></th>
-            <th><g:message code="query.create.value" /></th>
-          </tr>
-          <tr>
-            <td><g:message code="query.create.concept" /></td>
-            <td>
-              <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
-              <%-- optionKey="archetypeId" optionValue="name" --%>
-              <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-              <g:select name="view_archetype_id" size="10" from="${concepts}" noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
-            </td>
-          </tr>
-          <tr>
-            <td><g:message code="query.create.datapoint" /></td>
-            <td>
-              <%-- Se setean las options al elegir un arquetipo --%>
-              <select name="view_archetype_path" size="5"></select>
-            </td>
-          </tr>
-        </table>
+    <div class="row">
+      <div class="col-lg-12">
+        <h1><g:message code="query.create.title" /></h1>
       </div>
-        
-      <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-      <!-- Campos de queryByData -->
+    </div>
 
-      <div id="query_composition" class="query_build">
-        <div id="composition_criteria_builder"></div>
-        
-        <%--
-        <table>
-          <tr>
-            <td><g:message code="query.create.operand" /></td>
-            <td>
-              < % - - TODO: sacar de restriccion inList de DataCriteria.operand 
-              Elija operador (TODO: hacerlo con grupo de radio buttons en lugar de selects, hay que corregir el JS)
-              - - % >
-              <label><input type="radio" name="soperand" value="eq" />=</label>
-              <label><input type="radio" name="soperand" value="neq" />!=</label>
-              <label><input type="radio" name="soperand" value="gt" />&gt;</label>
-              <label><input type="radio" name="soperand" value="lt" />&lt;</label>
-            </td>
-          </tr>
-          <tr>
-            <td>value</td>
-            <td><input type="text" name="svalue" /></td>
-          </tr>
-          <tr>
-            <td>add criteria</td>
-            <td><a href="#" id="addCriteria">[+]</a></td>
-          </tr>
-        </table>
-        --%>
-        
-        <a href="#" id="addCriteria">[+]</a>
-        
-        
-        <!--
-        value puede especificarse aqui como filtro o puede ser un
-        parametro de la query sino se especifica aqui.
-        
-        ehrId y rangos de fechas son parametros de la query
-        
-        archetypeId se puede especificar como filtro (tipo de documento), 
-        sino se especifica aqui puede pasarse como parametro de la query
-        -->
-        
-        <h2><g:message code="query.create.criteria" /></h2>
-         
-        <!-- Indices de nivel 1 -->
-        <table id="query_setup">
-          <tr>
-            <td>
-              <g:message code="query.create.criteria.filterByDocumentType" />
-              <span class="info">
-                <asset:image src="skin/information.png" />
-                 <span class="content">
-                   Selecting a document type will narrow the query to get only this type of document as a result.
-                 </span>
-              </span>
-            </td>
-            <td>
-              <g:select name="templateId" size="5"
-                        from="${ehr.clinical_documents.OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
-            </td>
-          </tr>
-          
-          <tr>
-            <td>
-              <g:message code="query.create.show_ui" />
-              <span class="info">
-                <asset:image src="skin/information.png" />
-                <span class="content">
-                  <g:message code="query.create.show_ui_help" />
-                </span>
-              </span>
-            </td>
-            <td>
-              <select name="showUI">
-                <option value="false" selected="selected"><g:message code="default.no" /></option>
-                <option value="true"><g:message code="default.yes" /></option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <g:message code="query.create.criteria_logic" />
-              <span class="info">
-                <span class="content">
-                  <g:message code="query.create.criteria_logic_help" />
-                </span>
-              </span>
-            </td>
-            <td>
-              <select name="criteriaLogic">
-                <option value="AND" selected="selected">AND</option>
-                <option value="OR">OR</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td><g:message code="query.create.default_format" /></td>
-            <td>
-              <select name="composition_format">
-                <option value="xml" selected="selected">XML</option>
-                <option value="json">JSON</option>
-              </select>
-            </td>
-          </tr>
-        </table>
-        
-        <a name="criteria"></a>
-        <h3><g:message code="query.create.conditions" /></h3>
-        <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
-        <table id="criteria">
-          <tr>
-            <th><g:message code="query.create.archetype_id" /></th>
-            <th><g:message code="query.create.path" /></th>
-            <th><g:message code="query.create.type" /></th>
-            <th><g:message code="query.create.criteria" /></th>
-            <th></th>
-          </tr>
-        </table>
-      </div><!-- query_composition -->
-        
-      <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-        
-      <div id="query_datavalue" class="query_build">
+    <div class="row">
+      <div class="col-lg-12">
+	      
+	    <g:if test="${flash.message}">
+	      <div class="message" role="status">${flash.message}</div>
+	    </g:if>
+	      
+	    <g:hasErrors bean="${queryInstance}">
+	      <ul class="errors" role="alert">
+	        <g:eachError bean="${queryInstance}" var="error">
+	          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+	        </g:eachError>
+	      </ul>
+	    </g:hasErrors>
+	    
+	    
+	    <g:form name="query_form" controller="query">
+	
+	      <%-- campos comunes a ambos tipos de query --%>
+	      <div class="table-responsive">
+           <table class="table table-striped table-bordered table-hover">
+		        <%-- nombre de la query --%>
+		        <tr>
+		          <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
+		            <label for="name">
+		              <g:message code="query.name.label" default="Name" /> *
+		            </label>
+		          </td>
+		          <td>
+		            <g:textField name="name" required="" value="${queryInstance?.name}"/>
+		          </td>
+		        </tr>
+		          
+		        <%-- se hace como wizard, primero poner el tipo luego va el contenido --%>
+		        <%-- type de la query, el contenid va a depender del tipo --%>
+		        <tr>
+		          <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
+		            <label for="type">
+		              <g:message code="query.type.label" default="Type" />
+		            </label>
+		            <span class="info">
+		              <asset:image src="skin/information.png" />
+		              <span class="content">
+		                <ul>
+		                  <li><g:message code="query.create.help_composition" /></li>
+		                  <li><g:message code="query.create.help_datavalue" /></li>
+		                </ul>
+		              </span>
+		            </span>
+		          </td>
+		          <td>
+		            <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']"/>
+		          </td>
+		        </tr>
+		     </table>
+	      </div>
+	
+	      
+	      <!-- Aqui van los campos comunes a ambos tipos de query -->
+	      <div id="query_common" class="query_build">
+	        <div class="table-responsive">
+	          <table class="table table-striped table-bordered table-hover">
+		          <tr>
+		            <th><g:message code="query.create.attribute" /></th>
+		            <th><g:message code="query.create.value" /></th>
+		          </tr>
+		          <tr>
+		            <td><g:message code="query.create.concept" /></td>
+		            <td>
+		              <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
+		              <%-- optionKey="archetypeId" optionValue="name" --%>
+		              <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
+		              <g:select name="view_archetype_id" size="10" from="${concepts}" noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
+		            </td>
+		          </tr>
+		          <tr>
+		            <td><g:message code="query.create.datapoint" /></td>
+		            <td>
+		              <%-- Se setean las options al elegir un arquetipo --%>
+		              <select name="view_archetype_path" size="5"></select>
+		            </td>
+		          </tr>
+		       </table>
+		     </div>
+	      </div>
+	        
+	      <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	      <!-- Campos de queryByData -->
+	
+	      <div id="query_composition" class="query_build">
+	      
+	        <div id="composition_criteria_builder"></div>
+	        
+	        <div class="btn-toolbar" role="toolbar">
+	          <a href="#" id="addCriteria">
+	            <button type="button" class="btn btn-default btn-md">
+	              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.addCriteria" default="Add criteria" />
+	            </button>
+	          </a>
+	        </div>
+	        
+	        <!--
+	        value puede especificarse aqui como filtro o puede ser un
+	        parametro de la query sino se especifica aqui.
+	        
+	        ehrId y rangos de fechas son parametros de la query
+	        
+	        archetypeId se puede especificar como filtro (tipo de documento), 
+	        sino se especifica aqui puede pasarse como parametro de la query
+	        -->
+	        
+	        <h2><g:message code="query.create.criteria" /></h2>
+	         
+	        <!-- Indices de nivel 1 -->
+	        <div class="table-responsive">
+             <table class="table table-striped table-bordered table-hover" id="query_setup">
+		         <tr>
+		            <td>
+		              <g:message code="query.create.criteria.filterByDocumentType" />
+		              <span class="info">
+		                <asset:image src="skin/information.png" />
+		                 <span class="content">
+		                   Selecting a document type will narrow the query to get only this type of document as a result.
+		                 </span>
+		              </span>
+		            </td>
+		            <td>
+		              <g:select name="templateId" size="5"
+		                        from="${ehr.clinical_documents.OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
+		            </td>
+		         </tr>
+		         <tr>
+		            <td>
+		              <g:message code="query.create.show_ui" />
+		              <span class="info">
+		                <asset:image src="skin/information.png" />
+		                <span class="content">
+		                  <g:message code="query.create.show_ui_help" />
+		                </span>
+		              </span>
+		            </td>
+		            <td>
+		              <select name="showUI">
+		                <option value="false" selected="selected"><g:message code="default.no" /></option>
+		                <option value="true"><g:message code="default.yes" /></option>
+		              </select>
+		            </td>
+		         </tr>
+		         <tr>
+		            <td>
+		              <g:message code="query.create.criteria_logic" />
+		              <span class="info">
+		                <span class="content">
+		                  <g:message code="query.create.criteria_logic_help" />
+		                </span>
+		              </span>
+		            </td>
+		            <td>
+		              <select name="criteriaLogic">
+		                <option value="AND" selected="selected">AND</option>
+		                <option value="OR">OR</option>
+		              </select>
+		            </td>
+		         </tr>
+		         <tr>
+		            <td><g:message code="query.create.default_format" /></td>
+		            <td>
+		              <select name="composition_format">
+		                <option value="xml" selected="selected">XML</option>
+		                <option value="json">JSON</option>
+		              </select>
+		            </td>
+		         </tr>
+		       </table>
+		     </div>
+	        
+	        <a name="criteria"></a>
+	        <h3><g:message code="query.create.conditions" /></h3>
+	        <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
+	        <div class="table-responsive">
+             <table class="table table-striped table-bordered table-hover" id="criteria">
+		          <tr>
+		            <th><g:message code="query.create.archetype_id" /></th>
+		            <th><g:message code="query.create.path" /></th>
+		            <th><g:message code="query.create.type" /></th>
+		            <th><g:message code="query.create.criteria" /></th>
+		            <th></th>
+		          </tr>
+		       </table>
+	        </div>
+	      </div><!-- query_composition -->
+	        
+	      <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	        
+	      <div id="query_datavalue" class="query_build">
+	
+           <div class="btn-toolbar" role="toolbar">
+             <a href="#" id="addSelection">
+               <button type="button" class="btn btn-default btn-md">
+                 <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.addProjection" default="Add projection" />
+               </button>
+             </a>
+           </div>
+           
+	        <h2><g:message code="query.create.filters" /></h2>
+	
+	        <!--
+	        ehrId, archetypeId (tipo de doc), rango de fechas, formato
+	        y agrupacion son todos parametros de la query.
+	        
+	        Aqui se pueden fijar SOLO algunos de esos parametros
+	        a modo de filtro.
+	
+	        TODO: para los que no se pueden fijar aqui, inluir en la
+	        definicion de la query si son obligatorios o no.
+	        -->
+	        
+	        <div class="table-responsive">
+             <table class="table table-striped table-bordered table-hover">
+	          <tr>
+	            <td><g:message code="query.create.default_format" /></td>
+	            <td>
+	              <select name="format">
+	                <option value="xml" selected="selected">XML</option>
+	                <option value="json">JSON</option>
+	              </select>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td><g:message code="query.create.default_group" /></td>
+	            <td>
+	              <select name="group" size="3">
+	                <option value="none" selected="selected"><g:message code="query.create.none" /></option>
+	                <option value="composition"><g:message code="query.create.composition" /></option>
+	                <option value="path"><g:message code="query.create.path" /></option>
+	              </select>
+	            </td>
+	          </tr>
+	          </table>
+           </div>
+	        
+	        <h3><g:message code="query.create.projections" /></h3>
+	        <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
+	        <a name="selection"></a>
+           <div class="table-responsive">
+             <table class="table table-striped table-bordered table-hover" id="selection">
+	          <tr>
+	            <th><g:message code="query.create.archetype_id" /></th>
+	            <th><g:message code="query.create.path" /></th>
+	            <th></th>
+	          </tr>
+	          </table>
+           </div>
+	        
+	      </div><!-- query_datavalue -->
+	      
 
-        <!--
-        Aqui van los campos de queryData
-        -->
-        
-        <table>
-          <tr>
-            <td><label><g:message code="query.create.add_projection" /></label></td>
-            <td><a href="#" id="addSelection">[+]</a></td>
-          </tr>
-        </table>
+	        <script>
+	          // Toggles the query test on and off.
+	          var toggle_test = function() { 
+	            
+	            // Test options for each type of query
+	            if ( $('select[name=type]').val() == 'composition' )
+	            {
+	               $('div#query_test_composition').show();
+	               $('div#query_test_datavalue').hide();
+	            }
+	            else
+	            {
+	               $('div#query_test_composition').hide();
+	               $('div#query_test_datavalue').show();
+	            }
+	            
+	            $('#query_test').toggle('slow');
+	          };
+	        </script>
+	        <!--
+           <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
+	        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">${message(code:'default.button.create.label', default: 'Save')}</a>
+	        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">${message(code:'default.button.update.label', default: 'Update')}</a>
+           -->
+           <div class="btn-toolbar bottom" role="toolbar">
+	          <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
+	            <button type="button" class="btn btn-default btn-md">
+	              <span class="fa fa-road fa-fw" aria-hidden="true"></span> <g:message code="default.button.test.label" default="Test" />
+	            </button>
+	          </a>
+             <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">
+	            <button type="button" class="btn btn-default btn-md">
+	              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.button.create.label" default="Save" />
+	            </button>
+	          </a>
+             <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">
+	            <button type="button" class="btn btn-default btn-md">
+	              <span class="fa fa-check fa-fw" aria-hidden="true"></span> <g:message code="default.button.update.label" default="Update" />
+	            </button>
+	          </a>
+	        </div>
 
-        <h2><g:message code="query.create.filters" /></h2>
-
-        <!--
-        ehrId, archetypeId (tipo de doc), rango de fechas, formato
-        y agrupacion son todos parametros de la query.
-        
-        Aqui se pueden fijar SOLO algunos de esos parametros
-        a modo de filtro.
-
-        TODO: para los que no se pueden fijar aqui, inluir en la
-        definicion de la query si son obligatorios o no.
-        -->
-        
-        <table>
-          <tr>
-            <td><g:message code="query.create.default_format" /></td>
-            <td>
-              <select name="format">
-                <option value="xml" selected="selected">XML</option>
-                <option value="json">JSON</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td><g:message code="query.create.default_group" /></td>
-            <td>
-              <select name="group" size="3">
-                <option value="none" selected="selected"><g:message code="query.create.none" /></option>
-                <option value="composition"><g:message code="query.create.composition" /></option>
-                <option value="path"><g:message code="query.create.path" /></option>
-              </select>
-            </td>
-          </tr>
-        </table>
-        
-        <h3><g:message code="query.create.projections" /></h3>
-        <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
-        <a name="selection"></a>
-        <table id="selection">
-          <tr>
-            <th><g:message code="query.create.archetype_id" /></th>
-            <th><g:message code="query.create.path" /></th>
-            <th></th>
-          </tr>
-        </table>
-        
-      </div><!-- query_datavalue -->
-      
-      <fieldset class="buttons create">
-        <script>
-          // Toggles the query test on and off.
-          var toggle_test = function() { 
-            
-            // Test options for each type of query
-            if ( $('select[name=type]').val() == 'composition' )
-            {
-               $('div#query_test_composition').show();
-               $('div#query_test_datavalue').hide();
-            }
-            else
-            {
-               $('div#query_test_composition').hide();
-               $('div#query_test_datavalue').show();
-            }
-            
-            $('#query_test').toggle('slow');
-          };
-        </script>
-        <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
-        
-        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">${message(code:'default.button.create.label', default: 'Save')}</a>
-        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">${message(code:'default.button.update.label', default: 'Update')}</a>
-      </fieldset>
-      
-      <!-- test panel -->
-      <div id="query_test">
-	      <g:include action="test" />
-	   </div>
-	   
-	   
-    </g:form>
+	      
+	      <!-- test panel -->
+	      <div id="query_test">
+		      <g:include action="test" />
+		   </div>
+		   
+	    </g:form>
+      </div>
+    </div>
   </body>
 </html>
