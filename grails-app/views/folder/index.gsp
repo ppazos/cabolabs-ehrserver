@@ -45,7 +45,7 @@
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 			            <td><g:link action="show" id="${folderInstance.id}">${fieldValue(bean: folderInstance, field: "uid")}</g:link></td>
 			            <td>${fieldValue(bean: folderInstance, field: "name")}</td>
-			            <td>${fieldValue(bean: folderInstance, field: "parent")}</td>
+			            <td>${folderInstance.parent?.name}</td>
 			          </tr>
 			        </g:each>
 		        </tbody>

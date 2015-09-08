@@ -51,6 +51,12 @@
           </div>
         </div>
         <div class="control-group">
+          <label class="control-label"><g:message code="query.templateId.label" default="Template ID" /></label>
+          <div class="controls">
+            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="templateId"/></p>
+          </div>
+        </div>
+        <div class="control-group">
           <label class="control-label"><g:message code="query.criteriaLogic.label" default="Criteria logic" /></label>
           <div class="controls">
             <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></p>
@@ -58,7 +64,7 @@
         </div>
 
        <g:if test="${queryInstance?.select}">
-         <span id="select-label" class="property-label"><g:message code="query.select.label" default="Select" /></span>
+         <label class="control-label"><g:message code="query.select.label" default="Select" /></label>
          <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
               <tr>
@@ -78,7 +84,7 @@
           </div>
         </g:if>
         <g:if test="${queryInstance?.where}">
-          <span id="where-label" class="property-label"><g:message code="query.where.label" default="Where" /></span>
+	       <label class="control-label"><g:message code="query.where.label" default="Where" /></label>
           <div class="table-responsive">
              <table class="table table-striped table-bordered table-hover">
               <tr>

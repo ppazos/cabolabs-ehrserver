@@ -268,48 +268,6 @@ class QueryController {
         [queryInstance: queryInstance]
     }
 
-    /** TODO https://github.com/ppazos/cabolabs-ehrserver/issues/71
-    def edit(Long id) {
-        def queryInstance = Query.get(id)
-        if (!queryInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), id])
-            redirect(action: "list")
-            return
-        }
-
-        [queryInstance: queryInstance]
-    }
-
-    
-    def update(Long id, Long version) {
-        def queryInstance = Query.get(id)
-        if (!queryInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), id])
-            redirect(action: "list")
-            return
-        }
-
-        if (version != null) {
-            if (queryInstance.version > version) {
-                queryInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                          [message(code: 'query.label', default: 'Query')] as Object[],
-                          "Another user has updated this Query while you were editing")
-                render(view: "edit", model: [queryInstance: queryInstance])
-                return
-            }
-        }
-
-        queryInstance.properties = params
-
-        if (!queryInstance.save(flush: true)) {
-            render(view: "edit", model: [queryInstance: queryInstance])
-            return
-        }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'query.label', default: 'Query'), queryInstance.id])
-        redirect(action: "show", id: queryInstance.id)
-    }
-    */
 
     def delete(Long id) {
         def queryInstance = Query.get(id)

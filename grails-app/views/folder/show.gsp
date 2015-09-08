@@ -52,35 +52,29 @@
         <div class="control-group">
             <label class="control-label"><g:message code="folder.parent.label" default="Parent" /></label>
             <div class="controls">
-                <p class="form-control-static"><g:link controller="folder" action="show" id="${folderInstance?.parent?.id}">${folderInstance?.parent?.encodeAsHTML()}</g:link></p>
+                <p class="form-control-static"><g:link controller="folder" action="show" id="${folderInstance?.parent?.id}">${folderInstance?.parent?.name}</g:link></p>
             </div>
         </div>
         
-
         <g:if test="${folderInstance?.folders}">
-	        <li class="fieldcontain">
-	          <span id="folders-label" class="property-label"></span>
-	          <g:each in="${folderInstance.folders}" var="f">
-	            <div class="control-group">
-		            <label class="control-label"><g:message code="folder.folders.label" default="Folders" /></label>
-		            <div class="controls">
-		                <p class="form-control-static"><g:link controller="folder" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link></p>
-		            </div>
-		         </div>
-	          </g:each>
-	        </li>
+          <label class="control-label"><g:message code="folder.folders.label" default="Folders" /></label>
+          <g:each in="${folderInstance.folders}" var="f">
+            <div class="control-group">
+	            <div class="controls">
+	                <p class="form-control-static"><g:link controller="folder" action="show" id="${f.id}">${f.name}</g:link></p>
+	            </div>
+	         </div>
+          </g:each>
         </g:if>
       
         <g:if test="${folderInstance?.items}">
-	        <li class="fieldcontain">
-	          <span id="items-label" class="property-label"><g:message code="folder.items.label" default="Items" /></span>
-	          <span class="property-value" aria-labelledby="items-label">
-	            <g:each in="${folderInstance.items}" var="vouid">
-	              <g:message code="folder.show.versionedComposition" />
-	              <g:link controller="versionedComposition" action="show" params="[uid: vouid]">${vouid}</g:link><br/>
-	            </g:each>
-	          </span>
-	        </li>
+          <span id="items-label" class="property-label"><g:message code="folder.items.label" default="Items" /></span>
+          <span class="property-value" aria-labelledby="items-label">
+            <g:each in="${folderInstance.items}" var="vouid">
+              <g:message code="folder.show.versionedComposition" />
+              <g:link controller="versionedComposition" action="show" params="[uid: vouid]">${vouid}</g:link><br/>
+            </g:each>
+          </span>
         </g:if>
 	     
 	     <div class="btn-toolbar" role="toolbar">

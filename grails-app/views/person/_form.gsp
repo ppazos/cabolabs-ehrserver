@@ -1,68 +1,47 @@
 <%@ page import="demographic.Person" %>
 
-
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'sex', 'error')} ">
-	<label for="sex">
-		<g:message code="person.sex.label" default="Sex" />
-		
-	</label>
-	<g:select name="sex" from="${personInstance.constraints.sex.inList}" value="${personInstance?.sex}" valueMessagePrefix="person.sex" noSelection="['': '']"/>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'firstName', 'has-error')}">
+  <label class="control-label"><g:message code="person.firstName.label" default="First Name" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:textField name="firstName" value="${personInstance?.firstName}"/></p>
+  </div>
+</div>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'lastName', 'has-error')}">
+  <label class="control-label"><g:message code="person.lastName.label" default="Last Name" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:textField name="lastName" value="${personInstance?.lastName}"/></p>
+  </div>
+</div>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'dob', 'has-error')} required">
+  <label class="control-label"><g:message code="person.dob.label" default="Dob" /><span class="required-indicator">*</span></label>
+  <div class="controls">
+    <p class="form-control-static"><g:datePicker name="dob" precision="day"  value="${personInstance?.dob}"  /></p>
+  </div>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'idCode', 'error')} ">
-	<label for="idCode">
-		<g:message code="person.idCode.label" default="Id Code" />
-		
-	</label>
-	<g:textField name="idCode" value="${personInstance?.idCode}"/>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'sex', 'has-error')}">
+  <label class="control-label"><g:message code="person.sex.label" default="Sex" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:select name="sex" from="${personInstance.constraints.sex.inList}" value="${personInstance?.sex}" valueMessagePrefix="person.sex" noSelection="['': '']"/></p>
+  </div>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'idType', 'error')} ">
-	<label for="idType">
-		<g:message code="person.idType.label" default="Id Type" />
-		
-	</label>
-	<g:select name="idType" from="${personInstance.constraints.idType.inList}" value="${personInstance?.idType}" valueMessagePrefix="person.idType" noSelection="['': '']"/>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'idCode', 'has-error')}">
+  <label class="control-label"><g:message code="person.idCode.label" default="Id Code" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:textField name="idCode" value="${personInstance?.idCode}"/></p>
+  </div>
+</div>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'idType', 'has-error')}">
+  <label class="control-label"><g:message code="person.idType.label" default="Id Type" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:select name="idType" from="${personInstance.constraints.idType.inList}" value="${personInstance?.idType}" valueMessagePrefix="person.idType" noSelection="['': '']"/></p>
+  </div>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'role', 'error')} ">
-	<label for="role">
-		<g:message code="person.role.label" default="Role" />
-		
-	</label>
-	<g:select name="role" from="${personInstance.constraints.role.inList}" value="${personInstance?.role}" valueMessagePrefix="person.role" noSelection="['': '']"/>
+<div class="control-group fieldcontain ${hasErrors(bean: personInstance, field: 'role', 'has-error')}">
+  <label class="control-label"><g:message code="person.role.label" default="Role" /></label>
+  <div class="controls">
+    <p class="form-control-static"><g:select name="role" from="${personInstance.constraints.role.inList}" value="${personInstance?.role}" valueMessagePrefix="person.role" noSelection="['': '']"/></p>
+  </div>
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'dob', 'error')} required">
-	<label for="dob">
-		<g:message code="person.dob.label" default="Dob" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:datePicker name="dob" precision="day"  value="${personInstance?.dob}"  />
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'firstName', 'error')} ">
-	<label for="firstName">
-		<g:message code="person.firstName.label" default="First Name" />
-		
-	</label>
-	<g:textField name="firstName" value="${personInstance?.firstName}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'lastName', 'error')} ">
-	<label for="lastName">
-		<g:message code="person.lastName.label" default="Last Name" />
-		
-	</label>
-	<g:textField name="lastName" value="${personInstance?.lastName}"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: personInstance, field: 'uid', 'error')} ">
-	<label for="uid">
-		<g:message code="person.uid.label" default="Uid" />
-		
-	</label>
-	<g:textField name="uid" value="${personInstance?.uid}"/>
-</div>
-

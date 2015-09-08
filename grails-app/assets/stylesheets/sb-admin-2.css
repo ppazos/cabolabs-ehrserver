@@ -352,3 +352,11 @@ table.dataTable thead .sorting:after {
 .panel-yellow a:hover {
     color: #df8a13;
 }
+
+/** CUSTOM **/
+label.control-label {
+	margin-bottom: 0;
+}
+div.controls {
+	display: inline-block;
+}

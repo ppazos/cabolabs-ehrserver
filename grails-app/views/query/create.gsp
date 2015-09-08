@@ -196,7 +196,7 @@
     
       var save_or_update_query = function(action) {
 
-        if (action != 'save' && action != 'updated') throw "Action is not save or update";
+        if (action != 'save' && action != 'update') throw "Action is not save or update";
       
         query.set_name($('input[name=name]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
