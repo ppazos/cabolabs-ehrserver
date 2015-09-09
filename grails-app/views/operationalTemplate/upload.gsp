@@ -33,10 +33,11 @@
 			   
 			   <br/>
 		
-		      <span class="button">
-		        <input type="file" name="opt" value="${params.opt}" />
-		        <input type="submit" class="upload" name="doit" value="Upload" />
-		      </span>
+		      <div class="btn-toolbar" role="toolbar">
+		        <input type="file" name="opt" value="${params.opt}" class="btn btn-default btn-md" required="required" />
+		        <br/>
+		        <input type="submit" class="upload btn btn-default btn-md" name="doit" value="Upload" />
+		      </div>
 		   </g:form>
       </div>
     </div>

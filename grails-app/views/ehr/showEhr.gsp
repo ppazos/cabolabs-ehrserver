@@ -185,9 +185,10 @@
                url="[action:'ehrContributions', id:ehr.id]"
                update="ehrContributions"
                value="${message(code:'filer.action.apply')}"
-               onSuccess="highlight_filtered_data()" />
+               onSuccess="highlight_filtered_data()"
+               class="btn btn-default btn-md" />
              
-            <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:location.reload()" />
+            <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:location.reload()" class="btn btn-default btn-md" />
           </g:form>
         </div>
         

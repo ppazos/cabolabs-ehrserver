@@ -1503,11 +1503,7 @@
 	            $('#query_test').toggle('slow');
 	          };
 	        </script>
-	        <!--
-           <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">${message(code:'default.button.test.label', default: 'Test')}</a>
-	        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">${message(code:'default.button.create.label', default: 'Save')}</a>
-	        <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">${message(code:'default.button.update.label', default: 'Update')}</a>
-           -->
+
            <div class="btn-toolbar bottom" role="toolbar">
 	          <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
 	            <button type="button" class="btn btn-default btn-md">

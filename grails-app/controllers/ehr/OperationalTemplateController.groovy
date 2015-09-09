@@ -39,8 +39,12 @@ class OperationalTemplateController {
          def f = request.getFile('opt')
          
          // Add file empty check
-         // if(!file.empty){ //do something }
-         // else { //do something }
+         if(f.empty)
+         {
+            errors << "No OPT was uploaded"
+            return [errors: errors]
+         }
+
          
          def xml = new String( f.getBytes() )
          

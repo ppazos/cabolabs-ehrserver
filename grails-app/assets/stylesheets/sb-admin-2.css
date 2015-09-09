@@ -21,7 +21,7 @@ body {
 @media(min-width:768px) {
     #page-wrapper {
         position: inherit;
-        margin: 0 0 0 250px;
+        margin: 0 0 0 180px;
         padding: 0 15px 15px 15px; /*0 30px;*/
         border-left: 1px solid #e7e7e7;
     }
@@ -131,7 +131,7 @@ body {
     .sidebar {
         z-index: 1;
         position: absolute;
-        width: 250px;
+        width: 180px;
         margin-top: 51px;
     }
 
@@ -359,4 +359,8 @@ label.control-label {
 }
 div.controls {
 	display: inline-block;
+}
+div.btn-toolbar {
+	margin-left: 0;
+	margin-top: 15px;
 }
