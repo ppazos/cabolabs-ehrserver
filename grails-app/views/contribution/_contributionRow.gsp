@@ -5,7 +5,7 @@
 </tr>
 <tr>
   <td colspan="2">
-    <table><!-- contribution versions data -->
+    <table class="table table-striped table-bordered table-hover" style="margin-bottom:0px;"><!-- contribution versions data -->
       <tr>
         <th>uid</th>
         <th>creation date</th>

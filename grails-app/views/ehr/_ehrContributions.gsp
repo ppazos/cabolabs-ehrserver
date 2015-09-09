@@ -24,18 +24,20 @@ y muestra todas las compositions de la contrib:
 <div id="contributionsChartContainer"></div>
 
 <g:each in="${contributions}" var="contribution">
-  <table>
-    <tr>
-      <th>time committed</th>
-      <th>committer</th>
-    </tr>
-    <g:render template="../contribution/contributionRow" model="[contribution:contribution]"/>
-  </table>
+   <div class="table-responsive" id="versions">
+     <table class="table table-striped table-bordered table-hover">
+	    <tr>
+	      <th>time committed</th>
+	      <th>committer</th>
+	    </tr>
+	    <g:render template="../contribution/contributionRow" model="[contribution:contribution]"/>
+	  </table>
+  </div>
 </g:each>
 
 
 <%-- Modal para mostrar el contenido de una composition --%>
-<div id="composition_modal" style="width:960px; height:600px; display:none;"><iframe src="" style="padding:0; margin:0; width:960px; height:600px; border:0;"></iframe></div>
+<div id="composition_modal" style="width:100%; height:100%; display:none;"><iframe src="" style="padding:0; margin:0; width:100%; height:100%; border:0;"></iframe></div>
 
 <script type="text/javascript">
 

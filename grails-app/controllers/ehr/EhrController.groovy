@@ -32,17 +32,6 @@ class EhrController {
       [list: Ehr.list(params), total: Ehr.count()]
    }
    
-   def show(Long id) {
-      def ehrInstance = Ehr.get(id)
-      if (!ehrInstance) {
-          flash.message = message(code: 'default.not.found.message', args: [message(code: 'ehr.label', default: 'Ehr'), id])
-          redirect(action: "list")
-          return
-      }
-
-      [ehrInstance: ehrInstance]
-  }
-   
    /**
     * GUI test: devuelve el XML de las compositions commiteadas
     * @param uid

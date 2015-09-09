@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Desktop</title>
-    <asset:link rel="stylesheet" href="main.css" type="text/css" />
-    <g:javascript library="jquery" plugin="jquery" />
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    
+    <meta name="layout" content="admin">
     <style type="text/css">
       html,body{
         height:100%;
@@ -31,11 +22,12 @@
         padding: 0;
         padding-bottom: 15px;
       }
-      #wrapper{
+      #awrapper{
         height:100%;
         width:100%;
         display:table;
         vertical-align:middle;
+        margin-top: 15px;
       }
       #outer {
         display:table-cell;
@@ -86,22 +78,20 @@
 
       /* Test mostrar icon */
       #index_menu a {
-        background-repeat: no-repeat;
-        background-position: 4px 4px;
-        
-        padding-left: 56px; /* ancho de la imagen de fondo + un margen */
-        padding-right: 8px;
+        padding-left: 4px; /* ancho de la imagen de fondo + un margen */
+        padding-right: 4px;
         padding-top: 4px;
         padding-bottom: 4px;
         
-        margin: 0 20px 15px 20px;
+        margin: 0.8em;
         
         /*height: 48px; no funciona */
-        line-height: 48px; /* deja el texto en el medio vertical del icono de fondo */
+        line-height: 1.6em; /* deja el texto en el medio vertical del icono de fondo */
+        font-size: 1.6em;
         
-        /*float: left;*/
         display: inline-block;
-        /*border: 1px solid #ddd;*/
+        
+        text-decoration: none;
       }
       
       .access:hover {
@@ -110,7 +100,6 @@
       
       #panel {
         overflow: visible;
-        /*width: 600px;*/
         display: inline-block;
       }
     </style>
@@ -128,44 +117,34 @@
         }
       </style>
     <![endif]-->
-    
-    <g:javascript library="jquery" plugin="jquery"/>
-
-    <script type="text/javascript">
-    $(document).ready(function() {
-      //$("#user").focus();
-    });
-    </script>
-    
   </head>
   <body>
-    <div id="wrapper">
-      <div id="outer">
-        <div id="formwrap">
-          <div id="inner">
-            <div style="padding: 15px;">
-              <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
-            </div>
-            
-            <h1 align="center"><g:message code="desktop.app" /></h1>
-            
-            <g:if test="${flash.message}">
-              <div class="error"><g:message code="${flash.message}" /></div>
-            </g:if>
+    <div class="row">
+      <div class="col-lg-12">
+		  <div id="awrapper">
+		    <div id="outer">
+		      <div id="formwrap">
+		        <div id="inner">
+		          <div style="padding: 15px;">
+		            <a href="http://cabolabs.com" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+		          </div>
+		            
+		          <h1 align="center"><g:message code="desktop.app" /></h1>
 
-            <div id="index_menu">
-              <g:link controller="person" action="list" class="access_icon"><g:message code="person.list.title" /></g:link>
-              <g:link controller="ehr" action="list" class="ehr_icon"><g:message code="desktop.ehrs" /></g:link>
-              <g:link controller="contribution" action="list" class="contributions_icon"><g:message code="desktop.contributions" /></g:link>
-              <g:link controller="folder" action="index" class="directory_icon"><g:message code="desktop.directory" /></g:link>
-              <g:link controller="query" action="list" class="query_icon"><g:message code="desktop.queries" /></g:link>
-              <g:link controller="indexDefinition" action="list" class="indexes_icon"><g:message code="desktop.indexes" /></g:link>
-              <g:link controller="operationalTemplate" action="list" class="templates_icon"><g:message code="desktop.templates" /></g:link>
-            </div>
-            <div style="clear: both"></div>
-            
-          </div>
-        </div>
+		          <div id="index_menu">
+		            <g:link controller="person" action="list"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
+		            <g:link controller="ehr" action="list"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
+		            <g:link controller="contribution" action="list"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
+		            <g:link controller="folder" action="index"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
+		            <g:link controller="query" action="list"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+		            <g:link controller="indexDefinition" action="list"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
+		            <g:link controller="operationalTemplate" action="list"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
+		          </div>
+		            
+		        </div>
+		      </div>
+		    </div>
+		  </div>
       </div>
     </div>
   </body>

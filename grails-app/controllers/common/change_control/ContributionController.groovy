@@ -50,5 +50,4 @@ class ContributionController {
 
       [contributionInstance: contributionInstance]
    }
-
 }
