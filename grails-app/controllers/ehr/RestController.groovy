@@ -30,7 +30,7 @@ import common.change_control.Version
 
 class RestController {
 
-   static allowedMethods = [commit: "POST"]
+   static allowedMethods = [commit: "POST", contributions: "GET"]
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
@@ -1207,5 +1207,79 @@ class RestController {
           else
              render(text: out, contentType:"text/xml", encoding:"UTF-8")
        }
+   }
+   
+   
+   /**
+    * 
+    * @param ehrUid
+    * @param from   date in string format yyyyMMdd
+    * @param to     date in string format yyyyMMdd
+    * @param max
+    * @param offset
+    * @param format xml or json
+    * @return
+    */
+   def contributions(String ehrUid, String from, String to, int max, int offset, String format)
+   {
+      Date dateFrom
+      Date dateTo
+
+      if (from) dateFrom = Date.parse(config.l10n.date_format, from)
+      if (to) dateTo = Date.parse(config.l10n.date_format, to)
+      
+      println params
+      println from
+      println to
+      
+      if (!max)
+      {
+         max = 50
+         offset = 0
+      }
+      
+      def res = Contribution.createCriteria().list(max: max, offset: offset) {
+         
+         if (ehrUid)
+         {
+            ehr {
+               eq('ehrId', ehrUid)
+            }
+         }
+         if (dateFrom && !dateTo)
+         {
+            audit {
+               ge('timeCommitted', dateFrom)
+            }
+         }
+         if (!dateFrom && dateTo)
+         {
+            audit {
+               le('timeCommitted', dateTo)
+            }
+         }
+         if (dateFrom && dateTo)
+         {
+            audit {
+               ge('timeCommitted', dateFrom)
+               le('timeCommitted', dateTo)
+            }
+         }
+         
+      }
+      
+      
+      if (!format || format == 'xml')
+      {
+         render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+      }
    }
 }
