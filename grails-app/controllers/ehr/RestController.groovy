@@ -929,11 +929,13 @@ class RestController {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
+      /*
       if (!ehrId)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
+      */
       
       
       def query = Query.findByUid(queryUid)
@@ -944,9 +946,7 @@ class RestController {
          return
       }
       
-      def ehr = Ehr.findByEhrId(ehrId)
-      
-      if (!ehr)
+      if (ehrId && Ehr.countByEhrId(ehrId) == 0)
       {
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
@@ -961,12 +961,24 @@ class RestController {
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
+         // If no ehrUid was specified, the results will be for different ehrs
+         // we need to group those CompositionIndexes by EHR.
+         if (!ehrId)
+         {
+            res = res.groupBy { ci -> ci.ehrId }
+         }
+         
          // Muestra compositionIndex/list
          if (showUI)
          {
             // FIXME: hay que ver el tema del paginado
             render(template:'/compositionIndex/listTable',
-                   model:[compositionIndexInstanceList: res, compositionIndexInstanceTotal:res.size()])
+                   model:[
+                      compositionIndexInstanceList: res,
+                      //compositionIndexInstanceTotal:res.size(),
+                      groupedByEhr: (!ehrId)
+                   ],
+                   contentType: "text/html")
             return
          }
          
@@ -974,8 +986,10 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
-            // TODO: support for JSON
-            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            if (format == 'json')
+               render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+            else
+               render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
             return
          }
 
@@ -994,27 +1008,64 @@ class RestController {
           def version
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-          res.each { compoIndex ->
-             
-             // FIXME: verificar que esta en disco, sino esta hay un problema
-             //        de sincronizacion entre la base y el FS, se debe omitir
-             //        el resultado y hacer un log con prioridad alta para ver
-             //        cual fue el error.
-             
-             // adds the version, not just the composition
-             version = compoIndex.getParent()
-             buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
-
-             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-             buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
-             
-             /**
-              * Composition queda:
-              *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-              */
-             
-             out += buff + "\n"
+          
+          if (!ehrId) // group by ehrUid
+          {
+             res.each { ehrUid, compoIndexes ->
+                
+                out += '<ehr uid="'+ ehrUid +'">'
+                
+                // idem else, TODO refactor
+                compoIndexes.each { compoIndex ->
+                   
+                   // FIXME: verificar que esta en disco, sino esta hay un problema
+                   //        de sincronizacion entre la base y el FS, se debe omitir
+                   //        el resultado y hacer un log con prioridad alta para ver
+                   //        cual fue el error.
+                   
+                   // adds the version, not just the composition
+                   version = compoIndex.getParent()
+                   buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+      
+                   
+                   buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+                   buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+                   buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+                   
+                   /**
+                    * Composition queda:
+                    *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+                    */
+                   
+                   out += buff + "\n"
+                }
+                out += '</ehr>'
+             }
+          }
+          else
+          {
+             res.each { compoIndex ->
+                
+                // FIXME: verificar que esta en disco, sino esta hay un problema
+                //        de sincronizacion entre la base y el FS, se debe omitir
+                //        el resultado y hacer un log con prioridad alta para ver
+                //        cual fue el error.
+                
+                // adds the version, not just the composition
+                version = compoIndex.getParent()
+                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+   
+                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+                
+                /**
+                 * Composition queda:
+                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+                 */
+                
+                out += buff + "\n"
+            }
          }
          out += '</list>'
 
@@ -1137,6 +1188,14 @@ class RestController {
        
        def query = Query.newInstance(request.JSON.query)
        def cilist = query.executeComposition(qehrId, qFromDate, qToDate)
+       def result = cilist
+       
+       // If no ehrUid was specified, the results will be for different ehrs
+       // we need to group those CompositionIndexes by EHR.
+       if (!qehrId)
+       {
+          result = cilist.groupBy { ci -> ci.ehrId }
+       }
        
        println "Resultados (CompositionIndex): " + cilist
        
@@ -1146,7 +1205,12 @@ class RestController {
        {
           // FIXME: hay que ver el tema del paginado
           render(template:'/compositionIndex/listTable',
-                 model:[compositionIndexInstanceList: cilist, compositionIndexInstanceTotal:cilist.size()])
+                 model:[
+                    compositionIndexInstanceList:  result,
+                    //compositionIndexInstanceTotal: cilist.size(),
+                    groupedByEhr: (!qehrId)
+                 ],
+                 contentType: "text/html")
           return
        }
        
@@ -1155,28 +1219,65 @@ class RestController {
        if (!retrieveData)
        {
           if (format == 'json')
-             render(text:(cilist as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+             render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
           else
-             render(text:(cilist as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+             render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+          return
+       }
+
+
+       // FIXME: hay que armar bien el XML: declaracion de xml solo al
+       //        inicio y namespaces en el root.
+       //
+       //  REQUERIMIENTO:
+       //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
+       //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
+       //  para extraer datos con reglas sobre un conjunto de compositions en un
+       //  solo XML.
+       //
+       // FIXME: no genera xml valido porque las compos se guardan con:
+       // <?xml version="1.0" encoding="UTF-8"?>
+       //
+       def version
+       String buff
+       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
+       
+       if (!qehrId) // group by ehrUid
+       {
+          result.each { ehrUid, compoIndexes ->
+             
+             out += '<ehr uid="'+ ehrUid +'">'
+             
+             // idem else, TODO refactor
+             compoIndexes.each { compoIndex ->
+                
+                // FIXME: verificar que esta en disco, sino esta hay un problema
+                //        de sincronizacion entre la base y el FS, se debe omitir
+                //        el resultado y hacer un log con prioridad alta para ver
+                //        cual fue el error.
+                
+                // adds the version, not just the composition
+                version = compoIndex.getParent()
+                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+   
+                
+                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+                
+                /**
+                 * Composition queda:
+                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+                 */
+                
+                out += buff + "\n"
+             }
+             out += '</ehr>'
+          }
        }
        else
        {
-          // FIXME: hay que armar bien el XML: declaracion de xml solo al
-          //        inicio y namespaces en el root.
-          //
-          //  REQUERIMIENTO:
-          //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
-          //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
-          //  para extraer datos con reglas sobre un conjunto de compositions en un
-          //  solo XML.
-          //
-          // FIXME: no genera xml valido porque las compos se guardan con:
-          // <?xml version="1.0" encoding="UTF-8"?>
-          //
-          def version
-          String buff
-          String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-          cilist.each { compoIndex ->
+          result.each { compoIndex ->
              
              // FIXME: verificar que esta en disco, sino esta hay un problema
              //        de sincronizacion entre la base y el FS, se debe omitir
@@ -1199,14 +1300,15 @@ class RestController {
              
              out += buff + "\n"
           }
-          out += '</list>'
-          
-          
-          if (format == 'json')
-             render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
-          else
-             render(text: out, contentType:"text/xml", encoding:"UTF-8")
        }
+       out += '</list>'
+       
+       
+       if (format == 'json')
+          render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+       else
+          render(text: out, contentType:"text/xml", encoding:"UTF-8")
+       
    }
    
    

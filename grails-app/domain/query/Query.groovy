@@ -664,8 +664,6 @@ class Query {
             
             where += " AND " + dataCriteria.toSQL() // important part: complex criteria to SQL, depends on the datatype
             
-            println where
-            
             fromMap.each { index, alias ->
                 
                subq += index +' '+ alias +' , '
@@ -714,11 +712,11 @@ class Query {
          q += ')' // exists blocks should be isolated to avoid bad AND/OR association
       }
       
-      println "hql query: " + q
+      println "HQL QUERY: \n" + q
       
       def cilist = CompositionIndex.executeQuery( q )
       
-      println "cilist: "+ cilist
+      //println "cilist: "+ cilist
       
       return cilist
    }

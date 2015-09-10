@@ -269,18 +269,23 @@
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
         format = $('select[name=composition_format]').val();
+
+        if (showUI == 'true') format = 'html';
+
+        var data = {query:query, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format };
+        if (qehrId != null) data.qehrId = qehrId;
         
-        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format } ) );
         
         $.ajax({
           method: 'POST',
           url: '${createLink(controller:'rest', action:'queryCompositions')}',
           dataType: format, // xml o json
-          contentType : 'application/json',
-          data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format } ) // JSON.parse(  avoid puting functions, just data
+          contentType: 'application/json',
+          data: JSON.stringify( data ) // JSON.parse(  avoid puting functions, just data
         })
-        .done(function( data ) {
-           console.log(data);
+        .done(function( res ) {
+           
+           console.log("queryCompositions result", res);
            
            // reset code class or highlight
            $('code').removeClass('xml json');
@@ -288,22 +293,25 @@
            // Si devuelve HTML
            if ($('select[name=showUI]').val()=='true')
            {
-             $('#results').html( data );
+             console.log('UI');
+              
+             $('#results').html( res );
              $('#results').show('slow');
            }
            else // Si devuelve XML o JSON
            {
+             console.log('JSON OR XML');
              if (format == 'json')
              {
                 $('code').addClass('json');
-                $('code').text(JSON.stringify(data, undefined, 2));
+                $('code').text(JSON.stringify(res, undefined, 2));
                 $('code').each(function(i, e) { hljs.highlightBlock(e); });
              }
              else
              { 
                // highlight
                $('code').addClass('xml');
-               $('code').text(formatXml( xmlToString(data) ));
+               $('code').text(formatXml( xmlToString(res) ));
                $('code').each(function(i, e) { hljs.highlightBlock(e); });
              }
 
@@ -313,6 +321,10 @@
            // Muestra el boton que permite ver los datos crudos
            // devueltos por el servidor
            $('#show_data').show();
+        })
+        .fail(function(a,b,c) {
+           
+           console.log(a,b,c);
         });
 
         console.log('after ajax submit');
@@ -335,7 +347,9 @@
         format = $('select[name=format]').val();
         group = $('select[name=group]').val();
 
-        console.log( JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) );
+
+        var data = {query:query, fromDate:fromDate, toDate:toDate, format:format, group:group };
+        if (qehrId != null) data.qehrId = qehrId;
         
         
         $.ajax({
@@ -343,10 +357,11 @@
            url: '${createLink(controller:'rest', action:'queryData')}',
            contentType : 'application/json',
            dataType: format, // xml o json
-           data: JSON.stringify( {query:query, qehrId:qehrId, fromDate:fromDate, toDate:toDate, format:format, group:group } ) // JSON.parse(  avoid puting functions, just data
+           data: JSON.stringify( data ) // JSON.parse(  avoid puting functions, just data
          })
-         .done(function( data ) {
-            console.log(data);
+         .done(function( res ) {
+         
+            console.log(res);
             
             // Vacia donde se va a mostrar la tabla o el chart
             $('#chartContainer').empty();
@@ -363,7 +378,7 @@
             
               // highlight
               $('code').addClass('json');
-              $('code').text(JSON.stringify(data, undefined, 2));
+              $('code').text(JSON.stringify(res, undefined, 2));
               $('code').each(function(i, e) { hljs.highlightBlock(e); });
               
               // =================================================================
@@ -371,11 +386,11 @@
               //
               if ($('select[name=group]').val() == 'composition')
               {
-                queryDataRenderTable(data);
+                queryDataRenderTable(res);
               }
               else if ($('select[name=group]').val() == 'path')
               {
-                queryDataRenderChart(data);
+                queryDataRenderChart(res);
               }
             }
             else // Si devuelve el XML
@@ -384,7 +399,7 @@
             
               // highlight
               $('code').addClass('xml');
-              $('code').text(formatXml( xmlToString(data) ));
+              $('code').text(formatXml( xmlToString(res) ));
               $('code').each(function(i, e) { hljs.highlightBlock(e); });
             }
 
@@ -422,11 +437,13 @@
             console.log('ehrid', $('select[name=qehrId]').val());
             
             // Validacion
+            /*
             if ($('select[name=qehrId]').val()==null)
             {
               alert('Please select an EHR');
               return false;
             }
+            */
 
             if ($('select[name=type]').val()=='composition')
             {
@@ -901,6 +918,8 @@
           
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
+          
+          
           println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
           
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
@@ -910,8 +929,12 @@
           println 'query.set_type("'+ queryInstance.type +'");'
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
-          println 'query.set_template_id("'+ queryInstance.templateId +'");'
           println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
+          
+          if (queryInstance.templateId)
+            println 'query.set_template_id("'+ queryInstance.templateId +'");'
+          
+          
           
           
           if (queryInstance.type == 'composition')
