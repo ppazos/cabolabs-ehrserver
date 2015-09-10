@@ -13,6 +13,8 @@ import grails.util.Holders
 
 class XmlService {
 
+   static transactional = true
+   
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
    def validationErrors = [:] // xsd validatios errros for the committed versions
@@ -90,7 +92,7 @@ class XmlService {
          return null
       }
       
-      println ":: versionsXML: "+ versionsXML.size()
+      //println ":: versionsXML: "+ versionsXML.size()
       
       
       // 3 loops:
@@ -151,12 +153,12 @@ class XmlService {
 
       parsedVersions.eachWithIndex { parsedVersion, i ->
       
-         println "************ EACH WITH INDEX ***************** "+ i
+         //println "************ EACH WITH INDEX ***************** "+ i
       
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
          
-         println "XMLSERVICE change_type="+ commitAudit.changeType
+         //println "XMLSERVICE change_type="+ commitAudit.changeType
          
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
@@ -200,19 +202,22 @@ class XmlService {
          // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
          if (Version.countByUid(version.uid) == 1)
          {
-            assert version.commitAudit.changeType != "creation"
+            if ( version.commitAudit.changeType == "creation" )
+            {
+               throw new Exception("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
+            }
             
             def previousLastVersion = Version.findByUid(version.uid)
             previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
             
-            println "PRE previousVersion.save"
-            println (previousLastVersion as grails.converters.XML)
+            //println "PRE previousVersion.save"
+            //println (previousLastVersion as grails.converters.XML)
             
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
             // This is adding (I dont know why) the version to the contribution.versions list
             if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
             
-            println "POST previousVersion.save"
+            //println "POST previousVersion.save"
             //println (previousLastVersion as grails.converters.XML)
             
             
