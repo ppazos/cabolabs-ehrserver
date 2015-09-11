@@ -331,7 +331,6 @@
       };
 
 
-
       var test_query_datavalue = function () {
 
         console.log('test datavalue query');
@@ -344,7 +343,7 @@
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
-        format = $('select[name=format]').val();
+        format = $('select[name=format]').val(); // xml o json
         group = $('select[name=group]').val();
 
 
@@ -354,10 +353,10 @@
         
         $.ajax({
            method: 'POST',
-           url: '${createLink(controller:'rest', action:'queryData')}',
+           url: '${createLink(controller:"rest", action:"queryData")}',
            contentType : 'application/json',
-           dataType: format, // xml o json
-           data: JSON.stringify( data ) // JSON.parse(  avoid puting functions, just data
+           dataType: format,
+           data: JSON.stringify( data )
          })
          .done(function( res ) {
          
@@ -381,16 +380,23 @@
               $('code').text(JSON.stringify(res, undefined, 2));
               $('code').each(function(i, e) { hljs.highlightBlock(e); });
               
-              // =================================================================
-              // Si agrupa por composition (muestra tabla)
-              //
-              if ($('select[name=group]').val() == 'composition')
+              if (qehrId != null) 
               {
-                queryDataRenderTable(res);
+	              // =================================================================
+	              // Si agrupa por composition (muestra tabla)
+	              //
+	              if ($('select[name=group]').val() == 'composition')
+	              {
+	                queryDataRenderTable(res);
+	              }
+	              else if ($('select[name=group]').val() == 'path')
+	              {
+	                queryDataRenderChart(res);
+	              }
               }
-              else if ($('select[name=group]').val() == 'path')
+              else
               {
-                queryDataRenderChart(res);
+                 // chart grouped by ehr
               }
             }
             else // Si devuelve el XML

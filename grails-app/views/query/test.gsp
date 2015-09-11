@@ -2,6 +2,19 @@
   <head>
     <%-- Modal, doesnt have layout, used from query/create to test queries before creation --%>
     <asset:javascript src="query_test_and_execution.js" />
+    
+    <style>
+      #query_test_composition label, #query_test_common label {
+        display: block;
+      }
+      #query_test_composition span, #query_test_common span {
+        display: inline-block;
+        width: 15%;
+        text-align: right;
+        padding-right: 1em;
+        vertical-align: top;
+      }
+    </style>
   </head>
   <body>
     <g:if test="${flash.message}">
@@ -42,7 +55,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
+              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" noSelection="${['':'Select One...']}" />
             </td>
           </tr>
           <tr>
@@ -78,18 +91,5 @@
     <div id="results" class="out"></div>
     <pre><code id="code"></code></pre>
     <div id="chartContainer"></div>
-    
-    <style>
-      #query_test_composition label, #query_test_common label {
-        display: block;
-      }
-      #query_test_composition span, #query_test_common span {
-        display: inline-block;
-        width: 15%;
-        text-align: right;
-        padding-right: 1em;
-        vertical-align: top;
-      }
-    </style>
   </body>
 </html>

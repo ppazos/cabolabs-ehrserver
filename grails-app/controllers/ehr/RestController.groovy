@@ -1134,7 +1134,7 @@ class RestController {
       def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group)
       
-
+      
       // Format
       if (!format || format == 'xml')
       {

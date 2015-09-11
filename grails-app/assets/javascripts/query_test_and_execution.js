@@ -56,8 +56,7 @@ $(document).ready(function() {
      
      e.preventDefault();
      
-     //$('#results').toggle('slow');
-     $('code').toggle('slow');
+     $('#code').toggle('slow');
    });
 });
 

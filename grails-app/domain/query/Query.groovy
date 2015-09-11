@@ -222,18 +222,10 @@ class Query {
          
          // WHERE level 1 filters
          owner { // CompositionIndex
-            eq('ehrId', ehrId) // Ya se verifico que viene el param y que el ehr existe
             
-            /*
-            if (qarchetypeId)
-            {
-               eq('archetypeId', qarchetypeId) // Arquetipo de composition
-            }
-            */
-            
+            if (ehrId) eq('ehrId', ehrId) // Ya se verifico que viene el param y que el ehr existe
             if (from) ge('startTime', from) // greater or equal
             if (to) le('startTime', to) // lower or equal
-            
             eq('lastVersion', true) // query only latest versions
          }
       }
@@ -245,11 +237,15 @@ class Query {
       
       if (group == 'composition')
       {
-         res = queryDataGroupComposition(res)
+         res = queryDataGroupComposition(res, (!ehrId))
       }
       else if (group == 'path')
       {
-         res = queryDataGroupPath(res)
+         res = queryDataGroupPath(res, (!ehrId))
+      }
+      else
+      {
+         if (!ehrId) res = res.groupBy { dvi -> dvi.owner.ehrId }
       }
       
       return res
@@ -258,7 +254,7 @@ class Query {
    /**
     * Usada por queryData para agrupar por composition
     */
-   private List queryDataGroupComposition(res)
+   private List queryDataGroupComposition(res, groupByEHR)
    {
       def resHeaders = [:]
       def dataidx
@@ -334,22 +330,45 @@ class Query {
       
       
       // Filas de la tabla
+      def resGrouped
+      
+      if (groupByEHR)
+      {
+         resGrouped = queryDataGroupByEHRAndComposition(res, resHeaders)
+      }
+      else
+      {
+         resGrouped = queryDataGroupByComposition(res, resHeaders)
+      }
+      
+      return [resHeaders, resGrouped]
+      
+   } // queryDataGroupComposition
+   
+   
+   private Map queryDataGroupByEHRAndComposition(res, resHeaders)
+   {
+      def resGrouped = [:]
+      def rows = res.groupBy { dvi -> dvi.owner.ehrId }
+      
+      rows.each { ehrId, dvis ->
+         
+         resGrouped[ehrId] = queryDataGroupByComposition(dvis, resHeaders)
+      }
+      
+      return resGrouped
+   }
+   
+   private Map queryDataGroupByComposition(res, resHeaders)
+   {
+      def dvi
+      def colValues // lista de valores de una columna
+      def uid
       def resGrouped = [:]
       
-      
-      // DEBUG
-      //println res as grails.converters.JSON
-      
-
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
-      // http://groovy.codehaus.org/groovy-jdk/java/util/Collection.html#groupBy(groovy.lang.Closure)
-      def rows = res.groupBy { it.owner.id } // as grails.converters.JSON
+      def rows = res.groupBy { it.owner.id }
       
-      //println rows
-      
-      def dvi
-      def col // lista de valores de una columna
-      def uid
       rows.each { compoId, dvis ->
          
          uid = dvis[0].owner.uid
@@ -367,9 +386,9 @@ class Query {
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
             
             //println "header: " + path + " " + colData
-            //resGrouped[compoId]['cols']['type'] = idxtype
+            //resGrouped[compoId]['colValues']['type'] = idxtype
             
-            col = [type: colData['type'], path: _absPath] // pongo la path para debug
+            colValues = [type: colData['type'], path: _absPath] // pongo la path para debug
             
             // dvi para la columna actual
             dvi = dvis.find{ (it.archetypeId + it.archetypePath) == _absPath && it.owner.id == compoId}
@@ -380,75 +399,90 @@ class Query {
                switch (colData['type'])
                {
                   case ['DV_QUANTITY', 'DvQuantity']:
-                     col['magnitude'] = dvi.magnitude
-                     col['units'] = dvi.units
+                     colValues['magnitude'] = dvi.magnitude
+                     colValues['units'] = dvi.units
                   break
                   case ['DV_CODED_TEXT', 'DvCodedText']:
-                     col['value'] = dvi.value
-                     col['code'] = dvi.code
+                     colValues['value'] = dvi.value
+                     colValues['code'] = dvi.code
                   break
                   case ['DV_TEXT', 'DvText']:
-                     col['value'] = dvi.value
+                     colValues['value'] = dvi.value
                   break
                   case ['DV_DATE_TIME', 'DvDateTime']:
-                     col['value'] = dvi.value
+                     colValues['value'] = dvi.value
                   break
                   case ['DV_BOOLEAN', 'DvBoolean']:
-                     col['value'] = dvi.value
+                     colValues['value'] = dvi.value
                   break
                   case ['DV_COUNT', 'DvCount']:
-                     col['magnitude'] = dvi.magnitude
+                     colValues['magnitude'] = dvi.magnitude
                   break
                   case ['DV_PROPORTION', 'DvProportion']:
-                     col['numerator'] = dvi.numerator
-                     col['denominator'] = dvi.denominator
-                     col['type'] = dvi.type
-                     col['precision'] = dvi.precision
+                     colValues['numerator'] = dvi.numerator
+                     colValues['denominator'] = dvi.denominator
+                     colValues['type'] = dvi.type
+                     colValues['precision'] = dvi.precision
                   break
                   case ['DV_ORDINAL', 'DvOrdinal']:
-                     col['value'] = dvi.value
-                     col['symbol_value'] = dvi.symbol_value
-                     col['symbol_code'] = dvi.symbol_code
-                     col['symbol_terminology_id'] = dvi.symbol_terminology_id
+                     colValues['value'] = dvi.value
+                     colValues['symbol_value'] = dvi.symbol_value
+                     colValues['symbol_code'] = dvi.symbol_code
+                     colValues['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
                   case ['DV_DURATION', 'DvDuration']:
-                     col['value'] = dvi.value
-                     col['magnitude'] = dvi.magnitude
+                     colValues['value'] = dvi.value
+                     colValues['magnitude'] = dvi.magnitude
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
                
-               resGrouped[uid]['cols'] << col
+               resGrouped[uid]['cols'] << colValues
             }
          }
       }
       
-      return [resHeaders, resGrouped]
-      
-   } // queryDataGroupComposition
-   
+      return resGrouped
+   }
    
    /**
     * Usada por queryData para agrupar por path
     */
-   private Map queryDataGroupPath(res)
+   private Map queryDataGroupPath(res, groupByEHR)
    {
-      // En este caso los headers son las filas
-      //def resHeaders = [:]
+      if (groupByEHR)
+      {
+         return queryDataGroupByEHRAndPath(res)
+      }
+
+      return queryDataGroupByPath(res)
+      
+   } // queryDataGroupPath
+   
+   
+   private Map queryDataGroupByEHRAndPath(res)
+   {
+      def resGrouped = [:]
+      def cols = res.groupBy { dvi -> dvi.owner.ehrId }
+      
+      cols.each { ehrId, dvis ->
+         
+         resGrouped[ehrId] = queryDataGroupByPath(dvis)
+      }
+      
+      return resGrouped
+   }
+   
+   private Map queryDataGroupByPath(res)
+   {
       def dataidx
       
       // Columnas de la tabla (series)
       def resGrouped = [:]
-      
-      
-      // TODO: necesito la fecha de la composition para cada item de la serie,
-      //       el mismo indice en distintas series corresponde la misma fecha
-      //       la fecha identifica la fila, y cada serie es una columna.
-      
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
-      def cols = res.groupBy { it.archetypeId + it.archetypePath }
+      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath }
       
 
       // Usa ruta absoluta para agrupar.
@@ -535,8 +569,7 @@ class Query {
       }
       
       return resGrouped
-      
-   } // queryDataGroupPath
+   }
    
    
    def executeComposition(String ehrId, Date from, Date to)
