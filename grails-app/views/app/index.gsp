@@ -1,3 +1,4 @@
+<%@ page import="ehr.clinical_documents.OperationalTemplateIndex" %><%@ page import="common.change_control.Contribution" %><%@ page import="query.Query" %><%@ page import="ehr.Ehr" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -22,6 +23,11 @@
         padding: 0;
         padding-bottom: 15px;
       }
+      
+      .gi-3x{font-size: 3em;}
+      .gi-4x{font-size: 4em;}
+      .gi-5x{font-size: 5em;}
+      
       #awrapper{
         height:100%;
         width:100%;
@@ -102,6 +108,10 @@
         overflow: visible;
         display: inline-block;
       }
+      
+      div.content > div {
+        margin-top: 15px;
+      }
     </style>
     <!--[if lt IE 8]>
       <style type="text/css">
@@ -119,6 +129,98 @@
     <![endif]-->
   </head>
   <body>
+    <div class="row content">
+       <div class="col-lg-3 col-md-6">
+           <div class="panel panel-primary">
+               <div class="panel-heading">
+                   <div class="row">
+                       <div class="col-xs-3">
+                           <i class="fa fa-book fa-4x"></i>
+                       </div>
+                       <div class="col-xs-9 text-right">
+                           <div class="huge">${Ehr.count()}</div>
+                           <div><g:message code="desktop.ehrs" /></div>
+                       </div>
+                   </div>
+               </div>
+               <g:link controller="ehr" action="list">
+                   <div class="panel-footer">
+                       <span class="pull-left">View Details</span>
+                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                       <div class="clearfix"></div>
+                   </div>
+               </g:link>
+           </div>
+       </div>
+       <div class="col-lg-3 col-md-6">
+           <div class="panel panel-green">
+               <div class="panel-heading">
+                   <div class="row">
+                       <div class="col-xs-3">
+                           <i class="fa fa-arrows-v fa-4x"></i>
+                       </div>
+                       <div class="col-xs-9 text-right">
+                           <div class="huge">${Contribution.count()}</div>
+                           <div><g:message code="desktop.contributions" /></div>
+                       </div>
+                   </div>
+               </div>
+               <g:link controller="contribution" action="list">
+                   <div class="panel-footer">
+                       <span class="pull-left">View Details</span>
+                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                       <div class="clearfix"></div>
+                   </div>
+               </g:link>
+           </div>
+       </div>
+       <div class="col-lg-3 col-md-6">
+           <div class="panel panel-yellow">
+               <div class="panel-heading">
+                   <div class="row">
+                       <div class="col-xs-3">
+                           <i class="glyphicon glyphicon-search gi-4x"></i>
+                       </div>
+                       <div class="col-xs-9 text-right">
+                           <div class="huge">${Query.count()}</div>
+                           <div><g:message code="desktop.queries" /></div>
+                       </div>
+                   </div>
+               </div>
+               <g:link controller="query" action="list">
+                   <div class="panel-footer">
+                       <span class="pull-left">View Details</span>
+                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                       <div class="clearfix"></div>
+                   </div>
+               </g:link>
+           </div>
+       </div>
+       <div class="col-lg-3 col-md-6">
+           <div class="panel panel-red">
+               <div class="panel-heading">
+                   <div class="row">
+                       <div class="col-xs-3">
+                           <i class="glyphicon glyphicon-file gi-4x"></i>
+                       </div>
+                       <div class="col-xs-9 text-right">
+                           <div class="huge">${OperationalTemplateIndex.count()}</div>
+                           <div><g:message code="desktop.templates" /></div>
+                       </div>
+                   </div>
+               </div>
+               <g:link controller="operationalTemplate" action="list">
+                   <div class="panel-footer">
+                       <span class="pull-left">View Details</span>
+                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                       <div class="clearfix"></div>
+                   </div>
+               </g:link>
+           </div>
+       </div>
+    </div>
+  
+    <%--
     <div class="row">
       <div class="col-lg-12">
 		  <div id="awrapper">
@@ -147,5 +249,6 @@
 		  </div>
       </div>
     </div>
+    --%>
   </body>
 </html>
