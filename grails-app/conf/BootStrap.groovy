@@ -3,6 +3,10 @@ import common.generic.PatientProxy
 import ehr.Ehr
 import ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
+import com.cabolabs.security.RequestMap
+import com.cabolabs.security.User
+import com.cabolabs.security.Role
+import com.cabolabs.security.UserRole
 
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 
@@ -35,7 +39,39 @@ class BootStrap {
         return delegate.toString()
      }
      
-      
+     
+     //****** SECURITY *******
+     for (String url in [
+      '/', '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
+      '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
+      '/login', '/login.*', '/login/*',
+      '/logout', '/logout.*', '/logout/*'])
+     {
+         new RequestMap(url: url, configAttribute: 'permitAll').save()
+     }
+     
+     new RequestMap(url: '/profile/**',    configAttribute: 'ROLE_USER').save()
+     new RequestMap(url: '/admin/**',      configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/admin/role/**', configAttribute: 'ROLE_SUPERVISOR').save()
+     new RequestMap(url: '/admin/user/**', configAttribute: 'ROLE_ADMIN,ROLE_SUPERVISOR').save()
+     new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
+     
+     if (Role.count() == 0 ){
+        def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
+     }
+     if (User.count() == 0)
+     {
+        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin')
+        adminUser.save(failOnError: true,  flush: true)
+        
+        UserRole.create adminUser, (Role.findByAuthority('ROLE_ADMIN')), true
+     }
+     
+     
+     
+     //****** SECURITY *******
+     
+     
      log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
      
      

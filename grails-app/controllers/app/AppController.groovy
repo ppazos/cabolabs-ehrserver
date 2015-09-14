@@ -1,5 +1,7 @@
 package app
 
+import grails.plugin.springsecurity.annotation.Secured
+
 class AppController {
 
    /**
@@ -7,6 +9,7 @@ class AppController {
     * 
     * @return
     */
+   @Secured(value = ['ROLE_ADMIN'])
    def index()
    {
       //println "vvvvv dfdf sds"
