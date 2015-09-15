@@ -89,7 +89,7 @@
             <sec:ifLoggedIn>
                <ul class="nav navbar-top-links navbar-right">
                  <li>
-                     Welcome Back <sec:username/>!
+                    Welcome Back <sec:username/>!
                  </li>
                  <li class="dropdown">
                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">

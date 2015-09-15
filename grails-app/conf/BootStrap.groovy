@@ -46,19 +46,21 @@ class BootStrap {
       '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
       '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
       '/login', '/login.*', '/login/*',
-      '/logout', '/logout.*', '/logout/*'])
+      '/logout', '/logout.*', '/logout/*',
+      '/user/register'])
      {
          new RequestMap(url: url, configAttribute: 'permitAll').save()
      }
      
-     //new RequestMap(url: '/profile/**',    configAttribute: 'ROLE_USER').save()
-     //new RequestMap(url: '/admin/**',      configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/admin/role/**', configAttribute: 'ROLE_SUPERVISOR').save()
-     //new RequestMap(url: '/admin/user/**', configAttribute: 'ROLE_ADMIN,ROLE_SUPERVISOR').save()
+     // root
      new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
      new RequestMap(url: '/', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
-     
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
+
+     // sections
      new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN').save()

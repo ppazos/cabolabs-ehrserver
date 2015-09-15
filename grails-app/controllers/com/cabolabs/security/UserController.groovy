@@ -1,11 +1,9 @@
 package com.cabolabs.security
 
-
-
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 class UserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -19,6 +17,34 @@ class UserController {
         respond userInstance
     }
 
+    def register()
+    {
+       println params
+       
+       if (!params.register) // show view
+          respond new User(params)
+       else
+       {
+          def u = new User(
+             username: params.username,
+             password: params.password,
+             email: params.email
+          )
+          
+          if (!u.save(flush:true))
+          {
+             println u.errors
+             flash.message = 'user.registerError.feedback'
+             respond u
+             return
+          }
+          
+          // TODO: send confirm email
+          
+          render (view: "registerOk")
+       }
+    }
+    
     def create() {
         respond new User(params)
     }
