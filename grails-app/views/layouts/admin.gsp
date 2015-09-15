@@ -86,40 +86,78 @@
             <!-- /.navbar-header -->
 
             <!-- TOP MENU: TODO -->
-            
-            <!-- LEFT MENU -->
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li>
-                            <g:link controller="app" action="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</g:link>
-                        </li>
-                        <li>
-                            <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
+            <sec:ifLoggedIn>
+               <ul class="nav navbar-top-links navbar-right">
+                 <li>
+                     Welcome Back <sec:username/>!
+                 </li>
+                 <li class="dropdown">
+                   <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                     <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                   </a>
+                   <ul class="dropdown-menu dropdown-user">
+                     <li>
+                        <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                     </li>
+                     <li>
+                        <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                     </li>
+                     <li class="divider"></li>
+                     <li>
+                       <g:form controller="logout" action="index">
+                         <i class="fa fa-sign-out fa-fw"></i> <g:submitButton name="logout" value="Logout" />
+                       </g:form>
+                     </li>
+                   </ul>
+                   <!-- /.dropdown-user -->
+                 </li>
+                 <!-- /.dropdown -->
+               </ul>
+               
+               
+               <!-- LEFT MENU -->
+               <div class="navbar-default sidebar" role="navigation">
+                   <div class="sidebar-nav navbar-collapse">
+                       <ul class="nav" id="side-menu">
+                           <li>
+                               <g:link controller="app" action="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</g:link>
+                           </li>
+                           <li>
+                               <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.user" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.role" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
+                           </li>
+                       </ul>
+                   </div>
+                   <!-- /.sidebar-collapse -->
+               </div>
             <!-- /.navbar-static-side -->
+            </sec:ifLoggedIn>
         </nav>
 
         <!-- BODY -->

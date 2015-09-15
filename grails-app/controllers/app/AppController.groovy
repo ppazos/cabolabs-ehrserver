@@ -4,15 +4,9 @@ import grails.plugin.springsecurity.annotation.Secured
 
 class AppController {
 
-   /**
-    * Muestra escritorio del EHR Server.
-    * 
-    * @return
-    */
-   @Secured(value = ['ROLE_ADMIN'])
+   @Secured(value = ['ROLE_ADMIN', 'ROLE_ORG_MANAGER', 'ROLE_CLINICAL_MANAGER'])
    def index()
    {
-      //println "vvvvv dfdf sds"
+      // shows main dashboard
    }
-
 }

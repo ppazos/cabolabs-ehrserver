@@ -166,15 +166,16 @@ grails.plugin.springsecurity.authority.className = 'com.cabolabs.security.Role'
 grails.plugin.springsecurity.requestMap.className = 'com.cabolabs.security.RequestMap'
 grails.plugin.springsecurity.securityConfigType = 'Requestmap'
 grails.plugin.springsecurity.rejectIfNoRule = true
-grails.plugin.springsecurity.successHandler.defaultTargetUrl = 'app/index'
-grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-	'/':                ['permitAll'],
-	'/index':           ['permitAll'],
-	'/index.gsp':       ['permitAll'],
-	'/assets/**':       ['permitAll'],
-	'/**/js/**':        ['permitAll'],
-	'/**/css/**':       ['permitAll'],
-	'/**/images/**':    ['permitAll'],
-	'/**/favicon.ico':  ['permitAll']
-]
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/app/index'
+
+//grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+//	'/':                ['permitAll'],
+//	'/index':           ['permitAll'],
+//	'/index.gsp':       ['permitAll'],
+//	'/assets/**':       ['permitAll'],
+//	'/**/js/**':        ['permitAll'],
+//	'/**/css/**':       ['permitAll'],
+//	'/**/images/**':    ['permitAll'],
+//	'/**/favicon.ico':  ['permitAll']
+//]
 
