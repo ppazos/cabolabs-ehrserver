@@ -418,7 +418,7 @@ class RestController {
    
    def ehrList(String format, int max, int offset)
    {
-      // TODO: fromDate, toDate
+     // TODO: fromDate, toDate
       
       // Paginacion
       if (!max) max = 15
@@ -540,6 +540,7 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
+         println 'Acabo de entrar en función con subjectUid '+ subjectUid
       if (!subjectUid)
       {
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
@@ -609,7 +610,7 @@ class RestController {
    
    def ehrGet(String ehrUid, String format)
    {
-      if (!ehrUid)
+     if (!ehrUid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
          return
@@ -665,6 +666,7 @@ class RestController {
    
    def patientList(String format, int max, int offset)
    {
+      println 'Esto es una prueba muy buena'
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
@@ -764,14 +766,13 @@ class RestController {
       if (!format || format == "xml")
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
-            delegate.patient{
-               delegate.uid(person.uid)
-               firstName(person.firstName)
-               lastName(person.lastName)
-               dob(this.formatterDate.format( person.dob ) )
-               sex(person.sex)
-               idCode(person.idCode)
-               idType(person.idType)
+            'query'{
+               id(person.firstName)
+               version(person.lastName)
+               criteria_logic(this.formatterDate.format( person.dob ) )
+               formart(person.sex)
+               dg_group(person.idCode)
+               (person.idType)
             }
          }
       }
@@ -801,16 +802,93 @@ class RestController {
    /*
     * Servicios sobre consultas.
     */
-   def queryList(String format, int max, int offset)
+    // Get query
+   def queryShow(String queryUid,String format)
    {
       println params
       
+      if (!queryUid)
+      {
+         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
+          renderError(message(code:'rest.error.query_uid_required'), "455", 400)
+         return
+      }
+      
+      def query=Query.findByUid(queryUid)
+       
+      if (!query)
+      {
+         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.query_doesnt_exists', args:[queryUid]), "477", 404)
+         return
+      }
+      
+      //println query
+      
+      if (!format || format == "xml")
+      {
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            'queryResult'{
+               id(query.id)
+               version(query.version)
+               formart(query.format)
+               name(query.name)
+               template_id(query.templateId)
+               type(query.type)
+               uid(query.uid)
+            }
+         }
+      }
+      else if (format == "json")
+      {
+         def data = [
+            id: query.id,
+            version: query.version,
+            format: query.format,
+            name: query.name,
+            template: query.template,
+            type: query.type,
+            uid: query.uid
+         ]
+         
+         def result = data as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+      }
+   }
+
+
+   def queryList(String format,String queryName,String descriptionContains,int max, int offset)
+   {
+      println params 
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
       
       // Lista ehrs
-      def _queries = Query.list(max: max, offset: offset, readOnly: true)
+
+      def _queries 
+      if (!queryName && !descriptionContains){
+            _queries = Query.list(max: max, offset: offset, readOnly: true)
+         }else{
+            if (!descriptionContains){
+               println queryName.replace('.',' ')
+                  def criteria = Query.createCriteria()
+                  _queries = criteria.list (max: max, offset: offset, readOnly: true) {
+                     eq('name', queryName.replace('.',' '))
+                  }
+            }else{
+                  def criteria = Query.createCriteria()
+                  _queries = criteria.list (max: max, offset: offset, readOnly: true) {
+                     like('name', '%'+descriptionContains+'%')
+                  }
+            }
+         }     
       
       // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
       /*
