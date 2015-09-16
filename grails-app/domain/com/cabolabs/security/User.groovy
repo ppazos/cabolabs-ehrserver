@@ -14,6 +14,8 @@ class User implements Serializable {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+   
+   static hasMany = [organizations: String] // UIDs of related organizations
 
 	User(String username, String password) {
 		this()

@@ -1,5 +1,7 @@
 <%@ page import="com.cabolabs.security.User" %>
 
+<input type="hidden" name="type" value="${params.type}" />
+
 <div class="fieldcontain ${hasErrors(bean: userInstance, field: 'username', 'error')} required">
 	<label for="username">
 		<g:message code="user.username.label" default="Username" />
@@ -13,7 +15,7 @@
 		<g:message code="user.password.label" default="Password" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="password" required="" value="${userInstance?.password}"/>
+	<g:textField name="password" required="" value="${params?.password}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: userInstance, field: 'email', 'error')} required">
@@ -23,6 +25,17 @@
    </label>
    <g:textField name="email" required="" value="${userInstance?.email}"/>
 </div>
+
+<%-- Fields to create an organization account --%>
+<g:if test="${params.type == 'organization'}">
+	<div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'name', 'error')} required">
+	   <label for="org_name">
+	      <g:message code="organization.name.label" default="Organization Name" />
+	      <span class="required-indicator">*</span>
+	   </label>
+	   <g:textField name="org_name" value="${organizationInstance?.name}"/>
+	</div>
+</g:if>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">
 

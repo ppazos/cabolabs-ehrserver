@@ -2,6 +2,7 @@ package com.cabolabs.security
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import grails.validation.ValidationException
 
 @Transactional(readOnly = false)
 class UserController {
@@ -17,12 +18,19 @@ class UserController {
         respond userInstance
     }
 
-    def register()
+    /**
+     * 
+     * @param type organization or personal account.
+     * @return
+     */
+    def register(String type)
     {
        println params
        
        if (!params.register) // show view
-          respond new User(params)
+       {
+          render view: "register", model: [userInstance: new User(params)]
+       }
        else
        {
           def u = new User(
@@ -30,18 +38,54 @@ class UserController {
              password: params.password,
              email: params.email
           )
+          def o
           
-          if (!u.save(flush:true))
-          {
-             println u.errors
-             flash.message = 'user.registerError.feedback'
-             respond u
-             return
-          }
+          User.withTransaction{ status ->
+          
+             try
+             {
+                u.save(failOnError: true, flush:true)
+                
+                UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true )
+                
+                // TODO: create an invitation with token, waiting for account confirmation
+                // 
+                
+                if (type == 'organization')
+                {
+                   o = new Organization(name: params.org_name)
+
+                   o.save(failOnError: true, flush:true)
+                   u.addToOrganizations(o.uid).save(failOnError: true, flush:true)
+                   
+                   // TODO: UserROle ORG_* needs a reference to the org, since the user
+                   //       can be ORG_ADMIN in one org and ORG_STAFF in another org.
+                   UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+                }
+             }
+             catch (ValidationException e)
+             {
+                println u.errors
+                println o?.errors
+                
+                status.setRollbackOnly()
+
+             }
+          } // transaction
+          
+          // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
           
           // TODO: send confirm email
           
-          render (view: "registerOk")
+          if (u.errors.hasErrors() || o?.errors.hasErrors())
+          {
+             flash.message = 'user.registerError.feedback'
+             render view: "register", model: [userInstance: u, organizationInstance: o]
+          }
+          else
+          {
+             render (view: "registerOk")
+          }
        }
     }
     

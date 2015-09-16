@@ -80,19 +80,20 @@ class BootStrap {
      {
         def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
         def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
-        def clinicalManagerRole = new Role(authority: 'ROLE_CLINICAL_MANAGER').save(failOnError: true, flush: true)
+        def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
+        def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
+        def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
      }
      if (User.count() == 0)
      {
-        def godlikeUser = new User(username: 'godlike', email: 'pablo.pazos@cabolabs.com',  password: 'godlike')
-        godlikeUser.save(failOnError: true,  flush: true)
-        
         def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin')
         adminUser.save(failOnError: true,  flush: true)
         
-        UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
-        UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
-        UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_CLINICAL_MANAGER')), true )
+        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
+        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_CLINICAL_MANAGER')), true )
+        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_USER')), true )
         
         UserRole.create( adminUser, (Role.findByAuthority('ROLE_ADMIN')), true )
      }
