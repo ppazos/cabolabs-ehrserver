@@ -103,26 +103,19 @@ grails.project.dependency.resolution = {
         compile ':scaffolding:2.1.0'
         compile ':cache:1.1.8'
         compile ':asset-pipeline:1.9.9'
-
         compile ':spring-security-core:2.0-RC5'
-        
-        
+        compile ":mail:1.0.7"
+
         // plugins needed at runtime but not for compilation
         runtime ':hibernate4:4.3.5.5' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
         runtime ':jquery:1.11.1'
         
-        
-        
         // https://github.com/davidtinker/grails-cors
         runtime ":cors:1.1.8"
         
         compile ':quartz:1.0.2'
-        //compile ":spring-security-core:2.0-RC4", {
-        //   excludes: 'spring-security-crypto'
-        //}
-        
-        
+
         //compile ':spring-security-rest:1.5.2', {
         //   excludes 'spring-security-core', 'cors'
         //}

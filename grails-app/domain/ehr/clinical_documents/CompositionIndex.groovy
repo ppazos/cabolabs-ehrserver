@@ -27,6 +27,8 @@ class CompositionIndex {
    boolean dataIndexed = false // true cuando se crean los indices de DataValue para la composition
    boolean lastVersion = true // copy of the latestVersion attribute of the parent Version to avoid the use of old data in queries
    
+   String organizationUid
+   
    // TODO: composerName para busquedas like %
    // TODO: name (de Locatable) para busqueda like %
    
