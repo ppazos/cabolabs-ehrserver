@@ -7,6 +7,10 @@ import com.cabolabs.security.RequestMap
 import com.cabolabs.security.User
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
+import com.cabolabs.security.Organization
+
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 
@@ -41,6 +45,19 @@ class BootStrap {
      
      
      //****** SECURITY *******
+     
+     // Register custom auth filter
+     // ref: https://objectpartners.com/2013/07/11/custom-authentication-with-the-grails-spring-security-core-plugin/
+     // See 'authFilter' in grails-app/conf/spring/resources.groovy
+     // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
+     SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+     
+     
+     // Sample organizations
+     def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
+     def clinic = new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+     
+     
      for (String url in [
       //'/', 
       '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
@@ -87,6 +104,7 @@ class BootStrap {
      if (User.count() == 0)
      {
         def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin')
+        adminUser.organizations = [hospital.uid, clinic.uid]
         adminUser.save(failOnError: true,  flush: true)
         
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
@@ -192,7 +210,8 @@ class BootStrap {
               ehrId: p.uid, // the ehr id is the same as the patient just to simplify testing
               subject: new PatientProxy(
                  value: p.uid
-              )
+              ),
+              organizationUid: hospital.uid
            )
          
            if (!ehr.save()) println ehr.errors

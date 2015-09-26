@@ -106,7 +106,7 @@
                   </p>
                   <p>
                     <label for='org_number'><g:message code="springSecurity.login.org_number.label"/>:</label>
-                    <input type='text' class='text_' name='org_number' id='org_number'/>
+                    <input type='text' class='text_' name='j_organisation' id='org_number'/>
                   </p>
                   <p id="remember_me_holder">
                     <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>/>

@@ -17,6 +17,11 @@ class UserController {
     def show(User userInstance) {
         respond userInstance
     }
+    
+    def login()
+    {
+       // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
+    }
 
     /**
      * 
