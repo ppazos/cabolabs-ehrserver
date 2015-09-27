@@ -56,9 +56,9 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
       }
       else
       {
-          String username = this.obtainUsername(request);
-          String password = this.obtainPassword(request);
-          String organization = this.obtainOrganisation(request);
+          String username = this.obtainUsername(request)
+          String password = this.obtainPassword(request)
+          String organization = this.obtainOrganisation(request)
 
           //regular implementation in spring security plugin   
         
@@ -72,8 +72,7 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
           // authenticate esta aca
           // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/ProviderManager.java
         
-         
-         
+          
           // I might need to add the User.getAuthorities /roles/ to the token.
           // UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
           //  "User", "Password", AuthorityUtils.createAuthorityList("ROLE_USER")
@@ -85,13 +84,15 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
           
           // FIXME: this is not encoding!!!!
           
+          /*
           Object springSecurityService = new grails.plugin.springsecurity.SpringSecurityService();
           String encodedPassword = springSecurityService.passwordEncoder ? springSecurityService.encodePassword(password) : password
 
           println password
           println encodedPassword
+          */
           
-          UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, encodedPassword, organization);
+          UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
           
           // If authentication fails, always throws an AuthenticationException.
         
