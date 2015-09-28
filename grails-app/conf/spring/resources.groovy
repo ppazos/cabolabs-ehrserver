@@ -4,6 +4,7 @@ import com.cabolabs.security.AuthProvider
 beans = {
 
    authProvider(AuthProvider) {
+      passwordEncoder = ref("passwordEncoder") // from plugin
    }
 
    authFilter(AuthFilter) {
@@ -11,6 +12,7 @@ beans = {
       // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
       authenticationManager = ref("authenticationManager")
       authProvider = ref("authProvider")
+      rememberMeServices = ref("rememberMeServices") // from plugin
    }
    
    

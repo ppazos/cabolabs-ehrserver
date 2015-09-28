@@ -1,5 +1,7 @@
 package com.cabolabs.security
 
+import java.util.Collection;
+
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
 
@@ -14,15 +16,21 @@ import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.util.Assert
+
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+
+import grails.util.Holders
 
 class AuthProvider implements AuthenticationProvider
 {
     //def userDetailsService
     //def passwordEncoder // should be injected! but is not... I might need to configure something in the resources.groovy file.
-    def passwordEncoder = new BCryptPasswordEncoder(10) // wont do the config for now, FIXME: this should consider the current encoder config, if we change it, this should change.
+    def passwordEncoder // = new BCryptPasswordEncoder(10) // wont do the config for now, FIXME: this should consider the current encoder config, if we change it, this should change.
     //passwordEncoder(BCryptPasswordEncoder, conf.password.bcrypt.logrounds) // 10
+    
+    def userService = Holders.grailsApplication.mainContext.getBean('userService')
+    
     
     Authentication authenticate(Authentication auth) throws AuthenticationException
     {
@@ -62,31 +70,31 @@ class AuthProvider implements AuthenticationProvider
        def password = auth.credentials // plain text entered by the user
        def organization_number = auth.organization
        
-       def user = User.findByUsername(username);
+       def user = userService.getByUsername(username) //User.findByUsername(username)
        if (user == null)
        {
-          System.out.println( "wrong username" );
-          throw new UsernameNotFoundException("No matching account"); 
+          System.out.println( "wrong username" )
+          throw new UsernameNotFoundException("No matching account")
        }
        
        
        // Status checks
        if (!user.enabled)
        {
-          System.out.println( "account disabled" );
-          throw new DisabledException("Account disabled");
+          System.out.println( "account disabled" )
+          throw new DisabledException("Account disabled")
        }
        
        if (user.accountExpired)
        {
-          System.out.println( "account expired" );
-          throw new AccountExpiredException("Account expired");
+          System.out.println( "account expired" )
+          throw new AccountExpiredException("Account expired")
        }
        
        if (user.accountLocked)
        {
-          System.out.println( "account locked" );
-          throw new LockedException("Account locked");
+          System.out.println( "account locked" )
+          throw new LockedException("Account locked")
        }
        
        
@@ -95,8 +103,8 @@ class AuthProvider implements AuthenticationProvider
        
        if (!passwordEncoder.isPasswordValid(user.password, password, null))
        {
-          System.out.println( "wrong password" );
-          throw new BadCredentialsException("Authentication failed");
+          System.out.println( "wrong password" )
+          throw new BadCredentialsException("Authentication failed")
        }
        
        println 'orgn '+ organization_number
@@ -108,25 +116,28 @@ class AuthProvider implements AuthenticationProvider
        
        if (org == null)
        {
-          System.out.println( "organization is not associated with user 1" );
-          throw new BadCredentialsException("Authentication failed");
+          System.out.println( "organization is not associated with user 1" )
+          throw new BadCredentialsException("Authentication failed")
        }
        
        println 'user orgs '+ user.organizations
        
        if (!user.organizations.contains( org.getUid() ))
        {
-          System.out.println( "organization is not associated with user 2" );
-          throw new BadCredentialsException("Authentication failed");
+          System.out.println( "organization is not associated with user 2" )
+          throw new BadCredentialsException("Authentication failed")
        }
        
-       /*
-       Message: failed to lazily initialize a collection of role: com.cabolabs.security.User.organizations, could not initialize proxy - no Session
-       Line | Method
-       ->>  115 | doAuthentication      in com.cabolabs.security.AuthProvider
-       */
      
-       auth.setAuthenticated(true)
+       //auth.setAuthenticated(true)
+       //auth.authorities = userService.getUserAuthorities(user)
+       
+       println "user authorities "+ userService.getUserAuthorities(user)
+       
+       // sets authenticated true
+       auth = new UserPassOrgAuthToken(username, password, organization_number, userService.getUserAuthorities(user))
+       
+       println "auth " + auth
        
        return auth
     }

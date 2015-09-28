@@ -1,18 +1,20 @@
 package com.cabolabs.security;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.util.Assert;
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.AuthenticationServiceException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
+import org.springframework.util.Assert
 //import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ApplicationEventPublisherAware
 import org.springframework.security.authentication.AuthenticationManager
-
-import com.cabolabs.security.UserPassOrgAuthToken;
+import org.springframework.security.web.authentication.RememberMeServices
+import org.springframework.security.core.context.SecurityContextHolder
+import com.cabolabs.security.UserPassOrgAuthToken
 
 /**
 Alternative to http://docs.spring.io/autorepo/docs/spring-security/3.2.3.RELEASE/apidocs/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.html
@@ -24,6 +26,7 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
  
   AuthenticationManager authenticationManager
   AuthProvider authProvider
+  RememberMeServices rememberMeServices
  
   public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "j_username";
   public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "j_password";
@@ -50,55 +53,52 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException
   {
-      if(this.postOnly && !request.getMethod().equals("POST"))
-      {
-          throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-      }
-      else
-      {
-          String username = this.obtainUsername(request)
-          String password = this.obtainPassword(request)
-          String organization = this.obtainOrganisation(request)
+     if(this.postOnly && !request.getMethod().equals("POST"))
+     {
+        throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+     }
+      
+     String username = this.obtainUsername(request)
+     String password = this.obtainPassword(request)
+     String organization = this.obtainOrganisation(request)
 
-          //regular implementation in spring security plugin   
-        
-          //UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-          //this.setDetails(request, authRequest);
-          //return         this.getAuthenticationManager().authenticate(authRequest);
-          
-          // That calls this provider to authenticate the token:
-          // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.java
-          
-          // authenticate esta aca
-          // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/ProviderManager.java
-        
-          
-          // I might need to add the User.getAuthorities /roles/ to the token.
-          // UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-          //  "User", "Password", AuthorityUtils.createAuthorityList("ROLE_USER")
-          // );
-          // org.springframework.security.core.authority.AuthorityUtils
-          // createAuthorityList deberia recibir los roles del user como un array.
-          // user.getAuthorities() Set<Role>
-          // tengo que poner Role.authority en un array y pasarselo al constructor de UserPassOrgAuthToken como 4to argumento.
-          
-          // FIXME: this is not encoding!!!!
-          
-          /*
-          Object springSecurityService = new grails.plugin.springsecurity.SpringSecurityService();
-          String encodedPassword = springSecurityService.passwordEncoder ? springSecurityService.encodePassword(password) : password
+       //regular implementation in spring security plugin   
+     
+       //UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+       //this.setDetails(request, authRequest);
+       //return         this.getAuthenticationManager().authenticate(authRequest);
+       
+       // That calls this provider to authenticate the token:
+       // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.java
+       
+       // authenticate esta aca
+       // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/ProviderManager.java
+     
+       // I might need to add the User.getAuthorities /roles/ to the token.
+       // UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+       //  "User", "Password", AuthorityUtils.createAuthorityList("ROLE_USER")
+       // );
+       // org.springframework.security.core.authority.AuthorityUtils
+       // createAuthorityList deberia recibir los roles del user como un array.
+       // user.getAuthorities() Set<Role>
+       // tengo que poner Role.authority en un array y pasarselo al constructor de UserPassOrgAuthToken como 4to argumento.
 
-          println password
-          println encodedPassword
-          */
-          
-          UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
-          
-          // If authentication fails, always throws an AuthenticationException.
-        
-          return this.getAuthenticationManager().authenticate(auth)
-      }
-      //Your custom implementation goes here(Authenticate on the basis of organisation as well). Here you need to customise authenticate as per your requirement so that it checks for organisation as well.
+       
+     UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
+     
+     // If authentication fails, always throws an AuthenticationException.
+     
+     auth = this.getAuthenticationManager().authenticate(auth)
+     
+     // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
+     SecurityContextHolder.getContext().setAuthentication(auth)
+     rememberMeServices.onLoginSuccess(request, response, auth)
+     
+     // TODO: catch auth exception and handle the lines below, then rethrow the except
+     // SecurityContextHolder.clearContext();
+     // rememberMeServices.loginFail(request, response)
+     //     
+     return auth
   }
 
   protected String obtainOrganisation(HttpServletRequest request) {
@@ -141,5 +141,10 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
   
   public final String getOrganizationParameter() {
       return this.organisationParameter;
+  }
+  
+  public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher)
+  {
+     this.eventPublisher = eventPublisher
   }
 }
