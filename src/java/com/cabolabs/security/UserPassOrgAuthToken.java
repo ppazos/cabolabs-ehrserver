@@ -30,7 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class UserPassOrgAuthToken extends AbstractAuthenticationToken {
 
     private final Object credentials;
-    private final Object principal;
+    private final Object principal; // username before login or GrailsUser after login
     private final Object organization;
 
 

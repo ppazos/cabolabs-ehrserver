@@ -16,7 +16,7 @@ import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.util.Assert
-
+import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
@@ -107,12 +107,12 @@ class AuthProvider implements AuthenticationProvider
           throw new BadCredentialsException("Authentication failed")
        }
        
-       println 'orgn '+ organization_number
+       //println 'orgn '+ organization_number
        
        // Check organization
        Organization org = Organization.findByNumber(organization_number)
        
-       println 'org '+ org
+       //println 'org '+ org
        
        if (org == null)
        {
@@ -120,7 +120,7 @@ class AuthProvider implements AuthenticationProvider
           throw new BadCredentialsException("Authentication failed")
        }
        
-       println 'user orgs '+ user.organizations
+       //println 'user orgs '+ user.organizations
        
        if (!user.organizations.contains( org.getUid() ))
        {
@@ -132,10 +132,23 @@ class AuthProvider implements AuthenticationProvider
        //auth.setAuthenticated(true)
        //auth.authorities = userService.getUserAuthorities(user)
        
-       println "user authorities "+ userService.getUserAuthorities(user)
+       //println "user authorities "+ userService.getUserAuthorities(user)
        
        // sets authenticated true
-       auth = new UserPassOrgAuthToken(username, password, organization_number, userService.getUserAuthorities(user))
+       // TODO: do it in a userDetailsService
+       // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
+       def userDetails = new GrailsUser(user.username,
+                                        user.password,
+                                        user.enabled,
+                                        !user.accountExpired,
+                                        !user.passwordExpired, // credentialsNonExpired
+                                        !user.accountLocked,
+                                        userService.getUserAuthorities(user),
+                                        user.id)
+       
+       println "userDetails " + userDetails
+       
+       auth = new UserPassOrgAuthToken(userDetails, password, organization_number, userDetails.authorities)
        
        println "auth " + auth
        

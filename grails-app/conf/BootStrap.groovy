@@ -52,6 +52,7 @@ class BootStrap {
      // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
      
+     //println "configured filters "+ SpringSecurityUtils.configuredOrderedFilters
      
      // Sample organizations
      def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
@@ -71,13 +72,7 @@ class BootStrap {
          new RequestMap(url: url, configAttribute: 'permitAll').save()
      }
      
-     // root
-     new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
+
 
      // sections
      new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN').save()
@@ -92,6 +87,26 @@ class BootStrap {
      new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN').save()
+     
+     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
+     
+     new RequestMap(url: '/**', configAttribute: 'ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ORG_MANAGER').save()
+     
+     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/index/', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/index/', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
+     // root
+     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
+     //new RequestMap(url: '/', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
+     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
+     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
+     
      
      new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
      
@@ -109,6 +124,10 @@ class BootStrap {
         adminUser.organizations = [hospital.uid, clinic.uid]
         adminUser.save(failOnError: true,  flush: true)
         
+        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com',  password: 'orgman')
+        orgManUser.organizations = [hospital.uid, clinic.uid]
+        orgManUser.save(failOnError: true,  flush: true)
+        
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
@@ -116,6 +135,7 @@ class BootStrap {
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_USER')), true )
         
         UserRole.create( adminUser, (Role.findByAuthority('ROLE_ADMIN')), true )
+        UserRole.create( orgManUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
      }
 
      //****** SECURITY *******

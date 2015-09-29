@@ -70,8 +70,8 @@
     
     <div id="wrapper">
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -158,24 +158,15 @@
                </div>
             <!-- /.navbar-static-side -->
             </sec:ifLoggedIn>
-        </nav>
+      </nav>
 
-        <!-- BODY -->
-        <div id="page-wrapper">
-            <!--
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
-                </div>
-            </div>
-            -->
-            <g:layoutBody/>
-			   <div class="footer" role="contentinfo"></div>
-			   <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
-        </div>
-        <!-- /BODY -->
-
+      <!-- BODY -->
+      <div id="page-wrapper">
+        <g:layoutBody/>
+        <div class="footer" role="contentinfo"></div>
+        <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+      </div>
+      <!-- /BODY -->
     </div>
-    <!-- /#wrapper -->
   </body>
 </html>
