@@ -17,3 +17,17 @@ for (int i in 0..10000)
 }
 
 println  collisions.size()
+
+
+String.metaClass.static.randomNumeric = { digits ->
+  // static Random rn = new Random()
+  // def seed = Calendar.instance.time.time
+  // def n = (rnd.nextInt(900000)+100000)
+  def alphabet = ['0','1','2','3','4','5','6','7','8','9']
+  new Random().with {
+    (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
+  }
+}
+
+println String.randomNumeric(5)
+

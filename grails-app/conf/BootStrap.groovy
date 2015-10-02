@@ -43,6 +43,13 @@ class BootStrap {
         return delegate.toString()
      }
      
+     // call String.randomNumeric(5)
+     String.metaClass.static.randomNumeric = { digits ->
+        def alphabet = ['0','1','2','3','4','5','6','7','8','9']
+        new Random().with {
+          (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
+        }
+     }
      
      //****** SECURITY *******
      
@@ -67,7 +74,7 @@ class BootStrap {
       '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
       '/login', '/login.*', '/login/*',
       '/logout', '/logout.*', '/logout/*',
-      '/user/register'])
+      '/user/register', '/simpleCaptcha/**'])
      {
          new RequestMap(url: url, configAttribute: 'permitAll').save()
      }

@@ -25,6 +25,13 @@
 	     <g:form url="[resource:userInstance, action:'register']" >
           <fieldset class="form">
             <g:render template="form"/>
+            
+            <div class="${!captchaValid ? 'error' : ''}">
+              <img src="${createLink(controller: 'simpleCaptcha', action: 'captcha')}"/>
+				  <label for="captcha">Type the letters above in the box below:</label>
+				  <g:textField name="captcha" />
+            </div>
+            
           </fieldset>
           <fieldset class="buttons">
             <g:submitButton name="register" class="save" value="${message(code: 'default.button.register.label', default: 'Register')}" />

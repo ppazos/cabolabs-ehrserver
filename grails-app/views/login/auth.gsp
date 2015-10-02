@@ -113,12 +113,8 @@
                     <label for='remember_me'><g:message code="springSecurity.login.remember.me.label"/></label>
                   </p>
                   <p>
-                    <g:link controller="user" action="register" params="[type:'personal']">
+                    <g:link controller="user" action="register">
                       <g:message code="springSecurity.login.register.label"/>
-                    </g:link>
-                    <br/>
-                    <g:link controller="user" action="register" params="[type:'organization']">
-                      <g:message code="springSecurity.login.registerOrganization.label"/>
                     </g:link>
                   </p>
                   <p>

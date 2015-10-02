@@ -26,16 +26,13 @@
    <g:textField name="email" required="" value="${userInstance?.email}"/>
 </div>
 
-<%-- Fields to create an organization account --%>
-<g:if test="${params.type == 'organization'}">
-	<div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'name', 'error')} required">
-	   <label for="org_name">
-	      <g:message code="organization.name.label" default="Organization Name" />
-	      <span class="required-indicator">*</span>
-	   </label>
-	   <g:textField name="org_name" value="${organizationInstance?.name}"/>
-	</div>
-</g:if>
+<div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'name', 'error')} required">
+   <label for="organization.name">
+      <g:message code="organization.name.label" default="Organization Name" />
+      <span class="required-indicator">*</span>
+   </label>
+   <g:textField name="organization.name" value="${organizationInstance?.name}"/>
+</div>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">
 

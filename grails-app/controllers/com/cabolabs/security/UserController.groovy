@@ -8,6 +8,9 @@ import grails.validation.ValidationException
 class UserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    
+    def simpleCaptchaService
+    
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -25,10 +28,9 @@ class UserController {
 
     /**
      * 
-     * @param type organization or personal account.
      * @return
      */
-    def register(String type)
+    def register()
     {
        println params
        
@@ -38,6 +40,8 @@ class UserController {
        }
        else
        {
+          boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
+          
           def u = new User(
              username: params.username,
              password: params.password,
@@ -55,18 +59,13 @@ class UserController {
                 
                 // TODO: create an invitation with token, waiting for account confirmation
                 // 
+                o = new Organization(name: params.organization.name)
+                o.save(failOnError: true, flush:true)
+                u.addToOrganizations(o.uid).save(failOnError: true, flush:true)
                 
-                if (type == 'organization')
-                {
-                   o = new Organization(name: params.org_name)
-
-                   o.save(failOnError: true, flush:true)
-                   u.addToOrganizations(o.uid).save(failOnError: true, flush:true)
-                   
-                   // TODO: UserROle ORG_* needs a reference to the org, since the user
-                   //       can be ORG_ADMIN in one org and ORG_STAFF in another org.
-                   UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
-                }
+                // TODO: UserROle ORG_* needs a reference to the org, since the user
+                //       can be ORG_ADMIN in one org and ORG_STAFF in another org.
+                UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
              }
              catch (ValidationException e)
              {
@@ -74,18 +73,21 @@ class UserController {
                 println o?.errors
                 
                 status.setRollbackOnly()
-
              }
+             
+             // FIXME: avoid saving stuff if the captcha is incorrect
+             if (!captchaValid) status.setRollbackOnly()
+             
           } // transaction
           
           // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
           
           // TODO: send confirm email
           
-          if (u.errors.hasErrors() || o?.errors.hasErrors())
+          if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
           {
              flash.message = 'user.registerError.feedback'
-             render view: "register", model: [userInstance: u, organizationInstance: o]
+             render view: "register", model: [userInstance: u, organizationInstance: o, captchaValid: captchaValid]
           }
           else
           {

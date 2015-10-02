@@ -9,4 +9,26 @@ class Organization {
    static constraints = {
       number nullable: true
    }
+   
+   def beforeInsert()
+   {
+      if (!this.number) assignNumber()
+   }
+   
+   def beforeUpdate()
+   {
+      if (!this.number) assignNumber()
+   }
+   
+   private void assignNumber()
+   {
+      def number = String.randomNumeric(6)
+      
+      while (Organization.countByNumber(number) == 1) // avoids repeated number
+      {
+         number = String.randomNumeric(6)
+      }
+      
+      this.number = number
+   }
 }
