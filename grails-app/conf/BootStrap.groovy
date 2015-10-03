@@ -18,8 +18,20 @@ class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
    
+   def mailService
+   def grailsApplication
+   
    def init = { servletContext ->
      
+      // test
+      /*
+      mailService.sendMail {
+        from grailsApplication.config.grails.mail.username //"pablo.pazos@cabolabs.com"
+        to "pablo.pazos@cabolabs.com"     
+        subject "Hello EHRServer user!" 
+        body 'How are you?' 
+      }
+      */
      
      // Used by query builder, all return String
      String.metaClass.asSQLValue = { operand ->

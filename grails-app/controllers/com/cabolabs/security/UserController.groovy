@@ -10,7 +10,7 @@ class UserController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
     
     def simpleCaptchaService
-    
+    def notificationService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -91,6 +91,7 @@ class UserController {
           }
           else
           {
+             notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
              render (view: "registerOk")
           }
        }

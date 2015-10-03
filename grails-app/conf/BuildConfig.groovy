@@ -97,12 +97,13 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:7.0.55"
+        build ":tomcat:7.0.55.2"
 
         // plugins for the compile step
         compile ':scaffolding:2.1.0'
         compile ':cache:1.1.8'
         compile ':asset-pipeline:1.9.9'
+        compile ':quartz:1.0.2'
         compile ':spring-security-core:2.0-RC5'
         compile ":mail:1.0.7"
         compile ":simple-captcha:1.0.0"
@@ -114,8 +115,6 @@ grails.project.dependency.resolution = {
         
         // https://github.com/davidtinker/grails-cors
         runtime ":cors:1.1.8"
-        
-        compile ':quartz:1.0.2'
 
         //compile ':spring-security-rest:1.5.2', {
         //   excludes 'spring-security-core', 'cors'

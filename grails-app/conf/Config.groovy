@@ -72,6 +72,7 @@ grails.hibernate.cache.queries = false
 environments {
   development {
     grails.logging.jul.usebridge = true
+    grails.serverURL = "http://localhost:8090/ehr/"
     app {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
     }
@@ -79,7 +80,7 @@ environments {
   production {
     grails.logging.jul.usebridge = false
     grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-    // TODO: grails.serverURL = "http://www.changeme.com"
+    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr-0.3"
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
     }
@@ -170,3 +171,44 @@ grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/app/index'
 grails.plugin.springsecurity.apf.filterProcessesUrl = "/j_ehrserver_security_check" //"/user/login" // custom login, overrides: plugins/spring-security-core-2.0-RC5/conf/DefaultSecurityConfig.groovy
 grails.plugin.springsecurity.providerNames = ['authProvider']
 
+// Allow logout through GET operation (by default only POSTs are accepted since plugin v2.0)
+grails.plugin.springsecurity.logout.postOnly = false
+
+// Mail
+/*
+grails {
+   mail {
+     host = "smtp.gmail.com"
+     port = 465
+     username = "cbl@gmail.com"
+     password = "asdfaasdfasdfasfasfdasfdsdfad"
+     props = ["mail.smtp.auth":"true",
+              "mail.smtp.socketFactory.port":"465",
+              "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+              "mail.smtp.socketFactory.fallback":"false"]
+   }
+}
+*/
+
+
+
+grails {
+   mail {
+     host = "mail.cabolabs.com"
+     port = 587
+     username = System.getenv('EHRSERVER_EMAIL_USER')
+     password =  System.getenv('EHRSERVER_EMAIL_PASS')
+     'default' {
+        from = "info@cabolabs.com"
+     }
+     /*
+     props = ["mail.smtp.auth":"true",
+              "mail.smtp.starttls.enable":"true",
+              //"mail.smtp.port":"587"
+              "mail.smtp.socketFactory.port":"465",
+              "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+              "mail.smtp.socketFactory.fallback":"false"
+              ]
+     */
+   }
+}
