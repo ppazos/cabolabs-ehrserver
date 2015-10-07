@@ -9,9 +9,13 @@ class UserService {
 
     def getByUsername(String username)
     {
-       def u = User.findByUsername(username)
+       def u = User.findByUsername(username) // can be null
        
-       println 'user organizations service '+ u.organizations
+       //println 'user organizations service '+ u.organizations
+       
+       // initialize the list if the user exists
+       // if this is not here, the AuthProvider fails on checking the organization number
+       //u?.organizations
        
        return u
     }

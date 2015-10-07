@@ -86,7 +86,7 @@ class BootStrap {
       '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
       '/login', '/login.*', '/login/*',
       '/logout', '/logout.*', '/logout/*',
-      '/user/register', '/simpleCaptcha/**'])
+      '/user/register', '/simpleCaptcha/**', '/j_spring_security_logout'])
      {
          new RequestMap(url: url, configAttribute: 'permitAll').save()
      }
@@ -107,9 +107,12 @@ class BootStrap {
      new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN').save()
      
-     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
      
+     new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
      new RequestMap(url: '/**', configAttribute: 'ROLE_ORG_MANAGER').save()
      new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ORG_MANAGER').save()
      

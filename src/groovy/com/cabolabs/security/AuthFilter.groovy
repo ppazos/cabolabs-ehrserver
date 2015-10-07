@@ -15,6 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.security.core.context.SecurityContextHolder
 import com.cabolabs.security.UserPassOrgAuthToken
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
+import org.springframework.security.web.util.matcher.RequestMatcher
 
 /**
 Alternative to http://docs.spring.io/autorepo/docs/spring-security/3.2.3.RELEASE/apidocs/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.html
@@ -24,10 +29,17 @@ ref: http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authe
 */
 public class AuthFilter extends AbstractAuthenticationProcessingFilter implements ApplicationEventPublisherAware {
  
-  AuthenticationManager authenticationManager
+  
   AuthProvider authProvider
-  RememberMeServices rememberMeServices
- 
+  
+  // redeclared because is private on superclass
+  //AuthenticationManager authenticationManager
+  //RememberMeServices rememberMeServices 
+  //AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler()
+  //AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler()
+  //RequestMatcher requiresAuthenticationRequestMatcher
+  
+  
   public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "j_username";
   public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "j_password";
   
@@ -62,33 +74,19 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      String password = this.obtainPassword(request)
      String organization = this.obtainOrganisation(request)
 
-       //regular implementation in spring security plugin   
-     
-       //UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-       //this.setDetails(request, authRequest);
-       //return         this.getAuthenticationManager().authenticate(authRequest);
-       
-       // That calls this provider to authenticate the token:
-       // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.java
-       
-       // authenticate esta aca
-       // https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/ProviderManager.java
-     
-       // I might need to add the User.getAuthorities /roles/ to the token.
-       // UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-       //  "User", "Password", AuthorityUtils.createAuthorityList("ROLE_USER")
-       // );
-       // org.springframework.security.core.authority.AuthorityUtils
-       // createAuthorityList deberia recibir los roles del user como un array.
-       // user.getAuthorities() Set<Role>
-       // tengo que poner Role.authority en un array y pasarselo al constructor de UserPassOrgAuthToken como 4to argumento.
-
-       
      UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
+     
+     // from https://github.com/spring-projects/spring-security/blob/7b4a37f27e4ba7045bd63656e49ee0d5ee381ce5/web/src/main/java/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.java
+     // Allow subclasses to set the "details" property
+     //setDetails(request, auth) // dice que no existe el metodo, porque es del UsernamePasswordAuthenticationFilter
+     // ese llama a authtoken.setDetails(authenticationDetailsSource.buildDetails(request)); en https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/UsernamePasswordAuthenticationToken.java
+     // que en realidad es heredado de https://github.com/spring-projects/spring-security/blob/master/core/src/main/java/org/springframework/security/authentication/AbstractAuthenticationToken.java
      
      // If authentication fails, always throws an AuthenticationException.
      
-     auth = this.getAuthenticationManager().authenticate(auth)
+     auth = this.getAuthenticationManager().authenticate(auth) // can throw AuthenticationException if auth fails
+     
+     
      
      // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
      SecurityContextHolder.getContext().setAuthentication(auth)

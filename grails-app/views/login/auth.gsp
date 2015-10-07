@@ -98,15 +98,15 @@
                <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
                   <p>
                     <label for='username'><g:message code="springSecurity.login.username.label"/>:</label>
-                    <input type='text' class='text_' name='j_username' id='username'/>
+                    <input type='text' class='text_' name='j_username' id='username' required="required" />
                   </p>
                   <p>
                     <label for='password'><g:message code="springSecurity.login.password.label"/>:</label>
-                    <input type='password' class='text_' name='j_password' id='password'/>
+                    <input type='password' class='text_' name='j_password' id='password' required="required" />
                   </p>
                   <p>
                     <label for='org_number'><g:message code="springSecurity.login.org_number.label"/>:</label>
-                    <input type='text' class='text_' name='j_organisation' id='org_number'/>
+                    <input type='text' class='text_' name='j_organisation' id='org_number' required="required" />
                   </p>
                   <p id="remember_me_holder">
                     <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>/>

@@ -72,7 +72,7 @@ grails.hibernate.cache.queries = false
 environments {
   development {
     grails.logging.jul.usebridge = true
-    grails.serverURL = "http://localhost:8090/ehr/"
+    //grails.serverURL = "http://localhost:8090/ehr"
     app {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
     }
@@ -123,7 +123,7 @@ app {
    
    l10n { // localization
       
-      locale = 'es'
+      locale = 'en'
       
       // general
       decimal_symbol = ',' // separa numero enteros de la fraccion decimal

@@ -97,16 +97,14 @@
                    </a>
                    <ul class="dropdown-menu dropdown-user">
                      <li>
-                        <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
                      </li>
                      <li>
-                        <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
                      </li>
                      <li class="divider"></li>
                      <li>
-                       <g:form controller="logout" action="index">
-                         <i class="fa fa-sign-out fa-fw"></i> <g:submitButton name="logout" value="Logout" />
-                       </g:form>
+                       <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
                      </li>
                    </ul>
                    <!-- /.dropdown-user -->
