@@ -11,12 +11,6 @@ class UserService {
     {
        def u = User.findByUsername(username) // can be null
        
-       //println 'user organizations service '+ u.organizations
-       
-       // initialize the list if the user exists
-       // if this is not here, the AuthProvider fails on checking the organization number
-       //u?.organizations
-       
        return u
     }
     

@@ -81,7 +81,7 @@ class BootStrap {
      clinic.save(failOnError:true, flush:true)
      
      for (String url in [
-      //'/', 
+      '/', // redirects to login, see UrlMappings
       '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
       '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
       '/login', '/login.*', '/login/*',
@@ -94,6 +94,11 @@ class BootStrap {
 
 
      // sections
+     // works for /app
+     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
+     
+     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+     
      new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN').save()
@@ -105,16 +110,16 @@ class BootStrap {
      
      new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
      
-     new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
+     //new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
      
-     new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/**', configAttribute: 'ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ORG_MANAGER').save()
+     //new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
+     //new RequestMap(url: '/**', configAttribute: 'ROLE_ORG_MANAGER').save()
+     //new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ORG_MANAGER').save()
      
      //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
      //new RequestMap(url: '/app/index/', configAttribute: 'ROLE_ADMIN').save()
