@@ -34,6 +34,9 @@ class Ehr {
    //static hasOne = [directory: Folder] // needed to set 1 to 1 rel with Folder, Folder has: Ehr ehr. See http://grails.github.io/grails-doc/2.2.1/ref/Domain%20Classes/hasOne.html
    
    
+   String organizationUid
+   
+   
    List compositions = []
    List contributions = []
    static hasMany = [compositions:VersionedComposition, contributions:Contribution]

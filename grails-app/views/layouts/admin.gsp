@@ -70,8 +70,8 @@
     
     <div id="wrapper">
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -86,58 +86,85 @@
             <!-- /.navbar-header -->
 
             <!-- TOP MENU: TODO -->
-            
-            <!-- LEFT MENU -->
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li>
-                            <g:link controller="app" action="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</g:link>
-                        </li>
-                        <li>
-                            <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
-                        </li>
-                        <li>
-                            <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
+            <sec:ifLoggedIn>
+               <ul class="nav navbar-top-links navbar-right">
+                 <li>
+                    Welcome Back <sec:username/>!
+                 </li>
+                 <li class="dropdown">
+                   <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                     <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                   </a>
+                   <ul class="dropdown-menu dropdown-user">
+                     <li>
+                        <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                     </li>
+                     <li>
+                        <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                     </li>
+                     <li class="divider"></li>
+                     <li>
+                       <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
+                     </li>
+                   </ul>
+                   <!-- /.dropdown-user -->
+                 </li>
+                 <!-- /.dropdown -->
+               </ul>
+               
+               
+               <!-- LEFT MENU -->
+               <div class="navbar-default sidebar" role="navigation">
+                   <div class="sidebar-nav navbar-collapse">
+                       <ul class="nav" id="side-menu">
+                           <li>
+                               <g:link controller="app" action="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</g:link>
+                           </li>
+                           <li>
+                               <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users fa-fw"></i> <g:message code="person.list.title" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book fa-fw"></i> <g:message code="desktop.ehrs" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.user" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.role" /></g:link>
+                           </li>
+                           <li>
+                               <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
+                           </li>
+                       </ul>
+                   </div>
+                   <!-- /.sidebar-collapse -->
+               </div>
             <!-- /.navbar-static-side -->
-        </nav>
+            </sec:ifLoggedIn>
+      </nav>
 
-        <!-- BODY -->
-        <div id="page-wrapper">
-            <!--
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
-                </div>
-            </div>
-            -->
-            <g:layoutBody/>
-			   <div class="footer" role="contentinfo"></div>
-			   <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
-        </div>
-        <!-- /BODY -->
-
+      <!-- BODY -->
+      <div id="page-wrapper">
+        <g:layoutBody/>
+        <div class="footer" role="contentinfo"></div>
+        <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+      </div>
+      <!-- /BODY -->
     </div>
-    <!-- /#wrapper -->
   </body>
 </html>

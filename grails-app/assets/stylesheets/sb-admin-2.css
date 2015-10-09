@@ -364,3 +364,8 @@ div.btn-toolbar {
 	margin-left: 0;
 	margin-top: 15px;
 }
+
+.error > input {
+	border: 1px solid #d9534f;
+	background-color: #f2dede;
+}

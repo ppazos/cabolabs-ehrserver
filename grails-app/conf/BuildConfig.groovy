@@ -37,6 +37,9 @@ grails.project.dependency.resolution = {
 
         mavenLocal()
         mavenCentral()
+        
+        mavenRepo "http://repo.spring.io/milestone/"
+        //mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
         //mavenRepo "http://snapshots.repository.codehaus.org"
@@ -74,41 +77,47 @@ grails.project.dependency.resolution = {
          excludes "commons-logging", "xml-apis", "groovy"
        }
        
-       dependencies {
-        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
-       }
-       
+
+       test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        
        compile 'xerces:xercesImpl:2.11.0'
        
        compile "mysql:mysql-connector-java:5.1.22"
+       
+       
+       
+       //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
+       //compile 'org.pac4j:pac4j-core:1.7.1'
     }
 
     plugins {
-        //runtime ":hibernate:$grailsVersion"
-        //runtime ":jquery:1.7.2"
-        //runtime ":resources:1.2"
 
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:7.0.52.1"
+        build ":tomcat:7.0.55.2"
 
         // plugins for the compile step
         compile ':scaffolding:2.1.0'
-        compile ':cache:1.1.3'
-        compile ':asset-pipeline:1.8.3'
+        compile ':cache:1.1.8'
+        compile ':asset-pipeline:1.9.9'
+        compile ':quartz:1.0.2'
+        compile ':spring-security-core:2.0-RC5'
+        compile ":mail:1.0.7"
+        compile ":simple-captcha:1.0.0"
 
         // plugins needed at runtime but not for compilation
-        runtime ':hibernate4:4.3.5.4' // or ':hibernate:3.6.10.14'
+        runtime ':hibernate4:4.3.5.5' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
-        runtime ':jquery:1.11.0.2'
+        runtime ':jquery:1.11.1'
         
         // https://github.com/davidtinker/grails-cors
         runtime ":cors:1.1.8"
-        
-        compile ':quartz:1.0.2'
+
+        //compile ':spring-security-rest:1.5.2', {
+        //   excludes 'spring-security-core', 'cors'
+        //}
     }
 }
