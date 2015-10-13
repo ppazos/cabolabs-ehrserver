@@ -766,13 +766,14 @@ class RestController {
       if (!format || format == "xml")
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
-            'query'{
-               id(person.firstName)
-               version(person.lastName)
-               criteria_logic(this.formatterDate.format( person.dob ) )
-               formart(person.sex)
-               dg_group(person.idCode)
-               (person.idType)
+            delegate.patient{
+               delegate.uid(person.uid)
+               firstName(person.firstName)
+               lastName(person.lastName)
+               dob(this.formatterDate.format( person.dob ) )
+               sex(person.sex)
+               idCode(person.idCode)
+               idType(person.idType)
             }
          }
       }

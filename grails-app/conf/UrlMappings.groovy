@@ -52,7 +52,7 @@ class UrlMappings {
         )
 		
 		// executes query xxx, each query knows its own type, this can be a queryData or a queryComposition
-		"/rest/queries/queryUid/$queryUid/execute "( 
+		"/rest/queries/queryUid/$queryUid/execute"( 
             controller: 'rest',
             action: 'query'
         )
