@@ -24,6 +24,9 @@ class Folder {
    Ehr ehr
    static belongsTo = [Ehr]
    
+   // multitenancy
+   String organizationUid
+   
    static constraints = {
       parent(nullable: true)
       name(empty: false)

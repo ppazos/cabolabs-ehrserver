@@ -100,39 +100,17 @@ class BootStrap {
      new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
      
      new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+     new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
      new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
      
-     new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN').save()
+     new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
      new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
      new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     
-     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
-     
-     //new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
-     //new RequestMap(url: '/**', configAttribute: 'ROLE_ORG_MANAGER').save()
-     //new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ORG_MANAGER').save()
-     
-     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/index/', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/index/', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/**', configAttribute: 'ROLE_ADMIN').save()
-     // root
-     //new RequestMap(url: '/', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/', configAttribute: 'ROLE_ORG_MANAGER').save()
-     //new RequestMap(url: '/', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
-     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN').save()
-     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_ORG_MANAGER').save()
-     //new RequestMap(url: '/app/index', configAttribute: 'ROLE_CLINICAL_MANAGER').save()
      
      
      new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()

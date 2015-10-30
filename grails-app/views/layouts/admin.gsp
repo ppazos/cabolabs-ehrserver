@@ -135,21 +135,35 @@
                            <li>
                                <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
                            </li>
+                           
+                           <sec:ifAnyGranted roles="ROLE_ADMIN">
                            <li>
                                <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
                            </li>
+                           </sec:ifAnyGranted>
+                           
+                           <sec:ifAnyGranted roles="ROLE_ADMIN">
                            <li>
                                <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
                            </li>
+                           </sec:ifAnyGranted>
+                           <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
                            <li>
                                <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.user" /></g:link>
                            </li>
+                           </sec:ifAnyGranted>
+                           
+                           <sec:ifAnyGranted roles="ROLE_ADMIN">
                            <li>
                                <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.role" /></g:link>
                            </li>
-                           <li>
+                           </sec:ifAnyGranted>
+                           
+                           <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+                             <li>
                                <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
-                           </li>
+                             </li>
+                           </sec:ifAnyGranted>
                        </ul>
                    </div>
                    <!-- /.sidebar-collapse -->

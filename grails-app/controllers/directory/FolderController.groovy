@@ -3,30 +3,71 @@ package directory
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
+import com.cabolabs.security.Organization
+import grails.plugin.springsecurity.SpringSecurityUtils
+
 @Transactional(readOnly = true)
 class FolderController {
 
+   def springSecurityService
+   
     static allowedMethods = [save: "POST", update: "PUT"]
 
-    def index(Integer max) {
+    def index(Integer max)
+    {
         params.max = Math.min(max ?: 10, 100)
-        respond Folder.list(params), model:[folderInstanceCount: Folder.count()]
+        
+        def list, count
+        
+        // All folders for admins, filtered by org uid for other roles
+        if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+        {
+           list = Folder.list(params)
+           count = Folder.count()
+        }
+        else
+        {
+           // auth token used to login
+           def auth = springSecurityService.authentication
+           def org = Organization.findByNumber(auth.organization)
+           
+           list = Folder.findAllByOrganizationUid(org.uid, params)
+           count = Folder.countByOrganizationUid(org.uid)
+        }
+        
+        
+        respond list, model:[folderInstanceCount: count]
     }
 
-    def show(Folder folderInstance) {
+    def show(Folder folderInstance)
+    {
         respond folderInstance
     }
 
-    def create() {
+    def create()
+    {
         respond new Folder(params)
     }
 
     @Transactional
-    def save(Folder folderInstance) {
-       
-        if (folderInstance == null) {
+    def save(Folder folderInstance)
+    {
+        if (folderInstance == null)
+        {
             notFound()
             return
+        }
+
+        // admins can select the org uid, for other roles is the org used to login
+        if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+        {
+           // auth token used to login
+           def auth = springSecurityService.authentication
+           def org = Organization.findByNumber(auth.organization)
+           //println "org "+ org
+           //println "org uid "+ org.uid
+           
+           folderInstance.organizationUid = org.uid
         }
         
         if (folderInstance.ehrId)
@@ -35,14 +76,18 @@ class FolderController {
            ehr.directory = folderInstance
            ehr.save() 
         }
+        
+        folderInstance.save flush:true
 
-        if (folderInstance.hasErrors()) {
+        
+        
+        
+        if (folderInstance.hasErrors())
+        {
             respond folderInstance, view:'create'
             return
         }
-
-        folderInstance.save flush:true
-
+        
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'folder.label', default: 'Folder'), folderInstance.id])
@@ -52,12 +97,14 @@ class FolderController {
         }
     }
 
-    def edit(Folder folderInstance) {
+    def edit(Folder folderInstance)
+    {
         respond folderInstance
     }
 
     @Transactional
-    def update(Folder folderInstance) {
+    def update(Folder folderInstance)
+    {
         if (folderInstance == null) {
             notFound()
             return
@@ -80,9 +127,11 @@ class FolderController {
     }
 
     @Transactional
-    def delete(Folder folderInstance) {
+    def delete(Folder folderInstance)
+    {
 
-        if (folderInstance == null) {
+        if (folderInstance == null)
+        {
             notFound()
             return
         }
@@ -98,7 +147,8 @@ class FolderController {
         }
     }
 
-    protected void notFound() {
+    protected void notFound()
+    {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'folder.label', default: 'Folder'), params.id])
@@ -128,6 +178,7 @@ class FolderController {
        
        if (!folder.save(flush:true)) println folder.errors
        
+       // FIXME
        render "ok"
     }
 }

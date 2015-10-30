@@ -33,7 +33,7 @@ class Ehr {
    // Causes errors when creating Folders with ehr null
    //static hasOne = [directory: Folder] // needed to set 1 to 1 rel with Folder, Folder has: Ehr ehr. See http://grails.github.io/grails-doc/2.2.1/ref/Domain%20Classes/hasOne.html
    
-   
+   // multitenancy
    String organizationUid
    
    
