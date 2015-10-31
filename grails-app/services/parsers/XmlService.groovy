@@ -386,6 +386,7 @@ class XmlService {
          startTime:   startTime, // puede ser vacio si category es persistent
          subjectId:   ehr.subject.value,
          ehrId:       ehr.ehrId,
+         organizationUid: ehr.organizationUid,
          archetypeId: version.data.@archetype_node_id.text(),
          templateId:  version.data.archetype_details.template_id.value.text()
       )
@@ -424,6 +425,7 @@ class XmlService {
       currentContribution = new Contribution(
          uid: contributionId,
          ehr: ehr,
+         organizationUid: ehr.organizationUid,
          audit: new AuditDetails(
             systemId:      auditSystemId,
             

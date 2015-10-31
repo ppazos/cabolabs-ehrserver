@@ -2,6 +2,7 @@ package common.change_control
 
 import common.generic.AuditDetails
 import ehr.Ehr
+
 import java.text.SimpleDateFormat
 
 /**
@@ -28,6 +29,12 @@ class Contribution {
    int dateGroup      // yyyymmdd to group by day
    int yearMonthGroup // yyyymm to group by month
    int yearGroup      // yyyy to group by year
+   
+   
+   // multitenancy
+   // copy of the EHR.organizationUid
+   String organizationUid
+   
    
    static constraints = {
       uid(nullable: false)

@@ -1,12 +1,17 @@
 package common.change_control
 
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.SpringSecurityUtils
+import com.cabolabs.security.Organization
 
 class ContributionController {
 
+   def springSecurityService
+   
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-   def index() {
+   def index()
+   {
       redirect(action: "list", params: params)
    }
 
@@ -14,8 +19,22 @@ class ContributionController {
    {
       params.max = Math.min(max ?: 10, 100)
      
-      def lst = Contribution.list(params)
-      def cnt = Contribution.count()
+      def list, cnt, org
+      
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = Contribution.list(params)
+         cnt = Contribution.count()
+      }
+      else
+      {
+         // auth token used to login
+         def auth = springSecurityService.authentication
+         org = Organization.findByNumber(auth.organization)
+         
+         list = Contribution.findAllByOrganizationUid(org.uid, params)
+         cnt = Contribution.countByOrganizationUid(org.uid)
+      }
      
       // =========================================================================
       // For charting
@@ -29,6 +48,10 @@ class ContributionController {
               count('id')
               groupProperty('yearMonthGroup') // count contributions in the same month
           }
+          if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+          {
+             eq('organizationUid', org.uid)
+          }
           audit {
              between('timeCommitted', oneyearbehind, now)
           }
@@ -37,10 +60,12 @@ class ContributionController {
       //println data
       // =========================================================================
 
-      return [contributionInstanceList: lst, contributionInstanceTotal: cnt, data: data, start: oneyearbehind, end: now]
+      return [contributionInstanceList: list, contributionInstanceTotal: cnt,
+              data: data, start: oneyearbehind, end: now]
    }
 
-   def show(Long id) {
+   def show(Long id)
+   {
       def contributionInstance = Contribution.get(id)
       if (!contributionInstance) {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'contribution.label', default: 'Contribution'), id])

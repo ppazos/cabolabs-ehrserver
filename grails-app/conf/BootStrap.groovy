@@ -86,7 +86,8 @@ class BootStrap {
       '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
       '/login', '/login.*', '/login/*',
       '/logout', '/logout.*', '/logout/*',
-      '/user/register', '/simpleCaptcha/**', '/j_spring_security_logout'])
+      '/user/register', '/simpleCaptcha/**', '/j_spring_security_logout',
+      '/rest/**'])
      {
          new RequestMap(url: url, configAttribute: 'permitAll').save()
      }
@@ -229,7 +230,8 @@ class BootStrap {
      // Fake EHRs for patients
      // Idem EhrController.createEhr
      def ehr
-     persons.each { p ->
+     def c = Organization.count()
+     persons.eachWithIndex { p, i ->
      
         if (p.role == 'pat')
         {
@@ -238,7 +240,7 @@ class BootStrap {
               subject: new PatientProxy(
                  value: p.uid
               ),
-              organizationUid: hospital.uid
+              organizationUid: Organization.get(i % c + 1).uid
            )
          
            if (!ehr.save()) println ehr.errors
