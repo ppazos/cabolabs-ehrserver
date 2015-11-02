@@ -66,6 +66,11 @@ class OrganizationController {
       }
 
       organizationInstance.save flush:true
+      
+      // Assign org to logged user
+      def user = springSecurityService.loadCurrentUser()
+      user.addToOrganizations(organizationInstance.uid)
+      user.save(flush:true)
 
       request.withFormat {
          form multipartForm {
