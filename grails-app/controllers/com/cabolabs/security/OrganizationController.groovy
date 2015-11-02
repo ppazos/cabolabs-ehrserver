@@ -1,104 +1,141 @@
 package com.cabolabs.security
 
 
-
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+
+//http://grails-plugins.github.io/grails-spring-security-core/guide/single.html#springSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
+
 
 @Transactional(readOnly = true)
 class OrganizationController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+   def springSecurityService
+   
+   static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond Organization.list(params), model:[organizationInstanceCount: Organization.count()]
-    }
+   def index(Integer max)
+   {
+      params.max = Math.min(max ?: 10, 100)
+      
+      def list, count
+      
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = Organization.list(params)
+         count = Organization.count()
+      }
+      else
+      {
+         def user = springSecurityService.loadCurrentUser()
+         
+         //println "organizations: "+ user.organizations.toString()
+         
+         // no pagination
+         list = Organization.findAllByUidInList(user.organizations)
+         count = list.size()
+      }
+      
+      respond list, model:[organizationInstanceCount: count]
+   }
 
-    def show(Organization organizationInstance) {
-        respond organizationInstance
-    }
+   def show(Organization organizationInstance)
+   {
+      respond organizationInstance
+   }
 
-    def create() {
-        respond new Organization(params)
-    }
+   def create()
+   {
+      respond new Organization(params)
+   }
 
-    @Transactional
-    def save(Organization organizationInstance) {
-        if (organizationInstance == null) {
-            notFound()
-            return
-        }
+   @Transactional
+   def save(Organization organizationInstance)
+   {
+      if (organizationInstance == null)
+      {
+         notFound()
+         return
+      }
 
-        if (organizationInstance.hasErrors()) {
-            respond organizationInstance.errors, view:'create'
-            return
-        }
+      if (organizationInstance.hasErrors())
+      {
+         respond organizationInstance.errors, view:'create'
+         return
+      }
 
-        organizationInstance.save flush:true
+      organizationInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
-                redirect organizationInstance
-            }
-            '*' { respond organizationInstance, [status: CREATED] }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
+            redirect organizationInstance
+         }
+         '*' { respond organizationInstance, [status: CREATED] }
+      }
+   }
 
-    def edit(Organization organizationInstance) {
-        respond organizationInstance
-    }
+   def edit(Organization organizationInstance)
+   {
+      respond organizationInstance
+   }
 
-    @Transactional
-    def update(Organization organizationInstance) {
-        if (organizationInstance == null) {
-            notFound()
-            return
-        }
+   @Transactional
+   def update(Organization organizationInstance)
+   {
+      if (organizationInstance == null)
+      {
+         notFound()
+         return
+      }
 
-        if (organizationInstance.hasErrors()) {
-            respond organizationInstance.errors, view:'edit'
-            return
-        }
+      if (organizationInstance.hasErrors())
+      {
+         respond organizationInstance.errors, view:'edit'
+         return
+      }
 
-        organizationInstance.save flush:true
+      organizationInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Organization.label', default: 'Organization'), organizationInstance.id])
-                redirect organizationInstance
-            }
-            '*'{ respond organizationInstance, [status: OK] }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'Organization.label', default: 'Organization'), organizationInstance.id])
+            redirect organizationInstance
+         }
+         '*'{ respond organizationInstance, [status: OK] }
+      }
+   }
 
-    @Transactional
-    def delete(Organization organizationInstance) {
+   @Transactional
+   def delete(Organization organizationInstance)
+   {
 
-        if (organizationInstance == null) {
-            notFound()
-            return
-        }
+      if (organizationInstance == null)
+      {
+         notFound()
+         return
+      }
 
-        organizationInstance.delete flush:true
+      organizationInstance.delete flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Organization.label', default: 'Organization'), organizationInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'Organization.label', default: 'Organization'), organizationInstance.id])
+            redirect action:"index", method:"GET"
+         }
+         '*'{ render status: NO_CONTENT }
+      }
+   }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
+   protected void notFound()
+   {
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
+            redirect action: "index", method: "GET"
+         }
+         '*'{ render status: NOT_FOUND }
+      }
+   }
 }
