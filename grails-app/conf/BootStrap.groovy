@@ -76,9 +76,11 @@ class BootStrap {
      // Sample organizations
      def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
      def clinic = new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+     def practice = new Organization(name: 'Cirugia Estetica', number: '5555')
      
      hospital.save(failOnError:true, flush:true)
      clinic.save(failOnError:true, flush:true)
+     practice.save(failOnError:true, flush:true)
      
      for (String url in [
       '/', // redirects to login, see UrlMappings

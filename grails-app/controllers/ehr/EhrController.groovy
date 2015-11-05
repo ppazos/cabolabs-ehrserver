@@ -17,9 +17,12 @@ import grails.util.Holders
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
+import grails.plugin.springsecurity.SpringSecurityUtils
+import com.cabolabs.security.Organization
 
 class EhrController {
 
+   def springSecurityService
    
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -27,9 +30,28 @@ class EhrController {
    
    def index() { }
    
-   def list(Integer max) {
+   def list(Integer max)
+   {
       params.max = Math.min(max ?: 10, 100)
-      [list: Ehr.list(params), total: Ehr.count()]
+      
+      def list, count
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = Ehr.list(params)
+         count = Ehr.count()
+      }
+      else
+      {
+         // auth token used to login
+         def auth = springSecurityService.authentication
+         def org = Organization.findByNumber(auth.organization)
+         
+         // no pagination
+         list = Ehr.findAllByOrganizationUid(org.uid, params)
+         count = Ehr.countByOrganizationUid(org.uid)
+      }
+      
+      [list: list, total: count]
    }
    
    /**
