@@ -69,7 +69,7 @@ class RestController {
             }
          }
          json {
-            println "error json"
+            //println "error json"
             
             def error = [
                result: [
@@ -82,7 +82,7 @@ class RestController {
                ]
             ]
             
-            println "error json struct"
+            //println "error json struct"
             
             //render error as JSON
             def result = error as JSON
@@ -418,7 +418,7 @@ class RestController {
    
    def ehrList(String format, int max, int offset)
    {
-     // TODO: fromDate, toDate
+      // TODO: fromDate, toDate
       
       // Paginacion
       if (!max) max = 15
@@ -540,7 +540,7 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
-         println 'Acabo de entrar en función con subjectUid '+ subjectUid
+      println 'Acabo de entrar en función con subjectUid '+ subjectUid
       if (!subjectUid)
       {
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
@@ -610,7 +610,7 @@ class RestController {
    
    def ehrGet(String ehrUid, String format)
    {
-     if (!ehrUid)
+      if (!ehrUid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
          return
@@ -666,7 +666,6 @@ class RestController {
    
    def patientList(String format, int max, int offset)
    {
-      println 'Esto es una prueba muy buena'
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
