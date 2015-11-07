@@ -7,12 +7,14 @@
     <title><g:message code="user.registerOk.label" args="[entityName]" /></title>
   </head>
   <body>
-    <div id="show-user" class="content scaffold-show" role="main">
-      <h1><g:message code="user.registerOk.label" args="[entityName]" /></h1>
-      <g:if test="${flash.message}">
-        <div class="message" role="status">${flash.message}</div>
-      </g:if>
-      <g:message code="user.registerOk.text" />
+    <div class="row">
+      <div class="col-lg-12">
+        <h1><g:message code="user.registerOk.label" args="[entityName]" /></h1>
+        <g:if test="${flash.message}">
+          <div class="message" role="status">${flash.message}</div>
+        </g:if>
+        <g:message code="user.registerOk.text" />
+      </div>
     </div>
   </body>
 </html>
