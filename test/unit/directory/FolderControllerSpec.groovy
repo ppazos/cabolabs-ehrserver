@@ -11,6 +11,7 @@ class FolderControllerSpec extends Specification {
         assert params != null
         // TODO: Populate valid properties like...
         params["name"] = 'folder x'
+        params["organizationUid"] = '1234'
     }
 
     void "Test the index action returns the correct model"() {

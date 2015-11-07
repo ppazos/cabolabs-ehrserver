@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockMultipartFile
 import ehr.clinical_documents.data.*
 import grails.util.Holders
 import query.*
+import com.cabolabs.security.Organization
 
 
 /**
@@ -19,7 +20,7 @@ import query.*
  */
 @TestMixin(GrailsUnitTestMixin)
 @TestFor(RestController)
-@Mock([ Ehr,Person,
+@Mock([ Ehr,Person,Organization,
         PatientProxy, DoctorProxy,
         OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
         DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
@@ -42,8 +43,17 @@ class RestControllerTests {
       controller.xmlService = new parsers.XmlService()
       controller.xmlService.xmlValidationService = new parsers.XmlValidationService()
       
+      // Sample organizations
+      def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
+      def clinic = new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+      def practice = new Organization(name: 'Cirugia Estetica', number: '5555')
       
-	    // Copiado de bootstrap porque no agarra las instancias en testing.
+      hospital.save(failOnError:true, flush:true)
+      clinic.save(failOnError:true, flush:true)
+      practice.save(failOnError:true, flush:true)
+      
+      
+	   // Copiado de bootstrap porque no agarra las instancias en testing.
 		def persons = [
          new Person(
             firstName: 'Pablo',
@@ -107,14 +117,16 @@ class RestControllerTests {
 	  // Crea EHRs para los pacientes de prueba
 	  // Idem EhrController.createEhr
 	  def ehr
-	  persons.each { p ->
+     def c = Organization.count()
+	  persons.eachWithIndex { p, i ->
 	  
-	     if (p.role == 'pat')
+	    if (p.role == 'pat')
 		 {
 			ehr = new Ehr(
 			   subject: new PatientProxy(
 			      value: p.uid
-			   )
+			   ),
+            organizationUid: Organization.get(i % c + 1).uid
 		    )
          
           if (!ehr.save()) println ehr.errors

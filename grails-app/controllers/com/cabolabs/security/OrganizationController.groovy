@@ -58,13 +58,15 @@ class OrganizationController {
          notFound()
          return
       }
-
+      log.info "antes de has errors"
       if (organizationInstance.hasErrors())
       {
-         respond organizationInstance.errors, view:'create'
+         log.info "has errors"
+         respond organizationInstance, view:'create'
          return
       }
 
+      log.info "luego de has errors"
       organizationInstance.save flush:true
       
       // Assign org to logged user

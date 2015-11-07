@@ -18,7 +18,7 @@ class FolderSpec extends Specification {
     void "create single folder should validate"()
     {
        when: "create single folder"
-       def folder = new Folder(name:"folder 1")
+       def folder = new Folder(name:"folder 1", organizationUid:"1234")
        
        then: "should validate"
        folder.validate()
@@ -27,7 +27,7 @@ class FolderSpec extends Specification {
     void "create single folder should save"()
     {
        when: "create single folder"
-       def folder = new Folder(name:"folder 1")
+       def folder = new Folder(name:"folder 1", organizationUid:"1234")
        
        then: "should validate"
        folder.save()
@@ -36,7 +36,7 @@ class FolderSpec extends Specification {
     void "create single folder should save and get"()
     {
        when: "create single folder"
-       def folder = new Folder(name:"folder 1")
+       def folder = new Folder(name:"folder 1", organizationUid:"1234")
        folder.save()
        def folder_get = Folder.get(1)
        
@@ -47,11 +47,11 @@ class FolderSpec extends Specification {
     void "create folder with sub-folders"()
     {
        when: "create folder tree"
-       def folder = new Folder(name:"root")
+       def folder = new Folder(name:"root", organizationUid:"1234")
        folder.folders = [
-          new Folder(name:"child 1"),
-          new Folder(name:"child 2"),
-          new Folder(name:"child 3"),
+          new Folder(name:"child 1", organizationUid:"1234"),
+          new Folder(name:"child 2", organizationUid:"1234"),
+          new Folder(name:"child 3", organizationUid:"1234"),
        ]
        
        folder.save()
@@ -66,11 +66,11 @@ class FolderSpec extends Specification {
     void "create folder tree, access parent"()
     {
        when: "create folder tree"
-       def folder = new Folder(name:"root")
+       def folder = new Folder(name:"root", organizationUid:"1234")
        def subfolders = [
-          new Folder(name:"child 1"),
-          new Folder(name:"child 2"),
-          new Folder(name:"child 3"),
+          new Folder(name:"child 1", organizationUid:"1234"),
+          new Folder(name:"child 2", organizationUid:"1234"),
+          new Folder(name:"child 3", organizationUid:"1234"),
        ]
        subfolders.each { folder.addToFolders(it) } // addTo sets the backlink to parent
        

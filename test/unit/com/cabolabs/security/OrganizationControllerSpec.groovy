@@ -1,23 +1,37 @@
 package com.cabolabs.security
 
-
-
 import grails.test.mixin.*
 import spock.lang.*
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @TestFor(OrganizationController)
-@Mock(Organization)
+@Mock([Organization, User])
 class OrganizationControllerSpec extends Specification {
 
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["name"] = 'Organization X'
+        params["number"] = '1234'
     }
 
     void "Test the index action returns the correct model"() {
 
         when:"The index action is executed"
+            // mock login
+            // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
+            def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.i", organizations:['1234']).save()
+            controller.springSecurityService = [
+              encodePassword: 'admin',
+              reauthenticate: { String u -> true},
+              loggedIn: true,
+              principal: loggedInUser
+            ]
+            // without this the index action fails
+            SpringSecurityUtils.metaClass.static.ifAllGranted = { String role ->
+               return true
+            }
+            
             controller.index()
 
         then:"The model is correct"
