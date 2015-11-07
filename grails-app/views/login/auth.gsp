@@ -146,8 +146,9 @@
                   </div>
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.login.button")}'/>
                 </fieldset>
+                <br/>
                 <fieldset>
-                  <div class="form-group">
+                  <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
                     <g:link controller="user" action="register">
                       <g:message code="springSecurity.login.register.label"/>
                     </g:link>

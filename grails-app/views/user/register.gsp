@@ -34,8 +34,11 @@
             
           </fieldset>
           <fieldset class="buttons">
-            <g:submitButton name="register" class="save" value="${message(code: 'default.button.register.label', default: 'Register')}" />
+            <g:submitButton name="register" class="save btn btn-default btn-md" value="${message(code: 'default.button.register.label', default: 'Register')}" />
           </fieldset>
+          <fieldset class="buttons">
+             <g:link controller="login" class="btn btn-default btn-md">${message(code: 'default.button.cancel.label', default: 'Cancel')}</g:link>
+           </fieldset>
 	     </g:form>
       </div>
     </div>
