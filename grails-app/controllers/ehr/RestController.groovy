@@ -997,7 +997,9 @@ class RestController {
     * @param showUI only used for composition queries to retrieve HTML (FIXME: this might be another output format)
     * @param group grouping of datavalue queries, if not empty/null, will override the query group option ['composition'|'path']
     */
-   def query(String queryUid, String ehrId, String format, boolean retrieveData, boolean showUI, String group) // TODO: fechas
+   def query(String queryUid, String ehrId, String format, 
+             boolean retrieveData, boolean showUI, String group,
+             String fromDate, String toDate)
    {
       //println "rest/query"
       //println params
@@ -1031,10 +1033,19 @@ class RestController {
       }
       
       
+      // --------------------------------------------------------------
       // FIXME: do query execution and output processing in a service
+      // --------------------------------------------------------------
       
-      // TODO: fechas
-      def res = query.execute(ehrId, null, null, group)
+      
+      // parse de dates
+      Date qFromDate
+      Date qToDate
+
+      if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
+      if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
+      
+      def res = query.execute(ehrId, qFromDate, qToDate, group)
       
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
