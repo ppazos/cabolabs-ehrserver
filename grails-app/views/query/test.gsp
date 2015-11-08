@@ -1,3 +1,4 @@
+<%@ page import="com.cabolabs.security.Organization" %>
 <html>
   <head>
     <%-- Modal, doesnt have layout, used from query/create to test queries before creation --%>
@@ -72,6 +73,19 @@
             </td>
             <td>
               <input type="text" name="toDate" />
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <g:select name="organizationUid" from="${Organization.list()}"
+                          optionKey="uid" optionValue="name" />
+              </sec:ifAnyGranted>
+              <sec:ifNotGranted roles="ROLE_ADMIN">
+                <g:selectWithCurrentUserOrganiations name="organizationUid" />
+              </sec:ifNotGranted>
+              
             </td>
           </tr>
         </table>

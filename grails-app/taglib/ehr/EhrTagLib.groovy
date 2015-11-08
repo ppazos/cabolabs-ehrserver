@@ -3,6 +3,8 @@ package ehr
 import directory.Folder
 
 class EhrTagLib {
+   
+   def springSecurityService
 
    def hasEhr = { attrs, body ->
       
@@ -74,5 +76,21 @@ class EhrTagLib {
       html += '</div></div>' // /folder_folders, /folder
       
       return html
+   }
+   
+   
+   /**
+    * Renders a select with the organizations of the current logged user.
+    * This is used in the query test UID to filter by organizationUid.
+    */
+   def selectWithCurrentUserOrganiations = { attrs, body ->
+      
+      def loggedInUser = springSecurityService.currentUser
+  
+      if(loggedInUser)
+      {
+         def orgs = com.cabolabs.security.Organization.findAllByUidInList(loggedInUser.organizations)
+         out << g.select(name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name')
+      }
    }
 }
