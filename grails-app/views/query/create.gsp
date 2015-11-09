@@ -269,10 +269,15 @@
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
         format = $('select[name=composition_format]').val();
+        organizationUid = $('select[name=organizationUid]').val();
 
         if (showUI == 'true') format = 'html';
 
-        var data = {query:query, fromDate:fromDate, toDate:toDate, retrieveData:retrieveData, showUI:showUI, format:format };
+        var data = {
+                    query: query, fromDate: fromDate, toDate: toDate,
+                    retrieveData: retrieveData, showUI: showUI, format: format,
+                    organizationUid: organizationUid
+                   };
         if (qehrId != null) data.qehrId = qehrId;
         
         
@@ -345,9 +350,12 @@
         toDate = $('input[name=toDate]').val();
         format = $('select[name=format]').val(); // xml o json
         group = $('select[name=group]').val();
+        organizationUid = $('select[name=organizationUid]').val();
 
-
-        var data = {query:query, fromDate:fromDate, toDate:toDate, format:format, group:group };
+        var data = {
+                    query: query, fromDate: fromDate, toDate: toDate, format: format,
+                    group: group, organizationUid: organizationUid
+                   };
         if (qehrId != null) data.qehrId = qehrId;
         
         

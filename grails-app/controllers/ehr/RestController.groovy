@@ -999,7 +999,7 @@ class RestController {
     */
    def query(String queryUid, String ehrId, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate)
+             String fromDate, String toDate, String organizationUid)
    {
       //println "rest/query"
       //println params
@@ -1045,7 +1045,7 @@ class RestController {
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
-      def res = query.execute(ehrId, qFromDate, qToDate, group)
+      def res = query.execute(ehrId, qFromDate, qToDate, group, organizationUid)
       
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
@@ -1212,6 +1212,7 @@ class RestController {
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
       String group = request.JSON.group
+      String organizationUid = request.JSON.organizationUid
       
       // parse de dates
       Date qFromDate
@@ -1221,7 +1222,7 @@ class RestController {
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
       def query = Query.newInstance(request.JSON.query)
-      def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group)
+      def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid)
       
       
       // Format
@@ -1261,6 +1262,7 @@ class RestController {
        String toDate = request.JSON.toDate
        String qarchetypeId = request.JSON.qarchetypeId
        String format = request.JSON.format
+       String organizationUid = request.JSON.organizationUid
        
        /*
        println request.JSON.retrieveData.getClass().getSimpleName()
@@ -1276,7 +1278,7 @@ class RestController {
        if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
        
        def query = Query.newInstance(request.JSON.query)
-       def cilist = query.executeComposition(qehrId, qFromDate, qToDate)
+       def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid)
        def result = cilist
        
        // If no ehrUid was specified, the results will be for different ehrs

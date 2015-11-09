@@ -198,13 +198,13 @@ class Query {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
-   def execute(String ehrId, Date from, Date to, String group)
+   def execute(String ehrId, Date from, Date to, String group, String organizationUid)
    {
-      if (this.type == 'datavalue') return executeDatavalue(ehrId, from, to, group)
-      return executeComposition(ehrId, from, to)
+      if (this.type == 'datavalue') return executeDatavalue(ehrId, from, to, group, organizationUid)
+      return executeComposition(ehrId, from, to, organizationUid)
    }
    
-   def executeDatavalue(String ehrId, Date from, Date to, String group)
+   def executeDatavalue(String ehrId, Date from, Date to, String group, String organizationUid)
    {
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -572,7 +572,7 @@ class Query {
    }
    
    
-   def executeComposition(String ehrId, Date from, Date to)
+   def executeComposition(String ehrId, Date from, Date to, String organizationUid)
    {
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
