@@ -206,6 +206,8 @@ class Query {
    
    def executeDatavalue(String ehrId, Date from, Date to, String group, String organizationUid)
    {
+      println "ehrId: $ehrId - organizationUid: $organizationUid"
+      
       // Query data
       def res = DataValueIndex.withCriteria {
          
@@ -224,6 +226,7 @@ class Query {
          owner { // CompositionIndex
             
             if (ehrId) eq('ehrId', ehrId) // Ya se verifico que viene el param y que el ehr existe
+            if (organizationUid) eq('organizationUid', organizationUid)
             if (from) ge('startTime', from) // greater or equal
             if (to) le('startTime', to) // lower or equal
             eq('lastVersion', true) // query only latest versions
@@ -582,6 +585,7 @@ class Query {
       // ===============================================================
       // Criteria nivel 1 ehrId
       if (ehrId) q += "ci.ehrId = '" + ehrId + "' AND "
+      if (organizationUid) q += "ci.organizationUid = '" + organizationUid + "' AND "
        
       // Filter by templateId
       if (this.templateId) q += "ci.templateId = '" + this.templateId +"' AND "
