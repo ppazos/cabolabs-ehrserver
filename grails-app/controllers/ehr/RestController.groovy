@@ -870,25 +870,28 @@ class RestController {
       if (!max) max = 15
       if (!offset) offset = 0
       
-      // Lista ehrs
-
       def _queries 
-      if (!queryName && !descriptionContains){
-            _queries = Query.list(max: max, offset: offset, readOnly: true)
-         }else{
-            if (!descriptionContains){
-               println queryName.replace('.',' ')
-                  def criteria = Query.createCriteria()
-                  _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                     eq('name', queryName.replace('.',' '))
-                  }
-            }else{
-                  def criteria = Query.createCriteria()
-                  _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                     like('name', '%'+descriptionContains+'%')
-                  }
-            }
-         }     
+      if (!queryName && !descriptionContains)
+      {
+         _queries = Query.list(max: max, offset: offset, readOnly: true)
+      }
+      else
+      {
+         if (!descriptionContains)
+         {
+            def criteria = Query.createCriteria()
+            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
+                          like('name', '%'+queryName.replace('.',' ')+'%')
+                       }
+         }
+         else
+         {
+            def criteria = Query.createCriteria()
+            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
+                          like('name', '%'+descriptionContains+'%')
+                       }
+         }
+      }     
       
       // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
       /*
@@ -919,8 +922,8 @@ class RestController {
                                  delegate.criteria {
                                     archetypeId(criteria.archetypeId)
                                     path(criteria.path)
-                                    operand(criteria.operand)
-                                    value(criteria.value)
+                                    delegate.criteria(criteria.toSQL())
+                                    //value(criteria.value)
                                  }
                               }
                            }
@@ -971,7 +974,7 @@ class RestController {
                
                if (query.type == 'composition')
                {
-                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, operand: it.operand, value: it.value] }
+                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL() /*, value: it.value */] }
                }
                else
                {
