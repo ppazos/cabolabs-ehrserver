@@ -57,11 +57,8 @@
 			        </g:each>
 		        </tbody>
            </table>
-         </div>
-         
-	      <div class="pagination">
-	        <g:paginate total="${indexDefinitionInstanceTotal}" />
-	      </div>
+         </div>         
+	     <g:paginator currentPage="${pageCurrent}" numberOfPages="5" urlPage="/ehr/indexDefinition/list/?offset" total="${indexDefinitionInstanceTotal}" numberItemsDisplay="12" />
       </div>
     </div>
   </body>
