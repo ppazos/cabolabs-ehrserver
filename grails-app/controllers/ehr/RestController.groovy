@@ -15,9 +15,9 @@ import common.generic.DoctorProxy
 import common.generic.AuditDetails
 import common.change_control.Contribution
 import common.change_control.VersionedComposition
-import grails.util.Holders
 import common.change_control.Version
-
+import com.cabolabs.security.Organization
+import grails.util.Holders
 
 /**
  * TODO:
@@ -1009,34 +1009,32 @@ class RestController {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
-      /*
-      if (!ehrId)
+      if (!organizationUid)
       {
-         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
+         renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
          return
       }
-      */
-      
-      
-      def query = Query.findByUid(queryUid)
-      
-      if (!query)
+      if (Organization.countByUid(organizationUid) == 0)
       {
-         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456', 404)
+         renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
          return
       }
-      
       if (ehrId && Ehr.countByEhrId(ehrId) == 0)
       {
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
+      def query = Query.findByUid(queryUid)      
+      if (!query)
+      {
+         renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456', 404)
+         return
+      }
       
       // --------------------------------------------------------------
       // FIXME: do query execution and output processing in a service
       // --------------------------------------------------------------
-      
       
       // parse de dates
       Date qFromDate
