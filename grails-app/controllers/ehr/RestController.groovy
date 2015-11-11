@@ -1022,11 +1022,23 @@ class RestController {
          renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
          return
       }
-      if (ehrId && Ehr.countByEhrId(ehrId) == 0)
+      
+      if (ehrId)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
-         return
+         def ehr = Ehr.findByEhrId(ehrId)
+         if (!ehr)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
+            return
+         }
+         
+         if (ehr.organizationUid != organizationUid)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehrId, organizationUid]), '458', 400)
+            return
+         }
       }
+      
       
       def query = Query.findByUid(queryUid)      
       if (!query)
@@ -1215,6 +1227,24 @@ class RestController {
       String group = request.JSON.group
       String organizationUid = request.JSON.organizationUid
       
+      
+      if (qehrId && organizationUid)
+      {
+         def ehr = Ehr.findByEhrId(qehrId)
+         if (!ehr)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
+            return
+         }
+         
+         if (ehr.organizationUid != organizationUid)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
+            return
+         }
+      }
+      
+      
       // parse de dates
       Date qFromDate
       Date qToDate
@@ -1270,6 +1300,24 @@ class RestController {
        println request.JSON.showUI.getClass().getSimpleName()
        */
        println retrieveData.toString() +" "+ showUI.toString()
+       
+       
+       if (qehrId && organizationUid)
+       {
+          def ehr = Ehr.findByEhrId(qehrId)
+          if (!ehr)
+          {
+             renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
+             return
+          }
+          
+          if (ehr.organizationUid != organizationUid)
+          {
+             renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
+             return
+          }
+       }
+       
        
        // parse de dates
        Date qFromDate
