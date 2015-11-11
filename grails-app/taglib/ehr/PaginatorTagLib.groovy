@@ -30,11 +30,12 @@ class PaginatorTagLib {
           out << "<div>"
           out << "<ul id='bp-3-element-test'></ul>"
           out << "</div>"
-          //Librerias a cargar 
-          out << asset.stylesheet(href:'bootstrapv3.min.css')
-          out << asset.javascript(src:'jquery-1.9.1.min.js')
-          out << asset.javascript(src:'bootstrapv3.js')
-          out << asset.javascript(src:'bootstrap-paginator.js')
+          
+          //Librerias a cargar     
+          out << "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">"
+          out << "<script src=\"http://code.jquery.com/jquery-1.9.1.min.js\"></script>"
+          out << "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>"
+          out << asset.javascript(src:'bootstrap-paginator.min.js')
           //Codigo del script
           out << "<script type='text/javascript'>"
           out << "var element = \$(\'#bp-3-element-test\');"
