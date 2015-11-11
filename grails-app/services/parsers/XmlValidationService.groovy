@@ -12,6 +12,7 @@ import org.xml.sax.SAXException
 import org.xml.sax.SAXParseException
 
 import grails.util.Holders
+import groovy.util.slurpersupport.GPathResult
 
 class XmlValidationService {
 
@@ -23,6 +24,16 @@ class XmlValidationService {
       return this.validate(xml, Holders.config.app.opt_xsd)
    }
    
+   public boolean validateVersion(GPathResult xml)
+   {
+      xml.'@xmlns' = 'http://schemas.openehr.org/v1'
+      xml.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+      def xmlStr = groovy.xml.XmlUtil.serialize( xml )
+      
+      println 'validateVersion xmlStr: ' + xmlStr
+      
+      return this.validate(xmlStr, Holders.config.app.version_xsd)
+   }
    
    public boolean validateVersion(String xml)
    {

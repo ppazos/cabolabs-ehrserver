@@ -127,43 +127,82 @@ class RestController {
       
       // TODO: todo debe ser transaccional, se hace toda o no se hace nada...
       
-      // 1. ehrId debe venir
+
       if (!ehrId)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
-      
-      log.info( "ehrid present" )
-      
-      // 2. versions deben venir 1 por lo menos haber una
-      if (!params.versions)
+      if (!auditSystemId)
       {
-         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
+         renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
-      
-      log.info( "versions param present" )
-      
-      def xmlVersions = params.list('versions')
-      if (xmlVersions.size() == 0)
+      if (!auditCommitter)
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
+         renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
          return
       }
-      
-      log.info( "some versions committed" )
+
       
       def ehr = Ehr.findByEhrId(ehrId)
-      
-      // 3. ehr debe existir
       if (!ehr)
       {
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
          return
       }
       
-      log.info( "ehr exists" )
+      // test
+      //def versions = request.XML // xml object GPathResult
+      //def xmlString = new XmlNodePrinter(new PrintWriter(new StringWriter())).print(versions)
+      //def xmlString = groovy.xml.XmlUtil.serialize( versions )
+      //println xmlString
+      
+      //println "versions empty "+ versions.isEmpty()
+      //println "version count "+ versions.version.size()
+      
+      // raw body (el xml perfecto)
+      //println "text"
+      //println request.reader.text
+      // test
+      
+      //renderError(message(code:'rest.commit.error.versionsRequired'), '201', 201)
+      //return
+      
+      
+      /*
+       * <versions>
+       *  <version>
+       *  ...
+       *  </version>
+       * </version>
+       */
+      def versionsXMLString = request.reader.text
+      
+
+      // 2. versions deben venir 1 por lo menos haber una
+      if (!versionsXMLString)
+      {
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
+         return
+      }
+      
+      
+      def slurper = new XmlSlurper(false, false)
+      def versionsXML = slurper.parseText(versionsXMLString)
+      
+      if (versionsXML.isEmpty())
+      {
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
+         return
+      }
+      if (versionsXML.version.size() == 0)
+      {
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
+         return
+      }
+      
+
       
       // ========================================================
       // FIXME: MOVER ESTA LOGICA A UN SERVICIO
@@ -176,9 +215,13 @@ class RestController {
       {
          // null if there are xml validation errors
          contribution = xmlService.parseVersions(
-            ehr, xmlVersions, 
-            auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
-            parsedVersions)
+            ehr,
+            versionsXML, // GPathResult
+            auditSystemId,
+            new Date(),
+            auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
+            parsedVersions
+         )
          
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -540,7 +583,6 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
-      println 'Acabo de entrar en función con subjectUid '+ subjectUid
       if (!subjectUid)
       {
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
