@@ -33,12 +33,6 @@ class BootStrap {
       }
       */
       
-     // test
-     println "Version.count "+ common.change_control.Version.count()
-     println "Version.countBy"+ common.change_control.Version.countByUid('f96ab313-556f-4237-93f4-198a391d8323::EMR::1')
-     println "--------------------------------------------------------------"
-     
-     
      // Used by query builder, all return String
      String.metaClass.asSQLValue = { operand ->
         if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %

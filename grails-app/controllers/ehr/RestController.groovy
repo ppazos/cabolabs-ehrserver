@@ -187,6 +187,8 @@ class RestController {
          return
       }
       
+      println versionsXMLString
+      
       
       def slurper = new XmlSlurper(false, false)
       def versionsXML = slurper.parseText(versionsXMLString)

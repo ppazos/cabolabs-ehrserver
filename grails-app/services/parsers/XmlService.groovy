@@ -251,9 +251,6 @@ class XmlService {
          
       } // each versionXML
       
-
-      println "contribution "+ contribution
-      
       
       // FIXME: deberia ser transaccional junto al codigo de versionado de RestController.commit
       // Saves versions in cascade and saves the relationship contribution - versions

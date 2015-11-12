@@ -30,8 +30,6 @@ class XmlValidationService {
       xml.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
       def xmlStr = groovy.xml.XmlUtil.serialize( xml )
       
-      println 'validateVersion xmlStr: ' + xmlStr
-      
       return this.validate(xmlStr, Holders.config.app.version_xsd)
    }
    
