@@ -32,7 +32,7 @@ class BootStrap {
         body 'How are you?' 
       }
       */
-     
+      
      // Used by query builder, all return String
      String.metaClass.asSQLValue = { operand ->
         if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
