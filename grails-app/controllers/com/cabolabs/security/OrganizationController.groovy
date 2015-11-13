@@ -33,7 +33,7 @@ class OrganizationController {
          //println "organizations: "+ user.organizations.toString()
          
          // no pagination
-         list = Organization.findAllByUidInList(user.organizations)
+         list = user.organizationObjects //Organization.findAllByUidInList(user.organizations)
          count = list.size()
       }
       

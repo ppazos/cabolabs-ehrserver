@@ -89,7 +89,7 @@ class EhrTagLib {
   
       if(loggedInUser)
       {
-         def orgs = com.cabolabs.security.Organization.findAllByUidInList(loggedInUser.organizations)
+         def orgs = loggedInUser.organizationObjects
          out << g.select(name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name')
       }
    }

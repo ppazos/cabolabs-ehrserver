@@ -1,5 +1,7 @@
 package com.cabolabs.security
 
+import com.cabolabs.security.Organization
+
 class User implements Serializable {
 
 	private static final long serialVersionUID = 1
@@ -56,7 +58,7 @@ class User implements Serializable {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
 	}
 
-	static transients = ['springSecurityService']
+	static transients = ['springSecurityService', 'organizationObjects']
 
 	static constraints = {
 		username blank: false, unique: true
@@ -68,4 +70,9 @@ class User implements Serializable {
 		password column: '`password`'
       organizations lazy: false
 	}
+   
+   def getOrganizationObjects()
+   {
+      return Organization.findAllByUidInList(this.organizations)
+   }
 }
