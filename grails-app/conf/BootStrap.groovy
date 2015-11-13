@@ -73,51 +73,55 @@ class BootStrap {
      
      //println "configured filters "+ SpringSecurityUtils.configuredOrderedFilters
      
-     // Sample organizations
-     def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
-     def clinic = new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
-     def practice = new Organization(name: 'Cirugia Estetica', number: '5555')
-     
-     hospital.save(failOnError:true, flush:true)
-     clinic.save(failOnError:true, flush:true)
-     practice.save(failOnError:true, flush:true)
-     
-     for (String url in [
-      '/', // redirects to login, see UrlMappings
-      '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
-      '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
-      '/login', '/login.*', '/login/*',
-      '/logout', '/logout.*', '/logout/*',
-      '/user/register', '/simpleCaptcha/**', '/j_spring_security_logout',
-      '/rest/**'])
+     def organizations = []
+     if (Organization.count() == 0)
      {
-         new RequestMap(url: url, configAttribute: 'permitAll').save()
+        // Sample organizations
+        organizations << new Organization(name: 'Hospital de Clinicas', number: '1234')
+        organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+        organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
+        
+        organizations.each {
+           it.save(failOnError:true, flush:true)
+        }
      }
+     else organizations = Organization.list()
      
+     if (RequestMap.count() == 0)
+     {
+        for (String url in [
+         '/', // redirects to login, see UrlMappings
+         '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
+         '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
+         '/login', '/login.*', '/login/*',
+         '/logout', '/logout.*', '/logout/*',
+         '/user/register', '/simpleCaptcha/**',
+         '/j_spring_security_logout',
+         '/rest/**'
+        ])
+        {
+            new RequestMap(url: url, configAttribute: 'permitAll').save()
+        }
+   
+        // sections
+        // works for /app
+        //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
+        
+        new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
 
-
-     // sections
-     // works for /app
-     //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
-     
-     new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     
-     new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
-     
-     new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
-     new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-     
-     
-     new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
-     
+        new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
+     }
      if (Role.count() == 0 )
      {
         def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
@@ -129,11 +133,11 @@ class BootStrap {
      if (User.count() == 0)
      {
         def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin')
-        adminUser.organizations = [hospital.uid, clinic.uid]
+        adminUser.organizations = [organizations[0].uid, organizations[1].uid]
         adminUser.save(failOnError: true,  flush: true)
         
         def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com',  password: 'orgman')
-        orgManUser.organizations = [hospital.uid, clinic.uid]
+        orgManUser.organizations = [organizations[0].uid, organizations[1].uid]
         orgManUser.save(failOnError: true,  flush: true)
         
         //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
@@ -228,24 +232,26 @@ class BootStrap {
            }
         }
      }
-     
-     // Fake EHRs for patients
-     // Idem EhrController.createEhr
-     def ehr
-     def c = Organization.count()
-     persons.eachWithIndex { p, i ->
-     
-        if (p.role == 'pat')
-        {
-           ehr = new Ehr(
-              ehrId: p.uid, // the ehr id is the same as the patient just to simplify testing
-              subject: new PatientProxy(
-                 value: p.uid
-              ),
-              organizationUid: Organization.get(i % c + 1).uid
-           )
-         
-           if (!ehr.save()) println ehr.errors
+     if (Ehr.count() == 0)
+     {
+        // Fake EHRs for patients
+        // Idem EhrController.createEhr
+        def ehr
+        def c = Organization.count()
+        persons.eachWithIndex { p, i ->
+        
+           if (p.role == 'pat')
+           {
+              ehr = new Ehr(
+                 ehrId: p.uid, // the ehr id is the same as the patient just to simplify testing
+                 subject: new PatientProxy(
+                    value: p.uid
+                 ),
+                 organizationUid: Organization.get(i % c + 1).uid
+              )
+            
+              if (!ehr.save()) println ehr.errors
+           }
         }
      }
    }
