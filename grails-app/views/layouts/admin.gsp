@@ -40,11 +40,11 @@
   .navbar-header img {
     max-height: 20px;
   }
-  ul.nav {
+  ul.navbar-top-links {
     text-align: center;
 
   }
-  ul.nav li:first-child {
+  ul.navbar-top-links > li:first-child {
     margin: 0;
     padding: 15px 0 15px 15px;
     margin-left: 15px;
@@ -81,10 +81,10 @@
 	    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 	      <div class="navbar-header">
 	        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	          <span class="sr-only">Toggle navigation</span>
-	          <span class="icon-bar"></span>
-	          <span class="icon-bar"></span>
-	          <span class="icon-bar"></span>
+	         <span class="sr-only">Toggle navigation</span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
 	        </button>
 	        <!-- LOGO -->
 	        <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
@@ -94,7 +94,7 @@
 	
 	      <!-- TOP MENU: TODO -->
 	      <sec:ifLoggedIn>
-	         <ul class="nav navbar-top-links navbar-right">
+	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
 	          Welcome Back <sec:username/>!
 	         </li>
@@ -117,7 +117,7 @@
 	           <!-- /.dropdown-user -->
 	         </li>
 	         <!-- /.dropdown -->
-	         </ul>
+	        </ul>
 	         
 	         
 	         <!-- LEFT MENU -->

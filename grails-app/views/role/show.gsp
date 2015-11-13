@@ -18,14 +18,10 @@
         <g:if test="${flash.message}">
           <div class="message" role="status">${flash.message}</div>
         </g:if>
-        <ol class="property-list role">
-          <g:if test="${roleInstance?.authority}">
-            <li class="fieldcontain">
-              <span id="authority-label" class="property-label"><g:message code="role.authority.label" default="Authority" /></span>
-              <span class="property-value" aria-labelledby="authority-label"><g:fieldValue bean="${roleInstance}" field="authority"/></span>
-            </li>
-          </g:if>
-        </ol>
+        <div class="control-group">
+          <label><g:message code="role.authority.label" default="Authority" /></label>
+          <div class="control"><g:fieldValue bean="${roleInstance}" field="authority"/></div>
+        </div>
         <g:form url="[resource:roleInstance, action:'delete']" method="DELETE">
           <fieldset class="buttons">
             <div class="btn-toolbar" role="toolbar">
