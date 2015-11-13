@@ -33,7 +33,6 @@
   #main_menu {
     text-align: center;
   }
-  
   #main_menu .active {
     background-color: #efefef;
     box-shadow: 0 -2px 2px 0px #aaaaaa; /* x_offset y_offset blur spread_distance color */
@@ -41,7 +40,15 @@
   .navbar-header img {
     max-height: 20px;
   }
-  
+  ul.nav {
+    text-align: center;
+
+  }
+  ul.nav li:first-child {
+    margin: 0;
+    padding: 15px 0 15px 15px;
+    margin-left: 15px;
+  }
   </style>
   
   <g:javascript>
