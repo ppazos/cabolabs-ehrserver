@@ -58,7 +58,7 @@
 		        </tbody>
            </table>
          </div>         
-	     <g:paginator currentPage="${pageCurrent}" numberOfPages="5" urlPage="/ehr/indexDefinition/list/?offset" total="${indexDefinitionInstanceTotal}" numberItemsDisplay="12" />
+	     <g:paginator currentPage="${pageCurrent}" numberOfPages="5" total="${indexDefinitionInstanceTotal}" numberItemsDisplay="12" />
       </div>
     </div>
   </body>

@@ -25,6 +25,7 @@ class PaginatorTagLib {
       def numberItemsDisplay=attrs.numberItemsDisplay? attrs.numberItemsDisplay:10 
      //Calculamos el maximo número de elementos que tendra el paginador.
       def totalPages =(attrs.total.toInteger()).intdiv(numberItemsDisplay.toInteger())+ ((attrs.total.toInteger()%numberItemsDisplay.toInteger()) ==0?0:1)
+      def urlPage=g.createLink(action: actionName);
       //Código que se genera para poder utilizar boostrap-paginator
          //Codigo necesario para poder aplicar bootstrap
           out << "<div>"
@@ -32,9 +33,6 @@ class PaginatorTagLib {
           out << "</div>"
           
           //Librerias a cargar     
-          out << "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">"
-          out << "<script src=\"http://code.jquery.com/jquery-1.9.1.min.js\"></script>"
-          out << "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>"
           out << asset.javascript(src:'bootstrap-paginator.min.js')
           //Codigo del script
           out << "<script type='text/javascript'>"
@@ -43,11 +41,18 @@ class PaginatorTagLib {
           out << "bootstrapMajorVersion:3," 
           out << "currentPage: " +currentPage                   
           out << ",numberOfPages: " + attrs.numberOfPages         
-          out << ",totalPages: " + totalPages          
+          out << ",totalPages: " + totalPages   
+          //opción del paginador que asignar url a cada elemento del paginador, en función de la página pulsada.       
           out << ",pageUrl: function(type, page, current){"   
-          out << "return \"${attrs.urlPage}=\"+(page-1)*${attrs.numberItemsDisplay}+\"&max=${attrs.numberItemsDisplay}\";"               
-          out << "}"           
-          out << "};"       
+          out << "return \"${urlPage}?offset=\"+(page-1)*${attrs.numberItemsDisplay}+\"&max=${attrs.numberItemsDisplay}\";"               
+          out << "},"
+          //opción del paginador para mostrar o ocultar partes del paginador.
+          out << "shouldShowPage:function(type, page, current){"
+          out << "switch(type){"
+          out <<"case \"first\":"
+          out <<"case \"last\":return false;"
+          out <<"default:return true;}"
+          out << "}};"       
           out << "element.bootstrapPaginator(options);"       
           out << "</script>"
    }
