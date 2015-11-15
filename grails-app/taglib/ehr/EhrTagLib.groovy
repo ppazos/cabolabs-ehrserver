@@ -90,7 +90,7 @@ class EhrTagLib {
       if(loggedInUser)
       {
          def orgs = loggedInUser.organizationObjects
-         out << g.select(name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name')
+         out << g.select(name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value)
       }
    }
 }

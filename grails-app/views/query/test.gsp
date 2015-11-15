@@ -85,7 +85,6 @@
               <sec:ifNotGranted roles="ROLE_ADMIN">
                 <g:selectWithCurrentUserOrganiations name="organizationUid" />
               </sec:ifNotGranted>
-              
             </td>
           </tr>
         </table>

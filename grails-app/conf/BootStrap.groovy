@@ -223,9 +223,12 @@ class BootStrap {
                uid: '55555555-1111-1111-1111-111111111111'
            )
         ]
-         
-        persons.each { p ->
-            
+        
+        def c = Organization.count()
+        persons.eachWithIndex { p, i ->
+           
+           p.organizationUid = Organization.get(i % c + 1).uid
+           
            if (!p.save())
            {
               println p.errors
@@ -237,7 +240,7 @@ class BootStrap {
         // Fake EHRs for patients
         // Idem EhrController.createEhr
         def ehr
-        def c = Organization.count()
+        
         persons.eachWithIndex { p, i ->
         
            if (p.role == 'pat')
@@ -247,7 +250,7 @@ class BootStrap {
                  subject: new PatientProxy(
                     value: p.uid
                  ),
-                 organizationUid: Organization.get(i % c + 1).uid
+                 organizationUid: p.organizationUid
               )
             
               if (!ehr.save()) println ehr.errors

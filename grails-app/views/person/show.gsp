@@ -69,6 +69,12 @@
             <p class="form-control-static"><g:fieldValue bean="${personInstance}" field="role"/></p>
           </div>
         </div>
+        <div class="control-group">
+          <label class="control-label"><g:message code="person.organization.label" default="Organization" /></label>
+          <div class="controls">
+            <p class="form-control-static"><g:fieldValue bean="${personInstance}" field="organizationUid"/></p>
+          </div>
+        </div>
         
         <div class="btn-toolbar" role="toolbar">
           <g:link class="edit" action="edit" id="${personInstance?.id}">

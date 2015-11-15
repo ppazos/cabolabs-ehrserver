@@ -177,7 +177,8 @@ class EhrController {
          ehr = new Ehr(
             subject: new PatientProxy(
                value: patientUID
-            )
+            ),
+            organizationUid: person.organizationUid
          )
          
          if (!ehr.save())

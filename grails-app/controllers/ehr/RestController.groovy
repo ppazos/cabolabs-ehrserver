@@ -738,6 +738,7 @@ class RestController {
                         sex(person.sex)
                         idCode(person.idCode)
                         idType(person.idType)
+                        organizationUid(person.organizationUid)
                      }
                   }
                }
@@ -769,7 +770,8 @@ class RestController {
                dob: this.formatterDate.format( person.dob ),
                sex: person.sex,
                idCode: person.idCode,
-               idType: person.idType
+               idType: person.idType,
+               organizationUid: person.organizationUid
             ]
          }
          def result = data as JSON
@@ -817,6 +819,7 @@ class RestController {
                sex(person.sex)
                idCode(person.idCode)
                idType(person.idType)
+               organizationUid(person.organizationUid)
             }
          }
       }
@@ -829,7 +832,8 @@ class RestController {
             dob: this.formatterDate.format( person.dob ),
             sex: person.sex,
             idCode: person.idCode,
-            idType: person.idType
+            idType: person.idType,
+            organizationUid: person.organizationUid
          ]
          
          def result = data as JSON

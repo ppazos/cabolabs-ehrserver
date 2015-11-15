@@ -32,6 +32,8 @@ class Person {
    
    boolean deleted = false // logical delete
    
+   String organizationUid
+   
    static constraints = {
       sex(inList:['M','F','U'])
       idCode(nullable:true)
