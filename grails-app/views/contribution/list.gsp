@@ -18,13 +18,15 @@
 	       
          match = (point[1].toString() =~ /(\d{4})(\d{2})/) //=match for year and month, /(\d{4})(\d{2})(\d{2})/ match for ymd
 
+         // -1 because month is 0 based
 	      println 'serie.data.push(['+
-          'Date.UTC('+ match[0][1] +', '+ match[0][2] +', 1), '+ point[0] +
+          'Date.UTC('+ match[0][1] +', (' + match[0][2] +' -1), 1), '+ point[0] +
          ']);' // point[0] is the count, point[1] is the group date
 	   }
 	   %>
 
-	   series.push(serie);
+      // avoid error on empty serie.data
+      if (serie.data.length > 0) series.push(serie);
 
 	   console.log(series);
     
