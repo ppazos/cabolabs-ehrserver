@@ -12,7 +12,7 @@
       var serie = { name: 'contributions', data: [] };
     
 	   <%
-      println 'var start = Date.UTC('+ (start.year + 1900) +','+ start.month +','+ start.date +');'
+      println 'var start = Date.UTC('+ (start.year + 1900) +','+ (start.month - 1) +','+ start.date +');'
       def match
 	   data.each { point ->
 	       
