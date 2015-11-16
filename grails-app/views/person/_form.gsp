@@ -55,7 +55,7 @@
                   optionKey="uid" optionValue="name" value="${personInstance.organizationUid}" />
       </sec:ifAnyGranted>
       <sec:ifNotGranted roles="ROLE_ADMIN">
-        <g:selectWithCurrentUserOrganiations name="organizationUid" value="${personInstance.organizationUid}" />
+        <g:selectWithCurrentUserOrganizations name="organizationUid" value="${personInstance.organizationUid}" />
       </sec:ifNotGranted>
     </p>
   </div>

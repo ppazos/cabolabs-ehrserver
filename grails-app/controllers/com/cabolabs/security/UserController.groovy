@@ -96,7 +96,7 @@ class UserController {
             o.save(failOnError: true, flush:true)
             u.addToOrganizations(o.uid).save(failOnError: true, flush:true)
             
-            // TODO: UserROle ORG_* needs a reference to the org, since the user
+            // TODO: UserRole ORG_* needs a reference to the org, since the user
             //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
             UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
             UserRole.create( u, (Role.findByAuthority('ROLE_ORG_MANAGER')), true ) // the user is creating the organization, it should be manager also
@@ -115,8 +115,6 @@ class UserController {
         } // transaction
         
         // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
-        
-        // TODO: send confirm email
         
         if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
         {
@@ -141,13 +139,21 @@ class UserController {
          notFound()
          return
       }
+      
+      if (!userInstance.password) userInstance.enabled = false
 
+      userInstance.validate() // it was validated and might have an error because enabled is true by default but might not have pass
+      
       if (userInstance.hasErrors()) {
          respond userInstance.errors, view:'create'
          return
       }
 
       userInstance.save flush:true
+      
+      // TODO: UserRole ORG_* needs a reference to the org, since the user
+      //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
+      UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
 
       request.withFormat {
          form multipartForm {

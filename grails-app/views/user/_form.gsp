@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.security.User" %>
+<%@ page import="com.cabolabs.security.User" %><%@ page import="com.cabolabs.security.Organization" %>
 
 <input type="hidden" name="type" value="${params.type}" />
 
@@ -18,8 +18,22 @@
    <g:textField name="email" required="" value="${userInstance?.email}"/>
 </div>
 
-<sec:access expression="hasRole('ROLE_ADMIN')">
+<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
+   <label for="organizations">
+      <g:message code="user.organizations.label" default="Organizations" />
+      <span class="required-indicator">*</span>
+   </label>
+   <br/>
+   <sec:ifAnyGranted roles="ROLE_ADMIN">
+     <g:select name="organizationUid" from="${Organization.list()}"
+               optionKey="uid" optionValue="name" value="${userInstance?.organizationObjects}" />
+   </sec:ifAnyGranted>
+   <sec:ifNotGranted roles="ROLE_ADMIN">
+     <g:selectWithCurrentUserOrganizations name="organizations" value="${userInstance?.organizations}" multiple="true" />
+   </sec:ifNotGranted>
+</div>
 
+<sec:access expression="hasRole('ROLE_ADMIN')">
 	<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'accountExpired', 'error')} ">
 		<label for="accountExpired">
 			<g:message code="user.accountExpired.label" default="Account Expired" />
@@ -47,5 +61,4 @@
 		</label>
 		<g:checkBox name="passwordExpired" value="${userInstance?.passwordExpired}" />
 	</div>
-	
 </sec:access>

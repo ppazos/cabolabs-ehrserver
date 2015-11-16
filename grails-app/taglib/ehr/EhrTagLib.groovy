@@ -83,14 +83,25 @@ class EhrTagLib {
     * Renders a select with the organizations of the current logged user.
     * This is used in the query test UID to filter by organizationUid.
     */
-   def selectWithCurrentUserOrganiations = { attrs, body ->
+   def selectWithCurrentUserOrganizations = { attrs, body ->
       
       def loggedInUser = springSecurityService.currentUser
-  
       if(loggedInUser)
       {
-         def orgs = loggedInUser.organizationObjects
-         out << g.select(name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value)
+         def args = [:]
+         args.name = attrs.name
+         args.from = loggedInUser.organizationObjects
+         args.optionKey = 'uid'
+         args.optionValue = 'name'
+         
+         if (attrs.value) args.value = attrs.value
+         if (attrs.multiple)
+         {
+            args.multiple = 'true'
+            args.size = 5
+         }
+         
+         out << g.select(args) // name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value
       }
    }
 }

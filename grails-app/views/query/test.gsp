@@ -83,7 +83,7 @@
                           optionKey="uid" optionValue="name" />
               </sec:ifAnyGranted>
               <sec:ifNotGranted roles="ROLE_ADMIN">
-                <g:selectWithCurrentUserOrganiations name="organizationUid" />
+                <g:selectWithCurrentUserOrganizations name="organizationUid" />
               </sec:ifNotGranted>
             </td>
           </tr>

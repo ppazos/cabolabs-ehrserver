@@ -45,7 +45,9 @@ class User implements Serializable {
 	}
 
 	def beforeInsert() {
-		encodePassword()
+      if (this.password) {
+		   encodePassword()
+      }
 	}
 
 	def beforeUpdate() {
@@ -62,8 +64,15 @@ class User implements Serializable {
 
 	static constraints = {
 		username blank: false, unique: true
-		password blank: false
-      email    blank: false, email: true
+      
+      // if user is disabled, password can be blank, is used to allow the user to reset the password
+		password nullable: true, validator: { val, obj ->
+      
+          if (obj.enabled && !val) return false
+          return true
+      }
+      
+      email blank: false, email: true
 	}
 
 	static mapping = {
