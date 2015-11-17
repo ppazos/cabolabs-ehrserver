@@ -25,6 +25,10 @@
 	       <div><g:fieldValue bean="${userInstance}" field="username"/></div>
 	     </div>
 	     <div class="control-group">
+          <label><g:message code="user.email.label" default="Email" /></label>
+          <div><g:fieldValue bean="${userInstance}" field="email"/></div>
+        </div>
+	     <div class="control-group">
 	       <label><g:message code="user.organizations.label" default="Organizations" /></label>
 	       <div>
 	         <g:select name="organizations" from="${userInstance.organizationObjects}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" />
