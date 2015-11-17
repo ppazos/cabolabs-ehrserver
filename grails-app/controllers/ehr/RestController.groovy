@@ -18,6 +18,7 @@ import common.change_control.VersionedComposition
 import common.change_control.Version
 import com.cabolabs.security.Organization
 import grails.util.Holders
+import java.lang.reflect.UndeclaredThrowableException
 
 /**
  * TODO:
@@ -260,12 +261,27 @@ class RestController {
             return
          }
       }
+      catch (UndeclaredThrowableException e)
+      {
+         // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
+         return
+      }
       catch (Exception e)
       {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          
-         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400)
+         // trace
+         StringWriter writer = new StringWriter();
+         PrintWriter printWriter = new PrintWriter( writer );
+         e.printStackTrace( printWriter );
+         printWriter.flush();
+         String stackTrace = writer.toString();
+         
+         println stackTrace
+         
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
          return
       }
       
