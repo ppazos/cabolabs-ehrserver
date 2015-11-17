@@ -80,7 +80,7 @@ environments {
   production {
     grails.logging.jul.usebridge = false
     grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr-0.3"
+    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr-0.3" // comment this if testing prod on localhost
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
     }
@@ -175,23 +175,6 @@ grails.plugin.springsecurity.providerNames = ['authProvider']
 grails.plugin.springsecurity.logout.postOnly = false
 
 // Mail
-/*
-grails {
-   mail {
-     host = "smtp.gmail.com"
-     port = 465
-     username = "cbl@gmail.com"
-     password = "asdfaasdfasdfasfasfdasfdsdfad"
-     props = ["mail.smtp.auth":"true",
-              "mail.smtp.socketFactory.port":"465",
-              "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-              "mail.smtp.socketFactory.fallback":"false"]
-   }
-}
-*/
-
-
-
 grails {
    mail {
      host = "mail.cabolabs.com"
