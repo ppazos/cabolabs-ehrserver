@@ -3,6 +3,7 @@ package ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult
+import org.xml.sax.ErrorHandler
 
 import grails.util.Holders
 
@@ -38,6 +39,16 @@ class IndexDataJob {
       //def compoXML
       def version, versionFile, versionXml, parsedVersion, compoParsed
       
+      // Error handler to avoid:
+      // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
+      // set, which is probably not what is desired.  Parser will use a default
+      // ErrorHandler to print the first 10 errors.  Please call
+      // the 'setErrorHandler' method to fix this.
+      def message
+      def parser = new XmlSlurper(false, false)
+//      parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
+      
+      
       // Para cada composition
       // El compoIndex se crea en el commit
       compoIdxs.each { compoIndex ->
@@ -49,7 +60,18 @@ class IndexDataJob {
          version = compoIndex.getParent()
          versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
          versionXml = versionFile.getText()
-         parsedVersion = new XmlSlurper(true, false).parseText(versionXml)
+         
+         
+         parsedVersion = parser.parseText(versionXml)
+         
+         // error from error handler?
+//         if (message)
+//         {
+//            println "IndexDataJob XML ERROR: "+ message
+//            message = null // empty for the next parse
+//         }
+         
+         
          compoParsed = parsedVersion.data
          
          recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
@@ -152,11 +174,12 @@ class IndexDataJob {
       
       if (!dataidx)
       {
-         println "IndexDefinition NOT found for "+ archetypeId +" and "+ archetypePath
+         // FIXME: don't continue if there is no index.
+         //println "IndexDefinition NOT found for "+ archetypeId +" and "+ archetypePath
       }
       else
       {
-         println "IndexDefinition FOUND for "+ archetypeId +" and "+ archetypePath
+         //println "IndexDefinition FOUND for "+ archetypeId +" and "+ archetypePath
       }
       
       // Si dataidx es nulo, idxtype sera nulo y luego idvalue tambien,
