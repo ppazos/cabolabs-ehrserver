@@ -52,7 +52,7 @@
 	     </div>
 	     <g:form url="[resource:userInstance, action:'delete']" method="DELETE">
 	       <fieldset class="buttons">
-	         <g:link class="edit btn btn-default btn-md" action="edit" resource="${userInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+	         <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
 	         <%--
 	          <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	         --%>

@@ -77,11 +77,7 @@
         </div>
         
         <div class="btn-toolbar" role="toolbar">
-          <g:link class="edit" action="edit" id="${personInstance?.id}">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" />
-            </button>
-          </g:link>
+          <g:link action="edit" id="${personInstance?.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
         </div>
       </div>
     </div>

@@ -120,11 +120,7 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:link action="edit" params="[id:queryInstance?.id]">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" />
-            </button>
-          </g:link>
+          <g:link action="edit" params="[id:queryInstance?.id]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
           <g:link action="delete" params="[id:queryInstance?.id]" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.delete" />

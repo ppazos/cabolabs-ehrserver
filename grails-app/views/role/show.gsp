@@ -25,11 +25,7 @@
         <g:form url="[resource:roleInstance, action:'delete']" method="DELETE">
           <fieldset class="buttons">
             <div class="btn-toolbar" role="toolbar">
-              <g:link class="edit" action="edit" resource="${roleInstance}">
-                <button type="button" class="btn btn-default btn-md">
-                  <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" />
-                </button>
-              </g:link>
+              <g:link action="edit" resource="${roleInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
             </div>
             <%--
             <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
