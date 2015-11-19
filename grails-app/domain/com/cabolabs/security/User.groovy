@@ -4,18 +4,18 @@ import com.cabolabs.security.Organization
 
 class User implements Serializable {
 
-	private static final long serialVersionUID = 1
+   private static final long serialVersionUID = 1
 
-	transient springSecurityService
+   transient springSecurityService
 
-	String username
-	String password
+   String username
+   String password
    String email
    
-	boolean enabled = true
-	boolean accountExpired
-	boolean accountLocked
-	boolean passwordExpired
+   boolean enabled = true
+   boolean accountExpired
+   boolean accountLocked
+   boolean passwordExpired
    
    // This is set when the user is created from the backend and the password is not set.
    // The user will be disabled, and the system sends an email to the new user with a
@@ -24,68 +24,74 @@ class User implements Serializable {
    
    static hasMany = [organizations: String] // UIDs of related organizations
 
-	User(String username, String password)
+   User(String username, String password)
    {
-		this()
-		this.username = username
-		this.password = password
-	}
+      this()
+      this.username = username
+      this.password = password
+   }
 
-	@Override
-	int hashCode()
+   @Override
+   int hashCode()
    {
-		username?.hashCode() ?: 0
-	}
+      username?.hashCode() ?: 0
+   }
 
-	@Override
-	boolean equals(other)
+   @Override
+   boolean equals(other)
    {
-		is(other) || (other instanceof User && other.username == username)
-	}
+      is(other) || (other instanceof User && other.username == username)
+   }
 
-	@Override
-	String toString()
+   @Override
+   String toString()
    {
-		username
-	}
+      username
+   }
 
-	Set<Role> getAuthorities()
+   Set<Role> getAuthorities()
    {
-		UserRole.findAllByUser(this)*.role
-	}
+      UserRole.findAllByUser(this)*.role
+   }
+   
+   boolean authoritiesContains(String role)
+   {
+      def roles = this.authorities
+      return roles.find { it.authority == role } != null
+   }
 
-	def beforeInsert()
+   def beforeInsert()
    {
       if (this.password)
       {
-		   encodePassword()
+         encodePassword()
          
          if (this.enabled) this.resetPasswordToken = null
       }
-	}
+   }
 
-	def beforeUpdate()
+   def beforeUpdate()
    {
-		if (isDirty('password'))
+      if (isDirty('password'))
       {
-			encodePassword()
-		}
+         encodePassword()
+      }
       
       if (this.password && this.enabled) this.resetPasswordToken = null
-	}
+   }
 
-	protected void encodePassword()
+   protected void encodePassword()
    {
-		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
-	}
+      password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+   }
 
-	static transients = ['springSecurityService', 'organizationObjects', 'passwordToken']
+   static transients = ['springSecurityService', 'organizationObjects', 'passwordToken']
 
-	static constraints = {
-		username blank: false, unique: true
+   static constraints = {
+      username blank: false, unique: true
       
       // if user is disabled, password can be blank, is used to allow the user to reset the password
-		password nullable: true, validator: { val, obj ->
+      password nullable: true, validator: { val, obj ->
       
           if (obj.enabled && !val) return false
           return true
@@ -94,12 +100,12 @@ class User implements Serializable {
       email blank: false, email: true
       
       resetPasswordToken nullable: true
-	}
+   }
 
-	static mapping = {
-		password column: '`password`'
+   static mapping = {
+      password column: '`password`'
       organizations lazy: false
-	}
+   }
    
    def getOrganizationObjects()
    {

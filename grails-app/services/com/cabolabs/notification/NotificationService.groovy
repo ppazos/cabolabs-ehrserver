@@ -29,14 +29,20 @@ class NotificationService {
    // User created by admin or org manager
    def sendUserCreatedEmail(String recipient, List messageData)
    {
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
-      def url = g.createLink(controller:'user', action:'resetPassword', absolute:true)
+      def user = messageData[0]
       
+      println "sendUserCreatedEmail user.organizations "+ user.organizations
+      
+      def token = user.passwordToken
+      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
+      def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+      
+      def organizationNumbers = user.organizationObjects*.number
       String message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>To reset your password, please go here: '+ url +'</p>'
 
-      messageData.eachWithIndex { data, i ->
-        message = message.replaceFirst ( /\{\d*\}/ , data)
-      }
+
+      message = message.replaceFirst ( /\{0\}/ , organizationNumbers.toString())
+
       
       this.sendMail(recipient, 'Welcome to CaboLabs EHRServer!', message)
    }

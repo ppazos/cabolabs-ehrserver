@@ -95,7 +95,8 @@ class BootStrap {
          '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
          '/login', '/login.*', '/login/*',
          '/logout', '/logout.*', '/logout/*',
-         '/user/register', '/simpleCaptcha/**',
+         '/user/register', '/user/resetPassword',
+         '/simpleCaptcha/**',
          '/j_spring_security_logout',
          '/rest/**'
         ])

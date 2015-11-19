@@ -65,7 +65,7 @@ class UserController {
     */
    def register()
    {
-      println params
+      //println params
       
       if (!params.register) // show view
       {
@@ -134,34 +134,52 @@ class UserController {
    }
 
    @Transactional
-   def save(User userInstance) {
-      if (userInstance == null) {
+   def save(User userInstance)
+   {
+      if (userInstance == null)
+      {
          notFound()
          return
       }
       
+      println "user.save organizations 1 "+ userInstance.organizations
+      
+      def sendNotification = false
       if (!userInstance.password)
       {
          userInstance.enabled = false
          userInstance.setPasswordToken()
          
-         // TODO
-         // get token to create the URL for the email
+         sendNotification = true
       }
 
       userInstance.validate() // it was validated and might have an error because enabled is true by default but might not have pass
       
-      if (userInstance.hasErrors()) {
+      if (userInstance.hasErrors())
+      {
          respond userInstance.errors, view:'create'
          return
       }
 
       userInstance.save flush:true
       
+      println "user.save organizations 2 "+ userInstance.organizations
+      
       // TODO: UserRole ORG_* needs a reference to the org, since the user
       //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
       UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
 
+      
+      if (sendNotification)
+      {
+         // token to create the URL for the email is in the userInstance
+         notificationService.sendUserCreatedEmail(
+            userInstance.email,
+            [userInstance]
+         )
+      }
+      
+      
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])

@@ -25,7 +25,7 @@
    </label>
    <br/>
    <sec:ifAnyGranted roles="ROLE_ADMIN">
-     <g:select name="organizationUid" from="${Organization.list()}"
+     <g:select name="organizations" from="${Organization.list()}"
                optionKey="uid" optionValue="name" value="${userInstance?.organizationObjects}" />
    </sec:ifAnyGranted>
    <sec:ifNotGranted roles="ROLE_ADMIN">
