@@ -17,50 +17,69 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
    
+   // This is set when the user is created from the backend and the password is not set.
+   // The user will be disabled, and the system sends an email to the new user with a
+   // link to the reset password action, including this token in the link.
+   String resetPasswordToken
+   
    static hasMany = [organizations: String] // UIDs of related organizations
 
-	User(String username, String password) {
+	User(String username, String password)
+   {
 		this()
 		this.username = username
 		this.password = password
 	}
 
 	@Override
-	int hashCode() {
+	int hashCode()
+   {
 		username?.hashCode() ?: 0
 	}
 
 	@Override
-	boolean equals(other) {
+	boolean equals(other)
+   {
 		is(other) || (other instanceof User && other.username == username)
 	}
 
 	@Override
-	String toString() {
+	String toString()
+   {
 		username
 	}
 
-	Set<Role> getAuthorities() {
+	Set<Role> getAuthorities()
+   {
 		UserRole.findAllByUser(this)*.role
 	}
 
-	def beforeInsert() {
-      if (this.password) {
+	def beforeInsert()
+   {
+      if (this.password)
+      {
 		   encodePassword()
+         
+         if (this.enabled) this.resetPasswordToken = null
       }
 	}
 
-	def beforeUpdate() {
-		if (isDirty('password')) {
+	def beforeUpdate()
+   {
+		if (isDirty('password'))
+      {
 			encodePassword()
 		}
+      
+      if (this.password && this.enabled) this.resetPasswordToken = null
 	}
 
-	protected void encodePassword() {
+	protected void encodePassword()
+   {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
 	}
 
-	static transients = ['springSecurityService', 'organizationObjects']
+	static transients = ['springSecurityService', 'organizationObjects', 'passwordToken']
 
 	static constraints = {
 		username blank: false, unique: true
@@ -73,6 +92,8 @@ class User implements Serializable {
       }
       
       email blank: false, email: true
+      
+      resetPasswordToken nullable: true
 	}
 
 	static mapping = {
@@ -83,5 +104,15 @@ class User implements Serializable {
    def getOrganizationObjects()
    {
       return Organization.findAllByUidInList(this.organizations)
+   }
+   
+   def setPasswordToken()
+   {
+      this.resetPasswordToken = java.util.UUID.randomUUID() as String
+   }
+   
+   def getPasswordToken()
+   {
+      return this.resetPasswordToken
    }
 }

@@ -140,7 +140,14 @@ class UserController {
          return
       }
       
-      if (!userInstance.password) userInstance.enabled = false
+      if (!userInstance.password)
+      {
+         userInstance.enabled = false
+         userInstance.setPasswordToken()
+         
+         // TODO
+         // get token to create the URL for the email
+      }
 
       userInstance.validate() // it was validated and might have an error because enabled is true by default but might not have pass
       
@@ -207,6 +214,37 @@ class UserController {
             redirect action:"index", method:"GET"
          }
          '*'{ render status: NO_CONTENT }
+      }
+   }
+   
+   def resetPassword(String token, String newPassword)
+   {
+      // GET: display reset view
+      // POST: try to reset the pass
+      
+      assert token // token comes always and is required for reset
+      
+      if (request.post)
+      {
+         assert newPassword
+         
+         def user = User.findByResetPasswordToken(token)
+         if (!user)
+         {
+            // TODO
+         }
+         
+         assert user
+         
+         user.password = newPassword
+         user.enabled = true
+         user.save(flush:true)
+         
+         // TODO: I18N
+         flash.message = "Password reseted!"
+         
+         redirect controller:'login'
+         return
       }
    }
 
