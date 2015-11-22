@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.security.User" %><%@ page import="com.cabolabs.security.Organization" %>
+<%@ page import="com.cabolabs.security.User" %><%@ page import="com.cabolabs.security.Role" %><%@ page import="com.cabolabs.security.Organization" %>
 
 <input type="hidden" name="type" value="${params.type}" />
 
@@ -26,11 +26,20 @@
    <br/>
    <sec:ifAnyGranted roles="ROLE_ADMIN">
      <g:select name="organizations" from="${Organization.list()}"
-               optionKey="uid" optionValue="name" value="${userInstance?.organizationObjects}" />
+               optionKey="uid" optionValue="name" value="${userInstance?.organizationObjects}"
+               multiple="true" size="5" />
    </sec:ifAnyGranted>
    <sec:ifNotGranted roles="ROLE_ADMIN">
      <g:selectWithCurrentUserOrganizations name="organizations" value="${userInstance?.organizations}" multiple="true" />
    </sec:ifNotGranted>
+</div>
+
+<div>
+  <label for="role">
+    <g:message code="user.roles.label" default="Roles" />
+    <span class="required-indicator">*</span>
+  </label>
+  <g:selectWithRolesICanAssign name="role" value="${userInstance?.authorities}" multiple="true" />
 </div>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">

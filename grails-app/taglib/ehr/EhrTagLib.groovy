@@ -1,6 +1,7 @@
 package ehr
 
 import directory.Folder
+import com.cabolabs.security.Role
 
 class EhrTagLib {
    
@@ -102,6 +103,43 @@ class EhrTagLib {
          }
          
          out << g.select(args) // name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value
+      }
+   }
+   
+   /**
+    * Admins can assign any role.
+    * OrgAdmins can assig OrgAdmins and OrgStaff.
+    */
+   def selectWithRolesICanAssign = { attrs, body ->
+      
+      def loggedInUser = springSecurityService.currentUser
+      if(loggedInUser)
+      {
+         def roles = Role.list()
+         
+         def args = [:]
+         args.name = attrs.name
+         args.from = roles
+         
+         if (attrs.value) args.value = attrs.value
+         if (attrs.multiple)
+         {
+            args.multiple = 'true'
+            args.size = 5
+         }
+         
+         if (loggedInUser.authoritiesContains('ROLE_ORG_MANAGER'))
+         {
+            roles.removeAll { it.authority == 'ROLE_ADMIN' } // all roles minus admin, removeAll modifies the collection
+            args.from = roles
+         }
+         else if (!loggedInUser.authoritiesContains('ROLE_ADMIN'))
+         {
+            // non admins can't assign any roles
+            return
+         }
+         
+         out << g.select(args)
       }
    }
 }

@@ -51,6 +51,8 @@ class User implements Serializable {
 
    Set<Role> getAuthorities()
    {
+      // Avoids error of finding by a non saved instance.
+      if (!this.id) return [] as Set
       UserRole.findAllByUser(this)*.role
    }
    
@@ -100,6 +102,11 @@ class User implements Serializable {
       email blank: false, email: true
       
       resetPasswordToken nullable: true
+      
+      organizations validator: { val, obj ->
+         if (val.size() == 0) return ['user.organizations.empty']
+         return true
+      }
    }
 
    static mapping = {

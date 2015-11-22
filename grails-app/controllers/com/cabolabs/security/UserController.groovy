@@ -5,6 +5,8 @@ import grails.transaction.Transactional
 import grails.validation.ValidationException
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
+import com.cabolabs.security.Role
+import com.cabolabs.security.UserRole
 
 @Transactional(readOnly = false)
 class UserController {
@@ -194,18 +196,38 @@ class UserController {
    }
 
    @Transactional
-   def update(User userInstance) {
-      if (userInstance == null) {
+   def update(User userInstance)
+   {
+      if (userInstance == null)
+      {
          notFound()
          return
       }
-
-      if (userInstance.hasErrors()) {
+      
+      if (userInstance.hasErrors())
+      {
          respond userInstance.errors, view:'edit'
          return
       }
-
+      
       userInstance.save flush:true
+      
+      // Role updating
+      
+      // Delete all current roles
+      // FIXME: if the logged user is the same as the userInstance, and it has admin or org man roles, those cant be removed.
+      def currentRoles = UserRole.findByUser(userInstance)
+      currentRoles*.delete()
+      
+      // Add selected roles
+      def roles = params.list('role')
+      roles.each { authority ->
+         
+         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
+      }
+
+      // / Role updating
+
 
       request.withFormat {
          form multipartForm {
