@@ -73,7 +73,7 @@ class AuthProvider implements AuthenticationProvider
        def user = userService.getByUsername(username) //User.findByUsername(username)
        if (user == null)
        {
-          System.out.println( "wrong username" )
+          //System.out.println( "wrong username" )
           throw new UsernameNotFoundException("No matching account")
        }
        
@@ -81,19 +81,19 @@ class AuthProvider implements AuthenticationProvider
        // Status checks
        if (!user.enabled)
        {
-          System.out.println( "account disabled" )
+          //System.out.println( "account disabled" )
           throw new DisabledException("Account disabled")
        }
        
        if (user.accountExpired)
        {
-          System.out.println( "account expired" )
+          //System.out.println( "account expired" )
           throw new AccountExpiredException("Account expired")
        }
        
        if (user.accountLocked)
        {
-          System.out.println( "account locked" )
+          //System.out.println( "account locked" )
           throw new LockedException("Account locked")
        }
        
@@ -103,7 +103,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (!passwordEncoder.isPasswordValid(user.password, password, null))
        {
-          System.out.println( "wrong password" )
+          //System.out.println( "wrong password" )
           throw new BadCredentialsException("Authentication failed")
        }
        
@@ -111,7 +111,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (!organization_number) // null or empty
        {
-          System.out.println( "organization not provided" )
+          //System.out.println( "organization not provided" )
           throw new BadCredentialsException("Authentication failed - organization number not provided")
        }
        
@@ -122,7 +122,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (org == null)
        {
-          System.out.println( "organization with number does not exists" )
+          //System.out.println( "organization with number does not exists" )
           throw new BadCredentialsException("Authentication failed")
        }
        
@@ -130,7 +130,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (!user.organizations.contains( org.getUid() ))
        {
-          System.out.println( "organization is not associated with user 2" )
+          //System.out.println( "organization is not associated with user 2" )
           throw new BadCredentialsException("Authentication failed")
        }
        
@@ -156,7 +156,7 @@ class AuthProvider implements AuthenticationProvider
        
        auth = new UserPassOrgAuthToken(userDetails, password, organization_number, userDetails.authorities)
        
-       println "auth " + auth
+       //println "auth " + auth
        
        return auth
     }
