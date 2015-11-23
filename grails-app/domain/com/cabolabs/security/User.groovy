@@ -22,6 +22,7 @@ class User implements Serializable {
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    
+   List organizations
    static hasMany = [organizations: String] // UIDs of related organizations
 
    User(String username, String password)
@@ -104,7 +105,8 @@ class User implements Serializable {
       resetPasswordToken nullable: true
       
       organizations validator: { val, obj ->
-         if (val.size() == 0) return ['user.organizations.empty']
+         println "validator "+ val
+         if (obj.organizations.size() == 0) return false
          return true
       }
    }

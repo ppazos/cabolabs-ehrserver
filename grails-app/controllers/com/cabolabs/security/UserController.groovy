@@ -198,14 +198,38 @@ class UserController {
    @Transactional
    def update(User userInstance)
    {
+      println "update "+ params
       if (userInstance == null)
       {
          notFound()
          return
       }
       
+      println "orgs 1 " + userInstance.organizations
+      
+      // Update organizations
+      // Remove current
+      
+      // For clear to work, we need mapping organizations cascade: "all-delete-orphan"
+      // and organizations should be a List.
+      // http://stackoverflow.com/questions/18944042/grails-clear-hasmany-entries-and-add-new-ones-error
+      //userInstance.organizations.clear()
+      def orgsToDelete = []
+      orgsToDelete += userInstance.organizations
+      orgsToDelete.each { orguid -> // just using .clear doesnt work, it resaves the orguids again
+         userInstance.removeFromOrganizations(orguid)
+      }
+      
+      println "orgs 2 " + userInstance.organizations
+      
+      // Associate new
+      userInstance.organizations = params.list("organizations")
+      
+      println "orgs 3 " + userInstance.organizations
+      
       if (userInstance.hasErrors())
       {
+         println "has errors"
          respond userInstance.errors, view:'edit'
          return
       }
