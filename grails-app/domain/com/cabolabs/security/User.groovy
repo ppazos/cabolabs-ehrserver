@@ -22,9 +22,10 @@ class User implements Serializable {
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    
-   List organizations
-   static hasMany = [organizations: String] // UIDs of related organizations
-
+   List organizations = []
+   //static hasMany = [organizations: String] // UIDs of related organizations
+   static hasMany = [organizations: Organization]
+   
    User(String username, String password)
    {
       this()
@@ -88,7 +89,7 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'organizationObjects', 'passwordToken']
+   static transients = ['springSecurityService', 'passwordToken']
 
    static constraints = {
       username blank: false, unique: true
@@ -106,19 +107,24 @@ class User implements Serializable {
       
       organizations validator: { val, obj ->
          println "validator "+ val
-         if (obj.organizations.size() == 0) return false
-         return true
+         if (val.size() == 0)
+         {
+            println "validator returns false"
+            
+            // We set the error, if this returns false, grails adds another error.
+            obj.errors.rejectValue('organizations', 'user.organizations.empty')
+            //return false
+            //return ['user.organizations.empty']
+         }
+         
+         //println "validator returns true"
+         //return true
       }
    }
 
    static mapping = {
       password column: '`password`'
       organizations lazy: false
-   }
-   
-   def getOrganizationObjects()
-   {
-      return Organization.findAllByUidInList(this.organizations)
    }
    
    def setPasswordToken()

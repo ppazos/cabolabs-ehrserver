@@ -128,10 +128,10 @@ class AuthProvider implements AuthenticationProvider
        
        //println 'user orgs '+ user.organizations
        
-       if (!user.organizations.contains( org.getUid() ))
+       if (!user.organizations.find{ it.uid == org.uid })
        {
           //System.out.println( "organization is not associated with user 2" )
-          throw new BadCredentialsException("Authentication failed")
+          throw new BadCredentialsException("Authentication failed - check the organization number")
        }
        
      

@@ -33,7 +33,7 @@ class OrganizationController {
          //println "organizations: "+ user.organizations.toString()
          
          // no pagination
-         list = user.organizationObjects //Organization.findAllByUidInList(user.organizations)
+         list = user.organizations
          count = list.size()
       }
       
@@ -71,7 +71,7 @@ class OrganizationController {
       
       // Assign org to logged user
       def user = springSecurityService.loadCurrentUser()
-      user.addToOrganizations(organizationInstance.uid)
+      user.addToOrganizations(organizationInstance)
       user.save(flush:true)
 
       request.withFormat {

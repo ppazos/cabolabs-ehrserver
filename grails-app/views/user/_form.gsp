@@ -19,18 +19,18 @@
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
-   <label for="organizations">
+   <label for="organizationUid">
       <g:message code="user.organizations.label" default="Organizations" />
       <span class="required-indicator">*</span>
    </label>
    <br/>
    <sec:ifAnyGranted roles="ROLE_ADMIN">
-     <g:select name="organizations" from="${Organization.list()}"
-               optionKey="uid" optionValue="name" value="${userInstance?.organizationObjects}"
+     <g:select name="organizationUid" from="${Organization.list()}"
+               optionKey="uid" optionValue="name" value="${userInstance?.organizations}"
                multiple="true" size="5" />
    </sec:ifAnyGranted>
    <sec:ifNotGranted roles="ROLE_ADMIN">
-     <g:selectWithCurrentUserOrganizations name="organizations" value="${userInstance?.organizations}" multiple="true" />
+     <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" />
    </sec:ifNotGranted>
 </div>
 

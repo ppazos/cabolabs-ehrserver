@@ -37,11 +37,10 @@ class UserController {
          // no pagination
 
          // users with the current org.uid in their organizations list
-         
-         //http://stackoverflow.com/questions/7531011/grails-gorm-criteria-query-with-hasmany-string
          list = User.withCriteria {
-            createAlias('organizations', 'oo')
-            eq ('oo.elements', org.uid)
+            organizations {
+               eq('uid', org.uid)
+            }
          }
          
          count = list.size()
@@ -96,7 +95,7 @@ class UserController {
             // 
             o = new Organization(name: params.organization.name)
             o.save(failOnError: true, flush:true)
-            u.addToOrganizations(o.uid).save(failOnError: true, flush:true)
+            u.addToOrganizations(o).save(failOnError: true, flush:true)
             
             // TODO: UserRole ORG_* needs a reference to the org, since the user
             //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
@@ -154,7 +153,23 @@ class UserController {
          
          sendNotification = true
       }
+      
+      
+      // Associate orgs
+      def orgUids = params.list("organizationUid")
+      def newOrgs = Organization.findAllByUidInList(orgUids)
+      newOrgs.each { newOrg ->
+         userInstance.addToOrganizations(newOrg)
+      }
+      
+      
+      if (!userInstance.save(flush:true))
+      {
+         respond userInstance.errors, view:'create'
+         return
+      }
 
+      /*
       userInstance.validate() // it was validated and might have an error because enabled is true by default but might not have pass
       
       if (userInstance.hasErrors())
@@ -164,6 +179,7 @@ class UserController {
       }
 
       userInstance.save flush:true
+      */
       
       println "user.save organizations 2 "+ userInstance.organizations
       
@@ -205,36 +221,33 @@ class UserController {
          return
       }
       
-      println "orgs 1 " + userInstance.organizations
-      
       // Update organizations
       // Remove current
-      
-      // For clear to work, we need mapping organizations cascade: "all-delete-orphan"
-      // and organizations should be a List.
-      // http://stackoverflow.com/questions/18944042/grails-clear-hasmany-entries-and-add-new-ones-error
-      //userInstance.organizations.clear()
-      def orgsToDelete = []
-      orgsToDelete += userInstance.organizations
-      orgsToDelete.each { orguid -> // just using .clear doesnt work, it resaves the orguids again
-         userInstance.removeFromOrganizations(orguid)
+
+      def orgsToRemove = []
+      orgsToRemove += userInstance.organizations
+      orgsToRemove.each { org ->
+         println "removeFromOrganizations " + org
+         userInstance.removeFromOrganizations(org)
       }
       
-      println "orgs 2 " + userInstance.organizations
+      userInstance.organizations.clear()
       
+
       // Associate new
-      userInstance.organizations = params.list("organizations")
+      def orgUids = params.list("organizationUid")
+      def newOrgs = Organization.findAllByUidInList(orgUids)
+      newOrgs.each { newOrg ->
+         userInstance.addToOrganizations(newOrg)
+      }
       
-      println "orgs 3 " + userInstance.organizations
-      
-      if (userInstance.hasErrors())
+      if (!userInstance.save(flush:true))
       {
-         println "has errors"
          respond userInstance.errors, view:'edit'
          return
       }
       
-      userInstance.save flush:true
+
       
       // Role updating
       
@@ -252,7 +265,6 @@ class UserController {
 
       // / Role updating
 
-
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.updated.message', args: [message(code: 'User.label', default: 'User'), userInstance.id])
@@ -265,7 +277,8 @@ class UserController {
    @Transactional
    def delete(User userInstance) {
 
-      if (userInstance == null) {
+      if (userInstance == null)
+      {
          notFound()
          return
       }

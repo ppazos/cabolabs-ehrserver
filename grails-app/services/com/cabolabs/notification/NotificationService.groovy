@@ -37,7 +37,7 @@ class NotificationService {
       def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
       def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
       
-      def organizationNumbers = user.organizationObjects*.number
+      def organizationNumbers = user.organizations*.number
       String message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>To reset your password, please go here: '+ url +'</p>'
 
 

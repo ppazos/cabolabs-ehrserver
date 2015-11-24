@@ -364,7 +364,7 @@ div.btn-toolbar {
 	margin-top: 15px;
 }
 
-.error > input {
+.error > input, .error > select, .error > textarea {
 	border: 1px solid #d9534f;
 	background-color: #f2dede;
 }

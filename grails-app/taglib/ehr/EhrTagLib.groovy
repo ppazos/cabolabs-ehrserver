@@ -91,7 +91,7 @@ class EhrTagLib {
       {
          def args = [:]
          args.name = attrs.name
-         args.from = loggedInUser.organizationObjects
+         args.from = loggedInUser.organizations
          args.optionKey = 'uid'
          args.optionValue = 'name'
          

@@ -31,7 +31,7 @@
 	     <div class="control-group">
 	       <label><g:message code="user.organizations.label" default="Organizations" /></label>
 	       <div>
-	         <g:select name="organizations" from="${userInstance.organizationObjects}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" />
+	         <g:select name="organizations" from="${userInstance.organizations}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" />
 	       </div>
 	     </div>
 	     <div class="control-group">

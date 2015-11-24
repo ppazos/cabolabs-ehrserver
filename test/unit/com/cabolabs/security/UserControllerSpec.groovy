@@ -22,7 +22,8 @@ class UserControllerSpec extends Specification {
         when:"The index action is executed"
             // mock login
             // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
-            def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.i", organizations:['1234']).save()
+            def organization = new Organization(name: 'Hospital de Clinicas', number: '1234').save()
+            def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.i", organizations:['organization']).save()
             controller.springSecurityService = [
               encodePassword: 'admin',
               reauthenticate: { String u -> true},
