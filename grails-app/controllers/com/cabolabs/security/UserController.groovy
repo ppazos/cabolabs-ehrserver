@@ -177,32 +177,24 @@ class UserController {
          return
       }
 
-      /*
-      userInstance.validate() // it was validated and might have an error because enabled is true by default but might not have pass
-      
-      if (userInstance.hasErrors())
-      {
-         respond userInstance.errors, view:'create'
-         return
-      }
 
-      userInstance.save flush:true
-      */
-      
-      println "user.save organizations 2 "+ userInstance.organizations
-      
       // TODO: UserRole ORG_* needs a reference to the org, since the user
       //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-      UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+      //UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
 
+      // Add selected roles
+      def roles = params.list('role')
+      roles.each { authority ->
+         
+         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
+      }
       
+      
+      // FIXME: it should always send this because will never have a password assigned from the admin
       if (sendNotification)
       {
          // token to create the URL for the email is in the userInstance
-         notificationService.sendUserCreatedEmail(
-            userInstance.email,
-            [userInstance]
-         )
+         notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
       }
       
       
