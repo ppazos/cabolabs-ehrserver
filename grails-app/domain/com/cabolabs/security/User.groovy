@@ -106,10 +106,10 @@ class User implements Serializable {
       resetPasswordToken nullable: true
       
       organizations validator: { val, obj ->
-         println "validator "+ val
+         //println "validator "+ val
          if (val.size() == 0)
          {
-            println "validator returns false"
+            //println "validator returns false"
             
             // We set the error, if this returns false, grails adds another error.
             obj.errors.rejectValue('organizations', 'user.organizations.empty')

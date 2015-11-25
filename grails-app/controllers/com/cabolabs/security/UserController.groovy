@@ -78,28 +78,34 @@ class UserController {
         
         def u = new User(
           username: params.username,
-          password: params.password,
-          email: params.email
+          //password: params.password,
+          email: params.email,
+          enabled: false
         )
         def o
+        
+        
+        // generates a passwrod reset token, used in the email notification
+        u.setPasswordToken()
+        
         
         User.withTransaction{ status ->
         
           try
           {
-            u.save(failOnError: true, flush:true)
-            
-            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true )
-            
             // TODO: create an invitation with token, waiting for account confirmation
             // 
-            o = new Organization(name: params.organization.name)
+            o = new Organization(name: params.org_name)
             o.save(failOnError: true, flush:true)
+            
+            // needs an organization before saving
             u.addToOrganizations(o).save(failOnError: true, flush:true)
+            
+            u.save(failOnError: true, flush:true)
             
             // TODO: UserRole ORG_* needs a reference to the org, since the user
             //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-            UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+            //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
             UserRole.create( u, (Role.findByAuthority('ROLE_ORG_MANAGER')), true ) // the user is creating the organization, it should be manager also
           }
           catch (ValidationException e)
@@ -124,7 +130,9 @@ class UserController {
         }
         else
         {
-          notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
+          //notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
+          // token to create the URL for the email is in the userInstance
+          notificationService.sendUserCreatedEmail( u.email, [u], true )
           render (view: "registerOk")
         }
       }

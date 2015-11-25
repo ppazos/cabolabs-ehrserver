@@ -15,9 +15,10 @@
       <g:message code="user.email.label" default="Email" />
       <span class="required-indicator">*</span>
    </label>
-   <g:textField name="email" required="" value="${userInstance?.email}"/>
+   <g:textField name="email" required="true" value="${userInstance?.email}"/>
 </div>
 
+<sec:ifLoggedIn><!-- new user from admin gui -->
 <div class="fieldcontain ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
    <label for="organizationUid">
       <g:message code="user.organizations.label" default="Organizations" />
@@ -33,7 +34,18 @@
      <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" />
    </sec:ifNotGranted>
 </div>
+</sec:ifLoggedIn>
+<sec:ifNotLoggedIn><!-- register -->
+  <div class="fieldcontain required">
+	   <label for="org_name">
+	      <g:message code="organization.name.label" default="Organization Name" />
+	      <span class="required-indicator">*</span>
+	   </label>
+	   <g:textField name="org_name" value="${params.org_name}" required="true" />
+  </div>
+</sec:ifNotLoggedIn>
 
+<sec:ifLoggedIn>
 <div>
   <label for="role">
     <g:message code="user.roles.label" default="Roles" />
@@ -41,6 +53,7 @@
   </label>
   <g:selectWithRolesICanAssign name="role" value="${userInstance?.authorities}" multiple="true" />
 </div>
+</sec:ifLoggedIn>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">
 	<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'accountExpired', 'error')} ">

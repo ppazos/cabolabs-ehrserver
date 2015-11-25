@@ -8,6 +8,7 @@ class NotificationService {
    def mailService
    def grailsApplication
    
+   // FIXME: this is not used now...
    // User registers directly
    def sendUserRegisteredEmail(String recipient, List messageData)
    {
@@ -27,7 +28,14 @@ class NotificationService {
    }
    
    // User created by admin or org manager
-   def sendUserCreatedEmail(String recipient, List messageData)
+   /**
+    * 
+    * @param recipient
+    * @param messageData
+    * @param userRegistered true if the user was created by registering, false if it was created from the admin console.
+    * @return
+    */
+   def sendUserCreatedEmail(String recipient, List messageData, boolean userRegistered = false)
    {
       def user = messageData[0]
       
@@ -38,8 +46,12 @@ class NotificationService {
       def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
       
       def organizationNumbers = user.organizations*.number
-      String message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>To reset your password, please go here: '+ url +'</p>'
-
+      String message
+      
+      if (userRegistered)
+         message = '<p>We received your registration. You can login using these organization numbers {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
+      else
+        message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
 
       message = message.replaceFirst ( /\{0\}/ , organizationNumbers.toString())
 
