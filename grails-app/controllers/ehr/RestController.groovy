@@ -1124,6 +1124,11 @@ class RestController {
       
       def res = query.execute(ehrId, qFromDate, qToDate, group, organizationUid)
       
+      
+      // If not format is specified, take the query format.
+      if (!format) format = query.format
+         
+      
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
