@@ -1,6 +1,7 @@
 dataSource {
     pooled = true
-    driverClassName = "org.h2.Driver"
+    driverClassName = 'com.mysql.jdbc.Driver'
+    dialect = org.hibernate.dialect.MySQL5InnoDBDialect
     username = "root"
     password = "root"
 }
@@ -16,13 +17,8 @@ environments {
     development {
         dataSource {
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-           //dbCreate = "update"
-           url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+
 //           logSql = true
-           
-           
-           driverClassName = 'com.mysql.jdbc.Driver'
-           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
            
            // ===========================================================
            // Config for OpenShift ======================================
@@ -67,9 +63,6 @@ environments {
            */
 
             dbCreate = "update"
-            
-            driverClassName = 'com.mysql.jdbc.Driver'
-            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             
             // ===========================================================
             // Config for OpenShift ======================================
