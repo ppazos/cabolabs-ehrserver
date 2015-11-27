@@ -45,7 +45,10 @@ class FolderController {
 
    def create()
    {
-      respond new Folder(params)
+      // Filter ehrs by the ehrs that don't have a root folder and are ehrs the user can see by it's org uids
+      def user = springSecurityService.getCurrentUser()
+      def ehrs = ehr.Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
+      respond new Folder(params), model: [ehrs: ehrs]
    }
 
    @Transactional
@@ -57,6 +60,7 @@ class FolderController {
          return
       }
 
+      /*
       // FIXME: the org uid of the folder should be the same as the owning ehr...
       // admins can select the org uid, for other roles is the org used to login
       if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
@@ -69,20 +73,24 @@ class FolderController {
          
          folderInstance.organizationUid = org.uid
       }
+      */
       
       if (folderInstance.ehrId)
       {
          def ehr = ehr.Ehr.get(folderInstance.ehrId)
          ehr.directory = folderInstance
-         ehr.save() 
+         ehr.save()
+         
+         // root folder has the org uid of the ehr
+         folderInstance.organizationUid = ehr.organizationUid
+      }
+      else // take the org uid from the parent
+      {
+         folderInstance.organizationUid = folderInstance.parent.organizationUid
       }
       
-      folderInstance.save flush:true
-
       
-      
-      
-      if (folderInstance.hasErrors())
+      if (!folderInstance.save(flush:true))
       {
          respond folderInstance, view:'create'
          return
