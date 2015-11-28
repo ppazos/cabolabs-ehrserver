@@ -746,7 +746,7 @@ class RestController {
             'result' {
                'patients' {
                   subjects.each { person ->
-                     delegate.patient{
+                     delegate.patient { // THIS IS CALLING getPatient!!!
                         uid(person.uid)
                         firstName(person.firstName)
                         lastName(person.lastName)
@@ -803,9 +803,9 @@ class RestController {
    
    
    // Get patient data
-   def getPatient(String uid, String format)
+   def patient(String uid, String format)
    {
-      println params
+      println "patient "+ params
       
       if (!uid)
       {

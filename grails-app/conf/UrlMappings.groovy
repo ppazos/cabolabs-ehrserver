@@ -34,7 +34,11 @@ class UrlMappings {
       "/rest/patients"( 
          controller: 'rest',
          action: 'patientList'
-       )
+      )
+      "/rest/patient/$uid"( 
+         controller: 'rest',
+         action: 'patient'
+      )
       
       //   /rest/queryList por /rest/queries -- list of all queries
       "/rest/queries"( 
