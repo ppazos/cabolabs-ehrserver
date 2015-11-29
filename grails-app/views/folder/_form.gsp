@@ -15,15 +15,17 @@
   <g:textField name="name" required="" value="${folderInstance?.name}" class="form-control" />
 </div>
 
-<div class="form-group ${hasErrors(bean: folderInstance, field: 'items', 'has-error')}">
-  <label class="control-label"><g:message code="folder.items.label" default="Items" /></label>
-  <g:if test="${folderInstance.items.size() == 0}">
-    <div>There are no items in the folder</div>
-  </g:if>
-  <g:each in="${folderInstance.items}">
-    ${it}<br/>
-  </g:each>
-</div>
+<g:if test="${actionName == 'edit'}">
+   <div class="form-group ${hasErrors(bean: folderInstance, field: 'items', 'has-error')}">
+     <label class="control-label"><g:message code="folder.items.label" default="Items" /></label>
+     <g:if test="${folderInstance.items.size() == 0}">
+       <div>There are no items in the folder</div>
+     </g:if>
+     <g:each in="${folderInstance.items}">
+       ${it}<br/>
+     </g:each>
+   </div>
+</g:if>
 
 <script type="text/javascript">
   $(document).ready(function() {
