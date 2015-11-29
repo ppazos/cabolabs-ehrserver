@@ -1,11 +1,11 @@
 <%@ page import="com.cabolabs.security.Organization" %>
 
-<div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'name', 'error')} required">
+<div class="form-group ${hasErrors(bean: organizationInstance, field: 'name', 'error')} required">
 	<label for="name">
 		<g:message code="organization.name.label" default="Name" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="name" required="" value="${organizationInstance?.name}"/>
+	<g:textField name="name" required="" value="${organizationInstance?.name}" class="form-control" />
 </div>
 <%--
 <div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'number', 'error')} required">

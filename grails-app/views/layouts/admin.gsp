@@ -42,7 +42,6 @@
   }
   ul.navbar-top-links {
     text-align: center;
-
   }
   ul.navbar-top-links > li:first-child {
     margin: 0;
@@ -50,14 +49,13 @@
     margin-left: 15px;
   }
   </style>
-  
   <g:javascript>
     // Used to access the assets root from JS code.
     // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
-   window.grailsSupport = {
-    assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
-    baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
-   };
+    window.grailsSupport = {
+     assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
+     baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
+    };
    </g:javascript>
   </head>
   <body>
