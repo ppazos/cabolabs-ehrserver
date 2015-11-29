@@ -37,9 +37,7 @@
             </tbody>
           </table>
         </div>
-        <div class="pagination">
-          <g:paginate total="${total}" />
-        </div>
+        <g:paginator total="${total}" />
       </div>
     </div>
   </body>

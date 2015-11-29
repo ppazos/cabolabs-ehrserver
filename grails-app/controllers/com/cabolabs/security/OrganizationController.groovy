@@ -37,7 +37,7 @@ class OrganizationController {
          count = list.size()
       }
       
-      respond list, model:[organizationInstanceCount: count]
+      respond list, model:[total: count]
    }
 
    def show(Organization organizationInstance)

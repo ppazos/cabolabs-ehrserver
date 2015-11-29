@@ -31,22 +31,17 @@
           </tr>
         </thead>
         <tbody>
-        <g:each in="${versionedCompositionInstanceList}" status="i" var="versionedCompositionInstance">
-          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-            <td><g:link action="show" params="[uid: versionedCompositionInstance.uid]">${fieldValue(bean: versionedCompositionInstance, field: "ehrUid")}</g:link></td>
-          
-            <td><g:formatBoolean boolean="${versionedCompositionInstance.isPersistent}" /></td>
-          
-            <td><g:formatDate date="${versionedCompositionInstance.timeCreated}" /></td>
-          
-            <td>${fieldValue(bean: versionedCompositionInstance, field: "uid")}</td>
-          </tr>
-        </g:each>
+          <g:each in="${versionedCompositionInstanceList}" status="i" var="versionedCompositionInstance">
+            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+              <td><g:link action="show" params="[uid: versionedCompositionInstance.uid]">${fieldValue(bean: versionedCompositionInstance, field: "ehrUid")}</g:link></td>
+              <td><g:formatBoolean boolean="${versionedCompositionInstance.isPersistent}" /></td>
+              <td><g:formatDate date="${versionedCompositionInstance.timeCreated}" /></td>
+              <td>${fieldValue(bean: versionedCompositionInstance, field: "uid")}</td>
+            </tr>
+          </g:each>
         </tbody>
       </table>
-      <div class="pagination">
-        <g:paginate total="${versionedCompositionInstanceCount ?: 0}" />
-      </div>
+      <g:paginator total="${versionedCompositionInstanceCount}" />
     </div>
   </body>
 </html>

@@ -125,11 +125,8 @@
 		        </tbody>
 		     </table>
 	      </div>
-	      <div class="pagination">
-	        <g:paginate total="${contributionInstanceTotal}" />
-	      </div>
+         <g:paginator total="${total}" />
       </div>
     </div>
-
   </body>
 </html>

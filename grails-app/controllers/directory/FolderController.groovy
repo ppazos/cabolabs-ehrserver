@@ -35,7 +35,7 @@ class FolderController {
          count = Folder.countByOrganizationUid(org.uid)
       }
       
-      respond list, model:[folderInstanceCount: count]
+      respond list, model:[total: count]
    }
 
    def show(Folder folderInstance)
