@@ -80,7 +80,7 @@ environments {
   production {
     grails.logging.jul.usebridge = false
     grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr-0.3" // comment this if testing prod on localhost
+    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
     }
