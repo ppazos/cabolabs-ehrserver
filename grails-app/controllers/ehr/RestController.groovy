@@ -910,7 +910,7 @@ class RestController {
             version: query.version,
             format: query.format,
             name: query.name,
-            template: query.template,
+            template_id: query.templateId,
             type: query.type,
             uid: query.uid
          ]
