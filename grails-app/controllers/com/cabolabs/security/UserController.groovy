@@ -46,13 +46,30 @@ class UserController {
          count = list.size()
       }
       
-      
-      
       respond list, model:[userInstanceCount: count]
    }
 
-   def show(User userInstance) {
-      respond userInstance
+   def show(User userInstance)
+   {
+      def orgnumber = springSecurityService.authentication.organization
+      
+      // FIXME: instead of checking if the logged user is not and admin trying to show an admin, it should check
+      //        if the logged user has less permisssions than the userInstance.
+      
+      // If the user is admin (can see all) or
+      // the userInstance has the same org as the logged user and the userInstance is not an admin.
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") ||
+          (
+           userInstance.organizations.count { it.number == orgnumber } > 0 &&
+           !userInstance.authoritiesContains("ROLE_ADMIN")
+          )
+         )
+      {
+          respond userInstance
+          return
+      }
+      flash.message = "You don't have permissions to access the user"
+      redirect action:'index'
    }
    
    def login()
