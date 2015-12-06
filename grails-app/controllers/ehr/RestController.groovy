@@ -188,7 +188,7 @@ class RestController {
          return
       }
       
-      println versionsXMLString
+      //println versionsXMLString
       
       
       def slurper = new XmlSlurper(false, false)
@@ -373,7 +373,7 @@ class RestController {
          } // switch changeType
          
          
-         println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
+         //println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
          //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
          
@@ -429,7 +429,7 @@ class RestController {
     */
    def checkout(String ehrId, String compositionUid)
    {
-      println params
+      //println params
       
       def versions = Version.withCriteria {
          data {
@@ -892,28 +892,60 @@ class RestController {
       if (!format || format == "xml")
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
-            'queryResult'{
-               id(query.id)
-               version(query.version)
-               formart(query.format)
-               name(query.name)
-               template_id(query.templateId)
-               type(query.type)
+            delegate.query{
                uid(query.uid)
+               name(query.name)
+               format(query.format)
+               type(query.type)
+               
+               if (query.type == 'composition')
+               {
+                  for (criteria in query.where)
+                  {
+                     delegate.criteria {
+                        archetypeId(criteria.archetypeId)
+                        path(criteria.path)
+                        delegate.criteria(criteria.toSQL())
+                        //value(criteria.value)
+                     }
+                  }
+               }
+               else
+               {
+                  group(query.group) // Group is only for datavalue
+                  
+                  for (proj in query.select)
+                  {
+                     projection {
+                        archetypeId(proj.archetypeId)
+                        path(proj.path)
+                     }
+                  }
+               }
+               
+               
+               //template_id(query.templateId)
             }
          }
       }
       else if (format == "json")
       {
          def data = [
-            id: query.id,
-            version: query.version,
-            format: query.format,
+            uid: query.uid,
             name: query.name,
-            template_id: query.templateId,
-            type: query.type,
-            uid: query.uid
+            format: query.format,
+            type: query.type
          ]
+         if (query.type == 'composition')
+         {
+            data.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
+         }
+         else
+         {
+            data.group = query.group // Group is only for datavalue
+            data.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+         }
+         
          
          def result = data as JSON
          // JSONP
@@ -1038,7 +1070,7 @@ class RestController {
                
                if (query.type == 'composition')
                {
-                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL() /*, value: it.value */] }
+                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
                }
                else
                {
