@@ -177,12 +177,12 @@ grails.plugin.springsecurity.logout.postOnly = false
 // Mail
 grails {
    mail {
-     host = "mail.cabolabs.com"
-     port = 587
+     host = System.getenv('EHRSERVER_EMAIL_HOST')
+     port = System.getenv('EHRSERVER_EMAIL_PORT')
      username = System.getenv('EHRSERVER_EMAIL_USER')
-     password =  System.getenv('EHRSERVER_EMAIL_PASS')
+     password = System.getenv('EHRSERVER_EMAIL_PASS')
      'default' {
-        from = "info@cabolabs.com"
+        from = System.getenv('EHRSERVER_EMAIL_FROM')
      }
      /*
      props = ["mail.smtp.auth":"true",
