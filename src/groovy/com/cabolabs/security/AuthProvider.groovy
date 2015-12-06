@@ -24,35 +24,18 @@ import grails.util.Holders
 
 class AuthProvider implements AuthenticationProvider
 {
-    //def userDetailsService
-    //def passwordEncoder // should be injected! but is not... I might need to configure something in the resources.groovy file.
     def passwordEncoder // = new BCryptPasswordEncoder(10) // wont do the config for now, FIXME: this should consider the current encoder config, if we change it, this should change.
     //passwordEncoder(BCryptPasswordEncoder, conf.password.bcrypt.logrounds) // 10
     
     def userService = Holders.grailsApplication.mainContext.getBean('userService')
     
-    
     Authentication authenticate(Authentication auth) throws AuthenticationException
     {
+        println "provider authenticate"
+        
         Assert.isInstanceOf(UserPassOrgAuthToken.class, auth, "Only UserPassOrgAuthToken is supported")
                         
         UserPassOrgAuthToken authentication = (UserPassOrgAuthToken) auth
-          
-        // userDetailsService no se inyecta porque no hay bean 
-        //def userDetails = userDetailsService.loadUserByUsername(auth.principal)
-        //userDetails have the following properties like username, isEnabled..etc
-        
-        //println userDetails
-        
-        /*
-        def user = User.findByUsername(auth.principal);
-        if(userDetails != null && user.token == auth.credentials)
-        {
-            auth.authorities = userDetails.authorities;
-            auth.principal = userDetails
-            return auth;
-        }
-        */
         
         return doAuthentication(authentication)
     }

@@ -28,17 +28,8 @@ ref: http://stackoverflow.com/questions/32621369/customize-login-in-grails-sprin
 ref: http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
 */
 public class AuthFilter extends AbstractAuthenticationProcessingFilter implements ApplicationEventPublisherAware {
- 
-  
+
   AuthProvider authProvider
-  
-  // redeclared because is private on superclass
-  //AuthenticationManager authenticationManager
-  //RememberMeServices rememberMeServices 
-  //AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler()
-  //AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler()
-  //RequestMatcher requiresAuthenticationRequestMatcher
-  
   
   public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "j_username";
   public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "j_password";
@@ -65,10 +56,14 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException
   {
+     println "filter attemptAuthentication"
+     
      if(this.postOnly && !request.getMethod().equals("POST"))
      {
         throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
      }
+     
+     println "filter request params :"+ request.parameterNames
       
      String username = this.obtainUsername(request)
      String password = this.obtainPassword(request)

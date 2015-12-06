@@ -16,7 +16,8 @@ def PS = System.getProperty("file.separator")
 
 // CORS
 cors.url.pattern = '/rest/*'
-cors.headers = ['Access-Control-Allow-Origin': '*']
+cors.headers = ['Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization']
 cors.enabled = true
 
 
@@ -173,6 +174,23 @@ grails.plugin.springsecurity.providerNames = ['authProvider']
 
 // Allow logout through GET operation (by default only POSTs are accepted since plugin v2.0)
 grails.plugin.springsecurity.logout.postOnly = false
+
+// Spring Security Filters for REST plugin
+grails.plugin.springsecurity.filterChain.chainMap = [
+  '/rest/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',  // Stateless chain
+  '/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'                                                                          // Traditional chain
+]
+grails.plugin.springsecurity.rest.token.storage.useJwt=true
+grails.plugin.springsecurity.rest.token.storage.jwt.useSignedJwt=true
+grails.plugin.springsecurity.rest.token.storage.jwt.secret='d63fac74-ab3a-40da-abae-6168be289f04' // TODO: set on an ENV-VAR
+grails.plugin.springsecurity.rest.token.storage.jwt.expiration=(3600*24) // Expires after one day
+grails.plugin.springsecurity.rest.login.active=true
+grails.plugin.springsecurity.rest.login.endpointUrl='/rest/login'
+grails.plugin.springsecurity.rest.login.failureStatusCode=401
+
+grails.plugin.springsecurity.rest.login.useJsonCredentials=true
+grails.plugin.springsecurity.rest.login.usernamePropertyName='username'
+grails.plugin.springsecurity.rest.login.passwordPropertyName='password'
 
 // Mail
 grails {
