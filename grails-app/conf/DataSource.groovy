@@ -36,7 +36,13 @@ environments {
     test {
         dataSource {
             dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            String host = "localhost"
+            String port = 3306
+            String dbName = "ehrservertest"
+            url = "jdbc:mysql://$host:$port/$dbName"
+            
+            username = 'root'
+            password = ''
         }
     }
     production {
