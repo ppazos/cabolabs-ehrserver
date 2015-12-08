@@ -4,7 +4,7 @@ import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult
 import org.xml.sax.ErrorHandler
-
+import com.cabolabs.util.DateParser
 import grails.util.Holders
 
 /**
@@ -574,6 +574,8 @@ class IndexDataJob {
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
+      
+      
       /*
        * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
       <time>
@@ -586,9 +588,7 @@ class IndexDataJob {
          path: path,
          archetypePath: archetypePath,
          owner: owner,
-         value: Date.parse(config.l10n.datetime_format, node.value.text())
+         value: DateParser.tryParse(node.value.text())
       )
    }
-   
-   
 }

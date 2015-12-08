@@ -194,6 +194,9 @@ class RestController {
       def slurper = new XmlSlurper(false, false)
       def versionsXML = slurper.parseText(versionsXMLString)
       
+      // namespaces declared
+      //println versionsXML.attributes().collect { it.key.startsWith('xmlns')}
+      
       if (versionsXML.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)

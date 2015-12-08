@@ -24,10 +24,13 @@ class XmlValidationService {
       return this.validate(xml, Holders.config.app.opt_xsd)
    }
    
-   public boolean validateVersion(GPathResult xml)
+   public boolean validateVersion(GPathResult xml, Map namespaces)
    {
-      xml.'@xmlns' = 'http://schemas.openehr.org/v1'
-      xml.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+      //xml.'@xmlns' = 'http://schemas.openehr.org/v1'
+      //xml.'@xmlns:xsi' = 'http://www.w3.org/2001/XMLSchema-instance'
+      namespaces.each { ns, val ->
+         xml."@$ns" = val
+      }
       def xmlStr = groovy.xml.XmlUtil.serialize( xml )
       
       return this.validate(xmlStr, Holders.config.app.version_xsd)

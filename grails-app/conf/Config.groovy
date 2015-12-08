@@ -148,6 +148,16 @@ app {
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
       
+      // Extended formats supported by openEHR --------------------------------------------------------------
+      //2015-12-02T17:41:56.809Z
+      ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSZ" // contains timezone e.g. -0300
+      ext_datetime_format_point = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+      // If the time is in UTC, add a Z directly after the time without a space. Z is the zone
+      // designator for the zero UTC offset. "09:30 UTC" is therefore represented as "09:30Z" or "0930Z".
+      ext_datetime_utcformat = "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
+      ext_datetime_utcformat_point = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+      // ----------------------------------------------------------------------------------------------------
+      
       // formatos para mostrar las fechas al usuario
       display_datetime_format = "yyyy/MM/dd HH:mm:ss (Z)" 
       display_date_format = "yyyy/MM/dd"

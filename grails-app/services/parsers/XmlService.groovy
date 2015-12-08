@@ -10,6 +10,7 @@ import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
+import com.cabolabs.util.DateParser
 
 class XmlService {
 
@@ -101,8 +102,12 @@ class XmlService {
          parsedVersions << it
       }
       
+      println versionsXML.attributes()
+      
       // Validate XMLs
-      this.validationErrors = validateVersions(versionsXML) // the key is the index of the errored version
+      def namespaces = versionsXML.attributes().findAll { it.key.startsWith('xmlns') } // namespace map
+      //def namespaces = ['xmlns':'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
+      this.validationErrors = validateVersions(versionsXML, namespaces) // the key is the index of the errored version
       
       // There are errors, can't return the contributions
       // The caller should get the errors and process them
@@ -265,21 +270,23 @@ class XmlService {
       }
       else println "Guarda contrib"
       
+      /*
       println "***** VERSIONS AFTER ******"
       println "***** VERSIONS AFTER " +contribution.versions
       println "***** VERSIONS AFTER ******"
+      */
       
       return contribution
    }
    
    
-   private Map validateVersions(GPathResult versionsXML)
+   private Map validateVersions(GPathResult versionsXML, Map namespaces)
    {
       def errors = [:] // The index is the index of the version, the value is the list of errors for each version
 
       versionsXML.version.eachWithIndex { versionXML, i ->
          
-         if (!xmlValidationService.validateVersion(versionXML))
+         if (!xmlValidationService.validateVersion(versionXML, namespaces))
          {
             errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
          }
@@ -343,7 +350,8 @@ class XmlService {
          //
          // TODO: formato de fecha completa que sea configurable
          //       ademas la fraccion con . o , depende del locale!!!
-         startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
+         //startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
+         startTime = DateParser.tryParse(version.data.context.start_time.value.text())
       }
       
       // Check if the committed compo has an uid, if not, the server assigns one
@@ -382,7 +390,7 @@ class XmlService {
        *     <rm_version>1.0.2</rm_version>
        *   </archetype_details>
        *   ...
-       */
+       */      
       def compoIndex = new CompositionIndex(
          uid:         compoUid, // UID for compos is assigned by the server
          category:    version.data.category.value.text(), // event o persistent
