@@ -113,6 +113,13 @@ log4j = {
            //'net.sf.ehcache.hibernate'
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
+    
+    // http://alvarosanchez.github.io/grails-spring-security-rest/1.5.3/docs/guide/debugging.html
+    debug  'grails.plugin.springsecurity',
+    'grails.app.controllers.grails.plugin.springsecurity',
+    'grails.app.services.grails.plugin.springsecurity',
+    'org.pac4j',
+    'org.springframework.security'
 }
 
 app {
@@ -170,7 +177,7 @@ grails.plugin.springsecurity.securityConfigType = 'Requestmap'
 grails.plugin.springsecurity.rejectIfNoRule = true
 grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/app/index'
 grails.plugin.springsecurity.apf.filterProcessesUrl = "/j_ehrserver_security_check" //"/user/login" // custom login, overrides: plugins/spring-security-core-2.0-RC5/conf/DefaultSecurityConfig.groovy
-grails.plugin.springsecurity.providerNames = ['authProvider']
+grails.plugin.springsecurity.providerNames = ['authProvider'] // user for form and rest login
 
 // Allow logout through GET operation (by default only POSTs are accepted since plugin v2.0)
 grails.plugin.springsecurity.logout.postOnly = false

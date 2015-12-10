@@ -1,7 +1,10 @@
 // Place your Spring DSL code here
 //import com.cabolabs.security.AbstractAuthenticationProcessingFilter
 import com.cabolabs.security.AuthFilter
+import com.cabolabs.security.RestAuthFilter
 import com.cabolabs.security.AuthProvider
+import grails.plugin.springsecurity.rest.RestAuthenticationFilter
+import grails.plugin.springsecurity.SpringSecurityUtils
 beans = {
 
    authProvider(AuthProvider) {
@@ -34,5 +37,17 @@ beans = {
       
       // calls AbstractAuthenticationProcessingFilter.setRequiresAuthenticationRequestMatcher
       requiresAuthenticationRequestMatcher = ref('filterProcessUrlRequestMatcher')
+   }
+   
+   restAuthFilter(RestAuthFilter) {
+      authenticationManager = ref('authenticationManager')
+      authenticationSuccessHandler = ref('restAuthenticationSuccessHandler')
+      authenticationFailureHandler = ref('restAuthenticationFailureHandler')
+      authenticationDetailsSource = ref('authenticationDetailsSource')
+      credentialsExtractor = ref('credentialsExtractor')
+      endpointUrl = SpringSecurityUtils.securityConfig.rest.login.endpointUrl
+      tokenGenerator = ref('tokenGenerator')
+      tokenStorageService = ref('tokenStorageService')
+      authenticationEventPublisher = ref('authenticationEventPublisher')
    }
 }

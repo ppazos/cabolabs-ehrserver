@@ -70,6 +70,7 @@ class BootStrap {
      // See 'authFilter' in grails-app/conf/spring/resources.groovy
      // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+     SpringSecurityUtils.clientRegisterFilter('restAuthFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 11)
      
      //println "configured filters "+ SpringSecurityUtils.configuredOrderedFilters
      
@@ -97,8 +98,8 @@ class BootStrap {
          '/logout', '/logout.*', '/logout/*',
          '/user/register', '/user/resetPassword',
          '/simpleCaptcha/**',
-         '/j_spring_security_logout',
-         '/rest/**'
+         '/j_spring_security_logout'
+         //,'/rest/**'
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()

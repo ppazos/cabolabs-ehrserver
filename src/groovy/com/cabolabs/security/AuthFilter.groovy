@@ -2,24 +2,28 @@ package com.cabolabs.security;
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.util.Assert
-//import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ApplicationEventPublisherAware
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.security.core.context.SecurityContextHolder
+
 import com.cabolabs.security.UserPassOrgAuthToken
+
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.security.web.util.matcher.RequestMatcher
+
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 /**
 Alternative to http://docs.spring.io/autorepo/docs/spring-security/3.2.3.RELEASE/apidocs/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.html
@@ -52,6 +56,42 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      assert authenticationManager != null, 'authenticationManager must be specified'
      //assert rememberMeServices != null, 'rememberMeServices must be specified'
   }
+  
+  /*
+  // I want this to filter web form login /j_ehrserver_security_check and 
+  // rest API login /rest/login. The default impl only filters form login.
+  // https://github.com/justinedelson/spring-security/blob/master/web/src/main/java/org/springframework/security/web/authentication/AbstractAuthenticationProcessingFilter.java
+  @Override
+  protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response)
+  {
+     // REST login attempt
+     // The problem is this will filter but doesnt do the token generation.
+     // https://github.com/alvarosanchez/grails-spring-security-rest/blob/8ed76e66c5b07884a48e9cf4521d570dff1170b1/src/main/groovy/grails/plugin/springsecurity/rest/RestAuthenticationFilter.groovy
+     HttpServletRequest httpServletRequest = request as HttpServletRequest
+     HttpServletResponse httpServletResponse = response as HttpServletResponse
+     def actualUri =  httpServletRequest.requestURI - httpServletRequest.contextPath
+     def conf = SpringSecurityUtils.securityConfig
+     def endpointUrl = conf.rest.login.endpointUrl // /rest/login
+     if (actualUri == endpointUrl)
+     {
+        return true
+     }
+     
+     String uri = request.getRequestURI()
+     int pathParamIndex = uri.indexOf(';')
+
+     if (pathParamIndex > 0) {
+         // strip everything after the first semi-colon
+         uri = uri.substring(0, pathParamIndex)
+     }
+
+     if ("".equals(request.getContextPath())) {
+         return uri.endsWith(filterProcessesUrl)
+     }
+
+     return uri.endsWith(request.getContextPath() + filterProcessesUrl)
+ }
+ */
     
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException
