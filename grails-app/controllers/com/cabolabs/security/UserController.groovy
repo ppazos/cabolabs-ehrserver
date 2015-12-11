@@ -238,6 +238,22 @@ class UserController {
          return
       }
       
+      // Selected roles from edit view
+      def roles = params.list('role')
+      
+      // if the user is editing his data and it is an admin, he can't remove the admin role
+      def loggedUser = springSecurityService.currentUser
+      if (loggedUser.id == userInstance.id && userInstance.authoritiesContains('ROLE_ADMIN'))
+      {
+         if (!roles.contains('ROLE_ADMIN'))
+         {
+            flash.message = "You can't remove your ADMIN role"
+            respond userInstance, view:'edit'
+            return
+         }
+      }
+      
+      
       // Update organizations
       // Remove current
 
@@ -274,7 +290,7 @@ class UserController {
       currentRoles*.delete()
       
       // Add selected roles
-      def roles = params.list('role')
+      
       roles.each { authority ->
          
          UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
