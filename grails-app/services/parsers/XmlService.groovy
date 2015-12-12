@@ -94,15 +94,11 @@ class XmlService {
       List dataOut
    )
    {
-      println "parseVersions"
-      
       // GPathResult of all the parsed versions
       def parsedVersions = []
       versionsXML.version.each {
          parsedVersions << it
       }
-      
-      println versionsXML.attributes()
       
       // Validate XMLs
       def namespaces = versionsXML.attributes().findAll { it.key.startsWith('xmlns') } // namespace map
@@ -268,13 +264,6 @@ class XmlService {
             println it
          }
       }
-      else println "Guarda contrib"
-      
-      /*
-      println "***** VERSIONS AFTER ******"
-      println "***** VERSIONS AFTER " +contribution.versions
-      println "***** VERSIONS AFTER ******"
-      */
       
       return contribution
    }

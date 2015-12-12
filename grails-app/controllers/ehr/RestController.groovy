@@ -145,7 +145,6 @@ class RestController {
          return
       }
 
-      
       def ehr = Ehr.findByEhrId(ehrId)
       if (!ehr)
       {
@@ -153,24 +152,7 @@ class RestController {
          return
       }
       
-      // test
-      //def versions = request.XML // xml object GPathResult
-      //def xmlString = new XmlNodePrinter(new PrintWriter(new StringWriter())).print(versions)
-      //def xmlString = groovy.xml.XmlUtil.serialize( versions )
-      //println xmlString
-      
-      //println "versions empty "+ versions.isEmpty()
-      //println "version count "+ versions.version.size()
-      
-      // raw body (el xml perfecto)
-      //println "text"
-      //println request.reader.text
-      // test
-      
-      //renderError(message(code:'rest.commit.error.versionsRequired'), '201', 201)
-      //return
-      
-      
+
       /*
        * <versions>
        *  <version>
@@ -178,33 +160,33 @@ class RestController {
        *  </version>
        * </version>
        */
-      def versionsXMLString = request.reader.text
+      def versionsXML = request.reader?.text // GString
       
-
       // 2. versions deben venir 1 por lo menos haber una
-      if (!versionsXMLString)
+      if (!versionsXML)
       {
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
-      //println versionsXMLString
-      
       
       def slurper = new XmlSlurper(false, false)
-      def versionsXML = slurper.parseText(versionsXMLString)
+      def _parsedVersions = slurper.parseText(versionsXML)
       
-      // namespaces declared
-      //println versionsXML.attributes().collect { it.key.startsWith('xmlns')}
       
-      if (versionsXML.isEmpty())
+      //println "class "+ _parsedVersions.getClass() // groovy.util.slurpersupport.NodeChild
+      //println _parsedVersions.children()*.name()
+      //println _parsedVersions.version.size()
+      
+      
+      if (_parsedVersions.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
-      if (versionsXML.version.size() == 0)
+      if (_parsedVersions.version.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
       
@@ -222,7 +204,7 @@ class RestController {
          // null if there are xml validation errors
          contribution = xmlService.parseVersions(
             ehr,
-            versionsXML, // GPathResult
+            _parsedVersions, // GPathResult
             auditSystemId,
             new Date(),
             auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
@@ -276,15 +258,23 @@ class RestController {
          println e.message +" "+ e.getClass().getSimpleName()
          
          // trace
-         StringWriter writer = new StringWriter();
-         PrintWriter printWriter = new PrintWriter( writer );
-         e.printStackTrace( printWriter );
-         printWriter.flush();
-         String stackTrace = writer.toString();
+         StringWriter writer = new StringWriter()
+         PrintWriter printWriter = new PrintWriter( writer )
+         e.printStackTrace( printWriter )
+         printWriter.flush()
+         String stackTrace = writer.toString()
          
-         println stackTrace
+         //println stackTrace
+         //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
+         def appCtx = grailsApplication.getMainContext()
+         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
+            [e.message +" trace: "+ stackTrace] as Object[],
+            "error",
+            locale)
+         println locale
          
-         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
+         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
          return
       }
       
