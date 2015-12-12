@@ -272,7 +272,6 @@ class RestController {
             [e.message +" trace: "+ stackTrace] as Object[],
             "error",
             locale)
-         println locale
          
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
          return

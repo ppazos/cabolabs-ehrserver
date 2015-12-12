@@ -174,7 +174,184 @@ class RestControllerSpec extends Specification {
        
       then:
         response.xml.type.code.text() == 'AR' // response is already xml
-        response.xml.message != null
         Version.count() == 1
    }
+   
+   
+   void "test 2 commits with new version for amendment"()
+   {
+      setup:
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+        
+        // content to commit
+        def content1 = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+        content1 = content1.replaceAll('\\[PATIENT_UID\\]', patientUid)
+        
+        def content2 = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_new_version.xml').text
+        content2 = content2.replaceAll('\\[PATIENT_UID\\]', patientUid)
+      
+      
+      when:
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content1
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        
+      then:
+        response.xml.type.code.text() == 'AA' // response is already xml
+        Version.count() == 1
+        
+      
+      when:
+        controller.response.reset()
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content2
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+       
+      then:
+        response.xml.type.code.text() == 'AA' // response is already xml
+        response.xml.message != null
+        Version.count() == 2
+   }
+   
+   
+   void "test commit amendment with no previous version"()
+   {
+      setup:
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+        
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_new_version.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+      
+      
+      when:
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        
+        println "Should report an error"
+        println response.contentAsString
+        
+      then:
+        response.xml.type.code.text() == 'AR'
+        Version.count() == 0 // Known issue: still saves the version https://github.com/ppazos/cabolabs-ehrserver/issues/216
+   }
+   
+   
+   /**
+    * versions have same contribution uid and different version uid.
+    */
+   void "test commit of 2 versions"()
+   {
+      setup:
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+        
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+      
+      
+      when:
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        
+        println response.contentAsString
+        
+      then:
+        response.xml.type.code.text() == 'AA'
+        Version.count() == 2
+   }
+   
+   
+   /**
+    * versions have different contribution uid.
+    */
+   void "test commit of 2 versions with diff contrib id"()
+   {
+      setup:
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+        
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_diff_contrib.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+      
+      
+      when:
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        
+        println response.contentAsString
+        
+      then:
+        response.xml.type.code.text() == 'AR'
+        Version.count() == 0
+   }
+   
+   
+   /**
+    * 2 not valid versions against xsds
+    */
+   void "test commit of 2 versions with errors"()
+   {
+      setup:
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+        
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_invalid.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+      
+      
+      when:
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        
+        println response.contentAsString
+        
+      then:
+        response.xml.type.code.text() == 'AR'
+        Version.count() == 0
+   }
+   
 }
