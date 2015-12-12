@@ -98,6 +98,12 @@ class RestControllerSpec extends Specification {
       then:
         response.xml.type.code.text() == 'AA' // response is already xml
         Version.count() == 1
+        Contribution.count() == 1
+        CompositionIndex.count() == 1
+        VersionedComposition.count() == 1
+        Ehr.get(1).compositions.size() == 1 // versioned composition
+        Ehr.get(1).contributions.size() == 1
+        Contribution.get(1).ehr == Ehr.get(1)
    }
    
    void "test invalid commit"()
