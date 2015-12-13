@@ -18,6 +18,8 @@ import ehr.Ehr
 import ehr.IndexDataJob
 import ehr.clinical_documents.data.*
 
+import query.*
+
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
@@ -117,16 +119,53 @@ class IndexDataJobSpec extends Specification {
        def dvct = DvCodedTextIndex.first()
        dvct.value == 'event'
        dvct.code == '443'
-       
-       /*
-       response.xml.type.code.text() == 'AA' // response is already xml
-       Version.count() == 1
-       Contribution.count() == 1
-       CompositionIndex.count() == 1
-       VersionedComposition.count() == 1
-       Ehr.get(1).compositions.size() == 1 // versioned composition
-       Ehr.get(1).contributions.size() == 1
-       Contribution.get(1).ehr == Ehr.get(1)
-       */
    }
+   
+   
+   void "test commit and index and query data"()
+   {
+      setup:
+       // load template that will be used for indexing
+       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+       def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
+       oti.index(opt)
+      
+       // setup services for controller
+       def xmlService = new XmlService()
+       xmlService.xmlValidationService = new XmlValidationService()
+       controller.xmlService = xmlService
+       
+       // content to commit
+       def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+       content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+       
+       def query = new Query(name:'get data', type:'datavalue', format:'json', select:[
+          new DataGet(archetypeId:'openEHR-EHR-OBSERVATION.test_all_datatypes.v1', path:'/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value')
+       ])
+       
+      when:
+       request.method = 'POST'
+       request.contentType = 'text/xml'
+       request.xml = content
+       params.ehrId = Ehr.get(1).ehrId
+       params.auditSystemId = "TEST_SYSTEM_ID"
+       params.auditCommitter = "Mr. Committer"
+       controller.commit()
+       job.execute() // creates indexes
+       
+       DataValueIndex.list().each { println it.getClass() }
+       
+       println query.toString()
+       
+       def queryResult = query.execute(Ehr.get(1).ehrId, null, null, null, Organization.get(1).uid)
+       
+      then:
+       queryResult.size() == 1
+       queryResult[0] instanceof DvCountIndex
+       queryResult[0].magnitude == 3
+       queryResult[0].archetypeId == 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
+       queryResult[0].archetypePath == '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'
+   }
+   
+   
 }
