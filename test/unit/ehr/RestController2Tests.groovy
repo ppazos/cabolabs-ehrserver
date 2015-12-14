@@ -1427,7 +1427,7 @@ class RestController2Tests {
       
       println "========= COMMIT ========="
       
-      params.ehrId = Ehr.get(1).ehrId
+      params.ehrUid = Ehr.get(1).uid
       params.auditSystemId = "TEST_SYSTEM_ID"
       params.auditCommitter = "Mr. Committer"
       controller.commit()

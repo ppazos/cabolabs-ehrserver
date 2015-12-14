@@ -385,7 +385,7 @@ class XmlService {
          category:    version.data.category.value.text(), // event o persistent
          startTime:   startTime, // puede ser vacio si category es persistent
          subjectId:   ehr.subject.value,
-         ehrId:       ehr.ehrId,
+         ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId: version.data.@archetype_node_id.text(),
          templateId:  version.data.archetype_details.template_id.value.text()

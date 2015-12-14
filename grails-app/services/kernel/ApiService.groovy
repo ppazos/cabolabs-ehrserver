@@ -11,7 +11,7 @@ import ehr.Ehr
  */
 class ApiService {
 
-   def ehrExists(String ehrId)
+   def ehrExists(String ehrUid)
    {
       /*
       def before = System.currentTimeMillis()
@@ -21,7 +21,7 @@ class ApiService {
          projections {
             count "id"
          }
-         eq('ehrId', ehrId)
+         eq('uid', ehrUid)
       }
       
       def after = System.currentTimeMillis()
@@ -32,7 +32,7 @@ class ApiService {
       
       before = System.currentTimeMillis()
       
-      count = Ehr.countByEhrId(ehrId)
+      count = Ehr.countByUid(ehrUid)
       
       after = System.currentTimeMillis()
       println "Sorting took ${after-before} ms"
@@ -41,7 +41,7 @@ class ApiService {
       */
       
       // TODO: verificar que el ehrId es unico para que sea == 1
-      return Ehr.countByEhrId(ehrId) == 1
+      return Ehr.countByUid(ehrUid) == 1
    }
    
    def contributionExists(String contributionUid)

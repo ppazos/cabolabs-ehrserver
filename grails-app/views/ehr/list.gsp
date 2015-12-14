@@ -21,7 +21,7 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <g:sortableColumn property="ehrId" title="${message(code: 'ehr.ehrId.label', default: 'Ehr Id')}" />
+                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" />
                 <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" />
                 <th><g:message code="ehr.subject.label" default="Subject" /></th>
               </tr>
@@ -29,7 +29,7 @@
             <tbody>
               <g:each in="${list}" status="i" var="ehrInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                  <td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "ehrId")}</g:link></td>
+                  <td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
                   <td>${fieldValue(bean: ehrInstance, field: "dateCreated")}</td>
                   <td><g:link controller="person" action="show" params="[uid:ehrInstance.subject.value]">${ehrInstance.subject.value}</g:link></td>
                 </tr>

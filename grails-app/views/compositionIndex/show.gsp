@@ -50,9 +50,9 @@
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"><g:message code="compositionIndex.ehrId.label" default="EHR UID" /></label>
+          <label class="control-label"><g:message code="compositionIndex.ehrUid.label" default="EHR UID" /></label>
           <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${compositionIndexInstance}" field="ehrId"/></p>
+            <p class="form-control-static"><g:fieldValue bean="${compositionIndexInstance}" field="ehrUid"/></p>
           </div>
         </div>
         <div class="control-group">

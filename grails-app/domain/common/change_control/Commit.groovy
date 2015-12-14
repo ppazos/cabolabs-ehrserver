@@ -14,14 +14,14 @@ import ehr.Ehr
  */
 class Commit {
 
-   String ehrId
+   String ehrUid
    String contributionId
    
    static transients = ['ehr', 'contribution']
    
    def getEhr()
    {
-      return Ehr.findByEhrId(this.ehrId)
+      return Ehr.findByUid(this.ehrUid)
    }
    
    def getContribution()

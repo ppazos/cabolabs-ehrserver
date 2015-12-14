@@ -90,7 +90,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -122,7 +122,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -156,7 +156,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content1
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -170,7 +170,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content2
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -204,7 +204,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content1
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -219,7 +219,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content2
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -248,7 +248,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -282,7 +282,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -315,7 +315,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -348,7 +348,7 @@ class RestControllerSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()

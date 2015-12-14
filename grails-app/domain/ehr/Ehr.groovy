@@ -20,7 +20,7 @@ class Ehr {
    
    // Emula un HIER_OBJECT_ID.root y su valor va a ser un UUID (java.util.UUID.randomUUID() as String)
    // que se asigna en el momento que se crea el EHR
-   String ehrId = java.util.UUID.randomUUID() as String
+   String uid = java.util.UUID.randomUUID() as String
    
    // Emula timeCreated, se setea automaticamente por Grails en el momento de crear el EHR
    Date dateCreated = new Date()

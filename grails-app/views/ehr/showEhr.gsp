@@ -150,9 +150,9 @@
         </g:if>
         
         <div class="control-group">
-          <label class="control-label"><g:message code="ehr.dateCreated.label" default="EHR UID" /></label>
+          <label class="control-label"><g:message code="ehr.uid.label" default="UID" /></label>
           <div class="controls">
-            <p class="form-control-static">${ehr.ehrId}</p>
+            <p class="form-control-static">${ehr.uid}</p>
           </div>
         </div>
         <div class="control-group">

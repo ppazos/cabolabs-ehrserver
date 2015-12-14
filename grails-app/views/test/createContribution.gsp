@@ -20,11 +20,11 @@
     <g:form action="createContribution" >
       <fieldset class="form">
         <div class="fieldcontain">
-          <label for="ehrId">ehrId</label>
-          <g:select name="ehrId"
+          <label for="uid">UID</label>
+          <g:select name="uid"
                     from="${ehr.Ehr.list()}"
                     multiple="multiple"
-                    optionKey="ehrId"
+                    optionKey="uid"
                     size="5"
                     value="${ehrInstance?.compositions*.id}" />
         </div>

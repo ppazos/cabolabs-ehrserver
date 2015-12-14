@@ -117,7 +117,7 @@
 			        <g:each in="${contributionInstanceList}" status="i" var="contributionInstance">
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 			            <td><g:link action="show" id="${contributionInstance.id}">${fieldValue(bean: contributionInstance, field: "uid")}</g:link></td>
-			            <td>${contributionInstance.ehr.ehrId}</td>
+			            <td>${contributionInstance.ehr.uid}</td>
 			            <td>${contributionInstance.audit.timeCommitted}</td>
 			            <td>${contributionInstance.versions.size()}</td>
 			          </tr>

@@ -94,11 +94,11 @@
                   onSuccess="commitSuccess(data)"
                   onFailure="commitFailure(data)">
                   
-       <label for="ehrId">ehrId</label>
-       <g:select name="ehrId"
+       <label for="uid">UID</label>
+       <g:select name="uid"
                  from="${ehr.Ehr.list()}"
                  multiple="multiple"
-                 optionKey="ehrId" />
+                 optionKey="uid" />
        <br/><br/>
        
        <label for="version">version</label>

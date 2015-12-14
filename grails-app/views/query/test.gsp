@@ -56,7 +56,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" noSelection="${['':'Select One...']}" />
+              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" />
             </td>
           </tr>
           <tr>

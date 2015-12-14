@@ -534,9 +534,9 @@
 	        
 	        <table>
 	          <tr>
-	            <td>ehrId</td>
+	            <td>UID</td>
 	            <td>
-		           <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" />
+		           <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="uid" size="4" />
 	            </td>
 	          </tr>
 	          <tr>

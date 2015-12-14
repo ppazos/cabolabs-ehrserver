@@ -248,7 +248,7 @@ class BootStrap {
            if (p.role == 'pat')
            {
               ehr = new Ehr(
-                 ehrId: p.uid, // the ehr id is the same as the patient just to simplify testing
+                 uid: p.uid, // the ehr id is the same as the patient just to simplify testing
                  subject: new PatientProxy(
                     value: p.uid
                  ),

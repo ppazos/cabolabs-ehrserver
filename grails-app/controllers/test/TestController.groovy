@@ -31,14 +31,14 @@ class TestController {
     * 
     * Utiliza CompositionIndex para buscar entre las compositions y devuelve el XML de las compositions que matchean.
     * 
-    * @param ehrId
+    * @param ehrUid
     * @param subjectId
     * @param fromDate yyyyMMdd
     * @param toDate yyyyMMdd
     * @param archetypeId
     * @return
     */
-   def findCompositions(String ehrId, String subjectId, 
+   def findCompositions(String ehrUid, String subjectId, 
                         String fromDate, String toDate, 
                         String archetypeId, String category)
    {
@@ -52,7 +52,7 @@ class TestController {
       def dToDate
       
       // FIXME: cuando sea servicio no hay ui
-      if (!ehrId && !subjectId && !fromDate && !toDate && !archetypeId && !category)
+      if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
          return // muestro ui para testear busqueda
          //throw new Exception("Debe enviar por lo menos un dato para el criterio de busqueda")
@@ -74,8 +74,8 @@ class TestController {
       
       def idxs = CompositionIndex.withCriteria {
          
-         if (ehrId)
-            eq('ehrId', ehrId)
+         if (ehrUid)
+            eq('ehrUid', ehrUid)
          
          if (subjectId)
             eq('subjectId', subjectId)

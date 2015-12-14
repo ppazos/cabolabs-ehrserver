@@ -75,26 +75,31 @@ class FolderController {
       }
       */
       
-      if (folderInstance.ehrId)
+      if (folderInstance.ehr)
       {
-         def ehr = ehr.Ehr.get(folderInstance.ehrId)
-         ehr.directory = folderInstance
-         ehr.save()
-         
+         println "folder ehr "+ folderInstance.ehr
+         //def ehr = ehr.Ehr.get(folderInstance.ehrUid)
+         folderInstance.ehr.directory = folderInstance
          // root folder has the org uid of the ehr
-         folderInstance.organizationUid = ehr.organizationUid
+         folderInstance.organizationUid = folderInstance.ehr.organizationUid
+         
+         // saves the folder
+         if (!folderInstance.ehr.save(flush:true)) println folderInstance.ehr.errors
       }
       else // take the org uid from the parent
       {
+         println "folder tiene parent"
          folderInstance.organizationUid = folderInstance.parent.organizationUid
+         
+         if (!folderInstance.save(flush:true))
+         {
+            respond folderInstance, view:'create'
+            return
+         }
       }
       
       
-      if (!folderInstance.save(flush:true))
-      {
-         respond folderInstance, view:'create'
-         return
-      }
+      
       
       request.withFormat {
          form multipartForm {

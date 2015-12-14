@@ -115,7 +115,7 @@ class IndexDataJobSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -169,7 +169,7 @@ class IndexDataJobSpec extends Specification {
         request.method = 'POST'
         request.contentType = 'text/xml'
         request.xml = content
-        params.ehrId = Ehr.get(1).ehrId
+        params.ehrUid = Ehr.get(1).uid
         params.auditSystemId = "TEST_SYSTEM_ID"
         params.auditCommitter = "Mr. Committer"
         controller.commit()
@@ -179,7 +179,7 @@ class IndexDataJobSpec extends Specification {
        
         println query.toString()
        
-        def queryResult = query.execute(Ehr.get(1).ehrId, null, null, null, Organization.get(1).uid)
+        def queryResult = query.execute(Ehr.get(1).uid, null, null, null, Organization.get(1).uid)
        
       then:
         queryResult.size() == 1

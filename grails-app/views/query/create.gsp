@@ -448,7 +448,7 @@
          }
          else if (action == 'test') {
 
-            console.log('ehrid', $('select[name=qehrId]').val());
+            console.log('ehrUid', $('select[name=qehrId]').val());
             
             // Validacion
             /*
@@ -1369,7 +1369,7 @@
 	        value puede especificarse aqui como filtro o puede ser un
 	        parametro de la query sino se especifica aqui.
 	        
-	        ehrId y rangos de fechas son parametros de la query
+	        ehrUid y rangos de fechas son parametros de la query
 	        
 	        archetypeId se puede especificar como filtro (tipo de documento), 
 	        sino se especifica aqui puede pasarse como parametro de la query
@@ -1471,7 +1471,7 @@
 	        <h2><g:message code="query.create.filters" /></h2>
 	
 	        <!--
-	        ehrId, archetypeId (tipo de doc), rango de fechas, formato
+	        ehrUid, archetypeId (tipo de doc), rango de fechas, formato
 	        y agrupacion son todos parametros de la query.
 	        
 	        Aqui se pueden fijar SOLO algunos de esos parametros
