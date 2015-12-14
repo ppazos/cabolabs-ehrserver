@@ -8,6 +8,7 @@ import spock.lang.Specification
 import parsers.XmlService
 import parsers.XmlValidationService
 import demographic.Person
+import com.cabolabs.ehrserver.data.DataIndexerService
 
 import com.cabolabs.security.Organization
 
@@ -33,7 +34,6 @@ import query.*
  ])
 class IndexDataJobSpec extends Specification {
 
-   def job = new IndexDataJob()
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = 'a86ac702-980a-478c-8f16-927fd4a5e9ae'
    def config = grailsApplication.config.app //Holders.config.app
@@ -73,99 +73,119 @@ class IndexDataJobSpec extends Specification {
 
    void "test nothing to index"()
    {
+      setup:
+        def job = new IndexDataJob()
+        // https://github.com/grails/grails-core/issues/1501
+        
+        // service for job
+        job.dataIndexerService = new DataIndexerService()
+        job.dataIndexerService.transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug)
+        
       when:
-       job.execute()
+        job.execute()
        
       then:
-       DataValueIndex.count() == 0
+        DataValueIndex.count() == 0
    }
    
    void "test commit and index"()
    {
       setup:
-       // load template that will be used for indexing
-       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-       def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
-       oti.index(opt)
-      
-       // setup services for controller
-       def xmlService = new XmlService()
-       xmlService.xmlValidationService = new XmlValidationService()
-       controller.xmlService = xmlService
+        def job = new IndexDataJob()
+        
+        // service for job
+        job.dataIndexerService = new DataIndexerService()
+        job.dataIndexerService.transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug)
+        
+        // load template that will be used for indexing
+        def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+        def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
+        oti.index(opt)
        
-       // content to commit
-       def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
-       content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
+       
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
        
       when:
-       request.method = 'POST'
-       request.contentType = 'text/xml'
-       request.xml = content
-       params.ehrId = Ehr.get(1).ehrId
-       params.auditSystemId = "TEST_SYSTEM_ID"
-       params.auditCommitter = "Mr. Committer"
-       controller.commit()
-       job.execute() // creates indexes
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        job.execute() // creates indexes
        
-       DataValueIndex.list().each { println it.getClass() }
+        DataValueIndex.list().each { println it.getClass() }
        
       then:
-       DataValueIndex.count() == 2
+        DataValueIndex.count() == 2
        
-       DvCountIndex.count() == 1
-       DvCountIndex.first().magnitude == 3
+        DvCountIndex.count() == 1
+        DvCountIndex.first().magnitude == 3
        
-       DvCodedTextIndex.count() == 1
-       def dvct = DvCodedTextIndex.first()
-       dvct.value == 'event'
-       dvct.code == '443'
+        DvCodedTextIndex.count() == 1
+        def dvct = DvCodedTextIndex.first()
+        dvct.value == 'event'
+        dvct.code == '443'
    }
    
    
    void "test commit and index and query data"()
    {
-      setup:
-       // load template that will be used for indexing
-       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-       def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
-       oti.index(opt)
+      setup:        
+        def job = new IndexDataJob()
+        
+        // service for job
+        job.dataIndexerService = new DataIndexerService()
+        job.dataIndexerService.transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug).transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug)
+        
+        
+        // load template that will be used for indexing
+        def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+        def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
+        oti.index(opt)
+
       
-       // setup services for controller
-       def xmlService = new XmlService()
-       xmlService.xmlValidationService = new XmlValidationService()
-       controller.xmlService = xmlService
+        // setup services for controller
+        def xmlService = new XmlService()
+        xmlService.xmlValidationService = new XmlValidationService()
+        controller.xmlService = xmlService
        
-       // content to commit
-       def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
-       content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
+        // content to commit
+        def content = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+        content = content.replaceAll('\\[PATIENT_UID\\]', patientUid)
        
-       def query = new Query(name:'get data', type:'datavalue', format:'json', select:[
+        def query = new Query(name:'get data', type:'datavalue', format:'json', select:[
           new DataGet(archetypeId:'openEHR-EHR-OBSERVATION.test_all_datatypes.v1', path:'/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value')
-       ])
+        ])
        
       when:
-       request.method = 'POST'
-       request.contentType = 'text/xml'
-       request.xml = content
-       params.ehrId = Ehr.get(1).ehrId
-       params.auditSystemId = "TEST_SYSTEM_ID"
-       params.auditCommitter = "Mr. Committer"
-       controller.commit()
-       job.execute() // creates indexes
+        request.method = 'POST'
+        request.contentType = 'text/xml'
+        request.xml = content
+        params.ehrId = Ehr.get(1).ehrId
+        params.auditSystemId = "TEST_SYSTEM_ID"
+        params.auditCommitter = "Mr. Committer"
+        controller.commit()
+        job.execute() // creates indexes
        
-       DataValueIndex.list().each { println it.getClass() }
+        DataValueIndex.list().each { println it.getClass() }
        
-       println query.toString()
+        println query.toString()
        
-       def queryResult = query.execute(Ehr.get(1).ehrId, null, null, null, Organization.get(1).uid)
+        def queryResult = query.execute(Ehr.get(1).ehrId, null, null, null, Organization.get(1).uid)
        
       then:
-       queryResult.size() == 1
-       queryResult[0] instanceof DvCountIndex
-       queryResult[0].magnitude == 3
-       queryResult[0].archetypeId == 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
-       queryResult[0].archetypePath == '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'
+        queryResult.size() == 1
+        queryResult[0] instanceof DvCountIndex
+        queryResult[0].magnitude == 3
+        queryResult[0].archetypeId == 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
+        queryResult[0].archetypePath == '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'
    }
-   
-   
 }

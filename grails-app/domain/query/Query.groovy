@@ -658,40 +658,41 @@ class Query {
             // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
             switch (idxtype)
             {
-                // ADL Parser bug: uses Java class names instead of RM Type Names...
-               case ['DV_DATE_TIME', 'DvDateTime']:
+               // ADL Parser bug: uses Java class names instead of RM Type Names...
+               // FIXME: we are not working with ADL any more, the java types can be removed...
+               case 'DV_DATE_TIME':
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
                break
-               case ['DV_QUANTITY', 'DvQuantity']:
+               case 'DV_QUANTITY':
                    fromMap['DvQuantityIndex'] = 'dqi'
                    where += " AND dqi.id = dvi.id "
                break
-               case ['DV_CODED_TEXT', 'DvCodedText']:
+               case 'DV_CODED_TEXT':
                    fromMap['DvCodedTextIndex'] = 'dcti'
                    where += " AND dcti.id = dvi.id "
                break
-               case ['DV_TEXT', 'DvText']:
+               case 'DV_TEXT':
                    fromMap['DvTextIndex'] = 'dti'
                    where += " AND dti.id = dvi.id "
                break
-               case ['DV_ORDINAL', 'DvOrdinal']:
+               case 'DV_ORDINAL':
                    fromMap['DvOrdinalIndex'] = 'dvol'
                    where += " AND dvol.id = dvi.id "
                break
-               case ['DV_BOOLEAN', 'DvBoolean']:
+               case 'DV_BOOLEAN':
                    fromMap['DvBooleanIndex'] = 'dbi'
                    where += " AND dbi.id = dvi.id "
                break
-               case ['DV_COUNT', 'DvCount']:
+               case 'DV_COUNT':
                    fromMap['DvCountIndex'] = 'dci'
                    where += " AND dci.id = dvi.id "
                break
-               case ['DV_PROPORTION', 'DvProportion']:
+               case 'DV_PROPORTION':
                    fromMap['DvProportionIndex'] = 'dpi'
                    where += " AND dpi.id = dvi.id "
                break
-               case ['DV_DURATION', 'DvDuration']:
+               case 'DV_DURATION':
                   fromMap['DvDurationIndex'] = 'dduri'
                   where += " AND dduri.id = dvi.id "
                break
