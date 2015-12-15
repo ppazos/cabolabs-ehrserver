@@ -58,25 +58,10 @@
     };
    </g:javascript>
   </head>
-  <body>
-	  <%--
-	  <!-- main menu, same as desktop -->
-	  <div id="main_menu">
-	    <g:link controller="person" action="list" class="access_icon ${(controllerName=='person')?'active':''}"><g:message code="person.list.title" /></g:link>
-	    <g:link controller="ehr" action="list" class="ehr_icon ${(controllerName=='ehr')?'active':''}"><g:message code="desktop.ehrs" /></g:link>
-	    <g:link controller="contribution" action="list" class="contributions_icon ${(controllerName=='contribution')?'active':''}"><g:message code="desktop.contributions" /></g:link>
-	    <g:link controller="folder" action="index" class="directory_icon ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></g:link>
-	    <g:link controller="query" action="list" class="query_icon ${(controllerName=='query')?'active':''}"><g:message code="desktop.queries" /></g:link>
-	    <g:link controller="indexDefinition" action="list" class="indexes_icon ${(controllerName=='indexDefinition')?'active':''}"><g:message code="desktop.indexes" /></g:link>
-	    <g:link controller="operationalTemplate" action="list" class="templates_icon ${(controllerName=='operationalTemplate')?'active':''}"><g:message code="desktop.templates" /></g:link>
-	  </div>
-	  <div style="clear: both"></div>
-	   --%>
-	  
-	  <div id="wrapper">
-	
-	    <!-- Navigation -->
-	    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+  <body>	  
+	 <div id="wrapper">
+	   <!-- Navigation -->
+	   <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 	      <div class="navbar-header">
 	        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 	         <span class="sr-only">Toggle navigation</span>
@@ -169,21 +154,27 @@
 	                 <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
 	               </li>
 	               </sec:ifAnyGranted>
+	               
+	               <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li>
+                    <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
+                  </li>
+                  </sec:ifAnyGranted>
 	             </ul>
 	           </div>
 	           <!-- /.sidebar-collapse -->
 	         </div>
 	      <!-- /.navbar-static-side -->
 	      </sec:ifLoggedIn>
-	    </nav>
+	   </nav>
 	
-	    <!-- BODY -->
-	    <div id="page-wrapper">
-	      <g:layoutBody/>
-	      <div class="footer" role="contentinfo"></div>
-	      <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
-	    </div>
-	    <!-- /BODY -->
-	  </div>
+	   <!-- BODY -->
+	   <div id="page-wrapper">
+	     <g:layoutBody/>
+	     <div class="footer" role="contentinfo"></div>
+	     <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+	   </div>
+	   <!-- /BODY -->
+	 </div>
   </body>
 </html>

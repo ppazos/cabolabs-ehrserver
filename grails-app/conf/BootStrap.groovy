@@ -12,6 +12,8 @@ import com.cabolabs.security.Organization
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+import com.cabolabs.ehrserver.identification.PersonIdType
+
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 
 class BootStrap {
@@ -62,6 +64,19 @@ class BootStrap {
           (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
         }
      }
+     
+     
+     def idtypes = [
+        new PersonIdType(name:'DNI', code:'DNI'),
+        new PersonIdType(name:'CI', code:'CI'),
+        new PersonIdType(name:'Passport', code:'Passport'),
+        new PersonIdType(name:'SSN', code:'SSN'),
+        new PersonIdType(name:'UUID', code:'UUID'),
+        new PersonIdType(name:'OID', code:'OID')
+     ]
+     idtypes.each { it.save(failOnError:true, flush:true) }
+     
+     
      
      //****** SECURITY *******
      
@@ -123,6 +138,7 @@ class BootStrap {
         new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
      }
@@ -182,7 +198,7 @@ class BootStrap {
                dob: new Date(81, 9, 24),
                sex: 'M',
                idCode: '4116238-0',
-               idType: 'CI',
+               idType: PersonIdType.get(1).code,
                role: 'pat',
                uid: '11111111-1111-1111-1111-111111111111'
            ),
@@ -192,7 +208,7 @@ class BootStrap {
                dob: new Date(87, 2, 19),
                sex: 'F',
                idCode: '1234567-0',
-               idType: 'CI',
+               idType: PersonIdType.get(1).code,
                role: 'pat',
                uid: '22222222-1111-1111-1111-111111111111'
            ),
@@ -202,7 +218,7 @@ class BootStrap {
                dob: new Date(80, 2, 20),
                sex: 'M',
                idCode: '3453455-0',
-               idType: 'CI',
+               idType: PersonIdType.get(1).code,
                role: 'pat',
                uid: '33333333-1111-1111-1111-111111111111'
            ),
@@ -212,7 +228,7 @@ class BootStrap {
                dob: new Date(64, 8, 19),
                sex: 'M',
                idCode: '5677565-0',
-               idType: 'CI',
+               idType: PersonIdType.get(1).code,
                role: 'pat',
                uid: '44444444-1111-1111-1111-111111111111'
            ),
@@ -222,7 +238,7 @@ class BootStrap {
                dob: new Date(92, 1, 5),
                sex: 'F',
                idCode: '84848884-0',
-               idType: 'CI',
+               idType: PersonIdType.get(1).code,
                role: 'pat',
                uid: '55555555-1111-1111-1111-111111111111'
            )

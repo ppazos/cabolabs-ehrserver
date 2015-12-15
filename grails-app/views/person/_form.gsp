@@ -1,4 +1,4 @@
-<%@ page import="demographic.Person" %><%@ page import="com.cabolabs.security.Organization" %>
+<%@ page import="demographic.Person" %><%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.identification.PersonIdType" %>
 
 <div class="form-group ${hasErrors(bean: personInstance, field: 'firstName', 'has-error')}">
   <label class="control-label"><g:message code="person.firstName.label" default="First Name" /></label>
@@ -26,7 +26,7 @@
 </div>
 <div class="form-group ${hasErrors(bean: personInstance, field: 'idType', 'has-error')}">
   <label class="control-label"><g:message code="person.idType.label" default="Id Type" /></label>
-  <g:select name="idType" from="${personInstance.constraints.idType.inList}" value="${personInstance?.idType}" valueMessagePrefix="person.idType" noSelection="['': '']" class="form-control" />
+  <g:select name="idType" from="${PersonIdType.list()}" optionKey="code" optionValue="name" value="${personInstance?.idType}" valueMessagePrefix="person.idType" noSelection="['': '']" class="form-control" />
 </div>
 
 <div class="form-group ${hasErrors(bean: personInstance, field: 'role', 'has-error')}">
