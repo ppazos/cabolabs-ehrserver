@@ -22,7 +22,7 @@
 	      <g:hasErrors bean="${personInstance}">
 	        <ul class="errors" role="alert">
 	          <g:eachError bean="${personInstance}" var="error">
-	          <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+	            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
 	          </g:eachError>
 	        </ul>
 	      </g:hasErrors>
@@ -30,9 +30,9 @@
 	      <g:form action="save" >
 	        <fieldset class="form">
 	          <g:render template="form"/>
-	        </fieldset>
-	        <fieldset class="buttons">
-	          <g:submitButton name="create" class="save btn btn-default btn-md" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+	          <div style="text-align:right;">
+	            <g:submitButton name="create" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+             </div>
 	        </fieldset>
 	      </g:form>
       </div>

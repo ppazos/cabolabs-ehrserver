@@ -12,19 +12,21 @@
       var serie = { name: 'contributions', data: [] };
     
 	   <%
-      println 'var start = Date.UTC('+ (start.year + 1900) +','+ start.month +','+ start.date +');'
+      println 'var start = Date.UTC('+ (start.year + 1900) +','+ (start.month - 1) +','+ start.date +');'
       def match
 	   data.each { point ->
 	       
          match = (point[1].toString() =~ /(\d{4})(\d{2})/) //=match for year and month, /(\d{4})(\d{2})(\d{2})/ match for ymd
 
+         // -1 because month is 0 based
 	      println 'serie.data.push(['+
-          'Date.UTC('+ match[0][1] +', '+ match[0][2] +', 1), '+ point[0] +
+          'Date.UTC('+ match[0][1] +', (' + match[0][2] +' -1), 1), '+ point[0] +
          ']);' // point[0] is the count, point[1] is the group date
 	   }
 	   %>
 
-	   series.push(serie);
+      // avoid error on empty serie.data
+      if (serie.data.length > 0) series.push(serie);
 
 	   console.log(series);
     
@@ -115,7 +117,7 @@
 			        <g:each in="${contributionInstanceList}" status="i" var="contributionInstance">
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 			            <td><g:link action="show" id="${contributionInstance.id}">${fieldValue(bean: contributionInstance, field: "uid")}</g:link></td>
-			            <td>${contributionInstance.ehr.ehrId}</td>
+			            <td>${contributionInstance.ehr.uid}</td>
 			            <td>${contributionInstance.audit.timeCommitted}</td>
 			            <td>${contributionInstance.versions.size()}</td>
 			          </tr>
@@ -123,11 +125,8 @@
 		        </tbody>
 		     </table>
 	      </div>
-	      <div class="pagination">
-	        <g:paginate total="${contributionInstanceTotal}" />
-	      </div>
+         <g:paginator total="${total}" />
       </div>
     </div>
-
   </body>
 </html>

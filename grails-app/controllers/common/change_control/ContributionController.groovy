@@ -60,7 +60,7 @@ class ContributionController {
       //println data
       // =========================================================================
 
-      return [contributionInstanceList: list, contributionInstanceTotal: cnt,
+      return [contributionInstanceList: list, total: cnt,
               data: data, start: oneyearbehind, end: now]
    }
 

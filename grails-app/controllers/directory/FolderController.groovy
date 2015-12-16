@@ -35,7 +35,7 @@ class FolderController {
          count = Folder.countByOrganizationUid(org.uid)
       }
       
-      respond list, model:[folderInstanceCount: count]
+      respond list, model:[total: count]
    }
 
    def show(Folder folderInstance)
@@ -45,7 +45,10 @@ class FolderController {
 
    def create()
    {
-      respond new Folder(params)
+      // Filter ehrs by the ehrs that don't have a root folder and are ehrs the user can see by it's org uids
+      def user = springSecurityService.getCurrentUser()
+      def ehrs = ehr.Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
+      respond new Folder(params), model: [ehrs: ehrs]
    }
 
    @Transactional
@@ -57,6 +60,8 @@ class FolderController {
          return
       }
 
+      /*
+      // FIXME: the org uid of the folder should be the same as the owning ehr...
       // admins can select the org uid, for other roles is the org used to login
       if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -68,24 +73,33 @@ class FolderController {
          
          folderInstance.organizationUid = org.uid
       }
+      */
       
-      if (folderInstance.ehrId)
+      if (folderInstance.ehr)
       {
-         def ehr = ehr.Ehr.get(folderInstance.ehrId)
-         ehr.directory = folderInstance
-         ehr.save() 
+         println "folder ehr "+ folderInstance.ehr
+         //def ehr = ehr.Ehr.get(folderInstance.ehrUid)
+         folderInstance.ehr.directory = folderInstance
+         // root folder has the org uid of the ehr
+         folderInstance.organizationUid = folderInstance.ehr.organizationUid
+         
+         // saves the folder
+         if (!folderInstance.ehr.save(flush:true)) println folderInstance.ehr.errors
+      }
+      else // take the org uid from the parent
+      {
+         println "folder tiene parent"
+         folderInstance.organizationUid = folderInstance.parent.organizationUid
+         
+         if (!folderInstance.save(flush:true))
+         {
+            respond folderInstance, view:'create'
+            return
+         }
       }
       
-      folderInstance.save flush:true
-
       
       
-      
-      if (folderInstance.hasErrors())
-      {
-         respond folderInstance, view:'create'
-         return
-      }
       
       request.withFormat {
          form multipartForm {
@@ -128,22 +142,54 @@ class FolderController {
    @Transactional
    def delete(Folder folderInstance)
    {
-
       if (folderInstance == null)
       {
          notFound()
          return
       }
 
-      folderInstance.delete flush:true
-
-      request.withFormat {
-         form multipartForm {
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'Folder.label', default: 'Folder'), folderInstance.id])
-            redirect action:"index", method:"GET"
-         }
-         '*'{ render status: NO_CONTENT }
+      // root folders can't be deleted (to make things easier for the case below)
+      if (folderInstance.ehr)
+      {
+         flash.message = message(code: 'folder.delete.cantDeleteRootFolder')
+         redirect (action:'show', id:folderInstance.id)
+         return
       }
+      
+      // TODO: this can be added on Folder.beforeDelete
+      
+      // If the folder has children, just delete the folder and let
+      // the children parent be the parent of the current folder.
+      // This works because the root folder can't be deleted, so we
+      // know the deleted folder has a parent folder.
+      //(root folders don't have a parent folder)
+      if (folderInstance.folders)
+      {
+         def parent = folderInstance.parent
+         
+         parent.removeFromFolders(folderInstance) // deletes parent => folderInstance
+         folderInstance.parent = null             // deletes folderInstnace => parent
+         
+         folderInstance.folders.each { child ->
+            
+            folderInstance.removeFromFolders(child) // deletes folder => child
+            child.parent = parent                   // deletes child => folder
+            parent.addToFolders(child)
+         }
+         
+         if (!parent.save(flush:true))
+         {
+            // TODO: handle this
+            println parent.errors
+         }
+      }
+      
+      // Physical delete!
+      folderInstance.delete(flush:true)
+
+      
+      flash.message = message(code: 'default.deleted.message', args: [message(code: 'Folder.label', default: 'Folder'), folderInstance.id])
+      redirect action:"index", method:"GET"
    }
 
    protected void notFound()

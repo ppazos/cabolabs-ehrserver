@@ -1,6 +1,7 @@
 dataSource {
     pooled = true
-    driverClassName = "org.h2.Driver"
+    driverClassName = 'com.mysql.jdbc.Driver'
+    dialect = org.hibernate.dialect.MySQL5InnoDBDialect
     username = "root"
     password = "root"
 }
@@ -16,13 +17,8 @@ environments {
     development {
         dataSource {
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-           //dbCreate = "update"
-           url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+
 //           logSql = true
-           
-           
-           driverClassName = 'com.mysql.jdbc.Driver'
-           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
            
            // ===========================================================
            // Config for OpenShift ======================================
@@ -40,15 +36,39 @@ environments {
     test {
         dataSource {
             dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            String host = "localhost"
+            String port = 3306
+            String dbName = "ehrservertest"
+            url = "jdbc:mysql://$host:$port/$dbName"
+            
+            username = 'root'
+            password = ''
         }
     }
     production {
         dataSource {
+           
+           /* For testing prod on localhost
+           dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+           url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+           
+           driverClassName = 'com.mysql.jdbc.Driver'
+           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+           
+           // ===========================================================
+           // Config for OpenShift ======================================
+           
+           String host = "localhost"
+           String port = 3306
+           String dbName = "ehrserver"
+           
+           url = "jdbc:mysql://$host:$port/$dbName"
+           
+           username = 'root'
+           password = ''
+           */
+
             dbCreate = "update"
-            
-            driverClassName = 'com.mysql.jdbc.Driver'
-            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             
             // ===========================================================
             // Config for OpenShift ======================================

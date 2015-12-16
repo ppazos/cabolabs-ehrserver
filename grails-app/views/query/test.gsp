@@ -56,7 +56,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="ehrId" size="4" noSelection="${['':'Select One...']}" />
+              <g:select name="qehrId" from="${ehr.Ehr.list()}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" />
             </td>
           </tr>
           <tr>
@@ -83,9 +83,8 @@
                           optionKey="uid" optionValue="name" />
               </sec:ifAnyGranted>
               <sec:ifNotGranted roles="ROLE_ADMIN">
-                <g:selectWithCurrentUserOrganiations name="organizationUid" />
+                <g:selectWithCurrentUserOrganizations name="organizationUid" />
               </sec:ifNotGranted>
-              
             </td>
           </tr>
         </table>

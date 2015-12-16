@@ -10,7 +10,7 @@
               <g:sortableColumn property="category" title="${message(code: 'compositionIndex.category.label', default: 'Category')}" />
               <g:sortableColumn property="startTime" title="${message(code: 'compositionIndex.startTime.label', default: 'Start Time')}" />
               <g:sortableColumn property="archetypeId" title="${message(code: 'compositionIndex.archetypeId.label', default: 'Archetype Id')}" />
-              <g:sortableColumn property="ehrId" title="${message(code: 'compositionIndex.ehrId.label', default: 'Ehr')}" />
+              <g:sortableColumn property="ehrUid" title="${message(code: 'compositionIndex.ehrUid.label', default: 'Ehr')}" />
               <g:sortableColumn property="subjectId" title="${message(code: 'compositionIndex.subjectId.label', default: 'Subject')}" />
               <g:sortableColumn property="uid" title="${message(code: 'compositionIndex.uid.label', default: 'Uid')}" />
               <th></th>
@@ -22,7 +22,7 @@
                 <td><g:link action="show" id="${compositionIndexInstance.id}">${fieldValue(bean: compositionIndexInstance, field: "category")}</g:link></td>
                 <td><g:formatDate date="${compositionIndexInstance.startTime}" /></td>
                 <td>${fieldValue(bean: compositionIndexInstance, field: "archetypeId")}</td>
-                <td>${fieldValue(bean: compositionIndexInstance, field: "ehrId")}</td>
+                <td>${fieldValue(bean: compositionIndexInstance, field: "ehrUid")}</td>
                 <td>${fieldValue(bean: compositionIndexInstance, field: "subjectId")}</td>
                 <td>${fieldValue(bean: compositionIndexInstance, field: "uid")}</td>
                 <td>
@@ -46,7 +46,7 @@
           <g:sortableColumn property="category" title="${message(code: 'compositionIndex.category.label', default: 'Category')}" />
           <g:sortableColumn property="startTime" title="${message(code: 'compositionIndex.startTime.label', default: 'Start Time')}" />
           <g:sortableColumn property="archetypeId" title="${message(code: 'compositionIndex.archetypeId.label', default: 'Archetype Id')}" />
-          <g:sortableColumn property="ehrId" title="${message(code: 'compositionIndex.ehrId.label', default: 'Ehr')}" />
+          <g:sortableColumn property="ehrUid" title="${message(code: 'compositionIndex.ehrUid.label', default: 'Ehr')}" />
           <g:sortableColumn property="subjectId" title="${message(code: 'compositionIndex.subjectId.label', default: 'Subject')}" />
           <g:sortableColumn property="uid" title="${message(code: 'compositionIndex.uid.label', default: 'Uid')}" />
           <th></th>
@@ -58,7 +58,7 @@
            <td><g:link action="show" id="${compositionIndexInstance.id}">${fieldValue(bean: compositionIndexInstance, field: "category")}</g:link></td>
            <td><g:formatDate date="${compositionIndexInstance.startTime}" /></td>
            <td>${fieldValue(bean: compositionIndexInstance, field: "archetypeId")}</td>
-           <td>${fieldValue(bean: compositionIndexInstance, field: "ehrId")}</td>
+           <td>${fieldValue(bean: compositionIndexInstance, field: "ehrUid")}</td>
            <td>${fieldValue(bean: compositionIndexInstance, field: "subjectId")}</td>
            <td>${fieldValue(bean: compositionIndexInstance, field: "uid")}</td>
            <td>

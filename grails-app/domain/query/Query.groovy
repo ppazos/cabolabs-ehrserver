@@ -7,7 +7,7 @@ import query.datatypes.*
 
 /**
  * Parametros n1 de la query:
- *  - ehrId    (== compoIndex.ehrId)
+ *  - ehrUid    (== compoIndex.ehrUid)
  *  - fromDate (<= compoIndex.startDate)
  *  - toDate   (>= compoIndex.startDate)
  *  - archetypeId (es parametro si no se especifica qarchetypeId en Query)
@@ -198,15 +198,15 @@ class Query {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
-   def execute(String ehrId, Date from, Date to, String group, String organizationUid)
+   def execute(String ehrUid, Date from, Date to, String group, String organizationUid)
    {
-      if (this.type == 'datavalue') return executeDatavalue(ehrId, from, to, group, organizationUid)
-      return executeComposition(ehrId, from, to, organizationUid)
+      if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid)
+      return executeComposition(ehrUid, from, to, organizationUid)
    }
    
-   def executeDatavalue(String ehrId, Date from, Date to, String group, String organizationUid)
+   def executeDatavalue(String ehrUid, Date from, Date to, String group, String organizationUid)
    {
-      println "ehrId: $ehrId - organizationUid: $organizationUid"
+      println "ehrUid: $ehrUid - organizationUid: $organizationUid"
       
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -225,7 +225,7 @@ class Query {
          // WHERE level 1 filters
          owner { // CompositionIndex
             
-            if (ehrId) eq('ehrId', ehrId) // Ya se verifico que viene el param y que el ehr existe
+            if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
             if (from) ge('startTime', from) // greater or equal
             if (to) le('startTime', to) // lower or equal
@@ -240,15 +240,15 @@ class Query {
       
       if (group == 'composition')
       {
-         res = queryDataGroupComposition(res, (!ehrId))
+         res = queryDataGroupComposition(res, (!ehrUid))
       }
       else if (group == 'path')
       {
-         res = queryDataGroupPath(res, (!ehrId))
+         res = queryDataGroupPath(res, (!ehrUid))
       }
       else
       {
-         if (!ehrId) res = res.groupBy { dvi -> dvi.owner.ehrId }
+         if (!ehrUid) res = res.groupBy { dvi -> dvi.owner.ehrUid }
       }
       
       return res
@@ -352,11 +352,11 @@ class Query {
    private Map queryDataGroupByEHRAndComposition(res, resHeaders)
    {
       def resGrouped = [:]
-      def rows = res.groupBy { dvi -> dvi.owner.ehrId }
+      def rows = res.groupBy { dvi -> dvi.owner.ehrUid }
       
-      rows.each { ehrId, dvis ->
+      rows.each { ehrUid, dvis ->
          
-         resGrouped[ehrId] = queryDataGroupByComposition(dvis, resHeaders)
+         resGrouped[ehrUid] = queryDataGroupByComposition(dvis, resHeaders)
       }
       
       return resGrouped
@@ -467,11 +467,11 @@ class Query {
    private Map queryDataGroupByEHRAndPath(res)
    {
       def resGrouped = [:]
-      def cols = res.groupBy { dvi -> dvi.owner.ehrId }
+      def cols = res.groupBy { dvi -> dvi.owner.ehrUid }
       
-      cols.each { ehrId, dvis ->
+      cols.each { ehrUid, dvis ->
          
-         resGrouped[ehrId] = queryDataGroupByPath(dvis)
+         resGrouped[ehrUid] = queryDataGroupByPath(dvis)
       }
       
       return resGrouped
@@ -575,7 +575,7 @@ class Query {
    }
    
    
-   def executeComposition(String ehrId, Date from, Date to, String organizationUid)
+   def executeComposition(String ehrUid, Date from, Date to, String organizationUid)
    {
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
@@ -583,8 +583,8 @@ class Query {
       String q = "FROM CompositionIndex ci WHERE ci.lastVersion=true AND " // Query only latest versions
       
       // ===============================================================
-      // Criteria nivel 1 ehrId
-      if (ehrId) q += "ci.ehrId = '" + ehrId + "' AND "
+      // Criteria nivel 1 ehrUid
+      if (ehrUid) q += "ci.ehrUid = '" + ehrUid + "' AND "
       if (organizationUid) q += "ci.organizationUid = '" + organizationUid + "' AND "
        
       // Filter by templateId
@@ -658,40 +658,41 @@ class Query {
             // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
             switch (idxtype)
             {
-                // ADL Parser bug: uses Java class names instead of RM Type Names...
-               case ['DV_DATE_TIME', 'DvDateTime']:
+               // ADL Parser bug: uses Java class names instead of RM Type Names...
+               // FIXME: we are not working with ADL any more, the java types can be removed...
+               case 'DV_DATE_TIME':
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
                break
-               case ['DV_QUANTITY', 'DvQuantity']:
+               case 'DV_QUANTITY':
                    fromMap['DvQuantityIndex'] = 'dqi'
                    where += " AND dqi.id = dvi.id "
                break
-               case ['DV_CODED_TEXT', 'DvCodedText']:
+               case 'DV_CODED_TEXT':
                    fromMap['DvCodedTextIndex'] = 'dcti'
                    where += " AND dcti.id = dvi.id "
                break
-               case ['DV_TEXT', 'DvText']:
+               case 'DV_TEXT':
                    fromMap['DvTextIndex'] = 'dti'
                    where += " AND dti.id = dvi.id "
                break
-               case ['DV_ORDINAL', 'DvOrdinal']:
+               case 'DV_ORDINAL':
                    fromMap['DvOrdinalIndex'] = 'dvol'
                    where += " AND dvol.id = dvi.id "
                break
-               case ['DV_BOOLEAN', 'DvBoolean']:
+               case 'DV_BOOLEAN':
                    fromMap['DvBooleanIndex'] = 'dbi'
                    where += " AND dbi.id = dvi.id "
                break
-               case ['DV_COUNT', 'DvCount']:
+               case 'DV_COUNT':
                    fromMap['DvCountIndex'] = 'dci'
                    where += " AND dci.id = dvi.id "
                break
-               case ['DV_PROPORTION', 'DvProportion']:
+               case 'DV_PROPORTION':
                    fromMap['DvProportionIndex'] = 'dpi'
                    where += " AND dpi.id = dvi.id "
                break
-               case ['DV_DURATION', 'DvDuration']:
+               case 'DV_DURATION':
                   fromMap['DvDurationIndex'] = 'dduri'
                   where += " AND dduri.id = dvi.id "
                break

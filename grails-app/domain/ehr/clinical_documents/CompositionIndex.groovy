@@ -19,7 +19,7 @@ class CompositionIndex {
    
    String subjectId // uid de la persona con rol paciente
    
-   String ehrId // uid del ehr del subjectId
+   String ehrUid // uid del ehr del subjectId
    
    String templateId // se usa como "tipo de documento", es un arquetipo de COMPOSITION
    String archetypeId // archetype that defines the "definition" part of the template

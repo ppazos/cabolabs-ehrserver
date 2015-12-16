@@ -22,4 +22,9 @@ class DataValueIndex {
    static mapping = {
       tablePerHierarchy false // tabla por subclase
    }
+   
+   public String toString()
+   {
+      return this.archetypeId + this.archetypePath
+   }
 }

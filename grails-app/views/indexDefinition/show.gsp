@@ -9,16 +9,6 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	    <div class="nav" role="navigation">
-	      <ul>
-	        <li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-	      </ul>
-	    </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
 	      <h1><g:message code="indexDefinition.show.title" /></h1>
       </div>
     </div>

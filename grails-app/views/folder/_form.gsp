@@ -1,47 +1,31 @@
 <%@ page import="directory.Folder" %>
 
-<div class="control-group" class="fieldcontain ${hasErrors(bean: folderInstance, field: 'parent', 'has-error')}">
+<div class="form-group ${hasErrors(bean: folderInstance, field: 'parent', 'has-error')}">
   <label class="control-label"><g:message code="folder.parent.label" default="Parent" /></label>
-  <div class="controls">
-    <p class="form-control-static"><g:select id="parent" name="parent.id" from="${directory.Folder.list()}" optionKey="id" optionValue="name" value="${folderInstance?.parent?.id}" class="many-to-one" noSelection="['': '']"/></p>
-  </div>
+  <g:select id="parent" name="parent.id" from="${directory.Folder.list()}" optionKey="id" optionValue="name" value="${folderInstance?.parent?.id}" class="many-to-one form-control" noSelection="['': '']"/>
 </div>
 
-<div class="control-group" class="fieldcontain ${hasErrors(bean: folderInstance, field: 'ehr', 'has-error')}">
+<div class="form-group ${hasErrors(bean: folderInstance, field: 'ehr', 'has-error')}">
   <label class="control-label"><g:message code="folder.ehr.label" default="EHR" /></label>
-  <div class="controls">
-    <p class="form-control-static"><g:select id="ehr" name="ehr.id" from="${ehr.Ehr.findAllByDirectoryIsNull()}" optionKey="id" value="${folderInstance?.ehr?.id}" class="many-to-one" noSelection="['': '']"/></p>
-  </div>
+  <g:select id="ehr" name="ehr.id" from="${ehrs}" optionKey="id" class="many-to-one form-control" noSelection="['': '']"/>
 </div>
 
-<div class="control-group" class="fieldcontain ${hasErrors(bean: folderInstance, field: 'name', 'has-error')} required">
+<div class="form-group ${hasErrors(bean: folderInstance, field: 'name', 'has-error')} required">
   <label class="control-label"><g:message code="folder.name.label" default="Name" /></label>
-  <div class="controls">
-    <p class="form-control-static"><g:textField name="name" required="" value="${folderInstance?.name}"/></p>
-  </div>
+  <g:textField name="name" required="" value="${folderInstance?.name}" class="form-control" />
 </div>
 
-<sec:ifAllGranted roles='ROLE_ADMIN'>
-  <div class="control-group" class="fieldcontain ${hasErrors(bean: folderInstance, field: 'organizationUid', 'has-error')} required">
-    <label class="control-label"><g:message code="folder.organizationUid.label" default="Organization" /></label>
-    <div class="controls">
-      <p class="form-control-static">
-        <g:select name="organizationUid" required="" from="${com.cabolabs.security.Organization.list()}"
-                  optionKey="uid" optionValue="name" value="${folderInstance?.organizationUid}" noSelection="['': '']"/></p>
-    </div>
-  </div>
-</sec:ifAllGranted>
-
-<div class="control-group" class="fieldcontain ${hasErrors(bean: folderInstance, field: 'items', 'has-error')}">
-  <label class="control-label"><g:message code="folder.items.label" default="Items" /></label>
-  <div class="controls">
-    <p class="form-control-static">
-      <g:each in="${folderInstance.items}">
-        ${it}<br/>
-      </g:each>
-    </p>
-  </div>
-</div>
+<g:if test="${actionName == 'edit'}">
+   <div class="form-group ${hasErrors(bean: folderInstance, field: 'items', 'has-error')}">
+     <label class="control-label"><g:message code="folder.items.label" default="Items" /></label>
+     <g:if test="${folderInstance.items.size() == 0}">
+       <div>There are no items in the folder</div>
+     </g:if>
+     <g:each in="${folderInstance.items}">
+       ${it}<br/>
+     </g:each>
+   </div>
+</g:if>
 
 <script type="text/javascript">
   $(document).ready(function() {

@@ -80,7 +80,7 @@ environments {
   production {
     grails.logging.jul.usebridge = false
     grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr-0.3"
+    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
     }
@@ -112,6 +112,9 @@ log4j = {
            //'net.sf.ehcache.hibernate'
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
+    
+    
+    info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
 }
 
 app {
@@ -148,6 +151,16 @@ app {
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
       
+      // Extended formats supported by openEHR --------------------------------------------------------------
+      //2015-12-02T17:41:56.809Z
+      ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSZ" // contains timezone e.g. -0300
+      ext_datetime_format_point = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+      // If the time is in UTC, add a Z directly after the time without a space. Z is the zone
+      // designator for the zero UTC offset. "09:30 UTC" is therefore represented as "09:30Z" or "0930Z".
+      ext_datetime_utcformat = "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
+      ext_datetime_utcformat_point = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+      // ----------------------------------------------------------------------------------------------------
+      
       // formatos para mostrar las fechas al usuario
       display_datetime_format = "yyyy/MM/dd HH:mm:ss (Z)" 
       display_date_format = "yyyy/MM/dd"
@@ -175,31 +188,14 @@ grails.plugin.springsecurity.providerNames = ['authProvider']
 grails.plugin.springsecurity.logout.postOnly = false
 
 // Mail
-/*
 grails {
    mail {
-     host = "smtp.gmail.com"
-     port = 465
-     username = "cbl@gmail.com"
-     password = "asdfaasdfasdfasfasfdasfdsdfad"
-     props = ["mail.smtp.auth":"true",
-              "mail.smtp.socketFactory.port":"465",
-              "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-              "mail.smtp.socketFactory.fallback":"false"]
-   }
-}
-*/
-
-
-
-grails {
-   mail {
-     host = "mail.cabolabs.com"
-     port = 587
+     host = System.getenv('EHRSERVER_EMAIL_HOST')
+     port = System.getenv('EHRSERVER_EMAIL_PORT')
      username = System.getenv('EHRSERVER_EMAIL_USER')
-     password =  System.getenv('EHRSERVER_EMAIL_PASS')
+     password = System.getenv('EHRSERVER_EMAIL_PASS')
      'default' {
-        from = "info@cabolabs.com"
+        from = System.getenv('EHRSERVER_EMAIL_FROM')
      }
      /*
      props = ["mail.smtp.auth":"true",

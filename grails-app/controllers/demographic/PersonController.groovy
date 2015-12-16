@@ -1,19 +1,40 @@
 package demographic
 
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.SpringSecurityUtils
+import com.cabolabs.security.Organization
 
 class PersonController {
 
+   def springSecurityService
+   
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
    def index() {
       redirect(action: "list", params: params)
    }
 
-   def list(Integer max) {
+   def list(Integer max)
+   {
       params.max = Math.min(max ?: 10, 100)
       
-      [personInstanceList: Person.findAllByDeleted(false, params), personInstanceTotal: Person.countByDeleted(false)]
+      def list, count
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = Person.findAllByDeleted(false, params)
+         count = Person.countByDeleted(false)
+      }
+      else
+      {
+         // auth token used to login
+         def auth = springSecurityService.authentication
+         def org = Organization.findByNumber(auth.organization)
+         
+         list = Person.findAllByDeletedAndOrganizationUid(false, org.uid, params)
+         count = Person.countByDeletedAndOrganizationUid(false, org.uid)
+      }
+      
+      [personInstanceList: list, personInstanceTotal: count]
    }
 
    def create() {

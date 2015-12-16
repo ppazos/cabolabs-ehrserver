@@ -27,11 +27,11 @@
 		  
     <div class="row">
       <div class="col-lg-12">
-	      <g:if test="${flash.message}">
-	        <div class="message" role="status">${flash.message}</div>
-	      </g:if>
+	     <g:if test="${flash.message}">
+	       <div class="message" role="status">${flash.message}</div>
+	     </g:if>
 	      
-         <div class="table-responsive">
+        <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
@@ -50,11 +50,8 @@
 			        </g:each>
 		        </tbody>
 		      </table>
-         </div>
-		   
-	      <div class="pagination">
-	        <g:paginate total="${folderInstanceCount ?: 0}" />
-	      </div>
+        </div>
+	     <g:paginator total="${total}" />
       </div>
     </div>
   </body>

@@ -49,25 +49,31 @@
 
 ## REST API
 ### Get EHRs
-/rest/ehrList(String format:XML|JSON, int max, int offset)
+/rest/ehrs(String format:xml|json, int max, int offset)
 
 ### Get patients (this service will be obsolete when we move patient data to a specific demographic repo)
-/rest/patientList(String format:XML|JSON, int max, int offset)
+/rest/patients(String format:xml|json, int max, int offset)
 
-### Get EHR for a subject
-/rest/ehrForSubject(String subjectUid, String format:XML|JSON)
+### Get one patient by uid
+/rest/patients/{uid}(String format:xml|json, int max, int offset)
+
+### Get EHR for a subject (patient)
+/rest/ehrs/subjectUid/{subjectUid}(String format:xml|json)
 
 ### Get EHR by uid
-/rest/ehrGet(String ehrUid, String format:XML|JSON)
+/rest/ehrs/ehrUid/{ehrUid}(String format:xml|json)
 
 ### Get all compositions for a patient
 /rest/findCompositions(String ehrId)
 
 ### Get query definitions
-/rest/queryList(String format:XML|JSON, int max, int offset)
+/rest/queries(String format:xml|json, int max, int offset)
+
+### Get one query by it's uid
+/rest/queries/{queryUid}
 
 ### Query execution by uid
-/rest/query(String queryUid, String ehrId)
+/rest/queries/{queryUid}/execute(String organizationUid, String ehrId<optional>)
 
 ### Commits a set of clinical documents to the EHR
 /rest/commit(String ehrUid, Version[] versions, String auditSystemId, String auditCommitter)
@@ -104,6 +110,23 @@ Versions should be committed in XML, following this XSD: https://github.com/ppaz
    * "CONTRIBUTION.audit captures to the time, place and committer of the committal act; these three attributes (system_id,
      committer, time_committed of AUDIT_DETAILS) should be copied into the corresponding attributes of the commit_audit of each VERSION included in the CONTRIBUTION..."
 
+     
+     
+### EHRServer workflows supported by clients
+
+#### WF1. Commit
+
+A client applicaton can commit one or more versions of different Compositions in one transaction.
+
+#### WF2. Query
+
+Query execution by UID. Queries are created by admins. In the near future we'll add an API to create and manage Queries from client applications. We'll also explore adding support to AQL queries.
+
+#### WF3. Checkout and Commit (versioned clinical documents)
+
+On checkout, the client will receive a copy of an existing version of a Composition, with the current UID. The client can modify, and commit, and the same UID should be used. Then the EHRServer will update the version number in the new Version UID. Then Queries will get data only from the latest Version of the existing Compositions. All the Versions of a Composition are grouped in a VersionedComposition object.
+
+
 
 ### Milestones and deliverables
 
@@ -134,19 +157,3 @@ Versions should be committed in XML, following this XSD: https://github.com/ppaz
 * Querying versioned objects
 * Data syncrhonization between servers
 * Support for AQL/EQL output (openEHR archetype-based query language)
-
-
-### EHRServer workflows supported by clients
-
-#### WF1. Commit
-
-A client applicaton can commit one or more versions of different Compositions in one transaction.
-
-#### WF2. Query
-
-Query execution by UID. Queries are created by admins. In the near future we'll add an API to create and manage Queries from client applications. We'll also explore adding support to AQL queries.
-
-#### WF3. Checkout and Commit (versioned clinical documents)
-
-On checkout, the client will receive a copy of an existing version of a Composition, with the current UID. The client can modify, and commit, and the same UID should be used. Then the EHRServer will update the version number in the new Version UID. Then Queries will get data only from the latest Version of the existing Compositions. All the Versions of a Composition are grouped in a VersionedComposition object.
-

@@ -13,7 +13,8 @@ class IndexDefinitionController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        [indexDefinitionInstanceList: IndexDefinition.list(params), indexDefinitionInstanceTotal: IndexDefinition.count()]
+        //Añado pageCurrent para indicar al paginatorTagLib que pagina debe marcar como actual. Si no se pierde.
+        [indexDefinitionInstanceList: IndexDefinition.list(params), total: IndexDefinition.count()]
     }
 
     def show(Long id) {

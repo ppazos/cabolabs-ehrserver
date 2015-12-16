@@ -53,11 +53,7 @@
 		        </tbody>
 		      </table>
 		   </div>
-	      
-	      <div class="pagination">
-	        <g:paginate total="${queryInstanceTotal}" />
-	      </div>
-
+	      <g:paginator total="${queryInstanceTotal}" />
       </div>
     </div>
   </body>

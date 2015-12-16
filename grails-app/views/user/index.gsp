@@ -52,9 +52,7 @@
 	         </tbody>
 	       </table>
 	     </div>
-	     <div class="pagination">
-	       <g:paginate total="${userInstanceCount ?: 0}" />
-	     </div>
+	     <g:paginator total="${userInstanceCount}" />
       </div>
     </div>
   </body>

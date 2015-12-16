@@ -18,6 +18,7 @@ import common.change_control.VersionedComposition
 import common.change_control.Version
 import com.cabolabs.security.Organization
 import grails.util.Holders
+import java.lang.reflect.UndeclaredThrowableException
 
 /**
  * TODO:
@@ -111,15 +112,15 @@ class RestController {
    
    
    /**
-    * Envia una lista de versions para commitear al EHR(ehrId)
+    * Envia una lista de versions para commitear al EHR(ehrUid)
     * 
-    * @param String ehrId
+    * @param String ehrUid
     * @param auditSystemId
     * @param auditCommitter
     * @param List versions
     * @return
     */
-   def commit(String ehrId, String auditSystemId, String auditCommitter)
+   def commit(String ehrUid, String auditSystemId, String auditCommitter)
    {
       log.info( "commit received "+ params.list('versions').size() + " versions"  )
       
@@ -127,43 +128,69 @@ class RestController {
       
       // TODO: todo debe ser transaccional, se hace toda o no se hace nada...
       
-      // 1. ehrId debe venir
-      if (!ehrId)
+
+      if (!ehrUid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
+      if (!auditSystemId)
+      {
+         renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
+         return
+      }
+      if (!auditCommitter)
+      {
+         renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
+         return
+      }
+
+      def ehr = Ehr.findByUid(ehrUid)
+      if (!ehr)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
+         return
+      }
       
-      log.info( "ehrid present" )
+
+      /*
+       * <versions>
+       *  <version>
+       *  ...
+       *  </version>
+       * </version>
+       */
+      def versionsXML = request.reader?.text // GString
       
       // 2. versions deben venir 1 por lo menos haber una
-      if (!params.versions)
+      if (!versionsXML)
       {
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
-      log.info( "versions param present" )
       
-      def xmlVersions = params.list('versions')
-      if (xmlVersions.size() == 0)
+      def slurper = new XmlSlurper(false, false)
+      def _parsedVersions = slurper.parseText(versionsXML)
+      
+      
+      //println "class "+ _parsedVersions.getClass() // groovy.util.slurpersupport.NodeChild
+      //println _parsedVersions.children()*.name()
+      //println _parsedVersions.version.size()
+      
+      
+      if (_parsedVersions.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
-      
-      log.info( "some versions committed" )
-      
-      def ehr = Ehr.findByEhrId(ehrId)
-      
-      // 3. ehr debe existir
-      if (!ehr)
+      if (_parsedVersions.version.size() == 0)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
       
-      log.info( "ehr exists" )
+
       
       // ========================================================
       // FIXME: MOVER ESTA LOGICA A UN SERVICIO
@@ -176,9 +203,13 @@ class RestController {
       {
          // null if there are xml validation errors
          contribution = xmlService.parseVersions(
-            ehr, xmlVersions, 
-            auditSystemId, new Date(), auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
-            parsedVersions)
+            ehr,
+            _parsedVersions, // GPathResult
+            auditSystemId,
+            new Date(),
+            auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
+            parsedVersions
+         )
          
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -215,12 +246,34 @@ class RestController {
             return
          }
       }
+      catch (UndeclaredThrowableException e)
+      {
+         // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
+         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
+         return
+      }
       catch (Exception e)
       {
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          
-         renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400)
+         // trace
+         StringWriter writer = new StringWriter()
+         PrintWriter printWriter = new PrintWriter( writer )
+         e.printStackTrace( printWriter )
+         printWriter.flush()
+         String stackTrace = writer.toString()
+         
+         //println stackTrace
+         //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
+         def appCtx = grailsApplication.getMainContext()
+         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
+            [e.message +" trace: "+ stackTrace] as Object[],
+            "error",
+            locale)
+         
+         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
          return
       }
       
@@ -266,7 +319,7 @@ class RestController {
             
                versionedComposition = new VersionedComposition(
                   uid: version.objectId,
-                  ehrUid: ehrId,
+                  ehrUid: ehrUid,
                   isPersistent: (version.data.category == 'persistent'))
                
 //                  if (!versionedComposition.save())
@@ -312,7 +365,7 @@ class RestController {
          } // switch changeType
          
          
-         println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
+         //println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
          //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
          
@@ -350,7 +403,7 @@ class RestController {
                code('AA')                         // application reject
                codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
             }
-            message('Commit exitoso al EHR '+ ehrId)
+            message('Commit exitoso al EHR '+ ehrUid)
             // ok va sin codigo de error
          }
       }
@@ -362,13 +415,13 @@ class RestController {
     * The query services don't allow versioning the retrieved compositions because don't include
     * the version id that is necessary to create a new version of a composition. 
     * 
-    * @param ehrId
+    * @param ehrUid
     * @param compositionUid
     * @return
     */
-   def checkout(String ehrId, String compositionUid)
+   def checkout(String ehrUid, String compositionUid)
    {
-      println params
+      //println params
       
       def versions = Version.withCriteria {
          data {
@@ -393,7 +446,7 @@ class RestController {
       def version = versions[0]
       
       // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
-      if(version.contribution.ehr.ehrId != ehrId)
+      if(version.contribution.ehr.uid != ehrUid)
       {
          renderError(message(code:'rest.commit.error.contributionInconsistency'), '414', 500)
          return
@@ -470,7 +523,7 @@ class RestController {
                'ehrs' {
                   _ehrs.each { _ehr ->
                      'ehr'{
-                        ehrId(_ehr.ehrId)
+                        uid(_ehr.uid)
                         dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                         subjectUid(_ehr.subject.value)
                         systemId(_ehr.systemId)
@@ -519,7 +572,7 @@ class RestController {
          
          _ehrs.each { _ehr ->
             data.ehrs << [
-               ehrId: _ehr.ehrId,
+               uid: _ehr.uid,
                dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
                subjectUid: _ehr.subject.value,
                systemId: _ehr.systemId
@@ -540,7 +593,6 @@ class RestController {
    
    def ehrForSubject(String subjectUid, String format)
    {
-      println 'Acabo de entrar en función con subjectUid '+ subjectUid
       if (!subjectUid)
       {
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
@@ -580,7 +632,7 @@ class RestController {
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
             'ehr'{
-               ehrId(_ehr.ehrId)
+               uid(_ehr.uid)
                dateCreated( this.formatter.format( _ehr.dateCreated ) )
                delegate.subjectUid(_ehr.subject.value) // delegate para que no haya conflicto con la variable con el mismo nombre
                systemId(_ehr.systemId)
@@ -590,7 +642,7 @@ class RestController {
       else if (format == "json")
       {
          def data = [
-            ehrId: _ehr.ehrId,
+            uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
@@ -619,7 +671,7 @@ class RestController {
       // 1. EHR existe?
       def c = Ehr.createCriteria()
       def _ehr = c.get {
-         eq ('ehrId', ehrUid)
+         eq ('uid', ehrUid)
       }
       
       if (!_ehr)
@@ -635,7 +687,7 @@ class RestController {
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
             'ehr'{
-               ehrId(_ehr.ehrId)
+               uid(_ehr.uid)
                dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                subjectUid(_ehr.subject.value)
                systemId(_ehr.systemId)
@@ -645,7 +697,7 @@ class RestController {
       else if (format == "json")
       {
          def data = [
-            ehrId: _ehr.ehrId,
+            uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
             systemId: _ehr.systemId
@@ -686,7 +738,7 @@ class RestController {
             'result' {
                'patients' {
                   subjects.each { person ->
-                     delegate.patient{
+                     delegate.patient { // THIS IS CALLING getPatient!!!
                         uid(person.uid)
                         firstName(person.firstName)
                         lastName(person.lastName)
@@ -694,6 +746,7 @@ class RestController {
                         sex(person.sex)
                         idCode(person.idCode)
                         idType(person.idType)
+                        organizationUid(person.organizationUid)
                      }
                   }
                }
@@ -725,7 +778,8 @@ class RestController {
                dob: this.formatterDate.format( person.dob ),
                sex: person.sex,
                idCode: person.idCode,
-               idType: person.idType
+               idType: person.idType,
+               organizationUid: person.organizationUid
             ]
          }
          def result = data as JSON
@@ -741,9 +795,9 @@ class RestController {
    
    
    // Get patient data
-   def getPatient(String uid, String format)
+   def patient(String uid, String format)
    {
-      println params
+      println "patient "+ params
       
       if (!uid)
       {
@@ -773,6 +827,7 @@ class RestController {
                sex(person.sex)
                idCode(person.idCode)
                idType(person.idType)
+               organizationUid(person.organizationUid)
             }
          }
       }
@@ -785,7 +840,8 @@ class RestController {
             dob: this.formatterDate.format( person.dob ),
             sex: person.sex,
             idCode: person.idCode,
-            idType: person.idType
+            idType: person.idType,
+            organizationUid: person.organizationUid
          ]
          
          def result = data as JSON
@@ -828,28 +884,60 @@ class RestController {
       if (!format || format == "xml")
       {
          render(contentType:"text/xml", encoding:"UTF-8") {
-            'queryResult'{
-               id(query.id)
-               version(query.version)
-               formart(query.format)
-               name(query.name)
-               template_id(query.templateId)
-               type(query.type)
+            delegate.query{
                uid(query.uid)
+               name(query.name)
+               format(query.format)
+               type(query.type)
+               
+               if (query.type == 'composition')
+               {
+                  for (criteria in query.where)
+                  {
+                     delegate.criteria {
+                        archetypeId(criteria.archetypeId)
+                        path(criteria.path)
+                        delegate.criteria(criteria.toSQL())
+                        //value(criteria.value)
+                     }
+                  }
+               }
+               else
+               {
+                  group(query.group) // Group is only for datavalue
+                  
+                  for (proj in query.select)
+                  {
+                     projection {
+                        archetypeId(proj.archetypeId)
+                        path(proj.path)
+                     }
+                  }
+               }
+               
+               
+               //template_id(query.templateId)
             }
          }
       }
       else if (format == "json")
       {
          def data = [
-            id: query.id,
-            version: query.version,
-            format: query.format,
+            uid: query.uid,
             name: query.name,
-            template: query.template,
-            type: query.type,
-            uid: query.uid
+            format: query.format,
+            type: query.type
          ]
+         if (query.type == 'composition')
+         {
+            data.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
+         }
+         else
+         {
+            data.group = query.group // Group is only for datavalue
+            data.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+         }
+         
          
          def result = data as JSON
          // JSONP
@@ -974,7 +1062,7 @@ class RestController {
                
                if (query.type == 'composition')
                {
-                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL() /*, value: it.value */] }
+                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
                }
                else
                {
@@ -1000,7 +1088,7 @@ class RestController {
     * @param showUI only used for composition queries to retrieve HTML (FIXME: this might be another output format)
     * @param group grouping of datavalue queries, if not empty/null, will override the query group option ['composition'|'path']
     */
-   def query(String queryUid, String ehrId, String format, 
+   def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
              String fromDate, String toDate, String organizationUid)
    {
@@ -1022,11 +1110,23 @@ class RestController {
          renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
          return
       }
-      if (ehrId && Ehr.countByEhrId(ehrId) == 0)
+      
+      if (ehrUid)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrId]), '403', 404)
-         return
+         def ehr = Ehr.findByUid(ehrUid)
+         if (!ehr)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
+            return
+         }
+         
+         if (ehr.organizationUid != organizationUid)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehrUid, organizationUid]), '458', 400)
+            return
+         }
       }
+      
       
       def query = Query.findByUid(queryUid)      
       if (!query)
@@ -1046,16 +1146,21 @@ class RestController {
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
-      def res = query.execute(ehrId, qFromDate, qToDate, group, organizationUid)
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid)
+      
+      
+      // If not format is specified, take the query format.
+      if (!format) format = query.format
+         
       
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
          // If no ehrUid was specified, the results will be for different ehrs
          // we need to group those CompositionIndexes by EHR.
-         if (!ehrId)
+         if (!ehrUid)
          {
-            res = res.groupBy { ci -> ci.ehrId }
+            res = res.groupBy { ci -> ci.ehrUid }
          }
          
          // Muestra compositionIndex/list
@@ -1066,7 +1171,7 @@ class RestController {
                    model:[
                       compositionIndexInstanceList: res,
                       //compositionIndexInstanceTotal:res.size(),
-                      groupedByEhr: (!ehrId)
+                      groupedByEhr: (!ehrUid)
                    ],
                    contentType: "text/html")
             return
@@ -1099,11 +1204,11 @@ class RestController {
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
           
-          if (!ehrId) // group by ehrUid
+          if (!ehrUid) // group by ehrUid
           {
-             res.each { ehrUid, compoIndexes ->
+             res.each { _ehrUid, compoIndexes ->
                 
-                out += '<ehr uid="'+ ehrUid +'">'
+                out += '<ehr uid="'+ _ehrUid +'">'
                 
                 // idem else, TODO refactor
                 compoIndexes.each { compoIndex ->
@@ -1215,6 +1320,24 @@ class RestController {
       String group = request.JSON.group
       String organizationUid = request.JSON.organizationUid
       
+      
+      if (qehrId && organizationUid)
+      {
+         def ehr = Ehr.findByUid(qehrId)
+         if (!ehr)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
+            return
+         }
+         
+         if (ehr.organizationUid != organizationUid)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
+            return
+         }
+      }
+      
+      
       // parse de dates
       Date qFromDate
       Date qToDate
@@ -1271,6 +1394,24 @@ class RestController {
        */
        println retrieveData.toString() +" "+ showUI.toString()
        
+       
+       if (qehrId && organizationUid)
+       {
+          def ehr = Ehr.findByUid(qehrId)
+          if (!ehr)
+          {
+             renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
+             return
+          }
+          
+          if (ehr.organizationUid != organizationUid)
+          {
+             renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
+             return
+          }
+       }
+       
+       
        // parse de dates
        Date qFromDate
        Date qToDate
@@ -1286,7 +1427,7 @@ class RestController {
        // we need to group those CompositionIndexes by EHR.
        if (!qehrId)
        {
-          result = cilist.groupBy { ci -> ci.ehrId }
+          result = cilist.groupBy { ci -> ci.ehrUid }
        }
        
        println "Resultados (CompositionIndex): " + cilist
@@ -1437,7 +1578,7 @@ class RestController {
          if (ehrUid)
          {
             ehr {
-               eq('ehrId', ehrUid)
+               eq('uid', ehrUid)
             }
          }
          if (dateFrom && !dateTo)

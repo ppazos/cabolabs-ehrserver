@@ -22,7 +22,7 @@ class Folder {
    // Only root nodes have EHRs, so ehr != null only if parent == null
    // TODO: add that to constraints
    Ehr ehr
-   static belongsTo = [Ehr]
+   static belongsTo = [Ehr, Folder]
    
    // multitenancy
    String organizationUid
@@ -31,5 +31,9 @@ class Folder {
       parent(nullable: true)
       name(empty: false)
       ehr(nullable: true)
+   }
+   
+   static mapping = {
+      items cascade: 'all-delete-orphan'
    }
 }

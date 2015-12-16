@@ -12,7 +12,7 @@ class CompositionIndexController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        [compositionIndexInstanceList: CompositionIndex.list(params), compositionIndexInstanceTotal: CompositionIndex.count()]
+        [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
     }
 
     def show(Long id) {

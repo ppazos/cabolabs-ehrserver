@@ -61,12 +61,12 @@ class VersionedComposition {
     */
    def getEHR()
    {
-      def ehr = Ehr.findByEhrId(this.ehrId)
+      def ehr = Ehr.findByUid(this.ehrUid)
       
       // Caso imposible porque el uid fue establecido segun un EHR existente
       if (!ehr)
       {
-         throw new Exception("El EHR con uid '$ehrId' no existe")
+         throw new Exception("El EHR con uid '$ehrUid' no existe")
       }
       
       return ehr

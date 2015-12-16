@@ -46,7 +46,6 @@ class EhrController {
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
          
-         // no pagination
          list = Ehr.findAllByOrganizationUid(org.uid, params)
          count = Ehr.countByOrganizationUid(org.uid)
       }
@@ -177,7 +176,8 @@ class EhrController {
          ehr = new Ehr(
             subject: new PatientProxy(
                value: patientUID
-            )
+            ),
+            organizationUid: person.organizationUid
          )
          
          if (!ehr.save())

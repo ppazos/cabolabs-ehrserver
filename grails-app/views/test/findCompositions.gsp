@@ -135,10 +135,10 @@
        <g:select name="category" from="${['event','persistent']}" noSelection="['':'-Choose-']"  />
        <br/><br/>
        
-       <label for="ehrId">ehrId</label>
-       <g:select name="ehrId"
+       <label for="uid">UID</label>
+       <g:select name="uid"
                  from="${ehr.Ehr.list()}"
-                 optionKey="ehrId"
+                 optionKey="uid"
                  size="5" />
        <br/><br/>
        

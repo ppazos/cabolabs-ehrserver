@@ -78,11 +78,7 @@
         </g:if>
 	     
 	     <div class="btn-toolbar" role="toolbar">
-          <g:link action="edit" id="${folderInstance?.id}">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" />
-            </button>
-          </g:link>
+          <g:link action="edit" id="${folderInstance?.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
           <g:link action="delete" id="${folderInstance?.id}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" default="Delete" />

@@ -13,7 +13,7 @@ body {
 }
 
 #page-wrapper {
-    padding: 0 15px;
+    padding: 0 15px 15px 15px;
     min-height: 568px;
     background-color: #fff;
 }
@@ -22,7 +22,6 @@ body {
     #page-wrapper {
         position: inherit;
         margin: 0 0 0 180px;
-        padding: 0 15px 15px 15px; /*0 30px;*/
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -211,7 +210,7 @@ body {
 }
 
 .login-panel {
-    margin-top: 25%;
+    margin-top: 15%;
 }
 
 .flot-chart {
@@ -365,7 +364,7 @@ div.btn-toolbar {
 	margin-top: 15px;
 }
 
-.error > input {
+.error > input, .error > select, .error > textarea {
 	border: 1px solid #d9534f;
 	background-color: #f2dede;
 }

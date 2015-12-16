@@ -27,11 +27,11 @@
     
     <div class="row">
       <div class="col-lg-12">
-	      <g:if test="${flash.message}">
-	        <div class="message" role="status">${flash.message}</div>
-	      </g:if>
+	     <g:if test="${flash.message}">
+	       <div class="message" role="status">${flash.message}</div>
+	     </g:if>
 		   
-         <div class="table-responsive">
+        <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
@@ -41,6 +41,7 @@
 		            <g:sortableColumn property="idType" title="${message(code: 'person.idType.label', default: 'Id Type')}" />
 		            <g:sortableColumn property="role" title="${message(code: 'person.role.label', default: 'Role')}" />
 		            <g:sortableColumn property="dob" title="${message(code: 'person.dob.label', default: 'Dob')}" />
+                  <g:sortableColumn property="organizationUid" title="${message(code: 'person.organization.label', default: 'Organization')}" />
 		            <th>
 		              Actions
 		            </th>
@@ -55,6 +56,7 @@
 			            <td>${fieldValue(bean: personInstance, field: "idType")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "role")}</td>
 			            <td><g:formatDate date="${personInstance.dob}" /></td>
+                     <td>${fieldValue(bean: personInstance, field: "organizationUid")}</td>
 			            <td>
 			              <g:if test="${personInstance.role == 'pat'}">
 			                 <g:hasEhr patientUID="${personInstance.uid}">
@@ -69,11 +71,8 @@
 			        </g:each>
 		        </tbody>
 		      </table>
-		    </div>
-		      
-	      <div class="pagination">
-	        <g:paginate total="${personInstanceTotal}" />
-	      </div>
+		  </div>
+	     <g:paginator total="${personInstanceTotal}" />
       </div>
     </div>
   </body>

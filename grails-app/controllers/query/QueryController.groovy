@@ -13,7 +13,7 @@ import grails.converters.*
 
 class QueryController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
     
     // Para acceder a las opciones de localizacion
     def config = Holders.config.app

@@ -48,9 +48,7 @@
 	         </tbody>
 	       </table>
 	     </div>
-	     <div class="pagination">
-	       <g:paginate total="${organizationInstanceCount ?: 0}" />
-	     </div>
+	     <g:paginator total="${total}" />
 	   </div>
 	 </div>
   </body>

@@ -1,0 +1,235 @@
+{
+  "_type": "export",
+  "__export_format": 1,
+  "__export_date": "2015-12-06T00:47:18.711Z",
+  "__export_source": "insomnia.chrome.app:v2.1.2",
+  "items": [
+    {
+      "_type": "request_group",
+      "_id": "grp_1446961807590",
+      "name": "EHRServer",
+      "environments": {
+        "base": {
+          "url": "http://localhost:8090/ehr/rest"
+        }
+      },
+      "requests": [
+        {
+          "_type": "request",
+          "_id": "req_1449361419866",
+          "url": "{{url}}/ehrs",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrs"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449359293185",
+          "url": "{{url}}/ehrs/ehrUid/11111111-1111-1111-1111-111111111111",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrs/ehrUid"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449361318813",
+          "url": "{{url}}/ehrs/subjectUid/11111111-1111-1111-1111-111111111111",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrs/subjectUid"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449359373693",
+          "url": "{{url}}/patients",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "patients"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449361498502",
+          "url": "{{url}}/patients/11111111-1111-1111-1111-111111111111",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "patients/uid"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449359500782",
+          "url": "https://cabolabs-ehrserver.rhcloud.com/ehr/rest/findCompositions",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "compos"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449361522644",
+          "url": "{{url}}/queries",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "queries"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449361657537",
+          "url": "{{url}}/queries/64f1dbd5-4295-4dd3-92da-cdac57b1cdb9",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "queries/uid"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449362613248",
+          "url": "{{url}}/queries/64f1dbd5-4295-4dd3-92da-cdac57b1cdb9/execute",
+          "method": "GET",
+          "body": "{}",
+          "headers": [],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "organizationUid",
+              "value": "34ab91c8-7153-455e-8573-fc8c415af288"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "query/uid/execute"
+        }
+      ]
+    }
+  ]
+}

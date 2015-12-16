@@ -33,7 +33,6 @@
   #main_menu {
     text-align: center;
   }
-  
   #main_menu .active {
     background-color: #efefef;
     box-shadow: 0 -2px 2px 0px #aaaaaa; /* x_offset y_offset blur spread_distance color */
@@ -41,43 +40,34 @@
   .navbar-header img {
     max-height: 20px;
   }
-  
+  ul.navbar-top-links {
+    text-align: center;
+  }
+  ul.navbar-top-links > li:first-child {
+    margin: 0;
+    padding: 15px 0 15px 15px;
+    margin-left: 15px;
+  }
   </style>
-  
   <g:javascript>
     // Used to access the assets root from JS code.
     // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
-   window.grailsSupport = {
-    assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
-    baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
-   };
+    window.grailsSupport = {
+     assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
+     baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
+    };
    </g:javascript>
   </head>
-  <body>
-	  <%--
-	  <!-- main menu, same as desktop -->
-	  <div id="main_menu">
-	    <g:link controller="person" action="list" class="access_icon ${(controllerName=='person')?'active':''}"><g:message code="person.list.title" /></g:link>
-	    <g:link controller="ehr" action="list" class="ehr_icon ${(controllerName=='ehr')?'active':''}"><g:message code="desktop.ehrs" /></g:link>
-	    <g:link controller="contribution" action="list" class="contributions_icon ${(controllerName=='contribution')?'active':''}"><g:message code="desktop.contributions" /></g:link>
-	    <g:link controller="folder" action="index" class="directory_icon ${(controllerName=='folder')?'active':''}"><g:message code="desktop.directory" /></g:link>
-	    <g:link controller="query" action="list" class="query_icon ${(controllerName=='query')?'active':''}"><g:message code="desktop.queries" /></g:link>
-	    <g:link controller="indexDefinition" action="list" class="indexes_icon ${(controllerName=='indexDefinition')?'active':''}"><g:message code="desktop.indexes" /></g:link>
-	    <g:link controller="operationalTemplate" action="list" class="templates_icon ${(controllerName=='operationalTemplate')?'active':''}"><g:message code="desktop.templates" /></g:link>
-	  </div>
-	  <div style="clear: both"></div>
-	   --%>
-	  
-	  <div id="wrapper">
-	
-	    <!-- Navigation -->
-	    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+  <body>	  
+	 <div id="wrapper">
+	   <!-- Navigation -->
+	   <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 	      <div class="navbar-header">
 	        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	          <span class="sr-only">Toggle navigation</span>
-	          <span class="icon-bar"></span>
-	          <span class="icon-bar"></span>
-	          <span class="icon-bar"></span>
+	         <span class="sr-only">Toggle navigation</span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
 	        </button>
 	        <!-- LOGO -->
 	        <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
@@ -87,7 +77,7 @@
 	
 	      <!-- TOP MENU: TODO -->
 	      <sec:ifLoggedIn>
-	         <ul class="nav navbar-top-links navbar-right">
+	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
 	          Welcome Back <sec:username/>!
 	         </li>
@@ -110,7 +100,7 @@
 	           <!-- /.dropdown-user -->
 	         </li>
 	         <!-- /.dropdown -->
-	         </ul>
+	        </ul>
 	         
 	         
 	         <!-- LEFT MENU -->
@@ -164,21 +154,27 @@
 	                 <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
 	               </li>
 	               </sec:ifAnyGranted>
+	               
+	               <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li>
+                    <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
+                  </li>
+                  </sec:ifAnyGranted>
 	             </ul>
 	           </div>
 	           <!-- /.sidebar-collapse -->
 	         </div>
 	      <!-- /.navbar-static-side -->
 	      </sec:ifLoggedIn>
-	    </nav>
+	   </nav>
 	
-	    <!-- BODY -->
-	    <div id="page-wrapper">
-	      <g:layoutBody/>
-	      <div class="footer" role="contentinfo"></div>
-	      <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
-	    </div>
-	    <!-- /BODY -->
-	  </div>
+	   <!-- BODY -->
+	   <div id="page-wrapper">
+	     <g:layoutBody/>
+	     <div class="footer" role="contentinfo"></div>
+	     <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+	   </div>
+	   <!-- /BODY -->
+	 </div>
   </body>
 </html>

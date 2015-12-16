@@ -32,10 +32,12 @@ class Person {
    
    boolean deleted = false // logical delete
    
+   String organizationUid
+   
    static constraints = {
       sex(inList:['M','F','U'])
       idCode(nullable:true)
-      idType(inList:['CI','DNI','Passport','SSN','UID','OID'], nullable:true)
+      idType(nullable:true)
       role(inList:['pat','doc'])
    }
    

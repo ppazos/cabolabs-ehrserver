@@ -14,7 +14,7 @@ class CompositionIndexControllerTests {
         params["category"] = 'event'
         params["startTime"] = new Date()
         params["subjectId"] = '34563456345'
-        params["ehrId"] = '345634563534'
+        params["ehrUid"] = '345634563534'
         params["templateId"] = 'Signos'
         params["archetypeId"] = 'openEHR-EHR-COMPOSITION.signos.v1'
     }

@@ -10,6 +10,7 @@ import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
+import com.cabolabs.util.DateParser
 
 class XmlService {
 
@@ -21,69 +22,88 @@ class XmlService {
    def xmlValidationService
    
    /**
-   <version>
-     <!-- OBJECT_REF -->
-     <contribution>
-       <id>
-         <value></value>
-       </id>
-       <namespace></namespace>
-       <type></type>
-     </contribution>
-     
-     <!-- AUDIT_DETAILS -->
-     <commit_audit>
-       <system_id></system_id>
-       
-       <!-- DV_DATE_TIME -->
-       <time_committed>
-         <value></value>
-       </time_committed>
-       
-       <!-- DV_CODED_TEXT -->
-       <change_type>
-         <value>creation</value>
-         <defining_code>
-           <terminology_id>
-             <value>openehr</value>
-           </terminology_id>
-           <code_string>249</code_string>
-         </defining_code>
-       </change_type>
-       
-       <!-- PARTY_IDENTIFIED -->
-       <committer>
-         <name></name>
-       </committer>
-     </commit_audit>
-     
-     <!-- OBJECT_VERSION_ID -->
-     <uid>
-       <value>object_id::creating_system_id::version_tree_id</value>
-     </uid>
-     
-     <!-- COMPOSITION -->
-     <data>
-     ...
-     </data>
-     
-     <!-- DV_CODED_TEXT -->
-     <lifecycle_state>
-       <value>completed</value>
-       <defining_code>
-         <terminology_id>
-           <value>openehr</value>
-         </terminology_id>
-         <code_string>532</code_string>
-       </defining_code>
-     </lifecycle_state>
-   </version>
+   <versions>
+      <version>
+        <!-- OBJECT_REF -->
+        <contribution>
+          <id>
+            <value></value>
+          </id>
+          <namespace></namespace>
+          <type></type>
+        </contribution>
+        
+        <!-- AUDIT_DETAILS -->
+        <commit_audit>
+          <system_id></system_id>
+          
+          <!-- DV_DATE_TIME -->
+          <time_committed>
+            <value></value>
+          </time_committed>
+          
+          <!-- DV_CODED_TEXT -->
+          <change_type>
+            <value>creation</value>
+            <defining_code>
+              <terminology_id>
+                <value>openehr</value>
+              </terminology_id>
+              <code_string>249</code_string>
+            </defining_code>
+          </change_type>
+          
+          <!-- PARTY_IDENTIFIED -->
+          <committer>
+            <name></name>
+          </committer>
+        </commit_audit>
+        
+        <!-- OBJECT_VERSION_ID -->
+        <uid>
+          <value>object_id::creating_system_id::version_tree_id</value>
+        </uid>
+        
+        <!-- COMPOSITION -->
+        <data>
+        ...
+        </data>
+        
+        <!-- DV_CODED_TEXT -->
+        <lifecycle_state>
+          <value>completed</value>
+          <defining_code>
+            <terminology_id>
+              <value>openehr</value>
+            </terminology_id>
+            <code_string>532</code_string>
+          </defining_code>
+        </lifecycle_state>
+      </version>
+      <version>
+      ...
+      </version>
+    </version>
    */
-   def parseVersions(Ehr ehr, List<String> versionsXML,
-      String auditSystemId, Date auditTimeCommitted, String auditCommitter,
-      List dataOut)
+   def parseVersions(
+      Ehr ehr,
+      GPathResult versionsXML,
+      String auditSystemId,
+      Date auditTimeCommitted,
+      String auditCommitter,
+      List dataOut
+   )
    {
-      this.validationErrors = validateVersions(versionsXML) // the key is the index of the errored version
+      // GPathResult of all the parsed versions
+      def parsedVersions = []
+      versionsXML.version.each {
+         parsedVersions << it
+      }
+      
+      // Validate XMLs
+      def namespaces = versionsXML.attributes().findAll { it.key.startsWith('xmlns') } // namespace map
+      //def namespaces = ['xmlns':'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
+      this.validationErrors = validateVersions(versionsXML, namespaces) // the key is the index of the errored version
       
       // There are errors, can't return the contributions
       // The caller should get the errors and process them
@@ -92,9 +112,6 @@ class XmlService {
          return null
       }
       
-      //println ":: versionsXML: "+ versionsXML.size()
-      
-      
       // 3 loops:
       //  1. parse versions: String to GPathResult
       //  2. verify all parsed versions reference the same contribution
@@ -102,16 +119,7 @@ class XmlService {
       
       // FIXME: hay que parsear los versionXML para ver el contribution id
       
-      // GPathResult of all the parsed versions
-      def parsedVersions = []
-      def slurper = new XmlSlurper(false, false) //true, false)
-      
-      versionsXML.eachWithIndex { versionXML, i ->
-         
-         parsedVersions << slurper.parseText(versionXML) // String to GPathResult
-      }
-      
-      
+
       // Verification that all the versions reference the same contribution
       // https://github.com/ppazos/cabolabs-ehrserver/issues/124
       if (parsedVersions.size() > 1)
@@ -159,9 +167,10 @@ class XmlService {
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
          
          //println "XMLSERVICE change_type="+ commitAudit.changeType
-         
+
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
+
          // The contribution is set from the 1st version because is the same
          // for all the versions committed together
          if (!contribution)
@@ -172,7 +181,6 @@ class XmlService {
             )
          }
 
-         
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
          // - object_id se genera (porque el changeType es creation)
          // - creating_system_id se obtiene del cliente
@@ -185,10 +193,6 @@ class XmlService {
             //contribution: contribution, // contribution.addToVersions(version) saves the backlink automatically
             data: compoIndex
          )
-         
-         
-         // Test to see if the code above also adds the version to currentContribution.versions
-         //assert contribution.versions[i].uid == version.uid
          
          
          // ================================================================
@@ -206,17 +210,18 @@ class XmlService {
             {
                throw new Exception("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
             }
-            
+
             def previousLastVersion = Version.findByUid(version.uid)
             previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
             
             //println "PRE previousVersion.save"
             //println (previousLastVersion as grails.converters.XML)
             
+
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
             // This is adding (I dont know why) the version to the contribution.versions list
             if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
-            
+
             //println "POST previousVersion.save"
             //println (previousLastVersion as grails.converters.XML)
             
@@ -225,7 +230,7 @@ class XmlService {
             version.addTrunkVersion()
             // version se salva luego con la contribution
             
-            
+
             // ================================================================
             // Update the XML with the new version uid.
             //
@@ -243,7 +248,6 @@ class XmlService {
          }
 
          dataOut[i] = parsedVersion
-         
          contribution.addToVersions(version)
          
       } // each versionXML
@@ -260,23 +264,18 @@ class XmlService {
             println it
          }
       }
-      else println "Guarda contrib"
-      
-      println "***** VERSIONS AFTER ******"
-      println "***** VERSIONS AFTER " +contribution.versions
-      println "***** VERSIONS AFTER ******"
       
       return contribution
    }
    
    
-   private Map validateVersions(List<String> versionsXML)
+   private Map validateVersions(GPathResult versionsXML, Map namespaces)
    {
       def errors = [:] // The index is the index of the version, the value is the list of errors for each version
 
-      versionsXML.eachWithIndex { versionXML, i ->
-
-         if (!xmlValidationService.validateVersion(versionXML))
+      versionsXML.version.eachWithIndex { versionXML, i ->
+         
+         if (!xmlValidationService.validateVersion(versionXML, namespaces))
          {
             errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
          }
@@ -340,7 +339,8 @@ class XmlService {
          //
          // TODO: formato de fecha completa que sea configurable
          //       ademas la fraccion con . o , depende del locale!!!
-         startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
+         //startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
+         startTime = DateParser.tryParse(version.data.context.start_time.value.text())
       }
       
       // Check if the committed compo has an uid, if not, the server assigns one
@@ -379,13 +379,13 @@ class XmlService {
        *     <rm_version>1.0.2</rm_version>
        *   </archetype_details>
        *   ...
-       */
+       */      
       def compoIndex = new CompositionIndex(
          uid:         compoUid, // UID for compos is assigned by the server
          category:    version.data.category.value.text(), // event o persistent
          startTime:   startTime, // puede ser vacio si category es persistent
          subjectId:   ehr.subject.value,
-         ehrId:       ehr.ehrId,
+         ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId: version.data.@archetype_node_id.text(),
          templateId:  version.data.archetype_details.template_id.value.text()

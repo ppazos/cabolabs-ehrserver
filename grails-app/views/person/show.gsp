@@ -69,13 +69,15 @@
             <p class="form-control-static"><g:fieldValue bean="${personInstance}" field="role"/></p>
           </div>
         </div>
+        <div class="control-group">
+          <label class="control-label"><g:message code="person.organization.label" default="Organization" /></label>
+          <div class="controls">
+            <p class="form-control-static"><g:fieldValue bean="${personInstance}" field="organizationUid"/></p>
+          </div>
+        </div>
         
         <div class="btn-toolbar" role="toolbar">
-          <g:link class="edit" action="edit" id="${personInstance?.id}">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" />
-            </button>
-          </g:link>
+          <g:link action="edit" id="${personInstance?.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
         </div>
       </div>
     </div>

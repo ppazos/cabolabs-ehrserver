@@ -39,11 +39,8 @@
 	      
 	      <g:render template="/compositionIndex/listTable"/>
 	      
-	      <div class="pagination">
-	        <g:paginate total="${compositionIndexInstanceTotal}" />
-	      </div>
+	      <g:paginator total="${total}" />
       </div>
     </div>
-	    
   </body>
 </html>
