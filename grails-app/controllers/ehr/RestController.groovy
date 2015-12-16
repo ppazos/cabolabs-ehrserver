@@ -123,11 +123,6 @@ class RestController {
    def commit(String ehrUid, String auditSystemId, String auditCommitter)
    {
       log.info( "commit received "+ params.list('versions').size() + " versions"  )
-      
-      //new File('params_debug.log') << params.toString()
-      
-      // TODO: todo debe ser transaccional, se hace toda o no se hace nada...
-      
 
       if (!ehrUid)
       {
@@ -369,6 +364,10 @@ class RestController {
          //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
          
+         // error: versioned composition doesnt exists
+         if (errorbreak) return
+         
+         
          // FIXME: el archivo no deberia existir!!!
 
 
@@ -389,10 +388,6 @@ class RestController {
          versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
          
       } // contribution.versions.each
-      
-      
-      // error: versioned composition doesnt exists
-      if (errorbreak) return
       
 
       

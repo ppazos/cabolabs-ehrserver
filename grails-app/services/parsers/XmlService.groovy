@@ -10,6 +10,7 @@ import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
+import javax.xml.bind.ValidationException
 import com.cabolabs.util.DateParser
 
 class XmlService {
@@ -20,6 +21,114 @@ class XmlService {
    def config = Holders.config.app
    def validationErrors = [:] // xsd validatios errros for the committed versions
    def xmlValidationService
+   
+   
+   def processCommit(Ehr ehr, GPathResult versions, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+   {
+      // Validate versions
+      // Throw javax.xml.bind.ValidationException if there are a validation error
+      //  - errors will be saved into validationErrors
+      validateVersions(versions)
+      
+      // Check contribution id
+      //  If there is more than 1 version in the commit
+      //   - check all version have the same contribution id, error if not
+      checkContributions(versions)
+      
+      // Parse contribution once, since it is the same for all versions
+      //  - create the contrib and associated it with the ehr
+      
+      // For each version committed
+      //  Parse compo index
+      //  Check if a version exists with the uid in the version XML (it can be 0 or 1, 1 is the case of modification/amendment)
+      //  If there is a previous version
+      //   If the change type of the current version is creation, error
+      //   Else
+      //    - create version and associate the compo index
+      //    - change the last version status on previous version
+      //    - update the trunk version id on the previous version
+      //  Associate the version with the contribution
+      
+      // Save the contribution with all the versions
+      
+      // VersionedComposition creation by processing the change type
+      // For each version in the contribution
+      //  If change type = creation
+      //   - create new versioned compo for the version
+      //   - add versioned compo to ehr
+      //  If change type = amendment or modification
+      //   - check if a versioned compo already exists, error if not
+      //   - 
+      //  TODO: support more types
+      
+      // If contribution and versions can be saved ok
+      //  - check if file exists, error if exists
+      //  - save version XML files on file system
+   }
+   
+   
+   /**
+    * Validates all versions in the commit, against the version XSD.
+    * Throws a ValidationException if errors are found.
+    * @param versions
+    * @return
+    */
+   def validateVersions(GPathResult versions)
+   {
+      // This will have the ns declared in the versions element,
+      // like: ['xmlns':'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
+      // Those will be copied to each individual version to validate them individually.
+      def namespaceMap = versions.attributes().findAll { it.key.startsWith('xmlns') }
+      
+      def errors = [:] // The index is the index of the version, the value is the list of errors for each version
+      
+      versions.version.eachWithIndex { versionXML, i ->
+         
+         if (!xmlValidationService.validateVersion(versionXML, namespaceMap))
+         {
+            errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+         }
+      }
+      
+      this.validationErrors = errors
+      
+      if (this.validationErrors.size() > 0) throw new ValidationException('There are errors in the XML versions')
+   }
+   
+   
+   /**
+    * Throws an IllegalArgumentException if there are two versions with different contribution id
+    * @param versions
+    * @return
+    */
+   def checkContributions(GPathResult versions)
+   {
+      if (versions.version.size() == 1) return // nothing to check
+      
+      // All contribution ids are the same?
+      def firstContributionId
+      def loopContributionId
+      versions.version.each { versionXML ->
+         
+         loopContributionId = versionXML.contribution.id.value.text()
+         if (!loopContributionId)
+         {
+            throw new IllegalArgumentException('version.contribution.id.value should not be empty')
+         }
+         
+         // Set the first contribution uid, then compare the first with the rest,
+         // one is different, throw an exception.
+         if (!firstContributionId) firstContributionId = loopContributionId
+         else
+         {
+            if (firstContributionId != loopContributionId)
+            {
+               throw new IllegalArgumentException("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+            }
+         }
+      }
+   }
+   
    
    /**
    <versions>
@@ -266,21 +375,6 @@ class XmlService {
       }
       
       return contribution
-   }
-   
-   
-   private Map validateVersions(GPathResult versionsXML, Map namespaces)
-   {
-      def errors = [:] // The index is the index of the version, the value is the list of errors for each version
-
-      versionsXML.version.eachWithIndex { versionXML, i ->
-         
-         if (!xmlValidationService.validateVersion(versionXML, namespaces))
-         {
-            errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-         }
-      }
-      return errors
    }
    
    
