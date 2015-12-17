@@ -4,12 +4,15 @@ package parsers
 import ehr.Ehr
 import common.change_control.Contribution
 import common.change_control.Version
+import common.change_control.VersionedComposition
 import common.generic.AuditDetails
 import common.generic.DoctorProxy
 import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
+import java.nio.file.AccessDeniedException
+import java.nio.file.FileAlreadyExistsException
 import javax.xml.bind.ValidationException
 import com.cabolabs.util.DateParser
 
@@ -37,6 +40,7 @@ class XmlService {
       
       // Parse contribution once, since it is the same for all versions
       //  - create the contrib and associated it with the ehr
+      def contribution = parseCurrentContribution(versions.version[0], ehr, auditSystemId, auditTimeCommitted, auditCommitter)
       
       // For each version committed
       //  Parse compo index
@@ -48,8 +52,16 @@ class XmlService {
       //    - change the last version status on previous version
       //    - update the trunk version id on the previous version
       //  Associate the version with the contribution
+      def domainVersions = parseVersions(ehr, versions, auditTimeCommitted, contribution)
+      
+      // just checking :)
+      assert contribution.versions != null
+      assert contribution.versions.size() > 0
       
       // Save the contribution with all the versions
+      //  throws grails.validation.ValidationException that contains the errors
+      contribution.save(flush:true, failOnError:true)
+
       
       // VersionedComposition creation by processing the change type
       // For each version in the contribution
@@ -60,10 +72,12 @@ class XmlService {
       //   - check if a versioned compo already exists, error if not
       //   - 
       //  TODO: support more types
+      manageVersionedCompositions(domainVersions, ehr)
       
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
+      storeVersionXMLs(versions)
    }
    
    
@@ -131,6 +145,110 @@ class XmlService {
    
    
    /**
+    * This method manages the versions, creating new versioned compositions
+    * or adding the new version to an existing versioned compo.
+    * @param parsedVersions
+    * @return
+    */
+   def manageVersionedCompositions(List parsedVersions, Ehr ehr)
+   {
+      parsedVersions.eachWithIndex { version, i ->
+         
+//         println "version "+ version.uid
+//         println "version commitAudit "+ version.commitAudit
+//         println "change type "+ version.commitAudit.changeType
+         
+         def versionedComposition
+         switch (version.commitAudit.changeType)
+         {
+            case 'creation':
+            
+               versionedComposition = new VersionedComposition(
+                  uid: version.objectId,
+                  ehrUid: ehr.uid,
+                  isPersistent: (version.data.category == 'persistent'))
+               
+               
+               // Agrega composition al EHR
+               ehr.addToCompositions( versionedComposition )
+               
+               // If errors, throws grails.validation.ValidationException with the errors
+               ehr.save(flush:true, failOnError:true)
+               
+            break
+            case ['amendment', 'modification']:
+               
+               //println "change type "+ version.commitAudit.changeType
+            
+               versionedComposition = VersionedComposition.findByUid(version.objectId)
+               
+               //println "versioned compo "+ versionedComposition
+               
+               // VersionedObject should exist for change type modification or amendment
+               if (!versionedComposition)
+               {
+                  throw new IllegalArgumentException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
+               }
+               
+               // Nothing needs to be done if the versioned compo exists, since version and versioned compo
+               // are linked by the objectId. We can do further validations, like the template is the same for
+               // the previous latest version and the new version. Just to assure data consistency. (TODO)
+               
+               // XmlService hace previousLastVersion.isLastVersion = false
+               // asi la nueva version es la unica con isLastVersion == true
+               
+               
+               // ======================================================
+               // Improvement: DataValueIndexes for old versions can be deleted because queries are executed over the latest version.
+               // ======================================================
+               
+               // No crea el VersionedComposition porque ya deberia estar
+               
+               assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
+               
+            break
+            default:
+               throw new IllegalArgumentException("Change type ${version.commitAudit.changeType} not supported yet")
+
+         } // switch changeType
+      }
+   }
+   
+   /**
+    * Stores XML documents committed, as files.
+    * @param versions
+    * @return
+    */
+   def storeVersionXMLs(GPathResult versions)
+   {
+      // CHECK: the compo in version.data doesn't have the injected 
+      // compo.uid that parsedCompositions[i] does have.
+      /*
+       * XmlUtil.serialize generate these warnings but work ok:
+       * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
+         | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
+         | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
+       */
+      
+      // FIXME: this check should be done on setup
+      if (!new File(config.version_repo).canWrite()) throw new AccessDeniedException("Unable to write file ${config.version_repo}")
+      
+      
+      def uid, file, path
+      versions.version.each { version ->
+         
+         uid = version.uid.text()
+         path = config.version_repo + uid.replaceAll('::', '_') +'.xml'
+         file = new File(path)
+         
+         if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
+         
+         // FIXME: check if the XML has the namespace declarations of the root node from the commit
+         file << groovy.xml.XmlUtil.serialize( version )
+      }
+   }
+   
+   /**
    <versions>
       <version>
         <!-- OBJECT_REF -->
@@ -194,101 +312,21 @@ class XmlService {
       </version>
     </version>
    */
-   def parseVersions(
-      Ehr ehr,
-      GPathResult versionsXML,
-      String auditSystemId,
-      Date auditTimeCommitted,
-      String auditCommitter,
-      List dataOut
-   )
+   def parseVersions(Ehr ehr, GPathResult versionsXML, Date auditTimeCommitted, Contribution contribution)
    {
-      // GPathResult of all the parsed versions
-      def parsedVersions = []
-      versionsXML.version.each {
-         parsedVersions << it
-      }
+      def commitAudit, compoIndex, version
+      def dataOut = []
       
-      // Validate XMLs
-      def namespaces = versionsXML.attributes().findAll { it.key.startsWith('xmlns') } // namespace map
-      //def namespaces = ['xmlns':'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
-      this.validationErrors = validateVersions(versionsXML, namespaces) // the key is the index of the errored version
+      versionsXML.version.eachWithIndex { parsedVersion, i ->
       
-      // There are errors, can't return the contributions
-      // The caller should get the errors and process them
-      if (this.validationErrors.size() > 0)
-      {
-         return null
-      }
-      
-      // 3 loops:
-      //  1. parse versions: String to GPathResult
-      //  2. verify all parsed versions reference the same contribution
-      //  3. create model from GPathResult and save
-      
-      // FIXME: hay que parsear los versionXML para ver el contribution id
-      
-
-      // Verification that all the versions reference the same contribution
-      // https://github.com/ppazos/cabolabs-ehrserver/issues/124
-      if (parsedVersions.size() > 1)
-      {
-         def firstContributionId
-         def loopContributionId
-         parsedVersions.eachWithIndex { parsedVersion, i ->
-            
-            loopContributionId = parsedVersion.contribution.id.value.text()
-            if (!loopContributionId)
-            {
-               throw new Exception('version.contribution.id.value should not be empty')
-            }
-            
-            // Set the first contribution uid, then compare the first with the rest,
-            // one is different, throw an exception.
-            if (!firstContributionId) firstContributionId = loopContributionId
-            else
-            {
-               if (firstContributionId != loopContributionId)
-               {
-                  throw new Exception("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
-               }
-            }
-         }
-      }
-      
-      // Uso una lista para no reutilizar la misma variable que sobreescribe
-      // las versions anteriors y me deja varias copias de la misma composition
-      // en dataOut (quedan todos los punteros a la ultima que se procesa)
-
-      def commitAudit
-      def data
-      def version
-      def compoIndex
-      def startTime
-      def contributionId
-      Contribution contribution // to be returned: 1 contribution per commit
-
-      parsedVersions.eachWithIndex { parsedVersion, i ->
-      
-         //println "************ EACH WITH INDEX ***************** "+ i
-      
+         //println "parseVersion "+ parsedVersion.uid.value.text()
+         
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
+         //println "commitAudit: "+ commitAudit
          
-         //println "XMLSERVICE change_type="+ commitAudit.changeType
-
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
-
-         // The contribution is set from the 1st version because is the same
-         // for all the versions committed together
-         if (!contribution)
-         {
-            contribution = parseCurrentContribution(
-               parsedVersion, ehr,
-               auditSystemId, auditTimeCommitted, auditCommitter
-            )
-         }
 
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
          // - object_id se genera (porque el changeType es creation)
@@ -299,7 +337,6 @@ class XmlService {
             uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
             lifecycleState: parsedVersion.lifecycle_state.value.text(),
             commitAudit: commitAudit,
-            //contribution: contribution, // contribution.addToVersions(version) saves the backlink automatically
             data: compoIndex
          )
          
@@ -315,8 +352,9 @@ class XmlService {
          // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
          if (Version.countByUid(version.uid) == 1)
          {
-            if ( version.commitAudit.changeType == "creation" )
+            if (version.commitAudit.changeType == "creation")
             {
+               // TODO: IllegalArgument
                throw new Exception("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
             }
 
@@ -356,25 +394,12 @@ class XmlService {
             // ================================================================
          }
 
-         dataOut[i] = parsedVersion
+         dataOut[i] = version
          contribution.addToVersions(version)
          
       } // each versionXML
       
-      
-      // FIXME: deberia ser transaccional junto al codigo de versionado de RestController.commit
-      // Saves versions in cascade and saves the relationship contribution - versions
-      // FIXME: rollback transaction
-      if (!contribution.save(flush:true))
-      {
-         println "XmlService parse Versions"
-         println "Contribution errors"
-         contribution.errors.allErrors.each {
-            println it
-         }
-      }
-      
-      return contribution
+      return dataOut
    }
    
    

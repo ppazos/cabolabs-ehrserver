@@ -258,7 +258,17 @@ class RestControllerSpec extends Specification {
         
       then:
         response.xml.type.code.text() == 'AR'
-        Version.count() == 0 // Known issue: still saves the version https://github.com/ppazos/cabolabs-ehrserver/issues/216
+        
+        // Known issue: still saves the version https://github.com/ppazos/cabolabs-ehrserver/issues/216
+        // UPDATE: the rollback now seems to work since we moved all the logic to a service, but it seems
+        //         from a test it is not rolling back so we see data in the database. But on run-app it
+        //         is rolling back ok, so no Version or Contribution is created for this test case.
+        //         Might be related to: http://www.34m0.com/2012/08/grails-testing-rollback-of.html
+        Version.count() == 0
+        
+        
+        VersionedComposition.count() == 0
+        Contribution.count() == 0
    }
    
    
