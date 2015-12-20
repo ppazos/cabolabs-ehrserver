@@ -3,6 +3,7 @@ package query
 import query.datatypes.*
 
 import ehr.clinical_documents.IndexDefinition
+import ehr.clinical_documents.OperationalTemplateIndex
 
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -19,19 +20,22 @@ class QueryController {
     def config = Holders.config.app
     
 
-    def index() {
+    def index()
+    {
         redirect(action: "list", params: params)
     }
 
-    def list(Integer max) {
+    def list(Integer max)
+    {
         params.max = Math.min(max ?: 10, 100)
         [queryInstanceList: Query.list(params), queryInstanceTotal: Query.count()]
     }
 
-    def create() {
+    def create()
+    {
         [queryInstance: new Query(params),
-         dataIndexes: ehr.clinical_documents.IndexDefinition.list(), // to create filters or projections
-         templateIndexes: ehr.clinical_documents.OperationalTemplateIndex.list()]
+         dataIndexes: IndexDefinition.list(), // to create filters or projections
+         templateIndexes: OperationalTemplateIndex.list()]
     }
     
     def edit (Long id) {
