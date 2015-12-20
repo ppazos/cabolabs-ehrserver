@@ -10,7 +10,7 @@ import com.cabolabs.ehrserver.data.DataIndexerService
 class IndexDataJob {
    
    static triggers = {
-      simple repeatInterval: 90000l // execute job once in 90 seconds
+      simple repeatInterval: 45000l // execute job once in 45 seconds
    }
    
    def dataIndexerService
