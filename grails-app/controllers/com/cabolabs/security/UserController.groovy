@@ -8,6 +8,8 @@ import com.cabolabs.security.Organization
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
 
+import grails.converters.*
+
 @Transactional(readOnly = false)
 class UserController {
 
@@ -47,6 +49,32 @@ class UserController {
       }
       
       respond list, model:[userInstanceCount: count]
+   }
+   
+   // endpoint
+   def profile(String username)
+   {
+      println username
+      println params
+      // FIXME; check that the uid if the user logged in is the same as the param uid, or the logged user is an admin.
+      def u = User.findByUsername(username)
+      def data = [
+         username: u.username,
+         email: u.email,
+         organizations: u.organizations
+      ]
+      
+      withFormat {
+         xml {
+            def result = data as XML
+            render(text: result, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+
+            def result = data as JSON
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
    }
 
    def show(User userInstance)

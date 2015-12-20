@@ -8,6 +8,11 @@ class UrlMappings {
       
       "500"(view:'/error')
 
+      "/rest/profile/${username}"(
+         controller: 'user',
+         action: 'profile'
+      )
+      
       // /rest/ehrs -- list of all EHRs
       "/rest/ehrs"(
          controller: 'rest',

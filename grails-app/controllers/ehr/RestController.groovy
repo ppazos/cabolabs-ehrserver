@@ -3,7 +3,6 @@ package ehr
 import grails.converters.*
 
 import java.text.SimpleDateFormat
-import java.util.Date;
 
 import demographic.Person
 import query.Query
@@ -21,7 +20,7 @@ import common.change_control.Version
 import com.cabolabs.security.Organization
 
 import grails.util.Holders
-import groovy.util.slurpersupport.GPathResult;
+import groovy.util.slurpersupport.GPathResult
 
 import java.lang.reflect.UndeclaredThrowableException
 import javax.xml.bind.ValidationException

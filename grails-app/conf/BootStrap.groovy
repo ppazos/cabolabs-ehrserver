@@ -115,7 +115,8 @@ class BootStrap {
          '/j_spring_security_logout',
          '/rest/**',
          '/test/findCompositions', // will be refactores to /rest
-         '/ehr/showCompositionUI' // will be added as a rest service via url mapping
+         '/ehr/showCompositionUI', // will be added as a rest service via url mapping
+         '/user/profile'
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()
