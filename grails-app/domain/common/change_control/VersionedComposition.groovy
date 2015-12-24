@@ -45,12 +45,11 @@ class VersionedComposition {
    
    Version getLatestVersion()
    {
-      //return Version.findByUidLikeAndVlastVersion(this.uid+"::%", true)
       def c = Version.createCriteria()
       def v = c.get {
          like('uid', this.uid + '::%')
          data {
-            eq('lastVersion', true)
+            eq('lastVersion', Boolean.TRUE)
          }
       }
       return v

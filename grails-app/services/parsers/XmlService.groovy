@@ -1,6 +1,5 @@
 package parsers
 
-//import com.thoughtworks.xstream.XStream
 import ehr.Ehr
 import common.change_control.Contribution
 import common.change_control.Version
@@ -58,10 +57,6 @@ class XmlService {
       assert contribution.versions != null
       assert contribution.versions.size() > 0
       
-      // Save the contribution with all the versions
-      //  throws grails.validation.ValidationException that contains the errors
-      contribution.save(flush:true, failOnError:true)
-
       
       // VersionedComposition creation by processing the change type
       // For each version in the contribution
@@ -73,6 +68,12 @@ class XmlService {
       //   - 
       //  TODO: support more types
       manageVersionedCompositions(domainVersions, ehr)
+      
+      
+      // Save the contribution with all the versions
+      //  throws grails.validation.ValidationException that contains the errors
+      contribution.save(flush:true, failOnError:true)
+      
       
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
@@ -178,12 +179,8 @@ class XmlService {
             break
             case ['amendment', 'modification']:
                
-               //println "change type "+ version.commitAudit.changeType
-            
                versionedComposition = VersionedComposition.findByUid(version.objectId)
-               
-               //println "versioned compo "+ versionedComposition
-               
+
                // VersionedObject should exist for change type modification or amendment
                if (!versionedComposition)
                {
@@ -354,15 +351,27 @@ class XmlService {
          {
             if (version.commitAudit.changeType == "creation")
             {
-               // TODO: IllegalArgument
-               throw new Exception("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
+               throw new IllegalArgumentException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
             }
-
-            def previousLastVersion = Version.findByUid(version.uid)
-            previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
             
-            //println "PRE previousVersion.save"
-            //println (previousLastVersion as grails.converters.XML)
+            // change type is not creation
+
+            
+            // Verifies that the commit is a new version of the latestVersion
+            // Avoid committing an amendment for a version that is not the latest.
+            // This keeps consistency for the linear versioning we support.
+            def versionedComposition = VersionedComposition.findByUid(version.objectId)
+            def lastVersion = versionedComposition.latestVersion
+            if (lastVersion.uid != version.uid)
+            {
+               throw new IllegalArgumentException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please checkout the latest version ${lastVersion.uid}")
+            }
+            
+            
+            // Commit is for the last version of the compo
+            
+            def previousLastVersion = lastVersion //Version.findByUid(version.uid)
+            previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
             
 
             // FIXME: si falla, rollback. Este servicio deberia ser transaccional
