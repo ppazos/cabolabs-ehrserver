@@ -1334,9 +1334,10 @@
 		            <td><g:message code="query.create.concept" /></td>
 		            <td>
 		              <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
-		              <%-- optionKey="archetypeId" optionValue="name" --%>
+		              <%-- optionKey="archetypeId" optionValue="${{it.archetypeConcept +' ('+ it.archetypeId +')'}}" --%>
 		              <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-		              <g:select name="view_archetype_id" size="10" from="${concepts}" noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
+		              <g:select name="view_archetype_id" size="10" from="${concepts}"
+		                         noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
 		            </td>
 		          </tr>
 		          <tr>

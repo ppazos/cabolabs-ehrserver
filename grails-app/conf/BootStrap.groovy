@@ -65,16 +65,20 @@ class BootStrap {
         }
      }
      
-     
-     def idtypes = [
-        new PersonIdType(name:'DNI', code:'DNI'),
-        new PersonIdType(name:'CI', code:'CI'),
-        new PersonIdType(name:'Passport', code:'Passport'),
-        new PersonIdType(name:'SSN', code:'SSN'),
-        new PersonIdType(name:'UUID', code:'UUID'),
-        new PersonIdType(name:'OID', code:'OID')
-     ]
-     idtypes.each { it.save(failOnError:true, flush:true) }
+     if (PersonIdType.count() == 0)
+     {
+        def idtypes = [
+           new PersonIdType(name:'DNI',  code:'DNI'),
+           new PersonIdType(name:'CI',   code:'CI'),
+           new PersonIdType(name:'Passport', code:'Passport'),
+           new PersonIdType(name:'SSN',  code:'SSN'),
+           new PersonIdType(name:'UUID', code:'UUID'),
+           new PersonIdType(name:'OID',  code:'OID')
+        ]
+        idtypes.each {
+           it.save(failOnError:true, flush:true)
+        }
+     }
      
      
      
@@ -115,7 +119,8 @@ class BootStrap {
          '/j_spring_security_logout',
          '/rest/**',
          '/test/findCompositions', // will be refactores to /rest
-         '/ehr/showCompositionUI' // will be added as a rest service via url mapping
+         '/ehr/showCompositionUI', // will be added as a rest service via url mapping
+         '/user/profile'
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()

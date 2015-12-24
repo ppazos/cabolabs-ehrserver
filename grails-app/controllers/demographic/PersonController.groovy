@@ -10,7 +10,8 @@ class PersonController {
    
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-   def index() {
+   def index()
+   {
       redirect(action: "list", params: params)
    }
 
@@ -37,11 +38,13 @@ class PersonController {
       [personInstanceList: list, personInstanceTotal: count]
    }
 
-   def create() {
+   def create()
+   {
       [personInstance: new Person(params)]
    }
 
-   def save() {
+   def save()
+   {
       def personInstance = new Person(params)
       log.info "A"
       if (!personInstance.save(flush: true)) {
@@ -56,8 +59,8 @@ class PersonController {
       redirect(action: "show", id: personInstance.id)
    }
 
-   def show(Long id, String uid) {
-   
+   def show(Long id, String uid)
+   {
      def personInstance
      if (id) personInstance = Person.get(id)
      else personInstance = Person.findByUid(uid)
@@ -71,9 +74,11 @@ class PersonController {
      [personInstance: personInstance]
    }
 
-   def edit(Long id) {
+   def edit(Long id)
+   {
       def personInstance = Person.get(id)
-      if (!personInstance) {
+      if (!personInstance)
+      {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
          redirect(action: "list")
          return
@@ -82,7 +87,8 @@ class PersonController {
       [personInstance: personInstance]
    }
 
-   def update(Long id, Long version) {
+   def update(Long id, Long version)
+   {
       def personInstance = Person.get(id)
       if (!personInstance) {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
@@ -111,7 +117,8 @@ class PersonController {
       redirect(action: "show", id: personInstance.id)
    }
 
-   def delete(Long id) {
+   def delete(Long id)
+   {
       def personInstance = Person.get(id)
       if (!personInstance) {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])

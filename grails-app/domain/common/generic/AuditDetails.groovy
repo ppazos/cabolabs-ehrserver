@@ -25,4 +25,9 @@ class AuditDetails {
    
    // Para que Contribution salve su AuditDetails en cascada
    static belongsTo = [Contribution, Version]
+   
+   public String toString()
+   {
+      return this.getClass().getSimpleName() +' '+ changeType +' '+ systemId +' '+ timeCommitted
+   }
 }

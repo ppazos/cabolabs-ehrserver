@@ -94,6 +94,7 @@ class EhrTagLib {
          args.from = loggedInUser.organizations
          args.optionKey = 'uid'
          args.optionValue = 'name'
+         args.noSelection = ['':'Select One...']
          
          if (attrs.value) args.value = attrs.value
          if (attrs.multiple)

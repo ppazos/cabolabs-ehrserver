@@ -16,9 +16,14 @@ import common.generic.AuditDetails
 import common.change_control.Contribution
 import common.change_control.VersionedComposition
 import common.change_control.Version
+
 import com.cabolabs.security.Organization
+
 import grails.util.Holders
+import groovy.util.slurpersupport.GPathResult
+
 import java.lang.reflect.UndeclaredThrowableException
+import javax.xml.bind.ValidationException
 
 /**
  * TODO:
@@ -123,11 +128,6 @@ class RestController {
    def commit(String ehrUid, String auditSystemId, String auditCommitter)
    {
       log.info( "commit received "+ params.list('versions').size() + " versions"  )
-      
-      //new File('params_debug.log') << params.toString()
-      
-      // TODO: todo debe ser transaccional, se hace toda o no se hace nada...
-      
 
       if (!ehrUid)
       {
@@ -191,26 +191,11 @@ class RestController {
       }
       
 
-      
-      // ========================================================
-      // FIXME: MOVER ESTA LOGICA A UN SERVICIO
-      
-      // En data esta el XML de la composition recibida
-      List parsedVersions = [] // List<GPathResult>
-      //def contributions = []
-      Contribution contribution
       try
       {
-         // null if there are xml validation errors
-         contribution = xmlService.parseVersions(
-            ehr,
-            _parsedVersions, // GPathResult
-            auditSystemId,
-            new Date(),
-            auditCommitter, // time_committed is calculated by the server to be compliant with the specs ** (see below)
-            parsedVersions
-         )
-         
+         // throws exceptions for any error
+         xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
+
          /* **
           * The time_committed attribute in both the Contribution and Version audits
           * should reflect the time of committal to an EHR server, i.e. the time of
@@ -220,31 +205,28 @@ class RestController {
           * 
           * Note that this will override the time_committed from the version in the XML received.
           */
-         
-         // There are XML validation errors, the whole commit should fail.
-         if (!contribution)
-         {
-            // Parsing error
-            render(contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type {
-                     code('AR')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
-                  message(message(code:'rest.commit.error.versionsDontValidate'))
-                  details {
-                     
-                     xmlService.validationErrors.each { i, errorList ->
-                        errorList.each { errorText ->
-                           
-                           item('Error for version #'+ i +' '+ errorText)
-                        }
+      }
+      catch (ValidationException e) // xsd error
+      {
+         render(contentType:"text/xml", encoding:"UTF-8") {
+            result {
+               type {
+                  code('AR')                         // application reject
+                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+               }
+               message(message(code:'rest.commit.error.versionsDontValidate'))
+               details {
+                  
+                  xmlService.validationErrors.each { i, errorList ->
+                     errorList.each { errorText ->
+                        
+                        item('Error on version #'+ i +') '+ errorText)
                      }
                   }
                }
             }
-            return
          }
+         return
       }
       catch (UndeclaredThrowableException e)
       {
@@ -266,145 +248,25 @@ class RestController {
          
          //println stackTrace
          //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
-         def appCtx = grailsApplication.getMainContext()
-         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
-            [e.message +" trace: "+ stackTrace] as Object[],
-            "error",
-            locale)
+//         def appCtx = grailsApplication.getMainContext()
+//         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+//         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
+//            [e.message +" trace: "+ stackTrace] as Object[],
+//            "error",
+//            locale)
          
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
          return
       }
       
-      // test
-      // muestra los uids en vacio porque el escritor de xml es lazy,
-      // se escribe solo cuando se hace una salida ej. a un stream
-      
-      /*
-      println "ehrController parsedCompositions uids " // + parsedCompositions.uid.value*.text() esto me muestra vacio!!!!
-      parsedCompositions.each { pcomp ->
-         //println pcomp.uid // vacio
-         println new groovy.xml.StreamingMarkupBuilder().bind{ out << pcomp} // mejor que XMLUtil para serializar a String (TODO ver cual es mas rapido)
-         println ""
-      }
-      */
-      
-      
-      // FIXME: dejar esta tarea a un job y la logica debe ir a un servicio
-      // Guarda compositions y crea indices a nivel de documento (nivel 1)
-      def compoFile
-      def versionFile
-      def compoIndex
-      def startTime
-      
-      // ===================================================================================
-      // TODO:
-      // Contribution, Version y CompositionIndex ya se guardan en XmlService.parseVersions
-      // Eso mas poner las VersionedComposition dentro de EHR deberia ser transaccional.
-      // ===================================================================================
-      
-      def errorbreak = false
-      
-      contribution.versions.eachWithIndex { version, i ->
-         
-         // ========================================================
-         // Versionado
-         // FIXME: deberia ser transaccional junto a el contribution.save de XmlService
-         
-         def versionedComposition
-         switch (version.commitAudit.changeType)
-         {
-            case 'creation':
-            
-               versionedComposition = new VersionedComposition(
-                  uid: version.objectId,
-                  ehrUid: ehrUid,
-                  isPersistent: (version.data.category == 'persistent'))
-               
-//                  if (!versionedComposition.save())
-//                  {
-//                     println "VersionedComposition ERRORS: "+ vc.errors
-//                  }
-               
-               // Agrega composition al EHR
-               ehr.addToCompositions( versionedComposition )
-               
-               if (!ehr.save(flush:true)) println ehr.errors.allErrors
-               
-            break
-            case ['amendment', 'modification']:
-               
-               versionedComposition = VersionedComposition.findByUid(version.objectId)
-               
-               // VersionedObject should exist for change type modification or amendment
-               if (!versionedComposition)
-               {
-                  renderError(message(code:'rest.commit.error.noVersionedCompositionForChangeType', args:[version.commitAudit.changeType, version.objectId]), '472', 404)
-                  
-                  errorbreak = true
-                  return true // just returns from the each
-               }
-               
-               // XmlService hace previousLastVersion.isLastVersion = false
-               // asi la nueva version es la unica con isLastVersion == true
-               
-               
-               // ======================================================
-               // DataValueIndexes for old versions can be deleted
-               // ======================================================
-               
-               // No crea el VersionedComposition porque ya deberia estar
-               
-               assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
-               
-            break
-            default:
-               println "change type "+ version.commitAudit.changeType +" not supported yet"
-
-         } // switch changeType
-         
-         
-         //println "GRABA ARCHIVO " + i + " y hay " + parsedVersions.size() + " parsedVersions"
-         //println groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-         
-         
-         // FIXME: el archivo no deberia existir!!!
-
-
-         // Save compo
-         // This uses the composition uid that is assigned by the server so it must be unique.
-         
-         /*
-          * XmlUtil.serialize genera estos warnings:
-          * | Error Warning:  org.apache.xerces.parsers.SAXParser: Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
-            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
-            | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
-          */
-         
-         // Save version as committed
-         // This uses the version uid with the systemid and tree.
-         // FIXME: the compo in version.data doesn't have the injected compo.uid that parsedCompositions[i] does have.
-         versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +'.xml')
-         versionFile << groovy.xml.XmlUtil.serialize( parsedVersions[i] )
-         
-      } // contribution.versions.each
-      
-      
-      // error: versioned composition doesnt exists
-      if (errorbreak) return
-      
-
-      
-      //render(text:'<result><code>ok</code><message>EHR guardado</message></result>', contentType:"text/xml", encoding:"UTF-8")
       render(contentType:"text/xml", encoding:"UTF-8") {
          result {
             type {
                code('AA')                         // application reject
                codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
             }
-            message('Commit exitoso al EHR '+ ehrUid)
-            // ok va sin codigo de error
+            message('Versions successfully committed to EHR '+ ehrUid)
+            // has no error code
          }
       }
    } // commit
@@ -1092,15 +954,12 @@ class RestController {
              boolean retrieveData, boolean showUI, String group,
              String fromDate, String toDate, String organizationUid)
    {
-      //println "rest/query"
-      //println params
-      
       if (!queryUid)
       {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
-      if (!organizationUid)
+      if (!organizationUid) // TODO: when the token verification works, we can get the org id from the token. No need of a param.
       {
          renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
          return
@@ -1309,9 +1168,6 @@ class RestController {
    // To query by queryUID use "query" action.
    def queryData()
    {
-      println "queryData"
-      println params
-      
       String qehrId = request.JSON.qehrId
       String fromDate = request.JSON.fromDate
       String toDate = request.JSON.toDate
@@ -1375,7 +1231,6 @@ class RestController {
    def queryCompositions()
    {
        println "queryCompositions"
-       println params.toString()
        
        // all params come in the JSON object from the UI
        // all are strings
