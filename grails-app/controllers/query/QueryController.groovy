@@ -1,20 +1,22 @@
 package query
 
 import query.datatypes.*
-
 import ehr.clinical_documents.IndexDefinition
 import ehr.clinical_documents.OperationalTemplateIndex
-
 import org.springframework.dao.DataIntegrityViolationException
-
+import grails.plugin.springsecurity.SpringSecurityUtils
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 import ehr.clinical_documents.data.*
 import grails.converters.*
+import com.cabolabs.security.Organization
+import ehr.Ehr
 
 class QueryController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
+    
+    def springSecurityService
     
     // Para acceder a las opciones de localizacion
     def config = Holders.config.app
@@ -38,8 +40,8 @@ class QueryController {
          templateIndexes: OperationalTemplateIndex.list()]
     }
     
-    def edit (Long id) {
-       
+    def edit (Long id)
+    {
        if (!id || !Query.exists(id))
        {
           flash.message = "Query doesn't exists"
@@ -168,6 +170,19 @@ class QueryController {
      */
     def test(String type)
     {
+       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+       {
+          params['ehrs'] = Ehr.list()
+       }
+       else
+       {
+          // auth token used to login
+          def auth = springSecurityService.authentication
+          def org = Organization.findByNumber(auth.organization)
+          
+          params['ehrs'] = Ehr.findAllByOrganizationUid(org.uid)
+       }
+       
        // ==================================================================
        // asegura que archetypeId, path, value y operand son siempre listas,
        // el gsp espera listas.

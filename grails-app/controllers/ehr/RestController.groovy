@@ -954,15 +954,12 @@ class RestController {
              boolean retrieveData, boolean showUI, String group,
              String fromDate, String toDate, String organizationUid)
    {
-      //println "rest/query"
-      //println params
-      
       if (!queryUid)
       {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
-      if (!organizationUid)
+      if (!organizationUid) // TODO: when the token verification works, we can get the org id from the token. No need of a param.
       {
          renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
          return
@@ -1171,9 +1168,6 @@ class RestController {
    // To query by queryUID use "query" action.
    def queryData()
    {
-      println "queryData"
-      println params
-      
       String qehrId = request.JSON.qehrId
       String fromDate = request.JSON.fromDate
       String toDate = request.JSON.toDate
@@ -1237,7 +1231,6 @@ class RestController {
    def queryCompositions()
    {
        println "queryCompositions"
-       println params.toString()
        
        // all params come in the JSON object from the UI
        // all are strings
