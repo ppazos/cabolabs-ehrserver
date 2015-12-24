@@ -57,9 +57,16 @@ class DataIndexerService {
        // load xml file from filesystem
        version = compoIndex.getParent()
        versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
+       
+       // If the commit record was saved in the database but the file was not yet written to disk,
+       // the file doesn't exists. Leave it to the next run of the indexed and continue indexing.
+       if (!versionFile.exists())
+       {
+          log.info "avoid indexing "+ versionFile.absolutePath
+          return // Continue with next compoIdx
+       }
+       
        versionXml = versionFile.getText()
-       
-       
        parsedVersion = parser.parseText(versionXml)
        
        // error from error handler?

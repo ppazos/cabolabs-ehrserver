@@ -1,5 +1,6 @@
-package ehr
+package com.cabolabs.ehrserver.indexing
 
+import ehr.*
 import grails.test.mixin.TestMixin
 import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
@@ -9,14 +10,12 @@ import parsers.XmlService
 import parsers.XmlValidationService
 import demographic.Person
 import com.cabolabs.ehrserver.data.DataIndexerService
-
 import com.cabolabs.security.Organization
-
 import ehr.clinical_documents.*
 import common.change_control.*
 import common.generic.*
 import ehr.Ehr
-import ehr.IndexDataJob
+import com.cabolabs.ehrserver.indexing.IndexDataJob
 import ehr.clinical_documents.data.*
 
 import query.*
