@@ -9,15 +9,19 @@ import spock.lang.Specification
 import parsers.XmlService
 import parsers.XmlValidationService
 import demographic.Person
+
+import com.cabolabs.ehrserver.api.RestController;
 import com.cabolabs.ehrserver.data.DataIndexerService
 import com.cabolabs.security.Organization
+
 import ehr.clinical_documents.*
 import common.change_control.*
 import common.generic.*
 import ehr.Ehr
-import com.cabolabs.ehrserver.indexing.IndexDataJob
-import ehr.clinical_documents.data.*
 
+import com.cabolabs.ehrserver.indexing.IndexDataJob
+
+import ehr.clinical_documents.data.*
 import query.*
 
 /**
