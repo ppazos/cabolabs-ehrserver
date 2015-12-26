@@ -2,8 +2,8 @@ package kernel
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
-import common.generic.DoctorProxy
-import common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 
 /**
  * Operaciones basicas para usarse en el resto del sistemas.

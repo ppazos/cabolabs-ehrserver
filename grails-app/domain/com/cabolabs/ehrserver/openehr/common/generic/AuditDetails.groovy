@@ -1,7 +1,7 @@
 package com.cabolabs.ehrserver.openehr.common.generic
 
-import common.change_control.Contribution
-import common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 

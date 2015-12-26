@@ -1,5 +1,5 @@
-import demographic.Person
-import common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.demographic.Person
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
 

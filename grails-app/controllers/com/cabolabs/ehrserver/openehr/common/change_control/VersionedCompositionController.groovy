@@ -1,9 +1,7 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import static org.springframework.http.HttpStatus.*
-
-import common.change_control.VersionedComposition;
-
+import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)

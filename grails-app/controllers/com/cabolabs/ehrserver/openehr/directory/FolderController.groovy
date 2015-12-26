@@ -2,10 +2,8 @@ package com.cabolabs.ehrserver.openehr.directory
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
-
 import com.cabolabs.security.Organization
-
-import directory.Folder;
+import com.cabolabs.ehrserver.openehr.directory.Folder
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional(readOnly = true)

@@ -2,7 +2,7 @@ package support.identification
 
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
-import common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
 
 
 /**

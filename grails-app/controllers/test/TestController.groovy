@@ -3,13 +3,13 @@ package test
 //import com.thoughtworks.xstream.XStream
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.IndexDefinition
-import common.change_control.Contribution
-import common.change_control.Version
-import common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import query.DataCriteria
 import query.Query
 //import support.identification.CompositionRef // T0004
-import common.generic.DoctorProxy
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import ehr.clinical_documents.data.DataValueIndex
 
 import java.text.SimpleDateFormat

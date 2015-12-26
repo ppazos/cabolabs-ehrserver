@@ -1,9 +1,9 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
-import common.generic.PatientProxy
-import common.change_control.VersionedComposition
-import common.change_control.Contribution
-import directory.Folder
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.directory.Folder
 import javax.xml.bind.annotation.*
 
 /**

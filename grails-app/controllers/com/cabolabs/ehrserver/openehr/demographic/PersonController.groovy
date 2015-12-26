@@ -1,12 +1,9 @@
 package com.cabolabs.ehrserver.openehr.demographic
 
 import org.springframework.dao.DataIntegrityViolationException
-
 import grails.plugin.springsecurity.SpringSecurityUtils
-
 import com.cabolabs.security.Organization
-
-import demographic.Person;
+import com.cabolabs.ehrserver.openehr.demographic.Person
 
 class PersonController {
 

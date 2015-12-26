@@ -1,10 +1,8 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
-import common.generic.AuditDetails
-
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import java.text.SimpleDateFormat
-
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 /**
  * La contribution queda pendiente/incompleta hasta que no se envien todas las versiones referenciadas.

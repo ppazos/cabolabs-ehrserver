@@ -4,27 +4,24 @@ import grails.converters.*
 
 import java.text.SimpleDateFormat
 
-import demographic.Person
+import com.cabolabs.ehrserver.openehr.demographic.Person
 import query.Query
 import query.DataGet
 import query.DataCriteria
 import ehr.clinical_documents.IndexDefinition
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DataValueIndex
-import common.generic.DoctorProxy
-import common.generic.AuditDetails
-import common.change_control.Contribution
-import common.change_control.VersionedComposition
-import common.change_control.Version
-
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
-
 import java.lang.reflect.UndeclaredThrowableException
-
 import javax.xml.bind.ValidationException
 
 /**

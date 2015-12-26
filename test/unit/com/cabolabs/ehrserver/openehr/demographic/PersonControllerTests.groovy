@@ -1,10 +1,8 @@
 package com.cabolabs.ehrserver.openehr.demographic
 
 import org.junit.*
-
-import com.cabolabs.ehrserver.openehr.demographic.PersonController;
-
-import demographic.Person;
+import com.cabolabs.ehrserver.openehr.demographic.PersonController
+import com.cabolabs.ehrserver.openehr.demographic.Person
 import grails.test.mixin.*
 
 @TestFor(PersonController)

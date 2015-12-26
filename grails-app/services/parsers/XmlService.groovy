@@ -1,11 +1,11 @@
 package parsers
 
-import common.change_control.Contribution
-import common.change_control.Version
-import common.change_control.VersionedComposition
-import common.generic.AuditDetails
-import common.generic.DoctorProxy
-import common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders

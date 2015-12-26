@@ -1,8 +1,7 @@
 package ehr
 
-import directory.Folder
-
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.directory.Folder
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Role
 
 class EhrTagLib {

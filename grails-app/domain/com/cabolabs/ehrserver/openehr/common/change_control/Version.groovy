@@ -1,6 +1,6 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
-import common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import ehr.clinical_documents.CompositionIndex
 //import support.identification.CompositionRef // T0004 ya no se usa
 import javax.xml.bind.annotation.XmlAccessorType

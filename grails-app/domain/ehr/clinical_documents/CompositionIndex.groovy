@@ -1,6 +1,6 @@
 package ehr.clinical_documents
 
-import common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
 
 /**
  * Modela una instancei a de indice a nivel de documento (nivel 1).

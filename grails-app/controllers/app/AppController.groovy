@@ -3,7 +3,7 @@ package app
 import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
 
-import common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 class AppController {

@@ -6,12 +6,11 @@ import grails.test.mixin.*
 
 import org.junit.*
 
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
-
-import common.change_control.*
-import common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.ehrserver.openehr.common.change_control.*
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import ehr.clinical_documents.CompositionIndex
-import common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions

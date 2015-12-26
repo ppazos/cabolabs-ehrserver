@@ -24,7 +24,9 @@ class Organization {
    
    private void assignNumber()
    {
+      println "assign number"
       def number = String.randomNumeric(6)
+      
       
       while (Organization.countByNumber(number) == 1) // avoids repeated number
       {
@@ -32,6 +34,7 @@ class Organization {
          number = String.randomNumeric(6)
       }
       
+      println "number ${number}"
       this.number = number
    }
 }

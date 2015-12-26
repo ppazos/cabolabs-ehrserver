@@ -1,11 +1,9 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import org.springframework.dao.DataIntegrityViolationException
-
 import grails.plugin.springsecurity.SpringSecurityUtils
-
 import com.cabolabs.security.Organization
-import common.change_control.Contribution;
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 
 class ContributionController {
 

@@ -1,6 +1,6 @@
 package com.cabolabs.ehrserver.openehr.common.generic
 
-import common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 

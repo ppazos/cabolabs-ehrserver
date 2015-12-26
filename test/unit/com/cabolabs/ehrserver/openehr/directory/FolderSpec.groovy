@@ -1,6 +1,6 @@
 package com.cabolabs.ehrserver.openehr.directory
 
-import directory.Folder;
+import com.cabolabs.ehrserver.openehr.directory.Folder
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
