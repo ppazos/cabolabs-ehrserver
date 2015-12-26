@@ -1,7 +1,6 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import common.generic.AuditDetails
-import ehr.Ehr
 import common.change_control.Contribution;
 import common.change_control.Version
 import common.generic.DoctorProxy
@@ -11,6 +10,7 @@ import demographic.Person
 import org.junit.*
 
 import com.cabolabs.ehrserver.openehr.common.change_control.ContributionController;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 import grails.test.mixin.*
 

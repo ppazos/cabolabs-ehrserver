@@ -1,11 +1,11 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedCompositionController;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 import common.change_control.VersionedComposition;
 import common.generic.PatientProxy
 import demographic.Person
-import ehr.Ehr
 import grails.test.mixin.*
 import spock.lang.*
 

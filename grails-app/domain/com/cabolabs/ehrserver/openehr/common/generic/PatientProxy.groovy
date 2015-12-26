@@ -1,9 +1,9 @@
-package common.generic
+package com.cabolabs.ehrserver.openehr.common.generic
 
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
-import ehr.Ehr
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 /**
  * Emula a common.generic.PARTY_SELF que hereda de PARTY_PROXY.

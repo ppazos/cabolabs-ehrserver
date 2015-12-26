@@ -3,7 +3,6 @@ package com.cabolabs.ehrserver.openehr.ehr
 //import com.thoughtworks.xstream.XStream
 import common.generic.PatientProxy
 import demographic.Person
-import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DvTextIndex
 import ehr.clinical_documents.data.DvCodedTextIndex
@@ -12,12 +11,15 @@ import ehr.clinical_documents.data.DvQuantityIndex
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import common.change_control.Contribution
-
 import grails.util.Holders
+
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
+
 import grails.plugin.springsecurity.SpringSecurityUtils
+
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
 
 class EhrController {

@@ -4,7 +4,6 @@ import static org.junit.Assert.*
 import demographic.Person
 import grails.test.mixin.*
 import grails.test.mixin.support.*
-import ehr.Ehr;
 import ehr.clinical_documents.*
 import common.change_control.*
 import common.generic.*
@@ -17,6 +16,7 @@ import grails.util.Holders
 import query.*
 
 import com.cabolabs.ehrserver.api.RestController;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
 
 

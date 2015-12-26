@@ -10,12 +10,12 @@ import parsers.XmlValidationService
 import demographic.Person
 
 import com.cabolabs.ehrserver.api.RestController;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
 
 import ehr.clinical_documents.*
 import common.change_control.*
 import common.generic.*
-import ehr.Ehr
 import ehr.clinical_documents.data.*
 
 /**

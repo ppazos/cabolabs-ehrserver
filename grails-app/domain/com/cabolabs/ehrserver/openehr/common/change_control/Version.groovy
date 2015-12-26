@@ -1,4 +1,4 @@
-package common.change_control
+package com.cabolabs.ehrserver.openehr.common.change_control
 
 import common.generic.AuditDetails
 import ehr.clinical_documents.CompositionIndex

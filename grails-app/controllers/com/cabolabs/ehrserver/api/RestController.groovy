@@ -8,7 +8,6 @@ import demographic.Person
 import query.Query
 import query.DataGet
 import query.DataCriteria
-import ehr.Ehr;
 import ehr.clinical_documents.IndexDefinition
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.data.DataValueIndex
@@ -18,6 +17,7 @@ import common.change_control.Contribution
 import common.change_control.VersionedComposition
 import common.change_control.Version
 
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
 
 import grails.util.Holders

@@ -1,4 +1,4 @@
-package demographic
+package com.cabolabs.ehrserver.openehr.demographic
 
 //import javax.xml.bind.annotation.XmlAccessorType
 //import javax.xml.bind.annotation.XmlAccessType

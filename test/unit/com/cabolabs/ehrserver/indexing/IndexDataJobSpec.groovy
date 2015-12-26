@@ -17,9 +17,9 @@ import com.cabolabs.security.Organization
 import ehr.clinical_documents.*
 import common.change_control.*
 import common.generic.*
-import ehr.Ehr
 
 import com.cabolabs.ehrserver.indexing.IndexDataJob
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 import ehr.clinical_documents.data.*
 import query.*

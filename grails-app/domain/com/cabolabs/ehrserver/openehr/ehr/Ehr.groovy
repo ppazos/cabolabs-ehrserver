@@ -1,4 +1,4 @@
-package ehr
+package com.cabolabs.ehrserver.openehr.ehr
 
 import common.generic.PatientProxy
 import common.change_control.VersionedComposition

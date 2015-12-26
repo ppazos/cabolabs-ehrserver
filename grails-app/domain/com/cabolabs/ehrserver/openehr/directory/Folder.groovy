@@ -1,6 +1,6 @@
-package directory
+package com.cabolabs.ehrserver.openehr.directory
 
-import ehr.Ehr
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 class Folder {
 

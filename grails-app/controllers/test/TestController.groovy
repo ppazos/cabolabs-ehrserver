@@ -1,7 +1,6 @@
 package test
 
 //import com.thoughtworks.xstream.XStream
-import ehr.Ehr
 import ehr.clinical_documents.CompositionIndex
 import ehr.clinical_documents.IndexDefinition
 import common.change_control.Contribution
@@ -12,7 +11,11 @@ import query.Query
 //import support.identification.CompositionRef // T0004
 import common.generic.DoctorProxy
 import ehr.clinical_documents.data.DataValueIndex
+
 import java.text.SimpleDateFormat
+
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+
 import grails.util.Holders
 
 class TestController {

@@ -1,6 +1,6 @@
-package common.change_control
+package com.cabolabs.ehrserver.openehr.common.change_control
 
-import ehr.Ehr
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 class VersionedComposition {
 

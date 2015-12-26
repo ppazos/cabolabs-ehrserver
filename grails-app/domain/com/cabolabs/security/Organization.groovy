@@ -12,11 +12,13 @@ class Organization {
    
    def beforeInsert()
    {
+      println "before insert "+ this +" "+ this.name
       if (!this.number) assignNumber()
    }
    
    def beforeUpdate()
    {
+      println "before update"
       if (!this.number) assignNumber()
    }
    
@@ -26,6 +28,7 @@ class Organization {
       
       while (Organization.countByNumber(number) == 1) // avoids repeated number
       {
+         println "while"
          number = String.randomNumeric(6)
       }
       

@@ -3,14 +3,17 @@ package query
 import query.datatypes.*
 import ehr.clinical_documents.IndexDefinition
 import ehr.clinical_documents.OperationalTemplateIndex
+
 import org.springframework.dao.DataIntegrityViolationException
+
 import grails.plugin.springsecurity.SpringSecurityUtils
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 import ehr.clinical_documents.data.*
 import grails.converters.*
+
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.security.Organization
-import ehr.Ehr
 
 class QueryController {
 

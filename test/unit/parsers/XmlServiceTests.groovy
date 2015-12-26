@@ -3,12 +3,14 @@ package parsers
 // grails test-app me dice que no encuentra la lib...
 //import com.thoughtworks.xstream.XStream
 import grails.test.mixin.*
+
 import org.junit.*
+
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 
 import common.change_control.*
 import common.generic.AuditDetails
 import ehr.clinical_documents.CompositionIndex
-import ehr.Ehr
 import common.generic.PatientProxy
 
 /**

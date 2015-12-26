@@ -1,4 +1,4 @@
-package common.generic
+package com.cabolabs.ehrserver.openehr.common.generic
 
 import common.change_control.Contribution
 import common.change_control.Version

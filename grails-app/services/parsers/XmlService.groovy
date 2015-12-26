@@ -1,6 +1,5 @@
 package parsers
 
-import ehr.Ehr
 import common.change_control.Contribution
 import common.change_control.Version
 import common.change_control.VersionedComposition
@@ -10,9 +9,13 @@ import common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
+
 import java.nio.file.AccessDeniedException
 import java.nio.file.FileAlreadyExistsException
+
 import javax.xml.bind.ValidationException
+
+import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import com.cabolabs.util.DateParser
 
 class XmlService {

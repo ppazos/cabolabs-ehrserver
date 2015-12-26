@@ -144,7 +144,7 @@ class UserController {
             o.save(failOnError: true, flush:true)
             
             // needs an organization before saving
-            u.addToOrganizations(o).save(failOnError: true, flush:true)
+            u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
             
             u.save(failOnError: true, flush:true)
             
