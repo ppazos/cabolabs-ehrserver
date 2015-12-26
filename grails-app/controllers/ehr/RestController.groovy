@@ -1005,7 +1005,16 @@ class RestController {
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
+      
+      // measuring query timing
+      def start_time = System.currentTimeMillis()
+      // /measuring query timing
+      
       def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid)
+      
+      // measuring query timing
+      def end_time = System.currentTimeMillis()
+      // /measuring query timing
       
       
       // If not format is specified, take the query format.
@@ -1040,6 +1049,8 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
+            res['timing'] = (end_time - start_time) +' ms' // measuring query timing
+            
             if (format == 'json')
                render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
             else
@@ -1121,6 +1132,8 @@ class RestController {
                 out += buff + "\n"
             }
          }
+         // measuring query timing
+         out += '<timing>'+ (end_time - start_time) +' ms</timing>'
          out += '</list>'
 
          
@@ -1133,6 +1146,8 @@ class RestController {
       else
       {
          // type = datavalue
+         
+         res['timing'] = (end_time - start_time) +' ms' // measuring query timing
          
          // Format
          if (!format || format == 'xml')
@@ -1149,6 +1164,7 @@ class RestController {
          }
       }
    } // query
+   
    
    /**
     * Busqueda de datos simples dentro de compositions que cumplen cierto criterio.
