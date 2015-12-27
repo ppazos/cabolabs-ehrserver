@@ -1,4 +1,4 @@
-<%@ page import="common.change_control.Contribution" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Contribution" %>
 <!DOCTYPE html>
 <html>
   <head>

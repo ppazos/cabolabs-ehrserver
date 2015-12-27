@@ -100,16 +100,16 @@ grails.project.dependency.resolution = {
         build ":tomcat:7.0.55.2"
 
         // plugins for the compile step
-        compile ':scaffolding:2.1.0'
+        compile ':scaffolding:2.1.2'
         compile ':cache:1.1.8'
-        compile ':asset-pipeline:1.9.9'
+        compile ':asset-pipeline:2.1.5'
         compile ':quartz:1.0.2'
-        compile ':spring-security-core:2.0-RC5'
+        compile ':spring-security-core:2.0-RC6'
         compile ":mail:1.0.7"
         compile ":simple-captcha:1.0.0"
 
         // plugins needed at runtime but not for compilation
-        runtime ':hibernate4:4.3.5.5' // or ':hibernate:3.6.10.14'
+        runtime ':hibernate4:4.3.8.1' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
         runtime ':jquery:1.11.1'
         
@@ -119,5 +119,6 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-rest:1.5.2', {
         //   excludes 'spring-security-core', 'cors'
         //}
+        compile "org.grails.plugins:security-stateless:0.0.9"
     }
 }

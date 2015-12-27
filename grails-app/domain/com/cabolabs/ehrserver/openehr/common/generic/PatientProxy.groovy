@@ -3,6 +3,7 @@ package com.cabolabs.ehrserver.openehr.common.generic
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.ehrserver.openehr.demographic.Person
 
 /**
  * Emula a common.generic.PARTY_SELF que hereda de PARTY_PROXY.
@@ -41,6 +42,6 @@ class PatientProxy {
     */
    def getPerson()
    {
-      return demographic.Person.findByUid(this.value)
+      return Person.findByUid(this.value)
    }
 }

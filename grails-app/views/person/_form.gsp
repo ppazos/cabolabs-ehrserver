@@ -1,4 +1,4 @@
-<%@ page import="demographic.Person" %><%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.identification.PersonIdType" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.demographic.Person" %><%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.identification.PersonIdType" %>
 
 <div class="form-group ${hasErrors(bean: personInstance, field: 'firstName', 'has-error')}">
   <label class="control-label"><g:message code="person.firstName.label" default="First Name" /></label>

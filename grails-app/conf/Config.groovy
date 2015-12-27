@@ -20,6 +20,22 @@ cors.headers = ['Access-Control-Allow-Origin': '*']
 cors.enabled = true
 
 
+// upgrade to 2.5.3
+beans {
+  cacheManager {
+    shared = true
+  }
+}
+
+
+// test stateless security
+grails.plugin.security.stateless.secretKey = '88f0435c-ff45-4b5b-874f-689ad94adcad'
+grails.plugin.security.stateless.springsecurity.integration = false
+grails.plugin.security.stateless.format = "JWT"
+//grails.plugin.security.stateless.expirationTime = 1440 // 1 day
+//grails.plugin.security.stateless.expiresStatusCode = 401
+
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
