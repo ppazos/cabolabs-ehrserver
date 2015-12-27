@@ -1,9 +1,7 @@
 package com.cabolabs.ehrserver.api
 
 import grails.converters.*
-
 import java.text.SimpleDateFormat
-
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import query.Query
 import query.DataGet
@@ -23,6 +21,19 @@ import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import java.lang.reflect.UndeclaredThrowableException
 import javax.xml.bind.ValidationException
+
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.authentication.LockedException
+import org.springframework.security.authentication.DisabledException
+import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.AuthenticationProvider
+import com.cabolabs.security.UserPassOrgAuthToken
+import com.cabolabs.security.User
+import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
 
 /**
  * TODO:
@@ -49,13 +60,93 @@ class RestController {
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
    
-   /*
-   def testVersionedObject()
+   
+   // test stateless security
+   def statelessTokenProvider
+   def userService
+   def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
+
+   def login()
    {
-      def vo = VersionedComposition.get(1)
-      render vo.getAllVersions() as JSON
-   }
-   */
+      // https://github.com/ppazos/cabolabs-ehrserver/blob/rest_security/src/groovy/com/cabolabs/security/AuthFilter.groovy
+      // TODO check JSON payload for params...
+      String username = params.username
+      String password = params.password
+      String organization_number = params.organization
+      
+      //UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
+      //def username = auth.principal
+      //def password = auth.credentials // plain text entered by the user
+      //def organization_number = auth.organization
+      try
+      {
+         def user = userService.getByUsername(username) //User.findByUsername(username)
+         if (user == null)
+         {
+            throw new UsernameNotFoundException("No matching account")
+         }
+         
+         // Status checks
+         if (!user.enabled)
+         {
+            throw new DisabledException("Account disabled")
+         }
+         
+         if (user.accountExpired)
+         {
+            throw new AccountExpiredException("Account expired")
+         }
+         
+         if (user.accountLocked)
+         {
+            throw new LockedException("Account locked")
+         }
+         
+         
+         // Check password
+         assert this.passwordEncoder != null
+         
+         if (!passwordEncoder.isPasswordValid(user.password, password, null))
+         {
+            throw new BadCredentialsException("Authentication failed")
+         }
+         
+         //println 'orgn '+ organization_number
+         
+         if (!organization_number) // null or empty
+         {
+            throw new BadCredentialsException("Authentication failed - organization number not provided")
+         }
+         
+         // Check organization
+         Organization org = Organization.findByNumber(organization_number)
+         
+         //println 'org '+ org
+         
+         if (org == null)
+         {
+            //System.out.println( "organization with number does not exists" )
+            throw new BadCredentialsException("Authentication failed")
+         }
+         
+         //println 'user orgs '+ user.organizations
+         
+         if (!user.organizations.find{ it.uid == org.uid })
+         {
+            //System.out.println( "organization is not associated with user 2" )
+            throw new BadCredentialsException("Authentication failed - check the organization number")
+         }
+      
+         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number])] as JSON)
+      }
+      catch (Exception e)
+      {
+         println e.getClass()
+         render(status: 401, text: e.message)
+      }
+  }
+   
+   
    
    private void renderError(String msg, String errorCode, int status)
    {
@@ -124,6 +215,7 @@ class RestController {
     * @param List versions
     * @return
     */
+   @SecuredStateless
    def commit(String ehrUid, String auditSystemId, String auditCommitter)
    {
       log.info( "commit received "+ params.list('versions').size() + " versions"  )
@@ -280,6 +372,7 @@ class RestController {
     * @param compositionUid
     * @return
     */
+   @SecuredStateless
    def checkout(String ehrUid, String compositionUid)
    {
       //println params
@@ -329,10 +422,13 @@ class RestController {
       render(text: xml, contentType:"text/xml", encoding:"UTF-8")
    }
    
-   
+   @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
       // TODO: fromDate, toDate
+      
+      // test rest security
+      //println "hello ${request.securityStatelessMap}" // [extradata:[organization:1234], issued_at:2015-12-27T14:26:53.802-03:00, username:admin]
       
       // Paginacion
       if (!max) max = 15
@@ -451,7 +547,7 @@ class RestController {
       }
    } // ehrList
    
-   
+   @SecuredStateless
    def ehrForSubject(String subjectUid, String format)
    {
       if (!subjectUid)
@@ -520,7 +616,7 @@ class RestController {
       }
    } // ehrForSubject
    
-   
+   @SecuredStateless
    def ehrGet(String ehrUid, String format)
    {
       if (!ehrUid)
@@ -575,8 +671,7 @@ class RestController {
       }
    } // ehrGet
    
-   
-   
+   @SecuredStateless
    def patientList(String format, int max, int offset)
    {
       // Paginacion
@@ -656,6 +751,7 @@ class RestController {
    
    
    // Get patient data
+   @SecuredStateless
    def patient(String uid, String format)
    {
       println "patient "+ params
@@ -720,6 +816,7 @@ class RestController {
     * Servicios sobre consultas.
     */
     // Get query
+   @SecuredStateless
    def queryShow(String queryUid,String format)
    {
       println params
@@ -811,7 +908,7 @@ class RestController {
       }
    }
 
-
+   @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
       println params 
@@ -949,6 +1046,7 @@ class RestController {
     * @param showUI only used for composition queries to retrieve HTML (FIXME: this might be another output format)
     * @param group grouping of datavalue queries, if not empty/null, will override the query group option ['composition'|'path']
     */
+   @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
              String fromDate, String toDate, String organizationUid)
@@ -1181,6 +1279,7 @@ class RestController {
    // FIXME: verify that this is used only for query testing while creating a
    //        query. Query execution from the UI should use the "query" action.
    // To query by queryUID use "query" action.
+   // Not stateless secured because is for internal use from web
    def queryData()
    {
       String qehrId = request.JSON.qehrId
@@ -1243,6 +1342,7 @@ class RestController {
     * Solo soporta XML.
     * @return
     */
+   // Not stateless secured because is used from the web
    def queryCompositions()
    {
        println "queryCompositions"
@@ -1425,6 +1525,7 @@ class RestController {
     * @param format xml or json
     * @return
     */
+   @SecuredStateless
    def contributions(String ehrUid, String from, String to, int max, int offset, String format)
    {
       Date dateFrom

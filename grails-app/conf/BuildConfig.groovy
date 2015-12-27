@@ -119,5 +119,6 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-rest:1.5.2', {
         //   excludes 'spring-security-core', 'cors'
         //}
+        compile "org.grails.plugins:security-stateless:0.0.9"
     }
 }
