@@ -1,4 +1,4 @@
-<%@ page import="directory.Folder" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.directory.Folder" %>
 
 <div class="form-group ${hasErrors(bean: folderInstance, field: 'parent', 'has-error')}">
   <label class="control-label"><g:message code="folder.parent.label" default="Parent" /></label>

@@ -116,7 +116,10 @@ class AuthProvider implements AuthenticationProvider
        }
        
        // Check organization
-       Organization org = Organization.findByNumber(organization_number)
+       Organization org
+       Organization.withNewSession { 
+          org = Organization.findByNumber(organization_number)
+       }
        
        //println 'org '+ org
        

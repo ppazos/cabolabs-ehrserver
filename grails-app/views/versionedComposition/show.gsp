@@ -1,4 +1,4 @@
-<%@ page import="common.change_control.VersionedComposition" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition" %>
 <!DOCTYPE html>
 <html>
   <head>

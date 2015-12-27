@@ -1,4 +1,4 @@
-<%@ page import="demographic.Person" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.demographic.Person" %>
 <!doctype html>
 <html>
   <head>

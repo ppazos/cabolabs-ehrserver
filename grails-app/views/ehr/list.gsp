@@ -1,4 +1,4 @@
-<%@ page import="ehr.Ehr" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %>
 <!doctype html>
 <html>
   <head>
