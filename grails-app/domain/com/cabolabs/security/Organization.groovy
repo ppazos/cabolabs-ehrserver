@@ -12,29 +12,23 @@ class Organization {
    
    def beforeInsert()
    {
-      println "before insert "+ this +" "+ this.name
       if (!this.number) assignNumber()
    }
    
    def beforeUpdate()
    {
-      println "before update"
       if (!this.number) assignNumber()
    }
    
    private void assignNumber()
    {
-      println "assign number"
-      def number = String.randomNumeric(6)
+      def _number = String.randomNumeric(6)
       
-      
-      while (Organization.countByNumber(number) == 1) // avoids repeated number
+      while (Organization.countByNumber(_number) == 1) // avoids repeated number
       {
-         println "while"
-         number = String.randomNumeric(6)
+         _number = String.randomNumeric(6)
       }
       
-      println "number ${number}"
-      this.number = number
+      this.number = _number
    }
 }
