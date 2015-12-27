@@ -81,7 +81,6 @@ class BootStrap {
      }
      
      
-     
      //****** SECURITY *******
      
      // Register custom auth filter
@@ -89,9 +88,9 @@ class BootStrap {
      // See 'authFilter' in grails-app/conf/spring/resources.groovy
      // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+
      
-     //println "configured filters "+ SpringSecurityUtils.configuredOrderedFilters
-     
+
      def organizations = []
      if (Organization.count() == 0)
      {
