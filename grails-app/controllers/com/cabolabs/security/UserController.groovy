@@ -7,7 +7,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
-
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 
 @Transactional(readOnly = false)
@@ -52,6 +52,7 @@ class UserController {
    }
    
    // endpoint
+   @SecuredStateless
    def profile(String username)
    {
       println username
