@@ -131,6 +131,8 @@ log4j = {
     
     
     info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
+    
+    info 'com.cabolabs.security.AuthProvider'
 }
 
 app {
