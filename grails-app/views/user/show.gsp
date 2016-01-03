@@ -54,7 +54,7 @@
 	     <%-- if the user shown is admin, only can be edited if the logged user is admin (admins can edit any user)
 	          if the user shown is not admin, only can be edited if the logged user is org admin
 	     --%>
-	     <g:if test="${SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') || (!userInstance.authoritiesContains('ROLE_ADMIN') && SpringSecurityUtils.ifAllGranted('ROLE_ORG_MANAGER'))}">
+	     <g:if test="${ SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') || (!userInstance.authoritiesContains('ROLE_ADMIN') && SpringSecurityUtils.ifAllGranted('ROLE_ORG_MANAGER')) || (userInstance.id == Long.valueOf(sec.loggedInUserInfo(field:'id').toString())) }">
 		     <g:form url="[resource:userInstance, action:'delete']" method="DELETE">
 		       <fieldset class="buttons">
 		         <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>

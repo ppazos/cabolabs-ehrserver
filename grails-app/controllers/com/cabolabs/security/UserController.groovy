@@ -55,8 +55,8 @@ class UserController {
    @SecuredStateless
    def profile(String username)
    {
-      println username
-      println params
+      //println username
+      //println params
       // FIXME; check that the uid if the user logged in is the same as the param uid, or the logged user is an admin.
       def u = User.findByUsername(username)
       def data = [
@@ -253,19 +253,56 @@ class UserController {
       }
    }
 
-   def edit(User userInstance) {
-      respond userInstance
+   def edit(User userInstance)
+   {
+      def orgnumber = springSecurityService.authentication.organization
+      
+      // FIXME: instead of checking if the logged user is not and admin trying to show an admin, it should check
+      //        if the logged user has less permisssions than the userInstance.
+      
+      // If the user is admin (can see all) or
+      // the userInstance has the same org as the logged user and the userInstance is not an admin.
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") ||
+          (
+           userInstance.organizations.count { it.number == orgnumber } > 0 &&
+           !userInstance.authoritiesContains("ROLE_ADMIN")
+          )
+         )
+      {
+          respond userInstance
+          return
+      }
+      flash.message = "You don't have permissions to access the user"
+      redirect action:'index'
    }
 
    @Transactional
    def update(User userInstance)
    {
-      println "update "+ params
       if (userInstance == null)
       {
          notFound()
          return
       }
+      
+      // FIXME: move this check to a service
+      // check that I can update the userInstance
+      def orgnumber = springSecurityService.authentication.organization
+      // If the user is admin (can see all) or
+      // the userInstance has the same org as the logged user and the userInstance is not an admin.
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
+          !(
+           userInstance.organizations.count { it.number == orgnumber } > 0 &&
+           !userInstance.authoritiesContains("ROLE_ADMIN")
+          )
+         )
+      {
+         flash.message = "You don't have permissions to access the user"
+         redirect action:'index'
+         return
+      }
+      
+      
       
       // Selected roles from edit view
       def roles = params.list('role')

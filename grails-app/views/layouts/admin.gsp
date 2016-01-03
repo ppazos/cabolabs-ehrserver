@@ -79,23 +79,25 @@
 	      <sec:ifLoggedIn>
 	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
-	          Welcome Back <sec:username/>!
+	          Welcome Back <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>!
 	         </li>
 	         <li class="dropdown">
 	           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-	           <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+	             <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
 	           </a>
 	           <ul class="dropdown-menu dropdown-user">
-	           <li>
-	            <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
-	           </li>
-	           <li>
-	            <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
-	           </li>
-	           <li class="divider"></li>
-	           <li>
-	             <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
-	           </li>
+	             <!--
+	             <li>
+	               <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
+	             </li>
+	             <li>
+	               <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
+	             </li>
+	             <li class="divider"></li>
+	             -->
+	             <li>
+	               <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
+	             </li>
 	           </ul>
 	           <!-- /.dropdown-user -->
 	         </li>
