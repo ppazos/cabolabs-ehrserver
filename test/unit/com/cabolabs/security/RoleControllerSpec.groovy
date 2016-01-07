@@ -1,7 +1,5 @@
 package com.cabolabs.security
 
-
-
 import grails.test.mixin.*
 import spock.lang.*
 

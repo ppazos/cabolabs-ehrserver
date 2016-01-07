@@ -1,7 +1,6 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
-import com.cabolabs.ehrserver.openehr.ehr.OperationalTemplateController;
-
+import com.cabolabs.ehrserver.openehr.ehr.OperationalTemplateController
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

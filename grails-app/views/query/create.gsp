@@ -1,4 +1,4 @@
-<%@ page import="query.Query" %><%@ page import="grails.converters.JSON" %>
+<%@ page import="com.cabolabs.ehrserver.query.Query" %><%@ page import="grails.converters.JSON" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex" %>
 <!doctype html>
 <html>
   <head>
@@ -1393,7 +1393,7 @@
 		            </td>
 		            <td>
 		              <g:select name="templateId" size="5"
-		                        from="${ehr.clinical_documents.OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
+		                        from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
 		            </td>
 		         </tr>
 		         <tr>

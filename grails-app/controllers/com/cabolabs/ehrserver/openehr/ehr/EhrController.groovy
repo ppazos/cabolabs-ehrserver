@@ -3,11 +3,11 @@ package com.cabolabs.ehrserver.openehr.ehr
 //import com.thoughtworks.xstream.XStream
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
-import ehr.clinical_documents.CompositionIndex
-import ehr.clinical_documents.data.DvTextIndex
-import ehr.clinical_documents.data.DvCodedTextIndex
-import ehr.clinical_documents.data.DvDateTimeIndex
-import ehr.clinical_documents.data.DvQuantityIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvTextIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateTimeIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvQuantityIndex
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution

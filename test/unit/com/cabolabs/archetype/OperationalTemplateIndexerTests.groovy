@@ -6,9 +6,9 @@ import grails.test.mixin.*
 import grails.test.mixin.support.*
 import org.junit.*
 
-import ehr.clinical_documents.IndexDefinition
-import ehr.clinical_documents.OperationalTemplateIndex
-import ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions

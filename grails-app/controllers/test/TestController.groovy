@@ -1,21 +1,19 @@
 package test
 
 //import com.thoughtworks.xstream.XStream
-import ehr.clinical_documents.CompositionIndex
-import ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
-import query.DataCriteria
-import query.Query
+import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.ehrserver.query.Query
 //import support.identification.CompositionRef // T0004
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
-import ehr.clinical_documents.data.DataValueIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 
 import java.text.SimpleDateFormat
-
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
-
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.util.Holders
 
 class TestController {

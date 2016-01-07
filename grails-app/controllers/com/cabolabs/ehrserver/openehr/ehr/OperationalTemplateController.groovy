@@ -3,6 +3,7 @@ package com.cabolabs.ehrserver.openehr.ehr
 import grails.util.Holders
 import groovy.xml.MarkupBuilder
 import com.cabolabs.openehr.opt.manager.OptManager
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 
 class OperationalTemplateController {
 
@@ -17,8 +18,8 @@ class OperationalTemplateController {
    
    def list()
    {
-      return [opts: ehr.clinical_documents.OperationalTemplateIndex.list(),
-             total: ehr.clinical_documents.OperationalTemplateIndex.count()]
+      return [opts: OperationalTemplateIndex.list(),
+             total: OperationalTemplateIndex.count()]
    }
    
    /**

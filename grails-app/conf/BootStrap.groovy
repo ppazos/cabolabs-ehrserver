@@ -1,6 +1,6 @@
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
 
 import com.cabolabs.security.RequestMap
@@ -13,7 +13,7 @@ import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.ehrserver.identification.PersonIdType
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 
 class BootStrap {

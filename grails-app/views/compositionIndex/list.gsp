@@ -1,4 +1,4 @@
-<%@ page import="ehr.clinical_documents.CompositionIndex" %>
+<%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex" %>
 <!doctype html>
 <html>
   <head>

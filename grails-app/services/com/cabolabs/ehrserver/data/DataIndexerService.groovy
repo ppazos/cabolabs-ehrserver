@@ -1,23 +1,23 @@
 package com.cabolabs.ehrserver.data
 
 import com.cabolabs.ehrserver.exceptions.DataIndexException
-import ehr.clinical_documents.CompositionIndex
-import ehr.clinical_documents.data.DvBooleanIndex
-import ehr.clinical_documents.data.DvCodedTextIndex
-import ehr.clinical_documents.data.DvCountIndex
-import ehr.clinical_documents.data.DvDateTimeIndex
-import ehr.clinical_documents.data.DvDurationIndex
-import ehr.clinical_documents.data.DvOrdinalIndex
-import ehr.clinical_documents.data.DvProportionIndex
-import ehr.clinical_documents.data.DvQuantityIndex
-import ehr.clinical_documents.data.DvTextIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvBooleanIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCountIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateTimeIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDurationIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvOrdinalIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvProportionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvQuantityIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvTextIndex
 import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import grails.util.Holders
 import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
-import ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 
 @Transactional
 class DataIndexerService {

@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.directory.Folder
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional(readOnly = true)
@@ -47,7 +48,7 @@ class FolderController {
    {
       // Filter ehrs by the ehrs that don't have a root folder and are ehrs the user can see by it's org uids
       def user = springSecurityService.getCurrentUser()
-      def ehrs = ehr.Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
+      def ehrs = Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
       respond new Folder(params), model: [ehrs: ehrs]
    }
 

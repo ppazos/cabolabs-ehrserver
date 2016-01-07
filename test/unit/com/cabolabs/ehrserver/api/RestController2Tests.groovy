@@ -4,16 +4,16 @@ import static org.junit.Assert.*
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import grails.test.mixin.*
 import grails.test.mixin.support.*
-import ehr.clinical_documents.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 
 import org.junit.*
 import org.springframework.mock.web.MockMultipartFile
 
-import ehr.clinical_documents.data.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.util.Holders
-import query.*
+import com.cabolabs.ehrserver.query.*
 
 import com.cabolabs.ehrserver.api.RestController
 import com.cabolabs.ehrserver.openehr.ehr.Ehr

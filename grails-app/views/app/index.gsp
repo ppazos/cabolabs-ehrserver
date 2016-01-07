@@ -1,4 +1,4 @@
-<%@ page import="ehr.clinical_documents.OperationalTemplateIndex" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Contribution" %><%@ page import="query.Query" %><%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %>
+<%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Contribution" %><%@ page import="com.cabolabs.ehrserver.query.Query" %><%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %>
 <!DOCTYPE html>
 <html>
   <head>

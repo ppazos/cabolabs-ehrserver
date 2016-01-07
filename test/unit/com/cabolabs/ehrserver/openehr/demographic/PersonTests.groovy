@@ -1,7 +1,5 @@
 package com.cabolabs.ehrserver.openehr.demographic
 
-
-
 import grails.test.mixin.*
 import org.junit.*
 

@@ -1,10 +1,7 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
-
-
-import ehr.EhrTagLib;
+import ehr.EhrTagLib
 import grails.test.mixin.*
-
 import org.junit.*
 
 /**

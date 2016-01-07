@@ -5,8 +5,8 @@ import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
 import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
-import parsers.XmlService
-import parsers.XmlValidationService
+import com.cabolabs.ehrserver.parsers.XmlService
+import com.cabolabs.ehrserver.parsers.XmlValidationService
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
@@ -14,15 +14,15 @@ import com.cabolabs.ehrserver.api.RestController
 import com.cabolabs.ehrserver.data.DataIndexerService
 import com.cabolabs.security.Organization
 
-import ehr.clinical_documents.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 
 import com.cabolabs.ehrserver.indexing.IndexDataJob
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
-import ehr.clinical_documents.data.*
-import query.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
+import com.cabolabs.ehrserver.query.*
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions

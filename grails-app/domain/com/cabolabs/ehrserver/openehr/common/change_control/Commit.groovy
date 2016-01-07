@@ -2,7 +2,7 @@ package com.cabolabs.ehrserver.openehr.common.change_control
 
 // FIXME: move to another package like helpers or commit
 
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 /**
  * Clase auxiliar para mantener los commits pendientes de ser finalizados.

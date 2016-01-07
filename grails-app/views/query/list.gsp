@@ -1,4 +1,4 @@
-<%@ page import="query.Query" %>
+<%@ page import="com.cabolabs.ehrserver.query.Query" %>
 <!doctype html>
 <html>
   <head>

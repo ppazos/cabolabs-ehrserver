@@ -1,0 +1,1 @@
+grails war target/ehr.war
