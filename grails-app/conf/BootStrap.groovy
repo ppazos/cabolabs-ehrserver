@@ -65,6 +65,23 @@ class BootStrap {
         }
      }
      
+     // Marshallers
+     grails.converters.JSON.registerObjectMarshaller(Date) {
+        println "JSON DATE MARSHAL"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     
+     // These for XML dont seem to work...
+     grails.converters.XML.registerObjectMarshaller(Date) {
+        println "XML DATE MARSHAL"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     grails.converters.XML.registerObjectMarshaller(java.sql.Timestamp) {
+        println "XML DATE MARSHAL2"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     
+     
      if (PersonIdType.count() == 0)
      {
         def idtypes = [

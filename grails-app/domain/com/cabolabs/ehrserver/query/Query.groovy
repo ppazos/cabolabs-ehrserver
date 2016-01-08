@@ -4,6 +4,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
+import com.cabolabs.util.DateParser
 
 /**
  * Parametros n1 de la query:
@@ -123,6 +124,25 @@ class Query {
                   condition = new DataCriteriaDV_TEXT(criteria)
                break
                case 'DataCriteriaDV_DATE_TIME':
+
+                  def dateValues = []
+                  if (criteria.valueValue instanceof String)
+                  {
+                     println "try to parse "+ criteria.valueValue
+                     def dateValue = DateParser.tryParse(criteria.valueValue)
+                     dateValues << dateValue
+                  }
+                  else // criteria.valueValue is a list
+                  {
+                     def dateValue
+                     criteria.valueValue.each { stringDateValue ->
+                        dateValue = DateParser.tryParse(stringDateValue)
+                        dateValues << dateValue
+                     }
+                  }
+                  
+                  // Set the values converted to Date
+                  criteria.valueValue = dateValues
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':

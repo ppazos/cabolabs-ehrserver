@@ -18,35 +18,37 @@ class DateParser {
    {
       //println "tryParse "+ dateString
       def supported_formats = [
+         
+         // datetime formats
          config.l10n.datetime_format,
          config.l10n.ext_datetime_format,
          config.l10n.ext_datetime_format_point,
          config.l10n.ext_datetime_utcformat,
-         config.l10n.ext_datetime_utcformat_point
+         config.l10n.ext_datetime_utcformat_point,
+         
+         // date formats
+         config.l10n.date_format,
+         config.l10n.display_date_format,
+         config.l10n.db_date_format
       ]
+      
       def d
       for (String format : supported_formats)
       {
          try
          {
+            SimpleDateFormat sdf = new SimpleDateFormat(format)
+            sdf.setLenient(false) // avoids heuristic parsing, enabling just exact parsing
+            
             // If the date ends in Z, it's timezone is UTC
             // It the TZ is not present, the parser sets the local timezone and should be UTC.
             // This forces to use UTC.
             if (dateString.endsWith('Z'))
             {
-               //def tz = TimeZone.getTimeZone('UTC')
-               //println "tryParse TZ "+ tz + ' ' + tz.class
-               //d = Date.parse(format, dateString, tz) // get an exception method doesnt exists
-
-               SimpleDateFormat sdf = new SimpleDateFormat(format)
                sdf.setTimeZone(TimeZone.getTimeZone("UTC"))
-               d = sdf.parse(dateString)
-            }
-            else
-            {
-               d = Date.parse(format, dateString)
             }
 
+            d = sdf.parse(dateString)
             return d
          }
          catch (ParseException e) {}
