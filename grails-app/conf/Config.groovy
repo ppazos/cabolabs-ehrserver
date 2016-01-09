@@ -128,11 +128,11 @@ log4j = {
            //'net.sf.ehcache.hibernate'
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
-    
-    
     info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
     
+    // EHRServer logs
     info 'com.cabolabs.security.AuthProvider'
+    info 'com.cabolabs.archetype.OperationalTemplateIndexer'
 }
 
 app {
