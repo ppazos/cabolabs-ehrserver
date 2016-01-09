@@ -19,6 +19,9 @@ import com.cabolabs.ehrserver.api.RestController
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 
+import com.cabolabs.ehrserver.parsers.XmlService
+import com.cabolabs.ehrserver.parsers.XmlValidationService
+
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
@@ -45,8 +48,8 @@ class RestController2Tests {
       println "setUp"
       
 
-      controller.xmlService = new parsers.XmlService()
-      controller.xmlService.xmlValidationService = new parsers.XmlValidationService()
+      controller.xmlService = new XmlService()
+      controller.xmlService.xmlValidationService = new XmlValidationService()
       
       // Sample organizations
       def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')

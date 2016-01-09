@@ -5,7 +5,7 @@ import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.demographic.Person
-import ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.test.mixin.*
