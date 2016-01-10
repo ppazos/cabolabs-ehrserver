@@ -26,7 +26,6 @@ class DataIndexerService {
    
    def generateIndexes()
    {
-      println 'generateIndexes'
      // compositions with data to be indexed
      def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
      
