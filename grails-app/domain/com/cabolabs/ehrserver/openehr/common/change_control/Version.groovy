@@ -42,22 +42,7 @@ class Version {
    CompositionIndex data
    
    Contribution contribution
-   
-   
-   /* lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
-   // Auxiliar para marcar la ultima version
-   boolean vlastVersion = true
-   
-   // The lastVersion field value is copied into the CompositionIndex to avoid queries by old versions.
-   def beforeInsert() {
-      println "version beforeInsert"
-      this.data.lastVersion = this.vlastVersion
-   }
-   def beforeUpdate() {
-      println "version beforeUpdate"
-      this.data.lastVersion = this.vlastVersion
-   }
-   */
+
    
    /**
     * +1 on the uid.versionTreeId.trunkVersion, it is used to generate a new uid for the new version.
@@ -71,7 +56,6 @@ class Version {
                    
       this.uid = newUid
    }
-   
    
    
    // These methods emulate version.uid.[objectId, creatingSystemId, treeVersionId]
