@@ -18,7 +18,6 @@ class Role implements Serializable {
 
 	@Override
 	boolean equals(other) {
-      println "equals"
 		is(other) || (other instanceof Role && other.authority == authority)
 	}
 
@@ -37,7 +36,7 @@ class Role implements Serializable {
    
    boolean higherThan (Object r)
    {
-      println this.authority +" higherThan "+ r.authority
+      //println this.authority +" higherThan "+ r.authority
       if (this.authority == r.authority) return true // we consider x higher than x in the role hierarchy
       if (this.authority == 'ROLE_ADMIN') return true // admins is higher than anything if r is not admin (both admins is considered in the 1st case)
       if (r.authority == 'ROLE_ADMIN') return false // admin on r, higher than anything
