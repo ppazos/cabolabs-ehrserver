@@ -16,11 +16,6 @@ class DataCriteriaDV_DATE_TIME extends DataCriteria {
        alias = 'ddti'
     }
     
-    // test
-    def beforeInsert() {
-       println "beforeInsert: "+ this.valueValue
-   }
-    
     static hasMany = [valueValue: Date]
     
     static constraints = {
