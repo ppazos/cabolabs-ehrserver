@@ -26,6 +26,13 @@ class DateParser {
          config.l10n.ext_datetime_utcformat,
          config.l10n.ext_datetime_utcformat_point,
          
+         // no fraction
+         config.l10n.datetime_format_nof,
+         config.l10n.ext_datetime_format_nof,
+         config.l10n.ext_datetime_format_point_nof,
+         config.l10n.ext_datetime_utcformat_nof,
+         config.l10n.ext_datetime_utcformat_point_nof,
+         
          // date formats
          config.l10n.date_format,
          config.l10n.display_date_format,
@@ -49,6 +56,9 @@ class DateParser {
             }
 
             d = sdf.parse(dateString)
+            
+            //println "match ${dateString} ${format}"
+            
             return d
          }
          catch (ParseException e) {}
@@ -56,5 +66,4 @@ class DateParser {
 
       return null
    }
-
 }
