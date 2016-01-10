@@ -59,7 +59,6 @@ class Query {
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      println '=++++=+++++ QUERY newInstance =+++++=++++='
       //println "Query.construct JSON: "+ json.toString()
       /*
        * Query.construct JSON:
@@ -128,7 +127,7 @@ class Query {
                   def dateValues = []
                   if (criteria.valueValue instanceof String)
                   {
-                     println "try to parse "+ criteria.valueValue
+                     //println "try to parse "+ criteria.valueValue
                      def dateValue = DateParser.tryParse(criteria.valueValue)
                      dateValues << dateValue
                   }
