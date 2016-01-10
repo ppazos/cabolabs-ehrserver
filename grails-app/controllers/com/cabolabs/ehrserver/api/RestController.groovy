@@ -681,11 +681,14 @@ class RestController {
       if (!max) max = 15
       if (!offset) offset = 0
       
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
       
       // ===========================================================================
       // 1. Lista personas con rol paciente
       //
-      def subjects = Person.findAllByRole('pat', [max: max, offset: offset, readOnly: true])
+      def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
       
       
       // ===========================================================================
