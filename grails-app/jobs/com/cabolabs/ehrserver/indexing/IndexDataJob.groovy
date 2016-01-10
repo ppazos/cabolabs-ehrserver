@@ -19,7 +19,6 @@ class IndexDataJob {
 
    def execute()
    {
-      println "IndexDataJob"
       // transactional service
       dataIndexerService.generateIndexes()
    }
