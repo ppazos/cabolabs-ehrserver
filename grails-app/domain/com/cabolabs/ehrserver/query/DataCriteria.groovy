@@ -135,7 +135,7 @@ class DataCriteria {
          
          criteriaValueType = spec[attr][operand]
          
-         println this.getClass().getSimpleName()
+         //println this.getClass().getSimpleName()
          
          
          // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
