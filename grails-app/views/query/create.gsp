@@ -782,6 +782,37 @@
                 criteria += '</select>';
                 
                 
+                // *******************************************************************************
+                // FIXME: date* is not supported bu FF, we might need to use a JS lib / polyfill
+                // *******************************************************************************
+                
+                // input type by datatype and attr
+                var input_type = 'text';
+                switch ( datatype )
+                {
+                  case 'DV_QUANTITY':
+                    if (attr == 'magnitude') input_type = 'number';
+                  break;
+                  case 'DV_DATE_TIME':
+                    if (attr == 'value') input_type = 'datetime-local';
+                  break;
+                  case 'DV_COUNT':
+                    if (attr == 'magnitude') input_type = 'number';
+                  break;
+                  case 'DV_ORDINAL':
+                    if (attr == 'value') input_type = 'number';
+                  break;
+                  case 'DV_DURATION':
+                    if (attr == 'magnitude') input_type = 'number';
+                  break;
+                  case 'DV_PROPORTION':
+                    if (attr == 'numerator') input_type = 'number';
+                    if (attr == 'denominator') input_type = 'number';
+                  break;
+                }
+                
+                
+                
                 // indexes of operand and value should be linked.
                 criteria += '<span class="criteria_value_container">';
                 var i = 0;
@@ -807,13 +838,13 @@
                       switch ( conditions[cond] )
                       {
                         case 'value':
-                          criteria += '<input type="text" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                          criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                         break
                         case 'list':
-                          criteria += '<input type="text" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                          criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                         break
                         case 'range':
-                          criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                         break
                       }
                     }
@@ -839,7 +870,7 @@
                         break
                         case 'range':
                           // this case deosnt happen for now...
-                          //criteria += '<input type="text" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="text" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
+                          //criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +'" />';
                         break
                       }
                     }
