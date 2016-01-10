@@ -24,6 +24,12 @@
   
   <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
   
+  
+  <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
+  <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
+  <asset:javascript src="bootstrap-datetimepicker.js" />
+  
+  
   <!-- Custom CSS -->
   <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
   <asset:javascript src="sb-admin-2.js" />
