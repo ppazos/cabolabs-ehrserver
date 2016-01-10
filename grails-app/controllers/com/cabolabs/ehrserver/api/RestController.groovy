@@ -139,6 +139,7 @@ class RestController {
             throw new BadCredentialsException("Authentication failed - check the organization number")
          }
       
+         // TODO: refresh token
          render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number])] as JSON)
       }
       catch (Exception e)
@@ -149,7 +150,7 @@ class RestController {
   }
    
    
-   
+   // FIXME this is customized for the commit but used from other endpoints
    private void renderError(String msg, String errorCode, int status)
    {
       // Format comes from current request

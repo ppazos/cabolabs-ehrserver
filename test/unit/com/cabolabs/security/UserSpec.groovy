@@ -21,6 +21,13 @@ class UserSpec extends Specification {
             (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
           }
        }
+       
+       // role setup
+       def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
+       def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
+       def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
+       def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
+       def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
     }
 
     def cleanup()
@@ -62,7 +69,6 @@ class UserSpec extends Specification {
           
           u.save(failOnError: true)
           
-          println "A"
           // FIXME
           Organization.withNewSession { // without this we get an stack overflow, has something to do with countByNumber called from assignNumber called from beforeInsert on Organization.
 
@@ -84,11 +90,68 @@ class UserSpec extends Specification {
              }
           }
 
-          println "B"
-
        then:
           User.count() == 1
           User.get(1).organizations.size() == 4
           println User.get(1).organizations.number // is not assigning the number, maybe because the withNewSession...
+    }
+    
+    
+    void "test highest roles"()
+    {
+       when:
+          // testing users with just one role
+          def uadmin = new User(
+             username: 'user1',
+             email: 'pablo@pazos.com',
+             password: 'secret',
+             enabled: true
+          )
+          uadmin.save(failOnError: true)
+          
+          UserRole.create( uadmin, (Role.findByAuthority('ROLE_ADMIN')), true )
+          
+          
+          def uorgman = new User(
+             username: 'user2',
+             email: 'pablo@pazos.com',
+             password: 'secret',
+             enabled: true
+          )
+          uorgman.save(failOnError: true)
+          
+          UserRole.create( uorgman, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+
+          
+          // users with many roles
+          def uadmin2 = new User(
+             username: 'user3',
+             email: 'pablo@pazos.com',
+             password: 'secret',
+             enabled: true
+          )
+          uadmin2.save(failOnError: true)
+          
+          UserRole.create( uadmin2, (Role.findByAuthority('ROLE_ADMIN')), true )
+          UserRole.create( uadmin2, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+          
+          
+          def uorgman2 = new User(
+             username: 'user4',
+             email: 'pablo@pazos.com',
+             password: 'secret',
+             enabled: true
+          )
+          uorgman2.save(failOnError: true)
+          
+          UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+          UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+          
+          
+       then:
+          uadmin.higherAuthority.authority == 'ROLE_ADMIN'
+          uorgman.higherAuthority.authority == 'ROLE_ORG_MANAGER'
+          uadmin2.higherAuthority.authority == 'ROLE_ADMIN'
+          uorgman2.higherAuthority.authority == 'ROLE_ORG_MANAGER'
     }
 }

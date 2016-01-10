@@ -4,9 +4,11 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.validation.ValidationException
 import grails.plugin.springsecurity.SpringSecurityUtils
+
 import com.cabolabs.security.Organization
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
+
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 
@@ -51,14 +53,62 @@ class UserController {
       respond list, model:[userInstanceCount: count]
    }
    
+   
    // endpoint
    @SecuredStateless
    def profile(String username)
    {
-      //println username
-      //println params
-      // FIXME; check that the uid if the user logged in is the same as the param uid, or the logged user is an admin.
+      // username and organization number used on the API login
+      def _username = request.securityStatelessMap.username
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _user = User.findByUsername(_username)
+      
+
+      // user I want to access
       def u = User.findByUsername(username)
+      if (!username || !u)
+      {
+         withFormat {
+            xml {
+               render(status: 404, contentType: "text/xml", text: '<result>User doesn\'t exists</result>', encoding:"UTF-8")
+            }
+            json {
+               render(status: 404, contentType: "application/json", text: '{"result": "User doesn\'t exists"}', encoding:"UTF-8")
+            }
+         }
+         return
+      }
+      
+      
+      def allowed = (
+         _user.authoritiesContains('ROLE_ADMIN') || // admins access everything
+         (
+            ( u.organizations.count{ it.number == _orgnum } == 1 ) && // organization of the logged user match one of the organizations of the requested user
+            (
+               u.username == _username || // user want to access self profile
+               ( // org managers can see users with lees power than them
+                  _user.authoritiesContains('ROLE_ORG_MANAGER') && _user.higherAuthority.higherThan( u.higherAuthority )
+               )
+            )
+         )
+      )
+      
+      if (!allowed)
+      {
+         withFormat {
+            xml {
+               render(status: 401, contentType: "text/xml", text: '<result>Unauthorized to access user info</result>', encoding:"UTF-8")
+            }
+            json {
+               render(status: 401, contentType: "application/json", text: '{"result": "Unauthorized to access user info"}', encoding:"UTF-8")
+            }
+         }
+         return
+      }
+
+      
+      // allowed
+      
       def data = [
          username: u.username,
          email: u.email,
@@ -77,6 +127,7 @@ class UserController {
          }
       }
    }
+   
 
    def show(User userInstance)
    {
