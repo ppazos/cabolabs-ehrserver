@@ -27,7 +27,7 @@
   
   <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
   <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
-  <asset:javascript src="bootstrap-datetimepicker.js" />
+  <asset:javascript src="bootstrap-datetimepicker.min.js" />
   
   
   <!-- Custom CSS -->
