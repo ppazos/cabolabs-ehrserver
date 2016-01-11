@@ -60,6 +60,13 @@
       .criteria_value:first-child {
         display: inline;
       }
+      
+      /* Smaller selects with size > 1 because input-sm is not supported for that case */
+      select.withsize {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 3px;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -596,7 +603,7 @@
 
         // data for the selected criteria (input[name=criteria] is the radio button)
         ok = dom_add_criteria_2(
-          $('input[name=criteria]:checked', '#query_form').parent() // fieldset of the criteria selected
+          $('input[name=criteria]:checked', '#query_form').closest('.form-group') // container of the selected criteria
         );
         
         if (ok)
@@ -738,19 +745,27 @@
               
               global_criteria_id++;
               
+              
+              // 1 column for the radio button that selects the criteria
+              criteria += '<div class="form-group"><div class="col-sm-1">';
+              
               // All fields of the same criteria will have the same id in the data-criteria attribute
               if (i == 0)
-                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" checked="checked" />';
+                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" checked="checked" />';
               else
-                criteria += '<fieldset><input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
+                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
+              
+              // 11 columns for the criteria
+              criteria += '</div><div class="col-sm-11">';
+              
               
               for (attr in aspec)
               {
-                criteria += '<span class="criteria_attribute">';
-                criteria += attr + '<input type="hidden" name="attribute" value="'+ attr +'" />';
+                criteria += '<div class="criteria_attribute row">';
+                criteria += '<div class="col-sm-2">'+ attr + '<input type="hidden" name="attribute" value="'+ attr +'" /></div>';
                 
                 conditions = aspec[attr]; // spec[0][code][eq] == value
-                criteria += '<select class="operand form-control" data-criteria="'+ global_criteria_id +'" name="operand">';
+                criteria += '<div class="col-sm-5"><select class="operand form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
                 
                 
                 // =======================================================================================================
@@ -777,7 +792,7 @@
                 {
                   criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
-                criteria += '</select>';
+                criteria += '</select></div>';
                 
                 
                 
@@ -814,7 +829,7 @@
                 
                 
                 // indexes of operand and value should be linked.
-                criteria += '<span class="criteria_value_container">';
+                criteria += '<div class="criteria_value_container col-sm-5">';
                 var i = 0;
                 for (cond in conditions)
                 {
@@ -823,7 +838,7 @@
                   
                   if (cond == 'eq_one')
                   {
-                    criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'">';
+                    criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
                     for (v in conditions[cond]) // each value from the list of possible values
                     {
                       criteria += '<option value="'+ conditions[cond][v] +'">'+ conditions[cond][v] +'</option>'; // TODO: get texts for values
@@ -838,13 +853,13 @@
                       switch ( conditions[cond] )
                       {
                         case 'value':
-                          criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                         case 'list':
-                          criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                          criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                         break
                         case 'range':
-                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm'+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                       }
                     }
@@ -853,7 +868,7 @@
                       switch ( conditions[cond] )
                       {
                         case 'value':
-                          criteria += '<select name="value" class="value '+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'">';
+                          criteria += '<select name="value" class="value '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
                           for (k in possible_values)
                           {
                             criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
@@ -861,7 +876,7 @@
                           criteria += '</select>';
                         break
                         case 'list':
-                          criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'">';
+                          criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
                           for (k in possible_values)
                           {
                             criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
@@ -870,7 +885,7 @@
                         break
                         case 'range':
                           // this case deosnt happen for now...
-                          //criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control '+ class_type +'" />';
+                          //criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                       }
                     }
@@ -880,12 +895,12 @@
                    
                   i++;
                 }
-                criteria += '</span>'; // criteria value container
-                criteria += '</span>'; // criteria attribute
+                criteria += '</div>'; // criteria value container
+                criteria += '</div>'; // criteria attribute
                 
               } // for aspec
               
-              criteria += '</fieldset>';
+              criteria += '</div></div>'; // /col-sm-11 /row
                 
             }; // for render criteria spec
             
@@ -1352,7 +1367,7 @@
                     </label>
                   </td>
                   <td>
-                    <g:textField name="name" required="" value="${queryInstance?.name}"/>
+                    <g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />
                   </td>
                 </tr>
                   
@@ -1374,7 +1389,7 @@
                     </span>
                   </td>
                   <td>
-                    <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']"/>
+                    <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']" class="form-control input-sm" />
                   </td>
                 </tr>
              </table>
@@ -1396,14 +1411,14 @@
                       <%-- optionKey="archetypeId" optionValue="${{it.archetypeConcept +' ('+ it.archetypeId +')'}}" --%>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
                       <g:select name="view_archetype_id" size="10" from="${concepts}"
-                                 noSelection="${['':g.message(code:'query.create.please_select_concept')]}" />
+                                 noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
                     </td>
                   </tr>
                   <tr>
                     <td><g:message code="query.create.datapoint" /></td>
                     <td>
                       <%-- Se setean las options al elegir un arquetipo --%>
-                      <select name="view_archetype_path" size="5"></select>
+                      <select name="view_archetype_path" size="5" class="form-control withsize"></select>
                     </td>
                   </tr>
                </table>
@@ -1415,7 +1430,7 @@
     
           <div id="query_composition" class="query_build">
           
-            <div id="composition_criteria_builder"></div>
+            <div id="composition_criteria_builder" class="form-horizontal"></div>
             
             <div class="btn-toolbar" role="toolbar">
               <a href="#" id="addCriteria">
@@ -1452,7 +1467,7 @@
                     </td>
                     <td>
                       <g:select name="templateId" size="5"
-                                from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" />
+                                from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
                     </td>
                  </tr>
                  <tr>
@@ -1466,7 +1481,7 @@
                       </span>
                     </td>
                     <td>
-                      <select name="showUI">
+                      <select name="showUI" class="form-control input-sm">
                         <option value="false" selected="selected"><g:message code="default.no" /></option>
                         <option value="true"><g:message code="default.yes" /></option>
                       </select>
@@ -1482,7 +1497,7 @@
                       </span>
                     </td>
                     <td>
-                      <select name="criteriaLogic">
+                      <select name="criteriaLogic" class="form-control input-sm">
                         <option value="AND" selected="selected">AND</option>
                         <option value="OR">OR</option>
                       </select>
@@ -1491,7 +1506,7 @@
                  <tr>
                     <td><g:message code="query.create.default_format" /></td>
                     <td>
-                      <select name="composition_format">
+                      <select name="composition_format" class="form-control input-sm">
                         <option value="xml" selected="selected">XML</option>
                         <option value="json">JSON</option>
                       </select>
@@ -1546,7 +1561,7 @@
               <tr>
                 <td><g:message code="query.create.default_format" /></td>
                 <td>
-                  <select name="format">
+                  <select name="format" class="form-control input-sm">
                     <option value="xml" selected="selected">XML</option>
                     <option value="json">JSON</option>
                   </select>
@@ -1555,7 +1570,7 @@
               <tr>
                 <td><g:message code="query.create.default_group" /></td>
                 <td>
-                  <select name="group" size="3">
+                  <select name="group" size="3" class="form-control withsize">
                     <option value="none" selected="selected"><g:message code="query.create.none" /></option>
                     <option value="composition"><g:message code="query.create.composition" /></option>
                     <option value="path"><g:message code="query.create.path" /></option>
