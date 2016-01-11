@@ -1,6 +1,7 @@
 package ehr
 
-import directory.Folder
+import com.cabolabs.ehrserver.openehr.directory.Folder
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Role
 
 class EhrTagLib {
@@ -94,6 +95,7 @@ class EhrTagLib {
          args.from = loggedInUser.organizations
          args.optionKey = 'uid'
          args.optionValue = 'name'
+         args.noSelection = ['':'Select One...']
          
          if (attrs.value) args.value = attrs.value
          if (attrs.multiple)

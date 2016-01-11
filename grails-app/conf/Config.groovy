@@ -20,6 +20,22 @@ cors.headers = ['Access-Control-Allow-Origin': '*']
 cors.enabled = true
 
 
+// upgrade to 2.5.3
+beans {
+  cacheManager {
+    shared = true
+  }
+}
+
+
+// test stateless security
+grails.plugin.security.stateless.secretKey = '88f0435c-ff45-4b5b-874f-689ad94adcad'
+grails.plugin.security.stateless.springsecurity.integration = false
+grails.plugin.security.stateless.format = "JWT"
+//grails.plugin.security.stateless.expirationTime = 1440 // 1 day
+//grails.plugin.security.stateless.expiresStatusCode = 401
+
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -112,9 +128,11 @@ log4j = {
            //'net.sf.ehcache.hibernate'
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
-    
-    
     info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
+    
+    // EHRServer logs
+    info 'com.cabolabs.security.AuthProvider'
+    info 'com.cabolabs.archetype.OperationalTemplateIndexer'
 }
 
 app {
@@ -151,6 +169,7 @@ app {
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
       
+      
       // Extended formats supported by openEHR --------------------------------------------------------------
       //2015-12-02T17:41:56.809Z
       ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSZ" // contains timezone e.g. -0300
@@ -160,6 +179,13 @@ app {
       ext_datetime_utcformat = "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
       ext_datetime_utcformat_point = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
       // ----------------------------------------------------------------------------------------------------
+      
+      
+      // Dates without seconds fraction
+      datetime_format_nof = "yyyyMMdd'T'HHmmssZ"
+      ext_datetime_format_nof = "yyyy-MM-dd'T'HH:mm:ssZ"
+      ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+      
       
       // formatos para mostrar las fechas al usuario
       display_datetime_format = "yyyy/MM/dd HH:mm:ss (Z)" 

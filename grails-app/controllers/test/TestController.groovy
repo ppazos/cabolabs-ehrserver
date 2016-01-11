@@ -1,18 +1,19 @@
 package test
 
 //import com.thoughtworks.xstream.XStream
-import ehr.Ehr
-import ehr.clinical_documents.CompositionIndex
-import ehr.clinical_documents.IndexDefinition
-import common.change_control.Contribution
-import common.change_control.Version
-import common.generic.AuditDetails
-import query.DataCriteria
-import query.Query
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.ehrserver.query.Query
 //import support.identification.CompositionRef // T0004
-import common.generic.DoctorProxy
-import ehr.clinical_documents.data.DataValueIndex
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
+
 import java.text.SimpleDateFormat
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.util.Holders
 
 class TestController {
@@ -24,80 +25,6 @@ class TestController {
    
    // Para hacer consultas en la base
    def formatterDateDB = new SimpleDateFormat( Holders.config.app.l10n.db_date_format )
-   
-   
-   /**
-    * Usada desde EMRAPP para obtener compositions de un paciente.
-    * 
-    * Utiliza CompositionIndex para buscar entre las compositions y devuelve el XML de las compositions que matchean.
-    * 
-    * @param ehrUid
-    * @param subjectId
-    * @param fromDate yyyyMMdd
-    * @param toDate yyyyMMdd
-    * @param archetypeId
-    * @return
-    */
-   def findCompositions(String ehrUid, String subjectId, 
-                        String fromDate, String toDate, 
-                        String archetypeId, String category)
-   {
-      
-      // 1. Todos los parametros son opcionales pero debe venir por lo menos 1
-      // 2. La semantica de pasar 2 o mas parametros es el criterio de and
-      // 3. Para implementar como un OR se usaria otro parametro booleano (TODO)
-      //
-      
-      def dFromDate
-      def dToDate
-      
-      // FIXME: cuando sea servicio no hay ui
-      if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
-      {
-         return // muestro ui para testear busqueda
-         //throw new Exception("Debe enviar por lo menos un dato para el criterio de busqueda")
-      }
-      
-      // FIXME: Si el formato esta mal va a tirar una except!
-      if (fromDate)
-      {
-         dFromDate = Date.parse(config.l10n.date_format, fromDate)
-      }
-      
-      if (toDate)
-      {
-         dToDate = Date.parse(config.l10n.date_format, toDate)
-      }
-      
-      //println dFromDate
-      //println dToDate
-      
-      def idxs = CompositionIndex.withCriteria {
-         
-         if (ehrUid)
-            eq('ehrUid', ehrUid)
-         
-         if (subjectId)
-            eq('subjectId', subjectId)
-         
-         if (archetypeId)
-            eq('archetypeId', archetypeId)
-         
-         if (category)
-            eq('category', category)
-            
-         if (dFromDate)
-            ge('startTime', dFromDate) // greater or equal
-         
-         if (dToDate)
-            le('startTime', dToDate) // lower or equal
-            
-         eq('lastVersion', true)
-      }
-      
-      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
-      render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
-   }
    
    
    /**

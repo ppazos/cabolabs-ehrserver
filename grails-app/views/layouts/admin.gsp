@@ -24,6 +24,12 @@
   
   <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
   
+  
+  <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
+  <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
+  <asset:javascript src="bootstrap-datetimepicker.min.js" />
+  
+  
   <!-- Custom CSS -->
   <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
   <asset:javascript src="sb-admin-2.js" />
@@ -79,23 +85,25 @@
 	      <sec:ifLoggedIn>
 	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
-	          Welcome Back <sec:username/>!
+	          Welcome Back <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>!
 	         </li>
 	         <li class="dropdown">
 	           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-	           <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+	             <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
 	           </a>
 	           <ul class="dropdown-menu dropdown-user">
-	           <li>
-	            <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
-	           </li>
-	           <li>
-	            <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
-	           </li>
-	           <li class="divider"></li>
-	           <li>
-	             <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
-	           </li>
+	             <!--
+	             <li>
+	               <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
+	             </li>
+	             <li>
+	               <a href="#" onclick="alert('not avilable yet')"><i class="fa fa-gear fa-fw"></i> Settings</a>
+	             </li>
+	             <li class="divider"></li>
+	             -->
+	             <li>
+	               <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
+	             </li>
 	           </ul>
 	           <!-- /.dropdown-user -->
 	         </li>
@@ -119,46 +127,46 @@
 	               <li>
 	                 <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v fa-fw"></i> <g:message code="desktop.contributions" /></g:link>
 	               </li>
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+                    <li>
+                      <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
+                    </li>
+                  </sec:ifAnyGranted>
 	               <li>
 	                 <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open fa-fw"></i> <g:message code="desktop.directory" /></g:link>
 	               </li>
 	               <li>
 	                 <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
 	               </li>
-	               
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-	               <li>
-	                 <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
-	               </li>
+	                 <li>
+	                   <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
+	                 </li>
 	               </sec:ifAnyGranted>
-	               
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-	               <li>
-	                 <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
-	               </li>
+	                 <li>
+	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
+	                 </li>
 	               </sec:ifAnyGranted>
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
-	               <li>
-	                 <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.user" /></g:link>
-	               </li>
+	                 <li>
+	                   <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.user" /></g:link>
+	                 </li>
 	               </sec:ifAnyGranted>
-	               
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-	               <li>
-	                 <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.role" /></g:link>
-	               </li>
+	                 <li>
+	                   <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.role" /></g:link>
+	                 </li>
 	               </sec:ifAnyGranted>
-	               
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
-	               <li>
-	                 <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
-	               </li>
+	                 <li>
+	                   <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.organization" /></g:link>
+	                 </li>
 	               </sec:ifAnyGranted>
-	               
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-                  <li>
-                    <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
-                  </li>
+                    <li>
+                      <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
+                    </li>
                   </sec:ifAnyGranted>
 	             </ul>
 	           </div>

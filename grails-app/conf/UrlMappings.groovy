@@ -8,10 +8,20 @@ class UrlMappings {
       
       "500"(view:'/error')
 
+      "/rest/profile/${username}"(
+         controller: 'user',
+         action: 'profile'
+      )
+      
       // /rest/ehrs -- list of all EHRs
       "/rest/ehrs"(
          controller: 'rest',
          action: 'ehrList'
+      )
+      
+      "/rest/compositions"(
+         controller: 'rest',
+         action: 'findCompositions'
       )
 
       // /rest/ehrs/ehrUid/xxx -- one EHR based on ehrUid partition

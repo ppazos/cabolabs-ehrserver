@@ -4,9 +4,13 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.validation.ValidationException
 import grails.plugin.springsecurity.SpringSecurityUtils
+
 import com.cabolabs.security.Organization
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
+
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+import grails.converters.*
 
 @Transactional(readOnly = false)
 class UserController {
@@ -48,6 +52,82 @@ class UserController {
       
       respond list, model:[userInstanceCount: count]
    }
+   
+   
+   // endpoint
+   @SecuredStateless
+   def profile(String username)
+   {
+      // username and organization number used on the API login
+      def _username = request.securityStatelessMap.username
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _user = User.findByUsername(_username)
+      
+
+      // user I want to access
+      def u = User.findByUsername(username)
+      if (!username || !u)
+      {
+         withFormat {
+            xml {
+               render(status: 404, contentType: "text/xml", text: '<result>User doesn\'t exists</result>', encoding:"UTF-8")
+            }
+            json {
+               render(status: 404, contentType: "application/json", text: '{"result": "User doesn\'t exists"}', encoding:"UTF-8")
+            }
+         }
+         return
+      }
+      
+      
+      def allowed = (
+         _user.authoritiesContains('ROLE_ADMIN') || // admins access everything
+         (
+            ( u.organizations.count{ it.number == _orgnum } == 1 ) && // organization of the logged user match one of the organizations of the requested user
+            (
+               u.username == _username || // user want to access self profile
+               ( // org managers can see users with lees power than them
+                  _user.authoritiesContains('ROLE_ORG_MANAGER') && _user.higherAuthority.higherThan( u.higherAuthority )
+               )
+            )
+         )
+      )
+      
+      if (!allowed)
+      {
+         withFormat {
+            xml {
+               render(status: 401, contentType: "text/xml", text: '<result>Unauthorized to access user info</result>', encoding:"UTF-8")
+            }
+            json {
+               render(status: 401, contentType: "application/json", text: '{"result": "Unauthorized to access user info"}', encoding:"UTF-8")
+            }
+         }
+         return
+      }
+
+      
+      // allowed
+      
+      def data = [
+         username: u.username,
+         email: u.email,
+         organizations: u.organizations
+      ]
+      
+      withFormat {
+         xml {
+            def result = data as XML
+            render(text: result, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+
+            def result = data as JSON
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
+   }
+   
 
    def show(User userInstance)
    {
@@ -116,7 +196,7 @@ class UserController {
             o.save(failOnError: true, flush:true)
             
             // needs an organization before saving
-            u.addToOrganizations(o).save(failOnError: true, flush:true)
+            u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
             
             u.save(failOnError: true, flush:true)
             
@@ -224,19 +304,56 @@ class UserController {
       }
    }
 
-   def edit(User userInstance) {
-      respond userInstance
+   def edit(User userInstance)
+   {
+      def orgnumber = springSecurityService.authentication.organization
+      
+      // FIXME: instead of checking if the logged user is not and admin trying to show an admin, it should check
+      //        if the logged user has less permisssions than the userInstance.
+      
+      // If the user is admin (can see all) or
+      // the userInstance has the same org as the logged user and the userInstance is not an admin.
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") ||
+          (
+           userInstance.organizations.count { it.number == orgnumber } > 0 &&
+           !userInstance.authoritiesContains("ROLE_ADMIN")
+          )
+         )
+      {
+          respond userInstance
+          return
+      }
+      flash.message = "You don't have permissions to access the user"
+      redirect action:'index'
    }
 
    @Transactional
    def update(User userInstance)
    {
-      println "update "+ params
       if (userInstance == null)
       {
          notFound()
          return
       }
+      
+      // FIXME: move this check to a service
+      // check that I can update the userInstance
+      def orgnumber = springSecurityService.authentication.organization
+      // If the user is admin (can see all) or
+      // the userInstance has the same org as the logged user and the userInstance is not an admin.
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
+          !(
+           userInstance.organizations.count { it.number == orgnumber } > 0 &&
+           !userInstance.authoritiesContains("ROLE_ADMIN")
+          )
+         )
+      {
+         flash.message = "You don't have permissions to access the user"
+         redirect action:'index'
+         return
+      }
+      
+      
       
       // Selected roles from edit view
       def roles = params.list('role')

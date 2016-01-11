@@ -58,10 +58,28 @@ class User implements Serializable {
       UserRole.findAllByUser(this)*.role
    }
    
+   /**
+    * returns the highest role assigned to the user.
+    * ROLE_ADMIN > ROLE_ORG_MANAGER > any other role
+    * @return
+    */
+   Role getHigherAuthority()
+   {
+      // custom logic to avoid many queries for using authoritiesContains
+      def roles = UserRole.findAllByUser(this)*.role
+      
+      def role = roles.find { it.authority == 'ROLE_ADMIN' }
+      if (role) return role
+      
+      role = roles.find { it.authority == 'ROLE_ORG_MANAGER' }
+      if (role) return role
+      
+      return roles[0] // any other role
+   }
+   
    boolean authoritiesContains(String role)
    {
-      def roles = this.authorities
-      return roles.find { it.authority == role } != null
+      return this.authorities.find { it.authority == role } != null
    }
 
    def beforeInsert()
@@ -89,7 +107,7 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'passwordToken']
+   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority']
 
    static constraints = {
       username blank: false, unique: true

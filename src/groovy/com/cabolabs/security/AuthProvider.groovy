@@ -19,7 +19,7 @@ import org.springframework.util.Assert
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-
+import java.util.logging.Logger
 import grails.util.Holders
 
 class AuthProvider implements AuthenticationProvider
@@ -31,6 +31,7 @@ class AuthProvider implements AuthenticationProvider
     
     def userService = Holders.grailsApplication.mainContext.getBean('userService')
     
+    def log = Logger.getLogger('com.cabolabs.security.AuthProvider')
     
     Authentication authenticate(Authentication auth) throws AuthenticationException
     {
@@ -73,7 +74,7 @@ class AuthProvider implements AuthenticationProvider
        def user = userService.getByUsername(username) //User.findByUsername(username)
        if (user == null)
        {
-          //System.out.println( "wrong username" )
+          log.info("No matching account")
           throw new UsernameNotFoundException("No matching account")
        }
        
@@ -81,19 +82,19 @@ class AuthProvider implements AuthenticationProvider
        // Status checks
        if (!user.enabled)
        {
-          //System.out.println( "account disabled" )
+          log.info("Account disabled")
           throw new DisabledException("Account disabled")
        }
        
        if (user.accountExpired)
        {
-          //System.out.println( "account expired" )
+          log.info("Account expired")
           throw new AccountExpiredException("Account expired")
        }
        
        if (user.accountLocked)
        {
-          //System.out.println( "account locked" )
+          log.info("Account locked")
           throw new LockedException("Account locked")
        }
        
@@ -103,7 +104,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (!passwordEncoder.isPasswordValid(user.password, password, null))
        {
-          //System.out.println( "wrong password" )
+          log.info("Authentication failed - invalid password")
           throw new BadCredentialsException("Authentication failed")
        }
        
@@ -111,18 +112,21 @@ class AuthProvider implements AuthenticationProvider
        
        if (!organization_number) // null or empty
        {
-          //System.out.println( "organization not provided" )
+          log.info("Authentication failed - organization number not provided")
           throw new BadCredentialsException("Authentication failed - organization number not provided")
        }
        
        // Check organization
-       Organization org = Organization.findByNumber(organization_number)
+       Organization org
+       Organization.withNewSession { 
+          org = Organization.findByNumber(organization_number)
+       }
        
        //println 'org '+ org
        
        if (org == null)
        {
-          //System.out.println( "organization with number does not exists" )
+          log.info("Authentication failed - organization doesnt exists")
           throw new BadCredentialsException("Authentication failed")
        }
        
@@ -130,7 +134,7 @@ class AuthProvider implements AuthenticationProvider
        
        if (!user.organizations.find{ it.uid == org.uid })
        {
-          //System.out.println( "organization is not associated with user 2" )
+          log.info("Authentication failed - user not associated with existing organization")
           throw new BadCredentialsException("Authentication failed - check the organization number")
        }
        

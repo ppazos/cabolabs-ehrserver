@@ -1,4 +1,4 @@
-<%@ page import="ehr.clinical_documents.IndexDefinition" %>
+<%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition" %>
 <!doctype html>
 <html>
   <head>

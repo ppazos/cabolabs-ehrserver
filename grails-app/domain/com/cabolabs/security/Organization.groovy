@@ -22,13 +22,13 @@ class Organization {
    
    private void assignNumber()
    {
-      def number = String.randomNumeric(6)
+      def _number = String.randomNumeric(6)
       
-      while (Organization.countByNumber(number) == 1) // avoids repeated number
+      while (Organization.countByNumber(_number) == 1) // avoids repeated number
       {
-         number = String.randomNumeric(6)
+         _number = String.randomNumeric(6)
       }
       
-      this.number = number
+      this.number = _number
    }
 }

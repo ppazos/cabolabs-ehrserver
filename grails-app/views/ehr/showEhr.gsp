@@ -1,4 +1,4 @@
-<%@ page import="ehr.Ehr" %>
+<%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -178,7 +178,7 @@
              
             <g:message code="filter.rootArchetypeId" />
             <g:select name="qarchetypeId"
-                      from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
+                      from="${CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
                       noSelection="['':'']" />
                             
             <g:submitToRemote

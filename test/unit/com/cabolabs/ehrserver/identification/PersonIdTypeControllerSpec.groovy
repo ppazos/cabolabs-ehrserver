@@ -1,7 +1,5 @@
 package com.cabolabs.ehrserver.identification
 
-
-
 import grails.test.mixin.*
 import spock.lang.*
 

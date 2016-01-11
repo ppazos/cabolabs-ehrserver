@@ -1,8 +1,8 @@
-import demographic.Person
-import common.generic.PatientProxy
-import ehr.Ehr
-import ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.openehr.demographic.Person
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
+
 import com.cabolabs.security.RequestMap
 import com.cabolabs.security.User
 import com.cabolabs.security.Role
@@ -13,7 +13,7 @@ import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.ehrserver.identification.PersonIdType
-
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 
 class BootStrap {
@@ -24,6 +24,9 @@ class BootStrap {
    def grailsApplication
    
    def init = { servletContext ->
+      
+      // Define server timezone
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
      
       // test
       /*
@@ -65,17 +68,39 @@ class BootStrap {
         }
      }
      
+     // Marshallers
+     grails.converters.JSON.registerObjectMarshaller(Date) {
+        println "JSON DATE MARSHAL"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
      
-     def idtypes = [
-        new PersonIdType(name:'DNI', code:'DNI'),
-        new PersonIdType(name:'CI', code:'CI'),
-        new PersonIdType(name:'Passport', code:'Passport'),
-        new PersonIdType(name:'SSN', code:'SSN'),
-        new PersonIdType(name:'UUID', code:'UUID'),
-        new PersonIdType(name:'OID', code:'OID')
-     ]
-     idtypes.each { it.save(failOnError:true, flush:true) }
+     // These for XML dont seem to work...
+     grails.converters.XML.registerObjectMarshaller(Date) {
+        println "XML DATE MARSHAL"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     /*
+     grails.converters.XML.registerObjectMarshaller(java.sql.Timestamp) {
+        println "XML DATE MARSHAL2"
+        return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     */
      
+     
+     if (PersonIdType.count() == 0)
+     {
+        def idtypes = [
+           new PersonIdType(name:'DNI',  code:'DNI'),
+           new PersonIdType(name:'CI',   code:'CI'),
+           new PersonIdType(name:'Passport', code:'Passport'),
+           new PersonIdType(name:'SSN',  code:'SSN'),
+           new PersonIdType(name:'UUID', code:'UUID'),
+           new PersonIdType(name:'OID',  code:'OID')
+        ]
+        idtypes.each {
+           it.save(failOnError:true, flush:true)
+        }
+     }
      
      
      //****** SECURITY *******
@@ -85,9 +110,9 @@ class BootStrap {
      // See 'authFilter' in grails-app/conf/spring/resources.groovy
      // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+
      
-     //println "configured filters "+ SpringSecurityUtils.configuredOrderedFilters
-     
+
      def organizations = []
      if (Organization.count() == 0)
      {
@@ -114,13 +139,18 @@ class BootStrap {
          '/simpleCaptcha/**',
          '/j_spring_security_logout',
          '/rest/**',
-         '/test/findCompositions', // will be refactores to /rest
-         '/ehr/showCompositionUI' // will be added as a rest service via url mapping
+         '/ehr/showCompositionUI', // will be added as a rest service via url mapping
+         '/user/profile',
+         
+         // access for all roles to let users access their own profile
+         '/user/show/**',
+         '/user/edit/**',
+         '/user/update/**'
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()
         }
-   
+       
         // sections
         // works for /app
         //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
@@ -135,7 +165,13 @@ class BootStrap {
         new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/user/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        
+        // the rest of the operations should be open and security is checked inside the action
+        new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/create', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/save', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/delete', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
