@@ -24,6 +24,9 @@ class BootStrap {
    def grailsApplication
    
    def init = { servletContext ->
+      
+      // Define server timezone
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
      
       // test
       /*

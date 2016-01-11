@@ -29,9 +29,7 @@ class DateParser {
          // no fraction
          config.l10n.datetime_format_nof,
          config.l10n.ext_datetime_format_nof,
-         config.l10n.ext_datetime_format_point_nof,
          config.l10n.ext_datetime_utcformat_nof,
-         config.l10n.ext_datetime_utcformat_point_nof,
          
          // date formats
          config.l10n.date_format,

@@ -184,9 +184,7 @@ app {
       // Dates without seconds fraction
       datetime_format_nof = "yyyyMMdd'T'HHmmssZ"
       ext_datetime_format_nof = "yyyy-MM-dd'T'HH:mm:ssZ"
-      ext_datetime_format_point_nof = "yyyy-MM-dd'T'HH:mm:ssZ"
       ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-      ext_datetime_utcformat_point_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
       
       
       // formatos para mostrar las fechas al usuario
