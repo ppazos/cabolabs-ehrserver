@@ -1627,7 +1627,8 @@ class RestController {
    @SecuredStateless
    def findCompositions(String ehrUid, String subjectId,
                         String fromDate, String toDate,
-                        String archetypeId, String category)
+                        String archetypeId, String category,
+                        String format)
    {
       // 1. Todos los parametros son opcionales pero debe venir por lo menos 1
       // 2. La semantica de pasar 2 o mas parametros es el criterio de and
@@ -1641,7 +1642,11 @@ class RestController {
       // mandatory parameters not present so it is 400 Bad Request
       if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
-         render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         if (!format || format == 'xml')
+            render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 400, text:'{"error": "ehrUid or subjectUid are required"}', contentType:"application/json", encoding:"UTF-8")
+            
          return
       }
       
@@ -1680,6 +1685,11 @@ class RestController {
       }
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
-      render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+      if (!format || format == 'xml')
+         render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+      else if (format == 'json')
+         render(text: idxs as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
+      else
+         render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
 }
