@@ -437,21 +437,12 @@ class RestController {
       if (!max) max = 15
       if (!offset) offset = 0
       
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
       // Lista ehrs
-      def _ehrs = Ehr.list(max: max, offset: offset, readOnly: true)
-      
-      
-      /*
-      println params
-      
-      withFormat { 
-         xml { println "xml" } 
-         json { println "json" }
-         html { println "html" }
-         text { println "text" }         
-      }
-      */
-      
+      def _ehrs = Ehr.findAllByOrganizationUid(_org.uid, [max: max, offset: offset, readOnly: true])
       
       // ===========================================================================
       // 3. Discusion por formato de salida
@@ -487,6 +478,7 @@ class RestController {
                         dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                         subjectUid(_ehr.subject.value)
                         systemId(_ehr.systemId)
+                        organizationUid(_ehr.organizationUid)
                      }
                   }
                }
@@ -535,7 +527,8 @@ class RestController {
                uid: _ehr.uid,
                dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
                subjectUid: _ehr.subject.value,
-               systemId: _ehr.systemId
+               systemId: _ehr.systemId,
+               organizationUid: _ehr.organizationUid
             ]
          }
 
@@ -567,6 +560,17 @@ class RestController {
       {
          //render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
+         return
+      }
+      
+      // Check if the org used to login is the org of the requested patient
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_subject.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_patient', args:[subjectUid]), "484", 401)
          return
       }
       
@@ -640,6 +644,17 @@ class RestController {
          return
       }
       
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_ehr.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         return
+      }
+      
       // ===========================================================================
       // 2. Discusion por formato de salida
       //
@@ -690,7 +705,6 @@ class RestController {
       //
       def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
       
-      
       // ===========================================================================
       // 2. Discusion por formato de salida
       //
@@ -732,6 +746,7 @@ class RestController {
                prevOffset: ((offset-max < 0) ? 0 : offset-max )
             ]
          ]
+         
          subjects.each { person ->
             data.patients << [
                uid: person.uid,
@@ -744,6 +759,7 @@ class RestController {
                organizationUid: person.organizationUid
             ]
          }
+         
          def result = data as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
