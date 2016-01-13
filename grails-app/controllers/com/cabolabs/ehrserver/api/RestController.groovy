@@ -1638,9 +1638,11 @@ class RestController {
       def dToDate
       
       // FIXME: cuando sea servicio no hay ui
+      // mandatory parameters not present so it is 400 Bad Request
       if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
-         render(status: 404, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         return
       }
       
       // FIXME: Si el formato esta mal va a tirar una except!
