@@ -600,6 +600,7 @@ class RestController {
                dateCreated( this.formatter.format( _ehr.dateCreated ) )
                delegate.subjectUid(_ehr.subject.value) // delegate para que no haya conflicto con la variable con el mismo nombre
                systemId(_ehr.systemId)
+               organizationUid(_ehr.organizationUid)
             }
          }
       }
@@ -609,7 +610,8 @@ class RestController {
             uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId
+            systemId: _ehr.systemId,
+            organizationUid: _ehr.organizationUid
          ]
          
          def result = data as JSON
@@ -666,6 +668,7 @@ class RestController {
                dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                subjectUid(_ehr.subject.value)
                systemId(_ehr.systemId)
+               organizationUid(_ehr.organizationUid)
             }
          }
       }
@@ -675,7 +678,8 @@ class RestController {
             uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId
+            systemId: _ehr.systemId,
+            organizationUid: _ehr.organizationUid
          ]
 
          def result = data as JSON
