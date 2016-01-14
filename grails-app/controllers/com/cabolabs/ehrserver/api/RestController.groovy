@@ -1640,6 +1640,24 @@ class RestController {
    }
    
    
+   @SecuredStateless
+   def getComposition(String uid, String format)
+   {
+      // TODO: uid required
+      // TODO: check permissions of the logged user over the compo (cindex.organizationUid)
+      def cindex = CompositionIndex.findByUid(uid)
+      
+      // retrieveData of query
+      def version = compoIndex.getParent()
+      def buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+
+      if (format == 'json')
+         render(text: jsonService.xmlToJson(buff), contentType:"application/json", encoding:"UTF-8")
+      else
+         render(text: buff, contentType:"text/xml", encoding:"UTF-8")
+   }
+   
+   
    /**
     * Usada desde EMRAPP para obtener compositions de un paciente.
     *
