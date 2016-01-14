@@ -1133,7 +1133,7 @@ class RestController {
       def start_time = System.currentTimeMillis()
       // /measuring query timing
       
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid)
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
       
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1151,7 +1151,7 @@ class RestController {
          // we need to group those CompositionIndexes by EHR.
          if (!ehrUid)
          {
-            res = res.groupBy { ci -> ci.ehrUid }
+            res = res.groupBy { ci -> ci.ehrUid } // res is a map
          }
          
          // Muestra compositionIndex/list
@@ -1172,7 +1172,14 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
-            res['timing'] = (end_time - start_time) +' ms' // measuring query timing
+            // we need a map to return the timing...
+            if (res instanceof List)
+            {
+               def mapres = [results: res]
+               res = mapres
+            }
+            
+            res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
             
             if (format == 'json')
                render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
@@ -1270,7 +1277,15 @@ class RestController {
       {
          // type = datavalue
          
-         res['timing'] = (end_time - start_time) +' ms' // measuring query timing
+         // we need a map to return the timing...
+         // dv queries with group none will return a list, not a map
+         if (res instanceof List)
+         {
+            def mapres = [results: res]
+            res = mapres
+         }
+         
+         res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
          
          // Format
          if (!format || format == 'xml')
