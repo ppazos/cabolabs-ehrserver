@@ -1093,6 +1093,15 @@ class RestController {
          return
       }
       
+      // logged user has access to the org?
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_organization', args:[organizationUid]), '478', 403)
+         return
+      }
+      
       if (ehrUid)
       {
          def ehr = Ehr.findByUid(ehrUid)
