@@ -91,18 +91,19 @@ class EhrTagLib {
       if(loggedInUser)
       {
          def args = [:]
-         args.name = attrs.name
          args.from = loggedInUser.organizations
          args.optionKey = 'uid'
          args.optionValue = 'name'
          args.noSelection = ['':'Select One...']
          
-         if (attrs.value) args.value = attrs.value
          if (attrs.multiple)
          {
             args.multiple = 'true'
             args.size = 5
          }
+         
+         // add the rest of the attrs to the select args, name, value, class, etc
+         args += attrs
          
          out << g.select(args) // name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value
       }
