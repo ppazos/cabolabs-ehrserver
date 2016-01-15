@@ -1643,12 +1643,42 @@ class RestController {
    @SecuredStateless
    def getComposition(String uid, String format)
    {
-      // TODO: uid required
-      // TODO: check permissions of the logged user over the compo (cindex.organizationUid)
+      // uid required
+      if (!uid)
+      {
+         if (!format || format == 'xml')
+            render(status: 400, text:'<error>uid is required</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 400, text:'{"error": "uid is required"}', contentType:"application/json", encoding:"UTF-8")
+            
+         return
+      }
+      
+      
       def cindex = CompositionIndex.findByUid(uid)
       
-      // retrieveData of query
-      def version = compoIndex.getParent()
+      if (!cindex)
+      {
+         if (!format || format == 'xml')
+            render(status: 404, text:'<error>composition not found</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 404, text:'{"error": "composition not found"}', contentType:"application/json", encoding:"UTF-8")
+            
+         return
+      }
+      
+      // check permissions of the logged user over the compo (cindex.organizationUid)
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(cindex.organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_composition'), '479', 403)
+         return
+      }
+      
+      
+      // retrieve data
+      def version = cindex.getParent()
       def buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
 
       if (format == 'json')

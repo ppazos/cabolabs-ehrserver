@@ -26,7 +26,7 @@ class UrlMappings {
       
       "/rest/compositions/$uid"(
          controller: 'rest',
-         action: 'getCompositions'
+         action: 'getComposition'
       )
 
       // /rest/ehrs/ehrUid/xxx -- one EHR based on ehrUid partition
