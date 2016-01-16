@@ -246,6 +246,14 @@ class RestController {
          return
       }
       
+      // check permissions of the logged user over the ehr
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(ehr.organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
+         return
+      }
 
       /*
        * <versions>
