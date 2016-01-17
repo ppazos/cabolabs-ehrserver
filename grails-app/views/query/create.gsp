@@ -859,7 +859,7 @@
                           criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                         break
                         case 'range':
-                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm'+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                       }
                     }
@@ -948,7 +948,7 @@
          
         console.log('operand change', this.selectedIndex, $(this).data('criteria'));
         
-        var criteria_value_container = $(this).next();
+        var criteria_value_container = $(this).parent().next();
         
         // All criteria values hidden
         criteria_value_container.children().css('display', 'none');
