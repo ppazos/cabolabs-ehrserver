@@ -8,6 +8,7 @@ import com.cabolabs.security.User
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
 import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.query.*
 
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -15,6 +16,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.identification.PersonIdType
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
+
+import grails.converters.*
+import groovy.xml.MarkupBuilder
 
 class BootStrap {
 
@@ -68,14 +72,16 @@ class BootStrap {
         }
      }
      
+     // --------------------------------------------------------------------
+     
      // Marshallers
-     grails.converters.JSON.registerObjectMarshaller(Date) {
+     JSON.registerObjectMarshaller(Date) {
         println "JSON DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
      
      // These for XML dont seem to work...
-     grails.converters.XML.registerObjectMarshaller(Date) {
+     XML.registerObjectMarshaller(Date) {
         println "XML DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
@@ -83,6 +89,51 @@ class BootStrap {
      grails.converters.XML.registerObjectMarshaller(java.sql.Timestamp) {
         println "XML DATE MARSHAL2"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     */
+     
+     /*
+     XML.registerObjectMarshaller DataGet, { dataGet, xml ->
+        xml.build {
+           projection {
+              archetypeId(dataGet.archetypeId)
+              path(dataGet.path)
+           }
+        }
+     }
+     XML.registerObjectMarshaller( Query ) { _query, xml ->
+        
+        println "XML QUERY MARSHAL "+ xml.getClass() // grails.converters.XML
+        
+        // esto tira <query /> ?????
+        xml.build {
+           query {
+              uid(_query.uid)
+              name(_query.name)
+              format(_query.format)
+              type(_query.type)
+              
+              
+              if (_query.type == 'composition')
+              {
+                 criteriaLogic(_query.criteriaLogic)
+                 templateId(_query.templateId)
+                 
+                 for (criteria in _query.where)
+                 {
+                    
+                 }
+              }
+              else
+              {
+                 group(_query.group) // Group is only for datavalue
+                 for (proj in _query.select)
+                 {
+                    proj // ???
+                 }
+              }
+           }
+        }
      }
      */
      

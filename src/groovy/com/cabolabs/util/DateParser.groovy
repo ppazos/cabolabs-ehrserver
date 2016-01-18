@@ -55,7 +55,7 @@ class DateParser {
 
             d = sdf.parse(dateString)
             
-            //println "match ${dateString} ${format}"
+            println "match ${dateString} ${format} ${d} "+ d.getTimezoneOffset()
             
             return d
          }

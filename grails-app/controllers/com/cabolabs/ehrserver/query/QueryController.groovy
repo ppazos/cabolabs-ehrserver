@@ -397,13 +397,20 @@ class QueryController {
     
     def export(Long id)
     {
+       println 'export'
        def q = Query.get(id)
        def criteriaMap, _value
+       
+       
        
        // TODO: this code should be reused in RestConrtoller.queryList
        withFormat {
           xml {
+             render(text: q.getXML(), contentType: "text/xml")
+             /*
              render(contentType: "text/xml") {
+                q.toXML()
+                
                 query {
                    uid(q.uid)
                    name(q.name)
@@ -464,7 +471,8 @@ class QueryController {
                       }
                    }
                 }
-             }
+                
+             }*/
           }
           json {
              render(contentType: "application/json") {
