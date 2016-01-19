@@ -8,6 +8,7 @@ import com.cabolabs.security.User
 import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
 import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.query.*
 
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -15,6 +16,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.identification.PersonIdType
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
+
+import grails.converters.*
+import groovy.xml.MarkupBuilder
 
 class BootStrap {
 
@@ -27,55 +31,47 @@ class BootStrap {
       
       // Define server timezone
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-     
-      // test
-      /*
-      mailService.sendMail {
-        from grailsApplication.config.grails.mail.username //"pablo.pazos@cabolabs.com"
-        to "pablo.pazos@cabolabs.com"     
-        subject "Hello EHRServer user!" 
-        body 'How are you?' 
-      }
-      */
       
-     // Used by query builder, all return String
-     String.metaClass.asSQLValue = { operand ->
+      // Used by query builder, all return String
+      String.metaClass.asSQLValue = { operand ->
         if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
         return "'"+ delegate +"'"
-     }
-     Double.metaClass.asSQLValue = { operand ->
+      }
+      Double.metaClass.asSQLValue = { operand ->
         return delegate.toString()
-     }
-     Integer.metaClass.asSQLValue = { operand ->
+      }
+      Integer.metaClass.asSQLValue = { operand ->
         return delegate.toString()
-     }
-     Long.metaClass.asSQLValue = { operand ->
+      }
+      Long.metaClass.asSQLValue = { operand ->
         return delegate.toString()
-     }
-     Date.metaClass.asSQLValue = { operand ->
+      }
+      Date.metaClass.asSQLValue = { operand ->
         def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
         return "'"+ formatterDateDB.format( delegate ) +"'" 
-     }
-     Boolean.metaClass.asSQLValue = { operand ->
+      }
+      Boolean.metaClass.asSQLValue = { operand ->
         return delegate.toString()
-     }
+      }
      
-     // call String.randomNumeric(5)
-     String.metaClass.static.randomNumeric = { digits ->
+      // call String.randomNumeric(5)
+      String.metaClass.static.randomNumeric = { digits ->
         def alphabet = ['0','1','2','3','4','5','6','7','8','9']
         new Random().with {
           (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
         }
-     }
+      }
+     
+      // --------------------------------------------------------------------
      
      // Marshallers
-     grails.converters.JSON.registerObjectMarshaller(Date) {
+     JSON.registerObjectMarshaller(Date) {
         println "JSON DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
      
      // These for XML dont seem to work...
-     grails.converters.XML.registerObjectMarshaller(Date) {
+     XML.registerObjectMarshaller(Date) {
         println "XML DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
@@ -83,6 +79,51 @@ class BootStrap {
      grails.converters.XML.registerObjectMarshaller(java.sql.Timestamp) {
         println "XML DATE MARSHAL2"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
+     }
+     */
+     
+     /*
+     XML.registerObjectMarshaller DataGet, { dataGet, xml ->
+        xml.build {
+           projection {
+              archetypeId(dataGet.archetypeId)
+              path(dataGet.path)
+           }
+        }
+     }
+     XML.registerObjectMarshaller( Query ) { _query, xml ->
+        
+        println "XML QUERY MARSHAL "+ xml.getClass() // grails.converters.XML
+        
+        // esto tira <query /> ?????
+        xml.build {
+           query {
+              uid(_query.uid)
+              name(_query.name)
+              format(_query.format)
+              type(_query.type)
+              
+              
+              if (_query.type == 'composition')
+              {
+                 criteriaLogic(_query.criteriaLogic)
+                 templateId(_query.templateId)
+                 
+                 for (criteria in _query.where)
+                 {
+                    
+                 }
+              }
+              else
+              {
+                 group(_query.group) // Group is only for datavalue
+                 for (proj in _query.select)
+                 {
+                    proj // ???
+                 }
+              }
+           }
+        }
      }
      */
      

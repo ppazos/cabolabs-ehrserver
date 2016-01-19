@@ -1,5 +1,7 @@
 package com.cabolabs.ehrserver.query
 
+import grails.util.Holders
+
 /**
  * WHERE archId/path operand value 
  * 
@@ -93,7 +95,26 @@ class DataCriteria {
          
          criteriaValueType = spec[attr][operand]
          
+         // Date values as Strings formatted in UTC
+         // value can be list, is teh type of the attribute in the criteria class
+         if (value instanceof List)
+         {
+            if (value[0] instanceof Date)
+            {
+               value = value.collect{ it.format(Holders.config.app.l10n.ext_datetime_utcformat_nof) }
+            }
+         }
+         else
+         {
+            if (value instanceof Date)
+            {
+               value = value.format(Holders.config.app.l10n.ext_datetime_utcformat_nof)
+            }
+         }
+      
+         
          // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
+         // That can be done in a pre filter, and we can put the dates to utc string also there
          if (criteriaValueType == 'value')
          {
             criteria[attr] =  [(operand): value]
@@ -101,13 +122,11 @@ class DataCriteria {
          else if (criteriaValueType == 'list')
          {
             assert operand == 'in_list'
-            
             criteria[attr] =  [(operand): value]
          }
          else if (criteriaValueType == 'range')
          {
             assert operand == 'between'
-            
             criteria[attr] =  [(operand): value]
          }
       }

@@ -777,4 +777,120 @@ class Query {
       
       return cilist
    }
+   
+   
+   def getXML()
+   {
+      def builder = new groovy.xml.StreamingMarkupBuilder()
+      def xml = builder.bind {
+         
+         query {
+            uid(this.uid)
+            name(this.name)
+            format(this.format)
+            type(this.type)
+            
+            if (this.type == 'composition')
+            {
+               criteriaLogic(this.criteriaLogic)
+               templateId(this.templateId)
+               
+               def criteriaMap, _value
+               for (_criteria in this.where)
+               {
+                  criteria {
+                     archetypeId(_criteria.archetypeId)
+                     path(_criteria.path)
+                     
+                     criteriaMap = _criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+                     
+                     conditions {
+                        criteriaMap.each { attr, cond ->
+                           
+                           _value = cond.find{true}.value // can be a list
+                           
+                           //println "_value type "+ _value.getClass()
+                           // String
+                           // List
+                           // Boolean
+                           
+                           "$attr" {
+                              operand(cond.find{true}.key) // first entry of the operand: value map
+                              
+                              if (_value instanceof List)
+                              {
+                                 list {
+                                    _value.each { val ->
+                                       
+                                       //println "list val type "+ val.getClass()
+                                       // Double
+                                       // sql.TimeStamp (Date) <<<< add custom formatter for UTC date
+                                       if (val instanceof Date)
+                                       {
+                                          /*
+                                          println "date transform "+ val
+                                          println "offset " + val.getTimezoneOffset() // 0
+                                          
+                                          java.text.SimpleDateFormat dateFormatGmt = new java.text.SimpleDateFormat(Holders.config.app.l10n.ext_datetime_utcformat_nof)
+                                          dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"))
+                                          println "format dateformat "+ dateFormatGmt.format(val)
+                                          */
+                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof) )
+                                       }
+                                       else
+                                          item(val)
+                                    }
+                                 }
+                              }
+                              else
+                              {
+                                 value(_value)
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+            else
+            {
+               group(this.group) // Group is only for datavalue
+               
+               for (proj in this.select)
+               {
+                  projection {
+                     archetypeId(proj.archetypeId)
+                     path(proj.path)
+                  }
+               }
+            }
+         }
+      } // builder
+   }
+   
+   def getJSON()
+   {
+      def builder = new groovy.json.JsonBuilder()
+      def root = builder.query {
+         uid    this.uid
+         name   this.name
+         format this.format
+         type   this.type
+         
+         if (this.type == 'composition')
+         {
+            criteriaLogic this.criteriaLogic
+            templateId    this.templateId
+            criteria      this.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
+         }
+         else
+         {
+            group         this.group // Group is only for datavalue
+            projections   this.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+         }
+      }
+      
+      return builder.toString()
+   }
+   
 }
