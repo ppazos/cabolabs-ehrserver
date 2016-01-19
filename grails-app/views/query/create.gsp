@@ -229,7 +229,7 @@
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
              .done(function( data ) {
-               console.log(data);
+               //console.log(data);
                location.href = '${createLink("action": "show")}?id='+ data.id;
              });
            },
@@ -241,7 +241,7 @@
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
              .done(function( data ) {
-               console.log(data);
+               //console.log(data);
                location.href = '${createLink("action": "show")}?id='+ data.id;
              });
            }
@@ -258,8 +258,8 @@
 
       var test_query_composition = function () {
 
-        console.log('test composition query');
-        console.log('query_form', $('#query_form'));
+        //console.log('test composition query');
+        //console.log('query_form', $('#query_form'));
 
         
         // query management
@@ -295,10 +295,11 @@
         })
         .done(function( res ) {
            
-           console.log("queryCompositions result", res);
+           //console.log("queryCompositions result", res);
            
+           var code = $('#code');
            // reset code class or highlight
-           $('code').removeClass('xml json');
+           code.removeClass('xml json');
 
            // Si devuelve HTML
            if ($('select[name=showUI]').val()=='true')
@@ -313,19 +314,19 @@
              console.log('JSON OR XML');
              if (format == 'json')
              {
-                $('code').addClass('json');
-                $('code').text(JSON.stringify(res, undefined, 2));
-                $('code').each(function(i, e) { hljs.highlightBlock(e); });
+               code.addClass('json');
+               code.text(JSON.stringify(res, undefined, 2));
+               code.each(function(i, e) { hljs.highlightBlock(e); });
              }
              else
              { 
                // highlight
-               $('code').addClass('xml');
-               $('code').text(formatXml( xmlToString(res) ));
-               $('code').each(function(i, e) { hljs.highlightBlock(e); });
+               code.addClass('xml');
+               code.text(formatXml( xmlToString(res) ));
+               code.each(function(i, e) { hljs.highlightBlock(e); });
              }
 
-             $('code').show('slow');
+             code.show('slow');
            }
            
            // Muestra el boton que permite ver los datos crudos
@@ -380,8 +381,10 @@
             
             console.log('form_datavalue success 2');
 
+            var code = $('#code');
+            
             // reset code class or highlight
-            $('code').removeClass('xml json');
+            code.removeClass('xml json');
 
             // Si devuelve JSON (verifica si pedi json)
             if (format == 'json')
@@ -389,9 +392,9 @@
               console.log('form_datavalue success json');
               
               // highlight
-              $('code').addClass('json');
-              $('code').text(JSON.stringify(res, undefined, 2));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              code.addClass('json');
+              code.text(JSON.stringify(res, undefined, 2));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
               
               if (qehrId != null) 
               {
@@ -417,12 +420,12 @@
               console.log('form_datavalue success XML');
             
               // highlight
-              $('code').addClass('xml');
-              $('code').text(formatXml( xmlToString(res) ));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              code.addClass('xml');
+              code.text(formatXml( xmlToString(res) ));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
             }
 
-            $('code').show('slow');
+            code.show('slow');
             
             // Muestra el boton que permite ver los datos crudos
             // devueltos por el servidor
@@ -430,7 +433,7 @@
             
             
             // Hace scroll animado para mostrar el resultado
-            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+            $('html,body').animate({scrollTop:code.offset().top+400}, 500);
          });
 
       }; // test_query_datavalue
@@ -1648,9 +1651,8 @@
           
           <!-- test panel -->
           <div id="query_test">
-              <g:include action="test" />
-           </div>
-           
+            <g:include action="test" />
+          </div>
         </g:form>
       </div>
     </div>

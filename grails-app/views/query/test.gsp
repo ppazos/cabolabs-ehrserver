@@ -1,9 +1,6 @@
 <%@ page import="com.cabolabs.security.Organization" %>
 <html>
   <head>
-    <%-- Modal, doesnt have layout, used from query/create to test queries before creation --%>
-    <asset:javascript src="query_test_and_execution.js" />
-    
     <style>
       #query_test_composition label, #query_test_common label {
         display: block;
