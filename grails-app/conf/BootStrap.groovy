@@ -75,57 +75,6 @@ class BootStrap {
         println "XML DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
-     /*
-     grails.converters.XML.registerObjectMarshaller(java.sql.Timestamp) {
-        println "XML DATE MARSHAL2"
-        return it?.format(Holders.config.app.l10n.db_datetime_format)
-     }
-     */
-     
-     /*
-     XML.registerObjectMarshaller DataGet, { dataGet, xml ->
-        xml.build {
-           projection {
-              archetypeId(dataGet.archetypeId)
-              path(dataGet.path)
-           }
-        }
-     }
-     XML.registerObjectMarshaller( Query ) { _query, xml ->
-        
-        println "XML QUERY MARSHAL "+ xml.getClass() // grails.converters.XML
-        
-        // esto tira <query /> ?????
-        xml.build {
-           query {
-              uid(_query.uid)
-              name(_query.name)
-              format(_query.format)
-              type(_query.type)
-              
-              
-              if (_query.type == 'composition')
-              {
-                 criteriaLogic(_query.criteriaLogic)
-                 templateId(_query.templateId)
-                 
-                 for (criteria in _query.where)
-                 {
-                    
-                 }
-              }
-              else
-              {
-                 group(_query.group) // Group is only for datavalue
-                 for (proj in _query.select)
-                 {
-                    proj // ???
-                 }
-              }
-           }
-        }
-     }
-     */
      
      
      if (PersonIdType.count() == 0)
