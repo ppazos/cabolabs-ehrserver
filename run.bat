@@ -1,1 +1,1 @@
-grails -Duser.timezone=UTC -Dserver.port=8090 run-app
+grails -Dserver.port=8090 run-app

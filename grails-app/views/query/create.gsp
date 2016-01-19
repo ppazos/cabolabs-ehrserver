@@ -1045,12 +1045,26 @@
                    operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
                    
+                   // TODO
+                   // date?.format(Holders.config.app.l10n.db_datetime_format)
+                   // ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                   
                    if (value instanceof List)
                    {
-                      println 'criteria.add_condition("'+
-                         attr +'", "'+
-                         operand +'", '+
-                         ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                      if (value[0] instanceof Date)
+                      {
+                         println 'criteria.add_condition("'+
+                            attr +'", "'+
+                            operand +'", '+
+                            ( value.collect{ it.format(grailsApplication.config.app.l10n.ext_datetime_utcformat_nof) } as JSON ) +');'
+                      }
+                      else
+                      {
+                         println 'criteria.add_condition("'+
+                            attr +'", "'+
+                            operand +'", '+
+                            ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                      }
                    }
                    else // value is an array of 1 element
                    {

@@ -397,104 +397,17 @@ class QueryController {
     
     def export(Long id)
     {
-       println 'export'
        def q = Query.get(id)
        def criteriaMap, _value
-       
        
        
        // TODO: this code should be reused in RestConrtoller.queryList
        withFormat {
           xml {
              render(text: q.getXML(), contentType: "text/xml")
-             /*
-             render(contentType: "text/xml") {
-                q.toXML()
-                
-                query {
-                   uid(q.uid)
-                   name(q.name)
-                   format(q.format)
-                   type(q.type)
-                   
-                   if (q.type == 'composition')
-                   {
-                      criteriaLogic(q.criteriaLogic)
-                      templateId(q.templateId)
-                      
-                      for (criteria in q.where)
-                      {
-                         delegate.criteria {
-                            archetypeId(criteria.archetypeId)
-                            path(criteria.path)
-                            //operand(criteria.operand)
-                            //value(criteria.value)
-                            
-                            criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
-                            
-                            conditions {
-                               criteriaMap.each { attr, cond ->
-                                  
-                                  _value = cond.find{true}.value // can be a list
-                                  
-                                  "$attr" {
-                                     operand(cond.find{true}.key) // first entry of the operand: value map
-                                     
-                                     if (_value instanceof List)
-                                     {
-                                        list {
-                                           _value.each { val ->
-                                              item(val)
-                                           }
-                                        }
-                                     }
-                                     else
-                                     {
-                                        value(_value)
-                                     }
-                                  }
-                               }
-                            }
-                         }
-                      }
-                   }
-                   else
-                   {
-                      group(q.group) // Group is only for datavalue
-                      
-                      for (proj in q.select)
-                      {
-                         projection {
-                            archetypeId(proj.archetypeId)
-                            path(proj.path)
-                         }
-                      }
-                   }
-                }
-                
-             }*/
           }
           json {
-             render(contentType: "application/json") {
-                delegate.query = {
-                   uid    = q.uid
-                   name   = q.name
-                   format = q.format
-                   type   = q.type
-                   
-                   if (q.type == 'composition')
-                   {
-                      criteriaLogic = q.criteriaLogic
-                      templateId    = q.templateId
-                      criteria      = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
-                   }
-                   else
-                   {
-                      group         = q.group // Group is only for datavalue
-                      projections   = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-                   }
-                } // query
-             }
+             render(text: q.getJSON(), contentType: "application/json")
           }
           html {
              return "format not supported"

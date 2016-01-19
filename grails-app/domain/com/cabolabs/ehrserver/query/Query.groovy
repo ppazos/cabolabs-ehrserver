@@ -809,7 +809,7 @@ class Query {
                            
                            _value = cond.find{true}.value // can be a list
                            
-                           println "_value type "+ _value.getClass()
+                           //println "_value type "+ _value.getClass()
                            // String
                            // List
                            // Boolean
@@ -822,21 +822,20 @@ class Query {
                                  list {
                                     _value.each { val ->
                                        
-                                       println "list val type "+ val.getClass()
+                                       //println "list val type "+ val.getClass()
                                        // Double
                                        // sql.TimeStamp (Date) <<<< add custom formatter for UTC date
                                        if (val instanceof Date)
                                        {
+                                          /*
                                           println "date transform "+ val
                                           println "offset " + val.getTimezoneOffset() // 0
                                           
-                                          java.text.SimpleDateFormat dateFormatGmt = new java.text.SimpleDateFormat(Holders.config.app.l10n.ext_datetime_utcformat)
+                                          java.text.SimpleDateFormat dateFormatGmt = new java.text.SimpleDateFormat(Holders.config.app.l10n.ext_datetime_utcformat_nof)
                                           dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"))
                                           println "format dateformat "+ dateFormatGmt.format(val)
-                                          
-                                          // FIXME: format adds +3
-                                          // 2016-01-17T13:30:18,000Z should be 2016-01-17T10:30:18,000Z
-                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat, TimeZone.getTimeZone('UTC')) )
+                                          */
+                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof) )
                                        }
                                        else
                                           item(val)
@@ -867,6 +866,31 @@ class Query {
             }
          }
       } // builder
+   }
+   
+   def getJSON()
+   {
+      def builder = new groovy.json.JsonBuilder()
+      def root = builder.query {
+         uid    this.uid
+         name   this.name
+         format this.format
+         type   this.type
+         
+         if (this.type == 'composition')
+         {
+            criteriaLogic this.criteriaLogic
+            templateId    this.templateId
+            criteria      this.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
+         }
+         else
+         {
+            group         this.group // Group is only for datavalue
+            projections   this.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+         }
+      }
+      
+      return builder.toString()
    }
    
 }

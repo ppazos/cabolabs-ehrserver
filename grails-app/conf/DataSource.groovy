@@ -28,7 +28,7 @@ environments {
            String port = 3306
            String dbName = "ehrserver"
            
-           url = "jdbc:mysql://$host:$port/$dbName?useTimezone=true&serverTimezone=UTC"
+           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
            
            username = 'root'
            password = ''
@@ -40,7 +40,7 @@ environments {
             String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
-            url = "jdbc:mysql://$host:$port/$dbName?useTimezone=true&serverTimezone=UTC"
+            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
             
             username = 'root'
             password = ''
@@ -78,7 +78,7 @@ environments {
             String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
             String dbName = System.getenv('OPENSHIFT_APP_NAME')
             
-            url = "jdbc:mysql://$host:$port/$dbName?useTimezone=true&serverTimezone=UTC"
+            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
             
             username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
             password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')

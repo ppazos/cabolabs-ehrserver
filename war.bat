@@ -1,1 +1,1 @@
-grails -Duser.timezone=UTC war target/ehr.war
+grails war target/ehr.war
