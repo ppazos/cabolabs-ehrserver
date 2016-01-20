@@ -57,14 +57,14 @@ class EhrSpec extends Specification {
           def vc = new VersionedComposition(
              isPersistent: false,
              uid: '123-123-123',
-             ehrUid: ehr.uid)
-          ehr.addToCompositions(vc)
-          ehr.save(failOnError: true)
+             ehr: ehr)
+          
+          vc.save(failsOnError: true)
        
        then:
           ehr != null
           vc.id != null
-          vc.getEHR().id == ehr.id
+          vc.ehr.id == ehr.id
           ehr.compositions.size() == 1
           VersionedComposition.count() == 1
     }
@@ -77,27 +77,25 @@ class EhrSpec extends Specification {
           def vc = new VersionedComposition(
              isPersistent: false,
              uid: '123-123-456',
-             ehrUid: ehr.uid)
-          ehr.addToCompositions(vc)
+             ehr: ehr)
+          vc.save(failsOnError: true)
           
           vc = new VersionedComposition(
              isPersistent: false,
              uid: '123-123-567',
-             ehrUid: ehr.uid)
-          ehr.addToCompositions(vc)
+             ehr: ehr)
+          vc.save(failsOnError: true)
           
           vc = new VersionedComposition(
              isPersistent: false,
              uid: '123-123-123',
-             ehrUid: ehr.uid)
-          ehr.addToCompositions(vc)
+             ehr: ehr)
+          vc.save(failsOnError: true)
           
-          
-          ehr.save(failOnError: true)
        
        then:
           ehr != null
-          vc.getEHR().id == ehr.id
+          vc.ehr.id == ehr.id
           ehr.compositions.size() == 3
           VersionedComposition.count() == 3
     }

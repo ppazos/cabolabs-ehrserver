@@ -835,7 +835,7 @@ class Query {
                                           dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"))
                                           println "format dateformat "+ dateFormatGmt.format(val)
                                           */
-                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof) )
+                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC")) )
                                        }
                                        else
                                           item(val)

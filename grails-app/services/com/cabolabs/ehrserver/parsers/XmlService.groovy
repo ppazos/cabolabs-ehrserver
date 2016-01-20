@@ -166,15 +166,11 @@ class XmlService {
             
                versionedComposition = new VersionedComposition(
                   uid: version.objectId,
-                  ehrUid: ehr.uid,
+                  ehr: ehr,
                   isPersistent: (version.data.category == 'persistent'))
                
-               
-               // Agrega composition al EHR
-               ehr.addToCompositions( versionedComposition )
-               
                // If errors, throws grails.validation.ValidationException with the errors
-               ehr.save(flush:true, failOnError:true)
+               versionedComposition.save(flush:true, failOnError:true)
                
             break
             case ['amendment', 'modification']:

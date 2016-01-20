@@ -101,14 +101,14 @@ class DataCriteria {
          {
             if (value[0] instanceof Date)
             {
-               value = value.collect{ it.format(Holders.config.app.l10n.ext_datetime_utcformat_nof) }
+               value = value.collect{ it.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC")) }
             }
          }
          else
          {
             if (value instanceof Date)
             {
-               value = value.format(Holders.config.app.l10n.ext_datetime_utcformat_nof)
+               value = value.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
             }
          }
       
