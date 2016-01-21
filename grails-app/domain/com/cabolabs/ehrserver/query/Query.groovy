@@ -91,6 +91,28 @@ class Query {
    }
    
    /**
+    * used by updateInstance to create a list of dates from a string or list of strings entered in the query creation ui.
+    * @return
+    */
+   def dateValues(criteriaValuesFromUI)
+   {
+      def dateValues = []
+      if (criteriaValuesFromUI instanceof String)
+      {
+         //println "try to parse "+ criteria.valueValue
+         def dateValue = DateParser.tryParse(criteria.valueValue)
+         dateValues << dateValue
+      }
+      else // criteria.valueValue is a list
+      {
+         criteriaValuesFromUI.each { stringDateValue ->
+            dateValues << DateParser.tryParse(stringDateValue)
+         }
+      }
+      return dateValues
+   }
+   
+   /**
     * For edit/update.
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
@@ -124,25 +146,19 @@ class Query {
                break
                case 'DataCriteriaDV_DATE_TIME':
 
-                  def dateValues = []
-                  if (criteria.valueValue instanceof String)
-                  {
-                     //println "try to parse "+ criteria.valueValue
-                     def dateValue = DateParser.tryParse(criteria.valueValue)
-                     dateValues << dateValue
-                  }
-                  else // criteria.valueValue is a list
-                  {
-                     def dateValue
-                     criteria.valueValue.each { stringDateValue ->
-                        dateValue = DateParser.tryParse(stringDateValue)
-                        dateValues << dateValue
-                     }
-                  }
+                  def dateValues = dateValues(criteria.valueValue)
                   
                   // Set the values converted to Date
                   criteria.valueValue = dateValues
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
+               break
+               case 'DataCriteriaDV_DATE':
+
+                  def dateValues = dateValues(criteria.valueValue)
+                  
+                  // Set the values converted to Date
+                  criteria.valueValue = dateValues
+                  condition = new DataCriteriaDV_DATE(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':
                   condition = new DataCriteriaDV_BOOLEAN(criteria)
@@ -314,35 +330,38 @@ class Query {
          
          switch (dataidx.rmTypeName)
          {
-            case ['DV_QUANTITY', 'DvQuantity']:
+            case 'DV_QUANTITY':
                resHeaders[absPath]['attrs'] = ['magnitude', 'units']
             break
-            case ['DV_CODED_TEXT', 'DvCodedText']:
+            case 'DV_CODED_TEXT':
                // code => defining_code.code_string
                // FIXME: add defining_code.terminology_id
                resHeaders[absPath]['attrs'] = ['value', 'code']
             break
-            case ['DV_ORDINAL', 'DvOrdinal ']:
+            case 'DV_ORDINAL':
                // value: integer, symbol.value: string, symbol.code: string
                // FIXME: add symbol.defining_code.terminology_id
                resHeaders[absPath]['attrs'] = ['value', 'symbol_value', 'symbol_code']
             break
-            case ['DV_TEXT', 'DvText']:
+            case 'DV_TEXT':
                resHeaders[absPath]['attrs'] = ['value']
             break
-            case ['DV_DATE_TIME', 'DvDateTime']:
+            case 'DV_DATE_TIME':
                resHeaders[absPath]['attrs'] = ['value']
             break
-            case ['DV_BOOLEAN', 'DvBoolean']:
+            case 'DV_DATE':
                resHeaders[absPath]['attrs'] = ['value']
             break
-            case ['DV_COUNT', 'DvCount']:
+            case 'DV_BOOLEAN':
+               resHeaders[absPath]['attrs'] = ['value']
+            break
+            case 'DV_COUNT':
                resHeaders[absPath]['attrs'] = ['magnitude']
             break
-            case ['DV_PROPORTION', 'DvProportion']:
+            case 'DV_PROPORTION':
                resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
             break
-            case ['DV_DURATION', 'DvDuration']:
+            case 'DV_DURATION':
                resHeaders[absPath]['attrs'] = ['value', 'magnitude']
             break
             default:
@@ -420,39 +439,39 @@ class Query {
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
-                  case ['DV_QUANTITY', 'DvQuantity']:
+                  case 'DV_QUANTITY':
                      colValues['magnitude'] = dvi.magnitude
                      colValues['units'] = dvi.units
                   break
-                  case ['DV_CODED_TEXT', 'DvCodedText']:
+                  case 'DV_CODED_TEXT':
                      colValues['value'] = dvi.value
                      colValues['code'] = dvi.code
                   break
-                  case ['DV_TEXT', 'DvText']:
+                  case 'DV_TEXT':
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_DATE_TIME', 'DvDateTime']:
+                  case ['DV_DATE_TIME', 'DV_DATE']:
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_BOOLEAN', 'DvBoolean']:
+                  case 'DV_BOOLEAN':
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_COUNT', 'DvCount']:
+                  case 'DV_COUNT':
                      colValues['magnitude'] = dvi.magnitude
                   break
-                  case ['DV_PROPORTION', 'DvProportion']:
+                  case 'DV_PROPORTION':
                      colValues['numerator'] = dvi.numerator
                      colValues['denominator'] = dvi.denominator
                      colValues['type'] = dvi.type
                      colValues['precision'] = dvi.precision
                   break
-                  case ['DV_ORDINAL', 'DvOrdinal']:
+                  case 'DV_ORDINAL':
                      colValues['value'] = dvi.value
                      colValues['symbol_value'] = dvi.symbol_value
                      colValues['symbol_code'] = dvi.symbol_code
                      colValues['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
-                  case ['DV_DURATION', 'DvDuration']:
+                  case 'DV_DURATION':
                      colValues['value'] = dvi.value
                      colValues['magnitude'] = dvi.magnitude
                   break
@@ -538,47 +557,47 @@ class Query {
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
             {
-               case ['DV_QUANTITY', 'DvQuantity']: // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
+               case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
                                                    units:     dvi.units,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_CODED_TEXT', 'DvCodedText']:
+               case 'DV_CODED_TEXT':
                   resGrouped[absPath]['serie'] << [code:      dvi.code,
                                                    value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_ORDINAL', 'DvOrdinal']:
+               case 'DV_ORDINAL':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
                                                    symbol_value: dvi.symbol_value,
                                                    symbol_code:  dvi.symbol_code,
                                                    symbol_terminology_id: dvi.symbol_terminology_id,
                                                    date:         dvi.owner.startTime]
                break
-               case ['DV_TEXT', 'DvText']:
+               case 'DV_TEXT':
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_DATE_TIME', 'DvDateTime']:
+               case ['DV_DATE_TIME', 'DV_DATE']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_BOOLEAN', 'DvBoolean']:
+               case 'DV_BOOLEAN':
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_COUNT', 'DvCount']:
+               case 'DV_COUNT':
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_PROPORTION', 'DvProportion']:
+               case 'DV_PROPORTION':
                   resGrouped[absPath]['serie'] << [numerator:   dvi.numerator,
                                                    denominator: dvi.denominator,
                                                    type:        dvi.type,
                                                    precision:   dvi.precision,
                                                    date:        dvi.owner.startTime]
                break
-               case ['DV_DURATION', 'DvDuration']:
+               case 'DV_DURATION':
                   resGrouped[absPath]['serie'] << [value:   dvi.value,
                                                    magnitude: dvi.magnitude]
                break
@@ -682,6 +701,10 @@ class Query {
                case 'DV_DATE_TIME':
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
+               break
+               case 'DV_DATE':
+                  fromMap['DvDateIndex'] = 'dcdte'
+                  where += " AND dcdte.id = dvi.id "
                break
                case 'DV_QUANTITY':
                    fromMap['DvQuantityIndex'] = 'dqi'

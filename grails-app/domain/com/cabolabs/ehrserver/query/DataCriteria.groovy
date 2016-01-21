@@ -1,6 +1,7 @@
 package com.cabolabs.ehrserver.query
 
 import grails.util.Holders
+import com.cabolabs.ehrserver.data.DataValues
 
 /**
  * WHERE archId/path operand value 
@@ -43,7 +44,8 @@ class DataCriteria {
    
    static constraints = {
       //operand(inList:['eq','neq','lt','gt','le','ge','in_list','contains','between'])
-      rmTypeName(inList:['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_ORDINAL', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_DURATION'])
+      rmTypeName(inList: DataValues.valuesStringList() )
+      //rmTypeName(inList:['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_ORDINAL', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_DURATION'])
    }
    
    static Map operandMap = [

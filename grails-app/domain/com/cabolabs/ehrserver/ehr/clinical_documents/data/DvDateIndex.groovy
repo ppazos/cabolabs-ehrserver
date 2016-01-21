@@ -1,6 +1,6 @@
 package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-class DvDateTimeIndex extends DataValueIndex {
+class DvDateIndex extends DataValueIndex {
    
    Date value
 }

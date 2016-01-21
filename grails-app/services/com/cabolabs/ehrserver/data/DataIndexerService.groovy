@@ -5,6 +5,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvBooleanIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCountIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateTimeIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDurationIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvOrdinalIndex
@@ -556,6 +557,28 @@ class DataIndexerService {
       </time>
       */
       return new DvDateTimeIndex(
+        templateId: templateId,
+        archetypeId: archetypeId,
+        path: path,
+        archetypePath: archetypePath,
+        owner: owner,
+        value: DateParser.tryParse(node.value.text())
+      )
+   }
+   
+   private DvDateIndex create_DV_DATE_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      /*
+      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
+      <time>
+        <value>20070920</value>
+      </time>
+      */
+      return new DvDateIndex(
         templateId: templateId,
         archetypeId: archetypeId,
         path: path,

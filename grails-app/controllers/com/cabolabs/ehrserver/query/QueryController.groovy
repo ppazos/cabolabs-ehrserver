@@ -389,6 +389,9 @@ class QueryController {
           case 'DV_DURATION':
             res = DataCriteriaDV_DURATION.criteriaSpec(archetypeId, path)
           break
+          case 'DV_DATE':
+            res = DataCriteriaDV_DATE.criteriaSpec(archetypeId, path)
+          break
        }
        
        render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")

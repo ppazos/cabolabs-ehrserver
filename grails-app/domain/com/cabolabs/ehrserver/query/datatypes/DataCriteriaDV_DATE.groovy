@@ -1,0 +1,54 @@
+package com.cabolabs.ehrserver.query.datatypes
+
+import com.cabolabs.ehrserver.query.DataCriteria
+
+class DataCriteriaDV_DATE extends DataCriteria {
+
+    List valueValue
+
+    // Comparison operands
+    String valueOperand
+
+   
+    DataCriteriaDV_DATE()
+    {
+       rmTypeName = 'DV_DATE'
+       alias = 'dcdte'
+    }
+    
+    static hasMany = [valueValue: Date]
+    
+    static constraints = {
+    }
+    
+    static mapping = {
+       valueValue column: "dv_datetime_value" // reuse the same column as the DV_DATE_TIME since it is of the same type
+    }
+    
+    /**
+     * Metadata that defines the types of criteria supported to search
+     * by conditions over DV_QUANTITY.
+     * @return
+     */
+    static List criteriaSpec(String archetypeId, String path)
+    {
+       return [
+          [
+             value: [
+                eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
+                lt:  'value',
+                gt:  'value',
+                neq: 'value',
+                le:  'value',
+                ge:  'value',
+                between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
+             ]
+          ]
+       ]
+    }
+    
+    static List attributes()
+    {
+       return ['value']
+    }
+}
