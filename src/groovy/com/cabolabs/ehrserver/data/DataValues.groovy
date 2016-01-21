@@ -26,4 +26,23 @@ public enum DataValues {
       
       return dv
    }
+   
+   public static boolean contains(String test)
+   {
+      for (DataValues dv : DataValues.values())
+      {
+         if (dv.name().equals(test)) return true
+      }
+      return false
+   }
+   
+   public static List valuesList()
+   {
+      DataValues.values() as List
+   }
+   
+   public static List valuesStringList()
+   {
+      ( DataValues.values() as List).collect{ it.toString() }
+   }
 }

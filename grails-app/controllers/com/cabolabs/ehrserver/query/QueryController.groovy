@@ -3,6 +3,7 @@ package com.cabolabs.ehrserver.query
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.data.DataValues
 
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -320,10 +321,8 @@ class QueryController {
     def getIndexDefinitions(String archetypeId, boolean datatypesOnly)
     {
        // TODO: checkear params
-       
-       // TODO: define supported DVs in a singleton
-       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME',
-           'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']
+
+       def datatypes = DataValues.valuesStringList()
        
        // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
        //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
