@@ -21,7 +21,7 @@ description
 	lifecycle_state = <"0">
 	other_contributors = <>
 	other_details = <
-		["MD5-CAM-1.0.1"] = <"D58AD28659F9C10C06E20CDB41FE1692">
+		["MD5-CAM-1.0.1"] = <"EA94EE3E14D2DD383AD10C75C29BD87D">
 	>
 
 definition
@@ -227,6 +227,11 @@ definition
 											}
 										}
 									}
+									ELEMENT[at0028] occurrences matches {0..1} matches {	-- Date
+										value matches {
+											DV_DATE matches {*}
+										}
+									}
 								}
 							}
 						}
@@ -352,6 +357,10 @@ ontology
 					text = <"URI">
 					description = <"*">
 				>
+				["at0028"] = <
+					text = <"Date">
+					description = <"*">
+				>
 			>
 		>
 		["en"] = <
@@ -466,6 +475,10 @@ ontology
 				>
 				["at0027"] = <
 					text = <"*Nuevo elemento(es)">
+					description = <"**(es)">
+				>
+				["at0028"] = <
+					text = <"*Date(es)">
 					description = <"**(es)">
 				>
 			>

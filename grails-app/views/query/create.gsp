@@ -86,9 +86,6 @@
     
     <script type="text/javascript">
 
-      // TODO: put this in a singleton
-      //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
-
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
@@ -814,6 +811,9 @@
                   case 'DV_DATE_TIME':
                     if (attr == 'value') class_type = 'input_datetime'; //input_type = 'datetime-local';
                   break;
+                  case 'DV_DATE':
+                    if (attr == 'value') class_type = 'input_date'; //input_type = 'datetime-local';
+                  break;
                   case 'DV_COUNT':
                     if (attr == 'magnitude') input_type = 'number';
                   break;
@@ -929,6 +929,7 @@
        */
       var apply_datetime_picker_behavior_for_criteria = function (criteria_container)
       {
+        // datetime
         var fields = $('.input_datetime', criteria_container)
         
         fields.datetimepicker({
@@ -937,6 +938,22 @@
           weekStart: 1,
           todayHighlight: true,
           minuteStep: 15,
+          pickerPosition: 'bottom-left',
+          autoclose: true
+        });
+        
+        fields.attr('readonly', true);
+        
+        // date
+        fields = $('.input_date', criteria_container)
+        
+        fields.datetimepicker({
+          format: "yyyy-mm-dd",
+          todayHighlight: 1,
+          weekStart: 1,
+          todayHighlight: true,
+          startView: 'month', /* starts showing the days of the month */
+          minView: 'month',   /* ends showing the days of the month, that's the date picker, below this starts hte time picker */
           pickerPosition: 'bottom-left',
           autoclose: true
         });

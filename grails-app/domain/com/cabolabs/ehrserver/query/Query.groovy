@@ -100,7 +100,7 @@ class Query {
       if (criteriaValuesFromUI instanceof String)
       {
          //println "try to parse "+ criteria.valueValue
-         def dateValue = DateParser.tryParse(criteria.valueValue)
+         def dateValue = DateParser.tryParse(criteriaValuesFromUI)
          dateValues << dateValue
       }
       else // criteria.valueValue is a list
