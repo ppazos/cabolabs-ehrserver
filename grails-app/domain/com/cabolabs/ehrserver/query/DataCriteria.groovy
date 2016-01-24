@@ -43,9 +43,7 @@ class DataCriteria {
    String alias // for the query, private
    
    static constraints = {
-      //operand(inList:['eq','neq','lt','gt','le','ge','in_list','contains','between'])
       rmTypeName(inList: DataValues.valuesStringList() )
-      //rmTypeName(inList:['DV_DATE_TIME', 'DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_ORDINAL', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_DURATION'])
    }
    
    static Map operandMap = [

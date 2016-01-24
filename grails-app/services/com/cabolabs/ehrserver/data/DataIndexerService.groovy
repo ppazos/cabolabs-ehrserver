@@ -2,16 +2,7 @@ package com.cabolabs.ehrserver.data
 
 import com.cabolabs.ehrserver.exceptions.DataIndexException
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvBooleanIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCountIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateTimeIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDurationIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvOrdinalIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvProportionIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvQuantityIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvTextIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import grails.util.Holders
@@ -585,6 +576,25 @@ class DataIndexerService {
         archetypePath: archetypePath,
         owner: owner,
         value: DateParser.tryParse(node.value.text())
+      )
+   }
+   
+   private DvIdentifierIndex create_DV_IDENTIFIER_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      return new DvIdentifierIndex(
+        templateId: templateId,
+        archetypeId: archetypeId,
+        path: path,
+        archetypePath: archetypePath,
+        owner: owner,
+        identifier: node.id.text(),
+        type: node.type.text(),
+        issuer: node.issuer.text(),
+        assigner: node.assigner.text()
       )
    }
 }

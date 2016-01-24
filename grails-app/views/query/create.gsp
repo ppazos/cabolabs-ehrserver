@@ -1012,8 +1012,6 @@
       
         $('select[name=type]').val(""); // select empty option by default
         
-        console.log( $('select[size]') );
-        
         // zebra style to the selects that have the size attr
         $.each($('select[size] option'), function( i, option ) {
         

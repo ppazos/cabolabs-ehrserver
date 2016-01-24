@@ -11,7 +11,8 @@ public enum DataValues {
    DV_PROPORTION,
    DV_ORDINAL,
    DV_DURATION,
-   DV_DATE
+   DV_DATE,
+   DV_IDENTIFIER
    
    /**
     * This is to solve a bug on adl parser it uses Java types instead of RM ones

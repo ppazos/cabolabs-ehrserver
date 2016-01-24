@@ -1460,7 +1460,7 @@ class RestController {
           result = cilist.groupBy { ci -> ci.ehrUid }
        }
        
-       println "Resultados (CompositionIndex): " + cilist
+       //println "Resultados (CompositionIndex): " + cilist
        
        
        // Muestra compositionIndex/list
@@ -1571,7 +1571,6 @@ class RestController {
           render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
        else
           render(text: out, contentType:"text/xml", encoding:"UTF-8")
-       
    }
    
    

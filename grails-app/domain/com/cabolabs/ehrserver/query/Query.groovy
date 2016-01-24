@@ -175,6 +175,9 @@ class Query {
                case 'DataCriteriaDV_DURATION':
                   condition = new DataCriteriaDV_DURATION(criteria)
                break
+               case 'DataCriteriaDV_IDENTIFIER':
+                  condition = new DataCriteriaDV_IDENTIFIER(criteria)
+               break
             }
 
             this.addToWhere(condition)
@@ -331,38 +334,37 @@ class Query {
          switch (dataidx.rmTypeName)
          {
             case 'DV_QUANTITY':
-               resHeaders[absPath]['attrs'] = ['magnitude', 'units']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() //['magnitude', 'units']
             break
             case 'DV_CODED_TEXT':
-               // code => defining_code.code_string
-               // FIXME: add defining_code.terminology_id
-               resHeaders[absPath]['attrs'] = ['value', 'code']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_CODED_TEXT.attributes() // ['value', 'code']
             break
             case 'DV_ORDINAL':
-               // value: integer, symbol.value: string, symbol.code: string
-               // FIXME: add symbol.defining_code.terminology_id
-               resHeaders[absPath]['attrs'] = ['value', 'symbol_value', 'symbol_code']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_ORDINAL.attributes() // ['value', 'symbol_value', 'symbol_code']
             break
             case 'DV_TEXT':
-               resHeaders[absPath]['attrs'] = ['value']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_TEXT.attributes() // ['value']
             break
             case 'DV_DATE_TIME':
-               resHeaders[absPath]['attrs'] = ['value']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DATE_TIME.attributes() // ['value']
             break
             case 'DV_DATE':
-               resHeaders[absPath]['attrs'] = ['value']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DATE.attributes() // ['value']
             break
             case 'DV_BOOLEAN':
-               resHeaders[absPath]['attrs'] = ['value']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_BOOLEAN.attributes() // ['value']
             break
             case 'DV_COUNT':
-               resHeaders[absPath]['attrs'] = ['magnitude']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_COUNT.attributes() // ['magnitude']
             break
             case 'DV_PROPORTION':
-               resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_PROPORTION.attributes() // ['numerator', 'denominator', 'type', 'precision']
             break
             case 'DV_DURATION':
-               resHeaders[absPath]['attrs'] = ['value', 'magnitude']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DURATION.attributes() // ['value', 'magnitude']
+            break
+            case 'DV_IDENTIFIER':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_IDENTIFIER.attributes()
             break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -474,6 +476,12 @@ class Query {
                   case 'DV_DURATION':
                      colValues['value'] = dvi.value
                      colValues['magnitude'] = dvi.magnitude
+                  break
+                  case 'DV_IDENTIFIER':
+                     colValues['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                     colValues['type'] = dvi.type
+                     colValues['issuer'] = dvi.issuer
+                     colValues['assigner'] = dvi.assigner
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
@@ -598,8 +606,15 @@ class Query {
                                                    date:        dvi.owner.startTime]
                break
                case 'DV_DURATION':
-                  resGrouped[absPath]['serie'] << [value:   dvi.value,
-                                                   magnitude: dvi.magnitude]
+                  resGrouped[absPath]['serie'] << [value:       dvi.value,
+                                                   magnitude:   dvi.magnitude]
+               break
+               case 'DV_IDENTIFIER':
+                  resGrouped[absPath]['serie'] << [id:          dvi.identifier,  // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                                                   type:        dvi.type,
+                                                   issuer:      dvi.issuer,
+                                                   assigner:    dvi.assigner,
+                                                   date:        dvi.owner.startTime]
                break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -737,6 +752,10 @@ class Query {
                case 'DV_DURATION':
                   fromMap['DvDurationIndex'] = 'dduri'
                   where += " AND dduri.id = dvi.id "
+               break
+               case 'DV_IDENTIFIER':
+                  fromMap['DvIdentifierIndex'] = 'dvidi'
+                  where += " AND dvidi.id = dvi.id "
                break
                default:
                   throw new Exception("type $idxtype not supported")
@@ -915,5 +934,4 @@ class Query {
       
       return builder.toString()
    }
-   
 }
