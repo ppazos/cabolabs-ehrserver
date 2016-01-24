@@ -34,6 +34,7 @@ import org.springframework.security.authentication.AuthenticationProvider
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
+import com.cabolabs.ehrserver.openehr.composition.CompositionService
 
 /**
  * TODO:
@@ -50,6 +51,7 @@ class RestController {
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
+   def compositionService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -1684,15 +1686,18 @@ class RestController {
          return
       }
       
-      
-      // retrieve data
-      def version = cindex.getParent()
-      def buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
 
-      if (format == 'json')
-         render(text: jsonService.xmlToJson(buff), contentType:"application/json", encoding:"UTF-8")
-      else
-         render(text: buff, contentType:"text/xml", encoding:"UTF-8")
+      withFormat {
+         json {
+            render(text: compositionService.compositionAsJson(uid), contentType:"application/json", encoding:"UTF-8")
+         }
+         xml {
+            render(text: compositionService.compositionAsXml(uid), contentType:"text/xml", encoding:"UTF-8")
+         }
+         html {
+            render(text: compositionService.compositionAsHtml(uid), contentType:"text/html", encoding:"UTF-8")
+         }
+      }
    }
    
    
