@@ -42,7 +42,8 @@ class QueryController {
     def create()
     {
         [queryInstance: new Query(params),
-         dataIndexes: IndexDefinition.list(), // to create filters or projections
+         dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
+         concepts: IndexDefinition.findAllByArchetypePath('/'),
          templateIndexes: OperationalTemplateIndex.list()]
     }
     
@@ -59,7 +60,8 @@ class QueryController {
           view: 'create',
           model: [
              queryInstance: Query.get(id),
-             dataIndexes: IndexDefinition.list(), // to create filters or projections
+             dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
+             concepts: IndexDefinition.findAllByArchetypePath('/'),
              templateIndexes: OperationalTemplateIndex.list(),
              mode: 'edit'
           ]
@@ -332,7 +334,6 @@ class QueryController {
        //        in IndexDefinition, and a N-N relationship between OPTs and the referenced arch/path.
        //        Current fix is for https://github.com/ppazos/cabolabs-ehrserver/issues/102
        
-       //def list = IndexDefinition.findAllByArchetypeId(archetypeId)
        def list = IndexDefinition.withCriteria {
           resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
           projections {
@@ -397,23 +398,23 @@ class QueryController {
        render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
     
-    def export(Long id)
-    {
-       def q = Query.get(id)
-       def criteriaMap, _value
-       
-       
-       // TODO: this code should be reused in RestConrtoller.queryList
-       withFormat {
-          xml {
-             render(text: q.getXML(), contentType: "text/xml")
-          }
-          json {
-             render(text: q.getJSON(), contentType: "application/json")
-          }
-          html {
-             return "format not supported"
-          }
-       }
-    }
+   def export(Long id)
+   {
+      def q = Query.get(id)
+      def criteriaMap, _value
+      
+      
+      // TODO: this code should be reused in RestConrtoller.queryList
+      withFormat {
+         xml {
+            render(text: q.getXML(), contentType: "text/xml")
+         }
+         json {
+            render(text: q.getJSON(), contentType: "application/json")
+         }
+         html {
+            return "format not supported"
+         }
+      }
+   }
 }

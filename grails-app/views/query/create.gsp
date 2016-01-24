@@ -1011,6 +1011,14 @@
       $(document).ready(function() {
       
         $('select[name=type]').val(""); // select empty option by default
+        
+        console.log( $('select[size]') );
+        
+        // zebra style to the selects that have the size attr
+        $.each($('select[size] option'), function( i, option ) {
+        
+          if (i % 2 == 0) $(option).css('background-color', '#f3f3f3');
+        });
       
         <%
         // =====================================================================
@@ -1441,10 +1449,8 @@
                   <tr>
                     <td><g:message code="query.create.concept" /></td>
                     <td>
-                      <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
-                      <%-- optionKey="archetypeId" optionValue="${{it.archetypeConcept +' ('+ it.archetypeId +')'}}" --%>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10" from="${concepts}"
+                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name +' ('+ it.archetypeId +')'}}"
                                  noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
                     </td>
                   </tr>
