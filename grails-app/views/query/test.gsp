@@ -30,7 +30,7 @@
               <g:message code="query.test.retrieve_data" />
             </td>
             <td>
-              <select name="retrieveData">
+              <select name="retrieveData" class="form-control input-sm">
                 <option value="false" selected="selected"><g:message code="query.test.no" /></option>
                 <option value="true"><g:message code="query.test.yes" /></option>
               </select>
@@ -53,7 +53,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" />
+              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" class="form-control withsize" />
             </td>
           </tr>
           <tr>
@@ -61,7 +61,7 @@
               <g:message code="query.test.from" />
             </td>
             <td>
-              <input type="text" name="fromDate" />
+              <input type="text" name="fromDate" class="form-control input-sm" />
             </td>
           </tr>
           <tr>
@@ -69,7 +69,7 @@
               <g:message code="query.test.to" />
             </td>
             <td>
-              <input type="text" name="toDate" />
+              <input type="text" name="toDate" class="form-control input-sm" />
             </td>
           </tr>
           <tr>
@@ -77,10 +77,10 @@
             <td>
               <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <g:select name="organizationUid" from="${Organization.list()}"
-                          optionKey="uid" optionValue="name" />
+                          optionKey="uid" optionValue="name" class="form-control input-sm" />
               </sec:ifAnyGranted>
               <sec:ifNotGranted roles="ROLE_ADMIN">
-                <g:selectWithCurrentUserOrganizations name="organizationUid" />
+                <g:selectWithCurrentUserOrganizations name="organizationUid" class="form-control input-sm" />
               </sec:ifNotGranted>
             </td>
           </tr>
