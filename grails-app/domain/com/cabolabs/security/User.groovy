@@ -42,7 +42,7 @@ class User implements Serializable {
    @Override
    boolean equals(other)
    {
-      is(other) || (other instanceof User && other.username == username)
+      is(other) || (other.instanceOf(User) && other.username == username)
    }
 
    @Override
