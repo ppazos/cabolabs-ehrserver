@@ -207,6 +207,11 @@ class XmlService {
       }
    }
    
+   private String versionFileName(GPathResult version)
+   {
+      return config.version_repo + version.uid.text().replaceAll('::', '_') +'.xml'
+   }
+   
    /**
     * Stores XML documents committed, as files.
     * @param versions
@@ -227,14 +232,16 @@ class XmlService {
       if (!new File(config.version_repo).canWrite()) throw new AccessDeniedException("Unable to write file ${config.version_repo}")
       
       
-      def uid, file, path
+      def file, path
       versions.version.each { version ->
          
-         uid = version.uid.text()
-         path = config.version_repo + uid.replaceAll('::', '_') +'.xml'
-         file = new File(path)
+         path = versionFileName(version)
+         file = new File( path )
          
-         if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
+         //if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
+         // Need to throw unchecked exception to make the service rollback
+         // Ref: http://www.jellyfishtechnologies.com/services-grails-transactional-behaviour/
+         if (file.exists()) throw new RuntimeException("Unable to save composition from commit, file ${path} already exists")
          
          // FIXME: check if the XML has the namespace declarations of the root node from the commit
          file << groovy.xml.XmlUtil.serialize( version )
