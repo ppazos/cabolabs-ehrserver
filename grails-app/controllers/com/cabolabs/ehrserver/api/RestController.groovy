@@ -348,7 +348,7 @@ class RestController {
          PrintWriter printWriter = new PrintWriter( writer )
          e.printStackTrace( printWriter )
          printWriter.flush()
-         String stackTrace = writer.toString()
+         String stackTrace = writer.toString() // FIXME: return only on dev
          
          //println stackTrace
          //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
