@@ -31,7 +31,12 @@
 
 <div class="form-group ${hasErrors(bean: personInstance, field: 'role', 'has-error')}">
   <label class="control-label"><g:message code="person.role.label" default="Role" /></label>
-  <g:select name="role" from="${personInstance.constraints.role.inList}" value="${personInstance?.role}" valueMessagePrefix="person.role" noSelection="['': '']"  class="form-control"/>
+  <g:select name="role" from="${personInstance.constraints.role.inList}" value="${personInstance?.role}" valueMessagePrefix="person.role" noSelection="['': '']"  class="form-control" onchange="showHideCreateEhr()" />
+</div>
+
+<div class="form-group" id="create_ehr_div" style="display:none">
+  <label class="control-label"><g:message code="person.create_ehr.label" default="Create EHR?" /></label>
+  <input type="checkbox" name="createEhr" checked="checked" value="true" />
 </div>
 
 <div class="form-group ${hasErrors(bean: personInstance, field: 'organizationUid', 'has-error')}">
@@ -51,4 +56,10 @@
    $('select[name=dob_month]').addClass('form-control').css({'width':'55%', 'display':'inline-block'});
    $('select[name=dob_year]').addClass('form-control').css({'width':'22%', 'display':'inline-block'});
  })();
+
+ var showHideCreateEhr = function() {
+   if ( $('select[name=role]').val() == 'pat' ) $('#create_ehr_div').show();
+   else $('#create_ehr_div').hide();
+ };
+ 
 </script>

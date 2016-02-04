@@ -3,7 +3,9 @@ package com.cabolabs.ehrserver.openehr.demographic
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 class PersonController {
 
@@ -44,17 +46,35 @@ class PersonController {
       [personInstance: new Person(params)]
    }
 
-   def save()
+   def save(boolean createEhr)
    {
       def personInstance = new Person(params)
-      log.info "A"
-      if (!personInstance.save(flush: true)) {
-         log.info "B"
+
+      if (!personInstance.save(flush: true))
+      {
          render(view: "create", model: [personInstance: personInstance])
          return
       }
       
-      log.info "C"
+      if (personInstance.role == "pat" && createEhr)
+      {
+         log.info "create EHR for patient"
+         
+         // from EhrController.createEhr
+         def ehr = new Ehr(
+            subject: new PatientProxy(
+               value: personInstance.uid
+            ),
+            organizationUid: personInstance.organizationUid
+         )
+         
+         if (!ehr.save())
+         {
+            // TODO: error
+            println ehr.errors
+         }
+      }
+      
 
       flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
       redirect(action: "show", id: personInstance.id)
