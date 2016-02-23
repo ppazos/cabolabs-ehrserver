@@ -31,9 +31,7 @@ branches:
   only:
     - master
     
-script: sdk use grails $GRAILS_VERSION &&
-        grails upgrade --non-interactive &&
-        grails clean &&
+script: grails clean &&
         grails test-app -integration
 
 #./grailsw refresh-dependencies
