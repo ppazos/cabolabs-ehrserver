@@ -23,13 +23,15 @@ before_install:
 #  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
 #  - source ~/.gvm/bin/gvm-init.sh
 #  - gvm install grails $GRAILS_VERSION || true
-  - echo grails -version
-  - echo sdk current grails
+  - grails -version
+  - sdk current grails
   - grails clean
 
 branches:
   only:
     - master
     
-script: ./grailsw refresh-dependencies
-  && ./grailsw "test-app -integration"
+script: grails test-app -integration
+
+#./grailsw refresh-dependencies
+#  && ./grailsw "test-app -integration"
