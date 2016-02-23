@@ -10,12 +10,18 @@ env:
   
 before_install:
   - rm -rf ~/.gvm
-  - curl -s get.gvmtool.net > ~/install_gvm.sh
-  - chmod 775 ~/install_gvm.sh
-  - ~/install_gvm.sh
-  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
-  - source ~/.gvm/bin/gvm-init.sh
-  - gvm install grails $GRAILS_VERSION || true
+  - curl -s get.sdkman.io | bash
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+#  - curl -s get.gvmtool.net > ~/install_gvm.sh
+#  - chmod 775 ~/install_gvm.sh
+#  - ~/install_gvm.sh
+  - echo sdkman_auto_answer=true > ~/.sdkman/etc/config
+  - source "/home/travis/.sdkman/bin/sdkman-init.sh"
+  # dev null is to avoid the need for user input https://github.com/sdkman/sdkman-cli/issues/101
+  - sdk install grails $GRAILS_VERSION < /dev/null
+#  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
+#  - source ~/.gvm/bin/gvm-init.sh
+#  - gvm install grails $GRAILS_VERSION || true
 
 branches:
   only:
