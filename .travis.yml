@@ -25,7 +25,7 @@ before_install:
 #  - gvm install grails $GRAILS_VERSION || true
   - grails -version
   - sdk current grails
-  - sdk remove grails 2.4.4
+  - sdk uninstall grails 2.4.4
 
 branches:
   only:
