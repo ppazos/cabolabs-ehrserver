@@ -19,9 +19,13 @@ before_install:
   - source "/home/travis/.sdkman/bin/sdkman-init.sh"
   # dev null is to avoid the need for user input https://github.com/sdkman/sdkman-cli/issues/101
   - sdk install grails $GRAILS_VERSION < /dev/null
+  - sdk use grails $GRAILS_VERSION
 #  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
 #  - source ~/.gvm/bin/gvm-init.sh
 #  - gvm install grails $GRAILS_VERSION || true
+  - echo grails -version
+  - echo sdk current grails
+  - grails clean
 
 branches:
   only:
