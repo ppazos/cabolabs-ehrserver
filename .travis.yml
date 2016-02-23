@@ -25,13 +25,16 @@ before_install:
 #  - gvm install grails $GRAILS_VERSION || true
   - grails -version
   - sdk current grails
-  - sdk uninstall grails 2.4.4
+#  - sdk uninstall grails 2.4.4
 
 branches:
   only:
     - master
     
-script: grails clean && grails test-app -integration
+script: sdk use grails $GRAILS_VERSION &&
+        grails upgrade --non-interactive &&
+        grails clean &&
+        grails test-app -integration
 
 #./grailsw refresh-dependencies
 #  && ./grailsw "test-app -integration"
