@@ -5,34 +5,25 @@ sudo: false
 jdk:
   - oraclejdk7
   
-env:
-  - GRAILS_VERSION=2.5.3
+# env:
+#   - GRAILS_VERSION=2.5.3
   
-before_install:
-  - rm -rf ~/.gvm
-  - curl -s get.sdkman.io | bash
-  - source "$HOME/.sdkman/bin/sdkman-init.sh"
-#  - curl -s get.gvmtool.net > ~/install_gvm.sh
-#  - chmod 775 ~/install_gvm.sh
-#  - ~/install_gvm.sh
-  - echo sdkman_auto_answer=true > ~/.sdkman/etc/config
-  - source "/home/travis/.sdkman/bin/sdkman-init.sh"
+# before_install:
+#   - rm -rf ~/.gvm
+#   - curl -s get.sdkman.io | bash
+#   - source "$HOME/.sdkman/bin/sdkman-init.sh"
+#   - echo sdkman_auto_answer=true > ~/.sdkman/etc/config
+#   - source "/home/travis/.sdkman/bin/sdkman-init.sh"
   # dev null is to avoid the need for user input https://github.com/sdkman/sdkman-cli/issues/101
-  - sdk install grails $GRAILS_VERSION < /dev/null
-  - sdk use grails $GRAILS_VERSION
-#  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
-#  - source ~/.gvm/bin/gvm-init.sh
-#  - gvm install grails $GRAILS_VERSION || true
-  - grails -version
-  - sdk current grails
-#  - sdk uninstall grails 2.4.4
+#   - sdk install grails $GRAILS_VERSION < /dev/null
+#   - sdk use grails $GRAILS_VERSION
+#   - grails -version
+#   - sdk current grails
 
 branches:
   only:
     - master
     
-script: grails clean &&
-        grails test-app -integration
+script: ./grailsw refresh-dependencies
+     && ./grailsw "test-app -integration"
 
-#./grailsw refresh-dependencies
-#  && ./grailsw "test-app -integration"
