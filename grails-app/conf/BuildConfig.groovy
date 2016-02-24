@@ -82,15 +82,12 @@ grails.project.dependency.resolution = {
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
          excludes "commons-logging", "xml-apis", "groovy"
        }
-       
 
        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        
        compile 'xerces:xercesImpl:2.11.0'
        
        compile "mysql:mysql-connector-java:5.1.22"
-       
-       
        
        //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
        //compile 'org.pac4j:pac4j-core:1.7.1'
