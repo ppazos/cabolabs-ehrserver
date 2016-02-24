@@ -238,13 +238,13 @@
             <scope>runtime</scope>
         </dependency>
         
-        <!-- dependency for local jars -->
+        <!-- dependency for local jars, for travis-ci -->
         <dependency>
             <groupId>com.cabolabs</groupId>
             <artifactId>openEHR_OPT</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>/home/travis/build/ppazos/cabolabs-ehrserver/lib/openEHR_OPT-1.0.jar</systemPath>
+            <systemPath>${env.TRAVIS_BUILD_DIR}/ppazos/cabolabs-ehrserver/lib/openEHR_OPT-1.0.jar</systemPath>
         </dependency>
     </dependencies>
 
