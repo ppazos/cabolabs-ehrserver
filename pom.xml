@@ -244,7 +244,7 @@
             <artifactId>openEHR_OPT</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>./lib/openEHR_OPT-1.0.jar</systemPath>
+            <systemPath>/home/travis/build/ppazos/cabolabs-ehrserver/lib/openEHR_OPT-1.0.jar</systemPath>
         </dependency>
     </dependencies>
 
