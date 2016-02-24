@@ -4,7 +4,11 @@ sudo: false
 
 jdk:
   - oraclejdk7
-  
+
+services:
+  - mysql
+
+
 # env:
 #   - GRAILS_VERSION=2.5.3
   
@@ -26,7 +30,8 @@ branches:
 
 before_script:
   - chmod +x grailsw
-
+  - mysql -e 'create database ehrservertest;'
+  
 script: ./grailsw refresh-dependencies
      && ./grailsw "test-app -integration"
 
