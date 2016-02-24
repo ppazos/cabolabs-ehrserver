@@ -74,6 +74,10 @@ class XmlService {
       //  throws grails.validation.ValidationException that contains the errors
       contribution.save(flush:true, failOnError:true)
       
+
+      // TEST: this might save the contrib and there is no need of saving the contrib later
+      ehr.addToContributions( contribution )
+      
       
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
@@ -354,7 +358,8 @@ class XmlService {
          {
             if (version.commitAudit.changeType == "creation")
             {
-               throw new IllegalArgumentException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
+               //IllegalArgumentException
+               throw new RuntimeException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
             }
             
             // change type is not creation
@@ -580,10 +585,6 @@ class XmlService {
          )
          // versions se setean abajo
       )
-      
-      // FIXME: dont do this here, do it in the main process that saves all the data, because this should be transactional, if it fails, no contrib should be added
-      // TEST: this might save the contrib and there is no need of saving the contrib later
-      ehr.addToContributions( currentContribution )
       
       return currentContribution
    }

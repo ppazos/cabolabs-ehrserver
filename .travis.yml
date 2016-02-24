@@ -33,5 +33,5 @@ before_script:
   - mysql -e 'create database ehrservertest;'
   
 script: ./grailsw refresh-dependencies
-     && ./grailsw "test-app -integration"
+     && ./grailsw "test-app -integration -echoOut"
 

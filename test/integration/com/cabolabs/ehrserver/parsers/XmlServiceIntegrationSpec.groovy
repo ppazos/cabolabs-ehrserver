@@ -192,12 +192,14 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // ok first time
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
       
+         println "A"
          // second shoudl return an error
          try {
             xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
          } catch (Exception e) {
-            println e.message
+            println "ex: "+ e.message
          }
+         println "B"
       
       then:
          assert Contribution.count() == 1
