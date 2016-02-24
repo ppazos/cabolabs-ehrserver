@@ -240,7 +240,7 @@
         
         <!-- dependency for local jars, for travis-ci -->
         <dependency>
-            <groupId>com.cabolabs</groupId>
+            <groupId>openEHR_OPT</groupId>
             <artifactId>openEHR_OPT</artifactId>
             <version>1.0</version>
             <scope>system</scope>
