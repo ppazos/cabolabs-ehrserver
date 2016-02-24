@@ -1,7 +1,17 @@
 #!/bin/bash
-set -eo pipefail
+set -e
+
+if [ "$1" = 'grails' ]; then
+        echo "Running grails"
+
+echo "Starting Mysql server"
 mysqld_safe &
 sleep 5
+echo "Create Mysql table"
 echo "CREATE DATABASE IF NOT EXISTS ehrserver" | mysql -uroot
-sleep 5
-grails -Dserver.port=8090 run-app
+echo "CREATE DATABASE IF NOT EXISTS ehrservertest" | mysql -uroot
+sleep 1
+
+fi
+
+exec "$@"
