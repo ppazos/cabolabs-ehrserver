@@ -239,16 +239,13 @@
         </dependency>
         
         <!-- dependency for local jars -->
-        <dependencies>
-          <dependency>
+        <dependency>
             <groupId>com.cabolabs</groupId>
             <artifactId>openEHR_OPT</artifactId>
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>./lib/openEHR_OPT-1.0.jar</systemPath>
-          </dependency>
-        </dependencies>
-        
+        </dependency>
     </dependencies>
 
     <build>
