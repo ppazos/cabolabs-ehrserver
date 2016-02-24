@@ -114,4 +114,100 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def temp = new File(Holders.config.app.version_repo)
          temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
+   void "multiple / one invalid version"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_one_invalid.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         try {
+            xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         } catch (Exception e) {
+            println e.cause.message
+         }
+         
+      then:
+         assert xmlService.validationErrors.size() == 1
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+      cleanup:
+         // empty the temp version store
+         def temp = new File(Holders.config.app.version_repo)
+         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+   }
+   
+   void "multiple / all invalid version"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_invalid.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         try {
+            xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         } catch (Exception e) {
+            println e.cause.message
+         }
+      
+      then:
+         assert xmlService.validationErrors.size() == 2
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+      cleanup:
+         // empty the temp version store
+         def temp = new File(Holders.config.app.version_repo)
+         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+   }
+   
+   void "commit same version twice"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         // ok first time
+         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+      
+         // second shoudl return an error
+         try {
+            xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         } catch (Exception e) {
+            println e.message
+         }
+      
+      then:
+         assert Contribution.count() == 1
+         assert Version.count() == 1
+         assert VersionedComposition.count() == 1
+         assert CompositionIndex.count() == 1
+         
+      cleanup:
+         // empty the temp version store
+         def temp = new File(Holders.config.app.version_repo)
+         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+   }
 }
