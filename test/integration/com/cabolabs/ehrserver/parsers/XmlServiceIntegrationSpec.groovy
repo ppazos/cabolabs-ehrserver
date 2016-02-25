@@ -15,9 +15,14 @@ import grails.util.Holders
 
 class XmlServiceIntegrationSpec extends IntegrationSpec {
 
+   // it seems integration tests are transactional by default, so if an exception occurs, the session is rolledback at the end of each test case,
+   // after we check the conditions, and we need the rollback to occur before we check the test conditions
+   //static transactional = false
+   
    def xmlService
    
    private static String PS = System.getProperty("file.separator")
+   
    
    def setup()
    {
@@ -27,9 +32,39 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      println "cleanup"
       
+      /*
+       * org.springframework.dao.DataIntegrityViolationException: Hibernate operation: could not execute statement; SQL [n/a]; Cannot delete or update a p
+arent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCE
+S `composition_index` (`id`)); nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or u
+pdate a parent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`)
+REFERENCES `composition_index` (`id`))
+        at com.cabolabs.ehrserver.parsers.XmlServiceIntegrationSpec.cleanup(XmlServiceIntegrationSpec.groovy:46)
+Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constr
+aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCES `composition_index` (`id`))
+      
+      // clean database
+      VersionedComposition.list().each { it.delete() }
+      Version.list().each { version ->
+         //version.commitAudit.delete() // AuditDetails
+         version.data.delete() // CompositionIndex
+         version.contribution.removeFromVersions(version)
+         version.delete()
+      }
+      Contribution.list().each { contrib ->
+         //contrib.audit.delete() // AuditDetails
+         contrib.ehr.removeFromContributions(contrib)
+         contrib.delete()
+      }
+      */
+      
+      // empty the temp version store
+      def temp = new File(Holders.config.app.version_repo)
+      temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
 
+   
    void "commit single / valid version"()
    {
       setup:
@@ -50,11 +85,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
-         
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+ 
    }
    
    void "commit single / invalid version"()
@@ -70,23 +101,22 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          
       when:
-         try {
+         //try {
             xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-         }
-         catch (Exception e)
-         {
-            println "ok, exception handled "+ e.message
-         }
+         //}
+         //catch (Exception e)
+         //{
+         //   println "ok, exception handled "+ e.message
+         //}
+         
+         
       then:
+         Exception e = thrown()
          assert Contribution.count() == 0
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
-         
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+
    }
    
    void "multiple / all valid versions"()
@@ -109,10 +139,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert VersionedComposition.count() == 2
          assert CompositionIndex.count() == 2
          
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "multiple / one invalid version"()
@@ -139,11 +165,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
-         
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+
    }
    
    void "multiple / all invalid version"()
@@ -171,10 +193,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
          
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit same version twice"()
@@ -192,14 +210,12 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // ok first time
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
       
-         println "A"
          // second shoudl return an error
          try {
             xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
          } catch (Exception e) {
             println "ex: "+ e.message
          }
-         println "B"
       
       then:
          assert Contribution.count() == 1
@@ -207,9 +223,91 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
          
-      cleanup:
-         // empty the temp version store
-         def temp = new File(Holders.config.app.version_repo)
-         temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+   }
+   
+   void "commit 2 compos, and new version"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def slurper = new XmlSlurper(false, false)
+         
+         // first version
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+         // new version
+         def versionsXML2 = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_new_version.xml').text
+         versionsXML2 = versionsXML2.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         def parsedVersions2 = slurper.parseText(versionsXML2)
+         
+      when:
+         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         xmlService.processCommit(ehr, parsedVersions2, 'CaboLabs EMR', new Date(), 'House, MD.')
+      
+      then:
+         assert Contribution.count() == 2
+         assert Version.count() == 2
+         assert VersionedComposition.count() == 1
+         assert CompositionIndex.count() == 2
+         
+   }
+   
+   void "commit new version without previous version"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def slurper = new XmlSlurper(false, false)
+         
+         // amendment with not previous version
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_v2_amendment.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         try {
+            xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         } catch (Exception e) {
+            println "ex: "+ e.message
+         }
+      then:
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+   }
+   
+   void "commit with an existing file with the same version id on the version repo"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def slurper = new XmlSlurper(false, false)
+         
+         // copy file into the version repo
+         def source = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml')
+         java.nio.file.Files.copy(source.toPath(), new File(Holders.config.app.version_repo + PS + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
+         
+         // commit same file via the commit processing
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         try {
+            xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         } catch (Exception e) {
+            println "ex: "+ e.message
+         }
+      
+      then:
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
    }
 }

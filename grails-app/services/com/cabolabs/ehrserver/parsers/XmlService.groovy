@@ -69,6 +69,12 @@ class XmlService {
       //  TODO: support more types
       manageVersionedCompositions(domainVersions, ehr)
       
+
+      // If contribution and versions can be saved ok
+      //  - check if file exists, error if exists
+      //  - save version XML files on file system
+      storeVersionXMLs(versions)
+      
       
       // Save the contribution with all the versions
       //  throws grails.validation.ValidationException that contains the errors
@@ -77,12 +83,6 @@ class XmlService {
 
       // TEST: this might save the contrib and there is no need of saving the contrib later
       ehr.addToContributions( contribution )
-      
-      
-      // If contribution and versions can be saved ok
-      //  - check if file exists, error if exists
-      //  - save version XML files on file system
-      storeVersionXMLs(versions)
    }
    
    
