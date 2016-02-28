@@ -24,32 +24,33 @@ class XmlServiceTests { //  extends GroovyTestCase
    {
       service.xmlValidationService = new com.cabolabs.ehrserver.parsers.XmlValidationService()
       
-      def file = new File("test"+ PS +"resources"+ PS +"version.xml")
+      def file = new File("test"+ PS +"resources"+ PS +"commit"+ PS +"test_commit_1.xml")
       def xml = file.getText()
+      def slurper = new XmlSlurper(false, false)
+      def _parsedVersions = slurper.parseText(xml)
       
       def ehr = new Ehr(
          subject: new PatientProxy(
             value: '1234-12341-1341'
-         )
+         ),
+         organizationUid: '1234-1234-1234'
       )
       if (!ehr.save()) println ehr.errors
       
-      List data = []
-      def contribution = service.parseVersions(ehr, [xml], 'systemID', new Date(), 'Mr. Committer', data)
+      // shouldn't fail
+      service.processCommit(ehr, _parsedVersions, 'systemID', new Date(), 'Mr. Committer')
       
-      println "contribution.versions "+ contribution.versions
       
-      if (contribution == null) println service.validationErrors
-      
+      def contribution = Contribution.get(1)
+
       assert contribution != null
       assert contribution.versions != null
       assert contribution.versions.size() == 1
-      assert data.size() == 1
+
       
 	  /*
       XStream xstream = new XStream()
       xstream.omitField(Version.class, "errors")
-      //xstream.omitField(CompositionRef.class, "errors") // T0004
       xstream.omitField(CompositionIndex.class, "errors")
       xstream.omitField(DoctorProxy.class, "errors")
       xstream.omitField(AuditDetails.class, "errors")

@@ -10,7 +10,8 @@ class PersonIdTypeControllerSpec extends Specification {
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["name"] = 'SSN'
+        params["code"] = 'SSN'
     }
 
     void "Test the index action returns the correct model"() {
@@ -19,8 +20,8 @@ class PersonIdTypeControllerSpec extends Specification {
             controller.index()
 
         then:"The model is correct"
-            !model.personIdTypeInstanceList
-            model.personIdTypeInstanceCount == 0
+            !model.list
+            model.total == 0
     }
 
     void "Test the create action returns the correct model"() {

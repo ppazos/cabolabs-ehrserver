@@ -38,7 +38,6 @@ class CompositionIndex {
       return Version.findByData(this)
    }
    
-   // T0004: ahora CIndex se usa en Version
    static belongsTo = [Version]
    
    static constraints = {
