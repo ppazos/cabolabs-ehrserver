@@ -78,7 +78,7 @@ class XmlService {
       
       // Save the contribution with all the versions
       //  throws grails.validation.ValidationException that contains the errors
-      contribution.save(flush:true, failOnError:true)
+      //contribution.save(flush:true, failOnError:true) // saved through the ehr
       
 
       // TEST: this might save the contrib and there is no need of saving the contrib later
