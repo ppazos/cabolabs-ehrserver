@@ -3,22 +3,24 @@ package com.cabolabs.security
 import grails.test.mixin.*
 import spock.lang.*
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityService
 
 @TestFor(UserController)
 @Mock(User)
 class UserControllerSpec extends Specification {
 
-    def populateValidParams(params) {
+   def populateValidParams(params)
+   {
         assert params != null
         // TODO: Populate valid properties like...
         params["username"] = 'admin'
         params["password"] = 'admin'
         params["email"] = 'e@m.i'
-        params["organizations"] = ['1234']
-    }
+        params["organizationUid"] = '1234'
+   }
 
-    void "Test the index action returns the correct model"() {
-
+   void "Test the index action returns the correct model"()
+   {
         when:"The index action is executed"
             // mock login
             // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
@@ -39,26 +41,30 @@ class UserControllerSpec extends Specification {
         then:"The model is correct"
             !model.userInstanceList
             model.userInstanceCount == 0
-    }
+   }
 
-    void "Test the create action returns the correct model"() {
+   void "Test the create action returns the correct model"()
+   {
         when:"The create action is executed"
             controller.create()
 
         then:"The model is correctly created"
             model.userInstance!= null
-    }
+   }
 
-    void "Test the save action correctly persists an instance"() {
-
+   void "Test the save action correctly persists an instance"()
+   {
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
             def user = new User()
             user.validate()
-            controller.save(user)
+            controller.save()
+            //controller.save(user)
 
         then:"The create view is rendered again with the correct model"
             model.userInstance!= null
+            println model
+            println controller.class
             view == 'create'
 
         when:"The save action is executed with a valid instance"
@@ -72,9 +78,20 @@ class UserControllerSpec extends Specification {
             response.redirectedUrl == '/user/show/1'
             controller.flash.message != null
             User.count() == 1
-    }
+   }
 
-    void "Test that the show action returns the correct model"() {
+   void "Test that the show action returns the correct model"()
+   {
+       setup:
+          SpringSecurityService.metaClass.getAuthentication { ->
+             return [
+                username: 'user',
+                password: 'pass',
+                organization: '1234'
+             ]
+          }
+          controller.springSecurityService =  new SpringSecurityService()
+       
         when:"The show action is executed with a null domain"
             controller.show(null)
 
@@ -88,9 +105,22 @@ class UserControllerSpec extends Specification {
 
         then:"A model is populated containing the domain instance"
             model.userInstance == user
-    }
+   }
 
-    void "Test that the edit action returns the correct model"() {
+   void "Test that the edit action returns the correct model"()
+   {
+       given:
+          def svcMock = mockFor(SpringSecurityService)
+          //svcMock.authentication
+          svcMock.demand.getAuthentication {
+             return [
+                username: 'user',
+                password: 'pass',
+                organization: '1234'
+             ]
+          }
+          controller.springSecurityService = svcMock.createMock()
+       
         when:"The edit action is executed with a null domain"
             controller.edit(null)
 
@@ -104,9 +134,10 @@ class UserControllerSpec extends Specification {
 
         then:"A model is populated containing the domain instance"
             model.userInstance == user
-    }
+   }
 
-    void "Test the update action performs an update on a valid domain instance"() {
+   void "Test the update action performs an update on a valid domain instance"()
+   {
         when:"Update is called for a domain instance that doesn't exist"
             request.contentType = FORM_CONTENT_TYPE
             controller.update(null)
@@ -135,7 +166,7 @@ class UserControllerSpec extends Specification {
         then:"A redirect is issues to the show action"
             response.redirectedUrl == "/user/show/$user.id"
             flash.message != null
-    }
+   }
 
     void "Test that the delete action deletes an instance if it exists"() {
         when:"The delete action is called for a null instance"

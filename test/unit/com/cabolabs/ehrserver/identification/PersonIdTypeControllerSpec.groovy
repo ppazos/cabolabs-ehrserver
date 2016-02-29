@@ -20,8 +20,8 @@ class PersonIdTypeControllerSpec extends Specification {
             controller.index()
 
         then:"The model is correct"
-            !model.list
-            model.total == 0
+            !model.personIdTypeInstanceList
+            model.personIdTypeInstanceCount == 0
     }
 
     void "Test the create action returns the correct model"() {
@@ -41,8 +41,8 @@ class PersonIdTypeControllerSpec extends Specification {
             controller.save(personIdType)
 
         then:"The create view is rendered again with the correct model"
-            model.personIdTypeInstance!= null
             view == 'create'
+            model.personIdTypeInstance!= null
 
         when:"The save action is executed with a valid instance"
             response.reset()

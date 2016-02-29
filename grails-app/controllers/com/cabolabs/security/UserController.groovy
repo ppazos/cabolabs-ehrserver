@@ -248,8 +248,6 @@ class UserController {
          return
       }
       
-      println "user.save organizations 1 "+ userInstance.organizations
-      
       def sendNotification = false
       if (!userInstance.password)
       {
@@ -267,10 +265,9 @@ class UserController {
          userInstance.addToOrganizations(newOrg)
       }
       
-      
       if (!userInstance.save(flush:true))
       {
-         respond userInstance.errors, view:'create'
+         render model: [userInstance: userInstance], view:'create'
          return
       }
 
