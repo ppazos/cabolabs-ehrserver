@@ -20,8 +20,8 @@ class OrganizationControllerSpec extends Specification {
         when:"The index action is executed"
             // mock login
             // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
-            def organization = new Organization(name: 'Hospital de Clinicas', number: '1234').save()
-            def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.i", organizations:[organization]).save()
+            def organization = new Organization(name: 'Hospital de Clinicas', number: '1234').save(flush:true)
+            def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.i", organizations:[organization]).save(flush:true)
             controller.springSecurityService = [
               encodePassword: 'admin',
               reauthenticate: { String u -> true},
@@ -36,8 +36,10 @@ class OrganizationControllerSpec extends Specification {
             controller.index()
 
         then:"The model is correct"
-            !model.organizationInstanceList
-            model.organizationInstanceCount == 0
+            model.organizationInstanceList != null
+            model.organizationInstanceList != []
+            model.organizationInstanceList.size() == 1
+            model.total == 1
     }
 
     void "Test the create action returns the correct model"() {

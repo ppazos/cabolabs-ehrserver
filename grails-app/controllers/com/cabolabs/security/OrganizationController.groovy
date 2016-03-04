@@ -37,7 +37,7 @@ class OrganizationController {
          count = list.size()
       }
       
-      respond list, model:[total: count]
+      render view:'index', model:[organizationInstanceList:list, total:count]
    }
 
    def show(Organization organizationInstance)
@@ -62,7 +62,8 @@ class OrganizationController {
       if (organizationInstance.hasErrors())
       {
          log.info "has errors"
-         respond organizationInstance, view:'create'
+         //respond organizationInstance, view:'create'
+         render view:'create', model:[organizationInstance:organizationInstance]
          return
       }
 
