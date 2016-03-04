@@ -1,6 +1,5 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
-//import com.thoughtworks.xstream.XStream
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex

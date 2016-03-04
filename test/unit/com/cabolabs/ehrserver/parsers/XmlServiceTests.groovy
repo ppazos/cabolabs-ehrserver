@@ -1,7 +1,5 @@
 package com.cabolabs.ehrserver.parsers
 
-// grails test-app me dice que no encuentra la lib...
-//import com.thoughtworks.xstream.XStream
 import grails.test.mixin.*
 import org.junit.*
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
@@ -46,26 +44,5 @@ class XmlServiceTests { //  extends GroovyTestCase
       assert contribution != null
       assert contribution.versions != null
       assert contribution.versions.size() == 1
-
-      
-	  /*
-      XStream xstream = new XStream()
-      xstream.omitField(Version.class, "errors")
-      xstream.omitField(CompositionIndex.class, "errors")
-      xstream.omitField(DoctorProxy.class, "errors")
-      xstream.omitField(AuditDetails.class, "errors")
-      
-      println xstream.toXML(version)
-      */
-	  
-      //println xstream.toXML(data) data[0] es un GPathResult parseado con XmlSlurper
-      
-      /*
-      def stringWriter = new StringWriter()
-      new XmlNodePrinter(new PrintWriter(stringWriter)).print(data[0])
-      println stringWriter.toString()
-      */
-      
-      //println groovy.xml.XmlUtil.serialize( data[0] )
    }
 }

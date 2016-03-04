@@ -1,6 +1,5 @@
 package test
 
-//import com.thoughtworks.xstream.XStream
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
