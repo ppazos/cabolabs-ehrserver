@@ -11,6 +11,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
@@ -35,6 +36,7 @@ import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
+import com.cabolabs.util.DateParser
 
 /**
  * TODO:
@@ -165,7 +167,7 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(msg)
-                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode) // sys::service::concept::code
+                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
          }
@@ -179,7 +181,7 @@ class RestController {
                      codeSystem: 'HL7::TABLES::TABLE_8'
                   ],
                   message: msg,
-                  code: 'ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode
+                  code: 'ISIS_EHR_SERVER::API::ERRORS::'+ errorCode
                ]
             ]
             
@@ -203,7 +205,7 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(message(code:'rest.error.formatNotSupported'))
-                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::499') // sys::service::concept::code
+                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
          }
@@ -1144,6 +1146,7 @@ class RestController {
       Date qFromDate
       Date qToDate
 
+      // FIXME> use DateParser
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
@@ -1779,5 +1782,92 @@ class RestController {
          render(text: idxs as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
       else
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
+   }
+   
+   @SecuredStateless
+   def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
+                    String role, String organizationUid, boolean createEhr, String format)
+   {
+      if (!format) format = 'json'
+      
+      if (!organizationUid)
+      {
+         renderError('organizationUid required', '5556', 400) // Bad Request
+         return
+      }
+      
+      if (Organization.countByUid(organizationUid) == 0)
+      {
+         renderError("Organization $organizationUid doesn't exists", '1237', 400) // Bad Request
+         return
+      }
+      
+      // FIXME: this should be on a service
+      // Does the request comes from someone who has access to the organization?
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(organizationUid))
+      {
+         renderError("Don't have permissions over the organization $organizationUid", '4764', 403)
+         return
+      }
+      
+      
+      // I think this is binded automatically to the person on save
+      // dob to date
+      params.dob = DateParser.tryParse(dob)
+      
+      
+      // same as personcontroller.save
+      def personInstance = new Person(params)
+      
+      if (!personInstance.save(flush: true))
+      {
+         def errors = ""
+         personInstance.errors.allErrors.each { 
+            
+            errors += it.defaultMessage + "\n"
+         }
+         
+         renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
+         return
+      }
+      
+      if (personInstance.role == "pat" && createEhr)
+      {
+         // from EhrController.createEhr
+         def ehr = new Ehr(
+            subject: new PatientProxy(
+               value: personInstance.uid
+            ),
+            organizationUid: personInstance.organizationUid
+         )
+         
+         if (!ehr.save(flish:true))
+         {
+            renderError('Not able to save EHR', '1236', 500) // Internal Server Error
+            return
+         }
+      }
+      
+      withFormat {
+         
+         def data = [
+            firstName: personInstance.firstName,
+            lastName: personInstance.lastName,
+            dob: personInstance.dob, // Date is marshalled by the JSON marshaller
+            sex: personInstance.sex,
+            idCode: personInstance.idCode,
+            idType: personInstance.idType, 
+            role: personInstance.organizationUid, 
+            organizationUid: personInstance.organizationUid
+         ]
+         xml {
+            render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
    }
 }
