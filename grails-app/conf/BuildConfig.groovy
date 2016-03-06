@@ -15,6 +15,12 @@ grails.project.fork = [
    console: forkConfig // configure settings for the Swing console JVM
 ]
 
+grails {
+   tomcat {
+       jvmArgs = ["-Duser.timezone=UTC"]
+   }
+}
+
 
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 grails.server.port.http = 8090
@@ -65,26 +71,23 @@ grails.project.dependency.resolution = {
        }
        */
        
-/*
+       /*
        runtime('com.thoughtworks.xstream:xstream:1.4.3') {
 	      // loader constraint violation: loader (instance of <bootloader>) previously
 	      // initiated loading for a different type with name "org/w3c/dom/TypeInfo"
 	      //excludes 'xmlbeans'
-	   }
+	    }
        */
 	   
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
          excludes "commons-logging", "xml-apis", "groovy"
        }
-       
 
        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        
        compile 'xerces:xercesImpl:2.11.0'
        
        compile "mysql:mysql-connector-java:5.1.22"
-       
-       
        
        //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
        //compile 'org.pac4j:pac4j-core:1.7.1'
@@ -102,14 +105,14 @@ grails.project.dependency.resolution = {
         // plugins for the compile step
         compile ':scaffolding:2.1.2'
         compile ':cache:1.1.8'
-        compile ':asset-pipeline:2.1.5'
+        compile ':asset-pipeline:2.5.7'
         compile ':quartz:1.0.2'
         compile ':spring-security-core:2.0-RC6'
         compile ":mail:1.0.7"
         compile ":simple-captcha:1.0.0"
 
         // plugins needed at runtime but not for compilation
-        runtime ':hibernate4:4.3.8.1' // or ':hibernate:3.6.10.14'
+        runtime ':hibernate4:4.3.10' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
         runtime ':jquery:1.11.1'
         

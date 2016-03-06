@@ -186,7 +186,7 @@ class IndexDataJobSpec extends Specification {
        
       then:
         queryResult.size() == 1
-        queryResult[0] instanceof DvCountIndex
+        queryResult[0].instanceOf( DvCountIndex )
         queryResult[0].magnitude == 3
         queryResult[0].archetypeId == 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
         queryResult[0].archetypePath == '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'

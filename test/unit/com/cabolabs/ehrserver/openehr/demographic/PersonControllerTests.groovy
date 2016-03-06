@@ -4,44 +4,56 @@ import org.junit.*
 import com.cabolabs.ehrserver.openehr.demographic.PersonController
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import grails.test.mixin.*
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @TestFor(PersonController)
 @Mock(Person)
 class PersonControllerTests {
 
-    def populateValidParams(params) {
-        assert params != null
-        
-        params["firstName"] = 'Pablo'
-        params["lastName"] = 'Pazos'
-        params["dob"] = new Date()
-        params["sex"] = 'M'
-        params["idCode"] = '23542354'
-        params["idType"] = 'CI'
-        params["role"] = 'pat'
-        params["uid"] = '345634634563456'
-    }
+   def populateValidParams(params)
+   {
+      assert params != null
+      params["firstName"] = 'Pablo'
+      params["lastName"] = 'Pazos'
+      params["dob"] = new Date()
+      params["sex"] = 'M'
+      params["idCode"] = '23542354'
+      params["idType"] = 'CI'
+      params["role"] = 'pat'
+      params["uid"] = '1111-1111-1111'
+      params["organizationUid"] = '1234-1234-1234'
+   }
 
-    void testIndex() {
-        controller.index()
-        assert "/person/list" == response.redirectedUrl
-    }
+   void testIndex()
+   {
+      controller.index()
+      assert "/person/list" == response.redirectedUrl
+   }
 
-    void testList() {
+   void testList()
+   {
+      // setup
+      // mock method used in list
+      SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
+         return true // test like admin
+      }
+      
+      def model = controller.list()
+      assert model.personInstanceList.size() == 0
+      assert model.personInstanceTotal == 0
+      
+      // teardown
+      SpringSecurityUtils.metaClass = null
+   }
 
-        def model = controller.list()
+   void testCreate()
+   {
+      def model = controller.create()
+      assert model.personInstance != null
+   }
 
-        assert model.personInstanceList.size() == 0
-        assert model.personInstanceTotal == 0
-    }
-
-    void testCreate() {
-        def model = controller.create()
-
-        assert model.personInstance != null
-    }
-
-    void testSave() {
+   void testSave()
+   {
         controller.request.method = 'POST' // removing this will get response.status 405 method not allowed
         controller.save() // creates invalid person, redirects to create
         
@@ -58,9 +70,10 @@ class PersonControllerTests {
         assert response.redirectedUrl == '/person/show/1'
         assert controller.flash.message != null
         assert Person.count() == 1
-    }
+   }
 
-    void testShow() {
+   void testShow()
+   {
         controller.show()
 
         assert flash.message != null
@@ -76,9 +89,10 @@ class PersonControllerTests {
         def model = controller.show()
 
         assert model.personInstance == person
-    }
+   }
 
-    void testEdit() {
+   void testEdit()
+   {
         controller.edit()
 
         assert flash.message != null
@@ -94,10 +108,10 @@ class PersonControllerTests {
         def model = controller.edit()
 
         assert model.personInstance == person
-    }
+   }
 
-    void testUpdate() {
-       
+   void testUpdate()
+   {
         // no instance to update, redirect to list -----------------
         controller.request.method = 'POST'
         controller.update()
@@ -148,9 +162,10 @@ class PersonControllerTests {
         assert model.personInstance != null
         assert model.personInstance.errors.getFieldError('version')
         assert flash.message != null
-    }
+   }
 
-    void testDelete() {
+   void testDelete()
+   {
         controller.request.method = 'POST'
         controller.delete()
         assert flash.message != null
@@ -173,5 +188,5 @@ class PersonControllerTests {
         assert Person.countByIdAndDeleted(person.id, true) == 1
         assert Person.countByIdAndDeleted(person.id, false) == 0
         assert response.redirectedUrl == '/person/list'
-    }
+   }
 }

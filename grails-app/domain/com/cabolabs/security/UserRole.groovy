@@ -21,7 +21,7 @@ class UserRole implements Serializable {
 
 	@Override
 	boolean equals(other) {
-		if (!(other instanceof UserRole)) {
+		if (!other.instanceOf(UserRole)) {
 			return false
 		}
 

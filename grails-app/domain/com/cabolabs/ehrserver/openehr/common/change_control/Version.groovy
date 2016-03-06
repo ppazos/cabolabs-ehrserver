@@ -2,7 +2,6 @@ package com.cabolabs.ehrserver.openehr.common.change_control
 
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-//import support.identification.CompositionRef // T0004 ya no se usa
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
@@ -37,8 +36,6 @@ class Version {
    AuditDetails commitAudit
    
    // Datos commiteados (referencia a la composition)
-   //CompositionRef data
-   // T0004: CompositionRef se deja de usar y se usa CompositionIndex
    CompositionIndex data
    
    Contribution contribution

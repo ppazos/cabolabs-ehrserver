@@ -86,9 +86,6 @@
     
     <script type="text/javascript">
 
-      // TODO: put this in a singleton
-      //var datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME', 'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION'];
-
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
@@ -229,7 +226,7 @@
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
              .done(function( data ) {
-               console.log(data);
+               //console.log(data);
                location.href = '${createLink("action": "show")}?id='+ data.id;
              });
            },
@@ -241,7 +238,7 @@
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
              .done(function( data ) {
-               console.log(data);
+               //console.log(data);
                location.href = '${createLink("action": "show")}?id='+ data.id;
              });
            }
@@ -258,8 +255,8 @@
 
       var test_query_composition = function () {
 
-        console.log('test composition query');
-        console.log('query_form', $('#query_form'));
+        //console.log('test composition query');
+        //console.log('query_form', $('#query_form'));
 
         
         // query management
@@ -295,10 +292,11 @@
         })
         .done(function( res ) {
            
-           console.log("queryCompositions result", res);
+           //console.log("queryCompositions result", res);
            
+           var code = $('#code');
            // reset code class or highlight
-           $('code').removeClass('xml json');
+           code.removeClass('xml json');
 
            // Si devuelve HTML
            if ($('select[name=showUI]').val()=='true')
@@ -313,19 +311,19 @@
              console.log('JSON OR XML');
              if (format == 'json')
              {
-                $('code').addClass('json');
-                $('code').text(JSON.stringify(res, undefined, 2));
-                $('code').each(function(i, e) { hljs.highlightBlock(e); });
+               code.addClass('json');
+               code.text(JSON.stringify(res, undefined, 2));
+               code.each(function(i, e) { hljs.highlightBlock(e); });
              }
              else
              { 
                // highlight
-               $('code').addClass('xml');
-               $('code').text(formatXml( xmlToString(res) ));
-               $('code').each(function(i, e) { hljs.highlightBlock(e); });
+               code.addClass('xml');
+               code.text(formatXml( xmlToString(res) ));
+               code.each(function(i, e) { hljs.highlightBlock(e); });
              }
 
-             $('code').show('slow');
+             code.show('slow');
            }
            
            // Muestra el boton que permite ver los datos crudos
@@ -380,8 +378,10 @@
             
             console.log('form_datavalue success 2');
 
+            var code = $('#code');
+            
             // reset code class or highlight
-            $('code').removeClass('xml json');
+            code.removeClass('xml json');
 
             // Si devuelve JSON (verifica si pedi json)
             if (format == 'json')
@@ -389,9 +389,9 @@
               console.log('form_datavalue success json');
               
               // highlight
-              $('code').addClass('json');
-              $('code').text(JSON.stringify(res, undefined, 2));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              code.addClass('json');
+              code.text(JSON.stringify(res, undefined, 2));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
               
               if (qehrId != null) 
               {
@@ -417,12 +417,12 @@
               console.log('form_datavalue success XML');
             
               // highlight
-              $('code').addClass('xml');
-              $('code').text(formatXml( xmlToString(res) ));
-              $('code').each(function(i, e) { hljs.highlightBlock(e); });
+              code.addClass('xml');
+              code.text(formatXml( xmlToString(res) ));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
             }
 
-            $('code').show('slow');
+            code.show('slow');
             
             // Muestra el boton que permite ver los datos crudos
             // devueltos por el servidor
@@ -430,7 +430,7 @@
             
             
             // Hace scroll animado para mostrar el resultado
-            $('html,body').animate({scrollTop:$('#code').offset().top+400}, 500);
+            $('html,body').animate({scrollTop:code.offset().top+400}, 500);
          });
 
       }; // test_query_datavalue
@@ -811,6 +811,9 @@
                   case 'DV_DATE_TIME':
                     if (attr == 'value') class_type = 'input_datetime'; //input_type = 'datetime-local';
                   break;
+                  case 'DV_DATE':
+                    if (attr == 'value') class_type = 'input_date'; //input_type = 'datetime-local';
+                  break;
                   case 'DV_COUNT':
                     if (attr == 'magnitude') input_type = 'number';
                   break;
@@ -859,7 +862,7 @@
                           criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                         break
                         case 'range':
-                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm'+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                       }
                     }
@@ -926,6 +929,7 @@
        */
       var apply_datetime_picker_behavior_for_criteria = function (criteria_container)
       {
+        // datetime
         var fields = $('.input_datetime', criteria_container)
         
         fields.datetimepicker({
@@ -934,6 +938,22 @@
           weekStart: 1,
           todayHighlight: true,
           minuteStep: 15,
+          pickerPosition: 'bottom-left',
+          autoclose: true
+        });
+        
+        fields.attr('readonly', true);
+        
+        // date
+        fields = $('.input_date', criteria_container)
+        
+        fields.datetimepicker({
+          format: "yyyy-mm-dd",
+          todayHighlight: 1,
+          weekStart: 1,
+          todayHighlight: true,
+          startView: 'month', /* starts showing the days of the month */
+          minView: 'month',   /* ends showing the days of the month, that's the date picker, below this starts hte time picker */
           pickerPosition: 'bottom-left',
           autoclose: true
         });
@@ -948,7 +968,7 @@
          
         console.log('operand change', this.selectedIndex, $(this).data('criteria'));
         
-        var criteria_value_container = $(this).next();
+        var criteria_value_container = $(this).parent().next();
         
         // All criteria values hidden
         criteria_value_container.children().css('display', 'none');
@@ -991,6 +1011,12 @@
       $(document).ready(function() {
       
         $('select[name=type]').val(""); // select empty option by default
+        
+        // zebra style to the selects that have the size attr
+        $.each($('select[size] option'), function( i, option ) {
+        
+          if (i % 2 == 0) $(option).css('background-color', '#f3f3f3');
+        });
       
         <%
         // =====================================================================
@@ -1045,12 +1071,26 @@
                    operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
                    
+                   // TODO
+                   // date?.format(Holders.config.app.l10n.db_datetime_format)
+                   // ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                   
                    if (value instanceof List)
                    {
-                      println 'criteria.add_condition("'+
-                         attr +'", "'+
-                         operand +'", '+
-                         ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                      if (value[0] instanceof Date)
+                      {
+                         println 'criteria.add_condition("'+
+                            attr +'", "'+
+                            operand +'", '+
+                            ( value.collect{ it.format(grailsApplication.config.app.l10n.ext_datetime_utcformat_nof) } as JSON ) +');'
+                      }
+                      else
+                      {
+                         println 'criteria.add_condition("'+
+                            attr +'", "'+
+                            operand +'", '+
+                            ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                      }
                    }
                    else // value is an array of 1 element
                    {
@@ -1407,10 +1447,8 @@
                   <tr>
                     <td><g:message code="query.create.concept" /></td>
                     <td>
-                      <g:set var="concepts" value="${dataIndexes.archetypeId.unique().sort()}" />
-                      <%-- optionKey="archetypeId" optionValue="${{it.archetypeConcept +' ('+ it.archetypeId +')'}}" --%>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10" from="${concepts}"
+                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name +' ('+ it.archetypeId +')'}}"
                                  noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
                     </td>
                   </tr>
@@ -1634,9 +1672,8 @@
           
           <!-- test panel -->
           <div id="query_test">
-              <g:include action="test" />
-           </div>
-           
+            <g:include action="test" />
+          </div>
         </g:form>
       </div>
     </div>

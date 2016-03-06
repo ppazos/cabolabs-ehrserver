@@ -45,4 +45,17 @@ class RoleSpec extends Specification {
           
           staffRole.higherThan userRole
     }
+    
+    void "test equals"()
+    {
+       when:
+          def role1 = new Role(authority:'ROLE_ADMIN')
+          def role2 = new Role(authority:'ROLE_ADMIN')
+          def role3 = new Role(authority:'ROLE_OTHER')
+       
+       then:
+          role1.equals(role2)
+          role2.equals(role1)
+          !role3.equals(role1)
+    }
 }

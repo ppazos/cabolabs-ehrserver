@@ -28,7 +28,8 @@ class ContributionControllerTests {
             idCode: '4116238-0',
             idType: 'CI',
             role: 'pat',
-            uid: '463456346345654')
+            uid: '463456346345654',
+            organizationUid: '1234-1234-1234')
 
       if (!pat.save()) println p.errors
      
@@ -36,7 +37,8 @@ class ContributionControllerTests {
       // Crea EHRs para los pacientes de prueba
       // Idem EhrController.createEhr
       def ehr = new Ehr(
-         subject: new PatientProxy( value: pat.uid )
+         subject: new PatientProxy( value: pat.uid ),
+         organizationUid: '1234-1234-1234'
       )
       if (!ehr.save()) println ehr.errors
    }

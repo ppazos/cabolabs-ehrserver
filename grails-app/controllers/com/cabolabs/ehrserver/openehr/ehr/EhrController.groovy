@@ -1,6 +1,5 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
-//import com.thoughtworks.xstream.XStream
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
@@ -13,18 +12,16 @@ import groovy.xml.MarkupBuilder
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import grails.util.Holders
 
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.stream.StreamResult
-import javax.xml.transform.stream.StreamSource
-
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.openehr.composition.CompositionService
 
 class EhrController {
 
    def springSecurityService
+   def compositionService
    
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -54,20 +51,7 @@ class EhrController {
       
       [list: list, total: count]
    }
-   
-   /**
-    * GUI test: devuelve el XML de las compositions commiteadas
-    * @param uid
-    * @return
-    */
-   def showComposition(String uid)
-   {
-      def compoIndex = CompositionIndex.findByUid(uid)
-      def version = compoIndex.getParent()
-      def versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
-      
-      render(text: versionFile.getText(), contentType: "text/xml", encoding:"UTF-8")
-   }
+
    
    // GUI debug
    def showEhr(String patientUID)
@@ -166,8 +150,6 @@ class EhrController {
          }
       }
       
-      //def ehr = Ehr.findBySubject(subject)
-      
       if (ehr)
       {
          // TODO: ya tiene ehr, no creo nada
@@ -194,61 +176,23 @@ class EhrController {
    } // createEhr
    
    
-   
-   // ===========================================================
-   // test: mostrar composition en ui (doc viewer)
-   //
+   /**
+    * 
+    * @param uid composition identifier
+    * @return composition as HTML
+    */
    def showCompositionUI(String uid)
    {
-      def compoIndex = CompositionIndex.findByUid(uid)
-      def version = compoIndex.getParent()
-      def versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
-      def xml = versionFile.getText()
-      
-      // Transform to HTML
-      def xslt = new File(config.xslt).getText()
-      
-      // Create transformer
-      def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt)))
-      
-      // Set output file
-      //def html = new FileOutputStream("temp.html")
-      def html = new StringWriter()
-      
-      // Perform transformation
-      transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(html))
-      
-      return [compositionHtml: html.toString()]
+      return [compositionHtml: compositionService.compositionAsHtml(uid)]
    }
-
-/*
-   private void toHtml(GPathResult n, MarkupBuilder builder, String classPath)
-   {
-      // TODO: clases que sean clase.atributo del RM
-      // (ej. OBS.data, HIST.events), asi puedo definir estilos por
-      // atributo del RM.
-      //
-      // TODO: class por tipo del RM.
-      //
-      // necesito consultar el arquetipo para poder hacerlo o puedo consultar los IndexDefinition (temporal)
-      
-      if (n.children().isEmpty())
-      {
-         builder.div( class:'single_value', n.text() )
-      }
-      else
-      {
-         builder.div( class:classPath ) { // TODO: class = rmTypeName
-            
-            n.children().each { sn ->
-               
-               toHtml(sn, builder, classPath +'_'+ sn.name())
-            }
-         }
-      }
-   }
-*/
    
-   // /test: showCompositionUI
-   // ===========================================================
+   
+   /**
+    * @param uid composition identifier
+    * @return composition as XML
+    */
+   def showComposition(String uid)
+   {
+      render(text: compositionService.compositionAsXml(uid), contentType: "text/xml", encoding:"UTF-8")
+   }
 }

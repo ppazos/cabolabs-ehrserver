@@ -3,6 +3,7 @@ package com.cabolabs.ehrserver.query
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.data.DataValues
 
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -41,7 +42,8 @@ class QueryController {
     def create()
     {
         [queryInstance: new Query(params),
-         dataIndexes: IndexDefinition.list(), // to create filters or projections
+         dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
+         concepts: IndexDefinition.findAllByArchetypePath('/'),
          templateIndexes: OperationalTemplateIndex.list()]
     }
     
@@ -58,7 +60,8 @@ class QueryController {
           view: 'create',
           model: [
              queryInstance: Query.get(id),
-             dataIndexes: IndexDefinition.list(), // to create filters or projections
+             dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
+             concepts: IndexDefinition.findAllByArchetypePath('/'),
              templateIndexes: OperationalTemplateIndex.list(),
              mode: 'edit'
           ]
@@ -320,10 +323,8 @@ class QueryController {
     def getIndexDefinitions(String archetypeId, boolean datatypesOnly)
     {
        // TODO: checkear params
-       
-       // TODO: define supported DVs in a singleton
-       def datatypes = ['DV_QUANTITY', 'DV_CODED_TEXT', 'DV_TEXT', 'DV_DATE_TIME',
-           'DV_BOOLEAN', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']
+
+       def datatypes = DataValues.valuesStringList()
        
        // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
        //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
@@ -333,7 +334,6 @@ class QueryController {
        //        in IndexDefinition, and a N-N relationship between OPTs and the referenced arch/path.
        //        Current fix is for https://github.com/ppazos/cabolabs-ehrserver/issues/102
        
-       //def list = IndexDefinition.findAllByArchetypeId(archetypeId)
        def list = IndexDefinition.withCriteria {
           resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
           projections {
@@ -390,107 +390,34 @@ class QueryController {
           case 'DV_DURATION':
             res = DataCriteriaDV_DURATION.criteriaSpec(archetypeId, path)
           break
+          case 'DV_DATE':
+            res = DataCriteriaDV_DATE.criteriaSpec(archetypeId, path)
+          break
+          case 'DV_IDENTIFIER':
+            res = DataCriteriaDV_IDENTIFIER.criteriaSpec(archetypeId, path)
+          break
        }
        
        render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
     }
     
-    def export(Long id)
-    {
-       def q = Query.get(id)
-       def criteriaMap, _value
-       
-       // TODO: this code should be reused in RestConrtoller.queryList
-       withFormat {
-          xml {
-             render(contentType: "text/xml") {
-                query {
-                   uid(q.uid)
-                   name(q.name)
-                   format(q.format)
-                   type(q.type)
-                   
-                   if (q.type == 'composition')
-                   {
-                      criteriaLogic(q.criteriaLogic)
-                      templateId(q.templateId)
-                      
-                      for (criteria in q.where)
-                      {
-                         delegate.criteria {
-                            archetypeId(criteria.archetypeId)
-                            path(criteria.path)
-                            //operand(criteria.operand)
-                            //value(criteria.value)
-                            
-                            criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
-                            
-                            conditions {
-                               criteriaMap.each { attr, cond ->
-                                  
-                                  _value = cond.find{true}.value // can be a list
-                                  
-                                  "$attr" {
-                                     operand(cond.find{true}.key) // first entry of the operand: value map
-                                     
-                                     if (_value instanceof List)
-                                     {
-                                        list {
-                                           _value.each { val ->
-                                              item(val)
-                                           }
-                                        }
-                                     }
-                                     else
-                                     {
-                                        value(_value)
-                                     }
-                                  }
-                               }
-                            }
-                         }
-                      }
-                   }
-                   else
-                   {
-                      group(q.group) // Group is only for datavalue
-                      
-                      for (proj in q.select)
-                      {
-                         projection {
-                            archetypeId(proj.archetypeId)
-                            path(proj.path)
-                         }
-                      }
-                   }
-                }
-             }
-          }
-          json {
-             render(contentType: "application/json") {
-                delegate.query = {
-                   uid    = q.uid
-                   name   = q.name
-                   format = q.format
-                   type   = q.type
-                   
-                   if (q.type == 'composition')
-                   {
-                      criteriaLogic = q.criteriaLogic
-                      templateId    = q.templateId
-                      criteria      = q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
-                   }
-                   else
-                   {
-                      group         = q.group // Group is only for datavalue
-                      projections   = q.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-                   }
-                } // query
-             }
-          }
-          html {
-             return "format not supported"
-          }
-       }
-    }
+   def export(Long id)
+   {
+      def q = Query.get(id)
+      def criteriaMap, _value
+      
+      
+      // TODO: this code should be reused in RestConrtoller.queryList
+      withFormat {
+         xml {
+            render(text: q.getXML(), contentType: "text/xml")
+         }
+         json {
+            render(text: q.getJSON(), contentType: "application/json")
+         }
+         html {
+            return "format not supported"
+         }
+      }
+   }
 }

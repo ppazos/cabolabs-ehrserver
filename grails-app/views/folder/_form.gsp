@@ -2,7 +2,7 @@
 
 <div class="form-group ${hasErrors(bean: folderInstance, field: 'parent', 'has-error')}">
   <label class="control-label"><g:message code="folder.parent.label" default="Parent" /></label>
-  <g:select id="parent" name="parent.id" from="${directory.Folder.list()}" optionKey="id" optionValue="name" value="${folderInstance?.parent?.id}" class="many-to-one form-control" noSelection="['': '']"/>
+  <g:select id="parent" name="parent.id" from="${Folder.list()}" optionKey="id" optionValue="name" value="${folderInstance?.parent?.id}" class="many-to-one form-control" noSelection="['': '']"/>
 </div>
 
 <div class="form-group ${hasErrors(bean: folderInstance, field: 'ehr', 'has-error')}">

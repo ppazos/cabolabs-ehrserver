@@ -18,7 +18,7 @@ class Role implements Serializable {
 
 	@Override
 	boolean equals(other) {
-		is(other) || (other instanceof Role && other.authority == authority)
+		is(other) || (other.instanceOf(Role) && other.authority == authority)
 	}
 
 	@Override

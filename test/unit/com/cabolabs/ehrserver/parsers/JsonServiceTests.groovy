@@ -1,7 +1,5 @@
 package com.cabolabs.ehrserver.parsers
 
-// grails test-app me dice que no encuentra la lib...
-//import com.thoughtworks.xstream.XStream
 import grails.test.mixin.*
 import org.junit.*
 import com.cabolabs.ehrserver.parsers.JsonService

@@ -1,6 +1,14 @@
 #CaboLabs EHRServer
 
+[![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver)
+
+
 ## Service-oriented clinical data repository for shared EHRs/EMRs/PHRs based on the [openEHR standard](http://openehr.org).
+
+
+### [New EHRServer v0.5 guide](http://cabolabs.com/software_resources/EHRServer_v0.5.pdf)
+
+
 
 ### Main Services:
 

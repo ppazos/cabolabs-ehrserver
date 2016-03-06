@@ -37,23 +37,22 @@ class Ehr {
    String organizationUid
    
    
-   List compositions = []
    List contributions = []
-   static hasMany = [compositions:VersionedComposition, contributions:Contribution]
+   static hasMany = [contributions:Contribution]
    
+   static transients = ['compositions']
    
    static constraints = {
       directory(nullable: true) // directory is optional
    }
    
    static mapping = {
-      //subject cascade: 'save-update' // va con belongsTo en PatientProxy
-      compositions cascade: 'save-update'
    }
    
    // For testing purposes
    def containsVersionedComposition(String uid)
    {
+      /*
       def c = this.createCriteria()
       def res = c.list { // FIXME: use count
          compositions {
@@ -61,6 +60,13 @@ class Ehr {
          }
       }
       return res.size() == 1
+      */
+      VersionedComposition.countByUidAndEhr(uid, this) != 0
+   }
+   
+   def getCompositions()
+   {
+      VersionedComposition.findAllByEhr(this)
    }
    
    String toString()

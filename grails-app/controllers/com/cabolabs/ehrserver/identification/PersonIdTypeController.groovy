@@ -29,7 +29,7 @@ class PersonIdTypeController {
         }
 
         if (personIdTypeInstance.hasErrors()) {
-            respond personIdTypeInstance.errors, view:'create'
+            render model: [personIdTypeInstance: personIdTypeInstance], view: 'create'
             return
         }
 

@@ -91,6 +91,28 @@ class Query {
    }
    
    /**
+    * used by updateInstance to create a list of dates from a string or list of strings entered in the query creation ui.
+    * @return
+    */
+   def dateValues(criteriaValuesFromUI)
+   {
+      def dateValues = []
+      if (criteriaValuesFromUI instanceof String)
+      {
+         //println "try to parse "+ criteria.valueValue
+         def dateValue = DateParser.tryParse(criteriaValuesFromUI)
+         dateValues << dateValue
+      }
+      else // criteria.valueValue is a list
+      {
+         criteriaValuesFromUI.each { stringDateValue ->
+            dateValues << DateParser.tryParse(stringDateValue)
+         }
+      }
+      return dateValues
+   }
+   
+   /**
     * For edit/update.
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
@@ -124,25 +146,19 @@ class Query {
                break
                case 'DataCriteriaDV_DATE_TIME':
 
-                  def dateValues = []
-                  if (criteria.valueValue instanceof String)
-                  {
-                     //println "try to parse "+ criteria.valueValue
-                     def dateValue = DateParser.tryParse(criteria.valueValue)
-                     dateValues << dateValue
-                  }
-                  else // criteria.valueValue is a list
-                  {
-                     def dateValue
-                     criteria.valueValue.each { stringDateValue ->
-                        dateValue = DateParser.tryParse(stringDateValue)
-                        dateValues << dateValue
-                     }
-                  }
+                  def dateValues = dateValues(criteria.valueValue)
                   
                   // Set the values converted to Date
                   criteria.valueValue = dateValues
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
+               break
+               case 'DataCriteriaDV_DATE':
+
+                  def dateValues = dateValues(criteria.valueValue)
+                  
+                  // Set the values converted to Date
+                  criteria.valueValue = dateValues
+                  condition = new DataCriteriaDV_DATE(criteria)
                break
                case 'DataCriteriaDV_BOOLEAN':
                   condition = new DataCriteriaDV_BOOLEAN(criteria)
@@ -158,6 +174,9 @@ class Query {
                break
                case 'DataCriteriaDV_DURATION':
                   condition = new DataCriteriaDV_DURATION(criteria)
+               break
+               case 'DataCriteriaDV_IDENTIFIER':
+                  condition = new DataCriteriaDV_IDENTIFIER(criteria)
                break
             }
 
@@ -314,36 +333,38 @@ class Query {
          
          switch (dataidx.rmTypeName)
          {
-            case ['DV_QUANTITY', 'DvQuantity']:
-               resHeaders[absPath]['attrs'] = ['magnitude', 'units']
+            case 'DV_QUANTITY':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() //['magnitude', 'units']
             break
-            case ['DV_CODED_TEXT', 'DvCodedText']:
-               // code => defining_code.code_string
-               // FIXME: add defining_code.terminology_id
-               resHeaders[absPath]['attrs'] = ['value', 'code']
+            case 'DV_CODED_TEXT':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_CODED_TEXT.attributes() // ['value', 'code']
             break
-            case ['DV_ORDINAL', 'DvOrdinal ']:
-               // value: integer, symbol.value: string, symbol.code: string
-               // FIXME: add symbol.defining_code.terminology_id
-               resHeaders[absPath]['attrs'] = ['value', 'symbol_value', 'symbol_code']
+            case 'DV_ORDINAL':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_ORDINAL.attributes() // ['value', 'symbol_value', 'symbol_code']
             break
-            case ['DV_TEXT', 'DvText']:
-               resHeaders[absPath]['attrs'] = ['value']
+            case 'DV_TEXT':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_TEXT.attributes() // ['value']
             break
-            case ['DV_DATE_TIME', 'DvDateTime']:
-               resHeaders[absPath]['attrs'] = ['value']
+            case 'DV_DATE_TIME':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DATE_TIME.attributes() // ['value']
             break
-            case ['DV_BOOLEAN', 'DvBoolean']:
-               resHeaders[absPath]['attrs'] = ['value']
+            case 'DV_DATE':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DATE.attributes() // ['value']
             break
-            case ['DV_COUNT', 'DvCount']:
-               resHeaders[absPath]['attrs'] = ['magnitude']
+            case 'DV_BOOLEAN':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_BOOLEAN.attributes() // ['value']
             break
-            case ['DV_PROPORTION', 'DvProportion']:
-               resHeaders[absPath]['attrs'] = ['numerator', 'denominator', 'type', 'precision']
+            case 'DV_COUNT':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_COUNT.attributes() // ['magnitude']
             break
-            case ['DV_DURATION', 'DvDuration']:
-               resHeaders[absPath]['attrs'] = ['value', 'magnitude']
+            case 'DV_PROPORTION':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_PROPORTION.attributes() // ['numerator', 'denominator', 'type', 'precision']
+            break
+            case 'DV_DURATION':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_DURATION.attributes() // ['value', 'magnitude']
+            break
+            case 'DV_IDENTIFIER':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_IDENTIFIER.attributes()
             break
             default:
                throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -420,41 +441,47 @@ class Query {
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
-                  case ['DV_QUANTITY', 'DvQuantity']:
+                  case 'DV_QUANTITY':
                      colValues['magnitude'] = dvi.magnitude
                      colValues['units'] = dvi.units
                   break
-                  case ['DV_CODED_TEXT', 'DvCodedText']:
+                  case 'DV_CODED_TEXT':
                      colValues['value'] = dvi.value
                      colValues['code'] = dvi.code
                   break
-                  case ['DV_TEXT', 'DvText']:
+                  case 'DV_TEXT':
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_DATE_TIME', 'DvDateTime']:
+                  case ['DV_DATE_TIME', 'DV_DATE']:
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_BOOLEAN', 'DvBoolean']:
+                  case 'DV_BOOLEAN':
                      colValues['value'] = dvi.value
                   break
-                  case ['DV_COUNT', 'DvCount']:
+                  case 'DV_COUNT':
                      colValues['magnitude'] = dvi.magnitude
                   break
-                  case ['DV_PROPORTION', 'DvProportion']:
+                  case 'DV_PROPORTION':
                      colValues['numerator'] = dvi.numerator
                      colValues['denominator'] = dvi.denominator
                      colValues['type'] = dvi.type
                      colValues['precision'] = dvi.precision
                   break
-                  case ['DV_ORDINAL', 'DvOrdinal']:
+                  case 'DV_ORDINAL':
                      colValues['value'] = dvi.value
                      colValues['symbol_value'] = dvi.symbol_value
                      colValues['symbol_code'] = dvi.symbol_code
                      colValues['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
-                  case ['DV_DURATION', 'DvDuration']:
+                  case 'DV_DURATION':
                      colValues['value'] = dvi.value
                      colValues['magnitude'] = dvi.magnitude
+                  break
+                  case 'DV_IDENTIFIER':
+                     colValues['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                     colValues['type'] = dvi.type
+                     colValues['issuer'] = dvi.issuer
+                     colValues['assigner'] = dvi.assigner
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
@@ -538,49 +565,56 @@ class Query {
             // Datos de cada path seleccionada dentro de la composition
             switch (dataidx.rmTypeName)
             {
-               case ['DV_QUANTITY', 'DvQuantity']: // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
+               case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
                                                    units:     dvi.units,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_CODED_TEXT', 'DvCodedText']:
+               case 'DV_CODED_TEXT':
                   resGrouped[absPath]['serie'] << [code:      dvi.code,
                                                    value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_ORDINAL', 'DvOrdinal']:
+               case 'DV_ORDINAL':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
                                                    symbol_value: dvi.symbol_value,
                                                    symbol_code:  dvi.symbol_code,
                                                    symbol_terminology_id: dvi.symbol_terminology_id,
                                                    date:         dvi.owner.startTime]
                break
-               case ['DV_TEXT', 'DvText']:
+               case 'DV_TEXT':
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_DATE_TIME', 'DvDateTime']:
+               case ['DV_DATE_TIME', 'DV_DATE']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_BOOLEAN', 'DvBoolean']:
+               case 'DV_BOOLEAN':
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_COUNT', 'DvCount']:
+               case 'DV_COUNT':
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
                                                    date:      dvi.owner.startTime]
                break
-               case ['DV_PROPORTION', 'DvProportion']:
+               case 'DV_PROPORTION':
                   resGrouped[absPath]['serie'] << [numerator:   dvi.numerator,
                                                    denominator: dvi.denominator,
                                                    type:        dvi.type,
                                                    precision:   dvi.precision,
                                                    date:        dvi.owner.startTime]
                break
-               case ['DV_DURATION', 'DvDuration']:
-                  resGrouped[absPath]['serie'] << [value:   dvi.value,
-                                                   magnitude: dvi.magnitude]
+               case 'DV_DURATION':
+                  resGrouped[absPath]['serie'] << [value:       dvi.value,
+                                                   magnitude:   dvi.magnitude]
+               break
+               case 'DV_IDENTIFIER':
+                  resGrouped[absPath]['serie'] << [id:          dvi.identifier,  // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                                                   type:        dvi.type,
+                                                   issuer:      dvi.issuer,
+                                                   assigner:    dvi.assigner,
+                                                   date:        dvi.owner.startTime]
                break
                default:
                   throw new Exception("type "+dataidx.rmTypeName+" not supported")
@@ -683,6 +717,10 @@ class Query {
                    fromMap['DvDateTimeIndex'] = 'ddti'
                    where += " AND ddti.id = dvi.id "
                break
+               case 'DV_DATE':
+                  fromMap['DvDateIndex'] = 'dcdte'
+                  where += " AND dcdte.id = dvi.id "
+               break
                case 'DV_QUANTITY':
                    fromMap['DvQuantityIndex'] = 'dqi'
                    where += " AND dqi.id = dvi.id "
@@ -714,6 +752,10 @@ class Query {
                case 'DV_DURATION':
                   fromMap['DvDurationIndex'] = 'dduri'
                   where += " AND dduri.id = dvi.id "
+               break
+               case 'DV_IDENTIFIER':
+                  fromMap['DvIdentifierIndex'] = 'dvidi'
+                  where += " AND dvidi.id = dvi.id "
                break
                default:
                   throw new Exception("type $idxtype not supported")
@@ -776,5 +818,120 @@ class Query {
       //println "cilist: "+ cilist
       
       return cilist
+   }
+   
+   
+   def getXML()
+   {
+      def builder = new groovy.xml.StreamingMarkupBuilder()
+      def xml = builder.bind {
+         
+         query {
+            uid(this.uid)
+            name(this.name)
+            format(this.format)
+            type(this.type)
+            
+            if (this.type == 'composition')
+            {
+               criteriaLogic(this.criteriaLogic)
+               templateId(this.templateId)
+               
+               def criteriaMap, _value
+               for (_criteria in this.where)
+               {
+                  criteria {
+                     archetypeId(_criteria.archetypeId)
+                     path(_criteria.path)
+                     
+                     criteriaMap = _criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+                     
+                     conditions {
+                        criteriaMap.each { attr, cond ->
+                           
+                           _value = cond.find{true}.value // can be a list
+                           
+                           //println "_value type "+ _value.getClass()
+                           // String
+                           // List
+                           // Boolean
+                           
+                           "$attr" {
+                              operand(cond.find{true}.key) // first entry of the operand: value map
+                              
+                              if (_value instanceof List)
+                              {
+                                 list {
+                                    _value.each { val ->
+                                       
+                                       //println "list val type "+ val.getClass()
+                                       // Double
+                                       // sql.TimeStamp (Date) <<<< add custom formatter for UTC date
+                                       if (val instanceof Date)
+                                       {
+                                          /*
+                                          println "date transform "+ val
+                                          println "offset " + val.getTimezoneOffset() // 0
+                                          
+                                          java.text.SimpleDateFormat dateFormatGmt = new java.text.SimpleDateFormat(Holders.config.app.l10n.ext_datetime_utcformat_nof)
+                                          dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"))
+                                          println "format dateformat "+ dateFormatGmt.format(val)
+                                          */
+                                          item( val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC")) )
+                                       }
+                                       else
+                                          item(val)
+                                    }
+                                 }
+                              }
+                              else
+                              {
+                                 value(_value)
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+            else
+            {
+               group(this.group) // Group is only for datavalue
+               
+               for (proj in this.select)
+               {
+                  projection {
+                     archetypeId(proj.archetypeId)
+                     path(proj.path)
+                  }
+               }
+            }
+         }
+      } // builder
+   }
+   
+   def getJSON()
+   {
+      def builder = new groovy.json.JsonBuilder()
+      def root = builder.query {
+         uid    this.uid
+         name   this.name
+         format this.format
+         type   this.type
+         
+         if (this.type == 'composition')
+         {
+            criteriaLogic this.criteriaLogic
+            templateId    this.templateId
+            criteria      this.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }
+         }
+         else
+         {
+            group         this.group // Group is only for datavalue
+            projections   this.select.collect { [archetypeId: it.archetypeId, path: it.path] }
+         }
+      }
+      
+      return builder.toString()
    }
 }

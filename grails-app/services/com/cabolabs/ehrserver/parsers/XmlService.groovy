@@ -69,16 +69,20 @@ class XmlService {
       //  TODO: support more types
       manageVersionedCompositions(domainVersions, ehr)
       
-      
-      // Save the contribution with all the versions
-      //  throws grails.validation.ValidationException that contains the errors
-      contribution.save(flush:true, failOnError:true)
-      
-      
+
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
       storeVersionXMLs(versions)
+      
+      
+      // Save the contribution with all the versions
+      //  throws grails.validation.ValidationException that contains the errors
+      //contribution.save(flush:true, failOnError:true) // saved through the ehr
+      
+
+      // TEST: this might save the contrib and there is no need of saving the contrib later
+      ehr.addToContributions( contribution )
    }
    
    
@@ -166,15 +170,11 @@ class XmlService {
             
                versionedComposition = new VersionedComposition(
                   uid: version.objectId,
-                  ehrUid: ehr.uid,
+                  ehr: ehr,
                   isPersistent: (version.data.category == 'persistent'))
                
-               
-               // Agrega composition al EHR
-               ehr.addToCompositions( versionedComposition )
-               
                // If errors, throws grails.validation.ValidationException with the errors
-               ehr.save(flush:true, failOnError:true)
+               versionedComposition.save(flush:true, failOnError:true)
                
             break
             case ['amendment', 'modification']:
@@ -211,6 +211,11 @@ class XmlService {
       }
    }
    
+   private String versionFileName(GPathResult version)
+   {
+      return config.version_repo + version.uid.text().replaceAll('::', '_') +'.xml'
+   }
+   
    /**
     * Stores XML documents committed, as files.
     * @param versions
@@ -231,14 +236,16 @@ class XmlService {
       if (!new File(config.version_repo).canWrite()) throw new AccessDeniedException("Unable to write file ${config.version_repo}")
       
       
-      def uid, file, path
+      def file, path
       versions.version.each { version ->
          
-         uid = version.uid.text()
-         path = config.version_repo + uid.replaceAll('::', '_') +'.xml'
-         file = new File(path)
+         path = versionFileName(version)
+         file = new File( path )
          
-         if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
+         //if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
+         // Need to throw unchecked exception to make the service rollback
+         // Ref: http://www.jellyfishtechnologies.com/services-grails-transactional-behaviour/
+         if (file.exists()) throw new RuntimeException("Unable to save composition from commit, file ${path} already exists")
          
          // FIXME: check if the XML has the namespace declarations of the root node from the commit
          file << groovy.xml.XmlUtil.serialize( version )
@@ -351,7 +358,8 @@ class XmlService {
          {
             if (version.commitAudit.changeType == "creation")
             {
-               throw new IllegalArgumentException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
+               //IllegalArgumentException
+               throw new RuntimeException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
             }
             
             // change type is not creation
@@ -441,7 +449,6 @@ class XmlService {
    {
       Date startTime
       
-      // T0004
       // =====================================================================
       // Crea indice para la composition
       // =====================================================================
@@ -577,10 +584,6 @@ class XmlService {
          )
          // versions se setean abajo
       )
-      
-      // FIXME: dont do this here, do it in the main process that saves all the data, because this should be transactional, if it fails, no contrib should be added
-      // TEST: this might save the contrib and there is no need of saving the contrib later
-      ehr.addToContributions( currentContribution )
       
       return currentContribution
    }

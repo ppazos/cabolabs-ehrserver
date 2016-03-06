@@ -34,7 +34,7 @@
         <div class="control-group">
           <label class="control-label"><g:message code="versionedComposition.ehrUid.label" default="EHR UID" /></label>
           <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${versionedCompositionInstance}" field="ehrUid"/></p>
+            <p class="form-control-static">${versionedCompositionInstance.ehr.uid}</p>
           </div>
         </div>
         <div class="control-group">

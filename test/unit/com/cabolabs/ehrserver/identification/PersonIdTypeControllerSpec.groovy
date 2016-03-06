@@ -10,7 +10,8 @@ class PersonIdTypeControllerSpec extends Specification {
     def populateValidParams(params) {
         assert params != null
         // TODO: Populate valid properties like...
-        //params["name"] = 'someValidName'
+        params["name"] = 'SSN'
+        params["code"] = 'SSN'
     }
 
     void "Test the index action returns the correct model"() {
@@ -40,8 +41,8 @@ class PersonIdTypeControllerSpec extends Specification {
             controller.save(personIdType)
 
         then:"The create view is rendered again with the correct model"
-            model.personIdTypeInstance!= null
             view == 'create'
+            model.personIdTypeInstance!= null
 
         when:"The save action is executed with a valid instance"
             response.reset()

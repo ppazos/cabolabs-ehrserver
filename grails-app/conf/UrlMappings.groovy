@@ -23,6 +23,11 @@ class UrlMappings {
          controller: 'rest',
          action: 'findCompositions'
       )
+      
+      "/rest/compositions/$uid"(
+         controller: 'rest',
+         action: 'getComposition'
+      )
 
       // /rest/ehrs/ehrUid/xxx -- one EHR based on ehrUid partition
       "/rest/ehrs/ehrUid/$ehrUid"(

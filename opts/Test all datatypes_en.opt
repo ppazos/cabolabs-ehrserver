@@ -27,7 +27,7 @@
         <terminology_id>
           <value>ISO_639-1</value>
         </terminology_id>
-        <code_string>en</code_string>
+        <code_string>es</code_string>
       </language>
       <purpose>Not Specified</purpose>
     </details>
@@ -1601,6 +1601,41 @@
                           </children>
                         </attributes>
                       </children>
+                      <children xsi:type="C_COMPLEX_OBJECT">
+                        <rm_type_name>ELEMENT</rm_type_name>
+                        <occurrences>
+                          <lower_included>true</lower_included>
+                          <upper_included>true</upper_included>
+                          <lower_unbounded>false</lower_unbounded>
+                          <upper_unbounded>false</upper_unbounded>
+                          <lower>0</lower>
+                          <upper>1</upper>
+                        </occurrences>
+                        <node_id>at0028</node_id>
+                        <attributes xsi:type="C_SINGLE_ATTRIBUTE">
+                          <rm_attribute_name>value</rm_attribute_name>
+                          <existence>
+                            <lower_included>true</lower_included>
+                            <upper_included>true</upper_included>
+                            <lower_unbounded>false</lower_unbounded>
+                            <upper_unbounded>false</upper_unbounded>
+                            <lower>0</lower>
+                            <upper>1</upper>
+                          </existence>
+                          <children xsi:type="C_COMPLEX_OBJECT">
+                            <rm_type_name>DV_DATE</rm_type_name>
+                            <occurrences>
+                              <lower_included>true</lower_included>
+                              <upper_included>true</upper_included>
+                              <lower_unbounded>false</lower_unbounded>
+                              <upper_unbounded>false</upper_unbounded>
+                              <lower>1</lower>
+                              <upper>1</upper>
+                            </occurrences>
+                            <node_id />
+                          </children>
+                        </attributes>
+                      </children>
                       <cardinality>
                         <is_ordered>false</is_ordered>
                         <is_unique>false</is_unique>
@@ -1632,116 +1667,120 @@
           <value>openEHR-EHR-OBSERVATION.test_all_datatypes.v1</value>
         </archetype_id>
         <term_definitions code="at0000">
-          <items id="description">*unknown(es)</items>
-          <items id="text">*Test all datatypes(es)</items>
+          <items id="description">unknown</items>
+          <items id="text">Test all datatypes</items>
         </term_definitions>
         <term_definitions code="at0001">
-          <items id="description">*@ internal @(es)</items>
-          <items id="text">*Event Series(es)</items>
+          <items id="description">@ internal @</items>
+          <items id="text">Event Series</items>
         </term_definitions>
         <term_definitions code="at0002">
-          <items id="description">**(es)</items>
-          <items id="text">*Cualquier evento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Cualquier evento</items>
         </term_definitions>
         <term_definitions code="at0003">
-          <items id="description">*@ internal @(es)</items>
-          <items id="text">*Arbol(es)</items>
+          <items id="description">@ internal @</items>
+          <items id="text">Arbol</items>
         </term_definitions>
         <term_definitions code="at0004">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Free text</items>
         </term_definitions>
         <term_definitions code="at0005">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Coded text</items>
         </term_definitions>
         <term_definitions code="at0006">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Constrained text</items>
         </term_definitions>
         <term_definitions code="at0007">
-          <items id="description">*a(es)</items>
-          <items id="text">*a(es)</items>
+          <items id="description">a</items>
+          <items id="text">a</items>
         </term_definitions>
         <term_definitions code="at0008">
-          <items id="description">*b(es)</items>
-          <items id="text">*b(es)</items>
+          <items id="description">b</items>
+          <items id="text">b</items>
         </term_definitions>
         <term_definitions code="at0009">
-          <items id="description">*c(es)</items>
-          <items id="text">*c(es)</items>
+          <items id="description">c</items>
+          <items id="text">c</items>
         </term_definitions>
         <term_definitions code="at0010">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Quantity</items>
         </term_definitions>
         <term_definitions code="at0011">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Count</items>
         </term_definitions>
         <term_definitions code="at0012">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Datetime</items>
         </term_definitions>
         <term_definitions code="at0013">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Ordinal</items>
         </term_definitions>
         <term_definitions code="at0014">
-          <items id="description">**(es)</items>
-          <items id="text">*new ordinal(es)</items>
+          <items id="description">aa</items>
+          <items id="text">aa</items>
         </term_definitions>
         <term_definitions code="at0015">
-          <items id="description">**(es)</items>
-          <items id="text">*new ordinal(es)</items>
+          <items id="description">bb</items>
+          <items id="text">bb</items>
         </term_definitions>
         <term_definitions code="at0016">
-          <items id="description">**(es)</items>
-          <items id="text">*new ordinal(es)</items>
+          <items id="description">cc</items>
+          <items id="text">cc</items>
         </term_definitions>
         <term_definitions code="at0017">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Boolean</items>
         </term_definitions>
         <term_definitions code="at0018">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Duration</items>
         </term_definitions>
         <term_definitions code="at0019">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Integer interval</items>
         </term_definitions>
         <term_definitions code="at0020">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Quanitty interval</items>
         </term_definitions>
         <term_definitions code="at0021">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Datetime interval</items>
         </term_definitions>
         <term_definitions code="at0022">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Multimedia</items>
         </term_definitions>
         <term_definitions code="at0023">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">EHR_URI</items>
         </term_definitions>
         <term_definitions code="at0024">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Proportion</items>
         </term_definitions>
         <term_definitions code="at0025">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Identifier</items>
         </term_definitions>
         <term_definitions code="at0026">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">Parsable</items>
         </term_definitions>
         <term_definitions code="at0027">
-          <items id="description">**(es)</items>
-          <items id="text">*Nuevo elemento(es)</items>
+          <items id="description">*</items>
+          <items id="text">URI</items>
+        </term_definitions>
+        <term_definitions code="at0028">
+          <items id="description">*</items>
+          <items id="text">Date</items>
         </term_definitions>
       </children>
       <cardinality>
@@ -1766,7 +1805,7 @@
       <items id="text">Test all datatypes</items>
     </term_definitions>
     <term_definitions code="at0001">
-      <items id="description">test observation</items>
+      <items id="description">obervation slot</items>
       <items id="text">All datatypes observation</items>
     </term_definitions>
   </definition>

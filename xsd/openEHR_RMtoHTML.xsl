@@ -558,6 +558,11 @@
           <xsl:with-param name="datenode" select="$dvnode"/>
         </xsl:call-template>
       </xsl:when>
+      <xsl:when test="$dvnode/attribute::xsi:type='DV_DATE'">
+        <xsl:call-template name="generic-DV_DATE">
+          <xsl:with-param name="datenode" select="$dvnode"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$dvnode/attribute::xsi:type='DV_DURATION'">
         <xsl:call-template name="generic-DV_DURATION">
           <xsl:with-param name="durationnode" select="$dvnode"/>
@@ -628,9 +633,13 @@
           <xsl:with-param name="targetnode" select="$dvnode"/>
         </xsl:call-template>
       </xsl:when>
+      <xsl:when test="$dvnode/attribute::xsi:type='DV_IDENTIFIER'">
+        <xsl:call-template name="generic-DV_IDENTIFIER">
+          <xsl:with-param name="targetnode" select="$dvnode"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:otherwise>
-        <span style="font-size:80%">UNSUPPORTED DATA TYPE ENCOUNTERED: <xsl:value-of
-            select="$dvnode/attribute::xsi:type"/></span>
+        <span style="font-size:80%">UNSUPPORTED DATA TYPE ENCOUNTERED: <xsl:value-of select="$dvnode/attribute::xsi:type"/></span>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -676,6 +685,13 @@
       <xsl:with-param name="datetimestring" select="$datenode/oe:value"/>
       <xsl:with-param name="show-seconds" select="$show-seconds"/>
       <xsl:with-param name="show-timezone" select="$show-timezone"/>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template name="generic-DV_DATE">
+    <xsl:param name="datenode"/>
+    <xsl:call-template name="generic-date">
+      <xsl:with-param name="datetimestring" select="$datenode/oe:value"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -888,6 +904,18 @@
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="generic-DV_IDENTIFIER">
+    <xsl:param name="targetnode"/>
+    
+    <xsl:value-of select="$targetnode/oe:type"/>::<xsl:value-of select="$targetnode/oe:id"/>
+    
+    (Issued by: <xsl:value-of select="$targetnode/oe:issuer"/>
+    /
+    Assigner by: <xsl:value-of select="$targetnode/oe:assigner"/>
+    )
+
   </xsl:template>
 
   <!-- Generic DV_URI -->

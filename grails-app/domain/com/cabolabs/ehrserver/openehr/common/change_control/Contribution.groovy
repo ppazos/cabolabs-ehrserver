@@ -60,7 +60,7 @@ class Contribution {
    @Override
    public boolean equals(Object other)
    {
-      if (!(other instanceof Contribution)) return false
+      if (!other || !other.instanceOf(Contribution)) return false
 
       return this.uid.equals(other.uid)
    }

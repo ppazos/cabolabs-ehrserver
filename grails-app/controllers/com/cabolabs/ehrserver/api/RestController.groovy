@@ -11,6 +11,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
@@ -34,6 +35,8 @@ import org.springframework.security.authentication.AuthenticationProvider
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
+import com.cabolabs.ehrserver.openehr.composition.CompositionService
+import com.cabolabs.util.DateParser
 
 /**
  * TODO:
@@ -50,6 +53,7 @@ class RestController {
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
+   def compositionService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -163,7 +167,7 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(msg)
-                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode) // sys::service::concept::code
+                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
          }
@@ -177,7 +181,7 @@ class RestController {
                      codeSystem: 'HL7::TABLES::TABLE_8'
                   ],
                   message: msg,
-                  code: 'ISIS_EHR_SERVER::COMMIT::ERRORS::'+ errorCode
+                  code: 'ISIS_EHR_SERVER::API::ERRORS::'+ errorCode
                ]
             ]
             
@@ -201,7 +205,7 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(message(code:'rest.error.formatNotSupported'))
-                  code('ISIS_EHR_SERVER::COMMIT::ERRORS::499') // sys::service::concept::code
+                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
          }
@@ -246,6 +250,14 @@ class RestController {
          return
       }
       
+      // check permissions of the logged user over the ehr
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(ehr.organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
+         return
+      }
 
       /*
        * <versions>
@@ -338,7 +350,7 @@ class RestController {
          PrintWriter printWriter = new PrintWriter( writer )
          e.printStackTrace( printWriter )
          printWriter.flush()
-         String stackTrace = writer.toString()
+         String stackTrace = writer.toString() // FIXME: return only on dev
          
          //println stackTrace
          //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
@@ -437,21 +449,12 @@ class RestController {
       if (!max) max = 15
       if (!offset) offset = 0
       
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
       // Lista ehrs
-      def _ehrs = Ehr.list(max: max, offset: offset, readOnly: true)
-      
-      
-      /*
-      println params
-      
-      withFormat { 
-         xml { println "xml" } 
-         json { println "json" }
-         html { println "html" }
-         text { println "text" }         
-      }
-      */
-      
+      def _ehrs = Ehr.findAllByOrganizationUid(_org.uid, [max: max, offset: offset, readOnly: true])
       
       // ===========================================================================
       // 3. Discusion por formato de salida
@@ -487,6 +490,7 @@ class RestController {
                         dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                         subjectUid(_ehr.subject.value)
                         systemId(_ehr.systemId)
+                        organizationUid(_ehr.organizationUid)
                      }
                   }
                }
@@ -535,7 +539,8 @@ class RestController {
                uid: _ehr.uid,
                dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
                subjectUid: _ehr.subject.value,
-               systemId: _ehr.systemId
+               systemId: _ehr.systemId,
+               organizationUid: _ehr.organizationUid
             ]
          }
 
@@ -570,6 +575,17 @@ class RestController {
          return
       }
       
+      // Check if the org used to login is the org of the requested patient
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_subject.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_patient', args:[subjectUid]), "484", 401)
+         return
+      }
+      
       // ===========================================================================
       // 2. Paciente tiene EHR?
       //
@@ -596,6 +612,7 @@ class RestController {
                dateCreated( this.formatter.format( _ehr.dateCreated ) )
                delegate.subjectUid(_ehr.subject.value) // delegate para que no haya conflicto con la variable con el mismo nombre
                systemId(_ehr.systemId)
+               organizationUid(_ehr.organizationUid)
             }
          }
       }
@@ -605,7 +622,8 @@ class RestController {
             uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId
+            systemId: _ehr.systemId,
+            organizationUid: _ehr.organizationUid
          ]
          
          def result = data as JSON
@@ -640,6 +658,17 @@ class RestController {
          return
       }
       
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_ehr.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         return
+      }
+      
       // ===========================================================================
       // 2. Discusion por formato de salida
       //
@@ -651,6 +680,7 @@ class RestController {
                dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
                subjectUid(_ehr.subject.value)
                systemId(_ehr.systemId)
+               organizationUid(_ehr.organizationUid)
             }
          }
       }
@@ -660,7 +690,8 @@ class RestController {
             uid: _ehr.uid,
             dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
             subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId
+            systemId: _ehr.systemId,
+            organizationUid: _ehr.organizationUid
          ]
 
          def result = data as JSON
@@ -689,7 +720,6 @@ class RestController {
       // 1. Lista personas con rol paciente
       //
       def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
-      
       
       // ===========================================================================
       // 2. Discusion por formato de salida
@@ -732,6 +762,7 @@ class RestController {
                prevOffset: ((offset-max < 0) ? 0 : offset-max )
             ]
          ]
+         
          subjects.each { person ->
             data.patients << [
                uid: person.uid,
@@ -744,6 +775,7 @@ class RestController {
                organizationUid: person.organizationUid
             ]
          }
+         
          def result = data as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
@@ -1073,6 +1105,15 @@ class RestController {
          return
       }
       
+      // logged user has access to the org?
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_organization', args:[organizationUid]), '478', 403)
+         return
+      }
+      
       if (ehrUid)
       {
          def ehr = Ehr.findByUid(ehrUid)
@@ -1105,6 +1146,7 @@ class RestController {
       Date qFromDate
       Date qToDate
 
+      // FIXME> use DateParser
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
       
@@ -1113,7 +1155,7 @@ class RestController {
       def start_time = System.currentTimeMillis()
       // /measuring query timing
       
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid)
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
       
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1131,7 +1173,7 @@ class RestController {
          // we need to group those CompositionIndexes by EHR.
          if (!ehrUid)
          {
-            res = res.groupBy { ci -> ci.ehrUid }
+            res = res.groupBy { ci -> ci.ehrUid } // res is a map
          }
          
          // Muestra compositionIndex/list
@@ -1152,7 +1194,14 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
-            res['timing'] = (end_time - start_time) +' ms' // measuring query timing
+            // we need a map to return the timing...
+            if (res instanceof List)
+            {
+               def mapres = [results: res]
+               res = mapres
+            }
+            
+            res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
             
             if (format == 'json')
                render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
@@ -1250,7 +1299,15 @@ class RestController {
       {
          // type = datavalue
          
-         res['timing'] = (end_time - start_time) +' ms' // measuring query timing
+         // we need a map to return the timing...
+         // dv queries with group none will return a list, not a map
+         if (res instanceof List)
+         {
+            def mapres = [results: res]
+            res = mapres
+         }
+         
+         res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
          
          // Format
          if (!format || format == 'xml')
@@ -1406,7 +1463,7 @@ class RestController {
           result = cilist.groupBy { ci -> ci.ehrUid }
        }
        
-       println "Resultados (CompositionIndex): " + cilist
+       //println "Resultados (CompositionIndex): " + cilist
        
        
        // Muestra compositionIndex/list
@@ -1517,7 +1574,6 @@ class RestController {
           render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
        else
           render(text: out, contentType:"text/xml", encoding:"UTF-8")
-       
    }
    
    
@@ -1596,6 +1652,57 @@ class RestController {
    }
    
    
+   @SecuredStateless
+   def getComposition(String uid, String format)
+   {
+      // uid required
+      if (!uid)
+      {
+         if (!format || format == 'xml')
+            render(status: 400, text:'<error>uid is required</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 400, text:'{"error": "uid is required"}', contentType:"application/json", encoding:"UTF-8")
+            
+         return
+      }
+      
+      
+      def cindex = CompositionIndex.findByUid(uid)
+      
+      if (!cindex)
+      {
+         if (!format || format == 'xml')
+            render(status: 404, text:'<error>composition not found</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 404, text:'{"error": "composition not found"}', contentType:"application/json", encoding:"UTF-8")
+            
+         return
+      }
+      
+      // check permissions of the logged user over the compo (cindex.organizationUid)
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(cindex.organizationUid))
+      {
+         renderError(message(code:'query.execute.error.user_cant_access_composition'), '479', 403)
+         return
+      }
+      
+
+      withFormat {
+         json {
+            render(text: compositionService.compositionAsJson(uid), contentType:"application/json", encoding:"UTF-8")
+         }
+         xml {
+            render(text: compositionService.compositionAsXml(uid), contentType:"text/xml", encoding:"UTF-8")
+         }
+         html {
+            render(text: compositionService.compositionAsHtml(uid), contentType:"text/html", encoding:"UTF-8")
+         }
+      }
+   }
+   
+   
    /**
     * Usada desde EMRAPP para obtener compositions de un paciente.
     *
@@ -1611,7 +1718,8 @@ class RestController {
    @SecuredStateless
    def findCompositions(String ehrUid, String subjectId,
                         String fromDate, String toDate,
-                        String archetypeId, String category)
+                        String archetypeId, String category,
+                        String format)
    {
       // 1. Todos los parametros son opcionales pero debe venir por lo menos 1
       // 2. La semantica de pasar 2 o mas parametros es el criterio de and
@@ -1622,9 +1730,15 @@ class RestController {
       def dToDate
       
       // FIXME: cuando sea servicio no hay ui
+      // mandatory parameters not present so it is 400 Bad Request
       if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
       {
-         render(status: 404, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         if (!format || format == 'xml')
+            render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
+         else if (format == 'json')
+            render(status: 400, text:'{"error": "ehrUid or subjectUid are required"}', contentType:"application/json", encoding:"UTF-8")
+            
+         return
       }
       
       // FIXME: Si el formato esta mal va a tirar una except!
@@ -1662,6 +1776,98 @@ class RestController {
       }
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
-      render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+      if (!format || format == 'xml')
+         render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+      else if (format == 'json')
+         render(text: idxs as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
+      else
+         render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
+   }
+   
+   @SecuredStateless
+   def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
+                    String role, String organizationUid, boolean createEhr, String format)
+   {
+      if (!format) format = 'json'
+      
+      if (!organizationUid)
+      {
+         renderError('organizationUid required', '5556', 400) // Bad Request
+         return
+      }
+      
+      if (Organization.countByUid(organizationUid) == 0)
+      {
+         renderError("Organization $organizationUid doesn't exists", '1237', 400) // Bad Request
+         return
+      }
+      
+      // FIXME: this should be on a service
+      // Does the request comes from someone who has access to the organization?
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.organizations.uid.contains(organizationUid))
+      {
+         renderError("Don't have permissions over the organization $organizationUid", '4764', 403)
+         return
+      }
+      
+      
+      // I think this is binded automatically to the person on save
+      // dob to date
+      params.dob = DateParser.tryParse(dob)
+      
+      
+      // same as personcontroller.save
+      def personInstance = new Person(params)
+      
+      if (!personInstance.save(flush: true))
+      {
+         def errors = ""
+         personInstance.errors.allErrors.each { 
+            
+            errors += it.defaultMessage + "\n"
+         }
+         
+         renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
+         return
+      }
+      
+      if (personInstance.role == "pat" && createEhr)
+      {
+         // from EhrController.createEhr
+         def ehr = new Ehr(
+            subject: new PatientProxy(
+               value: personInstance.uid
+            ),
+            organizationUid: personInstance.organizationUid
+         )
+         
+         if (!ehr.save(flish:true))
+         {
+            renderError('Not able to save EHR', '1236', 500) // Internal Server Error
+            return
+         }
+      }
+      
+      withFormat {
+         
+         def data = [
+            firstName: personInstance.firstName,
+            lastName: personInstance.lastName,
+            dob: personInstance.dob, // Date is marshalled by the JSON marshaller
+            sex: personInstance.sex,
+            idCode: personInstance.idCode,
+            idType: personInstance.idType, 
+            role: personInstance.organizationUid, 
+            organizationUid: personInstance.organizationUid
+         ]
+         xml {
+            render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
    }
 }
