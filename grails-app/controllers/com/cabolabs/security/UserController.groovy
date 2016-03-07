@@ -450,26 +450,54 @@ class UserController {
       
       if (request.post)
       {
-         assert newPassword
+         if (!newPassword)
+         {
+            flash.message = "Please enter your new password"
+            return
+         }
          
          def user = User.findByResetPasswordToken(token)
          if (!user)
          {
-            // TODO
+            flash.message = "Password reset was already done, if you don't remember your password, please use the Forgot password link below"
+            redirect controller:'login'
+            return
          }
-         
-         assert user
          
          user.password = newPassword
          user.enabled = true
          user.save(flush:true)
          
          // TODO: I18N
-         flash.message = "Password reseted!"
-         
+         flash.message = "Password was reset!"
          redirect controller:'login'
          return
       }
+   }
+   
+   def forgotPassword(String email)
+   {
+      if (request.post)
+      {
+         def user = User.fingByEmail(email)
+         
+         if (!user)
+         {
+            flash.message = "Can't find a user for that email"
+            redirect controller:'login'
+            return
+         }
+         
+         // generates a passwrod reset token, used in the email notification
+         user.setPasswordToken()
+         
+         notificationService.sendForgotPasswordEmail( u.email, [u] )
+         
+         flash.message = "Password reset email was sent, please check the instructions on that email"
+         redirect controller:'login'
+         return
+      }
+      // display the forgotPassword view
    }
 
    protected void notFound() {

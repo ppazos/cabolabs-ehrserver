@@ -59,6 +59,27 @@ class NotificationService {
       this.sendMail(recipient, 'Welcome to CaboLabs EHRServer!', message)
    }
    
+   def sendForgotPasswordEmail(String recipient, List messageData, boolean userRegistered = false)
+   {
+      def user = messageData[0]
+      
+      println "sendForgotPasswordEmail"
+      
+      def token = user.passwordToken
+      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
+      def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+      
+      def organizationNumbers = user.organizations*.number
+      String message
+      
+      message = "<p>We received a password reset request for your email {0}</p>"+
+                "<p>If you didn't requested it, just ignore this email. If this was you, please go here: "+ url +"</p>"
+ 
+      message = message.replaceFirst ( /\{0\}/ , user.email)
+      
+      this.sendMail(recipient, 'Your password reset for CaboLabs EHRServer!', message)
+   }
+   
    def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!', String message)
    {
       mailService.sendMail {

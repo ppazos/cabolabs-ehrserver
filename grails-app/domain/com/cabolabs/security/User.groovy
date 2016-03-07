@@ -119,7 +119,7 @@ class User implements Serializable {
           return true
       }
       
-      email blank: false, email: true
+      email blank: false, email: true, unique: true
       
       resetPasswordToken nullable: true
       
