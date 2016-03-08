@@ -104,20 +104,27 @@
         <div class="col-md-4 col-md-offset-4">
           <div class="login-panel panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Please fill in the for to reset your password</h3>
+              <h3 class="panel-title">Please enter your email to reset your password</h3>
             </div>
             <div class="panel-body">
               <g:if test='${flash.message}'>
-                <div class='login_message'>${flash.message}</div>
+                <div class='login_message'>${flash.message}</div><br/>
               </g:if>
               
               <g:form url="[action:'forgotPassword']" method='POST' id="form" class='cssform' autocomplete='off'>
                 <fieldset>
                   <div class="form-group">
                     <label for='email'><g:message code="springSecurity.forgotPassword.email.label"/>:</label>
-                    <input type='email' class='form-control' name='email' id='email' required="required" value="" />
+                    <input type='email' class='form-control' name='email' id='email' required="required" value="${params.email}" />
                   </div>
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.reset.button")}'/>
+                </fieldset>
+                <fieldset>
+                  <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
+                    <g:link controller="login" action="auth">
+                      <g:message code="springSecurity.login.back.label"/>
+                    </g:link>
+                  </div>
                 </fieldset>
               </g:form>
             </div>

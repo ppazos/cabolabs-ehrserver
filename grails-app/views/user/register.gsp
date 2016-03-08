@@ -60,11 +60,15 @@
                    <label for="captcha">Type the letters in this box</label>
                    <g:textField name="captcha" class="form-control" />
                  </div>
-                 <div style="text-align:center;">
-                   <g:link controller="login" class="btn btn-default btn-lg">${message(code: 'default.button.cancel.label', default: 'Cancel')}</g:link>
-                   <g:submitButton name="register" class="btn btn-lg btn-success" value="${message(code: 'default.button.register.label', default: 'Register')}" />
-                 </div>
+                 <g:submitButton name="register" class="btn btn-lg btn-success btn-block" value="${message(code: 'default.button.register.label', default: 'Register')}" />
                </fieldset>
+               <fieldset>
+                  <div class="form-group" style="margin:15px 0 0 0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
+                    <g:link controller="login" action="auth">
+                      <g:message code="springSecurity.login.back.label"/>
+                    </g:link>
+                  </div>
+                </fieldset>
              </g:form>
             </div>
           </div>
