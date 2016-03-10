@@ -165,6 +165,7 @@ class BootStrap {
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/swagger/index', configAttribute: 'ROLE_ADMIN').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
      }

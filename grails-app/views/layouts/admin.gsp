@@ -168,6 +168,11 @@
                       <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
                     </li>
                   </sec:ifAnyGranted>
+                  <sec:ifAnyGranted roles="ROLE_ADMIN">
+                    <li>
+                      <g:link controller="swagger" action="index" class="${(controllerName=='swagger')?'active':''}"><i class="glyphicon glyphicon-download-alt"></i> <g:message code="desktop.swagger" /></g:link>
+                    </li>
+                  </sec:ifAnyGranted>
 	             </ul>
 	           </div>
 	           <!-- /.sidebar-collapse -->

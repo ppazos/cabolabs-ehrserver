@@ -38,6 +38,19 @@ import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncode
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 
+import com.cabolabs.swagger.annotations.ApiOperation
+import com.cabolabs.swagger.annotations.ApiParam
+import com.cabolabs.swagger.annotations.ApiParams
+import com.cabolabs.swagger.annotations.ApiResponse
+import com.cabolabs.swagger.annotations.ApiResponses
+import com.cabolabs.swagger.annotations.DeleteMethod
+import com.cabolabs.swagger.annotations.ApiDescription
+import com.cabolabs.swagger.annotations.GetMethod
+import com.cabolabs.swagger.annotations.ApiIgnore
+import com.cabolabs.swagger.annotations.PostMethod
+import com.cabolabs.swagger.annotations.ApiProperty
+import com.cabolabs.swagger.annotations.PutMethod
+
 /**
  * TODO:
  * 
@@ -46,7 +59,8 @@ import com.cabolabs.util.DateParser
  * @author pab
  *
  */
-
+@ApiDescription(title="EHRServer",description="The composition of ranks is determined by a taxonomist. The standards for the classification are not strictly codified.",version="0.0.1",
+            host="prueba.ehrserver.prueba",schemes="https",basePath="/ehrserver",produces="application/json")
 class RestController {
 
    static allowedMethods = [commit: "POST", contributions: "GET"]
@@ -704,7 +718,12 @@ class RestController {
          render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrGet
-   
+
+   @GetMethod(pathApiRest="/patientsList",summary="Listado de pacientes",description="Listado de pacientes",tags="patients",domainClass="Person")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "\'\$format\' no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),@ApiResponse(code = 200, message = "Listado de Pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
+   @ApiParams(value= [@ApiParam(name = "format", value = "descripcion de parametro format", required = true, in="query",type="string"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = true, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "int", value = "descripcion de parametro offset", required = true, in="query",type="integer",format="int32")])
    @SecuredStateless
    def patientList(String format, int max, int offset)
    {
