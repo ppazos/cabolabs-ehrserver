@@ -481,11 +481,18 @@ class UserController {
             return
          }
          
+         
+         // generates a password reset token, used in the email notification
+         user.setPasswordToken()
+         user.enabled = false // if enabled, password token is cleaned beforeInsert
+         user.save(flush:true)
+         
+         
          try
          {
             notificationService.sendForgotPasswordEmail( user.email, [user] )
          }
-         catch (Exception e)
+         catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
          {
             log.error e.message
             
@@ -493,12 +500,7 @@ class UserController {
             return
          }
          
-         
-         // generates a passwrod reset token, used in the email notification
-         user.setPasswordToken()
-         user.enabled = false // if enabled, passoword token is cleaned beforeInsert
-         user.save(flush:true)
-         
+
          
          flash.message = "Password reset email was sent, please check the instructions on that email"
          redirect controller:'login', action:'auth'
