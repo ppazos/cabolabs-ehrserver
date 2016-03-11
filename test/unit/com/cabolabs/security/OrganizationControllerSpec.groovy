@@ -59,6 +59,7 @@ class OrganizationControllerSpec extends Specification {
             controller.save(organization)
 
         then:"The create view is rendered again with the correct model"
+            !organization.validate()
             model.organizationInstance!= null
             view == 'create'
 

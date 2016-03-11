@@ -38,6 +38,8 @@ import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncode
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 
+import grails.transaction.Transactional
+
 /**
  * TODO:
  * 
@@ -49,7 +51,7 @@ import com.cabolabs.util.DateParser
 
 class RestController {
 
-   static allowedMethods = [commit: "POST", contributions: "GET"]
+   static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
@@ -1784,11 +1786,17 @@ class RestController {
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
    
+   
+   @Transactional
    @SecuredStateless
    def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
                     String role, String organizationUid, boolean createEhr, String format)
    {
-      if (!format) format = 'json'
+      if (!format)
+      {
+         params.format = 'json' // this is to make withFormat works because uses the request params
+         format = 'json'
+      }
       
       if (!organizationUid)
       {
@@ -1850,24 +1858,31 @@ class RestController {
          }
       }
       
-      withFormat {
+
          
-         def data = [
-            firstName: personInstance.firstName,
-            lastName: personInstance.lastName,
-            dob: personInstance.dob, // Date is marshalled by the JSON marshaller
-            sex: personInstance.sex,
-            idCode: personInstance.idCode,
-            idType: personInstance.idType, 
-            role: personInstance.organizationUid, 
-            organizationUid: personInstance.organizationUid
-         ]
-         xml {
-            render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
-         }
-         json {
-            render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-         }
+      def data = [
+         firstName: personInstance.firstName,
+         lastName: personInstance.lastName,
+         dob: personInstance.dob, // Date is marshalled by the JSON marshaller
+         sex: personInstance.sex,
+         idCode: personInstance.idCode,
+         idType: personInstance.idType, 
+         role: personInstance.organizationUid, 
+         organizationUid: personInstance.organizationUid
+      ]
+      if (format == 'xml')
+      {
+         println "XML"
+         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         println "JSON"
+         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
       }
    }
 }
