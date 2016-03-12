@@ -436,12 +436,19 @@ class UserController {
       }
    }
    
+   
+   // token comes always and is required for reset
    def resetPassword(String token, String newPassword)
    {
       // GET: display reset view
       // POST: try to reset the pass
       
-      assert token // token comes always and is required for reset
+      if (!token)
+      {
+         flash.message = "Token no present and needed for reseting password, try reseting again"
+         redirect controller:'login', action:'auth'
+         return
+      }
       
       def user = User.findByResetPasswordToken(token)
       if (!user)
