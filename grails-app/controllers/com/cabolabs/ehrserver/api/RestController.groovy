@@ -448,7 +448,7 @@ class RestController {
       //println "hello ${request.securityStatelessMap}" // [extradata:[organization:1234], issued_at:2015-12-27T14:26:53.802-03:00, username:admin]
       
       // Paginacion
-      if (!max) max = 15
+      if (!max) max = 30
       if (!offset) offset = 0
       
       // organization number used on the API login
@@ -527,8 +527,8 @@ class RestController {
         }
         */
          def data = [
-           ehrs: [],
-           pagination: [
+            ehrs: [],
+            pagination: [
                'max': max,
                'offset': offset,
                nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
@@ -1721,8 +1721,12 @@ class RestController {
    def findCompositions(String ehrUid, String subjectId,
                         String fromDate, String toDate,
                         String archetypeId, String category,
-                        String format)
+                        String format, int max, int offset)
    {
+      // Paginacion
+      if (!max) max = 30
+      if (!offset) offset = 0
+      
       // 1. Todos los parametros son opcionales pero debe venir por lo menos 1
       // 2. La semantica de pasar 2 o mas parametros es el criterio de and
       // 3. Para implementar como un OR se usaria otro parametro booleano (TODO)
@@ -1775,13 +1779,27 @@ class RestController {
             le('startTime', dToDate) // lower or equal
             
          eq('lastVersion', true)
+         
+         maxResults(max)
+         firstResult(offset)
       }
+      
+      // TODO: fix the structure for XML, it will output the MAP marshaling.
+      def result = [
+         result: idxs,
+         pagination: [
+            'max': max,
+            'offset': offset,
+            nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+            prevOffset: ((offset-max < 0) ? 0 : offset-max )
+         ]
+      ]
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
       if (!format || format == 'xml')
-         render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: result as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
       else if (format == 'json')
-         render(text: idxs as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: result as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
       else
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
