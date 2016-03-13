@@ -1635,17 +1635,32 @@ class RestController {
                le('timeCommitted', dateTo)
             }
          }
-         
+      }
+      
+      // TODO: create a XML marshalled to not return lists or maps as XML (try to follow the openEHR XML)
+      def result = []
+      res.each { contrib ->
+         result << [
+            uid: contrib.uid,
+            organizationUid: contrib.organizationUid,
+            ehr: contrib.ehr.uid,
+            versions: contrib.versions.uid, // list of uids
+            audit: [
+               timeCommitted: contrib.audit.timeCommitted,
+               systemId:  contrib.audit.systemId,
+               committer:  contrib.audit.committer.name
+            ]
+         ]
       }
       
       
       if (!format || format == 'xml')
       {
-         render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
