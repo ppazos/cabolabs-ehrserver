@@ -169,15 +169,15 @@ app {
       
       // formatos para procesamiento de fechas
       // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
-      datetime_format = "yyyyMMdd'T'HHmmss,SSSZ" 
+      datetime_format = "yyyyMMdd'T'HHmmss,SSSX" 
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
       
       
       // Extended formats supported by openEHR --------------------------------------------------------------
       //2015-12-02T17:41:56.809Z
-      ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSZ" // contains timezone e.g. -0300
-      ext_datetime_format_point = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+      ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSX" // contains timezone e.g. -0300
+      ext_datetime_format_point = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
       // If the time is in UTC, add a Z directly after the time without a space. Z is the zone
       // designator for the zero UTC offset. "09:30 UTC" is therefore represented as "09:30Z" or "0930Z".
       ext_datetime_utcformat = "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
@@ -186,13 +186,13 @@ app {
       
       
       // Dates without seconds fraction
-      datetime_format_nof = "yyyyMMdd'T'HHmmssZ"
-      ext_datetime_format_nof = "yyyy-MM-dd'T'HH:mm:ssZ"
+      datetime_format_nof = "yyyyMMdd'T'HHmmssX"
+      ext_datetime_format_nof = "yyyy-MM-dd'T'HH:mm:ssX"
       ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
       
       
       // formatos para mostrar las fechas al usuario
-      display_datetime_format = "yyyy/MM/dd HH:mm:ss (Z)" 
+      display_datetime_format = "yyyy/MM/dd HH:mm:ss (X)" 
       display_date_format = "yyyy/MM/dd"
       display_time_format = "HH:mm:ss"
       
