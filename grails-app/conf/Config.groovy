@@ -91,6 +91,7 @@ environments {
     //grails.serverURL = "http://localhost:8090/ehr"
     app {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
+      version_repo = "versions" + PS
     }
   }
   production {
@@ -99,10 +100,14 @@ environments {
     grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
+      version_repo = "versions" + PS
     }
   }
   test {
     grails.converters.default.pretty.print = true
+    app {
+       version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+    }
   }
 }
 
@@ -136,7 +141,6 @@ log4j = {
 }
 
 app {
-   version_repo = "versions" + PS
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"

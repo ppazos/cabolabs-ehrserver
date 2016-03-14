@@ -18,6 +18,8 @@ import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 
+import grails.util.Holders
+
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
@@ -68,10 +70,11 @@ class RestControllerSpec extends Specification {
     */
    def cleanup()
    {
-      def version_repo = new File(config.version_repo)
-      version_repo.eachFile {
-         it.delete()
-      }
+      println "+++ RestControllerSpec config.version_repo "+ config.version_repo // dice /versions ...
+//      def version_repo = new File(config.version_repo)
+//      version_repo.eachFile {
+//         it.delete()
+//      }
    }
 
    void "test commit"()

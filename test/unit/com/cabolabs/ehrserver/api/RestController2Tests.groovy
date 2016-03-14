@@ -47,7 +47,6 @@ class RestController2Tests {
 	{
       println "setUp"
       
-
       controller.xmlService = new XmlService()
       controller.xmlService.xmlValidationService = new XmlValidationService()
       
@@ -162,11 +161,11 @@ class RestController2Tests {
    void tearDown()
 	{
       // Tear down logic here
-      def version_repo = new File(config.version_repo)
-      
-      version_repo.eachFile {
-         it.delete()
-      }
+//      def version_repo = new File(config.version_repo)
+//      
+//      version_repo.eachFile {
+//         it.delete()
+//      }
    }
 
 	void testPatientList()
