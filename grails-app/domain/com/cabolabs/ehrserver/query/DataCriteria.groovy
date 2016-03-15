@@ -34,7 +34,7 @@ class DataCriteria {
    String rmTypeName
    
    // TODO: poner name para mostrar en la definicion
-   //       de la consulta, se saca de IndexDefinition o del
+   //       de la consulta, se saca de ArchetypeIndexItem o del
    //       arquetipo archetypeId para la path (que
    //       tiene el nodeId)
    

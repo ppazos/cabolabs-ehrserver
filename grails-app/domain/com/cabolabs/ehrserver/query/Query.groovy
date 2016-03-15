@@ -324,7 +324,7 @@ class Query {
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
+         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
@@ -545,7 +545,7 @@ class Query {
 
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
+         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
 
          resGrouped[absPath] = [:]
@@ -681,7 +681,7 @@ class Query {
             //println "archId "+ dataCriteria.archetypeId
             //println "path "+ dataCriteria.path
              
-            dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
+            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
             idxtype = dataidx?.rmTypeName
              
             // ================================================================
@@ -708,7 +708,7 @@ class Query {
                       dvi.archetypePath = '${dataCriteria.path}'
             /$
              
-            // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
+            // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
             switch (idxtype)
             {
                // ADL Parser bug: uses Java class names instead of RM Type Names...
@@ -782,21 +782,21 @@ class Query {
             
             //       EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
             //               AND dvi.magnitude>140.0
             //       ) AND EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
             //               AND dvi.magnitude<130.0
             //       ) AND EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/origin

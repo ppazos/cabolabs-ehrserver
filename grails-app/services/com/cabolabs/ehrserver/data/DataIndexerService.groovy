@@ -9,7 +9,7 @@ import grails.util.Holders
 import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 
 @Transactional
 class DataIndexerService {
@@ -118,7 +118,7 @@ class DataIndexerService {
       // tengo que consultar al arquetipo para saber el tipo del nodo.
       // Necesito el archetype_id (esta en el XML) y la path (es la idxpath).
       
-      // En realidad el tipo lo dice la definicion de los indices (IndexDefinition),
+      // En realidad el tipo lo dice la definicion de los indices (ArchetypeIndexItem),
       // y puedo hacer lookup del tipo usando archetypeId+path.
       
  
@@ -165,9 +165,9 @@ class DataIndexerService {
       //println "archPath: "+ archetypePath
       
       // TODO: instead of calculating the archetypePath, I can use the templateId and path
-      //      to query IndexDefinition and get the archetypeId and archetypePath from there.
-      // IndexDefinition uses the archetypeId and archetypePath to search
-      def dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(archetypeId, archetypePath)
+      //      to query ArchetypeIndexItem and get the archetypeId and archetypePath from there.
+      // ArchetypeIndexItem uses the archetypeId and archetypePath to search
+      def idx = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, archetypePath)
       
       
       // FIXME:
@@ -188,18 +188,15 @@ class DataIndexerService {
       {
          try
          {
-            if (dataidx)
+            if (idx)
             {
-               log.info "IndexDefinition FOUND for "+ archetypeId +" and "+ archetypePath
+               //log.info "ArchetypeIndexItem FOUND for "+ archetypeId +" and "+ archetypePath
                
-               String idxtype = dataidx.rmTypeName
+               String idxtype = idx.rmTypeName
                def type = DataValues.valueOfString(idxtype)
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
-               
-               log.info 'call '+ method
-               
-               def indexDefinition = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
-               indexes << indexDefinition
+               def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
+               indexes << dataIndex
             }
          }
          catch (IllegalArgumentException ex)

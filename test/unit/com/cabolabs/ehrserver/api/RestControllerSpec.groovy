@@ -27,7 +27,7 @@ import grails.util.Holders
 @TestMixin(GrailsUnitTestMixin)
 @Mock([ Ehr,Person,Organization,
    PatientProxy, DoctorProxy,
-   OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+   OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
    DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
  ])
 class RestControllerSpec extends Specification {
@@ -71,10 +71,10 @@ class RestControllerSpec extends Specification {
    def cleanup()
    {
       println "+++ RestControllerSpec config.version_repo "+ config.version_repo // dice /versions ...
-//      def version_repo = new File(config.version_repo)
-//      version_repo.eachFile {
-//         it.delete()
-//      }
+      def version_repo = new File(config.version_repo)
+      version_repo.eachFile {
+         it.delete()
+      }
    }
 
    void "test commit"()

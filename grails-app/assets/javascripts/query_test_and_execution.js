@@ -218,7 +218,7 @@ var queryDataRenderTable = function(data)
     console.log('path y subheaders', path, subheaders);
     
     // TODO: deberia ser archetype+path para que sea absoluta
-    // name es el nombre del IndexDefinition coorespondiente al archId y path del DataValueIndex
+    // name es el nombre del ArchetypeIndexItem coorespondiente al archId y path del DataValueIndex
     htmlheaders += '<th colspan="'+ subheaders.attrs.length +'" title="'+ path +'">'+ subheaders.name +'</th>';
     
     $.each(subheaders.attrs, function(i, attr)

@@ -1,6 +1,5 @@
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
 
 import com.cabolabs.security.RequestMap
@@ -152,7 +151,8 @@ class BootStrap {
         new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/archetypeIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
         
@@ -203,11 +203,11 @@ class BootStrap {
      
      
      // Initial index loading
-     if (IndexDefinition.count() == 0)
-     {
+     //if (IndexDefinition.count() == 0)
+     //{
 		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 		  ti.indexAll()
-     }
+     //}
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
