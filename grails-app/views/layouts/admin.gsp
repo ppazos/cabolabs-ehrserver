@@ -138,11 +138,13 @@
 	               <li>
 	                 <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
 	               </li>
+	               <%--
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
 	                 <li>
 	                   <g:link controller="indexDefinition" action="list" class="${(controllerName=='indexDefinition')?'active':''}"><i class="glyphicon glyphicon-th-list"></i> <g:message code="desktop.indexes" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
+	               --%>
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
 	                 <li>
 	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>

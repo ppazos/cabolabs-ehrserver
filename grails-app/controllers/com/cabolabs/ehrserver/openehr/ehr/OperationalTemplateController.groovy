@@ -3,7 +3,7 @@ package com.cabolabs.ehrserver.openehr.ehr
 import grails.util.Holders
 import groovy.xml.MarkupBuilder
 import com.cabolabs.openehr.opt.manager.OptManager
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 class OperationalTemplateController {
 
@@ -111,6 +111,7 @@ class OperationalTemplateController {
          }
       }
    }
+   
 	/**
 	 * 
 	 * @return
@@ -120,4 +121,48 @@ class OperationalTemplateController {
 	   def compo = new File(config.opt_repo + concept +".opt")
       render(text:compo.getText(), contentType:"text/xml", encoding:"UTF-8")
 	}
+   
+   def items(String uid, String sort, String order)
+   {
+      def opt = OperationalTemplateIndex.findByUid(uid)
+      
+      if (!opt)
+      {
+         flash.message = 'Template not found'
+         redirect action:'list'
+         return
+      }
+      
+      sort = sort ?: 'id'
+      order = order ?: 'asc'
+      
+      def items = OperationalTemplateIndexItem.findAllByTemplateId(opt.templateId, [sort: sort, order: order])
+      
+      return [items: items, templateInstance: opt]
+   }
+   
+   def archetypeItems(String uid, String sort, String order)
+   {
+      def opt = OperationalTemplateIndex.findByUid(uid)
+      
+      if (!opt)
+      {
+         flash.message = 'Template not found'
+         redirect action:'list'
+         return
+      }
+      
+      def items = opt.referencedArchetypeNodes as List
+      
+      sort = sort ?: 'id'
+      order = order ?: 'asc'
+      
+      assert items instanceof List
+      
+      items.sort { it."$sort" }
+      
+      if (order == 'desc') items = items.reverse()
+      
+      return [items: items, templateInstance: opt]
+   }
 }
