@@ -18,9 +18,22 @@ class OperationalTemplateController {
    
    def list()
    {
-      return [opts: OperationalTemplateIndex.list(),
+      return [opts: OperationalTemplateIndex.list(params),
              total: OperationalTemplateIndex.count()]
    }
+   
+   /**
+    * (re)generates indexes for all archetypes in the repo.
+    * This is usefull to add archetypes to the repo and index them to generate new queries.
+    */
+   def generate()
+   {
+      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      ti.indexAll()
+      
+      redirect(action: "list")
+   }
+   
    
    /**
     * 

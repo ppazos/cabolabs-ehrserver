@@ -8,9 +8,9 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:link action="upload">
+          <g:link class="list" controller="operationalTemplate" action="list">
             <button type="button" class="btn btn-default btn-md">
-              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <g:message code="opt.upload.label" />
+              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="opt.list.title" />
             </button>
           </g:link>
         </div>

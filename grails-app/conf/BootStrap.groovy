@@ -202,12 +202,10 @@ class BootStrap {
      log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
      
      
-     // Initial index loading
-     //if (IndexDefinition.count() == 0)
-     //{
-		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-		  ti.indexAll()
-     //}
+     // Always regenerate indexes in deploy
+     def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+	  ti.indexAll()
+     
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )

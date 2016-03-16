@@ -190,10 +190,7 @@ class DataIndexerService {
          {
             if (idx)
             {
-               //log.info "ArchetypeIndexItem FOUND for "+ archetypeId +" and "+ archetypePath
-               
-               String idxtype = idx.rmTypeName
-               def type = DataValues.valueOfString(idxtype)
+               def type = DataValues.valueOfString(idx.rmTypeName)
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
                def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
                indexes << dataIndex
@@ -201,7 +198,7 @@ class DataIndexerService {
          }
          catch (IllegalArgumentException ex)
          {
-            // no need to process the except, is just that the current type should not be indexed
+            // TODO: no need to process the except, is just that the current type should not be indexed
          }
          
          // follow the recursion if there are children nodes
