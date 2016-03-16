@@ -80,7 +80,7 @@ class CompositionService {
       //
       // TODO: class por tipo del RM.
       //
-      // necesito consultar el arquetipo para poder hacerlo o puedo consultar los IndexDefinition (temporal)
+      // necesito consultar el arquetipo para poder hacerlo o puedo consultar los ArchetypeIndexItem (temporal)
       
       if (n.children().isEmpty())
       {

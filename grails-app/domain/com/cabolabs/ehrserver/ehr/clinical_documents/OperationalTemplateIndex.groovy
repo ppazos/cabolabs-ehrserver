@@ -8,4 +8,6 @@ class OperationalTemplateIndex {
 	String uid
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
+   
+   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem]
 }

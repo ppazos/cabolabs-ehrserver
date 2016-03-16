@@ -6,11 +6,10 @@ import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryController
 import grails.test.mixin.*
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 @TestFor(QueryController)
-@Mock([Query, DataGet, DataCriteria, IndexDefinition, OperationalTemplateIndex])
+@Mock([Query, DataGet, DataCriteria, OperationalTemplateIndexItem, ArchetypeIndexItem, OperationalTemplateIndex])
 class QueryControllerTests {
 
     def populateValidParams(params) {

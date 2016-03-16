@@ -1,7 +1,7 @@
 package com.cabolabs.ehrserver.query
 
 import com.cabolabs.ehrserver.query.datatypes.*
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.data.DataValues
 
@@ -42,8 +42,8 @@ class QueryController {
     def create()
     {
         [queryInstance: new Query(params),
-         dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
-         concepts: IndexDefinition.findAllByArchetypePath('/'),
+         dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
+         concepts: ArchetypeIndexItem.findAllByPath('/'),
          templateIndexes: OperationalTemplateIndex.list()]
     }
     
@@ -60,8 +60,8 @@ class QueryController {
           view: 'create',
           model: [
              queryInstance: Query.get(id),
-             dataIndexes: IndexDefinition.findAllByArchetypePathNotEqual('/'), // to create filters or projections
-             concepts: IndexDefinition.findAllByArchetypePath('/'),
+             dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
+             concepts: ArchetypeIndexItem.findAllByPath('/'),
              templateIndexes: OperationalTemplateIndex.list(),
              mode: 'edit'
           ]
@@ -309,7 +309,7 @@ class QueryController {
     
     
     /**
-     * Devuelve una lista de IndexDefinition.
+     * Devuelve una lista de ArchetypeIndexItem.
      *
      * Accion AJAX/JSON, se usa desde queryByData GUI.
      *
@@ -320,25 +320,16 @@ class QueryController {
      * @param archetypeId
      * @return
      */
-    def getIndexDefinitions(String archetypeId, boolean datatypesOnly)
+    def getArchetypePaths(String archetypeId, boolean datatypesOnly)
     {
        // TODO: checkear params
 
        def datatypes = DataValues.valuesStringList()
-       
-       // FIXME: we are creating each IndexDefinition for each archetype/path but for each template too.
-       //        If 2 templates have the same arch/path, two IndexDefinitions will be created,
-       //        then is we get the IndexDefinitions for an archetype we can get duplicated records.
-       //        The code below (hack) avoids returning duplicated archetype/path, BUT WE NEED TO CREATE
-       //        INDEXES DIFFERENTLY, like having the OPT data in a different record and the archetype/path
-       //        in IndexDefinition, and a N-N relationship between OPTs and the referenced arch/path.
-       //        Current fix is for https://github.com/ppazos/cabolabs-ehrserver/issues/102
-       
-       def list = IndexDefinition.withCriteria {
+       def list = ArchetypeIndexItem.withCriteria {
           resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
           projections {
             groupProperty('archetypeId', 'archetypeId')
-            groupProperty('archetypePath', 'archetypePath')
+            groupProperty('path', 'path')
             property('rmTypeName', 'rmTypeName')
             property('name', 'name')
           }

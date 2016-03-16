@@ -30,7 +30,7 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
 @TestFor(RestController)
 @Mock([ Ehr,Person,Organization,
         PatientProxy, DoctorProxy,
-        OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+        OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
         DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
         Query, DataGet, DataCriteria
       ])
@@ -161,11 +161,11 @@ class RestController2Tests {
    void tearDown()
 	{
       // Tear down logic here
-//      def version_repo = new File(config.version_repo)
-//      
-//      version_repo.eachFile {
-//         it.delete()
-//      }
+      def version_repo = new File(config.version_repo)
+      
+      version_repo.eachFile {
+         it.delete()
+      }
    }
 
 	void testPatientList()
