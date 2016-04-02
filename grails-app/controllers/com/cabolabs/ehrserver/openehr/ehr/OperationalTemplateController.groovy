@@ -2,6 +2,7 @@ package com.cabolabs.ehrserver.openehr.ehr
 
 import grails.util.Holders
 import groovy.xml.MarkupBuilder
+import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
@@ -10,11 +11,6 @@ class OperationalTemplateController {
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
    def xmlValidationService
-   
-   def index()
-   {   
-      render "hola mundo!"
-   }
    
    def list()
    {
@@ -59,17 +55,30 @@ class OperationalTemplateController {
             return [errors: errors]
          }
 
+         // Avoid BOM on OPT files (the Template Designer exports OPTs with BOM and that breaks the XML parser)
+         def bytes = f.getBytes()
+         def inputStream = new ByteArrayInputStream(bytes)
+         def bomInputStream = new UnicodeBOMInputStream(inputStream)
+         bomInputStream.skipBOM() // NOP if no BOM is detected
          
-         def xml = new String( f.getBytes() )
+         // Read out
+         def isr = new InputStreamReader(bomInputStream)
+         def br = new BufferedReader(isr)
+         def xml = br.text // getText from Groovy
+         //def xml = new String( f.getBytes() )
          
          //println xml
+         
+         // Parse to get the template id
+         def slurper = new XmlSlurper(false, false)
+         def template = slurper.parseText(xml)
          
          // Destination
          // Puedo cambiarle el nombre del archivo agregandolo a la ruta ...
          // FIXME: no deberia depender del nombre y los nombres en disco deberian ser generados,
          //      cuando se sube un OPT, habria que crear un opt_index en la bd con el nombre / id original
          //      y ver contra eso si ya lo tenemos, no contra el archivo fisico en disco como aqui.
-         def destination = config.opt_repo + f.getOriginalFilename()
+         def destination = config.opt_repo + template.template_id.value.text() + '.opt' //f.getOriginalFilename()
          
          //println "destination: "+ destination
          
