@@ -6,6 +6,9 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.util.DateParser
 
+import com.cabolabs.swagger.annotations.ApiDescription
+import com.cabolabs.swagger.annotations.ApiProperty
+
 /**
  * Parametros n1 de la query:
  *  - ehrUid    (== compoIndex.ehrUid)
@@ -22,27 +25,34 @@ import com.cabolabs.util.DateParser
  *       con nombres, tipos y obligatoriedad de parametros.
  *
  */
+ @ApiDescription(nameElementDefinitions="Query",typeElementDefinitions="object",description = "Representa una query.")
 class Query {
-
+   @ApiProperty(description = "Identifica la query de manera univoca",type="string")
    String uid = java.util.UUID.randomUUID() as String
 
    // Describe lo que hace la query
+    @ApiProperty(description = "Describe lo que hace la query",type="string")
    String name
    
    // queryByData (composition) o queryData (datavalue)
    // lo que los diferencia es el resultado: composiciones o datos asociados a paths
+   @ApiProperty(description = "Indica el tipo de la query",type="string")
    String type
    
    // Sino se especifica, por defecto es xml
+   @ApiProperty(description = "Indica el formato de la query. Sino se especifica, por defecto es xml",type="string")
    String format = 'xml'
    
    // Filter by templateId (this is the document type)
+
    String templateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
+   @ApiProperty(description = "Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.",type="string")
    List select = []
+   @ApiProperty(description = "Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria). Los filtros/criterios de n1 y de n2 son parametros de la query.",type="string")
    List where = []
    static hasMany = [select: DataGet, where: DataCriteria]
    
@@ -324,7 +334,7 @@ class Query {
          
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
+         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
@@ -545,7 +555,7 @@ class Query {
 
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataGet.archetypeId, dataGet.path)
+         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
 
          resGrouped[absPath] = [:]
@@ -681,7 +691,7 @@ class Query {
             //println "archId "+ dataCriteria.archetypeId
             //println "path "+ dataCriteria.path
              
-            dataidx = IndexDefinition.findByArchetypeIdAndArchetypePath(dataCriteria.archetypeId, dataCriteria.path)
+            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
             idxtype = dataidx?.rmTypeName
              
             // ================================================================
@@ -708,7 +718,7 @@ class Query {
                       dvi.archetypePath = '${dataCriteria.path}'
             /$
              
-            // Consulta sobre atributos del IndexDefinition dependiendo de su tipo
+            // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
             switch (idxtype)
             {
                // ADL Parser bug: uses Java class names instead of RM Type Names...
@@ -782,21 +792,21 @@ class Query {
             
             //       EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value
             //               AND dvi.magnitude>140.0
             //       ) AND EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value
             //               AND dvi.magnitude<130.0
             //       ) AND EXISTS (
             //         SELECT dvi.id
-            //         FROM IndexDefinition dvi
+            //         FROM ArchetypeIndexItem dvi
             //         WHERE dvi.owner.id = ci.id
             //               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
             //               AND dvi.path = /content/data[at0001]/origin

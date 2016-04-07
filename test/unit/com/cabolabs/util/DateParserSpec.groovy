@@ -42,5 +42,19 @@ class DateParserSpec extends Specification {
           utc_date_string == utc_date.format(utc_format, TimeZone.getTimeZone('UTC'))
     }
     
-    
+    void "parse dates with valid ISO 8601 time zones"()
+    {
+       when:
+         def valid_dates = ['2016-01-01T22:30:00-03', '2016-01-01T22:30:00-0300', '2016-01-01T22:30:00-03:00']
+         def dates = []
+         valid_dates.each {
+            dates << DateParser.tryParse(it)
+         }
+         
+       then:
+         '2016-01-02T01:30:00Z' == dates[0].format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone('UTC'))
+         '2016-01-02T01:30:00Z' == dates[1].format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone('UTC'))
+         '2016-01-02T01:30:00Z' == dates[2].format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone('UTC'))
+         
+    }
 }

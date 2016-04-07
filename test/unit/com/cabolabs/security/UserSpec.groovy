@@ -114,7 +114,7 @@ class UserSpec extends Specification {
           
           def uorgman = new User(
              username: 'user2',
-             email: 'pablo@pazos.com',
+             email: 'pablo2@pazos.com',
              password: 'secret',
              enabled: true
           )
@@ -126,7 +126,7 @@ class UserSpec extends Specification {
           // users with many roles
           def uadmin2 = new User(
              username: 'user3',
-             email: 'pablo@pazos.com',
+             email: 'pablo3@pazos.com',
              password: 'secret',
              enabled: true
           )
@@ -138,7 +138,7 @@ class UserSpec extends Specification {
           
           def uorgman2 = new User(
              username: 'user4',
-             email: 'pablo@pazos.com',
+             email: 'pablo4@pazos.com',
              password: 'secret',
              enabled: true
           )

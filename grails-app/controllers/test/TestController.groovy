@@ -1,7 +1,6 @@
 package test
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails

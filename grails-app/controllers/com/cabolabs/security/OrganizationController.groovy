@@ -75,6 +75,11 @@ class OrganizationController {
       user.addToOrganizations(organizationInstance)
       user.save(flush:true)
 
+      
+      flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
+      redirect action:'show', id:organizationInstance.id
+      
+      /*
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
@@ -82,6 +87,7 @@ class OrganizationController {
          }
          '*' { respond organizationInstance, [status: CREATED] }
       }
+      */
    }
 
    def edit(Organization organizationInstance)

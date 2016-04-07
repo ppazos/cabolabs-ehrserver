@@ -16,8 +16,8 @@ class PaginatorTagLib {
       def numberOfPages = (attrs.numberOfPages ?: 10)
       
       //println "paginator total/offset: " + (params.offset ?: 1).intdiv( params.max )
-      def max = Math.min(params.max ?: 10, 100)
-      def offset = (params.offset ?: 1).toInteger()
+      def max = Math.min(params.max?.toInteger() ?: 10, 100)
+      def offset = (params.offset?.toInteger() ?: 1)
       def currentPage = offset.intdiv(max) + 1
       //println "paginator currPage: " + currentPage
       

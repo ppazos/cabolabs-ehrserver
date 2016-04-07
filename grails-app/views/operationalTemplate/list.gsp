@@ -13,6 +13,18 @@
               <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <g:message code="opt.upload.label" />
             </button>
           </g:link>
+          
+          
+          <g:link action="generate">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+            </button>
+          </g:link>
+          <g:link controller="compositionIndex" action="list">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="compositionIndex.list.title" />
+            </button>
+          </g:link>
         </div>
       </div>
     </div>
@@ -36,6 +48,7 @@
 		            <g:sortableColumn property="concept" title="${message(code: 'template.concept.label', default: 'concept')}" />
 		            <g:sortableColumn property="language" title="${message(code: 'template.language.label', default: 'language')}" />
 		            <g:sortableColumn property="uid" title="${message(code: 'template.uid.label', default: 'uid')}" />
+		            <g:sortableColumn property="archetypeId" title="${message(code: 'template.archetypeId.label', default: 'root archetype')}" />
 		            <th>
 		              Actions
 		            </th>
@@ -50,7 +63,11 @@
 			            <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
 			            <td>${fieldValue(bean: templateInstance, field: "language")}</td>
 			            <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
+			            <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
 			            <td>
+			              <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
+			              <br/>
+			              <g:link action="archetypeItems" params="[uid: templateInstance.uid]">Archetype Indexes</g:link>
 			               <%--
 			               <g:hasEhr patientUID="${templateInstance.uid}">
 			                 <g:link controller="ehr" action="showEhr" params="[patientUID: templateInstance.uid]">Show EHR</g:link>

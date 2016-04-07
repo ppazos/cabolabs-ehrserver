@@ -18,6 +18,8 @@ import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 
+import grails.util.Holders
+
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
@@ -25,7 +27,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 @TestMixin(GrailsUnitTestMixin)
 @Mock([ Ehr,Person,Organization,
    PatientProxy, DoctorProxy,
-   OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+   OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
    DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
  ])
 class RestControllerSpec extends Specification {
@@ -68,6 +70,7 @@ class RestControllerSpec extends Specification {
     */
    def cleanup()
    {
+      println "+++ RestControllerSpec config.version_repo "+ config.version_repo // dice /versions ...
       def version_repo = new File(config.version_repo)
       version_repo.eachFile {
          it.delete()

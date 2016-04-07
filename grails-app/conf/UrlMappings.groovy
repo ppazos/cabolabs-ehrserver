@@ -13,6 +13,11 @@ class UrlMappings {
          action: 'profile'
       )
       
+      "/rest/person"(
+         controller: 'rest',
+         action: 'createPerson'
+      )
+      
       // /rest/ehrs -- list of all EHRs
       "/rest/ehrs"(
          controller: 'rest',

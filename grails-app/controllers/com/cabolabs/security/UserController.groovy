@@ -248,13 +248,10 @@ class UserController {
          return
       }
       
-      def sendNotification = false
       if (!userInstance.password)
       {
          userInstance.enabled = false
          userInstance.setPasswordToken()
-         
-         sendNotification = true
       }
       
       
@@ -284,12 +281,10 @@ class UserController {
       }
       
       
-      // FIXME: it should always send this because will never have a password assigned from the admin
-      if (sendNotification)
-      {
-         // token to create the URL for the email is in the userInstance
-         notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
-      }
+
+      // token to create the URL for the email is in the userInstance
+      notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
+
       
       
       request.withFormat {
@@ -441,35 +436,84 @@ class UserController {
       }
    }
    
+   
+   // token comes always and is required for reset
    def resetPassword(String token, String newPassword)
    {
       // GET: display reset view
       // POST: try to reset the pass
       
-      assert token // token comes always and is required for reset
+      if (!token)
+      {
+         flash.message = "Token no present and needed for reseting password, try reseting again"
+         redirect controller:'login', action:'auth'
+         return
+      }
+      
+      def user = User.findByResetPasswordToken(token)
+      if (!user)
+      {
+         flash.message = "Password reset was already done, if you don't remember your password, click on 'Forgot password?'"
+         redirect controller:'login', action:'auth'
+         return
+      }
       
       if (request.post)
       {
-         assert newPassword
-         
-         def user = User.findByResetPasswordToken(token)
-         if (!user)
+         if (!newPassword)
          {
-            // TODO
+            flash.message = "Please enter your new password"
+            return
          }
-         
-         assert user
          
          user.password = newPassword
          user.enabled = true
          user.save(flush:true)
-         
-         // TODO: I18N
-         flash.message = "Password reseted!"
-         
-         redirect controller:'login'
+
+         flash.message = "Password was reset!"
+         redirect controller:'login', action:'auth'
          return
       }
+   }
+   
+   def forgotPassword(String email)
+   {
+      if (request.post)
+      {
+         def user = User.findByEmail(email)
+         
+         if (!user)
+         {
+            flash.message = "Can't find a user for that email"
+            return
+         }
+         
+         
+         // generates a password reset token, used in the email notification
+         user.setPasswordToken()
+         user.enabled = false // if enabled, password token is cleaned beforeInsert
+         user.save(flush:true)
+         
+         
+         try
+         {
+            notificationService.sendForgotPasswordEmail( user.email, [user] )
+         }
+         catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
+         {
+            log.error e.message
+            
+            flash.message = "There was a problem sending the email notification, please try again."
+            return
+         }
+         
+
+         
+         flash.message = "Password reset email was sent, please check the instructions on that email"
+         redirect controller:'login', action:'auth'
+         return
+      }
+      // display the forgotPassword view
    }
 
    protected void notFound() {

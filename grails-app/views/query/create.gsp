@@ -679,7 +679,7 @@
       var get_and_render_archetype_paths = function (archetype_id) {
 
         $.ajax({
-          url: '${createLink(controller:"query", action:"getIndexDefinitions")}',
+          url: '${createLink(controller:"query", action:"getArchetypePaths")}',
           data: {archetypeId: archetype_id, datatypesOnly: true},
           dataType: 'json',
           success: function(data, textStatus) {
@@ -702,7 +702,7 @@
             $(data).each(function(i, didx) {
             
               $('select[name=view_archetype_path]').append(
-                '<option value="'+ didx.archetypePath +'" data-type="'+ didx.rmTypeName +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
+                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
               );
             });
           },

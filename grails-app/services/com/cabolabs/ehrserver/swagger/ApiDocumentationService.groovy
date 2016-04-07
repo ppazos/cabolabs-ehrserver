@@ -1,6 +1,6 @@
 
 package com.cabolabs.ehrserver.swagger
-
+import com.cabolabs.ehrserver.api.RestController
 import grails.rest.RestfulController
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.commons.GrailsControllerClass
@@ -25,52 +25,53 @@ import com.cabolabs.swagger.ControllerDocumentation
 import com.cabolabs.swagger.ControllerActionDocumentation
 import com.cabolabs.swagger.ControllerActionParameterDocumentation
 import com.cabolabs.swagger.ControllerActionResponseDocumentation
-import io.swagger.parser.SwaggerParser
-import io.swagger.models.Swagger
-import io.swagger.util.Json
+
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Field
+//Para el validador, quitarlas si al final se elimina
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.core.report.ProcessingReport;
 
-
-/**
- * Navigate through all Grails Controllers and search for RestfulControllers if they have any documenation information.
- * The resulting documantation will be stored in the global map doaminClasses for further usage.
- *
- * @author Derk Muenchhausen
- * @author Stephan Linkel
- * @since 0.1
- */
-@Transactional
 class ApiDocumentationService {
+    //Para obtener credenciales usuario
+    def springSecurityService
+    //Para generar el token
+    def statelessTokenProvider
     def grailsApplication
+    static String urlToSwaggerIOGenerator="https://generator.swagger.io/?url="
+    static String urlToFileJson="https://raw.githubusercontent.com/casiodbx/quizjc/master/"
     static IGNORE_PROPERTIES = ['class','errors','metaClass','version','']
-    static Map<String, DomainDocumentation> domainClasses = [:]
+    static def controllerClasses
+    static String token
 
-    def String init() {
+    def init() {
+        def RestController restController= new RestController()
+        def auth = springSecurityService.authentication
+        token=" Bearer "+ statelessTokenProvider.generateToken(auth.getPrincipal().username, null, [organization: auth.organization])
         String resultado=""
-        domainClasses = [:]
+        controllerClasses =[:] 
         for (GrailsControllerClass controller in grailsApplication.controllerClasses) {
-           resultado+=addDomainAndControllerClass(controller, grailsApplication, domainClasses)
+          resultado=addDomainAndControllerClass(controller, grailsApplication)
+          if (resultado){
+            //Relleno Bean con información de la clase
+            controllerClasses.put(controller.clazz.simpleName,new ControllerDocumentation(controller.clazz.simpleName,resultado,validatorJson(resultado),urlToSwaggerIOGenerator+urlToFileJson+controller.clazz.simpleName+".json"))
+          }
         }
-        return resultado
     }
 
 
-    protected static String addDomainAndControllerClass(GrailsControllerClass controller, grailsApplication, LinkedHashMap<String, DomainDocumentation> domainClasses) {
+
+    protected static String addDomainAndControllerClass(GrailsControllerClass controller, grailsApplication) {
       
       ApiDescription apiDescription = controller.clazz.getAnnotation(ApiDescription)
       String contenidoInfoNotaciones=""
       if (apiDescription) {
            contenidoInfoNotaciones='{'+getHeaderSwagger(controller,'2.0')+','+ generatePaths(controller,grailsApplication)+'}' 
-           SwaggerParser parser = new SwaggerParser()
-            /*try {
-                 Swagger swagger = parser.read("src/issue99.json")//parser.parse(contenidoInfoNotaciones)//parser.read("src/issue99.json")
-                 String swaggerString = Json.pretty(contenidoInfoNotaciones);
-                }catch(Exception e){
-                println e.toString()
-            }*/
-        }
+         }
         return contenidoInfoNotaciones
     }
 
@@ -95,6 +96,21 @@ class ApiDocumentationService {
       def basePathHeader = { basePath -> 
          return "\"basePath\": \"${basePath}\"\n" 
       }
+      def tagsHeader = { tags -> 
+          def contentTags=""
+          if (tags){
+              def values =tags.split(',')
+              int i
+              for (i = 0; i <values.size(); i++) {
+                   if (i==0){
+                      contentTags+= "{\"name\":\"${values[i]}\"}"
+                   }else{
+                      contentTags+= ",{\"name\":\"${values[i]}\"}"
+                   }
+              }
+          }
+         return "\"tags\": [${contentTags}]\n" 
+      }      
       //Define tag produces 
       def producesHeader = { produces -> 
          return "\"produces\": [\"${produces}\"]\n" 
@@ -111,9 +127,11 @@ class ApiDocumentationService {
          header+=","+hostHeader(description.host())
       //Add to tag schemes
          header+=","+schemesHeader(description.schemes())
-      //Add to basepath chemes
+      //Add to basepath 
          header+=","+basePathHeader(description.basePath())
-      //Add to produces chemes
+      //Add to tags 
+         header+=","+tagsHeader(description.tags())
+      //Add to produces 
          header+=","+producesHeader(description.produces())     
         return header
     }
@@ -216,7 +234,7 @@ class ApiDocumentationService {
                 if (!''.equals(typeOperationRestMethod(method).domainClass())){
                     //def errorPropertiesDefinitions=errorProperties(errorPropertiesCodeDefinitions('typeCode','formatCode'),errorMenssage('type'),errorFields('type'))
                     //contenidoDefinitions=definitions(generateDefinitions(Method method,grailsApplication),errorDefinitions('type',errorPropertiesDefinitions))
-                    contenidoDefinitions+=generateDefinitions(method,grailsApplication)
+                    contenidoDefinitions+=((contenidoDefinitions)?",":"")+generateDefinitions(method,grailsApplication)
                 }
             }          
 
@@ -241,18 +259,39 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
          return   "\"parameters\": [\n${parameters}\n]"     
       }
       //Defino Paramters Type of Element of Api Rest     
-      def parameterElementApiRest={name,ind,description,required,type,format->
+      def parameterElementApiRest={name,ind,description,required,type,format,items->
          String contentFormatParameters="";
+         String contentDefaultValue="";
+         String contentEnum="";
          if (!"".equals(format)){
             contentFormatParameters=",\"format\": \"${format}\""
          } 
+         //Para elemento Authorization del Header
+         if ("Authorization".equals(name)){
+            contentDefaultValue=",\"default\": \"${token}\""
+         } 
+         //Cuando un elemento tiene un listado cerrado de valores
+         if (items){
+              def values =items.split(',')
+              int i
+              contentEnum=",\"enum\": ["
+              for (i = 0; i <values.size(); i++) {
+                   if (i==0){
+                      contentEnum+= "\"${values[i]}\""
+                   }else{
+                      contentEnum+= ",\"${values[i]}\""
+                   }
+              }
+             contentEnum+="]"
+         }
 
          return   "{\"name\": \"${name}\",\n"+
                   "\"in\": \"${ind}\",\n" +
                   "\"description\": \"${description}\",\n" +
                   "\"required\": ${required},\n" +
                   "\"type\": \"${type}\"\n"+
-                  contentFormatParameters+"}"
+                  contentEnum+
+                  contentFormatParameters+contentDefaultValue+"}"
       }
       //Defino tags of Element of Api Rest     
       def tagsElementApiRest={tag->
@@ -313,7 +352,7 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
                     if (contadorParametro >0){
                        parametro+=','
                     }
-                    parametro+=parameterElementApiRest(((ApiParam)it).name(),((ApiParam)it).in(),((ApiParam)it).value(),((ApiParam)it).required(),((ApiParam)it).type(),((ApiParam)it).format()) 
+                    parametro+=parameterElementApiRest(((ApiParam)it).name(),((ApiParam)it).in(),((ApiParam)it).value(),((ApiParam)it).required(),((ApiParam)it).type(),((ApiParam)it).format(),((ApiParam)it).items()) 
                    contadorParametro++
                }   
 
@@ -425,5 +464,23 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
         }
         return r
     }
-  
+
+    //Sustituirlo por validación online http://online.swagger.io/validator/debug?url=http://petstore.swagger.io/v2/swagger.json
+    //<img src="http://online.swagger.io/validator?url={YOUR_URL}">
+    private Boolean validatorJson(String content) {
+      Boolean validoJson=false;
+     try { 
+          JsonNode mySchema=JsonLoader.fromResource('/src/Schema.json')
+          JsonNode jsonFile=JsonLoader.fromString(content)
+          JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+          JsonSchema schema = factory.getJsonSchema(mySchema);
+          ProcessingReport report = schema.validate(jsonFile);
+          if (report.isSuccess()) {
+              validoJson=true
+          }
+       } catch (Exception e) {
+          println 'Se ha producido un error'+e
+       } 
+       return validoJson
+    }
 }

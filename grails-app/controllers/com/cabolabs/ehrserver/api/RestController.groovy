@@ -6,7 +6,6 @@ import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
@@ -38,6 +37,8 @@ import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncode
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 
+import grails.transaction.Transactional
+
 import com.cabolabs.swagger.annotations.ApiOperation
 import com.cabolabs.swagger.annotations.ApiParam
 import com.cabolabs.swagger.annotations.ApiParams
@@ -59,11 +60,11 @@ import com.cabolabs.swagger.annotations.PutMethod
  * @author pab
  *
  */
-@ApiDescription(title="EHRServer",description="The composition of ranks is determined by a taxonomist. The standards for the classification are not strictly codified.",version="0.0.1",
-            host="prueba.ehrserver.prueba",schemes="https",basePath="/ehrserver",produces="application/json")
+@ApiDescription(title="EHRServer",description="Descripcion de la clase RestController",version="0.6",
+            host="cabolabs-ehrserver.rhcloud.com",schemes="https",basePath="/ehr",produces="application/json",tags="authorization,patients,ehrs,queries")
 class RestController {
 
-   static allowedMethods = [commit: "POST", contributions: "GET"]
+   static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
@@ -85,6 +86,11 @@ class RestController {
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
 
    
+   @GetMethod(pathApiRest="/rest/login",summary="Obtenemos token de seguridad",description="Obtenemos token de seguridad",tags="authorization")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Authentication failed",typeSchema="string"),@ApiResponse(code = 200, message = "Token de seguridad",typeSchema="string")])
+   @ApiParams(value= [@ApiParam(name = "username", value = "Usuario", required = true, in="query",type="string"),
+                      @ApiParam(name = "password", value = "Clave de acceso", required = true, in="query",type="string"),
+                      @ApiParam(name = "organization", value = "Numero de la organizacion, facilitado al registrarse en la aplicacion", required = true, in="query",type="integer",format="int32")])
    // FIXME: move logic to service
    def login()
    {
@@ -451,6 +457,13 @@ class RestController {
       render(text: xml, contentType:"text/xml", encoding:"UTF-8")
    }
    
+   @GetMethod(pathApiRest="/rest/ehrs",summary="Listado de pacientes",description="Listado de historiales medicos",tags="ehrs",domainClass="Ehr")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                           @ApiResponse(code = 200, message = "Listado de historiales de pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Ehr")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
@@ -460,7 +473,7 @@ class RestController {
       //println "hello ${request.securityStatelessMap}" // [extradata:[organization:1234], issued_at:2015-12-27T14:26:53.802-03:00, username:admin]
       
       // Paginacion
-      if (!max) max = 15
+      if (!max) max = 30
       if (!offset) offset = 0
       
       // organization number used on the API login
@@ -539,8 +552,8 @@ class RestController {
         }
         */
          def data = [
-           ehrs: [],
-           pagination: [
+            ehrs: [],
+            pagination: [
                'max': max,
                'offset': offset,
                nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
@@ -718,12 +731,13 @@ class RestController {
          render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrGet
-
-   @GetMethod(pathApiRest="/patientsList",summary="Listado de pacientes",description="Listado de pacientes",tags="patients",domainClass="Person")
-   @ApiResponses(value = [ @ApiResponse(code = 500, message = "\'\$format\' no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),@ApiResponse(code = 200, message = "Listado de Pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
-   @ApiParams(value= [@ApiParam(name = "format", value = "descripcion de parametro format", required = true, in="query",type="string"),
-                      @ApiParam(name = "max", value = "descripcion de parametro max", required = true, in="query",type="integer",format="int32"),
-                      @ApiParam(name = "int", value = "descripcion de parametro offset", required = true, in="query",type="integer",format="int32")])
+   
+   @GetMethod(pathApiRest="/rest/patients",summary="Listado de pacientes",description="Listado de pacientes",tags="patients",domainClass="Person")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),@ApiResponse(code = 200, message = "Listado de Pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def patientList(String format, int max, int offset)
    {
@@ -965,6 +979,15 @@ class RestController {
       }
    }
 
+   @GetMethod(pathApiRest="/rest/queries",summary="Listado de queries",description="Listado de queries",tags="queries",domainClass="Query")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                           @ApiResponse(code = 200, message = "Listado de queries",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Query")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "queryName", value = "descripcion de parametro queryName", required = false, in="query",type="string"),
+                      @ApiParam(name = "descriptionContains", value = "descripcion de parametro descriptionContains", required = false, in="query",type="string"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
@@ -1652,17 +1675,32 @@ class RestController {
                le('timeCommitted', dateTo)
             }
          }
-         
+      }
+      
+      // TODO: create a XML marshalled to not return lists or maps as XML (try to follow the openEHR XML)
+      def result = []
+      res.each { contrib ->
+         result << [
+            uid: contrib.uid,
+            organizationUid: contrib.organizationUid,
+            ehr: contrib.ehr.uid,
+            versions: contrib.versions.uid, // list of uids
+            audit: [
+               timeCommitted: contrib.audit.timeCommitted,
+               systemId:  contrib.audit.systemId,
+               committer:  contrib.audit.committer.name
+            ]
+         ]
       }
       
       
       if (!format || format == 'xml')
       {
-         render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
@@ -1738,8 +1776,12 @@ class RestController {
    def findCompositions(String ehrUid, String subjectId,
                         String fromDate, String toDate,
                         String archetypeId, String category,
-                        String format)
+                        String format, int max, int offset)
    {
+      // Paginacion
+      if (!max) max = 30
+      if (!offset) offset = 0
+      
       // 1. Todos los parametros son opcionales pero debe venir por lo menos 1
       // 2. La semantica de pasar 2 o mas parametros es el criterio de and
       // 3. Para implementar como un OR se usaria otro parametro booleano (TODO)
@@ -1792,22 +1834,42 @@ class RestController {
             le('startTime', dToDate) // lower or equal
             
          eq('lastVersion', true)
+         
+         maxResults(max)
+         firstResult(offset)
       }
+      
+      // TODO: fix the structure for XML, it will output the MAP marshaling.
+      def result = [
+         result: idxs,
+         pagination: [
+            'max': max,
+            'offset': offset,
+            nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+            prevOffset: ((offset-max < 0) ? 0 : offset-max )
+         ]
+      ]
       
       // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
       if (!format || format == 'xml')
-         render(text: idxs as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: result as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
       else if (format == 'json')
-         render(text: idxs as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: result as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
       else
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
    
+   
+   @Transactional
    @SecuredStateless
    def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
                     String role, String organizationUid, boolean createEhr, String format)
    {
-      if (!format) format = 'json'
+      if (!format)
+      {
+         params.format = 'json' // this is to make withFormat works because uses the request params
+         format = 'json'
+      }
       
       if (!organizationUid)
       {
@@ -1869,24 +1931,31 @@ class RestController {
          }
       }
       
-      withFormat {
+
          
-         def data = [
-            firstName: personInstance.firstName,
-            lastName: personInstance.lastName,
-            dob: personInstance.dob, // Date is marshalled by the JSON marshaller
-            sex: personInstance.sex,
-            idCode: personInstance.idCode,
-            idType: personInstance.idType, 
-            role: personInstance.organizationUid, 
-            organizationUid: personInstance.organizationUid
-         ]
-         xml {
-            render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
-         }
-         json {
-            render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-         }
+      def data = [
+         firstName: personInstance.firstName,
+         lastName: personInstance.lastName,
+         dob: personInstance.dob, // Date is marshalled by the JSON marshaller
+         sex: personInstance.sex,
+         idCode: personInstance.idCode,
+         idType: personInstance.idType, 
+         role: personInstance.organizationUid, 
+         organizationUid: personInstance.organizationUid
+      ]
+      if (format == 'xml')
+      {
+         println "XML"
+         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         println "JSON"
+         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
       }
    }
 }

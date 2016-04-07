@@ -2,7 +2,7 @@ package com.cabolabs.ehrserver.query.datatypes
 
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.openehr.opt.manager.OptManager
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
@@ -92,7 +92,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        else
        {
           // https://github.com/ppazos/cabolabs-ehrserver/issues/154
-          def idef = IndexDefinition.findByArchetypeIdAndArchetypePath(archetypeId, path)
+          def idef = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, path)
           if (idef && idef.terminologyRef)
           {
              // terminology:WHO?subset=ATC&amp;language=en-GB

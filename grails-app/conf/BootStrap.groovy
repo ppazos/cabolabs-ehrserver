@@ -1,6 +1,5 @@
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.ehrserver.ehr.clinical_documents.IndexDefinition
 import grails.util.Holders
 
 import com.cabolabs.security.RequestMap
@@ -125,7 +124,7 @@ class BootStrap {
          '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
          '/login', '/login.*', '/login/*',
          '/logout', '/logout.*', '/logout/*',
-         '/user/register', '/user/resetPassword',
+         '/user/register', '/user/resetPassword', '/user/forgotPassword',
          '/simpleCaptcha/**',
          '/j_spring_security_logout',
          '/rest/**',
@@ -152,7 +151,8 @@ class BootStrap {
         new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/indexDefinition/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/archetypeIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
         
@@ -165,7 +165,7 @@ class BootStrap {
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/swagger/index', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/swagger/**', configAttribute: 'ROLE_ADMIN').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
      }
@@ -203,12 +203,10 @@ class BootStrap {
      log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
      
      
-     // Initial index loading
-     if (IndexDefinition.count() == 0)
-     {
-		  def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-		  ti.indexAll()
-     }
+     // Always regenerate indexes in deploy
+     def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+	  ti.indexAll()
+     
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )

@@ -108,7 +108,7 @@
             </div>
             <div class="panel-body">
               <g:if test='${flash.message}'>
-                <div class='login_message'>${flash.message}</div>
+                <div class='login_message'>${flash.message}</div><br/>
               </g:if>
               
               <g:form url="[action:'resetPassword']" method='POST' id="form" class='cssform' autocomplete='off'>
@@ -119,6 +119,13 @@
                     <input type='password' class='form-control' name='newPassword' id='password' required="required" value="" />
                   </div>
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.reset.button")}'/>
+                </fieldset>
+                <fieldset>
+                  <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
+                    <g:link controller="login" action="auth">
+                      <g:message code="springSecurity.login.back.label"/>
+                    </g:link>
+                  </div>
                 </fieldset>
               </g:form>
             </div>

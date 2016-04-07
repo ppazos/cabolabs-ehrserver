@@ -56,7 +56,7 @@ class Contribution {
       this.yearGroup      = Integer.parseInt( new SimpleDateFormat("yyyy").format(d) )
    }
    
-   
+   /* we sre not using this and is causing problems with grails that uses equals internally
    @Override
    public boolean equals(Object other)
    {
@@ -71,4 +71,5 @@ class Contribution {
       // http://stackoverflow.com/questions/113511/hash-code-implementation
       return this.uid.hashCode()
    }
+   */
 }

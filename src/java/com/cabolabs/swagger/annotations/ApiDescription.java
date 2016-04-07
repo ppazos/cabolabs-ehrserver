@@ -22,6 +22,7 @@ public @interface ApiDescription {
     String host () default ""; //
     String schemes() default "";//Values MUST be from the list: "http", "https", "ws", "wss"
     String basePath() default "";//The value MUST start with a leading slash (/)
+    String tags() default "";// A list of tags used by the specification with additional metadata.
     String produces() default "";//Values MUST be from the list: http://swagger.io/specification/#mimeTypes
     //Definitions
     String nameElementDefinitions() default "";

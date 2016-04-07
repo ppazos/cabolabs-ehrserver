@@ -30,7 +30,7 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
 @TestFor(RestController)
 @Mock([ Ehr,Person,Organization,
         PatientProxy, DoctorProxy,
-        OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+        OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
         DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
         Query, DataGet, DataCriteria
       ])
@@ -47,7 +47,6 @@ class RestController2Tests {
 	{
       println "setUp"
       
-
       controller.xmlService = new XmlService()
       controller.xmlService.xmlValidationService = new XmlValidationService()
       
