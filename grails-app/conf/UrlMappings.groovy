@@ -45,6 +45,11 @@ class UrlMappings {
          controller: 'rest',
          action: 'patientList'
       )
+          "/rest/patient"(
+         controller: 'rest',
+         action: 'createPerson',
+         method: 'POST'
+      )          
       "/rest/patients/$uid"( 
          controller: 'rest',
          action: 'patient'
