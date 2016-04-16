@@ -6,7 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A simple array wrapper to contain multiple ApiResponse objects
+ * @author cabolabs
+ * @since 0.7
+ *
+ * Representa un array que contiene objectos ApiResponses
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

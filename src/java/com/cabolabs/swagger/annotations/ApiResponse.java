@@ -7,11 +7,13 @@ import java.lang.annotation.Target;
 
 
 /**
- * An ApiResponse represents a type of response from a server.  This can be used to
- * describe both success codes as well as errors.
- * If your Api has different response classes, you can describe them here by associating
- * a response class with a response code.  Note, Swagger does not allow multiple response
- * types for a single response code.
+ * @author cabolabs
+ * @since 0.7
+ * 
+ *Recoge el tipo de respuestas que da al servidor para una operación de la api. Esto se puede
+ *usar tanto para recoger las respuestas correctas como las erroneas.
+ *
+ *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -7,15 +7,14 @@ import java.lang.annotation.Target;
 
 
 /**
- * @author Derk Muenchhausen
- * @author Stephan Linkel
- * @since 0.1
+ * @author cabolabs
+ * @since 0.7
  */
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiDescription {
-    String name() default "";           // if empty the Controller name will be used
-    String plural() default "";         // if empty the Controller name will be used
+    String name() default "";        
+    String plural() default "";        
     String description() default "";
     String title() default ""; // Is required for specification swagger 2.0
     String version() default ""; //  Is required for specification swagger 2.0

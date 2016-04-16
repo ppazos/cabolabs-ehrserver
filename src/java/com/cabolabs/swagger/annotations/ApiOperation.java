@@ -5,6 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
+/**
+ * @author cabolabs
+ * @since 0.7
+ */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiOperation {
@@ -16,6 +21,4 @@ public @interface ApiOperation {
 
   String sample() default "";
 
-  /** authorizations required by this Api */
-  // String authorizations() default "";
 }

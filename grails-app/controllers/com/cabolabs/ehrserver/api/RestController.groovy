@@ -86,7 +86,7 @@ class RestController {
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
 
    
-   @GetMethod(pathApiRest="/rest/login",summary="Obtenemos token de seguridad",description="Obtenemos token de seguridad",tags="authorization")
+   @GetMethod(pathApiRest="/rest/login",summary="Obtenemos token de seguridad",description="Obtenemos token de seguridad",tags="authorization",domainClass="Person")
    @ApiResponses(value = [ @ApiResponse(code = 500, message = "Authentication failed",typeSchema="string"),@ApiResponse(code = 200, message = "Token de seguridad",typeSchema="string")])
    @ApiParams(value= [@ApiParam(name = "username", value = "Usuario", required = true, in="query",type="string"),
                       @ApiParam(name = "password", value = "Clave de acceso", required = true, in="query",type="string"),
@@ -1859,7 +1859,21 @@ class RestController {
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
    
-   
+    
+  @PostMethod(pathApiRest="/rest/patient",summary="Crear un paciente",description="Creación de un paciente",tags="patients",domainClass="Person")
+  @ApiResponses(value = [@ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                          @ApiResponse(code = 200, message = "Paciente creado con exito.",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
+  @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = true, in="header",type="string"),
+                      @ApiParam(name = "firstName", value = "descripcion de parametro firstName", required = true, in="query",type="string"),
+                      @ApiParam(name = "lastName", value = "descripcion de parametro lastName", required = true, in="query",type="string"),
+                      @ApiParam(name = "dob", value = "descripcion de parametro dob", required = true, in="query",type="string"),
+                      @ApiParam(name = "sex", value = "descripcion de parametro sex", required = true, in="query",type="string"),
+                      @ApiParam(name = "idCode", value = "descripcion de parametro idCode", required = true, in="query",type="string"),
+                      @ApiParam(name = "idType", value = "descripcion de parametro idType", required = true, in="query",type="string"),
+                      @ApiParam(name = "role", value = "descripcion de parametro role", required = true, in="query",type="string"),
+                      @ApiParam(name = "organizationUid", value = "descripcion de parametro organizationUid", required = true, in="query",type="string"),
+                      @ApiParam(name = "createEhr", value = "descripcion de parametro createEhr", required = true, in="query",type="boolean"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json")])   
    @Transactional
    @SecuredStateless
    def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 

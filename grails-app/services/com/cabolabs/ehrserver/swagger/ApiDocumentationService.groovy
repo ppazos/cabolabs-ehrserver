@@ -36,12 +36,24 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jackson.JsonLoader
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 
+
+/**
+ * @author cabolabs
+ * @since 0.7
+ * 
+ * Encargada de recoger la información de los controller que hayamos anotado y generar un mapa. Este mapa esta compuesto:
+ *    clave:Nombre del controller analizado. 
+ *    valor: Un objecto de tipo ControllerDocumentation. Entre las propiedades de este objeto estara el archivo Json de swagger.
+ * En caso de que no hayamos anotado ninguna controller, nos devolvera una lista vacia.
+ *
+ */
 class ApiDocumentationService {
     //Para obtener credenciales usuario
     def springSecurityService
     //Para generar el token
     def statelessTokenProvider
     def grailsApplication
+    static def domainList=[]
     static String urlToSwaggerIOGenerator="https://generator.swagger.io/?url="
     static String urlToFileJson="https://raw.githubusercontent.com/casiodbx/quizjc/master/"
     static IGNORE_PROPERTIES = ['class','errors','metaClass','version','']
@@ -55,6 +67,7 @@ class ApiDocumentationService {
         String resultado=""
         controllerClasses =[:] 
         for (GrailsControllerClass controller in grailsApplication.controllerClasses) {
+          domainList.clear()
           resultado=addDomainAndControllerClass(controller, grailsApplication)
           if (resultado){
             //Relleno Bean con información de la clase
@@ -74,7 +87,10 @@ class ApiDocumentationService {
          }
         return contenidoInfoNotaciones
     }
-
+    /***
+    * Dentro del SWAGGER OBJECT se encarga de generar las siguientes partes del json de swagger:
+    * swagger,info,host,basePath,schemes,consumes,produces
+    */
     static String getHeaderSwagger(GrailsControllerClass controller,String versionSwagger){
        //Define tag swagger
       def tagSwagger = {version -> 
@@ -137,7 +153,10 @@ class ApiDocumentationService {
     }
 
 
-
+    /***
+    * Dentro del SWAGGER OBJECT se encarga de generar la siguiente parte json de swagger:
+    * paths (PATHS OBJECT)
+    */
     static generatePaths(GrailsControllerClass controller,grailsApplication){
 
         //Defino paths
@@ -234,7 +253,10 @@ class ApiDocumentationService {
                 if (!''.equals(typeOperationRestMethod(method).domainClass())){
                     //def errorPropertiesDefinitions=errorProperties(errorPropertiesCodeDefinitions('typeCode','formatCode'),errorMenssage('type'),errorFields('type'))
                     //contenidoDefinitions=definitions(generateDefinitions(Method method,grailsApplication),errorDefinitions('type',errorPropertiesDefinitions))
-                    contenidoDefinitions+=((contenidoDefinitions)?",":"")+generateDefinitions(method,grailsApplication)
+                    def definition=generateDefinitions(method,grailsApplication) 
+                    if (definition!=null){
+                        contenidoDefinitions+=((contenidoDefinitions)?",":"")+definition  
+                    }
                 }
             }          
 
@@ -244,7 +266,11 @@ class ApiDocumentationService {
             def errorPropertiesDefinitions=errorProperties(errorPropertiesCodeDefinitions('integer','int32'),errorMenssage('string'),errorFields('string'))
         return paths(contenidoPaths)+','+definitions(contenidoDefinitions,errorDefinitions('object',errorPropertiesDefinitions))       
     }
-
+ /***
+ * Dentro del SWAGGER OBJECT en la parte de paths.
+ * Se encarga de PARAMETERS DEFINITIONS OBJECT y dentro de este de definir los PARAMETER OBJECT  
+ *
+ ***/
 static String generatePath(Method method,String httpMethod,grailsApplication){
       //Defino Element of Api Rest
      def elementApiRestPaths={nameElementApiRest,contentElementApiRest->
@@ -307,12 +333,19 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
       }
       //Defino tags of Element of Api Rest     
       def schemaResponseElementApiRest={type,items->
-         String contentItems="";
+         String contentItems=""
+         String contentType=""
          if (!"".equals(items)){
                  contentItems=",\n\"items\": {\n${items}\n}"
          } 
+         if (!"".equals(type)){
+             contentType="\"type\": \"${type}\""
+         }else{
+          //Si no viene el type debe aparecer items tal cual viene.
+           contentItems=items;
+         }
 
-         return   "\"type\": \"${type}\""+contentItems     
+         return   contentType+contentItems     
       }
       //Defino tags of Element of Api Rest     
       def itemSchemaResponseElementApiRest={name,contentItem->
@@ -383,9 +416,12 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
   }
 
 
-
+  /***
+    * Dentro del SWAGGER OBJECT se encarga de generar la parte del json de swagger:
+    *  Definitions (DEFINITIONS OBJECT)
+    */
  static String generateDefinitions(Method method,grailsApplication){
-    //Defino definitions
+     //Defino definitions
      
       //Defino element of definitions
       def elementDefinitions={name,type,properties->
@@ -419,37 +455,43 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
               return (DeleteMethod) annotation;   
           }         
       }
+    def definitionsElement
+    Annotation annotation
+    ApiDescription testerInfo
     //Deberemos recibir un directorio y trataremos cada una de las clases.
-    GrailsDomainClass domainClass = grailsApplication.domainClasses.find({ it.clazz.simpleName == typeOperationRestMethod(method).domainClass()})    
-    //1)Generamos todos los definitions.element
-      def contenidoProperties=""
-      def contadorProperties=0
-      Annotation annotation
-        ApiDescription testerInfo
-      for (Field field: domainClass.clazz.getDeclaredFields()) {   
-         if (field.isAnnotationPresent(ApiProperty.class)) {
-           annotation = field.getAnnotation(ApiProperty.class)
-            
-            ApiProperty apiProperty= (ApiProperty) annotation;            
-            if (contadorProperties >0){
-                contenidoProperties+=','
-            }
-            contenidoProperties+=propertyElementDefinitions(field.getName(),apiProperty.type(),apiProperty.format(),apiProperty.description())
-            contadorProperties++
-        }
-      }
-    //2 los añado a su elemento.
-        def properties=propertiesElementDefinitions(contenidoProperties)
-     //3 Elemento del definitions
-        if (domainClass.clazz.isAnnotationPresent(ApiDescription.class)) {
-            annotation = domainClass.clazz.getAnnotation(ApiDescription.class)
-            testerInfo = (ApiDescription) annotation;              
-        }
-        def definitionsElement=elementDefinitions(testerInfo.nameElementDefinitions(),testerInfo.typeElementDefinitions(),properties)
-     /////////Fin del for de las clases de dominio///////////////        
-     //def errorPropertiesDefinitions=errorProperties(errorPropertiesCodeDefinitions('typeCode','formatCode'),errorMenssage('type'),errorFields('type'))
-     //print definitions(definitionsElement,errorDefinitions('type',errorPropertiesDefinitions))
-     //return definitions(definitionsElement,errorDefinitions('type',errorPropertiesDefinitions))     
+    GrailsDomainClass domainClass = grailsApplication.domainClasses.find({ it.clazz.simpleName == typeOperationRestMethod(method).domainClass()})   
+    if (domainClass.clazz.isAnnotationPresent(ApiDescription.class)) {
+        annotation = domainClass.clazz.getAnnotation(ApiDescription.class)
+        testerInfo = (ApiDescription) annotation;     
+    }
+    //Para evitar repetir dominios
+    if (!domainList.contains(testerInfo.nameElementDefinitions())){
+        domainList.add(testerInfo.nameElementDefinitions())  
+        //1)Generamos todos los definitions.element
+          def contenidoProperties=""
+          def contadorProperties=0
+          for (Field field: domainClass.clazz.getDeclaredFields()) {
+
+               if (field.isAnnotationPresent(ApiProperty.class)) {
+                 annotation = field.getAnnotation(ApiProperty.class)
+                  
+                  ApiProperty apiProperty= (ApiProperty) annotation;            
+                  if (contadorProperties >0){
+                      contenidoProperties+=','
+                  }
+                  contenidoProperties+=propertyElementDefinitions(field.getName(),apiProperty.type(),apiProperty.format(),apiProperty.description())
+                  contadorProperties++
+              }
+          }
+        //2 los añado a su elemento.
+            def properties=propertiesElementDefinitions(contenidoProperties)
+         //3 Elemento del definitions
+            definitionsElement=elementDefinitions(testerInfo.nameElementDefinitions(),testerInfo.typeElementDefinitions(),properties)
+         /////////Fin del for de las clases de dominio///////////////        
+         //def errorPropertiesDefinitions=errorProperties(errorPropertiesCodeDefinitions('typeCode','formatCode'),errorMenssage('type'),errorFields('type'))
+         //print definitions(definitionsElement,errorDefinitions('type',errorPropertiesDefinitions))
+         //return definitions(definitionsElement,errorDefinitions('type',errorPropertiesDefinitions))    
+    } 
      return definitionsElement
 }
 
@@ -465,8 +507,11 @@ static String generatePath(Method method,String httpMethod,grailsApplication){
         return r
     }
 
-    //Sustituirlo por validación online http://online.swagger.io/validator/debug?url=http://petstore.swagger.io/v2/swagger.json
-    //<img src="http://online.swagger.io/validator?url={YOUR_URL}">
+    /***
+    * Encargada de validar el archivo json generado contra el esquema
+    * de la especificacion Swagger 2.0
+    *
+    */
     private Boolean validatorJson(String content) {
       Boolean validoJson=false;
      try { 

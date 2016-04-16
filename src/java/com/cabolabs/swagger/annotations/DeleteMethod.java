@@ -7,9 +7,8 @@ import java.lang.annotation.Target;
 
 
 /**
- * @author Derk Muenchhausen
- * @author Stephan Linkel
- * @since 0.1
+ * @author cabolabs
+ * @since 0.7
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

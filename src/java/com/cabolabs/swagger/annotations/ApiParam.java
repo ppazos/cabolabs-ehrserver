@@ -6,8 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Represents a single parameter in an Api Operation.  A parameter is an input
- * to the operation
+ * @author cabolabs
+ * @since 0.7
+ * Representa un parametro de una operación de la api
+ *
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -37,14 +39,4 @@ public @interface ApiParam {
   String formatCodeProperties() default "";
   String messageProperties() default "";
   String fieldsProperties() default "";
-
-  /** 
-   * specify an optional access value for filtering in a Filter 
-   * implementation.  This
-   * allows you to hide certain parameters if a user doesn't have access to them
-   */
-  // String access() default "";
-
-  /** specifies whether or not the parameter can have multiple values provided */
-  // boolean allowMultiple() default false;
 }
