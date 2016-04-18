@@ -1,26 +1,63 @@
 {
   "_type": "export",
   "__export_format": 1,
-  "__export_date": "2015-12-06T00:47:18.711Z",
-  "__export_source": "insomnia.chrome.app:v2.1.2",
+  "__export_date": "2016-04-18T03:03:33.035Z",
+  "__export_source": "insomnia.chrome.app:v2.6.10",
   "items": [
     {
       "_type": "request_group",
-      "_id": "grp_1446961807590",
-      "name": "EHRServer",
+      "_id": "grp_1446857936278",
+      "name": "EHRServer local",
       "environments": {
         "base": {
-          "url": "http://localhost:8090/ehr/rest"
+          "base_url": "http://localhost:8090/ehr/rest"
         }
       },
       "requests": [
         {
           "_type": "request",
-          "_id": "req_1449361419866",
-          "url": "{{url}}/ehrs",
+          "_id": "req_1449760999055",
+          "url": "{{base_url}}/login",
+          "method": "POST",
+          "body": "",
+          "headers": [],
+          "params": [
+            {
+              "name": "username",
+              "value": "admin"
+            },
+            {
+              "name": "password",
+              "value": "admin"
+            },
+            {
+              "name": "organization",
+              "value": "1234"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "login"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1450642391186",
+          "url": "{{base_url}}/profile/orgman",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -36,19 +73,36 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "ehrs"
+          "name": "profile"
         },
         {
           "_type": "request",
-          "_id": "req_1449359293185",
-          "url": "{{url}}/ehrs/ehrUid/11111111-1111-1111-1111-111111111111",
+          "_id": "req_1450065390395",
+          "url": "{{base_url}}/compositions",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
             {
               "name": "format",
               "value": "json"
+            },
+            {
+              "name": "max",
+              "value": "2"
+            },
+            {
+              "name": "offset",
+              "value": "0"
             }
           ],
           "authentication": {
@@ -60,19 +114,24 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "ehrs/ehrUid"
+          "name": "compositions"
         },
         {
           "_type": "request",
-          "_id": "req_1449361318813",
-          "url": "{{url}}/ehrs/subjectUid/11111111-1111-1111-1111-111111111111",
+          "_id": "req_1452824882548",
+          "url": "{{base_url}}/compositions/763059fb-a373-4d49-98d1-3d126843556f",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
-              "value": "json"
+              "value": ""
             }
           ],
           "authentication": {
@@ -84,15 +143,81 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "ehrs/subjectUid"
+          "name": "composition"
         },
         {
           "_type": "request",
-          "_id": "req_1449359373693",
-          "url": "{{url}}/patients",
+          "_id": "req_1457211739575",
+          "url": "{{base_url}}/createPerson",
+          "method": "POST",
+          "body": "",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ],
+          "params": [
+            {
+              "name": "firstName",
+              "value": "Pablo"
+            },
+            {
+              "name": "lastName",
+              "value": "Pazos"
+            },
+            {
+              "name": "dob",
+              "value": "19811024"
+            },
+            {
+              "name": "role",
+              "value": "pat"
+            },
+            {
+              "name": "sex",
+              "value": "M"
+            },
+            {
+              "name": "format",
+              "value": ""
+            },
+            {
+              "name": "createEhr",
+              "value": "true"
+            },
+            {
+              "name": "organizationUid",
+              "value": "fb844f0f-1a23-46d2-a103-3f30c56bb579"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "create person"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1452387297857",
+          "url": "{{base_url}}/patients",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -112,11 +237,16 @@
         },
         {
           "_type": "request",
-          "_id": "req_1449361498502",
-          "url": "{{url}}/patients/11111111-1111-1111-1111-111111111111",
+          "_id": "req_1460948548261",
+          "url": "{{base_url}}/patients/11111111-1111-1111-1111-111111111111",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -132,16 +262,26 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "patients/uid"
+          "name": "patients/$patientUid"
         },
         {
           "_type": "request",
-          "_id": "req_1449359500782",
-          "url": "https://cabolabs-ehrserver.rhcloud.com/ehr/rest/findCompositions",
+          "_id": "req_1446857936281",
+          "url": "{{base_url}}/ehrs",
           "method": "GET",
           "body": "{}",
-          "headers": [],
-          "params": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
           "authentication": {
             "_type": "basic",
             "username": "",
@@ -151,15 +291,341 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "compos"
+          "name": "ehrs"
         },
         {
           "_type": "request",
-          "_id": "req_1449361522644",
-          "url": "{{url}}/queries",
+          "_id": "req_1446858044141",
+          "url": "{{base_url}}/ehrs/ehrUid/11111111-1111-1111-1111-111111111111",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrs/$ehrUid"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1447288608745",
+          "url": "{{base_url}}/ehrForSubject",
+          "method": "GET",
+          "body": "{}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "subjectUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrForSubject"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1447205456395",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\r\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n<version xsi:type=\"ORIGINAL_VERSION\">\r\n  <contribution>\r\n    <id xsi:type=\"HIER_OBJECT_ID\">\r\n      <value>ad6866e1-fb08-4e9b-a93b-5095a2563775</value>\r\n    </id>\r\n    <namespace>EHR::COMMON</namespace>\r\n    <type>CONTRIBUTION</type>\r\n  </contribution>\r\n  <commit_audit>\r\n    <system_id>CABOLABS_EHR</system_id>\r\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </committer>\r\n    <time_committed>\r\n      <value>20140901T233114,065-0300</value>\r\n    </time_committed>\r\n    <change_type>\r\n      <value>creation</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>249</code_string>\r\n      </defining_code>\r\n    </change_type>\r\n  </commit_audit>\r\n  <uid>\r\n    <value>91cf9ded-e926-4848-aa3f-3257c1d89554::EMR_APP::1</value>\r\n  </uid>\r\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.test_all_datatypes.v1\">\r\n    <name>\r\n      <value>Test all datatypes</value>\r\n    </name>\r\n    <archetype_details>\r\n      <archetype_id>\r\n        <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>\r\n      </archetype_id>\r\n      <template_id>\r\n        <value>Test all datatypes_en</value>\r\n      </template_id>\r\n      <rm_version>1.0.2</rm_version>\r\n    </archetype_details>\r\n    <language>\r\n      <terminology_id>\r\n        <value>ISO_639-1</value>\r\n      </terminology_id>\r\n      <code_string>es</code_string>\r\n    </language>\r\n    <territory>\r\n      <terminology_id>\r\n        <value>ISO_3166-1</value>\r\n      </terminology_id>\r\n      <code_string>UY</code_string>\r\n    </territory>\r\n    <category>\r\n      <value>event</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>443</code_string>\r\n      </defining_code>\r\n    </category>\r\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </composer>\r\n    <context>\r\n      <start_time>\r\n        <value>20140901T232600,304-0300</value>\r\n      </start_time>\r\n      <setting>\r\n        <value>Hospital Montevideo</value>\r\n        <defining_code>\r\n          <terminology_id>\r\n            <value>openehr</value>\r\n          </terminology_id>\r\n          <code_string>229</code_string>\r\n        </defining_code>\r\n      </setting>\r\n    </context>\r\n    <content xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.test_all_datatypes.v1\">\r\n      <name>\r\n        <value>Blood Pressure</value>\r\n      </name>\r\n      <language>\r\n         <terminology_id>\r\n           <value>ISO_639-1</value>\r\n         </terminology_id>\r\n         <code_string>es</code_string>\r\n       </language>\r\n       <encoding>\r\n         <terminology_id>\r\n           <value>UNICODE</value>\r\n         </terminology_id>\r\n         <code_string>UTF-8</code_string>\r\n      </encoding>\r\n      <subject xsi:type=\"PARTY_IDENTIFIED\">\r\n        <external_ref>\r\n          <id xsi:type=\"HIER_OBJECT_ID\">\r\n            <value>11111111-1111-1111-1111-111111111111</value>\r\n          </id>\r\n          <namespace>DEMOGRAPHIC</namespace>\r\n          <type>PERSON</type>\r\n        </external_ref>\r\n      </subject>\r\n      <data xsi:type=\"HISTORY\" archetype_node_id=\"at0001\">\r\n        <name>\r\n          <value>history</value>\r\n        </name>\r\n        <origin>\r\n          <value>20140101</value>\r\n        </origin>\r\n        <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0002\">\r\n          <name>\r\n            <value>any event</value>\r\n          </name>\r\n          <time><value>20140101</value></time>\r\n          <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0003\">\r\n            <name>\r\n              <value>Arbol</value>\r\n            </name>\r\n            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0011\">\r\n              <name>\r\n                <value>Count</value>\r\n              </name>\r\n              <value xsi:type=\"DV_COUNT\">\r\n                <magnitude>3</magnitude>\r\n              </value>\r\n            </items>\r\n          </data>\r\n        </events>\r\n      </data>\r\n    </content>\r\n  </data>\r\n  <lifecycle_state>\r\n    <value>completed</value>\r\n    <defining_code>\r\n      <terminology_id>\r\n        <value>openehr</value>\r\n      </terminology_id>\r\n      <code_string>532</code_string>\r\n    </defining_code>\r\n  </lifecycle_state>\r\n</version>\r\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "popo"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "pepe"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit XML (change the uids befor commit!)"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1450312869678",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\r\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n<version xsi:type=\"ORIGINAL_VERSION\">\r\n  <contribution>\r\n    <id xsi:type=\"HIER_OBJECT_ID\">\r\n      <value>ad6866e1-fb08-4e9b-a93b-5095a2567889</value>\r\n    </id>\r\n    <namespace>EHR::COMMON</namespace>\r\n    <type>CONTRIBUTION</type>\r\n  </contribution>\r\n  <commit_audit>\r\n    <system_id>CABOLABS_EHR</system_id>\r\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </committer>\r\n    <time_committed>\r\n      <value>20140901T233114,065-0300</value>\r\n    </time_committed>\r\n    <change_type>\r\n      <value>amendment</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>250</code_string>\r\n      </defining_code>\r\n    </change_type>\r\n  </commit_audit>\r\n  <uid>\r\n    <value>91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::1</value>\r\n  </uid>\r\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.test_all_datatypes.v1\">\r\n    <name>\r\n      <value>Test all datatypes</value>\r\n    </name>\r\n    <archetype_details>\r\n      <archetype_id>\r\n        <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>\r\n      </archetype_id>\r\n      <template_id>\r\n        <value>Test all datatypes_en</value>\r\n      </template_id>\r\n      <rm_version>1.0.2</rm_version>\r\n    </archetype_details>\r\n    <language>\r\n      <terminology_id>\r\n        <value>ISO_639-1</value>\r\n      </terminology_id>\r\n      <code_string>es</code_string>\r\n    </language>\r\n    <territory>\r\n      <terminology_id>\r\n        <value>ISO_3166-1</value>\r\n      </terminology_id>\r\n      <code_string>UY</code_string>\r\n    </territory>\r\n    <category>\r\n      <value>event</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>443</code_string>\r\n      </defining_code>\r\n    </category>\r\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </composer>\r\n    <context>\r\n      <start_time>\r\n        <value>20140901T232600,304-0300</value>\r\n      </start_time>\r\n      <setting>\r\n        <value>Hospital Montevideo</value>\r\n        <defining_code>\r\n          <terminology_id>\r\n            <value>openehr</value>\r\n          </terminology_id>\r\n          <code_string>229</code_string>\r\n        </defining_code>\r\n      </setting>\r\n    </context>\r\n    <content xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.test_all_datatypes.v1\">\r\n      <name>\r\n        <value>Blood Pressure</value>\r\n      </name>\r\n      <language>\r\n         <terminology_id>\r\n           <value>ISO_639-1</value>\r\n         </terminology_id>\r\n         <code_string>es</code_string>\r\n       </language>\r\n       <encoding>\r\n         <terminology_id>\r\n           <value>UNICODE</value>\r\n         </terminology_id>\r\n         <code_string>UTF-8</code_string>\r\n      </encoding>\r\n      <subject xsi:type=\"PARTY_IDENTIFIED\">\r\n        <external_ref>\r\n          <id xsi:type=\"HIER_OBJECT_ID\">\r\n            <value>11111111-1111-1111-1111-111111111111</value>\r\n          </id>\r\n          <namespace>DEMOGRAPHIC</namespace>\r\n          <type>PERSON</type>\r\n        </external_ref>\r\n      </subject>\r\n      <data xsi:type=\"HISTORY\" archetype_node_id=\"at0001\">\r\n        <name>\r\n          <value>history</value>\r\n        </name>\r\n        <origin>\r\n          <value>20140101</value>\r\n        </origin>\r\n        <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0002\">\r\n          <name>\r\n            <value>any event</value>\r\n          </name>\r\n          <time><value>20140101</value></time>\r\n          <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0003\">\r\n            <name>\r\n              <value>Arbol</value>\r\n            </name>\r\n            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0011\">\r\n              <name>\r\n                <value>Count</value>\r\n              </name>\r\n              <value xsi:type=\"DV_COUNT\">\r\n                <magnitude>4</magnitude>\r\n              </value>\r\n            </items>\r\n          </data>\r\n        </events>\r\n      </data>\r\n    </content>\r\n  </data>\r\n  <lifecycle_state>\r\n    <value>completed</value>\r\n    <defining_code>\r\n      <terminology_id>\r\n        <value>openehr</value>\r\n      </terminology_id>\r\n      <code_string>532</code_string>\r\n    </defining_code>\r\n  </lifecycle_state>\r\n</version>\r\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "popo"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "pepe"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit XML amendment (update uids before commit)"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1450056272393",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\r\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n<version xsi:type=\"ORIGINAL_VERSION\">\r\n  <contribution>\r\n    <id xsi:type=\"HIER_OBJECT_ID\">\r\n      <value>ad6866e1-fb08-4e9b-a93b-5095a2563333</value>\r\n    </id>\r\n    <namespace>EHR::COMMON</namespace>\r\n    <type>CONTRIBUTION</type>\r\n  </contribution>\r\n  <commit_audit>\r\n    <system_id>CABOLABS_EHR</system_id>\r\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </committer>\r\n    <time_committed>\r\n      <value>20140901T233114,065-0300</value>\r\n    </time_committed>\r\n    <change_type>\r\n      <value>creation</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>249</code_string>\r\n      </defining_code>\r\n    </change_type>\r\n  </commit_audit>\r\n  <uid>\r\n    <value>91cf9ded-e926-4848-aa3f-3257c1d81324::EMR_APP::1</value>\r\n  </uid>\r\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.test_all_datatypes.v2\">\r\n    <name>\r\n      <value>Test all datatypes</value>\r\n    </name>\r\n    <archetype_details>\r\n      <archetype_id>\r\n        <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v2</value>\r\n      </archetype_id>\r\n      <template_id>\r\n        <value>Test all datatypes_en.v2</value>\r\n      </template_id>\r\n      <rm_version>1.0.2</rm_version>\r\n    </archetype_details>\r\n    <language>\r\n      <terminology_id>\r\n        <value>ISO_639-1</value>\r\n      </terminology_id>\r\n      <code_string>es</code_string>\r\n    </language>\r\n    <territory>\r\n      <terminology_id>\r\n        <value>ISO_3166-1</value>\r\n      </terminology_id>\r\n      <code_string>UY</code_string>\r\n    </territory>\r\n    <category>\r\n      <value>event</value>\r\n      <defining_code>\r\n        <terminology_id>\r\n          <value>openehr</value>\r\n        </terminology_id>\r\n        <code_string>443</code_string>\r\n      </defining_code>\r\n    </category>\r\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\r\n      <name>Dr. Pablo Pazos</name>\r\n    </composer>\r\n    <context>\r\n      <start_time>\r\n        <value>20140901T232600,304-0300</value>\r\n      </start_time>\r\n      <setting>\r\n        <value>Hospital Montevideo</value>\r\n        <defining_code>\r\n          <terminology_id>\r\n            <value>openehr</value>\r\n          </terminology_id>\r\n          <code_string>229</code_string>\r\n        </defining_code>\r\n      </setting>\r\n    </context>\r\n    <content xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.test_all_datatypes.v2\">\r\n      <name>\r\n        <value>Blood Pressure</value>\r\n      </name>\r\n      <language>\r\n         <terminology_id>\r\n           <value>ISO_639-1</value>\r\n         </terminology_id>\r\n         <code_string>es</code_string>\r\n       </language>\r\n       <encoding>\r\n         <terminology_id>\r\n           <value>UNICODE</value>\r\n         </terminology_id>\r\n         <code_string>UTF-8</code_string>\r\n      </encoding>\r\n      <subject xsi:type=\"PARTY_IDENTIFIED\">\r\n        <external_ref>\r\n          <id xsi:type=\"HIER_OBJECT_ID\">\r\n            <value>11111111-1111-1111-1111-111111111111</value>\r\n          </id>\r\n          <namespace>DEMOGRAPHIC</namespace>\r\n          <type>PERSON</type>\r\n        </external_ref>\r\n      </subject>\r\n      <data xsi:type=\"HISTORY\" archetype_node_id=\"at0001\">\r\n        <name>\r\n          <value>history</value>\r\n        </name>\r\n        <origin>\r\n          <value>20140101</value>\r\n        </origin>\r\n        <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0002\">\r\n          <name>\r\n            <value>any event</value>\r\n          </name>\r\n          <time><value>20140101</value></time>\r\n          <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0003\">\r\n            <name>\r\n              <value>Arbol</value>\r\n            </name>\r\n            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0011\">\r\n              <name>\r\n                <value>Count</value>\r\n              </name>\r\n              <value xsi:type=\"DV_COUNT\">\r\n                <magnitude>3</magnitude>\r\n              </value>\r\n            </items>\r\n          </data>\r\n        </events>\r\n      </data>\r\n    </content>\r\n  </data>\r\n  <lifecycle_state>\r\n    <value>completed</value>\r\n    <defining_code>\r\n      <terminology_id>\r\n        <value>openehr</value>\r\n      </terminology_id>\r\n      <code_string>532</code_string>\r\n    </defining_code>\r\n  </lifecycle_state>\r\n</version>\r\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "popo"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "pepe"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit XML archetype v2"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1447208718950",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "one"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "no"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit no XLM"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1460745424994",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\r\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n<version xsi:type=\"ORIGINAL_VERSION\">\r\n    <contribution>\r\n        <id xsi:type=\"HIER_OBJECT_ID\">\r\n            <value>ce9303d9-7e41-4830-b31d-c741918953e5</value>\r\n        </id>\r\n        <namespace>EHR::COMMON</namespace>\r\n        <type>CONTRIBUTION</type>\r\n    </contribution>\r\n    <commit_audit>\r\n        <system_id>CABOLABS_EHR</system_id>\r\n        <committer xsi:type=\"PARTY_IDENTIFIED\">\r\n            <external_ref>\r\n                <id xsi:type=\"HIER_OBJECT_ID\">\r\n                    <value>cc193f71-f5fe-438a-87f9-81ecb302eede</value>\r\n                </id>\r\n                <namespace>DEMOGRAPHIC</namespace>\r\n                <type>PERSON</type>\r\n            </external_ref>\r\n            <name>Dr. House</name>\r\n        </committer>\r\n        <time_committed>\r\n            <value>20140901T233114,065-0300</value>\r\n        </time_committed>\r\n        <change_type>\r\n            <value>creation</value>\r\n            <defining_code>\r\n                <terminology_id>\r\n                    <value>openehr</value>\r\n                </terminology_id>\r\n                <code_string>249</code_string>\r\n            </defining_code>\r\n        </change_type>\r\n    </commit_audit>\r\n    <uid>\r\n        <value>ca763233-2a7e-4251-bfdd-a0fecbfa6807::EMR::1</value>\r\n    </uid>\r\n    <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.testcompo.v1\">\r\n       <name>\r\n         <value>Test compo</value>\r\n       </name>\r\n       <archetype_details>\r\n         <archetype_id>\r\n           <value>openEHR-EHR-COMPOSITION.testcompo.v1</value>\r\n         </archetype_id>\r\n         <template_id>\r\n           <value>Test template</value>\r\n         </template_id>\r\n         <rm_version>1.0.2</rm_version>\r\n       </archetype_details>\r\n       <language>\r\n         <terminology_id>\r\n           <value>ISO_639-1</value>\r\n         </terminology_id>\r\n         <code_string>es</code_string>\r\n       </language>\r\n       <territory>\r\n         <terminology_id>\r\n           <value>ISO_3166-1</value>\r\n         </terminology_id>\r\n         <code_string>UY</code_string>\r\n       </territory>\r\n       <category>\r\n         <value>event</value>\r\n         <defining_code>\r\n           <terminology_id>\r\n             <value>openehr</value>\r\n           </terminology_id>\r\n           <code_string>443</code_string>\r\n         </defining_code>\r\n       </category>\r\n       <composer xsi:type=\"PARTY_IDENTIFIED\">\r\n         <external_ref>\r\n           <id xsi:type=\"HIER_OBJECT_ID\">\r\n             <value>cc193f71-f5fe-438a-87f9-81ecb302eede</value>\r\n           </id>\r\n           <namespace>DEMOGRAPHIC</namespace>\r\n           <type>PERSON</type>\r\n         </external_ref>\r\n         <name>Dr. House</name>\r\n       </composer>\r\n       <context>\r\n         <start_time>\r\n           <value>20160113T144434,417-0300</value>\r\n         </start_time>\r\n         <setting>\r\n           <value>Hospital Montevideo</value>\r\n           <defining_code>\r\n             <terminology_id>\r\n               <value>openehr</value>\r\n             </terminology_id>\r\n             <code_string>229</code_string>\r\n           </defining_code>\r\n         </setting>\r\n       </context>\r\n       <content xsi:type=\"ADMIN_ENTRY\" archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.patient.v1\">\r\n         <name>\r\n           <value>Patient</value>\r\n         </name>\r\n         <language>\r\n           <terminology_id>\r\n             <value>ISO_639-1</value>\r\n           </terminology_id>\r\n           <code_string>es</code_string>\r\n         </language>\r\n         <encoding>\r\n           <terminology_id>\r\n             <value>Unicode</value>\r\n           </terminology_id>\r\n           <code_string>UTF-8</code_string>\r\n         </encoding>\r\n         <subject xsi:type=\"PARTY_SELF\" />\r\n         <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\r\n           <name>\r\n             <value>Patient data</value>\r\n           </name>\r\n           <items archetype_node_id=\"openEHR-EHR-CLUSTER.individual_personal.v1\" xsi:type=\"CLUSTER\">\r\n                 <name>\r\n                     <value>Demographic</value>\r\n                 </name>\r\n                 <uid xsi:type=\"HIER_OBJECT_ID\">\r\n                     <value>c91aefc8-9f4f-4d59-9f22-b3bb112d96dd</value>\r\n                 </uid>\r\n                 <archetype_details>\r\n                     <archetype_id>\r\n                         <value>openEHR-EHR-CLUSTER.individual_personal.v1</value>\r\n                     </archetype_id>\r\n                     <template_id>\r\n                         <value>Demographic</value>\r\n                     </template_id>\r\n                     <rm_version>1.0.2</rm_version>\r\n                 </archetype_details>\r\n                 <items archetype_node_id=\"at0016\" xsi:type=\"ELEMENT\">\r\n                     <name>\r\n                         <value>Identifier</value>\r\n                     </name>\r\n                     <value xsi:type=\"DV_TEXT\">\r\n                         <value>ssdfgsdfgsdgfsdfgsdfgsdfggsd</value>\r\n                     </value>\r\n                 </items>\r\n           </items>\r\n         </data>\r\n       </content>\r\n    </data>\r\n    <lifecycle_state>\r\n        <value>completed</value>\r\n        <defining_code>\r\n            <terminology_id>\r\n                <value>openehr</value>\r\n            </terminology_id>\r\n            <code_string>532</code_string>\r\n        </defining_code>\r\n    </lifecycle_state>\r\n</version>\r\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "popo"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "pepe"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit XML (another test)"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1447208736838",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<versions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n    xmlns=\"http://schemas.openehr.org/v1\">\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "no"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "one"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit empty versions"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1449520569370",
+          "url": "{{base_url}}/commit",
+          "method": "POST",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"ORIGINAL_VERSION\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>59609a1d-1157-48d6-b13a-7714564563d2</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>cc193f71-f5fe-438a-87f9-81ecb302eede</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. House</name>\n    </committer>\n    <time_committed>\n      <value>2015-12-02T17:41:56.809Z</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>f16dd9db-b2cd-4e68-b08d-38bea43751b9::ripple_osi.ehrscape.c4h::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n        <name>\n            <value>Encounter</value>\n        </name>\n        <uid xsi:type=\"OBJECT_VERSION_ID\">\n            <value>f16dd9db-b2cd-4e68-b08d-38bea43751b9::ripple_osi.ehrscape.c4h::1</value>\n        </uid>\n        <archetype_details>\n            <archetype_id>\n                <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n            </archetype_id>\n            <template_id>\n                <value>RIPPLE - Conformance Test template</value>\n            </template_id>\n            <rm_version>1.0.1</rm_version>\n        </archetype_details>\n        <language>\n            <terminology_id>\n                <value>ISO_639-1</value>\n            </terminology_id>\n            <code_string>en</code_string>\n        </language>\n        <territory>\n            <terminology_id>\n                <value>ISO_3166-1</value>\n            </terminology_id>\n            <code_string>GB</code_string>\n        </territory>\n        <category>\n            <value>event</value>\n            <defining_code>\n                <terminology_id>\n                    <value>openehr</value>\n                </terminology_id>\n                <code_string>433</code_string>\n            </defining_code>\n        </category>\n        <composer xsi:type=\"PARTY_IDENTIFIED\">\n            <name>Silvia Blake</name>\n        </composer>\n        <context>\n            <start_time>\n                <value>2015-12-02T17:41:56.809Z</value>\n            </start_time>\n            <setting>\n                <value>other care</value>\n                <defining_code>\n                    <terminology_id>\n                        <value>openehr</value>\n                    </terminology_id>\n                    <code_string>238</code_string>\n                </defining_code>\n            </setting>\n            <other_context xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                <name>\n                    <value>Tree</value>\n                </name>\n                <items xsi:type=\"CLUSTER\" archetype_node_id=\"openEHR-EHR-CLUSTER.composition_context_detail.v1\">\n                    <name>\n                        <value>Context detail</value>\n                    </name>\n                    <archetype_details>\n                        <archetype_id>\n                            <value>openEHR-EHR-CLUSTER.composition_context_detail.v1</value>\n                        </archetype_id>\n                        <rm_version>1.0.1</rm_version>\n                    </archetype_details>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0001\">\n                        <name>\n                            <value>Period of care identifier</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Ident. 52</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0008\">\n                        <name>\n                            <value>Tags</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Tags 96</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0008\">\n                        <name>\n                            <value>Tags #2</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Tags 96</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0009\">\n                        <name>\n                            <value>Attachment</value>\n                        </name>\n                        <value xsi:type=\"DV_MULTIMEDIA\">\n                            <alternate_text>alternate text</alternate_text>\n                            <uri>\n                                <value>http://med.tube.com/sample</value>\n                            </uri>\n                            <media_type>\n                                <terminology_id>\n                                    <value>IANA_media-types</value>\n                                </terminology_id>\n                                <code_string>video/mp4</code_string>\n                            </media_type>\n                            <size>504903212</size>\n                        </value>\n                    </items>\n                </items>\n            </other_context>\n            <health_care_facility>\n                <external_ref>\n                    <id xsi:type=\"GENERIC_ID\">\n                        <value>9091</value>\n                        <scheme>HOSPITAL-NS</scheme>\n                    </id>\n                    <namespace>HOSPITAL-NS</namespace>\n                    <type>PARTY</type>\n                </external_ref>\n                <name>Hospital</name>\n            </health_care_facility>\n        </context>\n        <content xsi:type=\"SECTION\" archetype_node_id=\"openEHR-EHR-SECTION.adhoc.v1\">\n            <name>\n                <value>Ad hoc heading</value>\n            </name>\n            <archetype_details>\n                <archetype_id>\n                    <value>openEHR-EHR-SECTION.adhoc.v1</value>\n                </archetype_id>\n                <rm_version>1.0.1</rm_version>\n            </archetype_details>\n            <items xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.pulse.v1\">\n                <name>\n                    <value>Pulse</value>\n                </name>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-OBSERVATION.pulse.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <protocol xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0010\">\n                    <name>\n                        <value>List</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1019\">\n                        <name>\n                            <value>Method</value>\n                        </name>\n                        <value xsi:type=\"DV_CODED_TEXT\">\n                            <value>Device</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>local</value>\n                                </terminology_id>\n                                <code_string>at1034</code_string>\n                            </defining_code>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1037\">\n                        <name>\n                            <value>Findings Location</value>\n                        </name>\n                        <value xsi:type=\"DV_CODED_TEXT\">\n                            <value>Femoral Artery - Left</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>local</value>\n                                </terminology_id>\n                                <code_string>at1043</code_string>\n                            </defining_code>\n                        </value>\n                    </items>\n                    <items xsi:type=\"CLUSTER\" archetype_node_id=\"openEHR-EHR-CLUSTER.device.v1\">\n                        <name>\n                            <value>Medical Device</value>\n                        </name>\n                        <archetype_details>\n                            <archetype_id>\n                                <value>openEHR-EHR-CLUSTER.device.v1</value>\n                            </archetype_id>\n                            <rm_version>1.0.1</rm_version>\n                        </archetype_details>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0001\">\n                            <name>\n                                <value>Device name</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Device name 33</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0021\">\n                            <name>\n                                <value>Unique device identifier (UDI)</value>\n                            </name>\n                            <value xsi:type=\"DV_IDENTIFIER\">\n                                <issuer>Issuer</issuer>\n                                <assigner>Assigner</assigner>\n                                <id>59466e78-d15c-4765-87da-20e56f1413a6</id>\n                                <type>Prescription</type>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0004\">\n                            <name>\n                                <value>Manufacturer</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Manufacturer 6</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0005\">\n                            <name>\n                                <value>Date of manufacture</value>\n                            </name>\n                            <value xsi:type=\"DV_DATE_TIME\">\n                                <value>2015-12-02T17:41:56.811Z</value>\n                            </value>\n                        </items>\n                    </items>\n                </protocol>\n                <data archetype_node_id=\"at0002\">\n                    <name>\n                        <value>history</value>\n                    </name>\n                    <origin>\n                        <value>2015-12-02T17:41:56.809Z</value>\n                    </origin>\n                    <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0003\">\n                        <name>\n                            <value>First event</value>\n                        </name>\n                        <time>\n                            <value>2015-12-02T17:41:56.809Z</value>\n                        </time>\n                        <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                            <name>\n                                <value>structure</value>\n                            </name>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0004\">\n                                <name xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Heart Rate</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at1027</code_string>\n                                    </defining_code>\n                                </name>\n                                <value xsi:type=\"DV_QUANTITY\">\n                                    <magnitude>53.0</magnitude>\n                                    <units>/min</units>\n                                    <precision>0</precision>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0005\">\n                                <name>\n                                    <value>Regularity</value>\n                                </name>\n                                <value xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Regularly Irregular</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at0007</code_string>\n                                    </defining_code>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1022\">\n                                <name>\n                                    <value>Clinical Description</value>\n                                </name>\n                                <value xsi:type=\"DV_TEXT\">\n                                    <value>Clinical Description 14</value>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1023\">\n                                <name>\n                                    <value>Clinical Interpretation</value>\n                                </name>\n                                <value xsi:type=\"DV_TEXT\">\n                                    <value>Clinical Interpretation 23</value>\n                                </value>\n                            </items>\n                        </data>\n                    </events>\n                    <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0003\">\n                        <name>\n                            <value>Second event</value>\n                        </name>\n                        <time>\n                            <value>2015-12-02T17:41:56.809Z</value>\n                        </time>\n                        <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                            <name>\n                                <value>structure</value>\n                            </name>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1005\">\n                                <name>\n                                    <value>Pulse Presence</value>\n                                </name>\n                                <value xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Present</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at1024</code_string>\n                                    </defining_code>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0004\">\n                                <name xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Pulse Rate</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at1026</code_string>\n                                    </defining_code>\n                                </name>\n                                <value xsi:type=\"DV_QUANTITY\">\n                                    <magnitude>3.0</magnitude>\n                                    <units>/min</units>\n                                    <precision>0</precision>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0005\">\n                                <name>\n                                    <value>Regularity</value>\n                                </name>\n                                <value xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Regularly Irregular</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at0007</code_string>\n                                    </defining_code>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1023\">\n                                <name>\n                                    <value>Clinical Interpretation</value>\n                                </name>\n                                <value xsi:type=\"DV_TEXT\">\n                                    <value>Clinical Interpretation 34</value>\n                                </value>\n                            </items>\n                        </data>\n                    </events>\n                    <events xsi:type=\"INTERVAL_EVENT\" archetype_node_id=\"at1036\">\n                        <name>\n                            <value>Maximum</value>\n                        </name>\n                        <time>\n                            <value>2015-12-02T17:41:56.809Z</value>\n                        </time>\n                        <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                            <name>\n                                <value>structure</value>\n                            </name>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0004\">\n                                <name xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Heart Rate</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at1027</code_string>\n                                    </defining_code>\n                                </name>\n                                <value xsi:type=\"DV_QUANTITY\">\n                                    <magnitude>16.0</magnitude>\n                                    <units>/min</units>\n                                    <precision>0</precision>\n                                </value>\n                            </items>\n                        </data>\n                        <state xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0012\">\n                            <name>\n                                <value>List</value>\n                            </name>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0013\">\n                                <name>\n                                    <value>Position</value>\n                                </name>\n                                <value xsi:type=\"DV_CODED_TEXT\">\n                                    <value>Sitting</value>\n                                    <defining_code>\n                                        <terminology_id>\n                                            <value>local</value>\n                                        </terminology_id>\n                                        <code_string>at1001</code_string>\n                                    </defining_code>\n                                </value>\n                            </items>\n                            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at1018\">\n                                <name>\n                                    <value>Confounding Factors</value>\n                                </name>\n                                <value xsi:type=\"DV_TEXT\">\n                                    <value>Confounding Factors 16</value>\n                                </value>\n                            </items>\n                        </state>\n                        <width>\n                            <value>P1DT11H11M</value>\n                        </width>\n                        <math_function>\n                            <value>maximum</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>openehr</value>\n                                </terminology_id>\n                                <code_string>144</code_string>\n                            </defining_code>\n                        </math_function>\n                    </events>\n                </data>\n            </items>\n            <items xsi:type=\"EVALUATION\" archetype_node_id=\"openEHR-EHR-EVALUATION.cpr_decision_uk.v1\">\n                <name>\n                    <value>CPR decision</value>\n                </name>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-EVALUATION.cpr_decision_uk.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <protocol xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0010\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0014\">\n                        <name>\n                            <value>Discussion with informal carer</value>\n                        </name>\n                        <value xsi:type=\"DV_CODED_TEXT\">\n                            <value>Resuscitation not discussed with informal carer</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>local</value>\n                                </terminology_id>\n                                <code_string>at0024</code_string>\n                            </defining_code>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0009\">\n                        <name>\n                            <value>Date for review of CPR decision</value>\n                        </name>\n                        <value xsi:type=\"DV_DATE_TIME\">\n                            <value>2015-12-02T17:41:56.811Z</value>\n                        </value>\n                    </items>\n                </protocol>\n                <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0003\">\n                        <name>\n                            <value>CPR decision</value>\n                        </name>\n                        <value xsi:type=\"DV_CODED_TEXT\">\n                            <value>CPR decision status unknown</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>local</value>\n                                </terminology_id>\n                                <code_string>at0022</code_string>\n                            </defining_code>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0002\">\n                        <name>\n                            <value>Date of CPR decision</value>\n                        </name>\n                        <value xsi:type=\"DV_DATE_TIME\">\n                            <value>2015-12-02T17:41:56.811Z</value>\n                        </value>\n                    </items>\n                </data>\n            </items>\n            <items xsi:type=\"INSTRUCTION\" archetype_node_id=\"openEHR-EHR-INSTRUCTION.request-procedure.v1\">\n                <name>\n                    <value>Procedure request</value>\n                </name>\n                <uid xsi:type=\"HIER_OBJECT_ID\">\n                    <value>9a3871f8-8105-44f9-a06c-5626acaf40a3</value>\n                </uid>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-INSTRUCTION.request-procedure.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <other_participations>\n                    <function>\n                        <value>performer</value>\n                    </function>\n                    <performer xsi:type=\"PARTY_IDENTIFIED\">\n                        <name>Nurse Bailey</name>\n                    </performer>\n                    <mode>\n                        <value>not specified</value>\n                        <defining_code>\n                            <terminology_id>\n                                <value>openehr</value>\n                            </terminology_id>\n                            <code_string>193</code_string>\n                        </defining_code>\n                    </mode>\n                </other_participations>\n                <protocol xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0008\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"CLUSTER\" archetype_node_id=\"openEHR-EHR-CLUSTER.distribution.v1\">\n                        <name>\n                            <value>Distribution</value>\n                        </name>\n                        <archetype_details>\n                            <archetype_id>\n                                <value>openEHR-EHR-CLUSTER.distribution.v1</value>\n                            </archetype_id>\n                            <rm_version>1.0.1</rm_version>\n                        </archetype_details>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0008\">\n                            <name>\n                                <value>Group category</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Group category 26</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0012\">\n                            <name>\n                                <value>Urgent</value>\n                            </name>\n                            <value xsi:type=\"DV_BOOLEAN\">\n                                <value>true</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0006\">\n                            <name>\n                                <value>Date sent</value>\n                            </name>\n                            <value xsi:type=\"DV_DATE_TIME\">\n                                <value>2015-12-02T17:41:56.812Z</value>\n                            </value>\n                        </items>\n                    </items>\n                </protocol>\n                <narrative>\n                    <value>Human readable instruction narrative</value>\n                </narrative>\n                <activities archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Request</value>\n                    </name>\n                    <description xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0009\">\n                        <name>\n                            <value>Tree</value>\n                        </name>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0121\">\n                            <name>\n                                <value>Procedure requested</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Procedure requested 79</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0144\">\n                            <name>\n                                <value>Latest date service required</value>\n                            </name>\n                            <value xsi:type=\"DV_DATE_TIME\">\n                                <value>2015-12-02T17:41:56.812Z</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0076\">\n                            <name>\n                                <value>Supplementary information to follow</value>\n                            </name>\n                            <value xsi:type=\"DV_BOOLEAN\">\n                                <value>true</value>\n                            </value>\n                        </items>\n                    </description>\n                    <timing>\n                        <value>R2/2015-12-02T17:00:00Z/P3M</value>\n                        <formalism>timing</formalism>\n                    </timing>\n                    <action_archetype_id>/.*/</action_archetype_id>\n                </activities>\n                <activities archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Request #3</value>\n                    </name>\n                    <description xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0009\">\n                        <name>\n                            <value>Tree</value>\n                        </name>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0121\">\n                            <name>\n                                <value>Procedure requested</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Procedure requested 84</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0144\">\n                            <name>\n                                <value>Latest date service required</value>\n                            </name>\n                            <value xsi:type=\"DV_DATE_TIME\">\n                                <value>2015-12-02T17:41:56.812Z</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0076\">\n                            <name>\n                                <value>Supplementary information to follow</value>\n                            </name>\n                            <value xsi:type=\"DV_BOOLEAN\">\n                                <value>true</value>\n                            </value>\n                        </items>\n                    </description>\n                    <timing>\n                        <value>R2/2015-12-02T17:00:00Z/P1M</value>\n                        <formalism>timing</formalism>\n                    </timing>\n                    <action_archetype_id>/.*/</action_archetype_id>\n                </activities>\n            </items>\n            <items xsi:type=\"ACTION\" archetype_node_id=\"openEHR-EHR-ACTION.procedure.v1\">\n                <name>\n                    <value>Procedure</value>\n                </name>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-ACTION.procedure.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <protocol xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0053\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0054\">\n                        <name>\n                            <value>Requestor order identifier</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Ident. 38</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"CLUSTER\" archetype_node_id=\"openEHR-EHR-CLUSTER.person_name.v1\">\n                        <name>\n                            <value>Person name</value>\n                        </name>\n                        <archetype_details>\n                            <archetype_id>\n                                <value>openEHR-EHR-CLUSTER.person_name.v1</value>\n                            </archetype_id>\n                            <rm_version>1.0.1</rm_version>\n                        </archetype_details>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0006\">\n                            <name>\n                                <value>Name type</value>\n                            </name>\n                            <value xsi:type=\"DV_CODED_TEXT\">\n                                <value>AKA</value>\n                                <defining_code>\n                                    <terminology_id>\n                                        <value>local</value>\n                                    </terminology_id>\n                                    <code_string>at0010</code_string>\n                                </defining_code>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0022\">\n                            <name>\n                                <value>Preferred name</value>\n                            </name>\n                            <value xsi:type=\"DV_BOOLEAN\">\n                                <value>true</value>\n                            </value>\n                        </items>\n                        <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0001\">\n                            <name>\n                                <value>Unstructured name</value>\n                            </name>\n                            <value xsi:type=\"DV_TEXT\">\n                                <value>Unstructured name 16</value>\n                            </value>\n                        </items>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0056\">\n                        <name>\n                            <value>Receiver order identifier</value>\n                        </name>\n                        <value xsi:type=\"DV_IDENTIFIER\">\n                            <issuer>Issuer</issuer>\n                            <assigner>Assigner</assigner>\n                            <id>8fb20ec3-b285-4ab8-acd4-25bcd58cbd24</id>\n                            <type>Prescription</type>\n                        </value>\n                    </items>\n                </protocol>\n                <time>\n                    <value>2015-12-02T17:41:56.813Z</value>\n                </time>\n                <description xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0002\">\n                        <name>\n                            <value>Procedure name</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Procedure name 40</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0065\">\n                        <name xsi:type=\"DV_CODED_TEXT\">\n                            <value>Run-time coded name</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>SNOMED-CT</value>\n                                </terminology_id>\n                                <code_string>70901006</code_string>\n                            </defining_code>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Method 0</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0065\">\n                        <name>\n                            <value>Method #1</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Method #1 94</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0066\">\n                        <name>\n                            <value>Scheduled date/time</value>\n                        </name>\n                        <value xsi:type=\"DV_DATE_TIME\">\n                            <value>2015-12-02T17:41:56.812Z</value>\n                        </value>\n                    </items>\n                </description>\n                <ism_transition>\n                    <current_state>\n                        <value>initial</value>\n                        <defining_code>\n                            <terminology_id>\n                                <value>openehr</value>\n                            </terminology_id>\n                            <code_string>524</code_string>\n                        </defining_code>\n                    </current_state>\n                </ism_transition>\n            </items>\n            <items xsi:type=\"ADMIN_ENTRY\" archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.inpatient_admission_uk.v1\">\n                <name>\n                    <value>Inpatient admission</value>\n                </name>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-ADMIN_ENTRY.inpatient_admission_uk.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Tree</value>\n                    </name>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0002\">\n                        <name>\n                            <value>Date of admission</value>\n                        </name>\n                        <value xsi:type=\"DV_DATE_TIME\">\n                            <value>2015-12-02T17:41:56.813Z</value>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0003\">\n                        <name>\n                            <value>Admission method</value>\n                        </name>\n                        <value xsi:type=\"DV_CODED_TEXT\">\n                            <value>D.80 description</value>\n                            <defining_code>\n                                <terminology_id>\n                                    <value>external_terminology</value>\n                                </terminology_id>\n                                <code_string>D.80</code_string>\n                            </defining_code>\n                        </value>\n                    </items>\n                    <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0009\">\n                        <name>\n                            <value>Source of admission</value>\n                        </name>\n                        <value xsi:type=\"DV_TEXT\">\n                            <value>Source of admission 42</value>\n                        </value>\n                    </items>\n                </data>\n            </items>\n            <items xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.demo.v1\">\n                <name>\n                    <value>Demonstration</value>\n                </name>\n                <archetype_details>\n                    <archetype_id>\n                        <value>openEHR-EHR-OBSERVATION.demo.v1</value>\n                    </archetype_id>\n                    <rm_version>1.0.1</rm_version>\n                </archetype_details>\n                <language>\n                    <terminology_id>\n                        <value>ISO_639-1</value>\n                    </terminology_id>\n                    <code_string>en</code_string>\n                </language>\n                <encoding>\n                    <terminology_id>\n                        <value>IANA_character-sets</value>\n                    </terminology_id>\n                    <code_string>UTF-8</code_string>\n                </encoding>\n                <subject xsi:type=\"PARTY_SELF\"/>\n                <data archetype_node_id=\"at0001\">\n                    <name>\n                        <value>Event Series</value>\n                    </name>\n                    <origin>\n                        <value>2015-12-02T17:41:56.809Z</value>\n                    </origin>\n                    <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0002\">\n                        <name>\n                            <value>Any event</value>\n                        </name>\n                        <time>\n                            <value>2015-12-02T17:41:56.809Z</value>\n                        </time>\n                        <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0003\">\n                            <name>\n                                <value>Tree</value>\n                            </name>\n                            <items xsi:type=\"CLUSTER\" archetype_node_id=\"at0004\">\n                                <name>\n                                    <value>Heading1</value>\n                                </name>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0005\">\n                                    <name>\n                                        <value>Free text or coded</value>\n                                    </name>\n                                    <value xsi:type=\"DV_TEXT\">\n                                        <value>Free text or coded 33</value>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0006\">\n                                    <name>\n                                        <value>Text that uses Internal codes</value>\n                                    </name>\n                                    <value xsi:type=\"DV_CODED_TEXT\">\n                                        <value>Reclining</value>\n                                        <defining_code>\n                                            <terminology_id>\n                                                <value>local</value>\n                                            </terminology_id>\n                                            <code_string>at0008</code_string>\n                                        </defining_code>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0011\">\n                                    <name>\n                                        <value>Text that is sourced from an external terminology</value>\n                                    </name>\n                                    <value xsi:type=\"DV_CODED_TEXT\">\n                                        <value>T.38 description</value>\n                                        <defining_code>\n                                            <terminology_id>\n                                                <value>external_terminology</value>\n                                            </terminology_id>\n                                            <code_string>T.38</code_string>\n                                        </defining_code>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0012\">\n                                    <name>\n                                        <value>Quantity</value>\n                                    </name>\n                                    <value xsi:type=\"DV_QUANTITY\">\n                                        <magnitude>96.63</magnitude>\n                                        <units>cm</units>\n                                        <precision>1</precision>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0023\">\n                                    <name>\n                                        <value>Interval of Quantity</value>\n                                    </name>\n                                    <value xsi:type=\"DV_INTERVAL\">\n                                        <lower xsi:type=\"DV_QUANTITY\">\n                                            <magnitude>5.66</magnitude>\n                                            <units>cm</units>\n                                        </lower>\n                                        <upper xsi:type=\"DV_QUANTITY\">\n                                            <magnitude>62.91</magnitude>\n                                            <units>cm</units>\n                                        </upper>\n                                        <lower_unbounded>false</lower_unbounded>\n                                        <upper_unbounded>false</upper_unbounded>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0013\">\n                                    <name>\n                                        <value>Count</value>\n                                    </name>\n                                    <value xsi:type=\"DV_COUNT\">\n                                        <magnitude>908</magnitude>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0022\">\n                                    <name>\n                                        <value>Interval of Integer</value>\n                                    </name>\n                                    <value xsi:type=\"DV_INTERVAL\">\n                                        <lower xsi:type=\"DV_COUNT\">\n                                            <magnitude>10</magnitude>\n                                        </lower>\n                                        <upper xsi:type=\"DV_COUNT\">\n                                            <magnitude>4</magnitude>\n                                        </upper>\n                                        <lower_unbounded>false</lower_unbounded>\n                                        <upper_unbounded>false</upper_unbounded>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0028\">\n                                    <name>\n                                        <value>Proportion</value>\n                                    </name>\n                                    <value xsi:type=\"DV_PROPORTION\">\n                                        <numerator>58.0</numerator>\n                                        <denominator>100</denominator>\n                                        <type>2</type>\n                                        <precision>0</precision>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0014\">\n                                    <name>\n                                        <value>Date/Time</value>\n                                    </name>\n                                    <value xsi:type=\"DV_DATE_TIME\">\n                                        <value>2015-12-02T17:41:56.816Z</value>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0024\">\n                                    <name>\n                                        <value>Interval of Date</value>\n                                    </name>\n                                    <value xsi:type=\"DV_INTERVAL\">\n                                        <lower xsi:type=\"DV_DATE_TIME\">\n                                            <value>2015-12-02T17:41:56.817Z</value>\n                                        </lower>\n                                        <upper xsi:type=\"DV_DATE_TIME\">\n                                            <value>2015-12-02T17:41:56.817Z</value>\n                                        </upper>\n                                        <lower_unbounded>false</lower_unbounded>\n                                        <upper_unbounded>false</upper_unbounded>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0021\">\n                                    <name>\n                                        <value>Duration</value>\n                                    </name>\n                                    <value xsi:type=\"DV_DURATION\">\n                                        <value>P1DT11H11M</value>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0015\">\n                                    <name>\n                                        <value>Ordinal</value>\n                                    </name>\n                                    <value xsi:type=\"DV_ORDINAL\">\n                                        <value>1</value>\n                                        <symbol>\n                                            <value>Slight pain</value>\n                                            <defining_code>\n                                                <terminology_id>\n                                                    <value>local</value>\n                                                </terminology_id>\n                                                <code_string>at0039</code_string>\n                                            </defining_code>\n                                        </symbol>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0026\">\n                                    <name>\n                                        <value>Multimedia</value>\n                                    </name>\n                                    <value xsi:type=\"DV_MULTIMEDIA\">\n                                        <alternate_text>alternate text</alternate_text>\n                                        <uri>\n                                            <value>http://med.tube.com/sample</value>\n                                        </uri>\n                                        <media_type>\n                                            <terminology_id>\n                                                <value>IANA_media-types</value>\n                                            </terminology_id>\n                                            <code_string>text/xml</code_string>\n                                        </media_type>\n                                        <size>504903212</size>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0027\">\n                                    <name>\n                                        <value>URI - resource identifier</value>\n                                    </name>\n                                    <value xsi:type=\"DV_URI\">\n                                        <value>http://example.com/path/resource</value>\n                                    </value>\n                                </items>\n                                <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0044\">\n                                    <name>\n                                        <value>Identifier</value>\n                                    </name>\n                                    <value xsi:type=\"DV_IDENTIFIER\">\n                                        <issuer>Issuer</issuer>\n                                        <assigner>Assigner</assigner>\n                                        <id>0ffc464a-d954-46f0-9f77-05ed6877ccf5</id>\n                                        <type>Prescription</type>\n                                    </value>\n                                </items>\n                            </items>\n                        </data>\n                    </events>\n                </data>\n            </items>\n        </content>\n  </data>\n  <lifecycle_state>\n    <value>completed</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "auditSystemId",
+              "value": "popo"
+            },
+            {
+              "name": "auditCommitter",
+              "value": "pepe"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "xml",
+            "panel_width": 0.5
+          },
+          "name": "commit huge XML"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1447116583915",
+          "url": "{{base_url}}/queries",
+          "method": "GET",
+          "body": "{}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -179,11 +645,16 @@
         },
         {
           "_type": "request",
-          "_id": "req_1449361657537",
-          "url": "{{url}}/queries/64f1dbd5-4295-4dd3-92da-cdac57b1cdb9",
+          "_id": "req_1452732209613",
+          "url": "{{base_url}}/queries/7b8762ac-eaf4-435b-9fde-d59730b6641f",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -199,15 +670,20 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "queries/uid"
+          "name": "queries/$uid"
         },
         {
           "_type": "request",
-          "_id": "req_1449362613248",
-          "url": "{{url}}/queries/64f1dbd5-4295-4dd3-92da-cdac57b1cdb9/execute",
+          "_id": "req_1447115091903",
+          "url": "{{base_url}}/queries/abaec7ff-4c28-4767-a721-20f57e7c547d/execute",
           "method": "GET",
           "body": "{}",
-          "headers": [],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
           "params": [
             {
               "name": "format",
@@ -215,7 +691,11 @@
             },
             {
               "name": "organizationUid",
-              "value": "34ab91c8-7153-455e-8573-fc8c415af288"
+              "value": "40c777bb-e085-4846-bd8b-fefea170539d"
+            },
+            {
+              "name": "ehrUid",
+              "value": "763a86f1-e85e-43aa-99c2-9a8cb0958c1c"
             }
           ],
           "authentication": {
@@ -227,7 +707,48 @@
             "format": "json",
             "panel_width": 0.5
           },
-          "name": "query/uid/execute"
+          "name": "queries/$queryUid/execute"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1457899884656",
+          "url": "{{base_url}}/contributions",
+          "method": "GET",
+          "body": "{}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+            }
+          ],
+          "params": [
+            {
+              "name": "ehrUid",
+              "value": "11111111-1111-1111-1111-111111111111"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "max",
+              "value": "2"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "contributions"
         }
       ]
     }
