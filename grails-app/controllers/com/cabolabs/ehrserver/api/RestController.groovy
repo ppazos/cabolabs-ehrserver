@@ -1900,7 +1900,8 @@ class RestController {
          idCode: personInstance.idCode,
          idType: personInstance.idType, 
          role: personInstance.organizationUid, 
-         organizationUid: personInstance.organizationUid
+         organizationUid: personInstance.organizationUid,
+         subjectUid: personInstance.uid
       ]
       if (format == 'xml')
       {
