@@ -67,7 +67,7 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
         //println res // null
         //println controller
         //println controller.modelAndView // null, can't check the returned view
-        controller.flash.message == "Please enter your new password"
+        controller.flash.message == "Please enter your new password and confirm it"
    }
    
    void "test reset password with valid token, post to reset, new password"()
