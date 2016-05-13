@@ -70,7 +70,7 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
         controller.flash.message == "Please enter your new password and confirm it"
    }
    
-   void "test reset password with valid token, post to reset, new password"()
+   void "test reset password with valid token, post to reset, new password, without confirm"()
    {
       setup:
         def user = User.findByUsername('user')
@@ -81,6 +81,33 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
       when:
         controller.params.token = user.resetPasswordToken
         controller.params.newPassword = 'newPassword'
+        controller.request.method = "POST"
+        def res = controller.resetPassword()
+        user.refresh()
+      
+      then:
+        // TODO: check the value of the new password stored
+        controller.flash.message == "Please enter your new password and confirm it"
+        /*
+        user.enabled == true
+        user.resetPasswordToken == null
+        controller.response.redirectedUrl == '/login/auth'
+        controller.flash.message == "Password was reset!"
+        */
+   }
+   
+   void "test reset password with valid token, post to reset, new password, with confirm"()
+   {
+      setup:
+        def user = User.findByUsername('user')
+        user.setPasswordToken()
+        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        user.save(flush:true)
+        
+      when:
+        controller.params.token = user.resetPasswordToken
+        controller.params.newPassword = 'newPassword'
+        controller.params.confirmNewPassword = 'newPassword'
         controller.request.method = "POST"
         def res = controller.resetPassword()
         user.refresh()
