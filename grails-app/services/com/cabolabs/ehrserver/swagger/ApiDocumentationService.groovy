@@ -20,7 +20,6 @@ import com.cabolabs.swagger.annotations.PostMethod
 import com.cabolabs.swagger.annotations.ApiProperty
 import com.cabolabs.swagger.annotations.PutMethod
 import com.cabolabs.swagger.ControllerDocumentation
-
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Field
