@@ -1,7 +1,6 @@
 package com.cabolabs.swagger
 
 import com.cabolabs.ehrserver.swagger.ApiDocumentationService
-import com.cabolabs.swagger.ControllerDocumentation
 
 import groovy.util.slurpersupport.GPathResult
 import groovyx.net.http.HTTPBuilder

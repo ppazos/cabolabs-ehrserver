@@ -19,12 +19,7 @@ import com.cabolabs.swagger.annotations.ApiIgnore
 import com.cabolabs.swagger.annotations.PostMethod
 import com.cabolabs.swagger.annotations.ApiProperty
 import com.cabolabs.swagger.annotations.PutMethod
-import com.cabolabs.swagger.DomainDocumentation
-import com.cabolabs.swagger.DomainPropertyDocumentation
 import com.cabolabs.swagger.ControllerDocumentation
-import com.cabolabs.swagger.ControllerActionDocumentation
-import com.cabolabs.swagger.ControllerActionParameterDocumentation
-import com.cabolabs.swagger.ControllerActionResponseDocumentation
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
