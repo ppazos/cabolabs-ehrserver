@@ -11,6 +11,7 @@ import com.cabolabs.security.UserRole
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
+import grails.util.Holders
 
 @Transactional(readOnly = false)
 class UserController {
@@ -438,7 +439,7 @@ class UserController {
    
    
    // token comes always and is required for reset
-   def resetPassword(String token, String newPassword)
+   def resetPassword(String token, String newPassword, String confirmNewPassword)
    {
       // GET: display reset view
       // POST: try to reset the pass
@@ -460,11 +461,25 @@ class UserController {
       
       if (request.post)
       {
-         if (!newPassword)
+         if (!newPassword || !confirmNewPassword)
          {
-            flash.message = "Please enter your new password"
+            flash.message = "Please enter your new password and confirm it"
             return
          }
+         
+         def min_length = Holders.config.app.security.min_password_length
+         if (newPassword.size() < min_length)
+         {
+            flash.message = "The password length should be at least $min_length"
+            return
+         }
+         
+         if (newPassword != confirmNewPassword)
+         {
+            flash.message = "The password confirm is not equal to the password, please try again"
+            return
+         }
+         
          
          user.password = newPassword
          user.enabled = true

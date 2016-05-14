@@ -118,6 +118,10 @@
                     <label for='password'><g:message code="springSecurity.resetPassword.newPassword.label"/>:</label>
                     <input type='password' class='form-control' name='newPassword' id='password' required="required" value="" />
                   </div>
+                  <div class="form-group">
+                    <label for='confirmPassword'><g:message code="springSecurity.resetPassword.confirmNewPassword.label"/>:</label>
+                    <input type='password' class='form-control' name='confirmNewPassword' id='confirmPassword' required="required" value="" />
+                  </div>
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.reset.button")}'/>
                 </fieldset>
                 <fieldset>

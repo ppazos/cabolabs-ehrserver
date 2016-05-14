@@ -146,6 +146,10 @@ app {
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
    opt_repo = "opts" + PS
    
+   security {
+      min_password_length = 6
+   }
+   
    l10n { // localization
       
       locale = 'en'
