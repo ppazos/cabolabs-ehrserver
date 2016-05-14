@@ -13,23 +13,10 @@ import org.apache.http.impl.client.DefaultHttpClient
 
 class SwaggerController {
     def ApiDocumentationService apiDocumentationService
-    //OutputStream swaggerFile
     def index() {
       apiDocumentationService.init()
       def controllerClasses=apiDocumentationService.controllerClasses
-      // mapControllers.each { entry ->
-      //      println "Nombre de la clase: $entry.key "//Age: $entry.value"
-      //  }
-
         return [opts:controllerClasses]
-                //ByteArrayInputStream is = new ByteArrayInputStream(apiDocumentationService.init().getBytes());
-        //OutputStream os = new ByteArrayOutputStream();
-       // byte b;
-       // while ((b = is.read()) != -1) {
-      //      os.write(b);
-      //  }
-       // swaggerFile=os;
-      //  downloadFile();
     }
     def downloadFile() {
         InputStream contentStream
@@ -50,19 +37,13 @@ class SwaggerController {
     def show(String fileNameSwagger)
     {
       def controllerClasses=apiDocumentationService.controllerClasses
-      render("<div class=\"col-md-6\">Contenido del Fichero ${fileNameSwagger}:<pre><code id=\"json\">"+controllerClasses.get(fileNameSwagger).swaggerFileContent+"</code></pre></div>")
+      render("<div class=\"col-md-6\"><pre><code id=\"json\">"+controllerClasses.get(fileNameSwagger).swaggerFileContent+"</code></pre></div>")
     }
 
     /***
     *
     */
     def uploadFileToGitHub(){
-      //https://raw.github.com/username/project/master/script.js "https://raw.github.com/casiodbx/quizjc/master/"+downloadFile()
         final HttpURLConnection connection = new URL('https://rawgithub.com/casiodbx/quizjc/master/swagger.json').openConnection()
-        //connection.inputStream.withReader { Reader reader ->
-        //    html = reader.text
-        //}
-        println 'LA RESPUETA DEL LA CONEXIÓN HA SIDO '+connection.responseCode 
-       // String response = connection.inputStream.withReader { Reader reader -> reader.text }
     }
 }
