@@ -45,7 +45,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'patientList'
       )
-          "/rest/patient"(
+      "/rest/patient"(
          controller: 'rest',
          action: 'createPerson',
          method: 'POST'
