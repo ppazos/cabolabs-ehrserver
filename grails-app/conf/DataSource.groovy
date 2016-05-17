@@ -3,7 +3,7 @@ dataSource {
     driverClassName = 'com.mysql.jdbc.Driver'
     dialect = org.hibernate.dialect.MySQL5InnoDBDialect
     username = "root"
-    password = "root"
+    password = ""
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -31,7 +31,7 @@ environments {
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
            
            username = 'root'
-           password = ''
+           password = 'root'
         }
     }
     test {
