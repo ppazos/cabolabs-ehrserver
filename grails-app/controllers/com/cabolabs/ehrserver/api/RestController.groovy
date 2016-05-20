@@ -802,7 +802,11 @@ class RestController {
          return
       }
       
-      def person = Person.findByRoleAndUid('pat', uid)
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      def person = Person.findByRoleAndUidAndOrganizationUid('pat', uid, _org.uid)
       if (!person)
       {
          //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
@@ -1866,7 +1870,7 @@ class RestController {
          def errors = ""
          personInstance.errors.allErrors.each { 
             
-            errors += it.defaultMessage + "\n"
+            errors += it.defaultMessage + "\n" // FIXME: the error message is I18N, should be passed to g.message
          }
          
          renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
