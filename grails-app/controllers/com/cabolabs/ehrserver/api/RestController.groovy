@@ -1901,7 +1901,7 @@ class RestController {
          idType: personInstance.idType, 
          role: personInstance.organizationUid, 
          organizationUid: personInstance.organizationUid,
-         subjectUid: personInstance.uid
+         uid: personInstance.uid
       ]
       if (format == 'xml')
       {
