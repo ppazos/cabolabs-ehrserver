@@ -34,5 +34,7 @@ beans = {
       
       // calls AbstractAuthenticationProcessingFilter.setRequiresAuthenticationRequestMatcher
       requiresAuthenticationRequestMatcher = ref('filterProcessUrlRequestMatcher')
+      
+      continueChainBeforeSuccessfulAuthentication = false // test
    }
 }
