@@ -1,7 +1,7 @@
 {
   "_type": "export",
   "__export_format": 1,
-  "__export_date": "2016-04-18T03:03:33.035Z",
+  "__export_date": "2016-05-20T23:04:28.330Z",
   "__export_source": "insomnia.chrome.app:v2.6.10",
   "items": [
     {
@@ -24,11 +24,11 @@
           "params": [
             {
               "name": "username",
-              "value": "admin"
+              "value": "orgman"
             },
             {
               "name": "password",
-              "value": "admin"
+              "value": "orgman"
             },
             {
               "name": "organization",
@@ -55,7 +55,7 @@
           "headers": [
             {
               "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsImV4dHJhZGF0YSI6eyJvcmdhbml6YXRpb24iOiI2NjY2In0sImlzc3VlZF9hdCI6IjIwMTYtMDUtMjBUMjI6NDM6MjkuOTc3WiJ9.B6FB+/aTxfqJJsX0aSfOI9xu32lOWftGQIHLgw/z9RI="
             }
           ],
           "params": [
@@ -148,23 +148,19 @@
         {
           "_type": "request",
           "_id": "req_1457211739575",
-          "url": "{{base_url}}/createPerson",
+          "url": "{{base_url}}/person",
           "method": "POST",
           "body": "",
           "headers": [
             {
               "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
-            },
-            {
-              "name": "Accept",
-              "value": "application/json"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsImV4dHJhZGF0YSI6eyJvcmdhbml6YXRpb24iOiI2NjY2In0sImlzc3VlZF9hdCI6IjIwMTYtMDUtMjBUMjI6NDM6MjkuOTc3WiJ9.B6FB+/aTxfqJJsX0aSfOI9xu32lOWftGQIHLgw/z9RI="
             }
           ],
           "params": [
             {
               "name": "firstName",
-              "value": "Pablo"
+              "value": "Pablo1"
             },
             {
               "name": "lastName",
@@ -192,7 +188,7 @@
             },
             {
               "name": "organizationUid",
-              "value": "fb844f0f-1a23-46d2-a103-3f30c56bb579"
+              "value": "fc42a800-aa3e-434a-92bc-69c8dbd95be6"
             }
           ],
           "authentication": {
@@ -215,7 +211,7 @@
           "headers": [
             {
               "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsImV4dHJhZGF0YSI6eyJvcmdhbml6YXRpb24iOiIxMjM0In0sImlzc3VlZF9hdCI6IjIwMTYtMDUtMjBUMjM6MDM6NTMuNTIwWiJ9.ElzgigctTfF5f5nWMt5ZA1/UYhrsYODdKvcqoLDCQ9I="
             }
           ],
           "params": [
@@ -238,13 +234,13 @@
         {
           "_type": "request",
           "_id": "req_1460948548261",
-          "url": "{{base_url}}/patients/11111111-1111-1111-1111-111111111111",
+          "url": "{{base_url}}/patients/52538b33-c1b9-4e80-800a-980de7b37b9d",
           "method": "GET",
           "body": "{}",
           "headers": [
             {
               "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wNC0xOFQwMjo1Mjo1Ni4yMzFaIn0=.wZ8412Kagg3iYtuuvfd8wrVLrLNxv+1SLuyKkI3J5Wo="
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsImV4dHJhZGF0YSI6eyJvcmdhbml6YXRpb24iOiI2NjY2In0sImlzc3VlZF9hdCI6IjIwMTYtMDUtMjBUMjI6NDM6MjkuOTc3WiJ9.B6FB+/aTxfqJJsX0aSfOI9xu32lOWftGQIHLgw/z9RI="
             }
           ],
           "params": [
