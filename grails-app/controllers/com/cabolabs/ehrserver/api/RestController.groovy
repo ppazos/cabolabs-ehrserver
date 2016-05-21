@@ -720,7 +720,40 @@ class RestController {
       // ===========================================================================
       // 1. Lista personas con rol paciente
       //
-      def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
+      //def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
+      
+      def c = Person.createCriteria()
+      def subjects = c.list (max: params.max, offset: params.offset) {
+
+         eq("role", "pat")
+         eq("organizationUid", _org.uid)
+         
+         // filters
+         if (params.firstName)
+         {
+            like('firstName', '%'+params.firstName+'%')
+         }
+         if (params.lastName)
+         {
+            like('lastName', '%'+params.lastName+'%')
+         }
+         if (params.sex)
+         {
+            eq('sex', params.sex) // sex should be eq
+         }
+         if (params.idCode)
+         {
+            like('idCode', '%'+params.idCode+'%')
+         }
+         if (params.idType)
+         {
+            eq('idType', params.idType) // idcode should be eq
+         }
+         
+         // TODO: filter by dob range
+         
+         setReadOnly true
+      }
       
       // ===========================================================================
       // 2. Discusion por formato de salida
