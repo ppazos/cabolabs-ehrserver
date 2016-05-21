@@ -522,7 +522,6 @@ class UserController {
             return
          }
          
-
          
          flash.message = "Password reset email was sent, please check the instructions on that email"
          redirect controller:'login', action:'auth'
@@ -530,6 +529,48 @@ class UserController {
       }
       // display the forgotPassword view
    }
+   
+   
+   // same as forgotPassword but it can be triggered by an admin / org manager
+   // from the user/show to let users reset their password even if they forgot
+   // the email used to register.
+   def resetPasswordRequest(String email)
+   {
+      def user = User.findByEmail(email)
+      
+      if (!user)
+      {
+         flash.message = "Can't find a user for that email"
+         redirect(action:'show', id:params.id)
+         return
+      }
+      
+      
+      // generates a password reset token, used in the email notification
+      user.setPasswordToken()
+      user.enabled = false // if enabled, password token is cleaned beforeInsert
+      user.save(flush:true)
+      
+      
+      try
+      {
+         notificationService.sendForgotPasswordEmail( user.email, [user] )
+      }
+      catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
+      {
+         log.error e.message
+         
+         flash.message = "There was a problem sending the email notification, please try again."
+         redirect(action:'show', id:params.id)
+         return
+      }
+      
+      
+      flash.message = "Password reset email was sent, please check the instructions on that email"
+      redirect(action:'show', id:params.id)
+      return
+   }
+   
 
    protected void notFound() {
       request.withFormat {

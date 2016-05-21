@@ -55,14 +55,20 @@
 	          if the user shown is not admin, only can be edited if the logged user is org admin
 	     --%>
 	     <g:if test="${ SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') || (!userInstance.authoritiesContains('ROLE_ADMIN') && SpringSecurityUtils.ifAllGranted('ROLE_ORG_MANAGER')) || (userInstance.id == Long.valueOf(sec.loggedInUserInfo(field:'id').toString())) }">
-		     <g:form url="[resource:userInstance, action:'delete']" method="DELETE">
-		       <fieldset class="buttons">
-		         <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
-		         <%--
-		          <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-		         --%>
-		       </fieldset>
-		     </g:form>
+		    <g:form url="[resource:userInstance, action:'delete']" method="DELETE">
+		      <fieldset class="buttons">
+		        <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+		        <%--
+		        <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+		        --%>
+		      </fieldset>
+		    </g:form>
+		     
+		             
+	       <g:form action="resetPasswordRequest" id="${userInstance.id}" method="post">
+	         <input type="hidden" name="email" value="${userInstance.email}" />
+	         <button type="submit" class="btn btn-warning">${message(code: "springSecurity.reset.button")}</button>
+	       </g:form>
 	     </g:if>
 	     
       </div>
