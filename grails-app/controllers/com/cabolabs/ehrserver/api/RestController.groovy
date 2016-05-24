@@ -285,7 +285,7 @@ class RestController {
       //println _parsedVersions.children()*.name()
       //println _parsedVersions.version.size()
       
-      
+      // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
@@ -393,6 +393,10 @@ class RestController {
    {
       //println params
       
+      // TODO: check that the version is the last version of the versioned composition.
+      // the compositionUid should come from the result of findCompositions but since
+      // this is stateless, client apps might send anything here...
+      
       def versions = Version.withCriteria {
          data {
             eq('uid', compositionUid)
@@ -406,6 +410,7 @@ class RestController {
          return
       }
       
+      // this case is impossible: a compo has one version that contains it.
       if (versions.size() > 1)
       {
          renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413', 500)
