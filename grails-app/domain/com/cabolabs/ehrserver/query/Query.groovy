@@ -136,6 +136,19 @@ class Query {
             
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
+                  def magnitudeValue = []
+                  if (criteria.magnitudeValue instanceof String)
+                  {
+                     magnitudeValue << new Double(criteria.magnitudeValue)
+                  }
+                  else
+                  {
+                     criteria.magnitudeValue.each {
+                        magnitudeValue << new Double(it)
+                     }
+                  }
+                  
+                  criteria.magnitudeValue = magnitudeValue
                   condition = new DataCriteriaDV_QUANTITY(criteria)
                break
                case 'DataCriteriaDV_CODED_TEXT':
