@@ -418,6 +418,13 @@ class RestController {
          return
       }
       
+      // only the latest version can be checked out
+      if (!versions[0].data.lastVersion)
+      {
+         renderError(message(code:'rest.commit.error.versionIsNotTheLatest'), '416', 400)
+         return
+      }
+      
       def version = versions[0]
       
       // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
