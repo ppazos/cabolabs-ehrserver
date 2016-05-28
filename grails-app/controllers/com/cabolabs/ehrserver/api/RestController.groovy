@@ -391,11 +391,19 @@ class RestController {
    @SecuredStateless
    def checkout(String ehrUid, String compositionUid)
    {
-      //println params
+      // TODO: check that the logged user has access to the organization that the composition belongs to
       
-      // TODO: check that the version is the last version of the versioned composition.
-      // the compositionUid should come from the result of findCompositions but since
-      // this is stateless, client apps might send anything here...
+      if (!ehrUid)
+      {
+         renderError(message(code:'rest.commit.error.ehrUidIsRequired'), '411', 400)
+         return
+      }
+      
+      if (!compositionUid)
+      {
+         renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
+         return
+      }
       
       def versions = Version.withCriteria {
          data {
@@ -441,6 +449,7 @@ class RestController {
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
+         // This is another case that shouldn't happen, will happen only if the files are deleted from disk
          renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
          return
       }
