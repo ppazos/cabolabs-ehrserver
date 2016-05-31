@@ -1654,21 +1654,20 @@
               };
             </script>
 
-           <div class="btn-toolbar bottom" role="toolbar">
-              <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
-                <button type="button" class="btn btn-default btn-md">
-                  <span class="fa fa-road fa-fw" aria-hidden="true"></span> <g:message code="default.button.test.label" default="Test" />
-                </button></a>
-             <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">
-                <button type="button" class="btn btn-default btn-md">
-                  <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.button.create.label" default="Save" />
-                </button></a>
-             <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">
-                <button type="button" class="btn btn-default btn-md">
-                  <span class="fa fa-check fa-fw" aria-hidden="true"></span> <g:message code="default.button.update.label" default="Update" />
-                </button></a>
-            </div>
-
+          <div class="btn-toolbar bottom" role="toolbar">
+            <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-road fa-fw" aria-hidden="true"></span> <g:message code="default.button.test.label" default="Test" />
+              </button></a>
+            <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.button.create.label" default="Save" />
+              </button></a>
+            <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('update');" id="update_button">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-check fa-fw" aria-hidden="true"></span> <g:message code="default.button.update.label" default="Update" />
+              </button></a>
+          </div>
           
           <!-- test panel -->
           <div id="query_test">
