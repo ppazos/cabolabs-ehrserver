@@ -1146,24 +1146,35 @@ class RestController {
    @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate, String organizationUid)
+             String fromDate, String toDate)
    {
       if (!queryUid)
       {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
+      
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      String organizationUid = _org.uid
+      
+      /*
       if (!organizationUid) // TODO: when the token verification works, we can get the org id from the token. No need of a param.
       {
          renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
          return
       }
-      if (Organization.countByUid(organizationUid) == 0)
+      */
+      /* this cant happen because the org existed when the user login
+      if (!_org)
       {
          renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
          return
       }
+      */
       
+      /* the org is taken from the login, so the user has access to it
       // logged user has access to the org?
       def _username = request.securityStatelessMap.username
       def _user = User.findByUsername(_username)
@@ -1172,6 +1183,7 @@ class RestController {
          renderError(message(code:'query.execute.error.user_cant_access_organization', args:[organizationUid]), '478', 403)
          return
       }
+      */
       
       if (ehrUid)
       {
