@@ -1008,7 +1008,7 @@ class RestController {
    @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
-      println params 
+      //println params 
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
@@ -1133,6 +1133,9 @@ class RestController {
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+         '*' {
+            render(status: 400, text:"<result><code>error</code><message>formato no soportado, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
