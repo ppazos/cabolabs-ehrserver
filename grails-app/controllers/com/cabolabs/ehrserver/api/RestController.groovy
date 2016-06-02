@@ -573,7 +573,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrList
    
@@ -655,7 +655,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrForSubject
    
@@ -723,7 +723,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrGet
    
@@ -838,7 +838,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // patientList
    
@@ -905,7 +905,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    }
    
@@ -1001,7 +1001,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    }
 
@@ -1391,7 +1391,7 @@ class RestController {
          }
          else
          {
-            render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+            render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
          }
       }
    } // query
@@ -1464,7 +1464,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
       return
    }
@@ -1733,7 +1733,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
    }
    
@@ -1973,7 +1973,7 @@ class RestController {
          organizationUid: personInstance.organizationUid,
          uid: personInstance.uid
       ]
-      if (format == 'xml')
+      if (!format || format == 'xml')
       {
          println "XML"
          render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
