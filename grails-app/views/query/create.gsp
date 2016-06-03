@@ -283,6 +283,10 @@
         if (qehrId != null) data.qehrId = qehrId;
         
         
+        // removes previous alert if present
+        $('#query_test_common .alert').remove();
+        
+        
         $.ajax({
           method: 'POST',
           url: '${createLink(controller:'rest', action:'queryCompositions')}',
@@ -330,12 +334,25 @@
            // devueltos por el servidor
            $('#show_data').show();
         })
-        .fail(function(a,b,c) {
+        .fail(function(resp,status,status_msg) {
            
-           console.log(a,b,c);
+           //console.log(resp);
+           //console.log(resp.responseXML); // XML object!
+           //console.log(resp.responseXML.getElementsByTagName("result")[0]);
+           //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0]);
+           //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue);
+           
+           //console.log(status);
+           //console.log(status_msg);
+           
+           // show error in XML response
+           $('#query_test_common').prepend(
+'<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
+           );
         });
 
-        console.log('after ajax submit');
+        //console.log('after ajax submit');
       };
 
 
@@ -360,6 +377,10 @@
                     group: group, organizationUid: organizationUid
                    };
         if (qehrId != null) data.qehrId = qehrId;
+        
+        
+        // removes previous alert if present
+        $('#query_test_common .alert').remove();
         
         
         $.ajax({
@@ -431,6 +452,14 @@
             
             // Hace scroll animado para mostrar el resultado
             $('html,body').animate({scrollTop:code.offset().top+400}, 500);
+         })
+         .fail(function(resp,status,status_msg) {
+           
+           // show error in XML response
+           $('#query_test_common').prepend(
+'<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
+           );
          });
 
       }; // test_query_datavalue
