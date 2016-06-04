@@ -619,7 +619,7 @@ class RestController {
       }
       if (!_ehr)
       {
-         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el paciente $subjectUid, se debe crear un EHR para el paciente</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 404, text:"<result><code>error</code><message>"+ message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]) +"</message></result>", contentType:"text/xml", encoding:"UTF-8")
          return
       }
       
