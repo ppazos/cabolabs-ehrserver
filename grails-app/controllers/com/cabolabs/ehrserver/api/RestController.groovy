@@ -1162,31 +1162,6 @@ class RestController {
       def _org = Organization.findByNumber(_orgnum)
       String organizationUid = _org.uid
       
-      /*
-      if (!organizationUid) // TODO: when the token verification works, we can get the org id from the token. No need of a param.
-      {
-         renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
-         return
-      }
-      */
-      /* this cant happen because the org existed when the user login
-      if (!_org)
-      {
-         renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
-         return
-      }
-      */
-      
-      /* the org is taken from the login, so the user has access to it
-      // logged user has access to the org?
-      def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
-      if (!_user.organizations.uid.contains(organizationUid))
-      {
-         renderError(message(code:'query.execute.error.user_cant_access_organization', args:[organizationUid]), '478', 403)
-         return
-      }
-      */
       
       if (ehrUid)
       {
@@ -1202,6 +1177,13 @@ class RestController {
             renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehrUid, organizationUid]), '458', 400)
             return
          }
+      }
+      
+      // check valid value for group
+      if (group && group != 'composition' && group != 'path')
+      {
+         renderError(message(code:'rest.error.query.invalid_group', args:[group]), '488', 400)
+         return
       }
       
       
