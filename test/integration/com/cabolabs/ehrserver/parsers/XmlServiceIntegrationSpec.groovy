@@ -32,8 +32,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
-      println "cleanup"
-      
       /*
        * org.springframework.dao.DataIntegrityViolationException: Hibernate operation: could not execute statement; SQL [n/a]; Cannot delete or update a p
 arent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCE
@@ -59,10 +57,12 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
       }
       */
       
+      /*
       // empty the temp version store
       def temp = new File(Holders.config.app.version_repo)
       println "***** DELETE FROM "+ temp.path
       temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+      */
    }
 
    
@@ -87,6 +87,10 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
+      
+      cleanup:
+         println "commit single / valid version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit single / invalid version"()
@@ -107,10 +111,18 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          
       then:
          Exception e = thrown() // TODO: use specific exception type
+         //println e.getClass() // java.lang.reflect.UndeclaredThrowableException
+         //println e.getCause().getClass() // javax.xml.bind.ValidationException
+         assert e.getCause().message == "There are errors in the XML versions"
          assert Contribution.count() == 0
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
    }
    
    void "multiple / all valid versions"()
@@ -133,6 +145,15 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 2
          assert VersionedComposition.count() == 2
          assert CompositionIndex.count() == 2
+         
+         // check that 2 version files were created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 2
+      
+      cleanup:
+         println "multiple / all valid versions DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "multiple / one invalid version"()
@@ -157,6 +178,11 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
    }
    
    void "multiple / all invalid version"()
@@ -181,6 +207,11 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
    }
    
    void "commit same version twice"()
@@ -207,6 +238,16 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
+         
+         
+         // just one version file should be created in the filesystem, the one for the first commit
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 1
+      
+      cleanup:
+         println "commit same version twice DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit 2 compos, and new version"()
@@ -236,6 +277,15 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 2
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 2
+         
+         // check that 2 version files were created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 2
+      
+      cleanup:
+         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit new version without previous version"()
@@ -260,6 +310,11 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
    }
    
    /**
@@ -293,5 +348,10 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
          assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
    }
 }
