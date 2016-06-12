@@ -27,7 +27,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    def setup()
    {
       // used by the service, mock the version repo where commits are stored
-      Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+      //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
    }
 
    def cleanup()
@@ -61,6 +61,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
       
       // empty the temp version store
       def temp = new File(Holders.config.app.version_repo)
+      println "***** DELETE FROM "+ temp.path
       temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
 
