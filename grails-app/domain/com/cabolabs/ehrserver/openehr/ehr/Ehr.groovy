@@ -79,6 +79,6 @@ class Ehr {
    
    String toString()
    {
-      return "EHR of "+ this.subject.getPerson().toString()
+      return "EHR of "+ this.subject.getPerson().toString() +"("+ this.uid +")"
    }
 }

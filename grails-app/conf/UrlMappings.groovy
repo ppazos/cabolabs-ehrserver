@@ -13,10 +13,7 @@ class UrlMappings {
          action: 'profile'
       )
       
-      "/rest/person"(
-         controller: 'rest',
-         action: 'createPerson'
-      )
+      
       
       // /rest/ehrs -- list of all EHRs
       "/rest/ehrs"(
@@ -48,17 +45,23 @@ class UrlMappings {
       // /rest/patientList por /rest/patients -- list of all patients
       "/rest/patients"(
          controller: 'rest',
-         action: 'patientList'
+         action: 'patientList',
+         method: 'GET'
       )
-       "/rest/patient"(
+      "/rest/patients"(
          controller: 'rest',
          action: 'createPerson',
          method: 'POST'
-      )       
-      
+      )          
       "/rest/patients/$uid"( 
          controller: 'rest',
-         action: 'patient'
+         action: 'patient',
+         method: 'GET'
+      )
+      "/rest/person"( /* FIXME: we should have one url for creating people, now we have also /patients ^ */
+         controller: 'rest',
+         action: 'createPerson',
+         method: 'POST'
       )
       
       // /rest/queryList por /rest/queries -- list of all queries

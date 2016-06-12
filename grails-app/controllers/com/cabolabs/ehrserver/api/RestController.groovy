@@ -304,7 +304,7 @@ class RestController {
       //println _parsedVersions.children()*.name()
       //println _parsedVersions.version.size()
       
-      
+      // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
@@ -410,7 +410,19 @@ class RestController {
    @SecuredStateless
    def checkout(String ehrUid, String compositionUid)
    {
-      //println params
+      // TODO: check that the logged user has access to the organization that the composition belongs to
+      
+      if (!ehrUid)
+      {
+         renderError(message(code:'rest.commit.error.ehrUidIsRequired'), '411', 400)
+         return
+      }
+      
+      if (!compositionUid)
+      {
+         renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
+         return
+      }
       
       def versions = Version.withCriteria {
          data {
@@ -425,10 +437,18 @@ class RestController {
          return
       }
       
+      // this case is impossible: a compo has one version that contains it.
       if (versions.size() > 1)
       {
          renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413', 500)
          // LOG a disco este caso no se deberia dar
+         return
+      }
+      
+      // only the latest version can be checked out
+      if (!versions[0].data.lastVersion)
+      {
+         renderError(message(code:'rest.commit.error.versionIsNotTheLatest'), '416', 400)
          return
       }
       
@@ -448,6 +468,7 @@ class RestController {
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
+         // This is another case that shouldn't happen, will happen only if the files are deleted from disk
          renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
          return
       }
@@ -578,7 +599,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrList
    
@@ -624,7 +645,7 @@ class RestController {
       }
       if (!_ehr)
       {
-         render(status: 500, text:"<result><code>error</code><message>EHR no encontrado para el paciente $subjectUid, se debe crear un EHR para el paciente</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 404, text:"<result><code>error</code><message>"+ message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]) +"</message></result>", contentType:"text/xml", encoding:"UTF-8")
          return
       }
       
@@ -660,7 +681,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrForSubject
    
@@ -728,7 +749,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // ehrGet
    
@@ -752,7 +773,40 @@ class RestController {
       // ===========================================================================
       // 1. Lista personas con rol paciente
       //
-      def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
+      //def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
+      
+      def c = Person.createCriteria()
+      def subjects = c.list (max: params.max, offset: params.offset) {
+
+         eq("role", "pat")
+         eq("organizationUid", _org.uid)
+         
+         // filters
+         if (params.firstName)
+         {
+            like('firstName', '%'+params.firstName+'%')
+         }
+         if (params.lastName)
+         {
+            like('lastName', '%'+params.lastName+'%')
+         }
+         if (params.sex)
+         {
+            eq('sex', params.sex) // sex should be eq
+         }
+         if (params.idCode)
+         {
+            like('idCode', '%'+params.idCode+'%')
+         }
+         if (params.idType)
+         {
+            eq('idType', params.idType) // idcode should be eq
+         }
+         
+         // TODO: filter by dob range
+         
+         setReadOnly true
+      }
       
       // ===========================================================================
       // 2. Discusion por formato de salida
@@ -816,7 +870,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    } // patientList
    
@@ -834,7 +888,11 @@ class RestController {
          return
       }
       
-      def person = Person.findByRoleAndUid('pat', uid)
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      def person = Person.findByRoleAndUidAndOrganizationUid('pat', uid, _org.uid)
       if (!person)
       {
          //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
@@ -879,7 +937,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    }
    
@@ -975,7 +1033,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
       }
    }
 
@@ -991,7 +1049,7 @@ class RestController {
    @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
-      println params 
+      //println params 
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
@@ -1117,6 +1175,9 @@ class RestController {
             if (params.callback) result = "${params.callback}( ${result} )"
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
+         '*' {
+            render(status: 400, text:"<result><code>error</code><message>formato no soportado, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         }
       }
    }
    
@@ -1129,32 +1190,19 @@ class RestController {
    @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate, String organizationUid)
+             String fromDate, String toDate)
    {
       if (!queryUid)
       {
          renderError(message(code:'query.execute.error.queryUidMandatory'), '455', 400)
          return
       }
-      if (!organizationUid) // TODO: when the token verification works, we can get the org id from the token. No need of a param.
-      {
-         renderError(message(code:'query.execute.error.organizationUidMandatory'), '457', 400)
-         return
-      }
-      if (Organization.countByUid(organizationUid) == 0)
-      {
-         renderError(message(code:'query.execute.error.organizationDoesntExists', args:[organizationUid]), '456', 404)
-         return
-      }
       
-      // logged user has access to the org?
-      def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
-      if (!_user.organizations.uid.contains(organizationUid))
-      {
-         renderError(message(code:'query.execute.error.user_cant_access_organization', args:[organizationUid]), '478', 403)
-         return
-      }
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      String organizationUid = _org.uid
+      
       
       if (ehrUid)
       {
@@ -1170,6 +1218,13 @@ class RestController {
             renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehrUid, organizationUid]), '458', 400)
             return
          }
+      }
+      
+      // check valid value for group
+      if (group && group != 'composition' && group != 'path')
+      {
+         renderError(message(code:'rest.error.query.invalid_group', args:[group]), '488', 400)
+         return
       }
       
       
@@ -1362,7 +1417,7 @@ class RestController {
          }
          else
          {
-            render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+            render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
          }
       }
    } // query
@@ -1435,7 +1490,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
       return
    }
@@ -1704,7 +1759,7 @@ class RestController {
       }
       else
       {
-         render(status: 500, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
    }
    
@@ -1921,7 +1976,7 @@ class RestController {
          def errors = ""
          personInstance.errors.allErrors.each { 
             
-            errors += it.defaultMessage + "\n"
+            errors += it.defaultMessage + "\n" // FIXME: the error message is I18N, should be passed to g.message
          }
          
          renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
@@ -1955,9 +2010,10 @@ class RestController {
          idCode: personInstance.idCode,
          idType: personInstance.idType, 
          role: personInstance.organizationUid, 
-         organizationUid: personInstance.organizationUid
+         organizationUid: personInstance.organizationUid,
+         uid: personInstance.uid
       ]
-      if (format == 'xml')
+      if (!format || format == 'xml')
       {
          println "XML"
          render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
