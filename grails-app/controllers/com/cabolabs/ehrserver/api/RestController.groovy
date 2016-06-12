@@ -39,6 +39,19 @@ import com.cabolabs.util.DateParser
 
 import grails.transaction.Transactional
 
+import com.cabolabs.swagger.annotations.ApiOperation
+import com.cabolabs.swagger.annotations.ApiParam
+import com.cabolabs.swagger.annotations.ApiParams
+import com.cabolabs.swagger.annotations.ApiResponse
+import com.cabolabs.swagger.annotations.ApiResponses
+import com.cabolabs.swagger.annotations.DeleteMethod
+import com.cabolabs.swagger.annotations.ApiDescription
+import com.cabolabs.swagger.annotations.GetMethod
+import com.cabolabs.swagger.annotations.ApiIgnore
+import com.cabolabs.swagger.annotations.PostMethod
+import com.cabolabs.swagger.annotations.ApiProperty
+import com.cabolabs.swagger.annotations.PutMethod
+
 /**
  * TODO:
  * 
@@ -47,7 +60,8 @@ import grails.transaction.Transactional
  * @author pab
  *
  */
-
+@ApiDescription(title="EHRServer",description="Descripcion de la clase RestController",version="0.6",
+            host="cabolabs-ehrserver.rhcloud.com",schemes="https",basePath="/ehr",produces="application/json",tags="authorization,patients,ehrs,queries")
 class RestController {
 
    static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
@@ -72,6 +86,11 @@ class RestController {
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
 
    
+   @GetMethod(pathApiRest="/rest/login",summary="Obtenemos token de seguridad",description="Obtenemos token de seguridad",tags="authorization",domainClass="Person")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Authentication failed",typeSchema="string"),@ApiResponse(code = 200, message = "Token de seguridad",typeSchema="string")])
+   @ApiParams(value= [@ApiParam(name = "username", value = "Usuario", required = true, in="query",type="string"),
+                      @ApiParam(name = "password", value = "Clave de acceso", required = true, in="query",type="string"),
+                      @ApiParam(name = "organization", value = "Numero de la organizacion, facilitado al registrarse en la aplicacion", required = true, in="query",type="integer",format="int32")])
    // FIXME: move logic to service
    def login()
    {
@@ -459,6 +478,13 @@ class RestController {
       render(text: xml, contentType:"text/xml", encoding:"UTF-8")
    }
    
+   @GetMethod(pathApiRest="/rest/ehrs",summary="Listado de pacientes",description="Listado de historiales medicos",tags="ehrs",domainClass="Ehr")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                           @ApiResponse(code = 200, message = "Listado de historiales de pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Ehr")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
@@ -727,6 +753,12 @@ class RestController {
       }
    } // ehrGet
    
+   @GetMethod(pathApiRest="/rest/patients",summary="Listado de pacientes",description="Listado de pacientes",tags="patients",domainClass="Person")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),@ApiResponse(code = 200, message = "Listado de Pacientes",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def patientList(String format, int max, int offset)
    {
@@ -1005,6 +1037,15 @@ class RestController {
       }
    }
 
+   @GetMethod(pathApiRest="/rest/queries",summary="Listado de queries",description="Listado de queries",tags="queries",domainClass="Query")
+   @ApiResponses(value = [ @ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                           @ApiResponse(code = 200, message = "Listado de queries",typeSchema="array",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Query")])
+   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = false, in="header",type="string"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json"),
+                      @ApiParam(name = "queryName", value = "descripcion de parametro queryName", required = false, in="query",type="string"),
+                      @ApiParam(name = "descriptionContains", value = "descripcion de parametro descriptionContains", required = false, in="query",type="string"),
+                      @ApiParam(name = "max", value = "descripcion de parametro max", required = false, in="query",type="integer",format="int32"),
+                      @ApiParam(name = "offset", value = "descripcion de parametro offset", required = false, in="query",type="integer",format="int32")])
    @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
@@ -1873,7 +1914,21 @@ class RestController {
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
    
-   
+    
+  @PostMethod(pathApiRest="/rest/patients",summary="Crear un paciente",description="Creación de un paciente",tags="patients",domainClass="Person")
+  @ApiResponses(value = [@ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
+                          @ApiResponse(code = 200, message = "Paciente creado con exito.",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
+  @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = true, in="header",type="string"),
+                      @ApiParam(name = "firstName", value = "descripcion de parametro firstName", required = true, in="query",type="string"),
+                      @ApiParam(name = "lastName", value = "descripcion de parametro lastName", required = true, in="query",type="string"),
+                      @ApiParam(name = "dob", value = "descripcion de parametro dob", required = true, in="query",type="string"),
+                      @ApiParam(name = "sex", value = "descripcion de parametro sex", required = true, in="query",type="string"),
+                      @ApiParam(name = "idCode", value = "descripcion de parametro idCode", required = true, in="query",type="string"),
+                      @ApiParam(name = "idType", value = "descripcion de parametro idType", required = true, in="query",type="string"),
+                      @ApiParam(name = "role", value = "descripcion de parametro role", required = true, in="query",type="string"),
+                      @ApiParam(name = "organizationUid", value = "descripcion de parametro organizationUid", required = true, in="query",type="string"),
+                      @ApiParam(name = "createEhr", value = "descripcion de parametro createEhr", required = true, in="query",type="boolean"),
+                      @ApiParam(name = "format", value = "descripcion de parametro format", required = false, in="query",type="string",items="xml,json")])   
    @Transactional
    @SecuredStateless
    def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 

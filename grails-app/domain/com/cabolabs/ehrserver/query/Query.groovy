@@ -6,6 +6,9 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.util.DateParser
 
+import com.cabolabs.swagger.annotations.ApiDescription
+import com.cabolabs.swagger.annotations.ApiProperty
+
 /**
  * Parametros n1 de la query:
  *  - ehrUid    (== compoIndex.ehrUid)
@@ -22,27 +25,34 @@ import com.cabolabs.util.DateParser
  *       con nombres, tipos y obligatoriedad de parametros.
  *
  */
+ @ApiDescription(nameElementDefinitions="Query",typeElementDefinitions="object",description = "Representa una query.")
 class Query {
-
+   @ApiProperty(description = "Identifica la query de manera univoca",type="string")
    String uid = java.util.UUID.randomUUID() as String
 
    // Describe lo que hace la query
+    @ApiProperty(description = "Describe lo que hace la query",type="string")
    String name
    
    // queryByData (composition) o queryData (datavalue)
    // lo que los diferencia es el resultado: composiciones o datos asociados a paths
+   @ApiProperty(description = "Indica el tipo de la query",type="string")
    String type
    
    // Sino se especifica, por defecto es xml
+   @ApiProperty(description = "Indica el formato de la query. Sino se especifica, por defecto es xml",type="string")
    String format = 'xml'
    
    // Filter by templateId (this is the document type)
+
    String templateId
    
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
+   @ApiProperty(description = "Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.",type="string")
    List select = []
+   @ApiProperty(description = "Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria). Los filtros/criterios de n1 y de n2 son parametros de la query.",type="string")
    List where = []
    static hasMany = [select: DataGet, where: DataCriteria]
    
