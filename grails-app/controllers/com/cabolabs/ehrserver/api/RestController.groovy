@@ -1915,7 +1915,7 @@ class RestController {
    }
    
     
-  @PostMethod(pathApiRest="/rest/patient",summary="Crear un paciente",description="Creación de un paciente",tags="patients",domainClass="Person")
+  @PostMethod(pathApiRest="/rest/patients",summary="Crear un paciente",description="Creación de un paciente",tags="patients",domainClass="Person")
   @ApiResponses(value = [@ApiResponse(code = 500, message = "Formato no reconocido, debe ser exactamente \'xml\' o \'json\'",typeSchema="string"),
                           @ApiResponse(code = 200, message = "Paciente creado con exito.",nameItemsSchema="\$ref",valueItemsSchema="#/definitions/Person")])
   @ApiParams(value= [@ApiParam(name = "Authorization", value = "token de seguridad", required = true, in="header",type="string"),
