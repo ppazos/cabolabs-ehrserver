@@ -70,7 +70,26 @@ class RestController {
    def statelessTokenProvider
    def userService
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
-
+   
+   // This is used to generate controlled error codes.
+   // See: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
+   static String format_error_code = '0066'
+   
+   // Map controller.actionName => action code
+   static Map endpoint_codes = [
+      'login': '01',         // POST /login
+      'commit': '02',        // POST /commit
+      'checkout': '03',      // GET /checkout
+      'ehrList': '04',       // GET /ehrs
+      'ehrForSubject': '05', // GET /ehrs/subjectUid/$subjectUid
+      'ehrGet': '06',        // GET /ehrs/ehrUid/$ehrUid
+      'patientList': '07',   // GET /patients
+      'patient': '08',       // GET /patients/$uid
+      'queryShow': '09',     // GET /queries/$queryUid
+      'query': '10',         // GET /queries/$queryUid/execute
+      'queryList': '11',     // GET /queries
+      'contributions': '12'  // GET /contributions
+   ]
    
    // FIXME: move logic to service
    def login()
@@ -168,7 +187,7 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(msg)
-                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
+                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
          }
@@ -182,7 +201,7 @@ class RestController {
                      codeSystem: 'HL7::TABLES::TABLE_8'
                   ],
                   message: msg,
-                  code: 'ISIS_EHR_SERVER::API::ERRORS::'+ errorCode
+                  code: 'EHR_SERVER::API::ERRORS::'+ errorCode
                ]
             ]
             
@@ -198,7 +217,7 @@ class RestController {
             response.status = status
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
-         html {
+         '*' {
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
@@ -206,9 +225,26 @@ class RestController {
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
                   message(message(code:'rest.error.formatNotSupported'))
-                  code('ISIS_EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
+                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
+         }
+      }
+   }
+   
+   private void renderFormatNotSupportedError()
+   {
+      def error_code = 'e'+ endpoint_codes[actionName] +'.'+ format_error_code
+      
+      // 400 Bad Request
+      render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+         result {
+            type {
+               code('AR')                         // application reject
+               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+            }
+            message(message(code:'rest.error.formatNotSupported'))
+            code('EHR_SERVER::API::ERRORS::'+ error_code) // sys::service::concept::code
          }
       }
    }
@@ -573,7 +609,7 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    } // ehrList
    
@@ -655,9 +691,10 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    } // ehrForSubject
+   
    
    @SecuredStateless
    def ehrGet(String ehrUid, String format)
@@ -723,9 +760,10 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    } // ehrGet
+   
    
    @SecuredStateless
    def patientList(String format, int max, int offset)
@@ -838,7 +876,7 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    } // patientList
    
@@ -905,9 +943,10 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    }
+   
    
    /*
     * Servicios sobre consultas.
@@ -1001,10 +1040,11 @@ class RestController {
       }
       else
       {
-         render(status: 400, text:"<result><code>error</code><message>formato '$format' no reconocido, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderFormatNotSupportedError()
       }
    }
 
+   
    @SecuredStateless
    def queryList(String format,String queryName,String descriptionContains,int max, int offset)
    {
@@ -1135,10 +1175,11 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            render(status: 400, text:"<result><code>error</code><message>formato no soportado, debe ser exactamente 'xml' o 'json'</message></result>", contentType:"text/xml", encoding:"UTF-8")
+            renderFormatNotSupportedError()
          }
       }
    }
+   
    
    /*
     * REST service to query data and compositions executing an existing Query instance.
@@ -1376,7 +1417,7 @@ class RestController {
          }
          else
          {
-            render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+            renderFormatNotSupportedError()
          }
       }
    } // query
@@ -1449,6 +1490,7 @@ class RestController {
       }
       else
       {
+         // since this is not actually an endpoint, is just for query test from the UI, dont uses renderFormatNotSupportedError()
          render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
       return
@@ -1646,9 +1688,12 @@ class RestController {
    @SecuredStateless
    def contributions(String ehrUid, String from, String to, int max, int offset, String format)
    {
+      // TODO: verify permissions by organization of the EHR with ehrUid
+      
       Date dateFrom
       Date dateTo
 
+      // TODO: verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
       if (from) dateFrom = Date.parse(config.l10n.date_format, from)
       if (to) dateTo = Date.parse(config.l10n.date_format, to)
       
