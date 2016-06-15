@@ -1689,6 +1689,35 @@ class RestController {
    def contributions(String ehrUid, String from, String to, int max, int offset, String format)
    {
       // TODO: verify permissions by organization of the EHR with ehrUid
+      if (!ehrUid)
+      {
+         renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
+         return
+      }
+      
+      // 1. EHR existe?
+      def c = Ehr.createCriteria()
+      def _ehr = c.get {
+         eq ('uid', ehrUid)
+      }
+      
+      if (!_ehr)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
+         return
+      }
+      
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_ehr.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         return
+      }
+      
       
       Date dateFrom
       Date dateTo
@@ -1709,12 +1738,13 @@ class RestController {
       
       def res = Contribution.createCriteria().list(max: max, offset: offset) {
          
-         if (ehrUid)
-         {
-            ehr {
-               eq('uid', ehrUid)
-            }
+         /*
+         ehr {
+            eq('uid', ehrUid)
          }
+         */
+         eq('ehr', _ehr)
+            
          if (dateFrom && !dateTo)
          {
             audit {
