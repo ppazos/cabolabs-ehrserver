@@ -1243,9 +1243,32 @@ class RestController {
       Date qFromDate
       Date qToDate
 
-      // FIXME> use DateParser
-      if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
-      if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
+      // verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
+      if (fromDate)
+      {
+         qFromDate = DateParser.tryParse(fromDate)
+         if (!qFromDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "479", 400)
+            return
+         }
+      }
+      
+      if (toDate)
+      {
+         qToDate = DateParser.tryParse(toDate)
+         if (!qToDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', toDate]), "480", 400)
+            return
+         }
+      }
+      
+      if (qFromDate && qToDate && qFromDate > qToDate)
+      {
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
+         return
+      }
       
       
       // measuring query timing
@@ -1688,7 +1711,7 @@ class RestController {
    @SecuredStateless
    def contributions(String ehrUid, String from, String to, int max, int offset, String format)
    {
-      // TODO: verify permissions by organization of the EHR with ehrUid
+      // verify permissions by organization of the EHR with ehrUid
       if (!ehrUid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
@@ -1722,13 +1745,32 @@ class RestController {
       Date dateFrom
       Date dateTo
 
-      // TODO: verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
-      if (from) dateFrom = Date.parse(config.l10n.date_format, from)
-      if (to) dateTo = Date.parse(config.l10n.date_format, to)
+      // verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
+      if (from)
+      {
+         dateFrom = DateParser.tryParse(from)
+         if (!dateFrom)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['from', from]), "479", 400)
+            return
+         }
+      }
       
-      println params
-      println from
-      println to
+      if (to)
+      {
+         dateTo = DateParser.tryParse(to)
+         if (!dateTo)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['to', to]), "480", 400)
+            return
+         }
+      }
+      
+      if (dateFrom && dateTo && dateFrom > dateTo)
+      {
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[from, to]), "481", 400)
+         return
+      }
       
       if (!max)
       {
