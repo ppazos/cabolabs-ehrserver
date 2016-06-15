@@ -289,7 +289,7 @@
         
         $.ajax({
           method: 'POST',
-          url: '${createLink(controller:'rest', action:'queryCompositions')}',
+          url: '${createLink(controller:'rest', action:'queryCompositions')}?format='+format, // format param in url to make the withFormat work in the controller
           dataType: format, // xml o json
           contentType: 'application/json',
           data: JSON.stringify( data ) // JSON.parse(  avoid puting functions, just data
@@ -344,12 +344,22 @@
            
            //console.log(status);
            //console.log(status_msg);
-           
-           // show error in XML response
-           $('#query_test_common').prepend(
+
+           if (format == 'xml')
+           {
+             // show error in XML response
+             $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
-           );
+             );
+           }
+           else
+           {
+              $('#query_test_common').prepend(
+'<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+resp.responseJSON.result.message +'</div>'
+             );
+           }
         });
 
         //console.log('after ajax submit');
@@ -385,7 +395,7 @@ resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message
         
         $.ajax({
            method: 'POST',
-           url: '${createLink(controller:"rest", action:"queryData")}',
+           url: '${createLink(controller:"rest", action:"queryData")}?format='+format, // format param in url to make the withFormat work in the controller
            contentType : 'application/json',
            dataType: format,
            data: JSON.stringify( data )
@@ -454,12 +464,24 @@ resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message
             $('html,body').animate({scrollTop:code.offset().top+400}, 500);
          })
          .fail(function(resp,status,status_msg) {
-           
-           // show error in XML response
-           $('#query_test_common').prepend(
+         
+           if (format == 'xml')
+           {
+             // show error in XML response
+             $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
-           );
+             );
+           }
+           else
+           {
+              console.log('json', resp);
+              
+              $('#query_test_common').prepend(
+'<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+resp.responseJSON.result.message +'</div>'
+             );
+           }
          });
 
       }; // test_query_datavalue

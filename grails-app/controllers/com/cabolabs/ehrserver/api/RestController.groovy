@@ -180,6 +180,7 @@ class RestController {
       // Format comes from current request
       withFormat {
          xml {
+            println "render error XML"
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
@@ -192,8 +193,7 @@ class RestController {
             }
          }
          json {
-            //println "error json"
-            
+            println "render error JSON"
             def error = [
                result: [
                   type: [
@@ -218,13 +218,14 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
+            println "render error *"
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type {
                      code('AR')                         // application reject
                      codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
                   }
-                  message(message(code:'rest.error.formatNotSupported'))
+                  message(msg)
                   code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
@@ -1259,7 +1260,7 @@ class RestController {
          qToDate = DateParser.tryParse(toDate)
          if (!qToDate)
          {
-            renderError(message(code:'rest.error.invalid_format', args:['fromDate', toDate]), "480", 400)
+            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "480", 400)
             return
          }
       }
@@ -1495,12 +1496,37 @@ class RestController {
       Date qFromDate
       Date qToDate
 
-      if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
-      if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
+      // verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
+      if (fromDate)
+      {
+         qFromDate = DateParser.tryParse(fromDate)
+         if (!qFromDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "479", 400)
+            return
+         }
+      }
+      
+      if (toDate)
+      {
+         qToDate = DateParser.tryParse(toDate)
+         if (!qToDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "480", 400)
+            return
+         }
+      }
+      
+      if (qFromDate && qToDate && qFromDate > qToDate)
+      {
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
+         return
+      }
       
       def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid)
       
+      println "format: "+ format
       
       // Format
       if (!format || format == 'xml')
@@ -1529,67 +1555,91 @@ class RestController {
    // Not stateless secured because is used from the web
    def queryCompositions()
    {
-       println "queryCompositions"
+      println "queryCompositions"
+      
+      // all params come in the JSON object from the UI
+      // all are strings
+      boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
+      boolean showUI = request.JSON.showUI.toBoolean()
+      String qehrId = request.JSON.qehrId
+      String fromDate = request.JSON.fromDate
+      String toDate = request.JSON.toDate
+      String qarchetypeId = request.JSON.qarchetypeId
+      String format = request.JSON.format
+      String organizationUid = request.JSON.organizationUid
        
-       // all params come in the JSON object from the UI
-       // all are strings
-       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
-       boolean showUI = request.JSON.showUI.toBoolean()
-       String qehrId = request.JSON.qehrId
-       String fromDate = request.JSON.fromDate
-       String toDate = request.JSON.toDate
-       String qarchetypeId = request.JSON.qarchetypeId
-       String format = request.JSON.format
-       String organizationUid = request.JSON.organizationUid
-       
-       /*
+      /*
        println request.JSON.retrieveData.getClass().getSimpleName()
        println request.JSON.showUI.getClass().getSimpleName()
-       */
-       println retrieveData.toString() +" "+ showUI.toString()
+      */
+      println retrieveData.toString() +" "+ showUI.toString()
        
        
-       if (qehrId && organizationUid)
-       {
-          def ehr = Ehr.findByUid(qehrId)
-          if (!ehr)
-          {
-             renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
-             return
-          }
-          
-          if (ehr.organizationUid != organizationUid)
-          {
-             renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
-             return
-          }
-       }
+      if (qehrId && organizationUid)
+      {
+         def ehr = Ehr.findByUid(qehrId)
+         if (!ehr)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_exists', args:[qehrId]), '403', 404)
+            return
+         }
+         
+         if (ehr.organizationUid != organizationUid)
+         {
+            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
+            return
+         }
+      }
+      
+      
+      // parse de dates
+      Date qFromDate
+      Date qToDate
+
+       // verify parsability and return errors, see: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
+      if (fromDate)
+      {
+         qFromDate = DateParser.tryParse(fromDate)
+         if (!qFromDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "479", 400)
+            return
+         }
+      }
+      
+      if (toDate)
+      {
+         qToDate = DateParser.tryParse(toDate)
+         if (!qToDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "480", 400)
+            return
+         }
+      }
+      
+      if (qFromDate && qToDate && qFromDate > qToDate)
+      {
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
+         return
+      }
        
+      def query = Query.newInstance(request.JSON.query)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid)
+      def result = cilist
+      
+      // If no ehrUid was specified, the results will be for different ehrs
+      // we need to group those CompositionIndexes by EHR.
+      if (!qehrId)
+      {
+         result = cilist.groupBy { ci -> ci.ehrUid }
+      }
        
-       // parse de dates
-       Date qFromDate
-       Date qToDate
- 
-       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
-       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
-       
-       def query = Query.newInstance(request.JSON.query)
-       def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid)
-       def result = cilist
-       
-       // If no ehrUid was specified, the results will be for different ehrs
-       // we need to group those CompositionIndexes by EHR.
-       if (!qehrId)
-       {
-          result = cilist.groupBy { ci -> ci.ehrUid }
-       }
-       
-       //println "Resultados (CompositionIndex): " + cilist
-       
-       
-       // Muestra compositionIndex/list
-       if (showUI)
-       {
+      //println "Resultados (CompositionIndex): " + cilist
+      
+      
+      // Muestra compositionIndex/list
+      if (showUI)
+      {
           // FIXME: hay que ver el tema del paginado
           render(template:'/compositionIndex/listTable',
                  model:[
@@ -1599,39 +1649,39 @@ class RestController {
                  ],
                  contentType: "text/html")
           return
-       }
+      }
        
-       // Devuelve CompositionIndex, si quiere el contenido es buscar las
-       // compositions que se apuntan por el index
-       if (!retrieveData)
-       {
-          if (format == 'json')
-             render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-          else
-             render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
-          return
-       }
+      // Devuelve CompositionIndex, si quiere el contenido es buscar las
+      // compositions que se apuntan por el index
+      if (!retrieveData)
+      {
+         if (format == 'json')
+            render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         else
+            render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         return
+      }
 
 
-       // FIXME: hay que armar bien el XML: declaracion de xml solo al
-       //        inicio y namespaces en el root.
-       //
-       //  REQUERIMIENTO:
-       //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
-       //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
-       //  para extraer datos con reglas sobre un conjunto de compositions en un
-       //  solo XML.
-       //
-       // FIXME: no genera xml valido porque las compos se guardan con:
-       // <?xml version="1.0" encoding="UTF-8"?>
-       //
-       def version
-       String buff
-       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-       
-       if (!qehrId) // group by ehrUid
-       {
-          result.each { ehrUid, compoIndexes ->
+      // FIXME: hay que armar bien el XML: declaracion de xml solo al
+      //        inicio y namespaces en el root.
+      //
+      //  REQUERIMIENTO:
+      //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
+      //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
+      //  para extraer datos con reglas sobre un conjunto de compositions en un
+      //  solo XML.
+      //
+      // FIXME: no genera xml valido porque las compos se guardan con:
+      // <?xml version="1.0" encoding="UTF-8"?>
+      //
+      def version
+      String buff
+      String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
+      
+      if (!qehrId) // group by ehrUid
+      {
+         result.each { ehrUid, compoIndexes ->
              
              out += '<ehr uid="'+ ehrUid +'">'
              
@@ -1660,41 +1710,40 @@ class RestController {
                 out += buff + "\n"
              }
              out += '</ehr>'
-          }
-       }
-       else
-       {
-          result.each { compoIndex ->
+         }
+      }
+      else
+      {
+         result.each { compoIndex ->
              
-             // FIXME: verificar que esta en disco, sino esta hay un problema
-             //        de sincronizacion entre la base y el FS, se debe omitir
-             //        el resultado y hacer un log con prioridad alta para ver
-             //        cual fue el error.
+            // FIXME: verificar que esta en disco, sino esta hay un problema
+            //        de sincronizacion entre la base y el FS, se debe omitir
+            //        el resultado y hacer un log con prioridad alta para ver
+            //        cual fue el error.
              
-             // adds the version, not just the composition
-             version = compoIndex.getParent()
-             buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
-
+            // adds the version, not just the composition
+            version = compoIndex.getParent()
+            buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+            
+            buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+            buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+            buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
              
-             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-             buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+            /**
+             * Composition queda:
+             *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+             */
              
-             /**
-              * Composition queda:
-              *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-              */
-             
-             out += buff + "\n"
-          }
-       }
-       out += '</list>'
-       
-       
-       if (format == 'json')
-          render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
-       else
-          render(text: out, contentType:"text/xml", encoding:"UTF-8")
+            out += buff + "\n"
+         }
+      }
+      out += '</list>'
+      
+      
+      if (format == 'json')
+         render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+      else
+         render(text: out, contentType:"text/xml", encoding:"UTF-8")
    }
    
    
@@ -1934,6 +1983,7 @@ class RestController {
       }
       
       // FIXME: Si el formato esta mal va a tirar una except!
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/364
       if (fromDate)
       {
          dFromDate = Date.parse(config.l10n.date_format, fromDate)
