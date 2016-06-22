@@ -111,9 +111,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          
       then:
          Exception e = thrown() // TODO: use specific exception type
-         //println e.getClass() // java.lang.reflect.UndeclaredThrowableException
-         //println e.getCause().getClass() // javax.xml.bind.ValidationException
-         assert e.getCause().message == "There are errors in the XML versions"
+         assert e.message == "There are errors in the XML versions"
          assert Contribution.count() == 0
          assert Version.count() == 0
          assert VersionedComposition.count() == 0

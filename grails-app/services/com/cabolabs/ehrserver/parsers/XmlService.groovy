@@ -8,10 +8,16 @@ import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.exceptions.CommitCantCreateNewVersionException
+import com.cabolabs.ehrserver.exceptions.CommitContributionReferenceException
+import com.cabolabs.ehrserver.exceptions.CommitNotSupportedChangeTypeException
+import com.cabolabs.ehrserver.exceptions.CommitRequiredValueNotPresentException
+import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+import com.cabolabs.ehrserver.exceptions.XmlValidationException
 import grails.util.Holders
 import java.nio.file.AccessDeniedException
 import java.nio.file.FileAlreadyExistsException
-import javax.xml.bind.ValidationException
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.util.DateParser
 
@@ -111,7 +117,7 @@ class XmlService {
       
       this.validationErrors = errors
       
-      if (this.validationErrors.size() > 0) throw new ValidationException('There are errors in the XML versions')
+      if (this.validationErrors.size() > 0) throw new XmlValidationException('There are errors in the XML versions')
    }
    
    
@@ -132,7 +138,7 @@ class XmlService {
          loopContributionId = versionXML.contribution.id.value.text()
          if (!loopContributionId)
          {
-            throw new IllegalArgumentException('version.contribution.id.value should not be empty')
+            throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')
          }
          
          // Set the first contribution uid, then compare the first with the rest,
@@ -142,7 +148,7 @@ class XmlService {
          {
             if (firstContributionId != loopContributionId)
             {
-               throw new IllegalArgumentException("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+               throw new CommitContributionReferenceException("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
             }
          }
       }
@@ -184,7 +190,7 @@ class XmlService {
                // VersionedObject should exist for change type modification or amendment
                if (!versionedComposition)
                {
-                  throw new IllegalArgumentException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
+                  throw new CommitWrongChangeTypeException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
                }
                
                // Nothing needs to be done if the versioned compo exists, since version and versioned compo
@@ -205,7 +211,7 @@ class XmlService {
                
             break
             default:
-               throw new IllegalArgumentException("Change type ${version.commitAudit.changeType} not supported yet")
+               throw new CommitNotSupportedChangeTypeException("Change type ${version.commitAudit.changeType} not supported yet")
 
          } // switch changeType
       }
@@ -233,7 +239,7 @@ class XmlService {
        */
       
       // FIXME: this check should be done on setup
-      if (!new File(config.version_repo).canWrite()) throw new AccessDeniedException("Unable to write file ${config.version_repo}")
+      if (!new File(config.version_repo).canWrite()) throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       
       
       def file, path
@@ -245,7 +251,7 @@ class XmlService {
          //if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
          // Need to throw unchecked exception to make the service rollback
          // Ref: http://www.jellyfishtechnologies.com/services-grails-transactional-behaviour/
-         if (file.exists()) throw new RuntimeException("Unable to save composition from commit, file ${path} already exists")
+         if (file.exists()) throw new RuntimeException("Unable to save composition from commit, file ${path} already exists. Maybe you committed the same version twice?")
          
          // FIXME: check if the XML has the namespace declarations of the root node from the commit
          file << groovy.xml.XmlUtil.serialize( version )
@@ -359,7 +365,7 @@ class XmlService {
             if (version.commitAudit.changeType == "creation")
             {
                //IllegalArgumentException
-               throw new RuntimeException("A version with UID ${version.uid} already exists, but the change type is 'creation', it should be 'amendment' or 'modification'")
+               throw new CommitWrongChangeTypeException("A version with UID ${version.uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error.")
             }
             
             // change type is not creation
@@ -372,7 +378,7 @@ class XmlService {
             def lastVersion = versionedComposition.latestVersion
             if (lastVersion.uid != version.uid)
             {
-               throw new IllegalArgumentException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please checkout the latest version ${lastVersion.uid}")
+               throw new CommitCantCreateNewVersionException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please checkout the latest version ${lastVersion.uid}")
             }
             
             
@@ -548,7 +554,7 @@ class XmlService {
       def contributionId = version.contribution.id.value.text()
       if (!contributionId)
       {
-         throw new Exception('version.contribution.id.value should not be empty')
+         throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')
       }
       
       // FIXME: la contribution debe existir solo si la version que proceso esta dentro de ella
