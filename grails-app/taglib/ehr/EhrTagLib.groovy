@@ -95,6 +95,7 @@ class EhrTagLib {
          args.optionKey = 'uid'
          args.optionValue = 'name'
          args.noSelection = ['':'Select One...']
+         args.class = attrs.class ?: '' // allows set style from outside
          
          if (attrs.multiple)
          {
@@ -123,6 +124,7 @@ class EhrTagLib {
          def args = [:]
          args.name = attrs.name
          args.from = roles
+         args.class = attrs.class ?: '' // allows set style from outside
          
          if (attrs.value) args.value = attrs.value
          if (attrs.multiple)
