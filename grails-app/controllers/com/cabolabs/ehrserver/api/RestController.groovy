@@ -52,6 +52,8 @@ class RestController {
 
    static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
    
+   def messageSource
+   
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
@@ -2088,7 +2090,7 @@ class RestController {
          def errors = ""
          personInstance.errors.allErrors.each { 
             
-            errors += it.defaultMessage + "\n" // FIXME: the error message is I18N, should be passed to g.message
+            errors += messageSource.getMessage(it, null) + "\n"
          }
          
          renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
