@@ -1988,12 +1988,22 @@ class RestController {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/364
       if (fromDate)
       {
-         dFromDate = Date.parse(config.l10n.date_format, fromDate)
+         dFromDate = DateParser.tryParse(fromDate)
+         if (!dFromDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "479", 400)
+            return
+         }
       }
       
       if (toDate)
       {
-         dToDate = Date.parse(config.l10n.date_format, toDate)
+         dToDate = DateParser.tryParse(toDate)
+         if (!dToDate)
+         {
+            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "480", 400)
+            return
+         }
       }
       
       def idxs = CompositionIndex.withCriteria {
