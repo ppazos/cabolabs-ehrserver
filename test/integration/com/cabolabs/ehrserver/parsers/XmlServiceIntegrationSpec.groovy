@@ -123,6 +123,40 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
                                                          .size() == 0
    }
    
+   // for https://github.com/ppazos/cabolabs-ehrserver/issues/366
+   void "commit single / invalid version with empty datatype nodes"()
+   {
+      setup:
+         def ehr = Ehr.get(1)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_empty_datatypes.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+         
+      when:
+         // should throw an exception
+         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         
+      then:
+         Exception e = thrown() // TODO: use specific exception type
+         
+         println xmlService.validationErrors // stores all the validation errors
+         
+         assert e.message == "There are errors in the XML versions"
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(Holders.config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
+   }
+   
    void "multiple / all valid versions"()
    {
       setup:

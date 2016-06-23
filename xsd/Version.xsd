@@ -486,7 +486,7 @@
 			      <xs:extension base="DV_AMOUNT">
 				        <xs:sequence>
 					          <xs:element name="magnitude" type="xs:double"/>
-					          <xs:element name="units" type="xs:string"/>
+					          <xs:element name="units" type="NotEmptyString"/>
 					          <xs:element name="precision" type="xs:int" default="-1" minOccurs="0"/>
 				        </xs:sequence>
 			      </xs:extension>
@@ -527,7 +527,17 @@
 		    <xs:complexContent>
 			      <xs:extension base="DATA_VALUE">
 				        <xs:sequence>
-					          <xs:element name="value" type="xs:string"/>
+                         <xs:element name="value" type="NotEmptyString"/>
+                         <!--<xs:element name="value" type="xs:string"/>-->
+                         <!--
+					          <xs:element name="value">
+                           <xs:simpleType>
+                             <xs:restriction base="xs:string">
+                               <xs:minLength value="1"/>
+                             </xs:restriction>
+                           </xs:simpleType>
+                         </xs:element>
+                         -->
 					          <xs:element name="hyperlink" type="DV_URI" minOccurs="0"/>
 					          <xs:element name="formatting" type="xs:string" minOccurs="0"/>
 					          <xs:element name="mappings" type="TERM_MAPPING" minOccurs="0" maxOccurs="unbounded"/>
@@ -549,7 +559,7 @@
    <xs:complexType name="CODE_PHRASE">
 		    <xs:sequence>
 			      <xs:element name="terminology_id" type="TERMINOLOGY_ID"/>
-			      <xs:element name="code_string" type="xs:string"/>
+			      <xs:element name="code_string" type="NotEmptyString"/>
 		    </xs:sequence>
 	  </xs:complexType>
    <xs:complexType name="TERM_MAPPING">
@@ -673,7 +683,7 @@
 	  </xs:complexType>
    <xs:complexType name="OBJECT_ID" abstract="true">
 		    <xs:sequence>
-			      <xs:element name="value" type="xs:token"/>
+			      <xs:element name="value" type="NotEmptyToken"/>
 		    </xs:sequence>
 	  </xs:complexType>
    <xs:complexType name="UID_BASED_ID" abstract="true">
@@ -720,8 +730,8 @@
    <xs:complexType name="OBJECT_REF">
 		    <xs:sequence>
 			      <xs:element name="id" type="OBJECT_ID"/>
-			      <xs:element name="namespace" type="xs:token"/>
-			      <xs:element name="type" type="xs:token"/>
+			      <xs:element name="namespace" type="NotEmptyToken"/>
+			      <xs:element name="type" type="NotEmptyToken"/>
 		    </xs:sequence>
 	  </xs:complexType>
    <xs:complexType name="PARTY_REF">
@@ -904,4 +914,14 @@
 			      </xs:extension>
 		    </xs:complexContent>
 	  </xs:complexType>
+     <xs:simpleType name="NotEmptyString">
+       <xs:restriction base="xs:string">
+         <xs:minLength value="1" />
+       </xs:restriction>
+     </xs:simpleType>
+     <xs:simpleType name="NotEmptyToken">
+       <xs:restriction base="xs:token">
+         <xs:minLength value="1" />
+       </xs:restriction>
+     </xs:simpleType>
 </xsd:schema>
