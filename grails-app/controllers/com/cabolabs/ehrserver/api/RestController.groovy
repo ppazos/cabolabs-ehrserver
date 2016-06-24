@@ -1268,7 +1268,7 @@ class RestController {
          qFromDate = DateParser.tryParse(fromDate)
          if (!qFromDate)
          {
-            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "479", 400)
+            renderError(message(code:'rest.error.invalid_format', args:['fromDate', fromDate]), "0010", 400)
             return
          }
       }
@@ -1278,14 +1278,14 @@ class RestController {
          qToDate = DateParser.tryParse(toDate)
          if (!qToDate)
          {
-            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "480", 400)
+            renderError(message(code:'rest.error.invalid_format', args:['toDate', toDate]), "0011", 400)
             return
          }
       }
       
       if (qFromDate && qToDate && qFromDate > qToDate)
       {
-         renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "0012", 400)
          return
       }
       
@@ -1804,7 +1804,7 @@ class RestController {
       
       if (_ehr.organizationUid != _org.uid)
       {
-         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "0004", 401)
          return
       }
       
@@ -1818,7 +1818,7 @@ class RestController {
          dateFrom = DateParser.tryParse(from)
          if (!dateFrom)
          {
-            renderError(message(code:'rest.error.invalid_format', args:['from', from]), "479", 400)
+            renderError(message(code:'rest.error.invalid_format', args:['from', from]), "0001", 400)
             return
          }
       }
@@ -1828,14 +1828,14 @@ class RestController {
          dateTo = DateParser.tryParse(to)
          if (!dateTo)
          {
-            renderError(message(code:'rest.error.invalid_format', args:['to', to]), "480", 400)
+            renderError(message(code:'rest.error.invalid_format', args:['to', to]), "0002", 400)
             return
          }
       }
       
       if (dateFrom && dateTo && dateFrom > dateTo)
       {
-         renderError(message(code:'rest.error.from_bigger_than_to', args:[from, to]), "481", 400)
+         renderError(message(code:'rest.error.from_bigger_than_to', args:[from, to]), "0003", 400)
          return
       }
       
