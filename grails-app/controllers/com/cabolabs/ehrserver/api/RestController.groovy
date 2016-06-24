@@ -904,11 +904,10 @@ class RestController {
    @SecuredStateless
    def patient(String uid, String format)
    {
-      println "patient "+ params
+      log.info( "patient "+ params.toString() )
       
       if (!uid)
       {
-         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
          return
       }
@@ -917,15 +916,18 @@ class RestController {
       def _orgnum = request.securityStatelessMap.extradata.organization
       def _org = Organization.findByNumber(_orgnum)
       
-      def person = Person.findByRoleAndUidAndOrganizationUid('pat', uid, _org.uid)
+      def person = Person.findByRoleAndUid('pat', uid)
       if (!person)
       {
-         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.patient_doesnt_exists', args:[uid]), "477", 404)
          return
       }
       
-      //println person
+      if (person.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_patient', args:[uid]), "484", 401)
+         return
+      }
       
       if (!format || format == "xml")
       {
