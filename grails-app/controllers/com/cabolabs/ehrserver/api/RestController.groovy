@@ -40,14 +40,8 @@ import com.cabolabs.util.DateParser
 import grails.transaction.Transactional
 
 /**
- * TODO:
- * 
- * Make a list of all the error types and assign an error code, publish that list, and make an endpoint to get the list.
- * 
- * @author pab
- *
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
-
 class RestController {
 
    static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
@@ -430,8 +424,6 @@ class RestController {
    @SecuredStateless
    def checkout(String ehrUid, String compositionUid)
    {
-      // TODO: check that the logged user has access to the organization that the composition belongs to
-      
       if (!ehrUid)
       {
          renderError(message(code:'rest.commit.error.ehrUidIsRequired'), '411', 400)
@@ -443,6 +435,30 @@ class RestController {
          renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
          return
       }
+      
+      
+      def c = Ehr.createCriteria()
+      def _ehr = c.get {
+         eq ('uid', ehrUid)
+      }
+      
+      if (!_ehr)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
+         return
+      }
+      
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_ehr.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         return
+      }
+      
       
       def versions = Version.withCriteria {
          data {
