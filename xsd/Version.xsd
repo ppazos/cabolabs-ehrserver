@@ -394,10 +394,10 @@
 		    <xs:complexContent>
 			      <xs:extension base="DATA_VALUE">
 				        <xs:sequence>
-					          <xs:element name="issuer" type="xs:string"/>
-					          <xs:element name="assigner" type="xs:string"/>
-					          <xs:element name="id" type="xs:string"/>
-					          <xs:element name="type" type="xs:string"/>
+					          <xs:element name="issuer" type="NotEmptyString"/>
+					          <xs:element name="assigner" type="NotEmptyString"/>
+					          <xs:element name="id" type="NotEmptyString"/>
+					          <xs:element name="type" type="NotEmptyString"/>
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
@@ -528,16 +528,6 @@
 			      <xs:extension base="DATA_VALUE">
 				        <xs:sequence>
                          <xs:element name="value" type="NotEmptyString"/>
-                         <!--<xs:element name="value" type="xs:string"/>-->
-                         <!--
-					          <xs:element name="value">
-                           <xs:simpleType>
-                             <xs:restriction base="xs:string">
-                               <xs:minLength value="1"/>
-                             </xs:restriction>
-                           </xs:simpleType>
-                         </xs:element>
-                         -->
 					          <xs:element name="hyperlink" type="DV_URI" minOccurs="0"/>
 					          <xs:element name="formatting" type="xs:string" minOccurs="0"/>
 					          <xs:element name="mappings" type="TERM_MAPPING" minOccurs="0" maxOccurs="unbounded"/>
@@ -659,8 +649,8 @@
 		    <xs:complexContent>
 			      <xs:extension base="DV_ENCAPSULATED">
 				        <xs:sequence>
-					          <xs:element name="value" type="xs:string"/>
-					          <xs:element name="formalism" type="xs:string"/>
+					          <xs:element name="value" type="NotEmptyString"/>
+					          <xs:element name="formalism" type="NotEmptyString"/>
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
@@ -669,7 +659,7 @@
 		    <xs:complexContent>
 			      <xs:extension base="DATA_VALUE">
 				        <xs:sequence>
-					          <xs:element name="value" type="xs:anyURI" minOccurs="0"/>
+					          <xs:element name="value" type="NotEmptyUri" />
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
@@ -921,6 +911,11 @@
      </xs:simpleType>
      <xs:simpleType name="NotEmptyToken">
        <xs:restriction base="xs:token">
+         <xs:minLength value="1" />
+       </xs:restriction>
+     </xs:simpleType>
+     <xs:simpleType name="NotEmptyUri">
+       <xs:restriction base="xs:anyURI">
          <xs:minLength value="1" />
        </xs:restriction>
      </xs:simpleType>

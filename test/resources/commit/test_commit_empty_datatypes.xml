@@ -160,6 +160,14 @@
                    <units></units>
                  </value>
                </items>
+               <items xsi:type="ELEMENT" archetype_node_id="at0027">
+                 <name>
+                   <value>Uri</value>
+                 </name>
+                 <value xsi:type="DV_URI">
+                   <value></value><!-- value here is mandatory by the IM -->
+                 </value>
+               </items>
              </data>
            </events>
          </data>
