@@ -1878,9 +1878,17 @@ class RestController {
       }
       
       // TODO: create a XML marshalled to not return lists or maps as XML (try to follow the openEHR XML)
-      def result = []
+      def result = [
+         contributions: [],
+         pagination: [
+            'max': max,
+            'offset': offset,
+            nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+            prevOffset: ((offset-max < 0) ? 0 : offset-max )
+         ]
+      ]
       res.each { contrib ->
-         result << [
+         result.contributions << [
             uid: contrib.uid,
             organizationUid: contrib.organizationUid,
             ehr: contrib.ehr.uid,
