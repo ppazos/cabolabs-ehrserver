@@ -8,6 +8,7 @@ import com.cabolabs.security.Role
 import com.cabolabs.security.UserRole
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.query.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -65,17 +66,46 @@ class BootStrap {
      
      // Marshallers
      JSON.registerObjectMarshaller(Date) {
-        println "JSON DATE MARSHAL"
+        //println "JSON DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
      
      // These for XML dont seem to work...
      XML.registerObjectMarshaller(Date) {
-        println "XML DATE MARSHAL"
+        //println "XML DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
      
+     JSON.registerObjectMarshaller(CompositionIndex) { composition ->
+        return [uid: composition.uid,
+                category: composition.category,
+                startTime: composition.startTime,
+                subjectId: composition.subjectId,
+                ehrUid: composition.ehrUid,
+                templateId: composition.templateId,
+                archetypeId: composition.archetypeId,
+                lastVersion: composition.lastVersion,
+                organizationUid: composition.organizationUid,
+                parent: composition.getParent().uid
+               ]
+     }
      
+     XML.registerObjectMarshaller(CompositionIndex) { composition, xml ->
+        xml.build {
+          uid(composition.uid)
+          category(composition.category)
+          startTime(composition.startTime)
+          subjectId(composition.subjectId)
+          ehrUid(composition.ehrUid)
+          templateId(composition.templateId)
+          archetypeId(composition.archetypeId)
+          lastVersion(composition.lastVersion)
+          organizationUid(composition.organizationUid)
+          parent(composition.getParent().uid)
+        }
+     }
+     
+     // Init id types
      if (PersonIdType.count() == 0)
      {
         def idtypes = [
