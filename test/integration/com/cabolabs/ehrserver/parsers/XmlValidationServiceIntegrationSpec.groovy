@@ -107,15 +107,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
         </terminology_id>
         <code_string>UTF-8</code_string>
       </encoding>
-      <subject xsi:type="PARTY_IDENTIFIED">
-        <external_ref>
-          <id xsi:type="HIER_OBJECT_ID">
-            <value>11111111-1111-1111-1111-111111111111</value>
-          </id>
-          <namespace>DEMOGRAPHIC</namespace>
-          <type>PERSON</type>
-        </external_ref>
-      </subject>
+      <subject xsi:type="PARTY_SELF" />
       <data archetype_node_id="at0001" xsi:type="HISTORY">
         <name>
           <value>history</value>
@@ -236,15 +228,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
         </terminology_id>
         <code_string>UTF-8</code_string>
       </encoding>
-      <subject xsi:type="PARTY_IDENTIFIED">
-        <external_ref>
-          <id xsi:type="HIER_OBJECT_ID">
-            <value>11111111-1111-1111-1111-111111111111</value>
-          </id>
-          <namespace>DEMOGRAPHIC</namespace>
-          <type>PERSON</type>
-        </external_ref>
-      </subject>
+      <subject xsi:type="PARTY_SELF" />
       <data archetype_node_id="at0001" xsi:type="HISTORY">
         <name>
           <value>history</value>
