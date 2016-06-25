@@ -44,7 +44,7 @@ import grails.transaction.Transactional
  */
 class RestController {
 
-   static allowedMethods = [commit: "POST", createPerson: "POST", contributions: "GET"]
+   static allowedMethods = [login: "POST", commit: "POST", createPerson: "POST", contributions: "GET"]
    
    def messageSource
    
