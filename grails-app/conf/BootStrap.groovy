@@ -9,7 +9,8 @@ import com.cabolabs.security.UserRole
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
-
+import com.cabolabs.ehrserver.openehr.common.change_control.*
+import com.cabolabs.ehrserver.openehr.common.generic.*
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -104,6 +105,91 @@ class BootStrap {
           parent(composition.getParent().uid)
         }
      }
+     
+     
+     JSON.registerObjectMarshaller(DoctorProxy) { doctor ->
+        return [namespace: doctor.namespace,
+                type: doctor.type,
+                value: doctor.value,
+                name: doctor.name
+               ]
+     }
+     
+     JSON.registerObjectMarshaller(AuditDetails) { audit ->
+        def a = [timeCommitted: audit.timeCommitted,
+                committer: audit.committer, // DoctorProxy
+                systemId: audit.systemId
+               ]
+        // audit for contributions have changeType null, so we avoid to add it here if it is null
+        if (audit.changeType) a << [changeType: audit.changeType]
+        return a
+     }
+     
+     JSON.registerObjectMarshaller(Contribution) { contribution ->
+        return [uid: contribution.uid,
+                organizationUid: contribution.organizationUid,
+                ehrUid: contribution.ehr.uid,
+                versions: contribution.versions.uid, // list of uids
+                audit: contribution.audit // AuditDetails
+               ]
+     }
+     
+     XML.registerObjectMarshaller(DoctorProxy) { doctor, xml ->
+        xml.build {
+          namespace(doctor.namespace)
+          type(doctor.type)
+          value(doctor.value)
+          name(doctor.name)
+        }
+     }
+     
+     XML.registerObjectMarshaller(AuditDetails) { audit, xml ->
+        xml.build {
+          timeCommitted(audit.timeCommitted)
+          committer(audit.committer) // DoctorProxy
+          systemId(audit.systemId)
+          if (audit.changeType) changeType(audit.changeType)
+        }
+     }
+     
+     XML.registerObjectMarshaller(Contribution) { contribution, xml ->
+        xml.build {
+          uid(contribution.uid)
+          organizationUid(contribution.organizationUid)
+          ehrUid(contribution.ehr.uid)
+          /*
+           * <versions>
+           *  <string>8b68a18c-bcb1... </string>
+           * </versions>
+           */
+          //versions(contribution.versions.uid) // list of uids
+          /* doesnt work, see below!
+          versions {
+             contribution.versions.uid.each { _vuid ->
+                uid(_vuid)
+             }
+          }
+          */
+          audit(contribution.audit) // AuditDetails
+        }
+        
+        // works!
+        // https://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
+        // http://docs.grails.org/2.5.3/api/grails/converters/XML.html
+         /*
+          * <versions>
+          *  <uid>8b68a18c-bcb1... </uid>
+          * </versions>
+          */
+        xml.startNode 'versions'
+        contribution.versions.uid.each { _vuid ->
+           xml.startNode 'uid'
+           xml.chars _vuid
+           xml.end()
+        }
+        xml.end()
+     }
+     
      
      // Init id types
      if (PersonIdType.count() == 0)

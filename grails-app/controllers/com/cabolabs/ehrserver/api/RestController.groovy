@@ -1849,11 +1849,6 @@ class RestController {
       
       def res = Contribution.createCriteria().list(max: max, offset: offset) {
          
-         /*
-         ehr {
-            eq('uid', ehrUid)
-         }
-         */
          eq('ehr', _ehr)
             
          if (dateFrom && !dateTo)
@@ -1877,9 +1872,8 @@ class RestController {
          }
       }
       
-      // TODO: create a XML marshalled to not return lists or maps as XML (try to follow the openEHR XML)
       def result = [
-         contributions: [],
+         contributions: res,
          pagination: [
             'max': max,
             'offset': offset,
@@ -1887,19 +1881,6 @@ class RestController {
             prevOffset: ((offset-max < 0) ? 0 : offset-max )
          ]
       ]
-      res.each { contrib ->
-         result.contributions << [
-            uid: contrib.uid,
-            organizationUid: contrib.organizationUid,
-            ehr: contrib.ehr.uid,
-            versions: contrib.versions.uid, // list of uids
-            audit: [
-               timeCommitted: contrib.audit.timeCommitted,
-               systemId:  contrib.audit.systemId,
-               committer:  contrib.audit.committer.name
-            ]
-         ]
-      }
       
       
       if (!format || format == 'xml')
