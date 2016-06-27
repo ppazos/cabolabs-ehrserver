@@ -974,7 +974,7 @@ class RestController {
     */
     // Get query
    @SecuredStateless
-   def queryShow(String queryUid,String format)
+   def queryShow(String queryUid, String format)
    {
       println params
       
@@ -998,11 +998,13 @@ class RestController {
       
       if (!format || format == "xml")
       {
+         render(text: query as XML, contentType:"text/xml", encoding:"UTF-8")
+         /*
          render(contentType:"text/xml", encoding:"UTF-8") {
             delegate.query{
                uid(query.uid)
                name(query.name)
-               format(query.format)
+               delegate.format(query.format)
                type(query.type)
                
                if (query.type == 'composition')
@@ -1034,9 +1036,11 @@ class RestController {
                //template_id(query.templateId)
             }
          }
+         */
       }
       else if (format == "json")
       {
+         /*
          def data = [
             uid: query.uid,
             name: query.name,
@@ -1052,9 +1056,9 @@ class RestController {
             data.group = query.group // Group is only for datavalue
             data.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
          }
+         */
          
-         
-         def result = data as JSON
+         def result = query as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")

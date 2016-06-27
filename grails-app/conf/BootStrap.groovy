@@ -191,6 +191,125 @@ class BootStrap {
      }
      
      
+     JSON.registerObjectMarshaller(Query) { q ->
+        def j = [uid: q.uid,
+                 name: q.name,
+                 format: q.format,
+                 type: q.type
+                ]
+        
+        if (q.type == 'composition')
+        {
+           j << [criteriaLogic: q.criteriaLogic]
+           j << [templateId:    q.templateId]
+           j << [criteria:      q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }]
+        }
+        else
+        {
+           j << [group:         q.group] // Group is only for datavalue
+           j << [projections:   q.select.collect { [archetypeId: it.archetypeId, path: it.path] }]
+        }
+        
+        return j
+     }
+     
+     XML.registerObjectMarshaller(Query) { q, xml ->
+        xml.build {
+          uid(q.uid)
+          name(q.name)
+          format(q.format)
+          type(q.type)
+        }
+        
+        if (q.type == 'composition')
+        {
+           xml.startNode 'criteriaLogic'
+              xml.chars (q.criteriaLogic ?: '')
+           xml.end()
+           xml.startNode 'templateId'
+              xml.chars (q.templateId ?: '') // fails if null!
+           xml.end()
+           
+           def criteriaMap
+           def _value
+           //q.where.each { criteria -> // with this the criteria clases are marshalled twice, it seems the each is returning the criteria instead of just processing the xml format creation.
+           for (criteria in q.where) // works ok, so we need to avoid .each
+           {
+              
+              criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+              
+              xml.startNode 'criteria'
+                 xml.startNode 'archetypeId'
+                    xml.chars criteria.archetypeId
+                 xml.end()
+                 xml.startNode 'path'
+                    xml.chars criteria.path
+                 xml.end()
+                 xml.startNode 'conditions'
+ 
+                    criteriaMap.each { attr, cond ->
+                    
+                       _value = cond.find{true}.value // can be a list
+                       
+                       xml.startNode "$attr"
+                          xml.startNode 'operand'
+                             xml.chars cond.find{true}.key
+                          xml.end()
+                          
+                          if (_value instanceof List)
+                          {
+                             xml.startNode 'list'
+                                _value.each { val ->
+                                   
+                                   if (val instanceof Date)
+                                   {
+                                      // FIXME: should use the XML date marshaller
+                                      xml.startNode 'item'
+                                         xml.chars val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
+                                      xml.end()
+                                   }
+                                   else
+                                   {
+                                      xml.startNode 'item'
+                                         xml.chars val
+                                      xml.end()
+                                   }
+                                }
+                             xml.end()
+                          }
+                          else
+                          {
+                             xml.startNode 'value'
+                                xml.chars _value
+                             xml.end()
+                          }
+                          
+                       xml.end()
+                    }
+                 xml.end()
+              xml.end()
+           }
+        }
+        else
+        {
+           xml.startNode 'group'
+              xml.chars q.group
+           xml.end()
+           
+           q.select.each { proj ->
+              xml.startNode 'projection'
+                xml.startNode 'archetypeId'
+                  xml.chars proj.archetypeId
+                xml.end()
+                xml.startNode 'path'
+                  xml.chars proj.path
+                xml.end()
+              xml.end()
+           }
+        }
+     }
+     
+     
      // Init id types
      if (PersonIdType.count() == 0)
      {
