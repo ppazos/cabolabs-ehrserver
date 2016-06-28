@@ -582,25 +582,6 @@ class RestController {
       }
       else if (format == "json")
       {
-         /*
-         {
-          "ehrs": [
-            {
-              "ehrId": "33b94e05-3da5-4291-872e-07b3a4664837",
-              "dateCreated": "20121105T113730.0890-0200",
-              "subjectUid": "bf529d1c-b74a-4c4f-b6dd-c44c44cd9a3f",
-              "systemId": "ISIS_EHR_SERVER"
-            },
-            {
-              "ehrId": "d06e3256-d65e-436e-95da-5c9bffd05dbd",
-              "dateCreated": "20121105T113732.0171-0200",
-              "subjectUid": "43a399c9-a5e0-4b51-9422-99c3991ea941",
-              "systemId": "ISIS_EHR_SERVER"
-            }
-          ],
-          "pagination": {...}
-        }
-        */
          def data = [
             ehrs: [],
             pagination: [
@@ -620,6 +601,7 @@ class RestController {
                organizationUid: _ehr.organizationUid
             ]
          }
+         
 
          def result = data as JSON
          // JSONP
@@ -683,27 +665,11 @@ class RestController {
       //
       if (!format || format == "xml")
       {
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            'ehr'{
-               uid(_ehr.uid)
-               dateCreated( this.formatter.format( _ehr.dateCreated ) )
-               delegate.subjectUid(_ehr.subject.value) // delegate para que no haya conflicto con la variable con el mismo nombre
-               systemId(_ehr.systemId)
-               organizationUid(_ehr.organizationUid)
-            }
-         }
+         render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == "json")
       {
-         def data = [
-            uid: _ehr.uid,
-            dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
-            subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId,
-            organizationUid: _ehr.organizationUid
-         ]
-         
-         def result = data as JSON
+         def result = _ehr as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
@@ -752,27 +718,11 @@ class RestController {
       //
       if (!format || format == "xml")
       {
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            'ehr'{
-               uid(_ehr.uid)
-               dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
-               subjectUid(_ehr.subject.value)
-               systemId(_ehr.systemId)
-               organizationUid(_ehr.organizationUid)
-            }
-         }
+         render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == "json")
       {
-         def data = [
-            uid: _ehr.uid,
-            dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
-            subjectUid: _ehr.subject.value,
-            systemId: _ehr.systemId,
-            organizationUid: _ehr.organizationUid
-         ]
-
-         def result = data as JSON
+         def result = _ehr as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")

@@ -235,7 +235,6 @@ class BootStrap {
            //q.where.each { criteria -> // with this the criteria clases are marshalled twice, it seems the each is returning the criteria instead of just processing the xml format creation.
            for (criteria in q.where) // works ok, so we need to avoid .each
            {
-              
               criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
               
               xml.startNode 'criteria'
@@ -249,7 +248,7 @@ class BootStrap {
  
                     criteriaMap.each { attr, cond ->
                     
-                       _value = cond.find{true}.value // can be a list
+                       _value = cond.find{true}.value // can be a list, string, boolean, ...
                        
                        xml.startNode "$attr"
                           xml.startNode 'operand'
@@ -271,7 +270,7 @@ class BootStrap {
                                    else
                                    {
                                       xml.startNode 'item'
-                                         xml.chars val
+                                         xml.chars val.toString() // chars fails if type is Double or other non string
                                       xml.end()
                                    }
                                 }
@@ -280,10 +279,9 @@ class BootStrap {
                           else
                           {
                              xml.startNode 'value'
-                                xml.chars _value
+                                xml.chars _value.toString() // chars fails if type is Double or other non string
                              xml.end()
                           }
-                          
                        xml.end()
                     }
                  xml.end()
@@ -308,6 +306,27 @@ class BootStrap {
            }
         }
      }
+     
+
+     JSON.registerObjectMarshaller(Ehr) { ehr ->
+        return [uid: ehr.uid,
+                dateCreated: ehr.dateCreated,
+                subjectUid: ehr.subject.value,
+                systemId: ehr.systemId,
+                organizationUid: ehr.organizationUid,
+               ]
+     }
+     
+     XML.registerObjectMarshaller(Ehr) { ehr, xml ->
+        xml.build {
+          uid(ehr.uid)
+          dateCreated(ehr.dateCreated)
+          subjectUid(ehr.subject.value)
+          systemId(ehr.systemId)
+          organizationUid(ehr.organizationUid)
+        }
+     }
+     
      
      
      // Init id types
