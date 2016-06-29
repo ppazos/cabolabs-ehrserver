@@ -313,7 +313,7 @@ class BootStrap {
                 dateCreated: ehr.dateCreated,
                 subjectUid: ehr.subject.value,
                 systemId: ehr.systemId,
-                organizationUid: ehr.organizationUid,
+                organizationUid: ehr.organizationUid
                ]
      }
      
@@ -326,6 +326,33 @@ class BootStrap {
           organizationUid(ehr.organizationUid)
         }
      }
+     
+     
+     JSON.registerObjectMarshaller(Person) { person ->
+        return [uid: person.uid,
+                firstName: person.firstName,
+                lastName: person.lastName,
+                dob: person.dob,
+                sex: person.sex,
+                idCode: person.idCode,
+                idType: person.idType,
+                organizationUid: person.organizationUid
+               ]
+     }
+     
+     XML.registerObjectMarshaller(Person) { person, xml ->
+        xml.build {
+          uid(person.uid)
+          firstName(person.firstName)
+          lastName(person.lastName)
+          dob(person.dob)
+          sex(person.sex)
+          idCode(person.idCode)
+          idType(person.idType)
+          organizationUid(person.organizationUid)
+        }
+     }
+     
      
      
      

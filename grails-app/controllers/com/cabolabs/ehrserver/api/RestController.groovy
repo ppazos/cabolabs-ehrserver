@@ -557,14 +557,13 @@ class RestController {
           <pagination>...</pagination>
           </result>
           */
-         //render(text: ehrs as XML, contentType:"text/xml", encoding:"UTF-8")
          render(contentType:"text/xml", encoding:"UTF-8") {
             'result' {
                'ehrs' {
                   _ehrs.each { _ehr ->
                      'ehr'{
                         uid(_ehr.uid)
-                        dateCreated( this.formatter.format( _ehr.dateCreated ) ) // TODO: format
+                        dateCreated( this.formatter.format( _ehr.dateCreated ) )
                         subjectUid(_ehr.subject.value)
                         systemId(_ehr.systemId)
                         organizationUid(_ehr.organizationUid)
@@ -583,7 +582,7 @@ class RestController {
       else if (format == "json")
       {
          def data = [
-            ehrs: [],
+            ehrs: _ehrs,
             pagination: [
                'max': max,
                'offset': offset,
@@ -591,17 +590,6 @@ class RestController {
                prevOffset: ((offset-max < 0) ? 0 : offset-max )
             ]
          ]
-         
-         _ehrs.each { _ehr ->
-            data.ehrs << [
-               uid: _ehr.uid,
-               dateCreated: this.formatter.format( _ehr.dateCreated ) , // TODO: format
-               subjectUid: _ehr.subject.value,
-               systemId: _ehr.systemId,
-               organizationUid: _ehr.organizationUid
-            ]
-         }
-         
 
          def result = data as JSON
          // JSONP
@@ -816,7 +804,7 @@ class RestController {
       else if (format == "json")
       {
          def data = [
-            patients: [],
+            patients: subjects,
             pagination: [
                'max': max,
                'offset': offset,
@@ -824,19 +812,6 @@ class RestController {
                prevOffset: ((offset-max < 0) ? 0 : offset-max )
             ]
          ]
-         
-         subjects.each { person ->
-            data.patients << [
-               uid: person.uid,
-               firstName: person.firstName,
-               lastName: person.lastName,
-               dob: this.formatterDate.format( person.dob ),
-               sex: person.sex,
-               idCode: person.idCode,
-               idType: person.idType,
-               organizationUid: person.organizationUid
-            ]
-         }
          
          def result = data as JSON
          // JSONP
@@ -881,33 +856,11 @@ class RestController {
       
       if (!format || format == "xml")
       {
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            delegate.patient{
-               delegate.uid(person.uid)
-               firstName(person.firstName)
-               lastName(person.lastName)
-               dob(this.formatterDate.format( person.dob ) )
-               sex(person.sex)
-               idCode(person.idCode)
-               idType(person.idType)
-               organizationUid(person.organizationUid)
-            }
-         }
+         render(text: person as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == "json")
       {
-         def data = [
-            uid: person.uid,
-            firstName: person.firstName,
-            lastName: person.lastName,
-            dob: this.formatterDate.format( person.dob ),
-            sex: person.sex,
-            idCode: person.idCode,
-            idType: person.idType,
-            organizationUid: person.organizationUid
-         ]
-         
-         def result = data as JSON
+         def result = person as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
