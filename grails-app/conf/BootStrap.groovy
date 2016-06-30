@@ -17,9 +17,11 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.identification.PersonIdType
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
+import com.cabolabs.ehrserver.api.structures.PaginatedResults
 
 import grails.converters.*
 import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
 
 class BootStrap {
 
@@ -351,6 +353,53 @@ class BootStrap {
           idType(person.idType)
           organizationUid(person.organizationUid)
         }
+     }
+     
+     /*
+     XML.registerObjectMarshaller(new NameAwareMarshaller() {
+        @Override
+        public boolean supports(java.lang.Object object) {
+           return (object instanceof PaginatedResults)
+        }
+
+        @Override
+        String getElementName(java.lang.Object o) {
+           'result'
+        }
+     })
+     */
+     
+     XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
+        
+        pres.update() // updates and checks pagination values
+        
+        // Our list marshaller to customize the name
+        xml.startNode pres.listName
+           
+           xml.convertAnother pres.list // this works, generates "person" nodes
+        
+           /* doesnt generate the patient root, trying with ^
+           pres.list.each { item ->
+              xml.convertAnother item // marshaller fot the item type should be declared
+           }
+           */
+
+        xml.end()
+        
+        xml.startNode 'pagination'
+           xml.startNode 'max'
+           xml.chars pres.max.toString() // integer fails for .chars
+           xml.end()
+           xml.startNode 'offset'
+           xml.chars pres.offset.toString()
+           xml.end()
+           xml.startNode 'nextOffset'
+           xml.chars pres.nextOffset.toString()
+           xml.end()
+           xml.startNode 'prevOffset'
+           xml.chars pres.prevOffset.toString()
+           xml.end()
+        xml.end()
      }
      
      

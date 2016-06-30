@@ -6,6 +6,7 @@ import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.ehrserver.api.structures.PaginatedResults
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
@@ -776,6 +777,11 @@ class RestController {
       //
       if (!format || format == "xml")
       {
+         render(text: new PaginatedResults(listName:'patients', list:subjects, max:max, offset:offset) as XML,
+                contentType:"text/xml",
+                encoding:"UTF-8")
+         
+         /*
          render(contentType:"text/xml", encoding:"UTF-8") {
             'result' {
                'patients' {
@@ -800,6 +806,7 @@ class RestController {
                }
             }
          }
+         */
       }
       else if (format == "json")
       {
