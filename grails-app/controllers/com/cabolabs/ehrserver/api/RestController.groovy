@@ -537,62 +537,16 @@ class RestController {
       // ===========================================================================
       // 3. Discusion por formato de salida
       //
+      
+      def res = new PaginatedResults(listName:'ehrs', list:_ehrs, max:max, offset:offset)
+      
       if (!format || format == "xml")
       {
-         /*
-         <result>
-          <ehrs>
-            <ehr>
-              <ehrId>33b94e05-3da5-4291-872e-07b3a4664837</ehrId>
-              <dateCreated>20121105T113730.0890-0200</dateCreated>
-              <subjectUid>bf529d1c-b74a-4c4f-b6dd-c44c44cd9a3f</subjectUid>
-              <systemId>ISIS_EHR_SERVER</systemId>
-            </ehr>
-            <ehr>
-              <ehrId>d06e3256-d65e-436e-95da-5c9bffd05dbd</ehrId>
-              <dateCreated>20121105T113732.0171-0200</dateCreated>
-              <subjectUid>43a399c9-a5e0-4b51-9422-99c3991ea941</subjectUid>
-              <systemId>ISIS_EHR_SERVER</systemId>
-            </ehr>
-          </ehrs>
-          <pagination>...</pagination>
-          </result>
-          */
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            'result' {
-               'ehrs' {
-                  _ehrs.each { _ehr ->
-                     'ehr'{
-                        uid(_ehr.uid)
-                        dateCreated( this.formatter.format( _ehr.dateCreated ) )
-                        subjectUid(_ehr.subject.value)
-                        systemId(_ehr.systemId)
-                        organizationUid(_ehr.organizationUid)
-                     }
-                  }
-               }
-               pagination {
-                  delegate.max(max)
-                  delegate.offset(offset)
-                  nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-                  prevOffset( ((offset-max < 0) ? 0 : offset-max) )
-               }
-            }
-         }
+         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == "json")
       {
-         def data = [
-            ehrs: _ehrs,
-            pagination: [
-               'max': max,
-               'offset': offset,
-               nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-               prevOffset: ((offset-max < 0) ? 0 : offset-max )
-            ]
-         ]
-
-         def result = data as JSON
+         def result = res as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
@@ -775,52 +729,18 @@ class RestController {
       // ===========================================================================
       // 2. Discusion por formato de salida
       //
+      def res = new PaginatedResults(listName:'patients', list:subjects, max:max, offset:offset)
+      
       if (!format || format == "xml")
       {
-         render(text: new PaginatedResults(listName:'patients', list:subjects, max:max, offset:offset) as XML,
+         render(text: res as XML,
                 contentType:"text/xml",
                 encoding:"UTF-8")
-         
-         /*
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            'result' {
-               'patients' {
-                  subjects.each { person ->
-                     delegate.patient { // THIS IS CALLING getPatient!!!
-                        uid(person.uid)
-                        firstName(person.firstName)
-                        lastName(person.lastName)
-                        dob(this.formatterDate.format( person.dob ) )
-                        sex(person.sex)
-                        idCode(person.idCode)
-                        idType(person.idType)
-                        organizationUid(person.organizationUid)
-                     }
-                  }
-               }
-               pagination {
-                  delegate.max(max)
-                  delegate.offset(offset)
-                  nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-                  prevOffset( ((offset-max < 0) ? 0 : offset-max) )
-               }
-            }
-         }
-         */
       }
       else if (format == "json")
       {
-         def data = [
-            patients: subjects,
-            pagination: [
-               'max': max,
-               'offset': offset,
-               nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-               prevOffset: ((offset-max < 0) ? 0 : offset-max )
-            ]
-         ]
+         def result = res as JSON
          
-         def result = data as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
@@ -1020,91 +940,16 @@ class RestController {
       }
       */
       
+      def res = new PaginatedResults(listName:'queries', list:_queries, max:max, offset:offset)
+      
       withFormat {
       
          xml {
-            render(contentType:"text/xml", encoding:"UTF-8") {
-               'result' {
-                  'queries' {
-                     _queries.each { query ->
-                        delegate.query {
-                           uid(query.uid)
-                           name(query.name) // FIXME: debe tener uid
-                           delegate.format(query.format)
-                           type(query.type)
-                           
-                           if (query.type == 'composition')
-                           {
-                              for (criteria in query.where)
-                              {
-                                 delegate.criteria {
-                                    archetypeId(criteria.archetypeId)
-                                    path(criteria.path)
-                                    delegate.criteria(criteria.toSQL())
-                                    //value(criteria.value)
-                                 }
-                              }
-                           }
-                           else
-                           {
-                              group(query.group) // Group is only for datavalue
-                              
-                              for (proj in query.select)
-                              {
-                                 projection {
-                                    archetypeId(proj.archetypeId)
-                                    path(proj.path)
-                                 }
-                              }
-                           }
-                        }
-                     }
-                  }
-                  pagination {
-                     delegate.max(max)
-                     delegate.offset(offset)
-                     nextOffset(offset+max) // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-                     prevOffset( ((offset-max < 0) ? 0 : offset-max) )
-                  }
-               }
-            }
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
          
-            def data = [
-               queries: [],
-               pagination: [
-                  max: max,
-                  offset: offset,
-                  nextOffset: offset + max,
-                  prevoffset: ((offset-max < 0) ? 0 : offset-max)
-               ]
-            ]
-            
-            _queries.each { query ->
-            
-               def jquery = [
-                  uid: query.uid,
-                  name: query.name, // FIXME: debe tener uid
-                  'format': query.format,
-                  type: query.type
-               ]
-               
-               if (query.type == 'composition')
-               {
-                  jquery.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
-               }
-               else
-               {
-                  jquery.group = query.group // Group is only for datavalue
-                  jquery.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-               }
-               
-               data.queries << jquery
-            }
-         
-            
-            def result = data as JSON
+            def result = res as JSON
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             render(text: result, contentType:"application/json", encoding:"UTF-8")
@@ -1953,22 +1798,13 @@ class RestController {
          firstResult(offset)
       }
       
-      // TODO: fix the structure for XML, it will output the MAP marshaling.
-      def result = [
-         result: idxs,
-         pagination: [
-            'max': max,
-            'offset': offset,
-            nextOffset: offset+max, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-            prevOffset: ((offset-max < 0) ? 0 : offset-max )
-         ]
-      ]
+      def res = new PaginatedResults(listName:'result', list:idxs, max:max, offset:offset)
       
-      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index y en XML
+      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index
       if (!format || format == 'xml')
-         render(text: result as grails.converters.XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
       else if (format == 'json')
-         render(text: result as grails.converters.JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       else
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }

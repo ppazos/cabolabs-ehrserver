@@ -369,6 +369,21 @@ class BootStrap {
      })
      */
      
+     JSON.registerObjectMarshaller(PaginatedResults) { pres ->
+        
+        pres.update() // updates and checks pagination values
+        
+        return [
+           "${pres.listName}": pres.list,
+           pagination: [
+              'max': pres.max,
+              'offset': pres.offset,
+              nextOffset: pres.nextOffset, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+              prevOffset: pres.prevOffset
+           ]
+        ]
+     }
+     
      XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
         
         pres.update() // updates and checks pagination values
