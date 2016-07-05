@@ -67,12 +67,30 @@ class EhrController {
       
       if (!ehr)
       {
+         // TODO: back to referrer
          flash.message = "No existe el ehr para el paciente $patientUID"
          redirect(controller:'person', action:'list')
          return
       }
       
       return [ehr: ehr] 
+   }
+   
+   def show(String uid)
+   {
+      def ehr = Ehr.findByUid(uid)
+      
+      println request.getHeader('referer')
+      
+      if (!ehr)
+      {
+         // TODO: back to referrer
+         flash.message = "No existe el ehr $uid"
+         redirect(url:request.getHeader('referer'))
+         return
+      }
+      
+      render(view:'showEhr', model:[ehr: ehr])
    }
    
    /**
