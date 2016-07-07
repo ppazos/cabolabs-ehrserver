@@ -54,6 +54,15 @@
     padding: 15px 0 15px 15px;
     margin-left: 15px;
   }
+  
+  /** Adding vertical space between rows when needed **/
+  /* usage <div class="row row-grid"> */
+  .row.row-grid {
+   margin-top: 15px;
+  }
+  h1 {
+    margin: 10px 0 0 0;
+  }
   </style>
   <g:javascript>
     // Used to access the assets root from JS code.

@@ -25,7 +25,7 @@
       </div>
     </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>

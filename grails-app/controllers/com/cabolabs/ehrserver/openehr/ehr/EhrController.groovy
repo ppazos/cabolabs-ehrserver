@@ -29,27 +29,61 @@ class EhrController {
    
    def index() { }
    
-   def list(Integer max)
+   /**
+    * 
+    * @param max
+    * @param offset
+    * @param uid filter of partial uid
+    * @return
+    */
+   def list(int max, int offset, String uid)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
       
-      def list, count
+      def list
+      def c = Ehr.createCriteria()
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         list = Ehr.list(params)
-         count = Ehr.count()
+         /*
+          * if the criteria is empty, does the same as .list (works as expected)
+          */
+         list = c.list (max: max, offset: offset) {
+            if (uid)
+            {
+               like('uid', '%'+uid+'%')
+            }
+         }
       }
       else
       {
          // auth token used to login
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
+
+         list = c.list (max: max, offset: offset) {
+            eq ('organizationUid', org.uid)
+            if (uid)
+            {
+               like('uid', '%'+uid+'%')
+            }
+         }
          
-         list = Ehr.findAllByOrganizationUid(org.uid, params)
-         count = Ehr.countByOrganizationUid(org.uid)
+         /*
+          * Form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
+          * 
+          * Because that query includes pagination parameters (max and offset), this will return
+          * a PagedResultList which has a getTotalCount() method to return the total number of
+          * matching records for pagination. Two queries are still run, but they are run for
+          * you and the results and total count are combined in the PagedResultList.
+          *
+          * So we can do subjects.totalCount
+          */
+         
       }
-      
-      [list: list, total: count]
+
+      [list: list, total: list.totalCount]
    }
 
    
