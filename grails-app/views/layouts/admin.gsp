@@ -58,10 +58,18 @@
   /** Adding vertical space between rows when needed **/
   /* usage <div class="row row-grid"> */
   .row.row-grid {
-   margin-top: 15px;
+    margin-top: 15px;
   }
   h1 {
     margin: 10px 0 0 0;
+  }
+  
+  /**
+   * Style for arrow to active sortable column.
+   */
+  tr > th.sortable.sorted.asc > a,
+  tr > th.sortable.sorted.desc > a {
+    margin-right: 5px;
   }
   </style>
   <g:javascript>
@@ -71,6 +79,14 @@
      assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
      baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
     };
+    
+    $(function() {
+     /**
+      * Add arrow to active sortable column.
+      */
+     $('tr > th.sortable.sorted.asc').append('<span class="glyphicon glyphicon-triangle-bottom"></span>');
+     $('tr > th.sortable.sorted.desc').append('<span class="glyphicon glyphicon-triangle-top"></span>');
+	 });
    </g:javascript>
   </head>
   <body>	  

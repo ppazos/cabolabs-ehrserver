@@ -27,7 +27,9 @@ class EhrController {
    def config = Holders.config.app
    
    
-   def index() { }
+   def index() {
+      redirect(action: "list", params: params)
+   }
    
    /**
     * 
@@ -36,10 +38,12 @@ class EhrController {
     * @param uid filter of partial uid
     * @return
     */
-   def list(int max, int offset, String uid)
+   def list(int max, int offset, String sort, String order, String uid)
    {
       max = Math.min(max ?: 10, 100)
       if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
       def list
       def c = Ehr.createCriteria()
@@ -49,7 +53,7 @@ class EhrController {
          /*
           * if the criteria is empty, does the same as .list (works as expected)
           */
-         list = c.list (max: max, offset: offset) {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
             if (uid)
             {
                like('uid', '%'+uid+'%')
@@ -62,7 +66,7 @@ class EhrController {
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
 
-         list = c.list (max: max, offset: offset) {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
             eq ('organizationUid', org.uid)
             if (uid)
             {
@@ -80,7 +84,6 @@ class EhrController {
           *
           * So we can do subjects.totalCount
           */
-         
       }
 
       [list: list, total: list.totalCount]

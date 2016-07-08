@@ -18,15 +18,33 @@ class PersonController {
       redirect(action: "list", params: params)
    }
 
-   def list(Integer max)
+   def list(int max, int offset, String sort, String order, String firstName, String lastName, String idCode)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def list, count
+      def list
+      def c = Person.createCriteria()
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         list = Person.findAllByDeleted(false, params)
-         count = Person.countByDeleted(false)
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('deleted', false)
+            if (firstName)
+            {
+               like('firstName', '%'+firstName+'%')
+            }
+            if (lastName)
+            {
+               like('lastName', '%'+lastName+'%')
+            }
+            if (idCode)
+            {
+               like('idCode', '%'+idCode+'%')
+            }
+         }
       }
       else
       {
@@ -34,11 +52,25 @@ class PersonController {
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
          
-         list = Person.findAllByDeletedAndOrganizationUid(false, org.uid, params)
-         count = Person.countByDeletedAndOrganizationUid(false, org.uid)
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('deleted', false)
+            eq ('organizationUid', org.uid)
+            if (firstName)
+            {
+               like('firstName', '%'+firstName+'%')
+            }
+            if (lastName)
+            {
+               like('lastName', '%'+lastName+'%')
+            }
+            if (idCode)
+            {
+               like('idCode', '%'+idCode+'%')
+            }
+         }
       }
       
-      [personInstanceList: list, personInstanceTotal: count]
+      [personInstanceList: list, personInstanceTotal: list.totalCount]
    }
 
    def create()
