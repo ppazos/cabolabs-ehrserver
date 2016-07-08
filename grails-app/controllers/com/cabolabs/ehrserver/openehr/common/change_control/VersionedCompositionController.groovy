@@ -1,9 +1,11 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import static org.springframework.http.HttpStatus.*
-import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
-import grails.transaction.Transactional
 
+import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
+
+import grails.transaction.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
 
 @Transactional(readOnly = true)
@@ -11,23 +13,45 @@ class VersionedCompositionController {
 
    def springSecurityService
    
-   def index(Integer max)
+   def index(int max, int offset, String sort, String order, String ehdUid)
    {
-      params.max = Math.min(max ?: 10, 100)
-      if (!params.offset) params.offset = 0
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      // login info
-      def auth = springSecurityService.authentication
-      def org = Organization.findByNumber(auth.organization)
-      
+      def list
       def c = VersionedComposition.createCriteria()
-      def results = c.list (max: params.max, offset: params.offset) {
-         ehr {
-            eq("organizationUid", org.uid)
+      
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (ehdUid)
+            {
+               ehr {
+                  like('uid', '%'+ehdUid+'%')
+               }
+            }
+         }
+      }
+      else
+      {
+         // login info
+         def auth = springSecurityService.authentication
+         def org = Organization.findByNumber(auth.organization)
+         
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            ehr {
+               eq("organizationUid", org.uid)
+               if (ehdUid)
+               {
+                  like('uid', '%'+ehdUid+'%')
+               }
+            }
          }
       }
       
-      respond results, model:[versionedCompositionInstanceCount: results.totalCount]
+      respond list, model:[versionedCompositionInstanceCount: list.totalCount]
    }
 
    def show(String uid)

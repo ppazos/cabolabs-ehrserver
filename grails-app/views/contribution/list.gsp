@@ -91,14 +91,27 @@
         <h1><g:message code="contribution.list.title" /></h1>
       </div>
     </div>
+    <div class="row row-grid">
+      <div class="col-lg-12">
+        <g:form class="form-inline" action="list">
+          <input type="hidden" name="sort" value="${params.sort}" />
+          <input type="hidden" name="order" value="${params.order}" />
+          <div class="form-group">
+            <label for="ipt_ehr">EHR</label>
+            <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" value="${params?.ehdUid}" />
+          </div>
+          <button type="submit" class="btn btn-default">Filter</button>
+        </g:form>
+      </div>
+    </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
         <div id="contributionsChartContainer"></div>
       </div>
     </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
          <g:if test="${flash.message}">
 	        <div class="message" role="status">${flash.message}</div>
@@ -107,7 +120,7 @@
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
-		            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" />
+		            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" params="${params}" />
 		            <th>EHR</th>
 		            <th>Time Committed</th>
 		            <th># Versions</th>

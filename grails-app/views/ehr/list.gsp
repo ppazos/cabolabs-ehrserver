@@ -42,7 +42,7 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" params="[uid: params.uid]" />
+                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" params="${params}" />
                 <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" params="[uid: params.uid]" />
                 <th><g:message code="ehr.subject.label" default="Subject" /></th>
               </tr>
