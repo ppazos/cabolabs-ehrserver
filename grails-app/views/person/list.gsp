@@ -57,7 +57,10 @@
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>
 	     </g:if>
-		   
+	     <%-- display validation errors for create ehr --%>
+	     <g:if test="${ehr?.hasErrors}">
+	       <g:renderErrors bean="${ehr}" as="list" />
+		  </g:if>
         <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
 		        <thead>

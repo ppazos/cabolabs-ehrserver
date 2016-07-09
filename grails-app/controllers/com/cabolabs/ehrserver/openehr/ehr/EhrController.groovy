@@ -93,7 +93,12 @@ class EhrController {
    // GUI debug
    def showEhr(String patientUID)
    {
-      // TODO: patientUID existe?
+      if (!patientUID)
+      {
+         flash.message = message(code:'ehr.showEhr.patientUidIsRequired')
+         redirect(url:request.getHeader('referer'))
+         return
+      }
       
       def c = Ehr.createCriteria()
       def ehr = c.get {
@@ -104,9 +109,9 @@ class EhrController {
       
       if (!ehr)
       {
-         // TODO: back to referrer
-         flash.message = "No existe el ehr para el paciente $patientUID"
-         redirect(controller:'person', action:'list')
+         flash.message = message(code:'ehr.showEhr.ehrDoesntExistsForPatientUid', args:[patientUid])
+         //redirect(controller:'person', action:'list')
+         redirect(url:request.getHeader('referer'))
          return
       }
       
@@ -115,14 +120,17 @@ class EhrController {
    
    def show(String uid)
    {
-      def ehr = Ehr.findByUid(uid)
+      if (!uid)
+      {
+         flash.message = message(code:'ehr.show.uidIsRequired')
+         redirect(url:request.getHeader('referer'))
+         return
+      }
       
-      println request.getHeader('referer')
-      
+      def ehr = Ehr.findByUid(uid)      
       if (!ehr)
       {
-         // TODO: back to referrer
-         flash.message = "No existe el ehr $uid"
+         flash.message = message(code:'ehr.show.ehrDoesntExistsForUid', args:[uid])
          redirect(url:request.getHeader('referer'))
          return
       }
@@ -137,7 +145,6 @@ class EhrController {
     */
    def ehrContributions(long id, String fromDate, String toDate, String qarchetypeId)
    {
-      println "ehrComtrbutions " + params
       def contribs
       def ehr = Ehr.get(id)
       
@@ -146,58 +153,54 @@ class EhrController {
       Date qToDate
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
-      
-      // TODO: filtro de 
-      //if (qarchetypeId || fromDate || toDate)
-      //{
-         contribs = Contribution.withCriteria {
-            
-            eq('ehr', ehr)
-            
-            // Busca por atributos de CompositionIndex
-            // Puede no venir ningun criterio y se deberia devolver
-            // todas las contribs del ehr, TODO: paginacion!
-            versions {
-               data {
-                  if (qarchetypeId)
-                     eq('archetypeId', qarchetypeId)
+
+      contribs = Contribution.withCriteria {
+         
+         eq('ehr', ehr)
+         
+         // Busca por atributos de CompositionIndex
+         // Puede no venir ningun criterio y se deberia devolver
+         // todas las contribs del ehr, TODO: paginacion!
+         versions {
+            data {
+               if (qarchetypeId)
+                  eq('archetypeId', qarchetypeId)
+               
+               if (qFromDate)
+                  ge('startTime', qFromDate)
                   
-                  if (qFromDate)
-                     ge('startTime', qFromDate)
-                     
-                  if (qToDate)
-                     le('startTime', qToDate)
-               }
+               if (qToDate)
+                  le('startTime', qToDate)
             }
          }
-      //}
+      }
       
       render(template:'ehrContributions', model:[contributions:contribs]) 
    }
    
    /**
-    * GUI
+    * From person.list
     * 
     * @param patientUID uid de la Person con rol paciente
     * @return
     */
    def createEhr(String patientUID)
    {
-      // TODO: no tirar excepciones porque pueden llegar a la gui
       if (!patientUID)
       {
-         throw new Exception("patientUID es obligatorio")
+         flash.message = message(code:'ehr.createEhr.patientUidIsRequired')
+         chain controller:'person', action: 'list' // with chain the action gets executed and maintains the flash
+         return
       }
       
       def person = Person.findByUidAndRole(patientUID, 'pat')
-      
-      // 1. existe paciente?
       if (!person)
       {
-         throw new Exception("el paciente $patientUID no existe")
+         flash.message = message(code:'ehr.createEhr.patientDoesntExists', args:[patientUID])
+         chain controller:'person', action: 'list'
+         return
       }
       
-      // 2. el paciente ya tiene EHR?
       def c = Ehr.createCriteria()
       def ehr = c.get {
          subject {
@@ -207,8 +210,9 @@ class EhrController {
       
       if (ehr)
       {
-         // TODO: ya tiene ehr, no creo nada
-         throw new Exception("ya tiene ehr")
+         flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
+         chain controller:'person', action: 'list'
+         return
       }
       else
       {
@@ -219,10 +223,11 @@ class EhrController {
             organizationUid: person.organizationUid
          )
          
-         if (!ehr.save())
+         if (!ehr.save(flush:true))
          {
-            // TODO: error
-            println ehr.errors
+            flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
+            render (view : '/person/list', model: [ehr: ehr])
+            return
          }
       }
       
