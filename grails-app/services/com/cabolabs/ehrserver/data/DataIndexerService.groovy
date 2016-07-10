@@ -10,11 +10,13 @@ import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
 @Transactional
 class DataIndexerService {
 
    def config = Holders.config.app
+   def versionFSRepoService
    
    def generateIndexes()
    {
@@ -47,13 +49,14 @@ class DataIndexerService {
        
        // load xml file from filesystem
        version = compoIndex.getParent()
-       versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
        
-       // If the commit record was saved in the database but the file was not yet written to disk,
-       // the file doesn't exists. Leave it to the next run of the indexed and continue indexing.
-       if (!versionFile.exists())
+       try
        {
-          log.info "avoid indexing "+ versionFile.absolutePath
+          versionFile = versionFSRepoService.getExistingVersionFile(version.uid)
+       }
+       catch (FileNotFoundException e)
+       {
+          log.info "avoid indexing "+ versionFile.absolutePath +" file not found"
           return // Continue with next compoIdx
        }
        

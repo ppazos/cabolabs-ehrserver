@@ -10,12 +10,14 @@ import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
 import com.cabolabs.ehrserver.parsers.JsonService
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
 @Transactional
 class CompositionService {
 
    def config = Holders.config.app
    def jsonService
+   def versionFSRepoService
    
    def compositionAsXml(String uid)
    {
@@ -32,12 +34,9 @@ class CompositionService {
       }
       
       def version = compoIndex.getParent()
-      def versionFile = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       
-      if (!versionFile.exists())
-      {
-         throw new Exception("Composition document doesn't exists")
-      }
+      // Throws FileNotFoundException
+      def versionFile = versionFSRepoService.getExistingVersionFile(version.uid)
       
       def xml = versionFile.getText()
       

@@ -1,6 +1,7 @@
 package com.cabolabs.ehrserver.versions
 
 import grails.util.Holders
+import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 
 /**
@@ -38,5 +39,35 @@ class VersionFSRepoService {
       }
       
       return size
+   }
+   
+   /**
+    * Gets a version file that should be on the repo.
+    * @param version_uid
+    * @return
+    */
+   def getExistingVersionFile(String version_uid)
+   {
+      def f = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+      if (!f.exists())
+      {
+         throw new FileNotFoundException("File ${f.path} doesn't exists")
+      }
+      return f
+   }
+   
+   /**
+    * Gets a version file that shouldn't be on the repo.
+    * @param version_uid
+    * @return
+    */
+   def getNonExistingVersionFile(String version_uid)
+   {
+      def f = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+      if (f.exists())
+      {
+         throw new FileAlreadyExistsException("File ${f.path} already exists")
+      }
+      return f
    }
 }
