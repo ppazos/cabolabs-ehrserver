@@ -54,9 +54,15 @@
 	      </g:if>
 	      
 	      <div class="control-group">
-            <label class="control-label"><g:message code="contribution.uid.label" default="Uid" /></label>
+            <label class="control-label"><g:message code="contribution.uid.label" default="UID" /></label>
             <div class="controls">
                 <p class="form-control-static"><g:fieldValue bean="${contributionInstance}" field="uid"/></p>
+            </div>
+         </div>
+         <div class="control-group">
+            <label class="control-label"><g:message code="contribution.ehr.label" default="EHR" /></label>
+            <div class="controls">
+                <p class="form-control-static"><g:link controller="ehr" action="show" params="[uid: contributionInstance.ehr.uid]">${contributionInstance.ehr.uid}</g:link></p>
             </div>
          </div>
          
