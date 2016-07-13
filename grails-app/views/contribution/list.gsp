@@ -84,6 +84,14 @@
 	     });
 	   });
     </script>
+    <style>
+     /* adjusts the filder input width */
+     @media (min-width: 768px) {
+      #ipt_ehr {
+       width: 320px;
+      }
+     }
+    </style>
   </head>
   <body>
     <div class="row">
@@ -98,7 +106,7 @@
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
             <label for="ipt_ehr">EHR</label>
-            <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" value="${params?.ehdUid}" />
+            <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.ehdUid}" />
           </div>
           <button type="submit" class="btn btn-default">Filter</button>
         </g:form>
