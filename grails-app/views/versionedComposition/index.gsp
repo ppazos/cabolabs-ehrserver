@@ -5,6 +5,14 @@
     <meta name="layout" content="admin">
     <g:set var="entityName" value="${message(code: 'versionedComposition.label', default: 'VersionedComposition')}" />
     <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <style>
+     /* adjusts the filder input width */
+     @media (min-width: 768px) {
+      #ipt_ehr {
+       width: 320px;
+      }
+     }
+    </style>
   </head>
   <body>
     <div class="row">
@@ -19,7 +27,7 @@
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
             <label for="ipt_ehr">EHR</label>
-            <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" value="${params?.ehdUid}" />
+            <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.ehdUid}" />
           </div>
           <button type="submit" class="btn btn-default">Filter</button>
         </g:form>
@@ -40,15 +48,20 @@
                 <th>${message(code: 'versionedComposition.ehrUid.label', default: 'EHR')}</th>
                 <g:sortableColumn property="isPersistent" title="${message(code: 'versionedComposition.isPersistent.label', default: 'Is Persistent')}" params="${params}" />
                 <g:sortableColumn property="timeCreated" title="${message(code: 'versionedComposition.timeCreated.label', default: 'Time Created')}" params="${params}" />
+                <th>${message(code: 'common.template.label', default: 'Template')}</th>
+                <th>${message(code: 'common.archetype.label', default: 'Archetype')}</th>
               </tr>
             </thead>
             <tbody>
               <g:each in="${versionedCompositionInstanceList}" status="i" var="versionedCompositionInstance">
+                <g:set var="compo" value="${versionedCompositionInstance.latestVersion.data}" />
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td><g:link action="show" params="[uid: versionedCompositionInstance.uid]">${fieldValue(bean: versionedCompositionInstance, field: "uid")}</g:link></td>
                   <td>${versionedCompositionInstance.ehr.uid}</td>
                   <td><g:formatBoolean boolean="${versionedCompositionInstance.isPersistent}" /></td>
                   <td><g:formatDate date="${versionedCompositionInstance.timeCreated}" /></td>
+                  <td>${compo.templateId}</td>
+                  <td>${compo.archetypeId}</td>
                 </tr>
               </g:each>
             </tbody>
