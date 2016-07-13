@@ -22,16 +22,24 @@ class UserController {
    def notificationService
    def springSecurityService
 
-   def index(Integer max)
+   def index(int max, int offset, String sort, String order, String username)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def list, count
+      def list
+      def c = User.createCriteria()
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         list = User.list(params)
-         count = User.count()
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (username)
+            {
+               like('username', '%'+username+'%')
+            }
+         }
       }
       else
       {
@@ -39,19 +47,18 @@ class UserController {
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
          
-         // no pagination
-
-         // users with the current org.uid in their organizations list
-         list = User.withCriteria {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
             organizations {
-               eq('uid', org.uid)
+               eq ('organizationUid', org.uid)
+            }
+            if (username)
+            {
+               like('username', '%'+username+'%')
             }
          }
-         
-         count = list.size()
       }
       
-      respond list, model:[userInstanceCount: count]
+      respond list, model:[userInstanceCount: list.totalCount]
    }
    
    
