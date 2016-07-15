@@ -21,7 +21,7 @@ class ContributionController {
       max = Math.min(max ?: 10, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
-      if (!order) order = 'asc'
+      if (!order) order = 'desc'
      
       def list, org
       def c = Contribution.createCriteria()

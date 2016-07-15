@@ -130,7 +130,8 @@
 		          <tr>
 		            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" params="${params}" />
 		            <th>EHR</th>
-		            <th>Time Committed</th>
+		            <%-- uses the id because is easier than sorting by timeCommitted and have the same order --%>
+		            <g:sortableColumn property="id" title="${message(code: 'contribution.timeCommitted.label', default: 'Time Committed')}" params="${params}" />
 		            <th># Versions</th>
 		          </tr>
 		        </thead>
