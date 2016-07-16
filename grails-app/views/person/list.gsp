@@ -62,7 +62,7 @@
 	       <g:renderErrors bean="${ehr}" as="list" />
 		  </g:if>
         <div class="table-responsive">
-           <table class="table table-striped table-bordered table-hover">
+          <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
 		            <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First Name')}" params="${params}" />
@@ -81,14 +81,14 @@
 		        <tbody>
 			        <g:each in="${personInstanceList}" status="i" var="personInstance">
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-			            <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "firstName")}</g:link></td>
-			            <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
+			            <td><g:link action="show" id="${personInstance.uid.encodeAsHTML()}">${fieldValue(bean: personInstance, field: "firstName")}</g:link></td>
+			            <td><g:link action="show" id="${personInstance.uid.encodeAsHTML()}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
 			            <td>${fieldValue(bean: personInstance, field: "sex")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "idCode")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "idType")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "role")}</td>
 			            <td><g:formatDate date="${personInstance.dob}" /></td>
-                     <td>${fieldValue(bean: personInstance, field: "organizationUid")}</td>
+                     <td><g:link controller="organization" action="show" id="${personInstance.organizationUid.encodeAsHTML()}">${fieldValue(bean: personInstance, field: "organizationUid")}</g:link></td>
 			            <td>
 			              <g:if test="${personInstance.role == 'pat'}">
 			                 <g:hasEhr patientUID="${personInstance.uid}">
@@ -102,7 +102,7 @@
 			          </tr>
 			        </g:each>
 		        </tbody>
-		      </table>
+		    </table>
 		  </div>
 	     <g:paginator total="${personInstanceTotal}" />
       </div>

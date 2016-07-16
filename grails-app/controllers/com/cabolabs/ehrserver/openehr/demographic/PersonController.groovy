@@ -6,6 +6,7 @@ import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.User
 
 class PersonController {
 
@@ -50,11 +51,15 @@ class PersonController {
       {
          // auth token used to login
          def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         //def org = Organization.findByNumber(auth.organization)
+         def un = auth.principal.username
+         def us = User.findByUsername(un)
+         def orgs = us.organizations
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             eq('deleted', false)
-            eq ('organizationUid', org.uid)
+            //eq ('organizationUid', org.uid) // same org as used for login
+            'in'('organizationUid', orgs.uid) // persons for all the orgs of the logged user
             if (firstName)
             {
                like('firstName', '%'+firstName+'%')
@@ -112,42 +117,29 @@ class PersonController {
       redirect(action: "show", id: personInstance.id)
    }
 
-   def show(Long id, String uid)
-   {
-     def personInstance
-     if (id) personInstance = Person.get(id)
-     else personInstance = Person.findByUid(uid)
    
-     if (!personInstance) {
-       flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-       redirect(action: "list")
-       return
-     }
-
-     [personInstance: personInstance]
+   // personInstance comes from the security filter on params
+   def show()
+   {
+      [personInstance: params.personInstance]
    }
 
-   def edit(Long id)
+   // personInstance comes from the security filter on params
+   def edit()
    {
-      def personInstance = Person.get(id)
-      if (!personInstance)
-      {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-         redirect(action: "list")
-         return
-      }
-
-      [personInstance: personInstance]
+      [personInstance: params.personInstance]
    }
 
-   def update(Long id, Long version)
+   /**
+    * params.personInstance comes from the filter.
+    * @param version
+    * @return
+    */
+   def update(Long version)
    {
-      def personInstance = Person.get(id)
-      if (!personInstance) {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-         redirect(action: "list")
-         return
-      }
+      println "update params "+ params
+      
+      def personInstance = params.personInstance
 
       if (version != null) {
          if (personInstance.version > version) {
@@ -167,27 +159,24 @@ class PersonController {
       }
 
       flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
-      redirect(action: "show", id: personInstance.id)
+      redirect action:'show', params:[uid:personInstance.uid]
    }
 
-   def delete(Long id)
+   // params.personInstance comes from the filter.
+   def delete()
    {
-      def personInstance = Person.get(id)
-      if (!personInstance) {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-         redirect(action: "list")
-         return
-      }
+      def personInstance = params.personInstance
 
-      try {
-         //personInstance.delete(flush: true)
+      try
+      {
          personInstance.deleted = true
          personInstance.save(flush:true)
-         flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person'), id])
+         flash.message = message(code: 'person.delete.deletedOk')
          redirect(action: "list")
       }
-      catch (DataIntegrityViolationException e) {
-         flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), id])
+      catch (DataIntegrityViolationException e)
+      {
+         flash.message = message(code: 'default.not.deleted.message')
          redirect(action: "show", id: id)
       }
    }

@@ -8,12 +8,44 @@ class UrlMappings {
       
       "500"(view:'/error')
 
+      /**
+       * Use UIDs on webconsole show/edit
+       */
+      "/person/show/${uid}"(
+         controller: 'person',
+         action: 'show'
+      )
+      "/person/edit/${uid}"(
+         controller: 'person',
+         action: 'edit'
+      )
+      "/person/update/${uid}"(
+         controller: 'person',
+         action: 'update'
+      )
+      "/person/delete/${uid}"(
+         controller: 'person',
+         action: 'delete'
+      )
+      
+      "/organization/show/${uid}"(
+         controller: 'organization',
+         action: 'show'
+      )
+      "/organization/edit/${uid}"(
+         controller: 'organization',
+         action: 'edit'
+      )
+      "/organization/update/${uid}"(
+         controller: 'organization',
+         action: 'update'
+      )
+      
+      
       "/rest/profile/${username}"(
          controller: 'user',
          action: 'profile'
       )
-      
-      
       
       // /rest/ehrs -- list of all EHRs
       "/rest/ehrs"(

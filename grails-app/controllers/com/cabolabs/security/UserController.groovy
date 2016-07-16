@@ -49,7 +49,7 @@ class UserController {
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             organizations {
-               eq ('organizationUid', org.uid)
+               eq ('uid', org.uid)
             }
             if (username)
             {
