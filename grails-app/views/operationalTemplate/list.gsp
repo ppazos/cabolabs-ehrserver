@@ -7,14 +7,29 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="opt.list.title" /></h1>
+      </div>
+    </div>
+    
+    <div class="row row-grid">
+      <div class="col-md-6">
+        <g:form class="form-inline" action="list">
+          <input type="hidden" name="sort" value="${params.sort}" />
+          <input type="hidden" name="order" value="${params.order}" />
+          <div class="form-group">
+            <label for="ipt_con">Concept</label>
+            <input type="text" class="form-control" name="concept" id="ipt_con" value="${params?.concept}" />
+          </div>
+          <button type="submit" class="btn btn-default">Filter</button>
+        </g:form>
+      </div>
+      <div class="col-md-6">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="upload">
             <button type="button" class="btn btn-default btn-md">
               <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <g:message code="opt.upload.label" />
             </button>
           </g:link>
-          
-          
           <g:link action="generate">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
@@ -29,13 +44,7 @@
       </div>
     </div>
     
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="opt.list.title" /></h1>
-      </div>
-    </div>
-    
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>

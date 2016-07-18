@@ -37,7 +37,7 @@ import com.cabolabs.security.User
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
-
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import grails.transaction.Transactional
 
 /**
@@ -52,6 +52,7 @@ class RestController {
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
+   def versionFSRepoService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -502,10 +503,23 @@ class RestController {
       // The result Version have the same XML format as the one used for commit
       
       // Get the version file
+      /*
       def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
       if (!vf.exists() || !vf.canRead())
       {
          // This is another case that shouldn't happen, will happen only if the files are deleted from disk
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
+         return
+      }
+      */
+      
+      def vf
+      try
+      {
+         vf = versionFSRepoService.getExistingVersionFile(version.uid)
+      }
+      catch (FileNotFoundException e)
+      {
          renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
          return
       }
@@ -572,7 +586,6 @@ class RestController {
       def _subject = Person.findByUidAndRole(subjectUid, 'pat')
       if (!_subject)
       {
-         //render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
          return
       }
@@ -726,6 +739,17 @@ class RestController {
          setReadOnly true
       }
       
+      /*
+       * TODO: we can return the total count, form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
+       * 
+       * Because that query includes pagination parameters (max and offset), this will return
+       * a PagedResultList which has a getTotalCount() method to return the total number of
+       * matching records for pagination. Two queries are still run, but they are run for
+       * you and the results and total count are combined in the PagedResultList.
+       * 
+       * So we can do subjects.totalCount
+       */
+      
       // ===========================================================================
       // 2. Discusion por formato de salida
       //
@@ -806,12 +830,9 @@ class RestController {
    @SecuredStateless
    def queryShow(String queryUid, String format)
    {
-      println params
-      
       if (!queryUid)
       {
-         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
-          renderError(message(code:'rest.error.query_uid_required'), "455", 400)
+         renderError(message(code:'rest.error.query_uid_required'), "455", 400)
          return
       }
       
@@ -819,75 +840,16 @@ class RestController {
        
       if (!query)
       {
-         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.query_doesnt_exists', args:[queryUid]), "477", 404)
          return
       }
       
-      //println query
-      
       if (!format || format == "xml")
       {
          render(text: query as XML, contentType:"text/xml", encoding:"UTF-8")
-         /*
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            delegate.query{
-               uid(query.uid)
-               name(query.name)
-               delegate.format(query.format)
-               type(query.type)
-               
-               if (query.type == 'composition')
-               {
-                  for (criteria in query.where)
-                  {
-                     delegate.criteria {
-                        archetypeId(criteria.archetypeId)
-                        path(criteria.path)
-                        delegate.criteria(criteria.toSQL())
-                        //value(criteria.value)
-                     }
-                  }
-               }
-               else
-               {
-                  group(query.group) // Group is only for datavalue
-                  
-                  for (proj in query.select)
-                  {
-                     projection {
-                        archetypeId(proj.archetypeId)
-                        path(proj.path)
-                     }
-                  }
-               }
-               
-               
-               //template_id(query.templateId)
-            }
-         }
-         */
       }
       else if (format == "json")
       {
-         /*
-         def data = [
-            uid: query.uid,
-            name: query.name,
-            format: query.format,
-            type: query.type
-         ]
-         if (query.type == 'composition')
-         {
-            data.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
-         }
-         else
-         {
-            data.group = query.group // Group is only for datavalue
-            data.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-         }
-         */
-         
          def result = query as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
@@ -1125,7 +1087,7 @@ class RestController {
           def version
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-          
+          def vf
           if (!ehrUid) // group by ehrUid
           {
              res.each { _ehrUid, compoIndexes ->
@@ -1142,7 +1104,18 @@ class RestController {
                    
                    // adds the version, not just the composition
                    version = compoIndex.getParent()
-                   buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                   //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                   
+                   try
+                   {
+                      vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                      buff = vf.getText()
+                   }
+                   catch (FileNotFoundException e)
+                   {
+                      log.warning e.message
+                      return // continue with next compoIndex
+                   }
       
                    
                    buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
@@ -1170,7 +1143,18 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                
+                try
+                {
+                   vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                   buff = vf.getText()
+                }
+                catch (FileNotFoundException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
    
                 buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
                 buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1457,7 +1441,7 @@ class RestController {
       def version
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-      
+      def vf
       if (!qehrId) // group by ehrUid
       {
          result.each { ehrUid, compoIndexes ->
@@ -1474,8 +1458,18 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
    
+                try
+                {
+                   vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                   buff = vf.getText()
+                }
+                catch (FileNotFoundException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
                 
                 buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
                 buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1502,7 +1496,18 @@ class RestController {
              
             // adds the version, not just the composition
             version = compoIndex.getParent()
-            buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+            //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+            
+            try
+            {
+               vf = versionFSRepoService.getExistingVersionFile(version.uid)
+               buff = vf.getText()
+            }
+            catch (FileNotFoundException e)
+            {
+               log.warning e.message
+               return // continue with next compoIndex
+            }
             
             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')

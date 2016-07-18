@@ -34,15 +34,28 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     static List criteriaSpec(String archetypeId, String path)
     {
        def optMan = OptManager.getInstance()
-       def arch = optMan.getReferencedArchetype(archetypeId)
+//       def arch = optMan.getReferencedArchetype(archetypeId)
        
        def units = [:]
        def u
-       arch.getNode(path).xmlNode.list.each {
+       
+/* can be many for the one archetypeId
+       println "-------------"
+       println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
+       println "-------------"
+*/
+       
+       optMan.getNode(archetypeId, path)?.xmlNode.list.each {
           u = it.units.text() 
           units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
        }
        
+       /*
+       arch.getNode(path).xmlNode.list.each {
+          u = it.units.text() 
+          units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+       }
+       */
        def spec = [
           [
              magnitude: [

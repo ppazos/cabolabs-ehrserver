@@ -40,9 +40,10 @@ class OrganizationController {
       render view:'index', model:[organizationInstanceList:list, total:count]
    }
 
-   def show(Organization organizationInstance)
+   // organizationInstance comes from the security filter on params
+   def show()
    {
-      respond organizationInstance
+      [organizationInstance: params.organizationInstance]
    }
 
    def create()
@@ -62,7 +63,6 @@ class OrganizationController {
       if (organizationInstance.hasErrors())
       {
          log.info "has errors"
-         //respond organizationInstance, view:'create'
          render view:'create', model:[organizationInstance:organizationInstance]
          return
       }
@@ -78,47 +78,33 @@ class OrganizationController {
       
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
       redirect action:'show', id:organizationInstance.id
-      
-      /*
-      request.withFormat {
-         form multipartForm {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
-            redirect organizationInstance
-         }
-         '*' { respond organizationInstance, [status: CREATED] }
-      }
-      */
    }
 
-   def edit(Organization organizationInstance)
+   def edit()
    {
-      respond organizationInstance
+      [organizationInstance: params.organizationInstance]
    }
 
    @Transactional
-   def update(Organization organizationInstance)
+   def update(String uid, Long version)
    {
-      if (organizationInstance == null)
-      {
-         notFound()
-         return
-      }
-
+      println "update "+ params +" uid: "+ uid
+      
+      def organizationInstance = Organization.findByUid(uid)
+      organizationInstance.properties = params
+      organizationInstance.validate()
+      
       if (organizationInstance.hasErrors())
       {
          respond organizationInstance.errors, view:'edit'
          return
       }
+      
+      // TODO check version (see PersonController.update)
 
       organizationInstance.save flush:true
 
-      request.withFormat {
-         form multipartForm {
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'Organization.label', default: 'Organization'), organizationInstance.id])
-            redirect organizationInstance
-         }
-         '*'{ respond organizationInstance, [status: OK] }
-      }
+      redirect action:'show', params:[uid:uid]
    }
 
    @Transactional

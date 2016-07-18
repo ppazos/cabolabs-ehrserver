@@ -27,36 +27,78 @@ class EhrController {
    def config = Holders.config.app
    
    
-   def index() { }
+   def index() {
+      redirect(action: "list", params: params)
+   }
    
-   def list(Integer max)
+   /**
+    * 
+    * @param max
+    * @param offset
+    * @param uid filter of partial uid
+    * @return
+    */
+   def list(int max, int offset, String sort, String order, String uid)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def list, count
+      def list
+      def c = Ehr.createCriteria()
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         list = Ehr.list(params)
-         count = Ehr.count()
+         /*
+          * if the criteria is empty, does the same as .list (works as expected)
+          */
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (uid)
+            {
+               like('uid', '%'+uid+'%')
+            }
+         }
       }
       else
       {
          // auth token used to login
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
+
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq ('organizationUid', org.uid)
+            if (uid)
+            {
+               like('uid', '%'+uid+'%')
+            }
+         }
          
-         list = Ehr.findAllByOrganizationUid(org.uid, params)
-         count = Ehr.countByOrganizationUid(org.uid)
+         /*
+          * Form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
+          * 
+          * Because that query includes pagination parameters (max and offset), this will return
+          * a PagedResultList which has a getTotalCount() method to return the total number of
+          * matching records for pagination. Two queries are still run, but they are run for
+          * you and the results and total count are combined in the PagedResultList.
+          *
+          * So we can do subjects.totalCount
+          */
       }
-      
-      [list: list, total: count]
+
+      [list: list, total: list.totalCount]
    }
 
    
    // GUI debug
    def showEhr(String patientUID)
    {
-      // TODO: patientUID existe?
+      if (!patientUID)
+      {
+         flash.message = message(code:'ehr.showEhr.patientUidIsRequired')
+         redirect(url:request.getHeader('referer'))
+         return
+      }
       
       def c = Ehr.createCriteria()
       def ehr = c.get {
@@ -67,12 +109,33 @@ class EhrController {
       
       if (!ehr)
       {
-         flash.message = "No existe el ehr para el paciente $patientUID"
-         redirect(controller:'person', action:'list')
+         flash.message = message(code:'ehr.showEhr.ehrDoesntExistsForPatientUid', args:[patientUid])
+         //redirect(controller:'person', action:'list')
+         redirect(url:request.getHeader('referer'))
          return
       }
       
       return [ehr: ehr] 
+   }
+   
+   def show(String uid)
+   {
+      if (!uid)
+      {
+         flash.message = message(code:'ehr.show.uidIsRequired')
+         redirect(url:request.getHeader('referer'))
+         return
+      }
+      
+      def ehr = Ehr.findByUid(uid)      
+      if (!ehr)
+      {
+         flash.message = message(code:'ehr.show.ehrDoesntExistsForUid', args:[uid])
+         redirect(url:request.getHeader('referer'))
+         return
+      }
+      
+      render(view:'showEhr', model:[ehr: ehr])
    }
    
    /**
@@ -82,7 +145,6 @@ class EhrController {
     */
    def ehrContributions(long id, String fromDate, String toDate, String qarchetypeId)
    {
-      println "ehrComtrbutions " + params
       def contribs
       def ehr = Ehr.get(id)
       
@@ -91,58 +153,54 @@ class EhrController {
       Date qToDate
       if (fromDate) qFromDate = Date.parse(config.l10n.date_format, fromDate)
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
-      
-      // TODO: filtro de 
-      //if (qarchetypeId || fromDate || toDate)
-      //{
-         contribs = Contribution.withCriteria {
-            
-            eq('ehr', ehr)
-            
-            // Busca por atributos de CompositionIndex
-            // Puede no venir ningun criterio y se deberia devolver
-            // todas las contribs del ehr, TODO: paginacion!
-            versions {
-               data {
-                  if (qarchetypeId)
-                     eq('archetypeId', qarchetypeId)
+
+      contribs = Contribution.withCriteria {
+         
+         eq('ehr', ehr)
+         
+         // Busca por atributos de CompositionIndex
+         // Puede no venir ningun criterio y se deberia devolver
+         // todas las contribs del ehr, TODO: paginacion!
+         versions {
+            data {
+               if (qarchetypeId)
+                  eq('archetypeId', qarchetypeId)
+               
+               if (qFromDate)
+                  ge('startTime', qFromDate)
                   
-                  if (qFromDate)
-                     ge('startTime', qFromDate)
-                     
-                  if (qToDate)
-                     le('startTime', qToDate)
-               }
+               if (qToDate)
+                  le('startTime', qToDate)
             }
          }
-      //}
+      }
       
       render(template:'ehrContributions', model:[contributions:contribs]) 
    }
    
    /**
-    * GUI
+    * From person.list
     * 
     * @param patientUID uid de la Person con rol paciente
     * @return
     */
    def createEhr(String patientUID)
    {
-      // TODO: no tirar excepciones porque pueden llegar a la gui
       if (!patientUID)
       {
-         throw new Exception("patientUID es obligatorio")
+         flash.message = message(code:'ehr.createEhr.patientUidIsRequired')
+         chain controller:'person', action: 'list' // with chain the action gets executed and maintains the flash
+         return
       }
       
       def person = Person.findByUidAndRole(patientUID, 'pat')
-      
-      // 1. existe paciente?
       if (!person)
       {
-         throw new Exception("el paciente $patientUID no existe")
+         flash.message = message(code:'ehr.createEhr.patientDoesntExists', args:[patientUID])
+         chain controller:'person', action: 'list'
+         return
       }
       
-      // 2. el paciente ya tiene EHR?
       def c = Ehr.createCriteria()
       def ehr = c.get {
          subject {
@@ -152,8 +210,9 @@ class EhrController {
       
       if (ehr)
       {
-         // TODO: ya tiene ehr, no creo nada
-         throw new Exception("ya tiene ehr")
+         flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
+         chain controller:'person', action: 'list'
+         return
       }
       else
       {
@@ -164,10 +223,11 @@ class EhrController {
             organizationUid: person.organizationUid
          )
          
-         if (!ehr.save())
+         if (!ehr.save(flush:true))
          {
-            // TODO: error
-            println ehr.errors
+            flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
+            render (view : '/person/list', model: [ehr: ehr])
+            return
          }
       }
       

@@ -156,6 +156,14 @@
           </div>
         </div>
         <div class="control-group">
+          <label class="control-label"><g:message code="ehr.organization.label" default="Organization" /></label>
+          <div class="controls">
+            <p class="form-control-static">
+              <g:link controller="organization" action="show" id="${ehr.organizationUid}"><g:fieldValue bean="${ehr}" field="organizationUid"/></g:link>
+            </p>
+          </div>
+        </div>
+        <div class="control-group">
           <label class="control-label"><g:message code="ehr.dateCreated.label" default="Date Created" /></label>
           <div class="controls">
             <p class="form-control-static"><g:formatDate date="${ehr?.dateCreated}" /></p>

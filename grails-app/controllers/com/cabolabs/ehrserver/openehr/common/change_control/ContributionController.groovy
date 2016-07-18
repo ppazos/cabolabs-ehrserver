@@ -16,16 +16,30 @@ class ContributionController {
       redirect(action: "list", params: params)
    }
 
-   def list(Integer max)
+   def list(int max, int offset, String sort, String order, String ehdUid)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'desc'
      
-      def list, cnt, org
+      def list, org
+      def c = Contribution.createCriteria()
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
+         /*
          list = Contribution.list(params)
          cnt = Contribution.count()
+         */
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (ehdUid)
+            {
+               ehr {
+                  like('uid', '%'+ehdUid+'%')
+               }
+            }
+         }
       }
       else
       {
@@ -33,8 +47,18 @@ class ContributionController {
          def auth = springSecurityService.authentication
          org = Organization.findByNumber(auth.organization)
          
-         list = Contribution.findAllByOrganizationUid(org.uid, params)
-         cnt = Contribution.countByOrganizationUid(org.uid)
+         //list = Contribution.findAllByOrganizationUid(org.uid, params)
+         //cnt = Contribution.countByOrganizationUid(org.uid)
+         
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq ('organizationUid', org.uid)
+            if (ehdUid)
+            {
+               ehr {
+                  like('uid', '%'+ehdUid+'%')
+               }
+            }
+         }
       }
      
       // =========================================================================
@@ -61,7 +85,7 @@ class ContributionController {
       //println data
       // =========================================================================
 
-      return [contributionInstanceList: list, total: cnt,
+      return [contributionInstanceList: list, total: list.totalCount,
               data: data, start: oneyearbehind, end: now]
    }
 

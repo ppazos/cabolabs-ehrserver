@@ -33,18 +33,32 @@ class QueryController {
         redirect(action: "list", params: params)
     }
 
-    def list(Integer max)
+    def list(int max, int offset, String sort, String order, String name)
     {
-        params.max = Math.min(max ?: 10, 100)
-        [queryInstanceList: Query.list(params), queryInstanceTotal: Query.count()]
+       max = Math.min(max ?: 10, 100)
+       if (!offset) offset = 0
+       if (!sort) sort = 'id'
+       if (!order) order = 'asc'
+      
+       def list
+       def c = Query.createCriteria()
+       
+       list = c.list (max: max, offset: offset, sort: sort, order: order) {
+          if (name)
+          {
+             like('name', '%'+name+'%')
+          }
+       }
+       
+       [queryInstanceList: list, queryInstanceTotal: list.totalCount]
     }
 
     def create()
     {
-        [queryInstance: new Query(params),
-         dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
-         concepts: ArchetypeIndexItem.findAllByPath('/'),
-         templateIndexes: OperationalTemplateIndex.list()]
+       [queryInstance: new Query(params),
+        dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
+        concepts: ArchetypeIndexItem.findAllByPath('/'),
+        templateIndexes: OperationalTemplateIndex.list()]
     }
     
     def edit (Long id)

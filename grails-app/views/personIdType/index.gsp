@@ -7,7 +7,12 @@
     <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
-	 <div class="row">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+      </div>
+    </div>
+	 <div class="row row-grid">
 	   <div class="col-lg-12">
 	     <div class="btn-toolbar" role="toolbar">
 	       <g:link action="create">
@@ -18,14 +23,7 @@
         </div>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-      </div>
-    </div>
-
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>

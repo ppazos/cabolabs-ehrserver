@@ -46,7 +46,7 @@
         <div class="control-group">
             <label class="control-label"><g:message code="folder.ehr.label" default="EHR" /></label>
             <div class="controls">
-                <p class="form-control-static"><g:link controller="ehr" action="show" id="${folderInstance?.ehr?.id}">${folderInstance?.ehr?.encodeAsHTML()}</g:link></p>
+                <p class="form-control-static"><g:link controller="ehr" action="show" params="[uid: folderInstance?.ehr?.uid]">${folderInstance?.ehr?.encodeAsHTML()}</g:link></p>
             </div>
         </div>
         <div class="control-group">

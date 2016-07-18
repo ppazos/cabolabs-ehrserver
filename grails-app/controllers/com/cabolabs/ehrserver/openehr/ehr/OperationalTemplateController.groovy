@@ -12,10 +12,25 @@ class OperationalTemplateController {
    def config = Holders.config.app
    def xmlValidationService
    
-   def list()
+   def list(int max, int offset, String sort, String order, String concept)
    {
-      return [opts: OperationalTemplateIndex.list(params),
-             total: OperationalTemplateIndex.count()]
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
+      
+      def list
+      def c = OperationalTemplateIndex.createCriteria()
+      
+      list = c.list (max: max, offset: offset, sort: sort, order: order) {
+         if (concept)
+         {
+            like('concept', '%'+concept+'%')
+         }
+      }
+      
+      return [opts: list,
+             total: list.totalCount]
    }
    
    /**

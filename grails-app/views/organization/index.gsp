@@ -9,6 +9,11 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+      </div>
+    </div>
+    <div class="row row-grid">
+      <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
@@ -18,12 +23,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-      </div>
-    </div>
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>
@@ -40,7 +40,7 @@
 		      <tbody>
 		        <g:each in="${organizationInstanceList}" status="i" var="organizationInstance">
 		          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-		            <td><g:link action="show" id="${organizationInstance.id}">${fieldValue(bean: organizationInstance, field: "name")}</g:link></td>
+		            <td><g:link action="show" id="${organizationInstance.uid}">${fieldValue(bean: organizationInstance, field: "name")}</g:link></td>
 		            <td>${fieldValue(bean: organizationInstance, field: "number")}</td>
 		            <td>${fieldValue(bean: organizationInstance, field: "uid")}</td>
 		          </tr>

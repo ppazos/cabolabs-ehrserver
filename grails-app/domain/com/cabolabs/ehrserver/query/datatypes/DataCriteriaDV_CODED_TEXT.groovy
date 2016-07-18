@@ -44,7 +44,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
     static List criteriaSpec(String archetypeId, String path)
     {
        def optMan = OptManager.getInstance()
-       def arch = optMan.getReferencedArchetype(archetypeId)
+//       def arch = optMan.getReferencedArchetype(archetypeId)
        
        /*
        println "path "+ path
@@ -58,15 +58,30 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        println "node codes "+ arch.getNode(path + '/defining_code').xmlNode.code_list.text()
        */
        
+/* can be many for the one archetypeId
+       println "-------------"
+       println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
+       println "-------------"
+*/
+       
        // List of valid codes for the code criteria
        // The path received points to the DV_CODED_TEXT, the codes are in the child CODE_PRHASE
        def codes = [:]
        def code
+       
+       optMan.getNode(archetypeId, path + '/defining_code')?.xmlNode.code_list.each {
+          
+          code = it.text()
+          codes[code] = optMan.getText(archetypeId, code) // at00XX -> name
+       }
+       
+       /*
        arch.getNode(path + '/defining_code').xmlNode.code_list.each {
           
           code = it.text()
           codes[code] = arch.getText(code) // at00XX -> name
        }
+       */
        
        def spec = [
           [

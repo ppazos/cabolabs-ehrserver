@@ -4,15 +4,36 @@
   <head>
     <meta name="layout" content="admin">
     <g:set var="entityName" value="${message(code: 'ehr.label', default: 'Ehr')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="ehr.list.title" /></title>
+    <style>
+     /* adjusts the filder input width */
+     @media (min-width: 768px) {
+      #ipt_uid {
+       width: 320px;
+      }
+     }
+    </style>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+        <h1><g:message code="ehr.list.title" /></h1>
       </div>
     </div>
-    <div class="row">
+    <div class="row row-grid">
+      <div class="col-lg-12">
+        <g:form class="form-inline" action="list">
+          <input type="hidden" name="sort" value="${params.sort}" />
+          <input type="hidden" name="order" value="${params.order}" />
+          <div class="form-group">
+            <label for="ipt_uid">UID</label>
+            <input type="text" class="form-control" name="uid" id="ipt_uid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.uid}" />
+          </div>
+          <button type="submit" class="btn btn-default">Filter</button>
+        </g:form>
+      </div>
+    </div>
+    <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
           <div class="message alert alert-warning" role="status">${flash.message}</div>
@@ -21,8 +42,8 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" />
-                <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" />
+                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" params="${params}" />
+                <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" params="[uid: params.uid]" />
                 <th><g:message code="ehr.subject.label" default="Subject" /></th>
               </tr>
             </thead>

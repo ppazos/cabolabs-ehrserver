@@ -9,6 +9,22 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+      </div>
+    </div>
+    <div class="row row-grid">
+      <div class="col-md-6">
+        <g:form class="form-inline" action="index">
+          <input type="hidden" name="sort" value="${params.sort}" />
+          <input type="hidden" name="order" value="${params.order}" />
+          <div class="form-group">
+            <label for="ipt_un">Username</label>
+            <input type="text" class="form-control" name="username" id="ipt_un" value="${params?.username}" />
+          </div>
+          <button type="submit" class="btn btn-default">Filter</button>
+        </g:form>
+      </div>
+      <div class="col-md-6">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
@@ -18,12 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-      </div>
-    </div>
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>

@@ -20,6 +20,7 @@ import java.nio.file.AccessDeniedException
 import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.util.DateParser
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
 class XmlService {
 
@@ -29,6 +30,7 @@ class XmlService {
    def config = Holders.config.app
    def validationErrors = [:] // xsd validatios errros for the committed versions
    def xmlValidationService
+   def versionFSRepoService
    
    
    def processCommit(Ehr ehr, GPathResult versions, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
@@ -217,10 +219,12 @@ class XmlService {
       }
    }
    
+   /*
    private String versionFileName(GPathResult version)
    {
       return config.version_repo + version.uid.text().replaceAll('::', '_') +'.xml'
    }
+   */
    
    /**
     * Stores XML documents committed, as files.
@@ -238,21 +242,22 @@ class XmlService {
          | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
        */
       
-      // FIXME: this check should be done on setup
+      // FIXME: this check should be done on startup
       if (!new File(config.version_repo).canWrite()) throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       
       
       def file, path
       versions.version.each { version ->
          
-         path = versionFileName(version)
-         file = new File( path )
-         
-         //if (file.exists()) throw new FileAlreadyExistsException("Unable to save composition from commit, file ${path} already exists")
-         // Need to throw unchecked exception to make the service rollback
-         // Ref: http://www.jellyfishtechnologies.com/services-grails-transactional-behaviour/
-         if (file.exists()) throw new RuntimeException("Unable to save composition from commit, file ${path} already exists. Maybe you committed the same version twice?")
-         
+         try
+         {
+            file = versionFSRepoService.getNonExistingVersionFile(version.uid.text())
+         }
+         catch (FileAlreadyExistsException e)
+         {
+            throw new RuntimeException("Unable to save composition from commit, file ${path} already exists. Maybe you committed the same version twice?", e)
+         }
+
          // FIXME: check if the XML has the namespace declarations of the root node from the commit
          file << groovy.xml.XmlUtil.serialize( version )
       }

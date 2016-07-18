@@ -301,17 +301,14 @@ table.dataTable thead .sorting:after {
 .panel-green {
     border-color: #5cb85c;
 }
-
 .panel-green .panel-heading {
     border-color: #5cb85c;
     color: #fff;
     background-color: #5cb85c;
 }
-
 .panel-green a {
     color: #5cb85c;
 }
-
 .panel-green a:hover {
     color: #3d8b3d;
 }
@@ -319,17 +316,14 @@ table.dataTable thead .sorting:after {
 .panel-red {
     border-color: #d9534f;
 }
-
 .panel-red .panel-heading {
     border-color: #d9534f;
     color: #fff;
     background-color: #d9534f;
 }
-
 .panel-red a {
     color: #d9534f;
 }
-
 .panel-red a:hover {
     color: #b52b27;
 }
@@ -337,17 +331,14 @@ table.dataTable thead .sorting:after {
 .panel-yellow {
     border-color: #f0ad4e;
 }
-
 .panel-yellow .panel-heading {
     border-color: #f0ad4e;
     color: #fff;
     background-color: #f0ad4e;
 }
-
 .panel-yellow a {
     color: #f0ad4e;
 }
-
 .panel-yellow a:hover {
     color: #df8a13;
 }
@@ -361,10 +352,33 @@ div.controls {
 }
 div.btn-toolbar {
 	margin-left: 0;
-	margin-top: 15px;
+	/*margin-top: 15px;*/
+	text-align: right;
 }
 
 .error > input, .error > select, .error > textarea {
 	border: 1px solid #d9534f;
 	background-color: #f2dede;
+}
+
+/** Adds vertical space between colums collapsed as rows for responsive **/
+/** src https://coderwall.com/p/0jezca/vertical-spacing-for-bootstrap-columns **/
+.row.row-grid [class*="col-"] + [class*="col-"] {
+  margin-top: 15px;
+}
+
+@media (min-width: 1200px) {
+  .row.row-grid [class*="col-lg-"] + [class*="col-lg-"] {
+    margin-top: 0;
+  }
+}
+@media (min-width: 992px) {
+  .row.row-grid [class*="col-md-"] + [class*="col-md-"] {
+    margin-top: 0;
+  }
+}
+@media (min-width: 768px) {
+  .row.row-grid [class*="col-sm-"] + [class*="col-sm-"] {
+    margin-top: 0;
+  }
 }
