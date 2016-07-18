@@ -29,7 +29,7 @@ grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
         // specify dependency exclusions here; for example, uncomment this to disable ehcache:
-        // excludes 'ehcache'
+        // excludes 'ehcache'		
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -80,12 +80,14 @@ grails.project.dependency.resolution = {
        */
 	   
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
-         excludes "commons-logging", "xml-apis", "groovy"
+         excludes "commons-logging", "xml-apis", "groovy", "nekohtml"
        }
 
        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        
-       compile 'xerces:xercesImpl:2.11.0'
+       //compile 'xerces:xercesImpl:2.11.0'	   
+	   compile group: 'de.odysseus.staxon', name: 'staxon', version: '1.2'
+	   compile group: 'com.cabolabs', name:'openEHR-OPT', version:'1.0'
        
        compile "mysql:mysql-connector-java:5.1.22"
        
