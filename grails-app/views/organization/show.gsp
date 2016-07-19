@@ -26,9 +26,12 @@
 	       <div class="control"><g:fieldValue bean="${organizationInstance}" field="number"/></div>
 	     </div>
 	     <div class="control-group">
-          <label><g:message code="organization.uid.label" default="Uid" /></label>
+          <label><g:message code="organization.uid.label" default="UID" /></label>
 	       <div class="control"><g:fieldValue bean="${organizationInstance}" field="uid"/></div>
 	     </div>
+	     <div class="control-group">
+          <label><g:link controller="ehr" action="list" params="[organizationUid:organizationInstance.uid]"><g:message code="organization.ehrs.label" default="EHRs" /></g:link></label>
+        </div>
 	     <g:form url="[resource:organizationInstance, action:'delete']" method="DELETE">
 	       <fieldset class="buttons">
 	         <g:link action="edit" id="${organizationInstance.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>

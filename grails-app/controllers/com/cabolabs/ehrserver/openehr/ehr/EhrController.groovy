@@ -16,6 +16,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
+import com.cabolabs.security.User
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 
 class EhrController {
@@ -38,7 +39,7 @@ class EhrController {
     * @param uid filter of partial uid
     * @return
     */
-   def list(int max, int offset, String sort, String order, String uid)
+   def list(int max, int offset, String sort, String order, String uid, String organizationUid)
    {
       max = Math.min(max ?: 10, 100)
       if (!offset) offset = 0
@@ -56,9 +57,14 @@ class EhrController {
           * if the criteria is empty, does the same as .list (works as expected)
           */
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            // filters
             if (uid)
             {
                like('uid', '%'+uid+'%')
+            }
+            if (organizationUid)
+            {
+               like('organizationUid', '%'+organizationUid+'%')
             }
          }
       }
@@ -73,7 +79,17 @@ class EhrController {
 
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             //eq ('organizationUid', org.uid) // same org as used for login
-            'in'('organizationUid', orgs.uid) // from all the orgs of the logged user
+            if (organizationUid)
+            {
+               and {
+                  like('organizationUid', '%'+organizationUid+'%') // filter
+                  'in'('organizationUid', orgs.uid) // from all the orgs of the logged user
+               }
+            }
+            else
+            {
+               'in'('organizationUid', orgs.uid) // from all the orgs of the logged user
+            }
             if (uid)
             {
                like('uid', '%'+uid+'%')

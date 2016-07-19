@@ -8,8 +8,8 @@
     <style>
      /* adjusts the filder input width */
      @media (min-width: 768px) {
-      #ipt_uid {
-       width: 320px;
+      #ipt_uid, #ipt_orguid {
+       width: 310px;
       }
      }
     </style>
@@ -28,6 +28,10 @@
           <div class="form-group">
             <label for="ipt_uid">UID</label>
             <input type="text" class="form-control" name="uid" id="ipt_uid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.uid}" />
+          </div>
+          <div class="form-group">
+            <label for="ipt_orguid">Org UID</label>
+            <input type="text" class="form-control" name="organizationUid" id="ipt_orguid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.organizationUid}" />
           </div>
           <button type="submit" class="btn btn-default">Filter</button>
         </g:form>
