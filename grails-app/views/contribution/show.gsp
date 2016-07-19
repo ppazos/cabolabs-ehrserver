@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'contribution.label', default: 'Contribution')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="contribution.show.title" /></title>
     <style>
     .icon {
       width: 48px;
@@ -42,7 +41,7 @@
     <div class="row">
       <div class="col-lg-12">
 	     <h1>
-	       <g:message code="default.show.label" args="[entityName]" />
+	       <g:message code="contribution.show.title" />
 	     </h1>
       </div>
     </div>
@@ -54,45 +53,45 @@
 	      </g:if>
 	      
 	      <div class="control-group">
-            <label class="control-label"><g:message code="contribution.uid.label" default="UID" /></label>
+            <label class="control-label"><g:message code="contribution.attr.uid" /></label>
             <div class="controls">
-                <p class="form-control-static"><g:fieldValue bean="${contributionInstance}" field="uid"/></p>
+               <p class="form-control-static"><g:fieldValue bean="${contributionInstance}" field="uid"/></p>
             </div>
          </div>
          <div class="control-group">
-            <label class="control-label"><g:message code="contribution.ehr.label" default="EHR" /></label>
+            <label class="control-label"><g:message code="contribution.attr.ehr" /></label>
             <div class="controls">
-                <p class="form-control-static"><g:link controller="ehr" action="show" params="[uid: contributionInstance.ehr.uid]">${contributionInstance.ehr.uid}</g:link></p>
+               <p class="form-control-static"><g:link controller="ehr" action="show" params="[uid: contributionInstance.ehr.uid]">${contributionInstance.ehr.uid}</g:link></p>
             </div>
          </div>
          
-         <h2><g:message code="contribution.audit.label" default="Audit details" /></h2>
+         <h2><g:message code="contribution.audit.title" /></h2>
          
          <div class="control-group">
-            <label class="control-label"><g:message code="contribution.systemId.label" default="System id" /></label>
+            <label class="control-label"><g:message code="autit.attr.systemId" /></label>
             <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.systemId}</p>
+               <p class="form-control-static">${contributionInstance?.audit?.systemId}</p>
             </div>
          </div>
          <div class="control-group">
-            <label class="control-label"><g:message code="contribution.timeCommitted.label" default="Time committed" /></label>
+            <label class="control-label"><g:message code="audit.attr.timeCommitted" /></label>
             <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.timeCommitted}</p>
+               <p class="form-control-static">${contributionInstance?.audit?.timeCommitted}</p>
             </div>
          </div>
          <div class="control-group">
-            <label class="control-label"><g:message code="contribution.committer.label" default="Committer" /></label>
+            <label class="control-label"><g:message code="audir.attr.committer" /></label>
             <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}</p>
+               <p class="form-control-static">${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}</p>
             </div>
          </div>
 	      
-	      <h2><g:message code="contribution.versions.label" default="Committed versions" /></h2>
+	      <h2><g:message code="contribution.versions.title" /></h2>
 	      
 	      <div class="control-group">
-            <label class="control-label"><g:message code="contribution.versions.label" default="Versions" /></label>
+            <label class="control-label"><g:message code="contribution.versions.label" /></label>
             <div class="controls">
-                <p class="form-control-static">${contributionInstance.versions.size()}</p>
+               <p class="form-control-static">${contributionInstance.versions.size()}</p>
             </div>
          </div>
 
@@ -100,10 +99,10 @@
            <div class="table-responsive" id="versions">
              <table class="table table-striped table-bordered table-hover">
                <tr>
-                 <th>uid</th>
-                 <th>start time</th>
-                 <th>type</th>
-                 <th>change type</th>
+			        <th><g:message code="version.attr.uid" /></th>
+			        <th><g:message code="composition.attr.startTime" /></th>
+			        <th><g:message code="composition.attr.archetypeId" /></th>
+			        <th><g:message code="audit.attr.changeType" /></th>
                  <th></th>
                </tr>
                <g:each in="${contributionInstance.versions}" var="version">

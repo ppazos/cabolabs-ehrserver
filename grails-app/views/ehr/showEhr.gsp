@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'ehr.label', default: 'Ehr')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="ehr.show.title" /></title>
     <style>
     tr:hover {
      background: none;
@@ -133,7 +132,7 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1 class="hidden_uid">EHR</h1>
+        <h1 class="hidden_uid"><g:message code="ehr.show.title" /></h1>
       </div>
     </div>
     
@@ -150,13 +149,13 @@
         </g:if>
         
         <div class="control-group">
-          <label class="control-label"><g:message code="ehr.uid.label" default="UID" /></label>
+          <label class="control-label"><g:message code="ehr.list.attr.uid" /></label>
           <div class="controls">
             <p class="form-control-static">${ehr.uid}</p>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"><g:message code="ehr.organization.label" default="Organization" /></label>
+          <label class="control-label"><g:message code="ehr.list.attr.organization" /></label>
           <div class="controls">
             <p class="form-control-static">
               <g:link controller="organization" action="show" id="${ehr.organizationUid}"><g:fieldValue bean="${ehr}" field="organizationUid"/></g:link>
@@ -164,13 +163,13 @@
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"><g:message code="ehr.dateCreated.label" default="Date Created" /></label>
+          <label class="control-label"><g:message code="ehr.list.attr.dateCreated" /></label>
           <div class="controls">
             <p class="form-control-static"><g:formatDate date="${ehr?.dateCreated}" /></p>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"><g:message code="ehr.systemId.label" default="System Id" /></label>
+          <label class="control-label"><g:message code="ehr.show.attr.systemId" /></label>
           <div class="controls">
             <p class="form-control-static"><g:fieldValue bean="${ehr}" field="systemId"/></p>
           </div>

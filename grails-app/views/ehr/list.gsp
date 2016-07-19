@@ -3,7 +3,6 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'ehr.label', default: 'Ehr')}" />
     <title><g:message code="ehr.list.title" /></title>
     <style>
      /* adjusts the filder input width */
@@ -26,14 +25,14 @@
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
-            <label for="ipt_uid">UID</label>
+            <label for="ipt_uid"><g:message code="filters.uid" /></label>
             <input type="text" class="form-control" name="uid" id="ipt_uid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.uid}" />
           </div>
           <div class="form-group">
-            <label for="ipt_orguid">Org UID</label>
+            <label for="ipt_orguid"><g:message code="filters.organizationUid" /></label>
             <input type="text" class="form-control" name="organizationUid" id="ipt_orguid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.organizationUid}" />
           </div>
-          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default"><g:message code="filters.action" /></button>
         </g:form>
       </div>
     </div>
@@ -46,10 +45,10 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" params="${params}" />
-                <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" params="[uid: params.uid]" />
-                <th><g:message code="ehr.subject.label" default="Subject" /></th>
-                <th><g:message code="ehr.organization.label" default="Organization" /></th>
+                <g:sortableColumn property="uid" title="${message(code: 'ehr.list.attr.uid')}" params="${params}" />
+                <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.list.attr.dateCreated')}" params="[uid: params.uid]" />
+                <th><g:message code="ehr.list.attr.subject" /></th>
+                <th><g:message code="ehr.list.attr.organization" /></th>
               </tr>
             </thead>
             <tbody>

@@ -27,8 +27,8 @@ y muestra todas las compositions de la contrib:
    <div class="table-responsive" id="versions">
      <table class="table table-striped table-bordered table-hover">
 	    <tr>
-	      <th>time committed</th>
-	      <th>committer</th>
+	      <th><g:message code="contribution.attr.timeCommitted" /></th>
+	      <th><g:message code="contribution.attr.committer" /></th>
 	    </tr>
 	    <g:render template="../contribution/contributionRow" model="[contribution:contribution]"/>
 	  </table>
@@ -44,7 +44,7 @@ y muestra todas las compositions de la contrib:
 //$(document).ready(function() {
 
    var series = [];
-   var serie = { name: 'contributions', data: [] };
+   var serie = { name: '${message(code:"contribution.list.title")}', data: [] };
 
    <%
    contributions.each { contrib ->
@@ -81,7 +81,7 @@ y muestra todas las compositions de la contrib:
        selected : 1
      },
      title: {
-        text: 'Contributions'
+        text: '${message(code:"contribution.list.title")}'
      },
      xAxis: {
         type: 'datetime',
@@ -103,7 +103,7 @@ y muestra todas las compositions de la contrib:
      },
      yAxis: {
         title: {
-          text: 'Contributions'
+          text: '${message(code:"contribution.list.title")}'
         },
         allowDecimals: false, // no decimals on y, just integers
      },
@@ -118,23 +118,23 @@ y muestra todas las compositions de la contrib:
      },
      plotOptions: {
         scatter:  {
-                marker: {
-                    radius: 3,
-                    states: {
-                        hover: {
-                            enabled: true,
-                            lineColor: 'rgb(100,100,100)'
-                        }
-                    }
-                },
-                states: {
-                    hover: {
-                        marker: {
-                            enabled: false
-                        }
-                    }
-                }
-            }
+           marker: {
+               radius: 3,
+               states: {
+                   hover: {
+                       enabled: true,
+                       lineColor: 'rgb(100,100,100)'
+                   }
+               }
+           },
+           states: {
+               hover: {
+                   marker: {
+                       enabled: false
+                   }
+               }
+           }
+        }
      },
      series: series
    });

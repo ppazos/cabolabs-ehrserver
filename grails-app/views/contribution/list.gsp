@@ -3,13 +3,12 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'contribution.label', default: 'Contribution')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="contribution.list.title" /></title>
     <asset:javascript src="highcharts/highcharts.js" />
     <script type="text/javascript">
 
       var series = [];
-      var serie = { name: 'contributions', data: [] };
+      var serie = { name: '${message(code:"contribution.list.title")}', data: [] };
     
 	   <%
       println 'var start = Date.UTC('+ (start.year + 1900) +','+ (start.month - 1) +','+ start.date +');'
@@ -38,7 +37,7 @@
               zoomType: 'x'
            },
            title: {
-               text: 'Contributions'
+               text: '${message(code:"contribution.list.title")}'
            },
            subtitle: {
                text: ''
@@ -60,7 +59,7 @@
                min: 0,
                allowDecimals: false, // no decimals on y, just integers
                title: {
-                   text: 'Count'
+                   text: '${message(code:"contribution.list.chartY")}'
                }
            },
            tooltip: {
@@ -105,10 +104,10 @@
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
-            <label for="ipt_ehr">EHR</label>
+            <label for="ipt_ehr"><g:message code="contribution.attr.ehr" /></label>
             <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.ehdUid}" />
           </div>
-          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default"><g:message code="filters.action" /></button>
         </g:form>
       </div>
     </div>
@@ -128,11 +127,11 @@
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
-		            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" params="${params}" />
-		            <th>EHR</th>
+		            <g:sortableColumn property="uid" title="${message(code:'contribution.attr.uid')}" params="${params}" />
+		            <th><g:message code="contribution.attr.ehr" /></th>
 		            <%-- uses the id because is easier than sorting by timeCommitted and have the same order --%>
-		            <g:sortableColumn property="id" title="${message(code: 'contribution.timeCommitted.label', default: 'Time Committed')}" params="${params}" />
-		            <th># Versions</th>
+		            <g:sortableColumn property="id" title="${message(code:'contribution.attr.timeCommitted')}" params="${params}" />
+		            <th><g:message code="contribution.list.versionCount" /></th>
 		          </tr>
 		        </thead>
 		        <tbody>
