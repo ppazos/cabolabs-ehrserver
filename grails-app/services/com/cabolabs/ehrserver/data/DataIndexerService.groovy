@@ -11,6 +11,7 @@ import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import java.io.FileNotFoundException
 
 @Transactional
 class DataIndexerService {
@@ -56,7 +57,7 @@ class DataIndexerService {
        }
        catch (FileNotFoundException e)
        {
-          log.info "avoid indexing "+ versionFile.absolutePath +" file not found"
+          log.info "avoid indexing version "+ version.uid +" "+ e.message
           return // Continue with next compoIdx
        }
        
