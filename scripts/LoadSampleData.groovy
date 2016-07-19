@@ -123,6 +123,16 @@ if (PersonIdType.count() == 0)
 		   role: 'pat',
 		   uid: '55555555-1111-1111-1111-111111111111'
 	   )
+	   new Person(
+		   firstName: 'test',
+		   lastName: 'test',
+		   dob: new Date(92, 1, 5),
+		   sex: 'F',
+		   idCode: '0000000-0',
+		   idType: PersonIdType.get(1).code,
+		   role: 'pat',
+		   uid: '00000000-1111-0000-1111-000000000000'
+	   )
 	]
 	
 	def c = Organization.count()
