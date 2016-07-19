@@ -169,6 +169,7 @@ class PersonController {
 
       try
       {
+         // TODO: if this is a patient and has an EHR, mark the EHR as deleted
          personInstance.deleted = true
          personInstance.save(flush:true)
          flash.message = message(code: 'person.delete.deletedOk')

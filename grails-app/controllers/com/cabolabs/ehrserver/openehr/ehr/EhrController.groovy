@@ -48,6 +48,8 @@ class EhrController {
       def list
       def c = Ehr.createCriteria()
       
+      // TODO: filter by deleted
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          /*
@@ -64,10 +66,14 @@ class EhrController {
       {
          // auth token used to login
          def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         //def org = Organization.findByNumber(auth.organization)
+         def un = auth.principal.username
+         def us = User.findByUsername(un)
+         def orgs = us.organizations
 
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            eq ('organizationUid', org.uid)
+            //eq ('organizationUid', org.uid) // same org as used for login
+            'in'('organizationUid', orgs.uid) // from all the orgs of the logged user
             if (uid)
             {
                like('uid', '%'+uid+'%')

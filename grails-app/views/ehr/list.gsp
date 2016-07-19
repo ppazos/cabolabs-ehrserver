@@ -45,6 +45,7 @@
                 <g:sortableColumn property="uid" title="${message(code: 'ehr.uid.label', default: 'UID')}" params="${params}" />
                 <g:sortableColumn property="dateCreated" title="${message(code: 'ehr.dateCreated.label', default: 'Date Created')}" params="[uid: params.uid]" />
                 <th><g:message code="ehr.subject.label" default="Subject" /></th>
+                <th><g:message code="ehr.organization.label" default="Organization" /></th>
               </tr>
             </thead>
             <tbody>
@@ -53,6 +54,7 @@
                   <td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
                   <td>${fieldValue(bean: ehrInstance, field: "dateCreated")}</td>
                   <td><g:link controller="person" action="show" params="[uid:ehrInstance.subject.value]">${ehrInstance.subject.value}</g:link></td>
+                  <td><g:link controller="organization" action="show" params="[uid:ehrInstance.organizationUid]">${fieldValue(bean: ehrInstance, field: "organizationUid")}</g:link></td>
                 </tr>
               </g:each>
             </tbody>
