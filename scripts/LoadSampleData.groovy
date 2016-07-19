@@ -122,7 +122,7 @@ if (PersonIdType.count() == 0)
 		   idType: PersonIdType.get(1).code,
 		   role: 'pat',
 		   uid: '55555555-1111-1111-1111-111111111111'
-	   )
+	   ),
 	   new Person(
 		   firstName: 'test',
 		   lastName: 'test',

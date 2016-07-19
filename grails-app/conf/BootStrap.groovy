@@ -513,6 +513,7 @@ class BootStrap {
 	 def files = []
 	 switch(Environment.current) {
 		 case Environment.DEVELOPMENT:
+		 case Environment.TEST:
 			 files << 'scripts/LoadSampleData.groovy'
 			 break
 	 }
