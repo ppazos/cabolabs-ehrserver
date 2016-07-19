@@ -196,7 +196,7 @@
                onSuccess="highlight_filtered_data()"
                class="btn btn-default btn-md" />
              
-            <input type="reset" value="${message(code:'form.action.reset')}" onclick="javascript:location.reload()" class="btn btn-default btn-md" />
+            <input type="reset" value="${message(code:'filters.reset')}" onclick="javascript:location.reload()" class="btn btn-default btn-md" />
           </g:form>
         </div>
         
