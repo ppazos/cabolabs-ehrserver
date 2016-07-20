@@ -52,6 +52,8 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+		
+		mavenRepo "https://raw.github.com/jagedn/openEHR-OPT/mvn-repo/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -87,6 +89,7 @@ grails.project.dependency.resolution = {
        
        //compile 'xerces:xercesImpl:2.11.0'
        compile group: 'de.odysseus.staxon', name: 'staxon', version: '1.2'
+	   compile group: 'com.cabolabs', name:'openEHR-OPT', version:'1.0'
        
        compile "mysql:mysql-connector-java:5.1.22"
        
