@@ -36,7 +36,7 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "update"
+            dbCreate = "create-drop"
             String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
