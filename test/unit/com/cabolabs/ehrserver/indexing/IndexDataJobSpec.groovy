@@ -135,7 +135,7 @@ class IndexDataJobSpec extends Specification {
         DvCodedTextIndex.count() == 1
         def dvct = DvCodedTextIndex.first()
         dvct.value == 'event'
-        dvct.code == '443'
+        dvct.code == '433'
    }
    
    
