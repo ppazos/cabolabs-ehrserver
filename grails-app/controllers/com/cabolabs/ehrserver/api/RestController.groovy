@@ -302,7 +302,17 @@ class RestController {
        *  </version>
        * </version>
        */
+      // Works only if the XML is directly in the body, if the content type
+      // is form urlencoded, it should be accessed via a param. If the content
+      // type is multipart/form-data, it should be request.getFile('paramname')
+      // content type application/xml is accessed via request.reader?.text
+      // ref: http://stackoverflow.com/questions/3831680/httpservletrequest-get-json-post-data
+      // ref: http://stackoverflow.com/questions/9464398/reading-from-a-file-using-the-input-type-file-in-grails
       def versionsXML = request.reader?.text // GString
+      
+      
+      println request.contentType
+      
       
       // 2. versions deben venir 1 por lo menos haber una
       if (!versionsXML)
