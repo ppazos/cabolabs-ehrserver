@@ -228,7 +228,7 @@
                 </div>
                 <div class="col-xs-9 text-right">
                   <div class="huge">${(org_repo_size.value / 1024).setScale(2,0)} KB</div>
-                  <div><g:link controller="organization" action="show" id="${org_repo_size.key.id}">${org_repo_size.key.name}</g:link></div>
+                  <div><g:link controller="organization" action="show" id="${org_repo_size.key.uid}">${org_repo_size.key.name}</g:link></div>
                 </div>
               </div>
             </div>
