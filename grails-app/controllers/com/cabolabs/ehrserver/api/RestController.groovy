@@ -693,6 +693,9 @@ class RestController {
    @SecuredStateless
    def patientList(String format, int max, int offset)
    {
+	if( params.uid ){
+		return patient(params.uid, format)
+	}
       // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0

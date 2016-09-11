@@ -75,7 +75,7 @@ class UrlMappings {
       )
 
       // /rest/patientList por /rest/patients -- list of all patients
-      "/rest/patients"(
+      "/rest/patients/$uid?"(
          controller: 'rest',
          action: 'patientList',
          method: 'GET'
@@ -84,12 +84,12 @@ class UrlMappings {
          controller: 'rest',
          action: 'createPerson',
          method: 'POST'
-      )          
+      )/*          
       "/rest/patients/$uid"( 
          controller: 'rest',
          action: 'patient',
          method: 'GET'
-      )
+      )*/
       "/rest/person"( /* FIXME: we should have one url for creating people, now we have also /patients ^ */
          controller: 'rest',
          action: 'createPerson',
