@@ -22,27 +22,27 @@ class VersionFSRepoService {
    
    def getRepoSizeInBytes(String orguid)
    {
-      def c = Version.createCriteria()
-      def orgversions = c.list () {
-         projections {
-            property('uid')
-         }
-         contribution {
-            eq('organizationUid', orguid)
-         }
-      }
-      
-      // if we add the size to the version on the DB we don't need to process the file system
-      def v, size = 0
-      orgversions.each { version_uid ->
-         v = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
-         size += v.length()
-      }
-      
-      return size
+      return getRepoSizeInBytesFiltered(orguid, filter_null)
    }
    
    def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
+   {
+      return getRepoSizeInBytesFiltered(orguid, filter_file_last_modified_between.curry(from.time).curry(to.time))
+   }
+   
+   /**
+    * The following closures are for reusing the code to calculate the
+    * size of an org repo.
+    */
+   def filter_file_last_modified_between = { min, max, f ->
+      return min <= f.lastModified() && f.lastModified() < max
+   }
+
+   def filter_null = {
+      return true
+   }
+   
+   private int getRepoSizeInBytesFiltered(String orguid, Closure filter)
    {
       def c = Version.createCriteria()
       def orgversions = c.list () {
@@ -59,13 +59,8 @@ class VersionFSRepoService {
       orgversions.each { version_uid ->
          v = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
          
-         println v.lastModified()
-         println from.time
-         println to.time
-         
-         if (from.time < v.lastModified() && v.lastModified() < to.time)
+         if (filter.call(v))
          {
-            println "between"
             size += v.length()
          }
       }
