@@ -4,25 +4,7 @@
   <head>
     <meta name="layout" content="admin">
     <style type="text/css">
-      html,body{
-        height:100%;
-        background-color:#efefef;
-        font-family: arial;
-        background-image: -moz-linear-gradient(center top, #ddd, #efefef);
-        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ddd), color-stop(1, #efefef));
-        background-image: linear-gradient(top, #ddd, #efefef);
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#dddddd', EndColorStr = '#efefef');
-        background-repeat: no-repeat;
-        height: 100%;
-        /* change the box model to exclude the padding from the calculation of 100% height (IE8+) */
-        -webkit-box-sizing: border-box;
-           -moz-box-sizing: border-box;
-                box-sizing: border-box;
-        
-        margin: 0;
-        padding: 0;
-        padding-bottom: 15px;
-      }
+
       
       .gi-3x{font-size: 3em;}
       .gi-4x{font-size: 4em;}
@@ -59,26 +41,6 @@
         border-radius: 8px;
         
         width: 540px;
-      }
-      
-      h1 {
-        background-color: #ddd;
-      }
-      
-      .error {
-        /* TODO: meter icono de error ! */
-        border: 1px solid #f00;
-        background-color: #f99;
-        padding: 2px;
-        margin-bottom: 3px;
-      }
-      .error ul {
-        list-style:none;
-        margin:0;
-        padding:0;
-      }
-      img {
-        border: 0px;
       }
       
 
@@ -139,7 +101,7 @@
                       </div>
                       <div class="col-xs-9 text-right">
                           <div class="huge">${transactions}</div>
-                          <div><g:message code="desktop.ehrs" /></div>
+                          <div><g:message code="stats.transactions" /></div>
                       </div>
                   </div>
               </div>
@@ -161,7 +123,7 @@
                       </div>
                       <div class="col-xs-9 text-right">
                           <div class="huge">${documents}</div>
-                          <div><g:message code="desktop.contributions" /></div>
+                          <div><g:message code="stats.documents" /></div>
                       </div>
                   </div>
               </div>
@@ -182,8 +144,8 @@
                           <i class="glyphicon glyphicon-search gi-4x"></i>
                       </div>
                       <div class="col-xs-9 text-right">
-                          <div class="huge">${size}</div>
-                          <div><g:message code="desktop.queries" /></div>
+                          <div class="huge">${(size / 1024).setScale(2,0)} KB</div>
+                          <div><g:message code="stats.size" /></div>
                       </div>
                   </div>
               </div>

@@ -34,14 +34,9 @@ class StatsController {
          to = cal.getTimeInMillis()
       }
    
-      println from
-      println to
-   
       def dfrom = new Date(from)
       def dto   = new Date(to)
       
-      println dfrom
-      println dto
    
       // Number of transactions
       def contributions = Contribution.withCriteria {
@@ -73,6 +68,6 @@ class StatsController {
       
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
       
-      [transactions: contributions, documents: versions, size: size]
+      [transactions: contributions[0], documents: versions[0], size: size]
    }
 }

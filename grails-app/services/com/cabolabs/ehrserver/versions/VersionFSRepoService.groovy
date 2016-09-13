@@ -59,8 +59,13 @@ class VersionFSRepoService {
       orgversions.each { version_uid ->
          v = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
          
-         if (v.lastModified() in from.time..to.time)
+         println v.lastModified()
+         println from.time
+         println to.time
+         
+         if (from.time < v.lastModified() && v.lastModified() < to.time)
          {
+            println "between"
             size += v.length()
          }
       }
