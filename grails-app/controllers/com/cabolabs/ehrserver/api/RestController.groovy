@@ -873,7 +873,7 @@ class RestController {
 
    
    @SecuredStateless
-   def queryList(String format,String queryName,String descriptionContains,int max, int offset)
+   def queryList(String format, String queryName, String descriptionContains,int max, int offset)
    {
       //println params 
       // Paginacion
@@ -927,7 +927,7 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            renderFormatNotSupportedError()
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
