@@ -3,13 +3,12 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'organization.label', default: 'Organization')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="organization.list.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+        <h1><g:message code="organization.list.title" /></h1>
       </div>
     </div>
     <div class="row row-grid">
@@ -17,7 +16,7 @@
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="[entityName]" />
+              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="common.action.create" />
             </button>
           </g:link>
         </div>

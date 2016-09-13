@@ -61,7 +61,7 @@
     margin-top: 15px;
   }
   h1 {
-    margin: 10px 0 0 0;
+    margin: 10px 0 10px 0;
   }
   
   /**

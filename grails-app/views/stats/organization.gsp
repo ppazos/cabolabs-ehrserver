@@ -92,12 +92,12 @@
   </head>
   <body>
     <div class="row content">
-      <div class="col-lg-4 col-md-6">
+      <div class="col-md-4">
           <div class="panel panel-primary">
               <div class="panel-heading">
                   <div class="row">
                       <div class="col-xs-3">
-                          <i class="fa fa-book fa-4x"></i>
+                          <i class="fa fa-exchange fa-4x"></i>
                       </div>
                       <div class="col-xs-9 text-right">
                           <div class="huge">${transactions}</div>
@@ -107,19 +107,19 @@
               </div>
               <g:link controller="ehr" action="list">
                   <div class="panel-footer">
-                      <span class="pull-left">View Details</span>
+                      <span class="pull-left"><g:message code="desktop.view_details" /></span>
                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                       <div class="clearfix"></div>
                   </div>
               </g:link>
           </div>
       </div>
-      <div class="col-lg-4 col-md-6">
+      <div class="col-md-4">
           <div class="panel panel-green">
               <div class="panel-heading">
                   <div class="row">
                       <div class="col-xs-3">
-                          <i class="fa fa-arrows-v fa-4x"></i>
+                          <i class="fa fa-file-o fa-4x"></i>
                       </div>
                       <div class="col-xs-9 text-right">
                           <div class="huge">${documents}</div>
@@ -129,19 +129,19 @@
               </div>
               <g:link controller="contribution" action="list">
                   <div class="panel-footer">
-                      <span class="pull-left">View Details</span>
+                      <span class="pull-left"><g:message code="desktop.view_details" /></span>
                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                       <div class="clearfix"></div>
                   </div>
               </g:link>
           </div>
       </div>
-      <div class="col-lg-4 col-md-6">
+      <div class="col-md-4">
           <div class="panel panel-yellow">
               <div class="panel-heading">
                   <div class="row">
                       <div class="col-xs-3">
-                          <i class="glyphicon glyphicon-search gi-4x"></i>
+                          <i class="fa fa-database fa-4x"></i>
                       </div>
                       <div class="col-xs-9 text-right">
                           <div class="huge">${(size / 1024).setScale(2,0)} KB</div>
@@ -151,7 +151,7 @@
               </div>
               <g:link controller="query" action="list">
                   <div class="panel-footer">
-                      <span class="pull-left">View Details</span>
+                      <span class="pull-left"><g:message code="desktop.view_details" /></span>
                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                       <div class="clearfix"></div>
                   </div>

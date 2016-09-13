@@ -138,55 +138,49 @@
     
     <div class="row">
       <div class="col-lg-12">
-        <g:render template="/person/patientData" model="[person: ehr.subject.person]" />
+        
+        <g:if test="${flash.message}">
+          <div class="message" role="status">${flash.message}</div>
+        </g:if>
+        
+        <table class="table">
+          <tbody>
+            <g:render template="/person/patientData" model="[person: ehr.subject.person]" />
+            <tr>
+              <th><g:message code="ehr.list.attr.uid" /></th>
+              <td>${ehr.uid}</td>
+            </tr>
+            <tr>
+              <th><g:message code="ehr.list.attr.organization" /></th>
+              <td><g:link controller="organization" action="show" id="${ehr.organizationUid}"><g:fieldValue bean="${ehr}" field="organizationUid"/></g:link></td>
+            </tr>
+            <tr>
+              <th><g:message code="ehr.list.attr.dateCreated" /></th>
+              <td><g:formatDate date="${ehr?.dateCreated}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="ehr.show.attr.systemId" /></th>
+              <td><g:fieldValue bean="${ehr}" field="systemId"/></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
     <div class="row">
       <div class="col-lg-12">
-        <g:if test="${flash.message}">
-          <div class="message" role="status">${flash.message}</div>
-        </g:if>
-        
-        <div class="control-group">
-          <label class="control-label"><g:message code="ehr.list.attr.uid" /></label>
-          <div class="controls">
-            <p class="form-control-static">${ehr.uid}</p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="ehr.list.attr.organization" /></label>
-          <div class="controls">
-            <p class="form-control-static">
-              <g:link controller="organization" action="show" id="${ehr.organizationUid}"><g:fieldValue bean="${ehr}" field="organizationUid"/></g:link>
-            </p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="ehr.list.attr.dateCreated" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:formatDate date="${ehr?.dateCreated}" /></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="ehr.show.attr.systemId" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${ehr}" field="systemId"/></p>
-          </div>
-        </div>
- 
-
         <h2><g:message code="ehr.show.contributions" /></h2>
 
         <div class="composition_filters">
-          <g:form id="${ehr.id}">
-            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" />
-            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" />
+          <g:form id="${ehr.id}" class="form-inline">
+            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" class="form-control" />
+            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" class="form-control" />
              
             <g:message code="filter.rootArchetypeId" />
             <g:select name="qarchetypeId"
                       from="${CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }"
-                      noSelection="['':'']" />
+                      noSelection="['':'']"
+                      class="form-control" />
                             
             <g:submitToRemote
                url="[action:'ehrContributions', id:ehr.id]"
