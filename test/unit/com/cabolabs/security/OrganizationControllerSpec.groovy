@@ -135,7 +135,7 @@ class OrganizationControllerSpec extends Specification {
             controller.update(organization)
 
         then:"A redirect is issues to the show action"
-            response.redirectedUrl == "/organization/show/$organization.id"
+            response.redirectedUrl == "/organization/show/$organization.uid"
             flash.message != null
     }
 

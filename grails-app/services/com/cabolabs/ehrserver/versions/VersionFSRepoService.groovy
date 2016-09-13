@@ -42,6 +42,32 @@ class VersionFSRepoService {
       return size
    }
    
+   def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
+   {
+      def c = Version.createCriteria()
+      def orgversions = c.list () {
+         projections {
+            property('uid')
+         }
+         contribution {
+            eq('organizationUid', orguid)
+         }
+      }
+      
+      // if we add the size to the version on the DB we don't need to process the file system
+      def v, size = 0
+      orgversions.each { version_uid ->
+         v = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+         
+         if (v.lastModified() in from.time..to.time)
+         {
+            size += v.length()
+         }
+      }
+      
+      return size
+   }
+   
    /**
     * Gets a version file that should be on the repo.
     * @param version_uid

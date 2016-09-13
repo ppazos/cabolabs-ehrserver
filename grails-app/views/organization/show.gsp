@@ -42,5 +42,17 @@
 	     </g:form>
 	   </div>
     </div>
+    
+    <div class="row">
+      <div class="col-lg-12">
+        <h1><g:message code="organization.show.stats" /></h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <g:include controller="stats" action="organization"
+                   params="[uid: organizationInstance.uid]" />
+      </div>
+    </div>
   </body>
 </html>
