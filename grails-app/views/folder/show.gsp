@@ -1,60 +1,57 @@
-<%@ page import="com.cabolabs.ehrserver.openehr.directory.Folder" %>
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'folder.label', default: 'Folder')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="folder.show.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="folder.show.title" /></h1>
+      </div>
+    </div>
+    
+    <div class="row row-grid">
+      <div class="col-md-8">
+      </div>
+      <div class="col-md-4">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="[entityName]" />
+              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="common.action.create" />
             </button>
           </g:link>
         </div>
       </div>
     </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
-        <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
+      
 	      <g:if test="${flash.message}">
 	        <div class="message" role="status">${flash.message}</div>
 	      </g:if>
 	      
-	      <div class="control-group">
-            <label class="control-label"><g:message code="folder.uid.label" default="Uid" /></label>
-            <div class="controls">
-                <p class="form-control-static"><g:fieldValue bean="${folderInstance}" field="uid"/></p>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><g:message code="folder.name.label" default="Name" /></label>
-            <div class="controls">
-                <p class="form-control-static"><g:fieldValue bean="${folderInstance}" field="name"/></p>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><g:message code="folder.ehr.label" default="EHR" /></label>
-            <div class="controls">
-                <p class="form-control-static"><g:link controller="ehr" action="show" params="[uid: folderInstance?.ehr?.uid]">${folderInstance?.ehr?.encodeAsHTML()}</g:link></p>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><g:message code="folder.parent.label" default="Parent" /></label>
-            <div class="controls">
-                <p class="form-control-static"><g:link controller="folder" action="show" id="${folderInstance?.parent?.id}">${folderInstance?.parent?.name}</g:link></p>
-            </div>
-        </div>
+         <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="folder.uid.label" default="Uid" /></th>
+              <td><g:fieldValue bean="${folderInstance}" field="uid"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="folder.name.label" default="Name" /></th>
+              <td><g:fieldValue bean="${folderInstance}" field="name"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="folder.ehr.label" default="EHR" /></th>
+              <td><g:link controller="ehr" action="show" params="[uid: folderInstance?.ehr?.uid]">${folderInstance?.ehr?.encodeAsHTML()}</g:link></td>
+            </tr>
+            <tr>
+              <th><g:message code="folder.parent.label" default="Parent" /></th>
+              <td><g:link controller="folder" action="show" id="${folderInstance?.parent?.id}">${folderInstance?.parent?.name}</g:link></td>
+            </tr>
+          </tbody>
+        </table>
         
         <g:if test="${folderInstance?.folders}">
           <label class="control-label"><g:message code="folder.folders.label" default="Folders" /></label>

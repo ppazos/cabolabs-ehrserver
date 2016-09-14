@@ -1,10 +1,8 @@
-<%@ page import="com.cabolabs.ehrserver.query.Query" %>
 <!doctype html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'query.label', default: 'Query')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="query.show.title" /></title>
     <!-- highlight xml and json -->
     <asset:stylesheet src="highlightjs/xcode.css" />
     <asset:javascript src="highlight.pack.js" />
@@ -14,67 +12,57 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+        <h1><g:message code="query.show.title" /></h1>
         
         <g:if test="${flash.message}">
           <div class="message" role="status">${flash.message}</div>
         </g:if>
         
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.uid.label" default="UID" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="uid"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.name.label" default="Name" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="name"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.group.label" default="Group" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="group"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.format.label" default="Format" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="format"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.type.label" default="Type" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="type"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.templateId.label" default="Template ID" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="templateId"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="query.criteriaLogic.label" default="Criteria logic" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></p>
-          </div>
-        </div>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="query.show.uid.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="uid"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.name.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="name"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.group.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="group"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.format.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="format"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.type.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="type"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.template_id.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="templateId"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.criteria.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></td>
+            </tr>
+          </tbody>
+        </table>
 
-       <g:if test="${queryInstance?.select}">
-         <label class="control-label"><g:message code="query.select.label" default="Select" /></label>
-         <div class="table-responsive">
-           <table class="table table-striped table-bordered table-hover">
+        <g:if test="${queryInstance?.select}">
+          <h2><g:message code="query.select.label" default="Select" /></h2>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
               <tr>
                 <th>archetypeId</th>
                 <th>path</th>
               </tr>
-              <g:each in="${queryInstance.select}" var="s">
-                <!--
-                <span class="property-value" aria-labelledby="select-label">  <g:link controller="dataGet" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></span>
-                -->
+               <g:each in="${queryInstance.select}" var="s">
+                 <!--
+                 <span class="property-value" aria-labelledby="select-label">  <g:link controller="dataGet" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></span>
+                 -->
                 <tr>
                   <td>${s.archetypeId}</td>
                   <td>${s.path}</td>
@@ -84,9 +72,9 @@
           </div>
         </g:if>
         <g:if test="${queryInstance?.where}">
-	       <label class="control-label"><g:message code="query.where.label" default="Where" /></label>
+	       <h2><g:message code="query.where.label" default="Where" /></h2>
           <div class="table-responsive">
-             <table class="table table-striped table-bordered table-hover">
+            <table class="table table-striped table-bordered table-hover">
               <tr>
                 <th>archetypeId</th>
                 <th>path</th>
@@ -108,11 +96,11 @@
     
     <div class="row">
       <div class="col-md-6">
-        Query as XML:
+        <g:message code="query.show.query_xml.label" />
         <pre><code id="xml"></code></pre>
       </div>
       <div class="col-md-6">
-        Query as JSON:
+        <g:message code="query.show.query_json.label" />
         <pre><code id="json"></code></pre>
       </div>
     </div>
