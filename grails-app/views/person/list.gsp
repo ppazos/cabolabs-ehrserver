@@ -38,7 +38,7 @@
             <label for="ipt_ic">ID Code</label>
             <input type="text" class="form-control" name="idCode" id="ipt_ic" value="${params?.idCode}" />
           </div>
-          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
       <div class="col-md-4">

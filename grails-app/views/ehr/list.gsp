@@ -32,7 +32,7 @@
             <label for="ipt_orguid"><g:message code="filters.organizationUid" /></label>
             <input type="text" class="form-control" name="organizationUid" id="ipt_orguid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.organizationUid}" />
           </div>
-          <button type="submit" class="btn btn-default"><g:message code="filters.action" /></button>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
     </div>

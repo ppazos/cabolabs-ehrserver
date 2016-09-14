@@ -111,6 +111,10 @@
       div.content > div {
         margin-top: 15px;
       }
+      
+      .panel-default>.panel-heading {
+        min-height: 8em; /* make all repo status boxes of the same height even if the org name occupies two rows */
+      }
     </style>
     <!--[if lt IE 8]>
       <style type="text/css">

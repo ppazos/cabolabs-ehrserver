@@ -28,7 +28,7 @@
             <label for="ipt_ehr"><g:message code="versionedComposition.attr.ehr" /></label>
             <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.ehdUid}" />
           </div>
-          <button type="submit" class="btn btn-default"><g:message code="filters.action" /></button>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
     </div>

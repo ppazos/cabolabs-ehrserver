@@ -1,10 +1,9 @@
-<%@ page import="com.cabolabs.security.User" %><%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="user.show.title" /></title>
     <style>
       form {
         display: inline-block;
@@ -12,49 +11,51 @@
     </style>
   </head>
   <body>
-
     <div class="row">
       <div class="col-lg-12">
-      <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+      <h1><g:message code="user.show.title" /></h1>
       </div>
     </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
+      
 	     <g:if test="${flash.message}">
-	        <div class="message" role="status">${flash.message}</div>
+	       <div class="message" role="status">${flash.message}</div>
 	     </g:if>
-	      
-	     <div class="form-group">
-	       <label><g:message code="user.username.label" default="Username" /></label>
-	       <div><g:fieldValue bean="${userInstance}" field="username"/></div>
-	     </div>
-	     <div class="form-group">
-          <label><g:message code="user.email.label" default="Email" /></label>
-          <div><g:fieldValue bean="${userInstance}" field="email"/></div>
-        </div>
-	     <div class="form-group">
-	       <label><g:message code="user.organizations.label" default="Organizations" /></label>
-	       <div>
-	         <g:select name="organizations" from="${userInstance.organizations}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" class="form-control" disabled="disabled" />
-	       </div>
-	     </div>
-	     <div class="form-group">
-	       <label><g:message code="user.accountExpired.label" default="Account Expired" /></label>
-	       <div><g:formatBoolean boolean="${userInstance?.accountExpired}" /></div>
-	     </div>
-	     <div class="form-group">
-	       <label><g:message code="user.accountLocked.label" default="Account Locked" /></label>
-	       <div><g:formatBoolean boolean="${userInstance?.accountLocked}" /></div>
-	     </div>
-	     <div class="form-group">
-	       <label><g:message code="user.enabled.label" default="Enabled" /></label>
-	       <div><g:formatBoolean boolean="${userInstance?.enabled}" /></div>
-	     </div>
-	     <div class="form-group">
-	       <label><g:message code="user.passwordExpired.label" default="Password Expired" /></label>
-	       <div><g:formatBoolean boolean="${userInstance?.passwordExpired}" /></div>
-	     </div>
+        
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="user.attr.username" default="Username" /></th>
+              <td><g:fieldValue bean="${userInstance}" field="username"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.email" default="Email" /></th>
+              <td><g:fieldValue bean="${userInstance}" field="email"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.organizations" default="Organizations" /></th>
+              <td><g:select name="organizations" from="${userInstance.organizations}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" class="form-control" disabled="disabled" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.account_expired" default="Account Expired" /></th>
+              <td><g:formatBoolean boolean="${userInstance?.accountExpired}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.account_locked" default="Account Locked" /></th>
+              <td><g:formatBoolean boolean="${userInstance?.accountLocked}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.enabled" default="Enabled" /></th>
+              <td><g:formatBoolean boolean="${userInstance?.enabled}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.password_expired" default="Password Expired" /></th>
+              <td><g:formatBoolean boolean="${userInstance?.passwordExpired}" /></td>
+            </tr>
+          </tbody>
+        </table>
 	     
 	     <%-- if the user shown is admin, only can be edited if the logged user is admin (admins can edit any user)
 	          if the user shown is not admin, only can be edited if the logged user is org admin

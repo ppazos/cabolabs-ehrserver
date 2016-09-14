@@ -1,27 +1,14 @@
-<%@ page import="com.cabolabs.ehrserver.identification.PersonIdType" %>
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'personIdType.label', default: 'PersonIdType')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="person_id_type.show.title" /></title>
   </head>
   <body>
+
     <div class="row">
       <div class="col-lg-12">
-        <div class="btn-toolbar" role="toolbar">
-          <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="[entityName]" />
-            </button>
-          </g:link>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+        <h1><g:message code="person_id_type.show.title" /></h1>
       </div>
     </div>
       
@@ -31,18 +18,18 @@
 	       <div class="message" role="status">${flash.message}</div>
 	     </g:if>
 	     
-        <div class="control-group">
-          <label class="control-label"><g:message code="personIdTypeInstance.name.label" default="Name" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${personIdTypeInstance}" field="name"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="personIdTypeInstance.code.label" default="Code" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${personIdTypeInstance}" field="code"/></p>
-          </div>
-        </div>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="person_id_type.attr.name" default="Name" /></th>
+              <td><g:fieldValue bean="${personIdTypeInstance}" field="name"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="person_id_type.attr.code" default="Code" /></th>
+              <td><g:fieldValue bean="${personIdTypeInstance}" field="code"/></td>
+            </tr>
+          </tbody>
+        </table>
 
 	     <div class="btn-toolbar" role="toolbar">
 	       <g:link class="edit" action="edit" resource="${personIdTypeInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>

@@ -17,10 +17,10 @@
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
-            <label for="ipt_con">Concept</label>
+            <label for="ipt_con"><g:message code="opt.list.filter.concept.label" /></label>
             <input type="text" class="form-control" name="concept" id="ipt_con" value="${params?.concept}" />
           </div>
-          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
       <div class="col-md-6">

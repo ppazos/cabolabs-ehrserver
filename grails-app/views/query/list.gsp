@@ -1,9 +1,7 @@
-<%@ page import="com.cabolabs.ehrserver.query.Query" %>
 <!doctype html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'query.label', default: 'Query')}" />
     <title><g:message code="query.list.title" /></title>
   </head>
   <body>
@@ -19,17 +17,17 @@
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
           <div class="form-group">
-            <label for="ipt_name">Name</label>
+            <label for="ipt_name"><g:message code="query.show.name.attr" /></label>
             <input type="text" class="form-control" name="name" id="ipt_name" value="${params?.name}" />
           </div>
-          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
       <div class="col-md-4">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.title" />
+              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="common.action.create" />
             </button>
           </g:link>
         </div>
