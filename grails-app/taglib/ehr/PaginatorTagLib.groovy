@@ -43,10 +43,20 @@ class PaginatorTagLib {
       out << ",numberOfPages: " + numberOfPages         
       out << ",totalPages: " + totalPages   
       
+      
+      // Adds only filter and sort params to the paginator, removing other non wanted params
+      attrs.args.keySet().removeAll(['controller','action','max','offset']) // this returns boolean
+      def args = attrs.args
+
+      def sort_and_filter = ''
+      args.each { name, value ->
+         sort_and_filter += name +'='+ value +'&'
+      }
+      
       //opción del paginador que asignar url a cada elemento del paginador, en función de la página pulsada.       
-      out << ",pageUrl: function(type, page, current){"   
-      out << "return \"${urlPage}?offset=\"+(page-1)*${max}+\"&max=${max}\";"               
-      out << "},"
+      out << $/,pageUrl: function(type, page, current){
+                  return "${urlPage}?${sort_and_filter}offset="+ (page-1)*${max} +"&max=${max}";          
+                },/$
       
       //opción del paginador para mostrar o ocultar partes del paginador.
       out << "shouldShowPage:function(type, page, current){"

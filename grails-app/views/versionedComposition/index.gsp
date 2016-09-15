@@ -66,7 +66,7 @@
             </tbody>
           </table>
         </div>
-        <g:paginator total="${versionedCompositionInstanceCount}" />
+        <g:paginator total="${versionedCompositionInstanceCount}" args="${params}" />
       </div>
     </div>
   </body>

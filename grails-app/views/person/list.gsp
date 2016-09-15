@@ -87,7 +87,7 @@
 			            <td>${fieldValue(bean: personInstance, field: "idCode")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "idType")}</td>
 			            <td>${fieldValue(bean: personInstance, field: "role")}</td>
-			            <td><g:formatDate date="${personInstance.dob}" /></td>
+			            <td><g:formatDate date="${personInstance.dob}" type="date" /></td>
                      <td><g:link controller="organization" action="show" id="${personInstance.organizationUid.encodeAsHTML()}">${fieldValue(bean: personInstance, field: "organizationUid")}</g:link></td>
 			            <td>
 			              <g:if test="${personInstance.role == 'pat'}">
@@ -104,7 +104,7 @@
 		        </tbody>
 		    </table>
 		  </div>
-	     <g:paginator total="${personInstanceTotal}" />
+	     <g:paginator total="${personInstanceTotal}" args="${params}" />
       </div>
     </div>
   </body>

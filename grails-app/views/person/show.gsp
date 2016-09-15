@@ -34,7 +34,7 @@
             </tr>
             <tr>
               <th><g:message code="person.dob.label" default="Dob" /></th>
-              <td><g:formatDate date="${personInstance?.dob}" /></td>
+              <td><g:formatDate date="${personInstance?.dob}" type="date" /></td>
             </tr>
             <tr>
               <th><g:message code="person.sex.label" default="Sex" /></th>

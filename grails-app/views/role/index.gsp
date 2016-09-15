@@ -42,7 +42,7 @@
 		       </tbody>
 		     </table>
 		  </div>
-	     <g:paginator total="${roleInstanceCount}" />
+	     <g:paginator total="${roleInstanceCount}" args="${params}" />
       </div>
     </div>
   </body>

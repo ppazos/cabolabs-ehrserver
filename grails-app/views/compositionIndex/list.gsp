@@ -39,7 +39,7 @@
 	      
 	      <g:render template="/compositionIndex/listTable"/>
 	      
-	      <g:paginator total="${total}" />
+	      <g:paginator total="${total}" args="${params}" />
       </div>
     </div>
   </body>
