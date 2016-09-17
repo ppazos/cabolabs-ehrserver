@@ -166,8 +166,7 @@ class RestController {
       }
       catch (Exception e)
       {
-         println e.getClass()
-         render(status: 401, text: e.message)
+         renderError(e.message, 'e01.0001', 401)
       }
   }
    
