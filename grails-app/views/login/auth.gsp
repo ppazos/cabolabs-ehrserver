@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>CaboLabs &copy;</title>
+    <title>CaboLabs &copy; <g:message code="login.title" /></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
@@ -107,15 +107,47 @@
 	  #login .inner .chk {
 	    height: 12px;
 	  }
+     
+     .navbar-header img {
+       max-height: 20px;
+     }
+     a.active {
+       font-weight: bold;
+     }
     </style>
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+	      <div class="navbar-header">
+	        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	         <span class="sr-only">Toggle navigation</span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	        </button>
+	        <!-- LOGO -->
+	        <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+	        <!-- /LOGO -->
+	      </div>
+	      <!-- /.navbar-header -->
+	
+	     <g:set var="locale" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}" />
+        <ul class="nav navbar-top-links navbar-right">
+             <li>
+               <g:link action="auth" params="[lang:'es']" class="${(locale.language == 'es')?'active':''}">ES</g:link>
+             </li>
+             <li>
+               <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
+             </li>
+        </ul>
+	   </nav>
+  
     <div class="container">
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
           <div class="login-panel panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Please Sign In</h3>
+              <h3 class="panel-title"><g:message code="login.title" /></h3>
             </div>
             <div class="panel-body">
               <g:if test='${flash.message}'>
@@ -142,6 +174,7 @@
                       <g:message code="springSecurity.login.remember.me.label"/>
                     </label>
                   </div>
+                  
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.login.button")}'/>
                   
                   <div class="form-group" style="margin:0; padding:15px 0 15px 0; text-align:center;">
