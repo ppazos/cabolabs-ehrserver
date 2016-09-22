@@ -2,6 +2,7 @@ package com.cabolabs.ehrserver.account
 
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.security.Organization
 
 class StatsController {
 
@@ -68,6 +69,10 @@ class StatsController {
       
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
       
-      [transactions: contributions[0], documents: versions[0], size: size]
+      // Active plan for the orgazination
+      def org = Organization.findByUid(uid)
+      def plan = Plan.active(org)
+      
+      [transactions: contributions[0], documents: versions[0], size: size, plan: plan, from: from, to: to]
    }
 }

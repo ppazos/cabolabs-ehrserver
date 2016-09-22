@@ -118,29 +118,29 @@
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-	      <div class="navbar-header">
-	        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	         <span class="sr-only">Toggle navigation</span>
-	         <span class="icon-bar"></span>
-	         <span class="icon-bar"></span>
-	         <span class="icon-bar"></span>
-	        </button>
-	        <!-- LOGO -->
-	        <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
-	        <!-- /LOGO -->
-	      </div>
-	      <!-- /.navbar-header -->
+	   <div class="navbar-header">
+	     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	       <span class="sr-only">Toggle navigation</span>
+	       <span class="icon-bar"></span>
+	       <span class="icon-bar"></span>
+	       <span class="icon-bar"></span>
+	     </button>
+	     <!-- LOGO -->
+	     <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+	     <!-- /LOGO -->
+	   </div>
+	   <!-- /.navbar-header -->
 	
-	     <g:set var="locale" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}" />
-        <ul class="nav navbar-top-links navbar-right">
-             <li>
-               <g:link action="auth" params="[lang:'es']" class="${(locale.language == 'es')?'active':''}">ES</g:link>
-             </li>
-             <li>
-               <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
-             </li>
-        </ul>
-	   </nav>
+	   <g:set var="locale" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}" />
+      <ul class="nav navbar-top-links navbar-right">
+        <li>
+          <g:link action="auth" params="[lang:'es']" class="${(locale.language == 'es')?'active':''}">ES</g:link>
+        </li>
+        <li>
+          <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
+        </li>
+      </ul>
+	 </nav>
   
     <div class="container">
       <div class="row">

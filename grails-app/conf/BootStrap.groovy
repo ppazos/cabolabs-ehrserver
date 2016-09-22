@@ -19,6 +19,8 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
 
+import com.cabolabs.ehrserver.account.*
+
 import grails.converters.*
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
@@ -646,6 +648,28 @@ class BootStrap {
               if (!ehr.save()) println ehr.errors
            }
         }
+     }
+     
+     // Create plans
+     def p1 = new Plan(
+       name: "Free Educational",
+       maxTransactions: 50,
+       maxDocuments: 100,
+       repositorySize: 1024*15*120, // allows 120 documents of 15KB
+       totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
+       period: Plan.periods.MONTHLY
+     )
+     
+     p1.save(failOnError: true)
+     
+     // Associate free plans by default
+     def plan
+     def orgs = Organization.list()
+     orgs.each { org ->
+       if (!PlanAssociation.findByOrganizationUid(org.uid))
+       {
+          p1.associate( org )
+       }
      }
    }
    
