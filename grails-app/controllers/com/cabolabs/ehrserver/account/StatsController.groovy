@@ -37,7 +37,6 @@ class StatsController {
    
       def dfrom = new Date(from)
       def dto   = new Date(to)
-      
    
       // Number of transactions
       def contributions = Contribution.withCriteria {
@@ -71,8 +70,15 @@ class StatsController {
       
       // Active plan for the orgazination
       def org = Organization.findByUid(uid)
-      def plan = Plan.active(org)
+      def plan_association = Plan.activeOn(org, dfrom)
       
-      [transactions: contributions[0], documents: versions[0], size: size, plan: plan, from: from, to: to]
+      if (plan_association)
+      {
+         [transactions: contributions[0], documents: versions[0], size: size, plan: plan_association.plan, plan_association: plan_association, from: from, to: to]
+      }
+      else
+      {
+         render message(code:'stats.no_active_plan')
+      }
    }
 }

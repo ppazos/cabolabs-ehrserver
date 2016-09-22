@@ -1,6 +1,11 @@
 <%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Contribution" %><%@ page import="com.cabolabs.ehrserver.query.Query" %><%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %>
 
 <%-- partial view for organization/show --%>
+
+  <script>
+   var ref_date = ${from}; // initial date to visualize the stats, default is current date in milliseconds from Jan 1 1970.
+ </script>
+ 
  <style>
    .gi-3x{font-size: 3em;}
    .gi-4x{font-size: 4em;}
@@ -84,6 +89,7 @@
      }
    </style>
  <![endif]-->
+ 
  <div class="row content">
    <div class="col-lg-4">
      <div class="panel panel-primary">
@@ -152,69 +158,3 @@
      </div>
    </div>
  </div>
- <script>
-   var date = ${from}; // initial date to visualize the stats, default is current date in milliseconds from Jan 1 1970.
- 
-   var first_day_prev_month_of = function(date)
-   {
-      var d = new Date(date);
-      d.setDate(1);
-      d.setMonth( d.getMonth() - 1 );
-      return d;
-   };
-   var last_day_prev_month_of = function(date)
-   {
-      var d = new Date(date);
-      d.setDate(0); // last day of previous month
-      return d;
-   };
-   var first_day_next_month_of = function(date)
-   {
-      var d = new Date(date);
-      d.setDate(1);
-      d.setMonth( d.getMonth() + 1 );
-      return d;
-   };
-   var last_day_next_month_of = function(date)
-   {
-      var d = new Date(date);
-      d.setMonth( d.getMonth() + 2 ); // next next month
-      d.setDate(0); // last day of previous month
-      return d;
-   };
-   
-   // test
-   var d = new Date().getTime();
-   console.log(d);
-   console.log(first_day_prev_month_of(d));
-   console.log(last_day_prev_month_of(d));
-   
-   d = first_day_next_month_of(d);
-   console.log(first_day_next_month_of(d));
-   console.log(last_day_next_month_of(d));
-   //console.log( d.getTime() );
-  
-   
-   
-   $(function() {
-     /*
-     $('.prev').on( "click", "p", function() {
-       alert( $( this ).text() );
-     });
-     */
-      /*
-      $.ajax({
-        url: "${g.createLink(action:'organization')}",
-        data: {'uid': '${params.uid}'},
-        beforeSend: function( xhr ) {
-          xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
-        }
-      })
-      .done(function( data ) {
-       if ( console && console.log ) {
-         console.log( "Sample of data:", data.slice( 0, 100 ) );
-       }
-      });
-      */
-   });
- </script>

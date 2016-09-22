@@ -1,6 +1,7 @@
 package com.cabolabs.ehrserver.account
 
 import com.cabolabs.security.Organization
+import com.cabolabs.util.DateUtils
 
 /**
  * Plan with quota information that can be assigned to many organizations through PlanAssociation.
@@ -31,22 +32,34 @@ class Plan {
    def associate(Organization org)
    {
       // TODO: check the org doesn't have an active plan
-      def pa = new PlanAssociation(organizationUid: org.uid, from: new Date(), to: new Date()+365, plan:this)
+      def from = DateUtils.toFirstDateOfMonth(new Date()) // plans go from the first day of a month
+      def pa = new PlanAssociation(organizationUid: org.uid, from: from, to: from+365, plan:this)
       pa.save(failOnError: true)
    }
    
    /**
     * Gets the active plan for the organization.
     */
-   static Plan active(Organization org)
+   static PlanAssociation active(Organization org)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
         def now = new Date()
-        lt('from', now)
+        lte('from', now)
         gt('to', now)
         eq('organizationUid', org.uid)
       }
       
-      return pa?.plan
+      return pa // can be null
+   }
+   
+   static PlanAssociation activeOn(Organization org, Date on)
+   {
+      def pa = PlanAssociation.withCriteria(uniqueResult: true) {
+        lte('from', on)
+        gt('to', on)
+        eq('organizationUid', org.uid)
+      }
+      
+      return pa // can be null
    }
 }

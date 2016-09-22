@@ -58,9 +58,77 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-lg-12 stats">
+        <g:include controller="stats" action="organization" params="[uid: organizationInstance.uid]" />
+      </div>
+    </div>
+    <div class="row">
       <div class="col-lg-12">
-        <g:include controller="stats" action="organization"
-                   params="[uid: organizationInstance.uid]" />
+        <div align="center">
+          <button class="prev btn btn-default btn-md"><span class="fa fa-chevron-left fa-fw" aria-hidden="true"></span></button>
+          <span class="ref_date"></span>
+          <button class="next btn btn-default btn-md"><span class="fa fa-chevron-right fa-fw" aria-hidden="true"></span></button>
+        </div>
+        <script>
+            var first_day_prev_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setDate(1);
+               d.setMonth( d.getMonth() - 1 );
+               return d;
+            };
+            var last_day_prev_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setDate(0); // last day of previous month
+               return d;
+            };
+            var first_day_next_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setDate(1);
+               d.setMonth( d.getMonth() + 1 );
+               return d;
+            };
+            var last_day_next_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setMonth( d.getMonth() + 2 ); // next next month
+               d.setDate(0); // last day of previous month
+               return d;
+            };
+
+            $(function() {
+              
+              $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
+              
+              $('button.prev').on( "click", function() {
+                var prev_from = first_day_prev_month_of(ref_date);
+                var prev_to = last_day_prev_month_of(ref_date);
+                
+                console.log(ref_date, prev_from, prev_to);
+                
+                var data = {'uid': '${params.uid}', 'from': prev_from.getTime(), 'to': prev_to.getTime()};
+
+                $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
+                  $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
+                });
+              });
+              
+              $('button.next').on( "click", function() {
+                var next_from = first_day_next_month_of(ref_date);
+                var next_to = last_day_next_month_of(ref_date);
+                
+                console.log(ref_date, next_from, next_to);
+                
+                var data = {'uid': '${params.uid}', 'from': next_from.getTime(), 'to': next_to.getTime()};
+
+                $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
+                  $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
+                });
+              });
+            });
+        </script>
       </div>
     </div>
   </body>
