@@ -10,7 +10,7 @@ services:
 
 
 # env:
-#   - GRAILS_VERSION=2.5.3
+#   - GRAILS_VERSION=2.5.5
   
 # before_install:
 #   - rm -rf ~/.gvm
