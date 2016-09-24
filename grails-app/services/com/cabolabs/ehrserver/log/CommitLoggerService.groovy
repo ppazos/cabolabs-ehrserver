@@ -58,7 +58,7 @@ class CommitLoggerService {
       
       // TODO: log specific errors thrown by the controller
       
-      println request['ehrUid']
+      println params.ehrUid
       println contributionUid
       println clientIP
       println clientLocale
@@ -72,7 +72,7 @@ class CommitLoggerService {
       if (versionsXML)
       {
          def commit = new Commit(
-           ehrUid: request['ehrUid'],
+           ehrUid: params.ehrUid,
            contributionUid: contributionUid, // can be null if !success
            ip: clientIP,
            locale: clientLocale,
