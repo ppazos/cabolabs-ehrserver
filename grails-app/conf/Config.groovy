@@ -92,6 +92,7 @@ environments {
     app {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
       version_repo = "versions" + PS
+      commit_logs = "commits" + PS
     }
   }
   production {
@@ -104,12 +105,14 @@ environments {
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
       version_repo = "versions" + PS
+      commit_logs = "commits" + PS
     }
   }
   test {
     grails.converters.default.pretty.print = true
     app {
        version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+       commit_logs = "commits" + PS
     }
   }
 }

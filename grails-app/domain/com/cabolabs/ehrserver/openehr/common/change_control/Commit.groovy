@@ -15,9 +15,25 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 class Commit {
 
    String ehrUid
-   String contributionId
+   String contributionUid
+   
+   // client/request data
+   String ip
+   String locale
+   Map params
+   String contentType
+   int contentLength
+   String url
+   String username // from JWT
+   
+   boolean success // false if an error hapenned in the commit
    
    static transients = ['ehr', 'contribution']
+   
+   static constraints = {
+      ehrUid nullable: true // null if the request doesnt include it, this is a client error
+      contributionUid nullable: true // will be null for a failed commit
+   }
    
    def getEhr()
    {
@@ -26,6 +42,6 @@ class Commit {
    
    def getContribution()
    {
-      return Contribution.findByUid(this.contributionId)
+      return Contribution.findByUid(this.contributionUid)
    }
 }

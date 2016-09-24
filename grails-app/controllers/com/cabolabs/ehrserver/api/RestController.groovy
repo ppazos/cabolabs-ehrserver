@@ -53,6 +53,7 @@ class RestController {
    def jsonService // Query composition with format = json
    def compositionService
    def versionFSRepoService
+   def commitLoggerService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -265,16 +266,19 @@ class RestController {
       if (!ehrUid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
+         commitLoggerService.log(request, null, false, null)
          return
       }
       if (!auditSystemId)
       {
          renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
+         commitLoggerService.log(request, null, false, null)
          return
       }
       if (!auditCommitter)
       {
          renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
+         commitLoggerService.log(request, null, false, null)
          return
       }
 
@@ -282,6 +286,7 @@ class RestController {
       if (!ehr)
       {
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
+         commitLoggerService.log(request, null, false, null)
          return
       }
       
@@ -291,6 +296,7 @@ class RestController {
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
          renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
+         commitLoggerService.log(request, null, false, null)
          return
       }
 
@@ -310,13 +316,11 @@ class RestController {
       def versionsXML = request.reader?.text // GString
       
       
-      println request.contentType
-      
-      
       // 2. versions deben venir 1 por lo menos haber una
       if (!versionsXML)
       {
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
+         commitLoggerService.log(request, null, false, null)
          return
       }
       
@@ -333,11 +337,13 @@ class RestController {
       if (_parsedVersions.isEmpty())
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
+         commitLoggerService.log(request, null, false, versionsXML.toString())
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
+         commitLoggerService.log(request, null, false, versionsXML.toString())
          return
       }
       
@@ -345,7 +351,7 @@ class RestController {
       try
       {
          // throws exceptions for any error
-         xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
+         def contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
 
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -356,9 +362,13 @@ class RestController {
           * 
           * Note that this will override the time_committed from the version in the XML received.
           */
+
+          commitLoggerService.log(request, contribution.uid, true, versionsXML.toString())
       }
       catch (ValidationException e) // xsd error
       {
+         commitLoggerService.log(request, null, false, versionsXML.toString())
+         
          render(contentType:"text/xml", encoding:"UTF-8") {
             result {
                type {
@@ -381,12 +391,16 @@ class RestController {
       }
       catch (UndeclaredThrowableException e)
       {
+         commitLoggerService.log(request, null, false, versionsXML.toString())
+         
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
          return
       }
       catch (Exception e)
       {
+         commitLoggerService.log(request, null, false, versionsXML.toString())
+         
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()
          

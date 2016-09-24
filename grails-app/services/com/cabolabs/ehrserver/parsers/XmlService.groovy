@@ -91,6 +91,8 @@ class XmlService {
 
       // TEST: this might save the contrib and there is no need of saving the contrib later
       ehr.addToContributions( contribution )
+      
+      return contribution
    }
    
    
