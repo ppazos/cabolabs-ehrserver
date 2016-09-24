@@ -89,7 +89,14 @@
      }
    </style>
  <![endif]-->
- 
+<g:if test="${!plan}">
+  <div class="row content">
+    <div class="col-md-12">
+      <g:message code="stats.no_active_plan" />
+    </div>
+  </div>
+</g:if>
+<g:else>
  <div class="row content">
    <div class="col-lg-4">
      <div class="panel panel-primary">
@@ -143,7 +150,7 @@
              <i class="fa fa-database fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${(size / 1024).setScale(1,0)} KB / ${(plan.repositorySize / 1024).setScale(1,0)} KB</div>
+             <div class="big">${(size / 1024).setScale(1,0)} / ${(plan.repositorySize / 1024).setScale(1,0)} KB</div>
              <div><g:message code="stats.size" /></div>
            </div>
          </div>
@@ -158,3 +165,4 @@
      </div>
    </div>
  </div>
+</g:else>
