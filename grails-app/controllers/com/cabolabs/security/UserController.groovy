@@ -12,6 +12,7 @@ import com.cabolabs.security.UserRole
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 import grails.util.Holders
+import com.cabolabs.ehrserver.account.*
 
 @Transactional(readOnly = false)
 class UserController {
@@ -175,71 +176,76 @@ class UserController {
       
       if (!params.register) // show view
       {
-        render view: "register", model: [userInstance: new User(params)]
+         render view: "register", model: [userInstance: new User(params)]
       }
       else
       {
-        boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
+         boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
         
-        def u = new User(
-          username: params.username,
-          //password: params.password,
-          email: params.email,
-          enabled: false
-        )
-        def o
-        
-        
-        // generates a passwrod reset token, used in the email notification
-        u.setPasswordToken()
+         def u = new User(
+            username: params.username,
+            //password: params.password,
+            email: params.email,
+            enabled: false
+         )
+         def o
         
         
-        User.withTransaction{ status ->
+         // generates a passwrod reset token, used in the email notification
+         u.setPasswordToken()
         
-          try
-          {
-            // TODO: create an invitation with token, waiting for account confirmation
-            // 
-            o = new Organization(name: params.org_name)
-            o.save(failOnError: true, flush:true)
-            
-            // needs an organization before saving
-            u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
-            
-            u.save(failOnError: true, flush:true)
-            
-            // TODO: UserRole ORG_* needs a reference to the org, since the user
-            //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-            //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
-            UserRole.create( u, (Role.findByAuthority('ROLE_ORG_MANAGER')), true ) // the user is creating the organization, it should be manager also
-          }
-          catch (ValidationException e)
-          {
-            println u.errors
-            println o?.errors
-            
-            status.setRollbackOnly()
-          }
+        
+         User.withTransaction{ status ->
+        
+            try
+            {
+               // TODO: create an invitation with token, waiting for account confirmation
+               // 
+               o = new Organization(name: params.org_name)
+               o.save(failOnError: true, flush:true)
+               
+               // needs an organization before saving
+               u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
+               
+               u.save(failOnError: true, flush:true)
+               
+               // TODO: UserRole ORG_* needs a reference to the org, since the user
+               //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
+               //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+               UserRole.create( u, (Role.findByAuthority('ROLE_ORG_MANAGER')), true ) // the user is creating the organization, it should be manager also
+               
+               // associate the basic plan to the new org
+               def p1 = Plan.get(1)
+               p1.associate( o )
+            }
+            catch (ValidationException e)
+            {
+               println u.errors
+               println o?.errors
+               
+               status.setRollbackOnly()
+            }
           
-          // FIXME: avoid saving stuff if the captcha is incorrect
-          if (!captchaValid) status.setRollbackOnly()
+            // FIXME: avoid saving stuff if the captcha is incorrect
+            // WHY not checking this before the instances are created?
+            if (!captchaValid) status.setRollbackOnly()
           
-        } // transaction
+         } // transaction
         
-        // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
+         // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
         
-        if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
-        {
-          flash.message = 'user.registerError.feedback'
-          render view: "register", model: [userInstance: u, organizationInstance: o, captchaValid: captchaValid]
-        }
-        else
-        {
-          //notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
-          // token to create the URL for the email is in the userInstance
-          notificationService.sendUserCreatedEmail( u.email, [u], true )
-          render (view: "registerOk")
-        }
+         if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
+         {
+            flash.message = 'user.registerError.feedback'
+            render view: "register", model: [userInstance: u, organizationInstance: o, captchaValid: captchaValid]
+         }
+         else
+         {
+            //notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
+            // token to create the URL for the email is in the userInstance
+            notificationService.sendUserCreatedEmail( u.email, [u], true )
+            render (view: "registerOk")
+         }
       }
    }
    
