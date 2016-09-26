@@ -652,20 +652,27 @@ class BootStrap {
         }
      }
      
-     // Create plans
-     def p1 = new Plan(
-       name: "Free Educational",
-       maxTransactions: 50,
-       maxDocuments: 100,
-       repositorySize: 1024*15*120, // allows 120 documents of 15KB
-       totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
-       period: Plan.periods.MONTHLY
-     )
-     
-     p1.save(failOnError: true)
+     def p1
+     if (Plan.count() == 0)
+     {
+        // Create plans
+        p1 = new Plan(
+          name: "Free Educational",
+          maxTransactions: 50,
+          maxDocuments: 100,
+          repositorySize: 1024*15*120, // allows 120 documents of 15KB
+          totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
+          period: Plan.periods.MONTHLY
+        )
+        
+        p1.save(failOnError: true)
+     }
+     else
+     {
+        p1 = Plan.get(1)
+     }
      
      // Associate free plans by default
-     def plan
      def orgs = Organization.list()
      orgs.each { org ->
        if (!PlanAssociation.findByOrganizationUid(org.uid))
