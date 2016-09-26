@@ -265,28 +265,28 @@ class RestController {
 
       if (!ehrUid)
       {
-         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       if (!auditSystemId)
       {
-         renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
       if (!auditCommitter)
       {
-         renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
          return
       }
 
       def ehr = Ehr.findByUid(ehrUid)
       if (!ehr)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
          return
       }
       
@@ -295,8 +295,8 @@ class RestController {
       def _user = User.findByUsername(_username)
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
-         renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
          return
       }
 
@@ -319,8 +319,8 @@ class RestController {
       // 2. versions deben venir 1 por lo menos haber una
       if (!versionsXML)
       {
-         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
@@ -336,14 +336,14 @@ class RestController {
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          commitLoggerService.log(request, null, false, versionsXML.toString())
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
-         renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          commitLoggerService.log(request, null, false, versionsXML.toString())
+         renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
       

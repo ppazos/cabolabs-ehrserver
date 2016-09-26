@@ -68,24 +68,26 @@ class CommitLoggerService {
       println url
       println authUser
       
-      // FIXME: empty XML is a possible error and it should be logged!
+      // empty XML is a possible error so the commit should be saved to the
+      // database but no xml file will be created
+      
+      def commit = new Commit(
+        ehrUid: params.ehrUid,
+        contributionUid: contributionUid, // can be null if !success
+        ip: clientIP,
+        locale: clientLocale,
+        params: params,
+        contentType: contentType,
+        contentLength: contentLength,
+        url: url,
+        username: authUser,
+        success: success
+      )
+      
+      commit.save(failOnError: true)
+      
       if (versionsXML)
       {
-         def commit = new Commit(
-           ehrUid: params.ehrUid,
-           contributionUid: contributionUid, // can be null if !success
-           ip: clientIP,
-           locale: clientLocale,
-           params: params,
-           contentType: contentType,
-           contentLength: contentLength,
-           url: url,
-           username: authUser,
-           success: success
-         )
-         
-         commit.save(failOnError: true)
-         
          // save the XML to the commit log
          def commitLog = new File(config.commit_logs + commit.id.toString() +'.xml')
          commitLog << versionsXML
