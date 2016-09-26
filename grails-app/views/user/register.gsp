@@ -8,8 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.register.label" args="[entityName]" /></title>
+    <title><g:message code="default.register.label" /></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
@@ -35,7 +34,7 @@
         <div class="col-md-4 col-md-offset-4">
           <div class="login-panel panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><g:message code="default.register.label" args="[entityName]" /></h3>
+              <h3 class="panel-title"><g:message code="default.register.label" /></h3>
             </div>
             <div class="panel-body">
              <g:if test="${flash.message}">

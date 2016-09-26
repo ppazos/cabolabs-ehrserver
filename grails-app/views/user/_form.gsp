@@ -27,7 +27,7 @@
 </sec:ifLoggedIn>
 <sec:ifNotLoggedIn><!-- register -->
   <div class="form-group required">
-	 <label for="org_name"><g:message code="organization.name.label" default="Organization Name" /><span class="required-indicator">*</span></label>
+	 <label for="org_name"><g:message code="user.register.organization_name" default="Organization Name" /><span class="required-indicator">*</span></label>
 	 <g:textField name="org_name" value="${params.org_name}" required="true" class="form-control" />
   </div>
 </sec:ifNotLoggedIn>
