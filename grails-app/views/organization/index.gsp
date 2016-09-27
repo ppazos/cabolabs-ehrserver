@@ -12,7 +12,22 @@
       </div>
     </div>
     <div class="row row-grid">
-      <div class="col-lg-12">
+      <div class="col-md-8">
+        <g:form class="form-inline" action="index">
+          <input type="hidden" name="sort" value="${params.sort}" />
+          <input type="hidden" name="order" value="${params.order}" />
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" name="name" id="name" value="${params?.name}" />
+          </div>
+          <div class="form-group">
+            <label for="number">Number</label>
+            <input type="text" class="form-control" name="number" id="number" value="${params?.number}" />
+          </div>
+          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
+        </g:form>
+      </div>
+      <div class="col-md-4">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">

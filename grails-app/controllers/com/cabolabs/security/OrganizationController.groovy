@@ -15,29 +15,48 @@ class OrganizationController {
    
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-   def index(Integer max)
+   def index(int max, int offset, String sort, String order, String name, String number)
    {
-      params.max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 10, 100)
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def list, count
+      def list
+      def c = Organization.createCriteria()
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         list = Organization.list(params)
-         count = Organization.count()
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (name)
+            {
+               like('name', '%'+name+'%')
+            }
+            if (number)
+            {
+               like('number', '%'+number+'%')
+            }
+         }
       }
       else
       {
          def user = springSecurityService.loadCurrentUser()
+         def orgs = user.organizations
          
-         //println "organizations: "+ user.organizations.toString()
-         
-         // no pagination
-         list = user.organizations
-         count = list.size()
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            'in'('uid', orgs.uid) // persons for all the orgs of the logged user
+            if (name)
+            {
+               like('name', '%'+name+'%')
+            }
+            if (number)
+            {
+               like('number', '%'+number+'%')
+            }
+         }
       }
       
-      render view:'index', model:[organizationInstanceList:list, total:count]
+      [organizationInstanceList: list, total: list.totalCount]
    }
 
    // organizationInstance comes from the security filter on params
