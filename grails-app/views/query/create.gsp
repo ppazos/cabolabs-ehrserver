@@ -1454,7 +1454,7 @@ resp.responseJSON.result.message +'</div>'
                 <tr>
                   <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
                     <label for="name">
-                      <g:message code="query.name.label" default="Name" /> *
+                      <g:message code="query.show.name.attr" default="Name" /> *
                     </label>
                   </td>
                   <td>
@@ -1467,7 +1467,7 @@ resp.responseJSON.result.message +'</div>'
                 <tr>
                   <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
                     <label for="type">
-                      <g:message code="query.type.label" default="Type" />
+                      <g:message code="query.show.type.attr" default="Type" />
                     </label>
                     <span class="info">
                       <asset:image src="skin/information.png" />
@@ -1708,7 +1708,7 @@ resp.responseJSON.result.message +'</div>'
           <div class="btn-toolbar bottom" role="toolbar">
             <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
               <button type="button" class="btn btn-default btn-md">
-                <span class="fa fa-road fa-fw" aria-hidden="true"></span> <g:message code="default.button.test.label" default="Test" />
+                <span class="fa fa-road fa-fw" aria-hidden="true"></span> <g:message code="query.create.test" default="Test" />
               </button></a>
             <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('save');" id="create_button">
               <button type="button" class="btn btn-default btn-md">

@@ -44,10 +44,10 @@
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
-		            <g:sortableColumn property="name" title="${message(code: 'query.name.label', default: 'Name')}" />
-		            <g:sortableColumn property="group" title="${message(code: 'query.group.label', default: 'Group')}" />
-		            <g:sortableColumn property="format" title="${message(code: 'query.format.label', default: 'Format')}" />
-		            <g:sortableColumn property="type" title="${message(code: 'query.type.label', default: 'Type')}" />
+		            <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
+		            <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
+		            <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
+		            <g:sortableColumn property="type" title="${message(code: 'query.show.type.attr', default: 'Type')}" />
 		          </tr>
 		        </thead>
 		        <tbody>
