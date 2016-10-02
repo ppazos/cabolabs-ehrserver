@@ -2,11 +2,13 @@
 
 <%-- partial view for organization/show --%>
 
-  <script>
-   var ref_date = ${from}; // initial date to visualize the stats, default is current date in milliseconds from Jan 1 1970.
- </script>
+<script>
+  var ref_date = ${from}; // initial date to visualize the stats, default is current date in milliseconds from Jan 1 1970.
+  console.log('from', new Date(${from}).toUTCString());
+  console.log('to', new Date(${to}).toUTCString());
+</script>
  
- <style>
+<style>
    .gi-3x{font-size: 3em;}
    .gi-4x{font-size: 4em;}
    .gi-5x{font-size: 5em;}

@@ -44,7 +44,7 @@ class Plan {
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
         def now = new Date()
-        lte('from', now)
+        le('from', now) // from <= now < to
         gt('to', now)
         eq('organizationUid', org.uid)
       }
@@ -55,7 +55,7 @@ class Plan {
    static PlanAssociation activeOn(Organization org, Date on)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
-        lte('from', on)
+        le('from', on) // from <= on < to
         gt('to', on)
         eq('organizationUid', org.uid)
       }

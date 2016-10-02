@@ -73,30 +73,55 @@
             var first_day_prev_month_of = function(date)
             {
                var d = new Date(date);
-               d.setDate(1);
-               d.setMonth( d.getMonth() - 1 );
+               d.setUTCDate(1);
+               d.setUTCMonth( d.getUTCMonth() - 1 );
+               d.setUTCHours(0,0,0,0);
+               return d;
+            };
+            var first_day_current_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setUTCDate(1);
+               d.setUTCHours(0,0,0,0);
                return d;
             };
             var last_day_prev_month_of = function(date)
             {
                var d = new Date(date);
-               d.setDate(0); // last day of previous month
+               d.setUTCDate(0); // last day of previous month
                return d;
             };
             var first_day_next_month_of = function(date)
             {
                var d = new Date(date);
-               d.setDate(1);
-               d.setMonth( d.getMonth() + 1 );
+               d.setUTCDate(1);
+               d.setUTCMonth( d.getUTCMonth() + 1 );
+               d.setUTCHours(0,0,0,0);
                return d;
             };
             var last_day_next_month_of = function(date)
             {
                var d = new Date(date);
-               d.setMonth( d.getMonth() + 2 ); // next next month
-               d.setDate(0); // last day of previous month
+               d.setUTCMonth( d.getUTCMonth() + 2 ); // next next month
+               d.setUTCDate(0); // last day of previous month
                return d;
             };
+            var first_day_next_next_month_of = function(date)
+            {
+               var d = new Date(date);
+               d.setUTCDate(1);
+               d.setUTCMonth( d.getUTCMonth() + 2 ); // next, next month
+               d.setUTCHours(0,0,0,0);
+               return d;
+            };
+            
+            console.log('now', new Date(ref_date).toUTCString());
+            
+            
+            console.log(first_day_prev_month_of(ref_date).toUTCString());
+            console.log(first_day_current_month_of(ref_date).toUTCString());
+            console.log(first_day_next_month_of(ref_date).toUTCString());
+            console.log(first_day_next_next_month_of(ref_date).toUTCString());
 
             $(function() {
               
@@ -104,7 +129,7 @@
               
               $('button.prev').on( "click", function() {
                 var prev_from = first_day_prev_month_of(ref_date);
-                var prev_to = last_day_prev_month_of(ref_date);
+                var prev_to = first_day_current_month_of(ref_date);
                 
                 console.log(ref_date, prev_from, prev_to);
                 
@@ -117,7 +142,7 @@
               
               $('button.next').on( "click", function() {
                 var next_from = first_day_next_month_of(ref_date);
-                var next_to = last_day_next_month_of(ref_date);
+                var next_to = first_day_next_next_month_of(ref_date);
                 
                 console.log(ref_date, next_from, next_to);
                 

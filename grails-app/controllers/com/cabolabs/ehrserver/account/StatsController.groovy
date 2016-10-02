@@ -22,21 +22,31 @@ class StatsController {
    def organization(String uid, long from, long to)
    {
       // If not date range is set, set the rante to the current month
+      // Range will be checked like: from <= timeCommitted < to
+      // so "to" should be next months 1st day on time 0
       if (!to)
       {
          def cal = Calendar.getInstance()
-         //cal.add(Calendar.MONTH, -1)
-         cal.set(Calendar.DATE, 1)
+         cal.set(Calendar.DATE, 1) // 1st day current month
          
+         // zero time
+         cal.set(Calendar.HOUR_OF_DAY, 0)
+         cal.set(Calendar.MINUTE, 0)
+         cal.set(Calendar.SECOND, 0)
+        
          from = cal.getTimeInMillis()
          
-         cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE))
+         //cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE))
+         cal.add(Calendar.MONTH, 1) // next month 1st day
          
          to = cal.getTimeInMillis()
       }
    
       def dfrom = new Date(from)
       def dto   = new Date(to)
+      
+      println dfrom
+      println dto
    
       // Number of transactions
       def contributions = Contribution.withCriteria {
@@ -47,7 +57,9 @@ class StatsController {
         
         eq('organizationUid', uid)
         audit {
-          between('timeCommitted', dfrom, dto)
+          //between('timeCommitted', dfrom, dto)
+          ge('timeCommitted', dfrom) // dfrom <= timeCommitted < dto
+          lt('timeCommitted', dto)
         }
       }
       
@@ -62,7 +74,9 @@ class StatsController {
             eq('organizationUid', uid)
          }
          commitAudit {
-            between('timeCommitted', dfrom, dto)
+            //between('timeCommitted', dfrom, dto)
+            ge('timeCommitted', dfrom) // dfrom <= timeCommitted < dto
+            lt('timeCommitted', dto)
          }
       }
       
