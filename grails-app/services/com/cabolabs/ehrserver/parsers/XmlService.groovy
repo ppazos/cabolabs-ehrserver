@@ -81,7 +81,7 @@ class XmlService {
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
-      storeVersionXMLs(versions)
+      storeVersionXMLs(versions, contribution)
       
       
       // Save the contribution with all the versions
@@ -221,19 +221,12 @@ class XmlService {
       }
    }
    
-   /*
-   private String versionFileName(GPathResult version)
-   {
-      return config.version_repo + version.uid.text().replaceAll('::', '_') +'.xml'
-   }
-   */
-   
    /**
     * Stores XML documents committed, as files.
     * @param versions
     * @return
     */
-   def storeVersionXMLs(GPathResult versions)
+   def storeVersionXMLs(GPathResult versions, Contribution contribution)
    {
       // CHECK: the compo in version.data doesn't have the injected 
       // compo.uid that parsedCompositions[i] does have.
@@ -248,12 +241,13 @@ class XmlService {
       if (!new File(config.version_repo).canWrite()) throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       
       
-      def file, path
-      versions.version.each { version ->
+      def file, path, version
+      versions.version.each { versionXML ->
          
          try
          {
-            file = versionFSRepoService.getNonExistingVersionFile(version.uid.text())
+            version = contribution.versions.find { it.uid == versionXML.uid.text()}
+            file = versionFSRepoService.getNonExistingVersionFile( version )
          }
          catch (FileAlreadyExistsException e)
          {
@@ -261,7 +255,7 @@ class XmlService {
          }
 
          // FIXME: check if the XML has the namespace declarations of the root node from the commit
-         file << groovy.xml.XmlUtil.serialize( version )
+         file << groovy.xml.XmlUtil.serialize( versionXML )
       }
    }
    

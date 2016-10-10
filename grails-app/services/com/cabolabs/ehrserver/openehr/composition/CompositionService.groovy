@@ -36,7 +36,7 @@ class CompositionService {
       def version = compoIndex.getParent()
       
       // Throws FileNotFoundException
-      def versionFile = versionFSRepoService.getExistingVersionFile(version.uid)
+      def versionFile = versionFSRepoService.getExistingVersionFile(version)
       
       def xml = versionFile.getText()
       

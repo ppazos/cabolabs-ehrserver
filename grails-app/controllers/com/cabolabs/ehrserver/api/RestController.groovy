@@ -539,7 +539,7 @@ class RestController {
       def vf
       try
       {
-         vf = versionFSRepoService.getExistingVersionFile(version.uid)
+         vf = versionFSRepoService.getExistingVersionFile(version)
       }
       catch (FileNotFoundException e)
       {
@@ -1131,7 +1131,7 @@ class RestController {
                    
                    try
                    {
-                      vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                      vf = versionFSRepoService.getExistingVersionFile(version)
                       buff = vf.getText()
                    }
                    catch (FileNotFoundException e)
@@ -1170,7 +1170,7 @@ class RestController {
                 
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                   vf = versionFSRepoService.getExistingVersionFile(version)
                    buff = vf.getText()
                 }
                 catch (FileNotFoundException e)
@@ -1485,7 +1485,7 @@ class RestController {
    
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(version.uid)
+                   vf = versionFSRepoService.getExistingVersionFile(version)
                    buff = vf.getText()
                 }
                 catch (FileNotFoundException e)
@@ -1523,7 +1523,7 @@ class RestController {
             
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(version.uid)
+               vf = versionFSRepoService.getExistingVersionFile(version)
                buff = vf.getText()
             }
             catch (FileNotFoundException e)

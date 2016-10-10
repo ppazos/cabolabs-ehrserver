@@ -53,7 +53,7 @@ class DataIndexerService {
        
        try
        {
-          versionFile = versionFSRepoService.getExistingVersionFile(version.uid)
+          versionFile = versionFSRepoService.getExistingVersionFile(version)
        }
        catch (FileNotFoundException e)
        {

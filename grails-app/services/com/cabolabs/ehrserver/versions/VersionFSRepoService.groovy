@@ -47,7 +47,7 @@ class VersionFSRepoService {
       def c = Version.createCriteria()
       def orgversions = c.list () {
          projections {
-            property('uid')
+            property('fileUid') // we want just the file uid to get the files
          }
          contribution {
             eq('organizationUid', orguid)
@@ -56,8 +56,8 @@ class VersionFSRepoService {
       
       // if we add the size to the version on the DB we don't need to process the file system
       def v, size = 0
-      orgversions.each { version_uid ->
-         v = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+      orgversions.each { fileUid ->
+         v = new File(config.version_repo + fileUid +'.xml')
          
          if (filter.call(v))
          {
@@ -76,9 +76,9 @@ class VersionFSRepoService {
     * Note: the exception is declared to avoid groovy wrap it in an UndeclaredThrowableException
     * ref http://stackoverflow.com/questions/19987720/exception-thrown-from-service-not-being-caught-in-controller
     */
-   def getExistingVersionFile(String version_uid) throws FileNotFoundException
+   def getExistingVersionFile(Version version) throws FileNotFoundException
    {
-      def f = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+      def f = new File(config.version_repo + version.fileUid +'.xml')
       if (!f.exists())
       {
          throw new FileNotFoundException("File ${f.path} doesn't exists")
@@ -91,9 +91,9 @@ class VersionFSRepoService {
     * @param version_uid
     * @return
     */
-   def getNonExistingVersionFile(String version_uid) throws FileAlreadyExistsException
+   def getNonExistingVersionFile(Version version) throws FileAlreadyExistsException
    {
-      def f = new File(config.version_repo + version_uid.replaceAll('::', '_') +'.xml')
+      def f = new File(config.version_repo + version.fileUid +'.xml')
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.path} already exists")
