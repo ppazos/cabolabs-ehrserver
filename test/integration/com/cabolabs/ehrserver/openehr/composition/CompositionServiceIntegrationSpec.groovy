@@ -10,10 +10,12 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.demographic.Person
+import groovy.io.FileType
 
 class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
    def compositionService
+   def versionFSRepoService
    
    private static String PS = System.getProperty("file.separator")
    
@@ -53,7 +55,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    <uid>
      <value>13a9f2b9-81fe-432a-bcc8-d225377a13f1::EMR::1</value>
    </uid>
-   <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1" xsi:type="COMPOSITION">
+   <data archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1" xsi:type="COMPOSITION">
      <name>
        <value>Signos vitales</value>
      </name>
@@ -553,6 +555,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       commitAudit.save(failOnError:true)
       contribution.save(failOnError:true)
       version.save(failOnError:true)
+      
+      // save version file
+      def file = versionFSRepoService.getNonExistingVersionFile( version )
+      file << xml
    }
 
    def cleanup()
@@ -563,10 +569,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def xml = compositionService.compositionAsXml(uid)
          
@@ -574,17 +577,18 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println xml
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as XML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
    
    void "test composition as JSON"()
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def json = compositionService.compositionAsJson(uid)
          
@@ -592,17 +596,18 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println json
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as JSON: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
    
    void "test composition as HTML"()
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def html = compositionService.compositionAsHtml(uid)
          
@@ -610,6 +615,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println html
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as HTML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
 }
