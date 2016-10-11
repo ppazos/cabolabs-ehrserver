@@ -39,11 +39,13 @@ class User implements Serializable {
       username?.hashCode() ?: 0
    }
 
+   /*
    @Override
    boolean equals(other)
    {
       is(other) || (other.instanceOf(User) && other.username == username)
    }
+   */
 
    @Override
    String toString()

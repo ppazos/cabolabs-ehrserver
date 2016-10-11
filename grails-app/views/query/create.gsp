@@ -227,7 +227,8 @@
              })
              .done(function( data ) {
                //console.log(data);
-               location.href = '${createLink("action": "show")}?id='+ data.id;
+               //alert(JSON.stringify(data));
+               location.href = '${createLink("action": "show")}?uid='+ data.uid;
              });
            },
            update_query: function() {
@@ -239,7 +240,7 @@
              })
              .done(function( data ) {
                //console.log(data);
-               location.href = '${createLink("action": "show")}?id='+ data.id;
+               location.href = '${createLink("action": "show")}?uid='+ data.uid;
              });
            }
         };

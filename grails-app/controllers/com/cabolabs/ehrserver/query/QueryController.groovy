@@ -240,10 +240,14 @@ class QueryController {
        
        println "-----------------------------------------"
        def query = Query.newInstance(request.JSON.query)
+       
+       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
+       def user = springSecurityService.getCurrentUser()
+       query.author = user
+       
        if (!query.save(flush:true)) println query.errors.allErrors
        println "-----------------------------------------"
        
-       JSON.use('deep')
        render query as JSON
     }
     
@@ -290,8 +294,12 @@ class QueryController {
     }
     
     
-    def show(Long id) {
-        def queryInstance = Query.get(id)
+    def show(Long id, String uid) {
+        def queryInstance
+        
+        if (id) queryInstance = Query.get(id)
+        else queryInstance = Query.findByUid(uid)
+        
         if (!queryInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), id])
             redirect(action: "list")

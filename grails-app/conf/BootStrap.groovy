@@ -121,9 +121,9 @@ class BootStrap {
      
      JSON.registerObjectMarshaller(AuditDetails) { audit ->
         def a = [timeCommitted: audit.timeCommitted,
-                committer: audit.committer, // DoctorProxy
-                systemId: audit.systemId
-               ]
+                 committer: audit.committer, // DoctorProxy
+                 systemId: audit.systemId
+                ]
         // audit for contributions have changeType null, so we avoid to add it here if it is null
         if (audit.changeType) a << [changeType: audit.changeType]
         return a
@@ -195,11 +195,45 @@ class BootStrap {
      }
      
      
+     JSON.registerObjectMarshaller(Organization) { o ->
+        return [uid: o.uid,
+                name: o.name
+               ]
+     }
+     
+     XML.registerObjectMarshaller(Organization) { o, xml ->
+        xml.build {
+          uid(o.uid)
+          name(o.name)
+        }
+     }
+     
+     JSON.registerObjectMarshaller(User) { u ->
+        return [username: u.username,
+                email: u.email,
+                organizations: u.organizations
+               ]
+     }
+     
+     XML.registerObjectMarshaller(User) { u, xml ->
+        xml.build {
+          username(u.username)
+          email(u.email)
+          xml.startNode 'organizations'
+          
+             xml.convertAnother u.organizations
+   
+          xml.end()
+        }
+     }
+     
+     
      JSON.registerObjectMarshaller(Query) { q ->
         def j = [uid: q.uid,
                  name: q.name,
                  format: q.format,
-                 type: q.type
+                 type: q.type,
+                 author: q.author
                 ]
         
         if (q.type == 'composition')
@@ -223,6 +257,7 @@ class BootStrap {
           name(q.name)
           format(q.format)
           type(q.type)
+          author(q.author)
         }
         
         if (q.type == 'composition')

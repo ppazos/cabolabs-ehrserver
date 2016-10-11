@@ -4,6 +4,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
+import com.cabolabs.security.User
 import com.cabolabs.util.DateParser
 
 /**
@@ -54,6 +55,9 @@ class Query {
    //  composition: sirve para mostrar tablas, donde cada fila es una composition
    //  path: sirve para armar series de valores para graficar
    String group = 'none'
+   
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/340
+   User author
    
    
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
