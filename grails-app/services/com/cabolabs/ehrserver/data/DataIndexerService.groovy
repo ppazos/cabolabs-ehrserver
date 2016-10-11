@@ -39,7 +39,6 @@ class DataIndexerService {
      def parser = new XmlSlurper(false, false)
 //     parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
      
-     
      // Para cada composition
      // El compoIndex se crea en el commit
      compoIdxs.each { compoIndex ->
@@ -77,6 +76,8 @@ class DataIndexerService {
        recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
        
        indexes.each { didx ->
+         
+         //println didx.archetypePath
          
          if (!didx.save())
          {

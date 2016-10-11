@@ -29,7 +29,10 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       // empty the temp version store
       def temp = new File(Holders.config.app.version_repo)
       println "***** DELETE FROM "+ temp.path
-      temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+      temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+         println it.path
+         it.delete()
+      }
    }
 
    void "test simple count inbdex"()
@@ -38,16 +41,20 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       setup:
          def ehr = Ehr.get(1)
       
-         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
+         def versionsXML = new File('test'+ PS +'resources'+ PS +'commit'+ PS +'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
          
          def slurper = new XmlSlurper(false, false)
          def parsedVersions = slurper.parseText(versionsXML)
          
+         assert CompositionIndex.count() == 0
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-          
+         assert CompositionIndex.count() == 1
+         
       when:
+         assert CompositionIndex.countByDataIndexed(false) == 1
          dataIndexerService.generateIndexes()
+         assert CompositionIndex.countByDataIndexed(true) == 1
           
       then:
          // commit was ok
@@ -56,6 +63,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
+         
          
          // indexing was ok
          assert DataValueIndex.count() == 2
