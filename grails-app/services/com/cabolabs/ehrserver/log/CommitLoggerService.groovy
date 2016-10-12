@@ -47,6 +47,7 @@ class CommitLoggerService {
             case ['application/xml', 'text/xml']:
                versionsXML = request.reader?.text
             break
+            // TODO: add logger for json commits
             default:
                println 'contentType '+ contentType +' not supported'
          }

@@ -299,7 +299,14 @@ class RestController {
          renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
          return
       }
+      
+      println request.getClass() // org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper
+      println request.contentType // application/xml, application/json
 
+      // FIXME: if the request is XML we can access an XmlSlurper instance from request.XML, so
+      //        there is no need of accessing request.reader.text, the only problem is that request.XML
+      //        will be null if Content-Type is not specified on the request.
+      
       /*
        * <versions>
        *  <version>
@@ -313,6 +320,8 @@ class RestController {
       // content type application/xml is accessed via request.reader?.text
       // ref: http://stackoverflow.com/questions/3831680/httpservletrequest-get-json-post-data
       // ref: http://stackoverflow.com/questions/9464398/reading-from-a-file-using-the-input-type-file-in-grails
+      
+      /*
       def versionsXML = request.reader?.text // GString
       
       
@@ -323,11 +332,50 @@ class RestController {
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
+      */
+      def content = request.reader?.text
+      def versionsXML, _parsedVersions
+      if (request.contentType == "application/json")
+      {
+         println "JSON"
+         
+         // JSON to XML, then process as XML
+         //def json = request.JSON.toString()
+         def json = content
+         //println json
+         
+         versionsXML = jsonService.json2xml(json)
+         
+         println "versionsXML from JSON "+ versionsXML
+         
+         def slurper = new XmlSlurper(false, false)
+         try {
+            _parsedVersions = slurper.parseText(versionsXML)
+         }
+         catch (Exception e)
+         {
+            // if _parsedVersions is empty, the error is reported below
+         }
+      }
       
+      if (request.contentType == "application/xml")
+      {
+         println "XML"
+         def slurper = new XmlSlurper(false, false)
+         _parsedVersions = slurper.parseText(content)
+      }
       
+      /*
       def slurper = new XmlSlurper(false, false)
       def _parsedVersions = slurper.parseText(versionsXML)
+      */
       
+      if (!_parsedVersions)
+      {
+         commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
+         return
+      }
       
       //println "class "+ _parsedVersions.getClass() // groovy.util.slurpersupport.NodeChild
       //println _parsedVersions.children()*.name()
