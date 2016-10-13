@@ -334,19 +334,20 @@ class RestController {
       }
       */
       def content = request.reader?.text
-      def versionsXML, _parsedVersions
+      def versionsXML, versionsJSON, _parsedVersions
       if (request.contentType == "application/json")
       {
          println "JSON"
          
          // JSON to XML, then process as XML
          //def json = request.JSON.toString()
-         def json = content
+         versionsJSON = content
          //println json
          
-         versionsXML = jsonService.json2xml(json)
+         // the json is transformed to xml and processed as an xml commit internally
+         versionsXML = jsonService.json2xml(versionsJSON)
          
-         println "versionsXML from JSON "+ versionsXML
+         //println "versionsXML from JSON "+ versionsXML
          
          def slurper = new XmlSlurper(false, false)
          try {
@@ -357,18 +358,12 @@ class RestController {
             // if _parsedVersions is empty, the error is reported below
          }
       }
-      
-      if (request.contentType == "application/xml")
+      else if (["application/xml", "text/xml"].contains(request.contentType))
       {
          println "XML"
          def slurper = new XmlSlurper(false, false)
          _parsedVersions = slurper.parseText(content)
       }
-      
-      /*
-      def slurper = new XmlSlurper(false, false)
-      def _parsedVersions = slurper.parseText(versionsXML)
-      */
       
       if (!_parsedVersions)
       {
@@ -384,13 +379,13 @@ class RestController {
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
-         commitLoggerService.log(request, null, false, versionsXML.toString())
+         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
-         commitLoggerService.log(request, null, false, versionsXML.toString())
+         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
@@ -411,11 +406,12 @@ class RestController {
           * Note that this will override the time_committed from the version in the XML received.
           */
 
-          commitLoggerService.log(request, contribution.uid, true, versionsXML.toString())
+          commitLoggerService.log(request, contribution.uid, true, versionsJSON ?: versionsXML.toString())
       }
       catch (ValidationException e) // xsd error
       {
-         commitLoggerService.log(request, null, false, versionsXML.toString())
+         // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
+         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
          
          render(contentType:"text/xml", encoding:"UTF-8") {
             result {
@@ -439,7 +435,7 @@ class RestController {
       }
       catch (UndeclaredThrowableException e)
       {
-         commitLoggerService.log(request, null, false, versionsXML.toString())
+         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
          
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
@@ -447,7 +443,7 @@ class RestController {
       }
       catch (Exception e)
       {
-         commitLoggerService.log(request, null, false, versionsXML.toString())
+         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
          
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()

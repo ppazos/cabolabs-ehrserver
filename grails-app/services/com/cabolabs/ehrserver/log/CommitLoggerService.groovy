@@ -11,10 +11,10 @@ class CommitLoggerService {
    def config = Holders.config.app
 
    /**
-    * If the XML was read from the request, we won't be able to read it again,
+    * If the content (xml or json) was read from the request, we won't be able to read it again,
     * reading twice from the request will result on a java.io.IOException "stream closed"
     */
-   def log(HttpServletRequest request, String contributionUid, boolean success, String readXML)
+   def log(HttpServletRequest request, String contributionUid, boolean success, String content)
    {
       // http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html
       def clientIP = request.remoteAddr
@@ -32,33 +32,41 @@ class CommitLoggerService {
          
       
       // FIXME: file can be read once from the request ...
-      def versionsXML
+      // I think this can be changed to an if (content) .. else try to read.
+      def logContent
       
       try
       {
+         // this is used when there is no content read from the request.reader yet
+         // if the content (xml or json commit) was read, it should come in the content param
          switch (contentType)
          {
+            // urlencoded not supported
             //case 'application/x-www-form-urlencoded':
             //break
-            case 'multipart/form-data':
+            case 'multipart/form-data': // TODO: check if it us JSON or XML (we dont really know)
                def f = request.getFile('versions')
-               versionsXML = f?.text
+               logContent = f?.text
             break
             case ['application/xml', 'text/xml']:
-               versionsXML = request.reader?.text
+               logContent = request.reader?.text
             break
             // TODO: add logger for json commits
+            case 'application/json':
+               logContent = request.reader?.text
+            break
             default:
-               println 'contentType '+ contentType +' not supported'
+               println 'commit logger contentType '+ contentType +' not supported'
          }
       }
       catch(java.io.IOException e) // file already read by the controller
       {
-         versionsXML = readXML // can be null or empty
+         logContent = content // can be null or empty
       }
       
       // TODO: log specific errors thrown by the controller
       
+      println "commmit log"
       println params.ehrUid
       println contributionUid
       println clientIP
@@ -87,11 +95,14 @@ class CommitLoggerService {
       
       commit.save(failOnError: true)
       
-      if (versionsXML)
+      if (logContent)
       {
-         // save the XML to the commit log
-         def commitLog = new File(config.commit_logs + commit.id.toString() +'.xml')
-         commitLog << versionsXML
+         // save the json or xml to the commit log
+         def ext = '.xml'
+         if (contentType == 'application/json') ext = '.json'
+         
+         def commitLog = new File(config.commit_logs + commit.id.toString() + ext)
+         commitLog << logContent
       }
    }
 }
