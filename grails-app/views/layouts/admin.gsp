@@ -111,6 +111,7 @@
 	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
 	          Welcome Back <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>!
+	          (${session.organization.name})
 	         </li>
 	         <li class="dropdown">
 	           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
