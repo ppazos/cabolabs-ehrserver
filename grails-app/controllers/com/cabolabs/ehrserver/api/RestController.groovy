@@ -321,31 +321,15 @@ class RestController {
       // ref: http://stackoverflow.com/questions/3831680/httpservletrequest-get-json-post-data
       // ref: http://stackoverflow.com/questions/9464398/reading-from-a-file-using-the-input-type-file-in-grails
       
-      /*
-      def versionsXML = request.reader?.text // GString
-      
-      
-      // 2. versions deben venir 1 por lo menos haber una
-      if (!versionsXML)
-      {
-         commitLoggerService.log(request, null, false, null)
-         renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
-         return
-      }
-      */
       def content = request.reader?.text
-      def versionsXML, versionsJSON, _parsedVersions
+      def versionsXML, _parsedVersions
       if (request.contentType == "application/json")
       {
          println "JSON"
          
          // JSON to XML, then process as XML
-         //def json = request.JSON.toString()
-         versionsJSON = content
-         //println json
-         
          // the json is transformed to xml and processed as an xml commit internally
-         versionsXML = jsonService.json2xml(versionsJSON)
+         versionsXML = jsonService.json2xml(content)
          
          //println "versionsXML from JSON "+ versionsXML
          
@@ -379,13 +363,13 @@ class RestController {
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
-         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
+         commitLoggerService.log(request, null, false, content)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
-         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
+         commitLoggerService.log(request, null, false, content)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
@@ -406,12 +390,12 @@ class RestController {
           * Note that this will override the time_committed from the version in the XML received.
           */
 
-          commitLoggerService.log(request, contribution.uid, true, versionsJSON ?: versionsXML.toString())
+          commitLoggerService.log(request, contribution.uid, true, content)
       }
       catch (ValidationException e) // xsd error
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
-         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
+         commitLoggerService.log(request, null, false, content)
          
          render(contentType:"text/xml", encoding:"UTF-8") {
             result {
@@ -435,7 +419,7 @@ class RestController {
       }
       catch (UndeclaredThrowableException e)
       {
-         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
+         commitLoggerService.log(request, null, false, content)
          
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
@@ -443,7 +427,7 @@ class RestController {
       }
       catch (Exception e)
       {
-         commitLoggerService.log(request, null, false, versionsJSON ?: versionsXML.toString())
+         commitLoggerService.log(request, null, false, content)
          
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          println e.message +" "+ e.getClass().getSimpleName()

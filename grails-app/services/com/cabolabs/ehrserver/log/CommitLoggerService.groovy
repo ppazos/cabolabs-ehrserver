@@ -101,7 +101,7 @@ class CommitLoggerService {
          def ext = '.xml'
          if (contentType == 'application/json') ext = '.json'
          
-         def commitLog = new File(config.commit_logs + commit.id.toString() + ext)
+         def commitLog = new File(config.commit_logs + commit.fileUid + ext)
          commitLog << logContent
       }
    }
