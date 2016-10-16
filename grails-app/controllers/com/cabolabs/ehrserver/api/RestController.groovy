@@ -397,6 +397,7 @@ class RestController {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content)
          
+         // TODO: JSON response
          render(contentType:"text/xml", encoding:"UTF-8") {
             result {
                type {
@@ -452,16 +453,36 @@ class RestController {
          return
       }
       
-      render(contentType:"text/xml", encoding:"UTF-8") {
-         result {
-            type {
-               code('AA')                         // application reject
-               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+      
+      withFormat {
+         xml {
+            render(contentType:"text/xml", encoding:"UTF-8") {
+               result {
+                  type {
+                     code('AA')                         // application reject
+                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+                  }
+                  message('Versions successfully committed to EHR '+ ehrUid)
+                  // has no error code
+               }
             }
-            message('Versions successfully committed to EHR '+ ehrUid)
-            // has no error code
+         }
+         json {
+            render(contentType:"application/json", encoding:"UTF-8") {
+               [
+                  result: [
+                     type: [
+                        code: 'AA',
+                        codeSystem: 'HL7::TABLES::TABLE_8'
+                     ],
+                     message: 'Versions successfully committed to EHR '+ ehrUid
+                  ]
+               ]
+            }
          }
       }
+      
+      
    } // commit
 
 
