@@ -176,13 +176,29 @@
         log: function () { console.log(this); }
       };
 
+      /**
+       * usage: array_clean(my_array, [null, undefined, ""])
+       */
+      function array_clean(arr, empty_values)
+      {
+        for (var i = 0; i < arr.length; i++)
+        {
+          if (empty_values.includes( arr[i] ))
+          {         
+            arr.splice(i, 1);
+            i--;
+          }
+        }
+        return arr;
+      };
+      
       function Criteria(spec) {
 
         this.conditions = [];
         this.spec = spec;
 
         this.add_condition = function (attr, operand, values) {
-
+          
           if (values.length > 1)
             this.conditions[attr+'Value'] = values;
           else
@@ -551,7 +567,8 @@ resp.responseJSON.result.message +'</div>'
         
         
         // inputs or selects with values
-        criteria_fields = $(':input.value.selected', fieldset);
+        var criteria_fields = $(':input.value.selected', fieldset);
+        var complete = true;
         
         if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
         {
@@ -560,15 +577,14 @@ resp.responseJSON.result.message +'</div>'
         }
         else // case when criteria spec is selected and maybe some values are not filled in
         {
-          complete = true;
-           $.each( criteria_fields, function (index, value_input) {
-            
-             if ( $(value_input).val() == '' )
-             {
-               complete = false;
-               return false; // breaks each
-             }
-           });
+          $.each( criteria_fields, function (index, value_input) {
+
+            if ( [null, undefined, ""].includes( $(value_input).val() ) )
+            {
+              complete = false;
+              return false; // breaks each
+            }
+          });
         }
         if (!complete)
         {
@@ -604,17 +620,15 @@ resp.responseJSON.result.message +'</div>'
           // the class with the name of the attribute is needed to filter values for each attribute
           $.each( $(':input.selected.value.'+attribute, e), function (j, v) {
 
-             console.log(v);
-
-             value = $(v).val();
-             values.push(value);
+            value = $(v).val();
              
-             criteria_str += value + ', ';
+            // values are not empty or null, already checked
+            values.push(value);
+            criteria_str += value + ', ';
           });
 
           criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
           criteria_str += ' AND ';
-          
           
           // query object mgt
           criteria.add_condition(attribute, operand, values);
@@ -1033,18 +1047,32 @@ resp.responseJSON.result.message +'</div>'
         console.log( $('#query_form').serialize() );
       });
       
-      // Add multiple input values for value list criteria when enter is pressed
+      
+      // Add/Delete multiple input values for value list criteria when enter is pressed
       $(document).on('keypress', ':input.value.list', function(evt) {
       
-          if (!evt) evt = window.event;
-          var keyCode = evt.keyCode || evt.which;
+        if (!evt) evt = window.event;
+        var keyCode = evt.keyCode || evt.which;
+        
+        // Enter pressed on an item from an input value list (inlist criteria condition)
+        if (keyCode == '13')
+        {
+          $(this).after( $(this).clone().val('') );
+          $(this).next().focus();
+          return false;
+        }
+        
+        // Backspace or delete pressed on an item from an input value list (inlist criteria condition)
+        if (keyCode == '8' || keyCode == '46')
+        {
+          // the latest input cant be deleted
+          var __parent = $(this).parent();
+          console.log(__parent.children());
+          if (__parent.children().size() == 1) return;
           
-          if (keyCode == '13') { // Enter pressed
-          
-            $(this).after( $(this).clone().val('') );
-            $(this).next().focus();
-            return false;
-          }
+          $(this).remove();
+          return false;
+        }
       });
      
       
