@@ -558,7 +558,15 @@ resp.responseJSON.result.message +'</div>'
        */
       var dom_add_criteria_2 = function (fieldset) {
 
-        console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
+        //console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
+        
+        // Path is not selected
+        console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
+        if ( $('select[name=view_archetype_path]').val() == null )
+        {
+          alert('Please select a datapoint to define a query criteria');
+          return false;
+        }
         
         // =======================================================================================
         // Criteria is complete? https://github.com/ppazos/cabolabs-ehrserver/issues/141
@@ -1342,6 +1350,9 @@ resp.responseJSON.result.message +'</div>'
          * Lista las paths del arquetipo en select[view_archetype_path]
          */
         $('select[name=view_archetype_id]').change(function() {
+        
+          // clean the current criteria if the user defined it for another archetype/path
+          $('#composition_criteria_builder').empty();
         
           var archetype_id = $(this).val(); // arquetipo seleccionado
           get_and_render_archetype_paths(archetype_id);
