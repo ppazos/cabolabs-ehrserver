@@ -110,7 +110,7 @@
 	      <sec:ifLoggedIn>
 	        <ul class="nav navbar-top-links navbar-right">
 	         <li>
-	          Welcome Back <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>!
+	          <g:message code="layout.welcome_user" /> <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>!
 	          (${session.organization.name})
 	         </li>
 	         <li class="dropdown">
@@ -128,7 +128,7 @@
 	             <li class="divider"></li>
 	             -->
 	             <li>
-	               <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</g:link>
+	               <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> <g:message code="layout.action.logout" /></g:link>
 	             </li>
 	           </ul>
 	           <!-- /.dropdown-user -->
