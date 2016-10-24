@@ -13,17 +13,18 @@ class PaginatorTagLib {
      */
     def paginator = { attrs, body ->
     
-      def numberOfPages = (attrs.numberOfPages ?: 10)
+      def numberOfPages = (attrs.numberOfPages ?: 5)
       
-      //println "paginator total/offset: " + (params.offset ?: 1).intdiv( params.max )
-      def max = Math.min(params.max?.toInteger() ?: 10, 100)
+      def max = Math.min(params.max?.toInteger() ?: 20, 100)
       def offset = (params.offset?.toInteger() ?: 1)
       def currentPage = offset.intdiv(max) + 1
-      //println "paginator currPage: " + currentPage
       
       //Calculamos el maximo número de elementos que tendra el paginador.
-      def totalPages = (attrs.total.toInteger()).intdiv(max) + ((attrs.total.toInteger() % max) == 0 ? 0 : 1)
-      def urlPage=g.createLink(action: actionName);
+      def totalPages = 1 // if there are 0 elements, totalPages = 1, this avoids set 0 by the logic below
+      def total = attrs.total.toInteger()
+      if (total > 0) totalPages = total.intdiv(max) + ((total % max == 0) ? 0 : 1) // 1 for total=1..max, 2 for total=max+1..2max, ...
+      
+      def urlPage = g.createLink(action: actionName)
       
       //Código que se genera para poder utilizar boostrap-paginator
       //Codigo necesario para poder aplicar bootstrap
