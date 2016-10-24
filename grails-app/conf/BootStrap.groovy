@@ -715,6 +715,45 @@ class BootStrap {
           p1.associate( org )
        }
      }
+     
+     
+      // ============================================================
+      // migration for latest changes
+      def versionsss = Version.list()
+      def version_file
+      versionsss.each {
+         if (!it.fileUid)
+         {
+            it.fileUid = java.util.UUID.randomUUID() as String
+            if (!it.save())
+            {
+               println it.errors
+            }
+            else
+            {
+               // update the version file names
+               version_file = new File(Holders.config.version_repo + it.uid.replaceAll('::', '_') +'.xml')
+               if (version_file.exists())
+               {
+                  version_file.renameTo( it.fileUid +'.xml' )
+               }
+               else
+                  println "file doesnt exists "+ version_file.path
+            }
+         }
+      }
+      
+      
+      def commitsss = Commit.list()
+      commitsss.each {
+         if (!it.fileUid)
+         {
+            it.fileUid = java.util.UUID.randomUUID() as String
+            it.save()
+         }
+         
+         // TODO: update commit file names with fileUid
+      }
    }
    
    def destroy = {
