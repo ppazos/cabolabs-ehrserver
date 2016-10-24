@@ -195,7 +195,14 @@ class SecurityFilters {
             
             def o = Organization.findByUid(params.uid)
             
-            if (!o || !orgs.uid.contains(o.uid))
+            if (!o)
+            {
+               flash.message = "The organization doesn't exists"
+               chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
+               return false
+            }
+            
+            if (!orgs.uid.contains(o.uid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
             {
                flash.message = "You don't have access to that organization!"
                chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
@@ -226,7 +233,15 @@ class SecurityFilters {
             
             def o = Organization.findByUid(params.uid)
             
-            if (!o || !orgs.uid.contains(o.uid))
+            if (!o)
+            {
+               flash.message = "The organization doesn't exists"
+               chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
+               return false
+            }
+            
+            // For now admins don't have edit access for organizations that belong to other users
+            if (!orgs.uid.contains(o.uid))
             {
                flash.message = "You don't have access to that organization!"
                chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
