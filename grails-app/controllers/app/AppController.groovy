@@ -23,13 +23,6 @@ class AppController {
       //println springSecurityService.getAuthentication().getAuthorities() // [ROLE_ADMIN]
       //println springSecurityService.getCurrentUser() // error porque espera que springSecurityService.getPrincipal() sea Grails User
       
-      // auth token used to login
-      def auth = springSecurityService.authentication
-      def org = Organization.findByNumber(auth.organization)
-      
-      session.organization = org
-      
-      
       // Count EHRs
       def count_ehrs
       def count_contributions

@@ -16,7 +16,16 @@ class SecurityFilters {
 
          }
          after = { Map model ->
-
+            
+            def auth = springSecurityService.authentication
+            
+            // GrailsAnonymousAuthenticationToken instance is returned forthat dont require authentication
+            // and UserPassOrgAuthToken when the user is logged in
+            if (!session.organization && auth instanceof com.cabolabs.security.UserPassOrgAuthToken)
+            {
+               def org = Organization.findByNumber(auth.organization)
+               session.organization = org // to show the org name in the ui
+            }
          }
          afterView = { Exception e ->
 
