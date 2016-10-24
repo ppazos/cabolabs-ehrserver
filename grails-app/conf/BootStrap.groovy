@@ -720,7 +720,7 @@ class BootStrap {
       // ============================================================
       // migration for latest changes
       def versionsss = Version.list()
-      def version_file
+      def version_file, commit_file
       versionsss.each {
          if (!it.fileUid)
          {
@@ -735,7 +735,7 @@ class BootStrap {
                version_file = new File(Holders.config.version_repo + it.uid.replaceAll('::', '_') +'.xml')
                if (version_file.exists())
                {
-                  version_file.renameTo( it.fileUid +'.xml' )
+                  version_file.renameTo( Holders.config.version_repo + it.fileUid +'.xml' )
                }
                else
                   println "file doesnt exists "+ version_file.path
@@ -749,10 +749,21 @@ class BootStrap {
          if (!it.fileUid)
          {
             it.fileUid = java.util.UUID.randomUUID() as String
-            it.save()
+            if (!it.save())
+            {
+               println it.errors
+            }
+            else
+            {
+               commit_file = new File(Holders.config.commit_logs + it.id.toString() +'.xml')
+               if (commit_file.exists())
+               {
+                  commit_file.renameTo( Holders.config.commit_logs + it.fileUid +'.xml' )
+               }
+               else
+                  println "file doesnt exists "+ commit_file.path
+            }
          }
-         
-         // TODO: update commit file names with fileUid
       }
    }
    
