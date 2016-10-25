@@ -253,15 +253,15 @@ class Query {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
-   def execute(String ehrUid, Date from, Date to, String group, String organizationUid)
+   def execute(String ehrUid, Date from, Date to, String group, String organizationUid, int max, int offset)
    {
       if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid)
-      return executeComposition(ehrUid, from, to, organizationUid)
+      return executeComposition(ehrUid, from, to, organizationUid, max, offset)
    }
    
    def executeDatavalue(String ehrUid, Date from, Date to, String group, String organizationUid)
    {
-      println "ehrUid: $ehrUid - organizationUid: $organizationUid"
+      //println "ehrUid: $ehrUid - organizationUid: $organizationUid"
       
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -645,7 +645,7 @@ class Query {
    }
    
    
-   def executeComposition(String ehrUid, Date from, Date to, String organizationUid)
+   def executeComposition(String ehrUid, Date from, Date to, String organizationUid, int max, int offset)
    {
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
@@ -830,9 +830,14 @@ class Query {
       
       println "HQL QUERY: \n" + q
       
-      def cilist = CompositionIndex.executeQuery( q )
+      // default pagination
+      if (!max)
+      {
+         max = 20
+         offset = 0
+      }
       
-      //println "cilist: "+ cilist
+      def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       
       return cilist
    }

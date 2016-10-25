@@ -9,11 +9,16 @@ class PaginatedResults {
    // Marshallers for those types should be already defined!
    List list
    
+   // Alternative when the results are stored in a Map instead of a List
+   Map map
+   
    // Pagination information
    int max
    int offset
    int nextOffset
    int prevOffset
+   
+   int timing // ms
 
    /**
     * calculates nextOffset and prevOffset

@@ -1004,7 +1004,7 @@ class RestController {
    @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate)
+             String fromDate, String toDate, int max, int offset)
    {
       if (!queryUid)
       {
@@ -1053,6 +1053,12 @@ class RestController {
       // FIXME: do query execution and output processing in a service
       // --------------------------------------------------------------
       
+      if (!max)
+      {
+         max = 20
+         offset = 0
+      }
+      
       // parse de dates
       Date qFromDate
       Date qToDate
@@ -1089,7 +1095,7 @@ class RestController {
       def start_time = System.currentTimeMillis()
       // /measuring query timing
       
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
       
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1128,19 +1134,24 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
+            def paginated_res = new PaginatedResults(listName:'results', max:max, offset:offset)
+            
             // we need a map to return the timing...
             if (res instanceof List)
             {
-               def mapres = [results: res]
-               res = mapres
+               paginated_res.list = res
+            }
+            else
+            {
+               paginated_res.map = res
             }
             
-            res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
+            paginated_res.timing = end_time - start_time
             
             if (format == 'json')
-               render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+               render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
             else
-               render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+               render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
             return
          }
 
@@ -1457,9 +1468,13 @@ class RestController {
          renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
          return
       }
-       
+      
+      // For testing there is no need to pass pagination params, so we define them here:
+      def max = 20
+      def offset = 0
+      
       def query = Query.newInstance(request.JSON.query)
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset)
       def result = cilist
       
       // If no ehrUid was specified, the results will be for different ehrs

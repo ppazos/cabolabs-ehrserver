@@ -410,15 +410,23 @@ class BootStrap {
         
         pres.update() // updates and checks pagination values
         
-        return [
-           "${pres.listName}": pres.list,
-           pagination: [
-              'max': pres.max,
-              'offset': pres.offset,
-              nextOffset: pres.nextOffset, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
-              prevOffset: pres.prevOffset
-           ]
+        def res = [:]
+        
+        if (pres.list)
+           res["${pres.listName}"] = pres.list
+        else
+           res["${pres.listName}"] = pres.map
+        
+        res.pagination = [
+           'max': pres.max,
+           'offset': pres.offset,
+           nextOffset: pres.nextOffset, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
+           prevOffset: pres.prevOffset
         ]
+        
+        if (pres.timing) res.timing = pres.timing.toString() + ' ms'
+           
+        return res
      }
      
      XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
@@ -428,8 +436,11 @@ class BootStrap {
         // Our list marshaller to customize the name
         xml.startNode pres.listName
            
-           xml.convertAnother pres.list // this works, generates "person" nodes
-        
+           if (pres.list)
+              xml.convertAnother pres.list // this works, generates "person" nodes
+           else
+              xml.convertAnother pres.map
+           
            /* doesnt generate the patient root, trying with ^
            pres.list.each { item ->
               xml.convertAnother item // marshaller fot the item type should be declared
@@ -732,10 +743,10 @@ class BootStrap {
             else
             {
                // update the version file names
-               version_file = new File(Holders.config.version_repo + it.uid.replaceAll('::', '_') +'.xml')
+               version_file = new File(Holders.config.app.version_repo + it.uid.replaceAll('::', '_') +'.xml')
                if (version_file.exists())
                {
-                  version_file.renameTo( Holders.config.version_repo + it.fileUid +'.xml' )
+                  version_file.renameTo( Holders.config.app.version_repo + it.fileUid +'.xml' )
                }
                else
                   println "file doesnt exists "+ version_file.path
@@ -755,10 +766,10 @@ class BootStrap {
             }
             else
             {
-               commit_file = new File(Holders.config.commit_logs + it.id.toString() +'.xml')
+               commit_file = new File(Holders.config.app.commit_logs + it.id.toString() +'.xml')
                if (commit_file.exists())
                {
-                  commit_file.renameTo( Holders.config.commit_logs + it.fileUid +'.xml' )
+                  commit_file.renameTo( Holders.config.app.commit_logs + it.fileUid +'.xml' )
                }
                else
                   println "file doesnt exists "+ commit_file.path
