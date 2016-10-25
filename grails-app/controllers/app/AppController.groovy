@@ -46,6 +46,9 @@ class AppController {
          count_ehrs = Ehr.countByOrganizationUid(org.uid)
          count_contributions = Contribution.countByOrganizationUid(org.uid)
          
+         def auth = springSecurityService.authentication
+         def org = Organization.findByNumber(auth.organization)
+         
          version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
       }
       
