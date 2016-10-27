@@ -23,6 +23,14 @@ grails {
 
 
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+
+// include XSDs and XSLTs in the war
+grails.war.resources = { stagingDir, args ->
+   copy(todir: "${stagingDir}/xsd") {
+       fileset(dir: "xsd", includes: "*.*")
+   }
+}
+
 grails.server.port.http = 8090
 grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
