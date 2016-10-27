@@ -62,7 +62,6 @@ $(document).ready(function() {
 
 var queryDataRenderChart = function(data)
 {
-  console.log("queryDataRenderChart");
   /*
    series: [{
      name: 'Jane',
@@ -75,6 +74,7 @@ var queryDataRenderChart = function(data)
    var series = [];
    var point;
    
+   // FIXME: externalize point builders, it doesnt need to be created on each call.
    // El punto a graficar depende del tipo de dato, se usa
    // point_builders para resolver la construccion del punto.
    var point_builders = {
@@ -156,7 +156,8 @@ var queryDataRenderChart = function(data)
    
    // ========================================
    // Test chart
-   renderchart(series);
+   if (series.length > 1)
+     renderchart(series);
    // ========================================
 }; // queryDataRenderChart
 
