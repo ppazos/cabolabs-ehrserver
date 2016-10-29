@@ -59,15 +59,11 @@ class XmlValidationService {
       def xsd = new File(xsdPath)
       if (!xsd.exists()) // try to load from resources
       {
-         //Holders.applicationContext
-         //Holders.grailsApplication.parentContext.getResource("classpath:$filePath")
-         
          // getResource returns a ServletContextResource
          def xsdInputStream = Holders.grailsApplication.parentContext.getResource(xsdPath).inputStream
-         //def xsdInputStream = this.getClass().getResourceAsStream(System.getProperty("file.separator") + xsdPath)
-         
+
          // reserouce on xsd\Version.xsd = null
-         println "reserouce on "+ xsdPath +" = "+ xsdInputStream
+         println "resource on "+ xsdPath +" = "+ xsdInputStream
          
          schema = schemaFactory.newSchema( [ new StreamSource( xsdInputStream ) ] as Source[] )
       }
