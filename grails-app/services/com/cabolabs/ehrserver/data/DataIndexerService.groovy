@@ -21,84 +21,85 @@ class DataIndexerService {
    
    def generateIndexes()
    {
-     // compositions with data to be indexed
-     def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
+      // compositions with data to be indexed
+      def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
      
-     // created indexes will be loaded here
-     def indexes = []
+      // created indexes will be loaded here
+      def indexes = []
 
-     def version, versionFile, versionXml, parsedVersion, compoParsed
+      def version, versionFile, versionXml, parsedVersion, compoParsed
      
      
-     // Error handler to avoid:
-     // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
-     // set, which is probably not what is desired.  Parser will use a default
-     // ErrorHandler to print the first 10 errors.  Please call
-     // the 'setErrorHandler' method to fix this.
-     def message
-     def parser = new XmlSlurper(false, false)
+      // Error handler to avoid:
+      // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
+      // set, which is probably not what is desired.  Parser will use a default
+      // ErrorHandler to print the first 10 errors.  Please call
+      // the 'setErrorHandler' method to fix this.
+      def message
+      def parser = new XmlSlurper(false, false)
 //     parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
      
-     // Para cada composition
-     // El compoIndex se crea en el commit
-     compoIdxs.each { compoIndex ->
+      // Para cada composition
+      // El compoIndex se crea en el commit
+      compoIdxs.each { compoIndex ->
      
-       //println "Indexacion de composition: " + compoIndex.uid
+         //println "Indexacion de composition: " + compoIndex.uid
        
-       indexes = []
+         indexes = []
        
-       // load xml file from filesystem
-       version = compoIndex.getParent()
+         // load xml file from filesystem
+         version = compoIndex.getParent()
        
-       try
-       {
-          versionFile = versionFSRepoService.getExistingVersionFile(version)
-       }
-       catch (FileNotFoundException e)
-       {
-          log.info "avoid indexing version "+ version.uid +" "+ e.message
-          return // Continue with next compoIdx
-       }
+         try
+         {
+            versionFile = versionFSRepoService.getExistingVersionFile(version)
+         }
+         catch (FileNotFoundException e)
+         {
+            log.info "avoid indexing version "+ version.uid +" "+ e.message
+            return // Continue with next compoIdx
+         }
        
-       versionXml = versionFile.getText()
-       parsedVersion = parser.parseText(versionXml)
+         versionXml = versionFile.getText()
+         parsedVersion = parser.parseText(versionXml)
        
-       // error from error handler?
+//       error from error handler?
 //       if (message)
 //       {
 //         println "IndexDataJob XML ERROR: "+ message
 //         message = null // empty for the next parse
 //       }
        
+         compoParsed = parsedVersion.data
        
-       compoParsed = parsedVersion.data
+         recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
        
-       recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
-       
-       indexes.each { didx ->
+         // empty if the OPT for the compo is not loaded in the server
+         indexes.each { didx ->
          
-         //println didx.archetypePath
+            //println didx.archetypePath
          
-         if (!didx.save())
-         {
-            log.info didx.errors.toString()
-            // if one index created fails to save, the whole indexing process is rolled back
-            throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
+            if (!didx.save())
+            {
+               log.info didx.errors.toString()
+               // if one index created fails to save, the whole indexing process is rolled back
+            
+               throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
+            }
+            else
+            {
+               log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
+            }
          }
-         else
+       
+         // Marca como indexado
+         compoIndex.dataIndexed = true
+       
+         if (!compoIndex.save())
          {
-            log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
+            log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
          }
-       }
-       
-       // Marca como indexado
-       compoIndex.dataIndexed = true
-       
-       if (!compoIndex.save())
-       {
-         log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
-       }
-     }
+      }
    }
    
    /**
@@ -116,6 +117,7 @@ class DataIndexerService {
       String templateId, String archetypeId,
       CompositionIndex owner)
    {
+      //println "recursiveIndexData "+ path
       //println "templateId 1: "+ templateId
       
       // TODO:
@@ -174,7 +176,6 @@ class DataIndexerService {
       // ArchetypeIndexItem uses the archetypeId and archetypePath to search
       def idx = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, archetypePath)
       
-      
       // FIXME:
       // Va a haber un problema con multiples datos para las mismas
       // paths de tipos estructurados, ej.: vienen 2 DvQuantity con
@@ -195,6 +196,8 @@ class DataIndexerService {
          {
             if (idx)
             {
+               // tries this with OBSERVATION, that triggers the exception:
+               // EH! No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
                def type = DataValues.valueOfString(idx.rmTypeName)
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
                def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
@@ -204,11 +207,11 @@ class DataIndexerService {
          catch (IllegalArgumentException ex)
          {
             // TODO: no need to process the except, is just that the current type should not be indexed
+            println "EH! "+ ex.message
          }
          
          // follow the recursion if there are children nodes
          node.children().each { subnode ->
-             
             recursiveIndexData( idxpath, archetypePath, subnode, indexes, templateId, archetypeId, owner )
          }
       }
