@@ -13,6 +13,7 @@ import org.xml.sax.SAXParseException
 
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
+import grails.util.Holders
 
 class XmlValidationService {
 
@@ -53,7 +54,25 @@ class XmlValidationService {
       this.errors = [] // Reset the errors for reuse
       
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-      Schema schema = schemaFactory.newSchema( [ new StreamSource( xsdPath ) ] as Source[] )
+      Schema schema
+      
+      def xsd = new File(xsdPath)
+      if (!xsd.exists()) // try to load from resources
+      {
+         //Holders.applicationContext
+         //Holders.grailsApplication.parentContext.getResource("classpath:$filePath")
+         
+         // getResource returns a ServletContextResource
+         def xsdInputStream = Holders.grailsApplication.parentContext.getResource(xsdPath).inputStream
+         //def xsdInputStream = this.getClass().getResourceAsStream(System.getProperty("file.separator") + xsdPath)
+         
+         // reserouce on xsd\Version.xsd = null
+         println "reserouce on "+ xsdPath +" = "+ xsdInputStream
+         
+         schema = schemaFactory.newSchema( [ new StreamSource( xsdInputStream ) ] as Source[] )
+      }
+      else
+         schema = schemaFactory.newSchema( [ new StreamSource( xsdPath ) ] as Source[] )
       
       // Validate with validator
       Validator validator = schema.newValidator()
