@@ -57,10 +57,19 @@ class CompositionService {
       def xml = compositionAsXml(uid)
       
       // Transform to HTML
-      def xslt = new File(config.xslt).getText()
+      def xslt = new File(config.xslt)
+      def xslt_content
+      if (!xslt.exists()) // try to load from resources
+      {
+         xslt_content = Holders.grailsApplication.parentContext.getResource(config.xslt).inputStream.text
+      }
+      else
+      {
+         xslt_content = xslt.text
+      }
       
       // Create transformer
-      def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt)))
+      def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt_content)))
       
       def html = new StringWriter()
       
