@@ -34,6 +34,9 @@ class BootStrap {
    
    def init = { servletContext ->
       
+      def working_folder = new File('.')
+      println "working folder: "+ working_folder.absolutePath
+      
       // Define server timezone
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
       
@@ -730,6 +733,7 @@ class BootStrap {
      
       // ============================================================
       // migration for latest changes
+      /*
       def versionsss = Version.list()
       def version_file, commit_file
       versionsss.each {
@@ -776,6 +780,7 @@ class BootStrap {
             }
          }
       }
+      */
    }
    
    def destroy = {
