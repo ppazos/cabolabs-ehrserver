@@ -525,12 +525,7 @@ class BootStrap {
          '/j_spring_security_logout',
          '/rest/**',
          '/ehr/showCompositionUI', // will be added as a rest service via url mapping
-         '/user/profile',
-         
-         // access for all roles to let users access their own profile
-         '/user/show/**',
-         '/user/edit/**',
-         '/user/update/**'
+         '/user/profile'
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()
@@ -554,6 +549,9 @@ class BootStrap {
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/show/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/edit/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/update/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/user/create', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/user/save', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/user/delete', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
