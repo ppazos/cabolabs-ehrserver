@@ -149,15 +149,20 @@ class OperationalTemplateController {
       }
    }
    
-	/**
-	 * 
-	 * @return
-	 */
-	def show(String concept)
-	{
-	   def compo = new File(config.opt_repo + concept +".opt")
-      render(text:compo.getText(), contentType:"text/xml", encoding:"UTF-8")
-	}
+   def show(String uid)
+   {
+      def opt = OperationalTemplateIndex.findByUid(uid)
+      if (!opt)
+      {
+         flash.message = 'Template not found'
+         redirect action:'list'
+         return
+      }
+      
+      def opt_file = new File(config.opt_repo + opt.concept +".opt")
+      
+      [opt_xml: opt_file.getText(), opt: opt]
+   }
    
    def items(String uid, String sort, String order)
    {
