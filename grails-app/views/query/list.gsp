@@ -53,7 +53,7 @@
 		        <tbody>
 			        <g:each in="${queryInstanceList}" status="i" var="queryInstance">
 			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-			            <td><g:link action="show" id="${queryInstance.id}">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
+			            <td><g:link action="show" params="[uid: queryInstance.uid]">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
 			            <td>${fieldValue(bean: queryInstance, field: "group")}</td>
 			            <td>${fieldValue(bean: queryInstance, field: "format")}</td>
 			            <td>${fieldValue(bean: queryInstance, field: "type")}</td>

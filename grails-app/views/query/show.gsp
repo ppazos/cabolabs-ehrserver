@@ -108,10 +108,10 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:link action="edit" params="[id:queryInstance?.id]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
+          <g:link action="edit" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
           
           <g:form method="DELETE" action="delete" style="display:inline">
-            <input type="hidden" name="id" value="${queryInstance.id}" />
+            <input type="hidden" name="uid" value="${queryInstance.uid}" />
             <g:submitButton class="btn btn-default btn-md" name="delete" value="${g.message(code:'query.execute.action.delete')}" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');" />
           </g:form>
         </div>
@@ -121,7 +121,7 @@
     <script type="text/javascript">
       $.ajax({
          url: '${createLink(controller:"query", action:"export")}',
-         data: {id: ${queryInstance?.id}, format: 'json'},
+         data: {uid: '${queryInstance?.uid}', format: 'json'},
          success: function(data, textStatus) {
             console.log(data);
             $('#json').addClass('json');
@@ -134,19 +134,19 @@
          }
       });
       $.ajax({
-          url: '${createLink(controller:"query", action:"export")}',
-          data: {id: ${queryInstance?.id}, format: 'xml'},
-          success: function(data, textStatus) {
-             console.log(data);
-             $('#xml').addClass('xml');
-             $('#xml').text(formatXml( xmlToString(data) ));
-             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
+         url: '${createLink(controller:"query", action:"export")}',
+         data: {uid: '${queryInstance?.uid}', format: 'xml'},
+         success: function(data, textStatus) {
+            console.log(data);
+            $('#xml').addClass('xml');
+            $('#xml').text(formatXml( xmlToString(data) ));
+            $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+         },
+         error: function(XMLHttpRequest, textStatus, errorThrown) {
             
             console.log(textStatus, errorThrown);
-          }
-        });
+         }
+      });
     </script>
   </body>
 </html>
