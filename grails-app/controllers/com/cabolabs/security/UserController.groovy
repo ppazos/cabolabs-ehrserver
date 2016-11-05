@@ -22,6 +22,7 @@ class UserController {
    def simpleCaptchaService
    def notificationService
    def springSecurityService
+   def userService
 
    def index(int max, int offset, String sort, String order, String username)
    {
@@ -79,7 +80,7 @@ class UserController {
       {
          withFormat {
             xml {
-               render(status: 404, contentType: "text/xml", text: '<result>User doesn\'t exists</result>', encoding:"UTF-8")
+               render(status: 404, contentType: "text/xml", text: "<result>User doesn't exists</result>", encoding:"UTF-8")
             }
             json {
                render(status: 404, contentType: "application/json", text: '{"result": "User doesn\'t exists"}', encoding:"UTF-8")
@@ -262,44 +263,16 @@ class UserController {
          return
       }
       
-      if (!userInstance.password)
+      try
       {
-         userInstance.enabled = false
-         userInstance.setPasswordToken()
+         userService.saveAndNotify(userInstance, params)
       }
-      
-      
-      // Associate orgs
-      def orgUids = params.list("organizationUid")
-      def newOrgs = Organization.findAllByUidInList(orgUids)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
-      if (!userInstance.save(flush:true))
+      catch (Exception e)
       {
+         flash.message = e.message
          render model: [userInstance: userInstance], view:'create'
          return
       }
-
-
-      // TODO: UserRole ORG_* needs a reference to the org, since the user
-      //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-      //UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
-
-      // Add selected roles
-      def roles = params.list('role')
-      roles.each { authority ->
-         
-         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
-      }
-      
-      
-
-      // token to create the URL for the email is in the userInstance
-      notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
-
-      
       
       request.withFormat {
          form multipartForm {
@@ -326,8 +299,8 @@ class UserController {
           )
          )
       {
-          respond userInstance
-          return
+         respond userInstance
+         return
       }
       flash.message = "You don't have permissions to access the user"
       redirect action:'index'
