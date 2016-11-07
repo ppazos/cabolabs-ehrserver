@@ -6,6 +6,8 @@ import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
+import com.cabolabs.ehrserver.reporting.ActivityLog
+
 class SecurityFilters {
    
    def springSecurityService
@@ -13,12 +15,38 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-
+         
+            // TODO: refactor to a log filter
+            def username
+            if (controllerName == 'rest')
+            {
+               if (actionName == 'login')
+                  username = params.username
+               else
+                  username = request.securityStatelessMap.username
+            }
+            else
+            {
+               def auth = springSecurityService.authentication
+               if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
+               {
+                  username = auth.principal.username
+               }
+            }
+            def alog = new ActivityLog(username: username, // can be null
+                            action: controllerName+':'+actionName,
+                            objectId: params.id, // can be null
+                            objectUid: params.uid, // can be null
+                            clientIp: request.remoteAddr)
+            
+            if (!alog.save()) println "activity log is not saving "+ alog.errors
+            
          }
          after = { Map model ->
-            
+            println request.forwardURI
             // this only applies to UI, avoid processing for API
-            if (controllerName != 'rest')
+            // forwardURI condition was added since some user endpoints are not in the RestController
+            if (controllerName != 'rest' && !request.forwardURI.contains('rest'))
             {
                def auth = springSecurityService.authentication
                
