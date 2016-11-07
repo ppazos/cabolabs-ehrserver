@@ -81,7 +81,7 @@ class VersionFSRepoService {
       def f = new File(config.version_repo + version.fileUid +'.xml')
       if (!f.exists())
       {
-         throw new FileNotFoundException("File ${f.path} doesn't exists")
+         throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
       }
       return f
    }

@@ -37,6 +37,21 @@ class BootStrap {
       def working_folder = new File('.')
       println "working folder: "+ working_folder.absolutePath
       
+      
+      // file system checks
+      def commits_repo = new File(Holders.config.app.commit_logs)
+      def versions_repo = new File(Holders.config.app.version_repo)
+      if (!commits_repo.exists())
+      {
+         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
+      }
+      if (!versions_repo.exists())
+      {
+         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
+      }
+      // /file system checks
+      
+      
       // Define server timezone
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
       
@@ -727,7 +742,6 @@ class BootStrap {
           p1.associate( org )
        }
      }
-     
      
       // ============================================================
       // migration for latest changes
