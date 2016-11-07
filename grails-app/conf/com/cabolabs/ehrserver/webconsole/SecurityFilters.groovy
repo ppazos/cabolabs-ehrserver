@@ -39,11 +39,12 @@ class SecurityFilters {
                             objectUid: params.uid, // can be null
                             clientIp: request.remoteAddr)
             
+            // TODO: file log failure
             if (!alog.save()) println "activity log is not saving "+ alog.errors
             
          }
          after = { Map model ->
-            println request.forwardURI
+
             // this only applies to UI, avoid processing for API
             // forwardURI condition was added since some user endpoints are not in the RestController
             if (controllerName != 'rest' && !request.forwardURI.contains('rest'))
