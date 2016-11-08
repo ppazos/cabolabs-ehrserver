@@ -62,7 +62,7 @@ class XmlValidationService {
          // getResource returns a ServletContextResource
          def xsdInputStream = Holders.grailsApplication.parentContext.getResource(xsdPath).inputStream
 
-         // reserouce on xsd\Version.xsd = null
+         // resource on xsd\Version.xsd = null
          println "resource on "+ xsdPath +" = "+ xsdInputStream
          
          schema = schemaFactory.newSchema( [ new StreamSource( xsdInputStream ) ] as Source[] )
