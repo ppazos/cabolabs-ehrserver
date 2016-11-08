@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.*
 class Ehr {
 
    // The id of the EHR system on which this EHR was created
-   String systemId = "ISIS_EHR_SERVER"
+   String systemId = "CABOLABS_EHR_SERVER"
    
    // Emula un HIER_OBJECT_ID.root y su valor va a ser un UUID (java.util.UUID.randomUUID() as String)
    // que se asigna en el momento que se crea el EHR
@@ -35,6 +35,8 @@ class Ehr {
    
    // multitenancy
    String organizationUid
+   
+   boolean deleted = false // logical delete
    
    
    List contributions = []

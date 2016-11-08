@@ -49,14 +49,13 @@ class EhrController {
       def list
       def c = Ehr.createCriteria()
       
-      // TODO: filter by deleted
-      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          /*
           * if the criteria is empty, does the same as .list (works as expected)
           */
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('deleted', false)
             // filters
             if (uid)
             {
@@ -78,6 +77,7 @@ class EhrController {
          def orgs = us.organizations
 
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('deleted', false)
             //eq ('organizationUid', org.uid) // same org as used for login
             if (organizationUid)
             {
