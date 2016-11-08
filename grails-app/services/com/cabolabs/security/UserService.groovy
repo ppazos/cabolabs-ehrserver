@@ -27,6 +27,7 @@ class UserService {
     
    def saveAndNotify(User userInstance, params)
    {
+      println "save and notify"
       if (!userInstance.password)
       {
          userInstance.enabled = false
@@ -53,7 +54,7 @@ class UserService {
          UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
       }
 
-
+      // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
    }

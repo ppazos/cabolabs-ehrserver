@@ -590,11 +590,11 @@ class BootStrap {
      }
      if (User.count() == 0)
      {
-        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin')
+        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin', enabled: true)
         adminUser.organizations = [organizations[0], organizations[1]]
         adminUser.save(failOnError: true,  flush: true)
         
-        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com',  password: 'orgman')
+        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com',  password: 'orgman', enabled: true)
         orgManUser.organizations = [organizations[0], organizations[1]]
         orgManUser.save(failOnError: true,  flush: true)
         

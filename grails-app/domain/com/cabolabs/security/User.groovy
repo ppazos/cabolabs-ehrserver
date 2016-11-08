@@ -12,7 +12,7 @@ class User implements Serializable {
    String password
    String email
    
-   boolean enabled = true
+   boolean enabled // false until the password is set
    boolean accountExpired
    boolean accountLocked
    boolean passwordExpired
@@ -23,7 +23,6 @@ class User implements Serializable {
    String resetPasswordToken
    
    List organizations = []
-   //static hasMany = [organizations: String] // UIDs of related organizations
    static hasMany = [organizations: Organization]
    
    User(String username, String password)
@@ -127,18 +126,11 @@ class User implements Serializable {
       
       organizations validator: { val, obj ->
          //println "validator "+ val
-         if (val.size() == 0)
+         if (!val || val.size() == 0)
          {
-            //println "validator returns false"
-            
             // We set the error, if this returns false, grails adds another error.
             obj.errors.rejectValue('organizations', 'user.organizations.empty')
-            //return false
-            //return ['user.organizations.empty']
          }
-         
-         //println "validator returns true"
-         //return true
       }
    }
 

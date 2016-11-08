@@ -262,14 +262,13 @@ class UserController {
          notFound()
          return
       }
-      
+
       try
       {
          userService.saveAndNotify(userInstance, params)
       }
       catch (Exception e)
       {
-         flash.message = e.message
          render model: [userInstance: userInstance], view:'create'
          return
       }
@@ -347,6 +346,8 @@ class UserController {
             respond userInstance, view:'edit'
             return
          }
+         
+         // FIXME: same for org manager if the orgman role is the highest
       }
       
       
@@ -356,7 +357,6 @@ class UserController {
       def orgsToRemove = []
       orgsToRemove += userInstance.organizations
       orgsToRemove.each { org ->
-         println "removeFromOrganizations " + org
          userInstance.removeFromOrganizations(org)
       }
       
@@ -370,20 +370,12 @@ class UserController {
          userInstance.addToOrganizations(newOrg)
       }
       
-      if (!userInstance.save(flush:true))
-      {
-         respond userInstance.errors, view:'edit'
-         return
-      }
-      
-
       
       // Role updating
       
       // Delete all current roles
-      // FIXME: if the logged user is the same as the userInstance, and it has admin or org man roles, those cant be removed.
-      def currentRoles = UserRole.findByUser(userInstance)
-      currentRoles*.delete()
+      def currentRoles = UserRole.findAllByUser(userInstance)
+      currentRoles*.delete(flush: true)
       
       // Add selected roles
       
@@ -393,6 +385,13 @@ class UserController {
       }
 
       // / Role updating
+      
+      
+      if (!userInstance.save(flush:true))
+      {
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
 
       request.withFormat {
          form multipartForm {

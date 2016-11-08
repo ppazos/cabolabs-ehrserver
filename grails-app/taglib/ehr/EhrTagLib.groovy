@@ -123,10 +123,20 @@ class EhrTagLib {
          
          def args = [:]
          args.name = attrs.name
-         args.from = roles
+         args.from = roles.authority
          args.class = attrs.class ?: '' // allows set style from outside
          
-         if (attrs.value) args.value = attrs.value
+         if (attrs.user_values)
+         {
+            // used for the edit, roles are saved in the user, we get them from there
+            args.value = attrs.user_values
+         }
+         else
+         {
+            // values from params, used when the create fails, ex. when no organization is selected, because the roles are not saved to the user when that happens
+            args.value = attrs.value
+         }
+         
          if (attrs.multiple)
          {
             args.multiple = 'true'
@@ -135,8 +145,9 @@ class EhrTagLib {
          
          if (loggedInUser.authoritiesContains('ROLE_ORG_MANAGER'))
          {
-            roles.removeAll { it.authority == 'ROLE_ADMIN' } // all roles minus admin, removeAll modifies the collection
-            args.from = roles
+            //roles.removeAll { it.authority == 'ROLE_ADMIN' } // all roles minus admin, removeAll modifies the collection
+            //args.from = roles
+            args.from.removeElement('ROLE_ADMIN')
          }
          else if (!loggedInUser.authoritiesContains('ROLE_ADMIN'))
          {

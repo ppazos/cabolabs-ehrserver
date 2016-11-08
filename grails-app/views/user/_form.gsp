@@ -38,7 +38,7 @@
     <g:message code="user.roles.label" default="Roles" />
     <span class="required-indicator">*</span>
   </label>
-  <g:selectWithRolesICanAssign name="role" value="${userInstance?.authorities}" multiple="true" class="form-control" />
+  <g:selectWithRolesICanAssign name="role" value="${params?.role}" user_values="${userInstance?.authorities?.authority}" multiple="true" class="form-control" />
 </div>
 </sec:ifLoggedIn>
 
