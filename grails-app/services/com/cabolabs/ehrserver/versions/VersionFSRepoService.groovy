@@ -96,7 +96,7 @@ class VersionFSRepoService {
       def f = new File(config.version_repo + version.fileUid +'.xml')
       if (f.exists())
       {
-         throw new FileAlreadyExistsException("File ${f.path} already exists")
+         throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")
       }
       return f
    }
