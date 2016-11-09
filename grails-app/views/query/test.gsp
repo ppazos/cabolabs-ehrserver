@@ -72,6 +72,7 @@
               <input type="text" name="toDate" class="form-control input-sm" />
             </td>
           </tr>
+          <%--
           <tr>
             <td></td>
             <td>
@@ -84,6 +85,7 @@
               </sec:ifNotGranted>
             </td>
           </tr>
+          --%>
         </table>
       </div>
     </div>

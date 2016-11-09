@@ -1318,10 +1318,9 @@ class RestController {
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
       String group = request.JSON.group
-      String organizationUid = request.JSON.organizationUid
       
-      
-      if (qehrId && organizationUid)
+      String organizationUid
+      if (qehrId)
       {
          def ehr = Ehr.findByUid(qehrId)
          if (!ehr)
@@ -1330,11 +1329,12 @@ class RestController {
             return
          }
          
-         if (ehr.organizationUid != organizationUid)
-         {
-            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
-            return
-         }
+         organizationUid = ehr.organizationUid
+      }
+      else
+      {
+         // use the orguid of the org used to login
+         organizationUid = session.organization.uid
       }
       
       
@@ -1372,7 +1372,6 @@ class RestController {
       def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid)
       
-      println "format: "+ format
       
       // Format
       if (!format || format == 'xml')
@@ -1401,8 +1400,6 @@ class RestController {
    // Not stateless secured because is used from the web
    def queryCompositions()
    {
-      println "queryCompositions"
-      
       // all params come in the JSON object from the UI
       // all are strings
       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
@@ -1412,16 +1409,16 @@ class RestController {
       String toDate = request.JSON.toDate
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
-      String organizationUid = request.JSON.organizationUid
        
       /*
        println request.JSON.retrieveData.getClass().getSimpleName()
        println request.JSON.showUI.getClass().getSimpleName()
       */
-      println retrieveData.toString() +" "+ showUI.toString()
-       
-       
-      if (qehrId && organizationUid)
+      //println retrieveData.toString() +" "+ showUI.toString()
+      
+      
+      String organizationUid
+      if (qehrId)
       {
          def ehr = Ehr.findByUid(qehrId)
          if (!ehr)
@@ -1430,11 +1427,12 @@ class RestController {
             return
          }
          
-         if (ehr.organizationUid != organizationUid)
-         {
-            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
-            return
-         }
+         organizationUid = ehr.organizationUid
+      }
+      else
+      {
+         // use the orguid of the org used to login
+         organizationUid = session.organization.uid
       }
       
       
@@ -1483,9 +1481,6 @@ class RestController {
       {
          result = cilist.groupBy { ci -> ci.ehrUid }
       }
-       
-      //println "Resultados (CompositionIndex): " + cilist
-      
       
       // Muestra compositionIndex/list
       if (showUI)

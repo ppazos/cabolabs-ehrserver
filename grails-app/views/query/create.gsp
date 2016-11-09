@@ -288,14 +288,12 @@
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
         format = $('select[name=composition_format]').val();
-        organizationUid = $('select[name=organizationUid]').val();
 
         if (showUI == 'true') format = 'html';
 
         var data = {
                     query: query, fromDate: fromDate, toDate: toDate,
-                    retrieveData: retrieveData, showUI: showUI, format: format,
-                    organizationUid: organizationUid
+                    retrieveData: retrieveData, showUI: showUI, format: format
                    };
         if (qehrId != null) data.qehrId = qehrId;
         
@@ -322,14 +320,14 @@
            // Si devuelve HTML
            if ($('select[name=showUI]').val()=='true')
            {
-             console.log('UI');
+             //console.log('UI');
               
              $('#results').html( res );
              $('#results').show('slow');
            }
            else // Si devuelve XML o JSON
            {
-             console.log('JSON OR XML');
+             //console.log('JSON OR XML');
              if (format == 'json')
              {
                code.addClass('json');
@@ -397,11 +395,10 @@ resp.responseJSON.result.message +'</div>'
         toDate = $('input[name=toDate]').val();
         format = $('select[name=format]').val(); // xml o json
         group = $('select[name=group]').val();
-        organizationUid = $('select[name=organizationUid]').val();
 
         var data = {
-                    query: query, fromDate: fromDate, toDate: toDate, format: format,
-                    group: group, organizationUid: organizationUid
+                    query: query, fromDate: fromDate, toDate: toDate,
+                    format: format, group: group
                    };
         if (qehrId != null) data.qehrId = qehrId;
         
@@ -419,12 +416,12 @@ resp.responseJSON.result.message +'</div>'
          })
          .done(function( res ) {
          
-            console.log(res);
+            //console.log(res);
             
             // Vacia donde se va a mostrar la tabla o el chart
             $('#chartContainer').empty();
             
-            console.log('form_datavalue success 2');
+            //console.log('form_datavalue success 2');
 
             var code = $('#code');
             
