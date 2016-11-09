@@ -5,48 +5,35 @@
 
 ## Service-oriented clinical data repository for shared EHRs/EMRs/PHRs based on the [openEHR standard](http://openehr.org).
 
-
 ### [Latest documentation](http://cabolabs.com/en/projects)
 
+### Main features:
+
+* Service Oriented / REST API
+* Open Source
+* Supports XML and JSON formats
+* Compliant with the openEHR standard
+* Full audit access for traceability
+* Versioned clinical records
+* Data query creation interface
+* Supports any structure of clinical document
+* Multitenancy
 
 
-### Main Services:
+### Use cases:
 
-* clinical data commit
-* clinical data query (with aggregation and grouping capabilities)
-* data synchronization (for backup and server clustering)
-
-
-### Features:
-
-* multiformat XML/JSON
-* web services (REST and SOAP)
-* versioned openEHR objects
-* data indexing
+* Centralize clinical data storage from many apps into an integrated patient EHR
+* Backend for end-user applications (Web, Mobile, Desktop)
+* Data querying for visualization
+* Data querying for analysis (Clinical desicion support, clinical dashboards, clinical management, research, etc.)
 
 
-### Main functionalities:
-
-* Patient management
-* EHR and contributions management
-* Query building and testing
-* Usage logs
-
-
-## The project
-
-### Intended audience
-
-* Clinical Record Managers
-* EHR/EMR/PHR System Admins
-* Healthcare Informatics Trainers & Students
-
-
-### Technologies
+### Based on Open Source Technologies
 
 * [Grails Framework](http://grails.org)
 * [Groovy](http://groovy.codehaus.org)
 * [Java](http://docs.oracle.com/javase/specs)
+* [MySQL](http://dev.mysql.com/downloads/mysql/)
 
 
 ### Out of scope
@@ -56,37 +43,8 @@
 
 
 ## REST API
-### Get EHRs
-/rest/ehrs(String format:xml|json, int max, int offset)
 
-### Get patients (this service will be obsolete when we move patient data to a specific demographic repo)
-/rest/patients(String format:xml|json, int max, int offset)
-
-### Get one patient by uid
-/rest/patients/{uid}(String format:xml|json, int max, int offset)
-
-### Get EHR for a subject (patient)
-/rest/ehrs/subjectUid/{subjectUid}(String format:xml|json)
-
-### Get EHR by uid
-/rest/ehrs/ehrUid/{ehrUid}(String format:xml|json)
-
-### Get all compositions for a patient
-/rest/findCompositions(String ehrId)
-
-### Get query definitions
-/rest/queries(String format:xml|json, int max, int offset)
-
-### Get one query by it's uid
-/rest/queries/{queryUid}
-
-### Query execution by uid
-/rest/queries/{queryUid}/execute(String organizationUid, String ehrId<optional>)
-
-### Commits a set of clinical documents to the EHR
-/rest/commit(String ehrUid, Version[] versions, String auditSystemId, String auditCommitter)
-
-Versions should be committed in XML, following this XSD: https://github.com/ppazos/cabolabs-ehrserver/blob/master/xsd/Version.xsd
+Latest documentation: https://docs.google.com/viewerng/viewer?url=http://cabolabs.com/software_resources/EHRServer_v0.7.pdf
 
 
 #### Rules for VERSIONs (commit, checkout and version control)
@@ -136,32 +94,6 @@ On checkout, the client will receive a copy of an existing version of a Composit
 
 
 
-### Milestones and deliverables
+### Staging server
 
-#### M1. Basic services in XML and JSON and internal operations
-
-* list and show of EHRs, Compositions, Queries and Contributions
-* commit reception (just openEHR XML for now)
-* data indexing operation
-* openEHR archetype definition indexing
-
-
-#### M2. GUI to manage internal data (list, show, create, edit, delete)
-
-* EHR management
-* Directory management
-* Composition management
-* Query management
-* Contribution management
-* Patient management (should be externalized to a demographic server)
-* User management
-
-
-#### M3. Advanced features (each one could be a milestone itself)
-
-* Support rules for directory management (copying and moving compositions between folders)
-* Composition versioning
-* Persistent composition support
-* Querying versioned objects
-* Data syncrhonization between servers
-* Support for AQL/EQL output (openEHR archetype-based query language)
+Want to try EHRServer? Just create an account here and help us testing! https://cabolabs-ehrserver.rhcloud.com/
