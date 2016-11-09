@@ -46,37 +46,6 @@
 
 Latest documentation: https://docs.google.com/viewerng/viewer?url=http://cabolabs.com/software_resources/EHRServer_v0.7.pdf
 
-
-#### Rules for VERSIONs (commit, checkout and version control)
-
-* The XML should be valid against the XSD (see /xsd folder in project).
-* version.uid should have this format: versioned_object_id::creating_system_id::version_tree_id.
-   * The 3 fields of the version.uid attribute should be set by the client.
-   * When committing a new Version, the client should assign: a_generated_uid::client_system_id::1
-   * The first commit of a Version will generate on the EHRServer a new VersionedObject that contains that Version.
-   * The versionedObject.uid will be equal to the first part of the version.uid
-   * When committing a change to an existing VersionedObject, the version.uid should be equal to the uid of the version that was checked out and to which the changes were apply.
-   * When receiving a new Version for an existing VersionedObject, the EHRServer will update the versio_tree_id, generating uid::system::1, uid::system::2, uid::system::3, ... for each version.uid of the same VersionedObject.
-* remember to use the archetype_id in the archetype_node_id attribute, of all the LOCATABLE elements
-  inside version.data, when the node_id is 'at0000' (root node).
-* for the encoding element in ENTRIES use 'Unicode' as the terminology and 'UTF-8' as the code_string,
-  and be sure that the XML content is encoded with UTF-8.
-* version.commit_audit.time_committed that is set by client apps will be overriden by the server
-  to be compliant with this rule from the openEHR specs:
-   * The time_committed attribute in both the Contribution and Version audits **should reflect the time
-     of committal to an EHR server, i.e. the time of availability to other users** in the same system.
-     It should therefore be computed on the server in implementations where the data are created
-     in a separate client context.
-
-#### Rules for CONTRIBUTIONs
-
-* The parameters _auditSystemId_, _auditTimeCommitted_ and _auditCommitter_ are used to create the CONTRIBUTION for each commit.
-  To be compliant with the openEHR specs, the client system should use that data to create the VERSION.commit_audit structure. So
-  this rule is met:
-   * "CONTRIBUTION.audit captures to the time, place and committer of the committal act; these three attributes (system_id,
-     committer, time_committed of AUDIT_DETAILS) should be copied into the corresponding attributes of the commit_audit of each VERSION included in the CONTRIBUTION..."
-
-     
      
 ### EHRServer workflows supported by clients
 
@@ -86,11 +55,15 @@ A client applicaton can commit one or more versions of different Compositions in
 
 #### WF2. Query
 
-Query execution by UID. Queries are created by admins. In the near future we'll add an API to create and manage Queries from client applications. We'll also explore adding support to AQL queries.
+Query execution by UID. Queries are created by admins. In the near future we'll add an API to 
+create and manage Queries from client applications. We'll also explore adding support to AQL queries.
 
 #### WF3. Checkout and Commit (versioned clinical documents)
 
-On checkout, the client will receive a copy of an existing version of a Composition, with the current UID. The client can modify, and commit, and the same UID should be used. Then the EHRServer will update the version number in the new Version UID. Then Queries will get data only from the latest Version of the existing Compositions. All the Versions of a Composition are grouped in a VersionedComposition object.
+On checkout, the client will receive a copy of an existing version of a Composition, with the 
+current UID. The client can modify, and commit, and the same UID should be used. Then the EHRServer 
+will update the version number in the new Version UID. Then Queries will get data only from the latest 
+Version of the existing Compositions. All the Versions of a Composition are grouped in a VersionedComposition object.
 
 
 
