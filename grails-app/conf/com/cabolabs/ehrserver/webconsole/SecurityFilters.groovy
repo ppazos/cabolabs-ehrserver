@@ -23,7 +23,20 @@ class SecurityFilters {
                if (actionName == 'login')
                   username = params.username
                else
-                  username = request.securityStatelessMap.username
+               {
+                  // exceptions for rest: actions that are not endpoints
+                  // FIXME: we need to move these actions to the query controller or just use the query endpoint for data testing
+                  if (['queryCompositions', 'queryData'].contains(actionName))
+                  {
+                     def auth = springSecurityService.authentication
+                     if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
+                     {
+                        username = auth.principal.username
+                     }
+                  }
+                  else
+                     username = request.securityStatelessMap.username
+               }
             }
             else
             {
