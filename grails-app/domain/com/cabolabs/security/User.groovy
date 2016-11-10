@@ -111,7 +111,7 @@ class User implements Serializable {
    static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority']
 
    static constraints = {
-      username blank: false, unique: true
+      username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
       
       // if user is disabled, password can be blank, is used to allow the user to reset the password
       password nullable: true, validator: { val, obj ->
