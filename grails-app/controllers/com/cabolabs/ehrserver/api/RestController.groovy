@@ -99,10 +99,6 @@ class RestController {
       String password = params.password
       String organization_number = params.organization
       
-      //UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
-      //def username = auth.principal
-      //def password = auth.credentials // plain text entered by the user
-      //def organization_number = auth.organization
       try
       {
          def user = userService.getByUsername(username) //User.findByUsername(username)
@@ -908,7 +904,7 @@ class RestController {
          return
       }
       
-      def query=Query.findByUid(queryUid)
+      def query = Query.findByUid(queryUid)
        
       if (!query)
       {
@@ -1990,6 +1986,26 @@ class RestController {
       {
          println "JSON"
          render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
+      }
+   }
+   
+   @SecuredStateless
+   def organizations(String format)
+   {
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      
+      if (!format || format == 'xml')
+      {
+         render(text: _user.organizations as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text: _user.organizations as JSON, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
