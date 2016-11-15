@@ -1257,29 +1257,33 @@ class RestController {
          else
             render(text: out, contentType:"text/xml", encoding:"UTF-8")
          
-      } // type = composition
+      } // /type = composition
       else
       {
          // type = datavalue
          
+         def paginated_res = new PaginatedResults(listName:'results', max:max, offset:offset)
+         
          // we need a map to return the timing...
-         // dv queries with group none will return a list, not a map
          if (res instanceof List)
          {
-            def mapres = [results: res]
-            res = mapres
+            paginated_res.list = res
+         }
+         else
+         {
+            paginated_res.map = res
          }
          
-         res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
+         paginated_res.timing = end_time - start_time
          
          // Format
          if (!format || format == 'xml')
          {
-            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
          }
          else if (format == 'json')
          {
-            render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+            render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
          }
          else
          {

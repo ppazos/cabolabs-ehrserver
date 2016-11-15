@@ -431,9 +431,9 @@ class BootStrap {
         def res = [:]
         
         if (pres.list)
-           res["${pres.listName}"] = pres.list
+           res["${pres.listName}"] = (pres.list ?: []) // prevents null on the json
         else
-           res["${pres.listName}"] = pres.map
+           res["${pres.listName}"] = (pres.map ?: [:])
         
         res.pagination = [
            'max': pres.max,
@@ -442,7 +442,7 @@ class BootStrap {
            prevOffset: pres.prevOffset
         ]
         
-        if (pres.timing) res.timing = pres.timing.toString() + ' ms'
+        if (pres.timing != null) res.timing = pres.timing.toString() + ' ms'
            
         return res
      }
@@ -455,9 +455,9 @@ class BootStrap {
         xml.startNode pres.listName
            
            if (pres.list)
-              xml.convertAnother pres.list // this works, generates "person" nodes
+              xml.convertAnother (pres.list ?: []) // this works, generates "person" nodes
            else
-              xml.convertAnother pres.map
+              xml.convertAnother (pres.map ?: [:])
            
            /* doesnt generate the patient root, trying with ^
            pres.list.each { item ->
@@ -481,6 +481,8 @@ class BootStrap {
            xml.chars pres.prevOffset.toString()
            xml.end()
         xml.end()
+        
+        // TODO: timing
      }
      
      
