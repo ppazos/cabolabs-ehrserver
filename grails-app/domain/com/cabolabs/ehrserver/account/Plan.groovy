@@ -24,7 +24,20 @@ class Plan {
    int repositorySize // in bytes
    int totalRepositorySize // in bytes, independent of the period, for the whole plan association duration
    int period
+   
+   
+   // Limits for the plan, globally
+   
+   /* not always maxUsersTotal = maxUsersPerOrganization * maxOrganizations,
+    * for some plans, we might have a constraint for the total users and not
+    * for the users per org (=null) */
+   int maxUsersTotal = 1 // adding all the users from all the organizations should not pass this boundary
+   int maxUsersPerOrganization = 1
+   int maxOrganizations = 1
+   
+   int maxEhrs = 50
 
+   
    static constraints = {
      period( inList: periods.values() as List)
    }
