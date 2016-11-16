@@ -242,8 +242,6 @@ class QueryController {
     */
    def save(String name, String type, String format, String group)
    {
-      println ">> save: " + params
-      
       //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
       //println request.JSON.query.getClass()
       

@@ -91,6 +91,7 @@
         id_gen: 0,
         name: undefined,
         type: undefined,
+        isPublic: false,
         format: undefined,
         template_id: undefined,
         criteriaLogic: undefined,
@@ -100,6 +101,8 @@
         set_id:       function (id) { this.id = id; }, // for edit/update
         set_type:     function (type) { this.type = type; }, // composition or datavalue
         get_type:     function () { return this.type; }, // composition or datavalue
+        set_public:   function () { this.isPublic = true; },
+        set_private:  function () { this.isPublic = false; },
         set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
         set_format:   function (format) { this.format = format; },
@@ -219,6 +222,10 @@
         if (action != 'save' && action != 'update') throw "Action is not save or update";
       
         query.set_name($('input[name=name]').val());
+
+        if ( $('input[name=isPublic]').is(':checked') ) query.set_public();
+        else query.set_private();
+        
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
 
         if (query.get_type() == 'datavalue')
@@ -1126,6 +1133,10 @@ resp.responseJSON.result.message +'</div>'
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
+          
+          if (queryInstance.isPublic)
+            println 'query.set_public();'
+          
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
           println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
@@ -1486,41 +1497,47 @@ resp.responseJSON.result.message +'</div>'
     
           <%-- campos comunes a ambos tipos de query --%>
           <div class="table-responsive">
-           <table class="table table-striped table-bordered table-hover">
-                <%-- nombre de la query --%>
-                <tr>
-                  <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
-                    <label for="name">
-                      <g:message code="query.show.name.attr" default="Name" /> *
-                    </label>
-                  </td>
-                  <td>
-                    <g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />
-                  </td>
-                </tr>
-                  
-                <%-- se hace como wizard, primero poner el tipo luego va el contenido --%>
-                <%-- type de la query, el contenid va a depender del tipo --%>
-                <tr>
-                  <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
-                    <label for="type">
-                      <g:message code="query.show.type.attr" default="Type" />
-                    </label>
-                    <span class="info">
-                      <asset:image src="skin/information.png" />
-                      <span class="content">
-                        <ul>
-                          <li><g:message code="query.create.help_composition" /></li>
-                          <li><g:message code="query.create.help_datavalue" /></li>
-                        </ul>
-                      </span>
+            <table class="table table-striped table-bordered table-hover">
+              <tr>
+                <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
+                  <label for="name">
+                    <g:message code="query.show.name.attr" default="Name" /> *
+                  </label>
+                </td>
+                <td>
+                  <g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />
+                </td>
+              </tr>
+              <tr>
+                <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
+                  <label for="type">
+                    <g:message code="query.show.type.attr" default="Type" />
+                  </label>
+                  <span class="info">
+                    <asset:image src="skin/information.png" />
+                    <span class="content">
+                      <ul>
+                        <li><g:message code="query.create.help_composition" /></li>
+                        <li><g:message code="query.create.help_datavalue" /></li>
+                      </ul>
                     </span>
-                  </td>
-                  <td>
-                    <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']" class="form-control input-sm" />
-                  </td>
-                </tr>
-             </table>
+                  </span>
+                </td>
+                <td>
+                  <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']" class="form-control input-sm" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="isPublic">
+                    <g:message code="query.show.isPublic.attr" default="Is public?" /> *
+                  </label>
+                </td>
+                <td>
+                  <g:checkBox name="isPublic" value="${queryInstance.isPublic}" />
+                </td>
+              </tr>
+            </table>
           </div>
     
           

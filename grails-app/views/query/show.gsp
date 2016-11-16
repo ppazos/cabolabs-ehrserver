@@ -29,6 +29,14 @@
               <td><g:fieldValue bean="${queryInstance}" field="name"/></td>
             </tr>
             <tr>
+              <th><g:message code="query.show.type.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="type"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="query.show.isPublic.attr" /></th>
+              <td><g:fieldValue bean="${queryInstance}" field="isPublic"/></td>
+            </tr>
+            <tr>
               <th><g:message code="query.show.group.attr" /></th>
               <td><g:fieldValue bean="${queryInstance}" field="group"/></td>
             </tr>
@@ -36,10 +44,7 @@
               <th><g:message code="query.show.format.attr" /></th>
               <td><g:fieldValue bean="${queryInstance}" field="format"/></td>
             </tr>
-            <tr>
-              <th><g:message code="query.show.type.attr" /></th>
-              <td><g:fieldValue bean="${queryInstance}" field="type"/></td>
-            </tr>
+            
             <tr>
               <th><g:message code="query.show.template_id.attr" /></th>
               <td><g:fieldValue bean="${queryInstance}" field="templateId"/></td>

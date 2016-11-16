@@ -30,7 +30,12 @@
 		      
 			   <label><input type="radio" name="overwrite" value="false" checked="true" />No</label>
 			   <label><input type="radio" name="overwrite" value="true" />Yes</label>
+			   <br/>
 			   
+			   
+            <label>Is public?
+              <g:checkBox name="isPublic" value="${false}" />
+            </label>
 			   <br/>
 		
 		      <div class="btn-toolbar" role="toolbar">

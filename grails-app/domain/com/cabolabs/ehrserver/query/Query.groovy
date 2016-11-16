@@ -59,6 +59,8 @@ class Query {
    // https://github.com/ppazos/cabolabs-ehrserver/issues/340
    User author
    
+   // true => shared with all the organizations
+   boolean isPublic
    
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
@@ -121,9 +123,10 @@ class Query {
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      this.name   = json['name']
-      this.type   = json['type']
-      this.format = ( json['format'] ) ? json['format'] : 'xml' 
+      this.name     = json['name']
+      this.type     = json['type']
+      this.isPublic = json['isPublic']
+      this.format   = ( json['format'] ) ? json['format'] : 'xml' 
       
       if (this.type == 'composition')
       {
