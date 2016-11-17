@@ -261,8 +261,6 @@ class QueryController {
    
    def update()
    {
-      println '>> update '+ params
-      
       def json = request.JSON.query
       def query = Query.get(json.id) // the id comes in the json object
       query.updateInstance(json)

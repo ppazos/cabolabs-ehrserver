@@ -30,7 +30,7 @@ class OperationalTemplateController {
       }
       
       return [opts: list,
-             total: list.totalCount]
+              total: list.totalCount]
    }
    
    /**
@@ -138,7 +138,7 @@ class OperationalTemplateController {
            
            
            def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-           ti.indexAll()
+           ti.indexAll() // FIXME: should index only the new OPT...
            
            
            // load opt in manager
