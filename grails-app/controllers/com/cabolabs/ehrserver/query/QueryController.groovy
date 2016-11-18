@@ -244,16 +244,15 @@ class QueryController {
    {
       //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
       //println request.JSON.query.getClass()
-      
-      println "-----------------------------------------"
+
       def query = Query.newInstance(request.JSON.query)
       
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
       def user = springSecurityService.getCurrentUser()
       query.author = user
       
+      // TODO: errors in json to be displayed
       if (!query.save(flush:true)) println query.errors.allErrors
-      println "-----------------------------------------"
       
       render query as JSON
    }
@@ -261,11 +260,13 @@ class QueryController {
    
    def update()
    {
-      def json = request.JSON.query
-      def query = Query.get(json.id) // the id comes in the json object
+      //def json = request.JSON.query
+      //def query = Query.get(json.id) // the id comes in the json object
+      
+      def json = params.json
+      def query = params.query
       query.updateInstance(json)
       if (!query.save(flush:true)) println query.errors.allErrors
-      //def query = createOrUpdateQuery(id)
       
       render query as JSON
    }

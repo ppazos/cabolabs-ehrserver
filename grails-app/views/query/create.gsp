@@ -264,6 +264,13 @@
              .done(function( data ) {
                //console.log(data);
                location.href = '${createLink("action": "show")}?uid='+ data.uid;
+             })
+             .fail(function(resp,status,status_msg) {
+
+                $('body').prepend(
+                   '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+                   resp.responseJSON.message +'</div>'
+                );
              });
            }
         };
