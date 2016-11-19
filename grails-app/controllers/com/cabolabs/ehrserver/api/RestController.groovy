@@ -22,11 +22,8 @@ import com.cabolabs.security.Organization
 
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
-
 import java.lang.reflect.UndeclaredThrowableException
-
 import javax.xml.bind.ValidationException
-
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 
 import org.springframework.security.core.Authentication
@@ -48,7 +45,6 @@ import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
 import grails.transaction.Transactional
-
 import com.cabolabs.ehrserver.query.QueryShare
 
 /**
