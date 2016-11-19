@@ -36,7 +36,7 @@ class QueryController {
 
    def list(int max, int offset, String sort, String order, String name)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: 15, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
@@ -44,13 +44,9 @@ class QueryController {
       // login organization
       def org = session.organization
       def shares = QueryShare.findAllByOrganization(org)
-     
-      println "shares ids :"+ shares.query.id
       
-      def list
       def c = Query.createCriteria()
-      
-      list = c.list (max: max, offset: offset, sort: sort, order: order) {
+      def list = c.list (max: max, offset: offset, sort: sort, order: order) {
         if (name)
         {
           like('name', '%'+name+'%')

@@ -28,8 +28,8 @@ class ResourceController {
          return
       }
       
-      // delete all shares
-      resourceService.cleanSharesQuery(query)
+      // delete all shares but the one that belongs to the current org
+      resourceService.cleanSharesQueryBut(query, session.organization)
       
       // share with selected orgs
       def organization

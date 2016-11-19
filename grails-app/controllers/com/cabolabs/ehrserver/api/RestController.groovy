@@ -1,7 +1,9 @@
 package com.cabolabs.ehrserver.api
 
 import grails.converters.*
+
 import java.text.SimpleDateFormat
+
 import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.DataGet
@@ -20,10 +22,13 @@ import com.cabolabs.security.Organization
 
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
+
 import java.lang.reflect.UndeclaredThrowableException
+
 import javax.xml.bind.ValidationException
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -32,13 +37,19 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
+
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
+
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
+
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+
 import grails.transaction.Transactional
+
+import com.cabolabs.ehrserver.query.QueryShare
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
@@ -931,14 +942,39 @@ class RestController {
 
    
    @SecuredStateless
-   def queryList(String format, String queryName, String descriptionContains,int max, int offset)
+   def queryList(String format, String name, String sort, String order, int max, int offset)
    {
-      //println params 
-      // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def _queries 
+      // login organization
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      def shares = QueryShare.findAllByOrganization(_org)
+      
+      def c = Query.createCriteria()
+      def _queries = c.list (max: max, offset: offset, sort: sort, order: order, readOnly: true) {
+        if (name)
+        {
+          like('name', '%'+name+'%')
+        }
+        
+        if (shares)
+        {
+           or {
+              eq('isPublic', true)
+              'in'('id', shares.query.id)
+           }
+        }
+        else
+        {
+           eq('isPublic', true)
+        }
+      }
+      
+      /*
       if (!queryName && !descriptionContains)
       {
          _queries = Query.list(max: max, offset: offset, readOnly: true)
@@ -959,16 +995,9 @@ class RestController {
                           like('name', '%'+descriptionContains+'%')
                        }
          }
-      }     
-      
-      // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
-      /*
-      withFormat {
-      
-         xml { render 'xml' }
-         json { render 'json' }
       }
-      */
+      */    
+      
       
       def res = new PaginatedResults(listName:'queries', list:_queries, max:max, offset:offset)
       

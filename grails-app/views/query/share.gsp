@@ -13,8 +13,11 @@
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
-          <div class="message" role="status">${flash.message}</div>
+          <div class="message" role="status">${flash.message}</div><br/>
         </g:if>
+
+        <p>The share with the current organization wont be deleted if you unselect it here, 
+        because the query can't be accessed if it is not shared with the current organization..</p>
 
         <g:form controller="resource" action="saveSharesQuery">
           <input type="hidden" name="uid" value="${query.uid}" />

@@ -25,4 +25,13 @@ class ResourceService {
          share?.delete(failOnError: true)
       }
    }
+   
+   def cleanSharesQueryBut(Query query, Organization organization)
+   {
+      def shares = QueryShare.findAllByQuery(query)
+      shares.each { share ->
+         if (share.organization.id != organization.id)
+            share?.delete(failOnError: true)
+      }
+   }
 }
