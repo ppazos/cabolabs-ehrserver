@@ -65,7 +65,7 @@ class CommitLoggerService {
       }
       
       // TODO: log specific errors thrown by the controller
-      
+      /*
       println "commmit log"
       println params.ehrUid
       println contributionUid
@@ -76,6 +76,7 @@ class CommitLoggerService {
       println contentLength
       println url
       println authUser
+      */
       
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created

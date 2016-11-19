@@ -12,6 +12,7 @@ import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import java.io.FileNotFoundException
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 
 @Transactional
 class DataIndexerService {
@@ -44,6 +45,13 @@ class DataIndexerService {
       compoIdxs.each { compoIndex ->
      
          //println "Indexacion de composition: " + compoIndex.uid
+         
+         if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
+         {
+            // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
+            log.info "The committed composition ${compoIndex.uid} references a template that is not loaded ${compoIndex.templateId}. Indexing is avoided until the template is loaded."
+            return
+         }
        
          indexes = []
        
