@@ -961,6 +961,7 @@ class RestController {
           like('name', '%'+name+'%')
         }
         
+        // return public or shared with the current org
         if (shares)
         {
            or {
@@ -973,31 +974,6 @@ class RestController {
            eq('isPublic', true)
         }
       }
-      
-      /*
-      if (!queryName && !descriptionContains)
-      {
-         _queries = Query.list(max: max, offset: offset, readOnly: true)
-      }
-      else
-      {
-         if (!descriptionContains)
-         {
-            def criteria = Query.createCriteria()
-            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                          like('name', '%'+queryName.replace('.',' ')+'%')
-                       }
-         }
-         else
-         {
-            def criteria = Query.createCriteria()
-            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                          like('name', '%'+descriptionContains+'%')
-                       }
-         }
-      }
-      */    
-      
       
       def res = new PaginatedResults(listName:'queries', list:_queries, max:max, offset:offset)
       
