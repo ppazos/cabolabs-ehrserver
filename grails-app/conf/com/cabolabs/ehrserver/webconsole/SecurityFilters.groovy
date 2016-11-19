@@ -23,6 +23,7 @@ class SecurityFilters {
          
             // TODO: refactor to a log filter
             def username
+            def organizationUid
             if (controllerName == 'rest')
             {
                if (actionName == 'login')
@@ -40,7 +41,13 @@ class SecurityFilters {
                      }
                   }
                   else
+                  {
                      username = request.securityStatelessMap.username
+                     
+                     def _orgnum = request.securityStatelessMap.extradata.organization
+                     def _org = Organization.findByNumber(_orgnum)
+                     organizationUid = _org.uid
+                  }
                }
             }
             else
@@ -49,9 +56,14 @@ class SecurityFilters {
                if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
                {
                   username = auth.principal.username
+
+                  def _org = Organization.findByNumber(auth.organization)
+                  organizationUid = _org.uid
                }
             }
-            def alog = new ActivityLog(username: username, // can be null
+            def alog = new ActivityLog(
+                            username: username, // can be null
+                            organizationUid: organizationUid,
                             action: controllerName+':'+actionName,
                             objectId: params.id, // can be null
                             objectUid: params.uid, // can be null

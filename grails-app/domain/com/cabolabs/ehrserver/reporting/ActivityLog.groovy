@@ -4,6 +4,7 @@ class ActivityLog {
 
    Date timestamp = new Date()
    String username
+   String organizationUid // used to login
    String action
    Long objectId    // when using db ids (we try to avoid this case)
    String objectUid // most ids will be uids
@@ -13,5 +14,6 @@ class ActivityLog {
       username nullable: true
       objectId nullable: true
       objectUid nullable: true
+      organizationUid nullable: true
    }
 }
