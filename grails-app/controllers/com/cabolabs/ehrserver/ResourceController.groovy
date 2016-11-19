@@ -21,6 +21,13 @@ class ResourceController {
    {
       Query query = params.query
       
+      if (query.isPublic)
+      {
+         flash.message = "Can't change the shares of a public query"
+         redirect action:'shareQuery', params:[uid:query.uid]
+         return
+      }
+      
       // delete all shares
       resourceService.cleanSharesQuery(query)
       
@@ -31,6 +38,8 @@ class ResourceController {
          organization = Organization.findByUid(organizationUid)
          resourceService.shareQuery(query, organization)
       }
+      
+      flash.message = "Query shares were updated correctly"
       redirect action:'shareQuery', params:[uid:query.uid]
    }
    

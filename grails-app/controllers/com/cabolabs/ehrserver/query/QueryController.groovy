@@ -23,6 +23,7 @@ class QueryController {
    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
    
    def springSecurityService
+   def resourceService
    
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -39,7 +40,13 @@ class QueryController {
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
+      
+      // login organization
+      def org = session.organization
+      def shares = QueryShare.findAllByOrganization(org)
      
+      println "shares ids :"+ shares.query.id
+      
       def list
       def c = Query.createCriteria()
       
@@ -47,6 +54,18 @@ class QueryController {
         if (name)
         {
           like('name', '%'+name+'%')
+        }
+        
+        if (shares)
+        {
+           or {
+              eq('isPublic', true)
+              'in'('id', shares.query.id)
+           }
+        }
+        else
+        {
+           eq('isPublic', true)
         }
       }
       
@@ -251,8 +270,15 @@ class QueryController {
       def user = springSecurityService.getCurrentUser()
       query.author = user
       
+      
       // TODO: errors in json to be displayed
       if (!query.save(flush:true)) println query.errors.allErrors
+      
+      // private queries should be shared with the current org
+      if (!query.isPublic)
+      {
+         resourceService.shareQuery(query, session.organization)
+      }
       
       render query as JSON
    }
@@ -266,6 +292,11 @@ class QueryController {
       def json = params.json
       def query = params.query
       query.updateInstance(json)
+      
+      // public queries dont have shares
+      if (query.isPublic) resourceService.cleanSharesQuery(query)
+      
+      // TODO: error as json
       if (!query.save(flush:true)) println query.errors.allErrors
       
       render query as JSON
