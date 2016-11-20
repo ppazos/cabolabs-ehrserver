@@ -289,11 +289,17 @@ class QueryController {
       def query = params.query
       query.updateInstance(json)
       
-      // public queries dont have shares
-      if (query.isPublic) resourceService.cleanSharesQuery(query)
       
       // TODO: error as json
       if (!query.save(flush:true)) println query.errors.allErrors
+      
+      
+      // public queries dont have shares
+      if (query.isPublic) resourceService.cleanSharesQuery(query)
+      else // private queries should be shared with the current org
+      {
+         resourceService.shareQuery(query, session.organization)
+      }
       
       render query as JSON
    }
