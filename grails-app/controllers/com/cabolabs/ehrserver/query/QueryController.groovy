@@ -89,7 +89,7 @@ class QueryController {
       
       if (!queryInstance)
       {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), id])
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), uid])
          redirect(action: "list")
          return
       }
@@ -339,7 +339,7 @@ class QueryController {
       
       if (!queryInstance)
       {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), id])
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), uid])
          redirect(action: "list")
          return
       }
