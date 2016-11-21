@@ -82,22 +82,25 @@ class OperationalTemplateController {
          def xml = br.text // getText from Groovy
          //def xml = new String( f.getBytes() )
          
-         //println xml
+         // Validate XML
+         if (!xmlValidationService.validateOPT(xml))
+         {
+           errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+           return [errors: errors]
+         }
+         
          
          // Parse to get the template id
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
-         // Destination
-         // Puedo cambiarle el nombre del archivo agregandolo a la ruta ...
-         // FIXME: no deberia depender del nombre y los nombres en disco deberian ser generados,
-         //      cuando se sube un OPT, habria que crear un opt_index en la bd con el nombre / id original
-         //      y ver contra eso si ya lo tenemos, no contra el archivo fisico en disco como aqui.
-         def destination = config.opt_repo + template.template_id.value.text() + '.opt' //f.getOriginalFilename()
+         def indexer = new com.cabolabs.archetype.OperationalTemplateIndexer()
+         def opt = indexer.createOptIndex(template) // saves OperationalTemplateIndex
          
-         //println "destination: "+ destination
-         
+         // Prepare file
+         def destination = config.opt_repo + opt.fileUid + '.opt' //f.getOriginalFilename()
          File fileDest = new File( destination )
+         
          
          // FIXME: overwrite check should happen using the template uid not the filename.
          if (!overwrite && fileDest.exists())
@@ -107,45 +110,37 @@ class OperationalTemplateController {
            return [errors: errors]
          }
          
-         // Validate
-         if (!xmlValidationService.validateOPT(xml))
+         
+         // Hago lo mismo que el transferTo pero a mano.
+         if (overwrite) // file exists and the user wants to overwrite
          {
-           errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-           return [errors: errors]
+            def copy = new File(destination + ".old")
+            fileDest.renameTo(copy)
+            copy.delete()
          }
          
-         if (errors.size() == 0)
-         {
-           // Hago lo mismo que el transferTo pero a mano.
-           if (overwrite) // file exists and the user wants to overwrite
-           {
-             def copy = new File(destination + ".old")
-             fileDest.renameTo(copy)
-             copy.delete()
-           }
-           
-           fileDest << xml
-           
-           // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
-           // If the file exists, it will be deleted first
-           //f.transferTo(fileDest)
-           // Tira excepcion si el archivo existe:
-           // Message: opts\Signos.opt (Access is denied)
-           //   Line | Method
-           //->>  221 | <init>   in java.io.FileOutputStream
-           
-           flash.message = "opt.upload.success"
-           
-           
-           def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-           ti.indexAll() // FIXME: should index only the new OPT...
-           
-           
-           // load opt in manager
-           def optMan = OptManager.getInstance()
-           optMan.unloadAll()
-           optMan.loadAll()
-         }
+         fileDest << xml
+         
+         // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
+         // If the file exists, it will be deleted first
+         //f.transferTo(fileDest)
+         // Tira excepcion si el archivo existe:
+         // Message: opts\Signos.opt (Access is denied)
+         //   Line | Method
+         //->>  221 | <init>   in java.io.FileOutputStream
+         
+         flash.message = g.message(code:"opt.upload.success")
+         
+         
+         // Generates OPT and archetype item indexes for the uploaded OPT
+         indexer.index(template)
+         
+         
+         // load opt in manager cache
+         // TODO: just load the newly created ones
+         def optMan = OptManager.getInstance()
+         optMan.unloadAll()
+         optMan.loadAll()
       }
    }
    
