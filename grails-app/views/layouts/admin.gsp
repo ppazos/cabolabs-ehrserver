@@ -71,6 +71,13 @@
   tr > th.sortable.sorted.desc > a {
     margin-right: 5px;
   }
+  
+  #powby {
+    width: 180px;
+    text-align: center;
+    position: fixed;
+    bottom: 10px;
+  }
   </style>
   <g:javascript>
     // Used to access the assets root from JS code.
@@ -190,6 +197,8 @@
                     </li>
                   </sec:ifAnyGranted>
 	             </ul>
+	             
+	             <p id="powby">Powered by <a href="http://www.cabolabs.com" target="_blank">CaboLabs</a></p>
 	           </div>
 	           <!-- /.sidebar-collapse -->
 	         </div>
