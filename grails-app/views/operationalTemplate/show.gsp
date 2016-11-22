@@ -54,7 +54,9 @@
     
     <script type="text/javascript">
        $('#xml').addClass('xml');
-       $('#xml').text(formatXml( '${opt_xml.normalize().replaceAll("\n", "\\\\n'+\n'")}' ));
+       // The first replace removes the new lines and empty spaces of indentation
+       // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
+       $('#xml').text(formatXml( '${opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'")}' ));
        $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
     </script>
   </body>
