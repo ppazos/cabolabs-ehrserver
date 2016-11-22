@@ -52,9 +52,6 @@ class OperationalTemplateController {
     */
    def upload(boolean overwrite)
    {
-      //println "upload "+ params
-      //println "destination folder "+ config.opt_repo
-      
       if (params.doit)
       {
          def errors = []
@@ -93,31 +90,74 @@ class OperationalTemplateController {
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
+         def opt_uid = template.uid.value.text()
+         
+         // OPT already uploaded, check if it needs to overwrite existing
+         def existing_opt = OperationalTemplateIndex.findByUid(opt_uid)
+         if (existing_opt)
+         {
+            if (overwrite) // OPT exists and the user wants to overwrite
+            {
+               def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
+               existing_file.delete()
+               
+               // FIXME: delete all and reindex all ...
+               
+               // deletes the the opt, operationalTemplateIndexItems and archetypeIndexItems
+               // below indexes are created again for the new OPT
+               OperationalTemplateIndexItem.findAllByTemplateId(existing_opt.templateId).each {
+                  it.delete()
+               }
+               existing_opt.referencedArchetypeNodes.each {
+                  it.delete() // FIXME: the problem with this is that if other OPT references the same path, but on the new update of the same template node was removed, we will lose a path.
+                  // The real solution would be to index everything again, for all the templates like before :)
+               }
+               existing_opt.delete()
+            }
+            else
+            {
+               errors << "The OPT ${opt_uid} already exists, change it's UID or select to overwrite"
+               return [errors: errors]
+            }
+         }
+         else // check by templateId because of tools the uid might vary for the same templateId, both uid and templateId should be unique
+         {
+            def opt_template_id = template.template_id.value.text()
+            existing_opt = OperationalTemplateIndex.findByTemplateId( opt_template_id )
+            
+            // refactor: is the same code as above
+            if (existing_opt)
+            {
+               if (overwrite) // OPT exists and the user wants to overwrite
+               {
+                  def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
+                  existing_file.delete()
+                  
+                  // deletes the the opt, operationalTemplateIndexItems and archetypeIndexItems
+                  // below indexes are created again for the new OPT
+                  OperationalTemplateIndexItem.findAllByTemplateId(existing_opt.templateId).each {
+                     it.delete()
+                  }
+                  existing_opt.referencedArchetypeNodes.each {
+                     it.delete() // FIXME: the problem with this is that if other OPT references the same path, but on the new update of the same template node was removed, we will lose a path.
+                     // The real solution would be to index everything again, for all the templates like before :) 
+                  }
+                  existing_opt.delete()
+               }
+               else
+               {
+                  errors << "The OPT ${opt_template_id} already exists, change it's UID or select to overwrite"
+                  return [errors: errors]
+               }
+            }
+         }
+         
          def indexer = new com.cabolabs.archetype.OperationalTemplateIndexer()
          def opt = indexer.createOptIndex(template) // saves OperationalTemplateIndex
          
          // Prepare file
          def destination = config.opt_repo + opt.fileUid + '.opt' //f.getOriginalFilename()
          File fileDest = new File( destination )
-         
-         
-         // FIXME: overwrite check should happen using the template uid not the filename.
-         if (!overwrite && fileDest.exists())
-         {
-           // FIXME: overwrite might cause inconsistencies with currently saved data for the previous version of the template
-           errors << "The OPT already exists"
-           return [errors: errors]
-         }
-         
-         
-         // Hago lo mismo que el transferTo pero a mano.
-         if (overwrite) // file exists and the user wants to overwrite
-         {
-            def copy = new File(destination + ".old")
-            fileDest.renameTo(copy)
-            copy.delete()
-         }
-         
          fileDest << xml
          
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
@@ -140,6 +180,8 @@ class OperationalTemplateController {
          def optMan = OptManager.getInstance()
          optMan.unloadAll()
          optMan.loadAll()
+         
+         redirect action:'upload'
       }
    }
    
