@@ -7,15 +7,17 @@ import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class VersionedCompositionController {
 
    def springSecurityService
+   def config = Holders.config.app
    
    def index(int max, int offset, String sort, String order, String ehdUid)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

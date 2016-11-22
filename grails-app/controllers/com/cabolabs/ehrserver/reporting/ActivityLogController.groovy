@@ -2,12 +2,15 @@ package com.cabolabs.ehrserver.reporting
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class ActivityLogController {
 
+   def config = Holders.config.app
+   
    def index(Integer max) {
-      params.max = Math.min(max ?: 10, 100)
+      params.max = Math.min(max ?: config.list_max, 100)
       respond ActivityLog.list(params), model:[activityLogInstanceCount: ActivityLog.count()]
    }
 

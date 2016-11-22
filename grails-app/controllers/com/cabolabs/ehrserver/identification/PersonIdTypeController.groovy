@@ -2,14 +2,17 @@ package com.cabolabs.ehrserver.identification
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class PersonIdTypeController {
 
     static allowedMethods = [save: "POST", update: "PUT"]
 
+    def config = Holders.config.app
+    
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        params.max = Math.min(max ?: config.list_max, 100)
         respond PersonIdType.list(params), model:[personIdTypeInstanceCount: PersonIdType.count()]
     }
 

@@ -157,6 +157,7 @@ log4j = {
 }
 
 app {
+   list_max = 20 // items per page for all the lists
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"

@@ -1,7 +1,11 @@
 package ehr
 
+import grails.util.Holders
+
 class PaginatorTagLib {
 
+   def config = Holders.config.app
+   
     /**
      * Creates a new password field.
      *
@@ -15,7 +19,7 @@ class PaginatorTagLib {
     
       def numberOfPages = (attrs.numberOfPages ?: 5)
       
-      def max = Math.min(params.max?.toInteger() ?: 20, 100)
+      def max = Math.min(params.max?.toInteger() ?: config.list_max, 100)
       def offset = (params.offset?.toInteger() ?: 1)
       def currentPage = offset.intdiv(max) + 1
       

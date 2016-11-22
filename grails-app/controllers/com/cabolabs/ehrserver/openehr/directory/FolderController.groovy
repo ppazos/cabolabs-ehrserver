@@ -6,6 +6,7 @@ import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class FolderController {
@@ -13,10 +14,12 @@ class FolderController {
    def springSecurityService
    
    static allowedMethods = [save: "POST", update: "PUT"]
+   
+   def config = Holders.config.app
 
    def index(Integer max)
    {
-      params.max = Math.min(max ?: 10, 100)
+      params.max = Math.min(max ?: config.list_max, 100)
       
       def list, count
       

@@ -1,7 +1,6 @@
 package com.cabolabs.ehrserver.account
 
-
-
+import grails.util.Holders
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
@@ -9,9 +8,11 @@ import grails.transaction.Transactional
 class PlanController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    
+    def config = Holders.config.app
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        params.max = Math.min(max ?: config.list_max, 100)
         respond Plan.list(params), model:[planInstanceCount: Plan.count()]
     }
 

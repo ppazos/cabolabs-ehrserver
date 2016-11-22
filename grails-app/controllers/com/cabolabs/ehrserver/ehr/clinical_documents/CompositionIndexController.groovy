@@ -2,9 +2,12 @@ package com.cabolabs.ehrserver.ehr.clinical_documents
 
 import org.springframework.dao.DataIntegrityViolationException
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import grails.util.Holders
 
 class CompositionIndexController {
 
+   def config = Holders.config.app
+   
    def index()
    {
       redirect(action: "list", params: params)
@@ -12,7 +15,7 @@ class CompositionIndexController {
 
    def list(Integer max)
    {
-      params.max = Math.min(max ?: 10, 100)
+      params.max = Math.min(max ?: config.list_max, 100)
       [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
    }
 

@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+import grails.util.Holders
 
 class ContributionController {
 
@@ -11,6 +12,8 @@ class ContributionController {
    
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+   def config = Holders.config.app
+   
    def index()
    {
       redirect(action: "list", params: params)
@@ -18,7 +21,7 @@ class ContributionController {
 
    def list(int max, int offset, String sort, String order, String ehdUid)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'

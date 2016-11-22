@@ -8,13 +8,12 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 class OperationalTemplateController {
 
-   // Para acceder a las opciones de localizacion
    def config = Holders.config.app
    def xmlValidationService
    
    def list(int max, int offset, String sort, String order, String concept)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
@@ -154,7 +153,7 @@ class OperationalTemplateController {
          return
       }
       
-      def opt_file = new File(config.opt_repo + opt.concept +".opt")
+      def opt_file = new File(config.opt_repo + opt.fileUid +".opt")
       
       [opt_xml: opt_file.getText(), opt: opt]
    }

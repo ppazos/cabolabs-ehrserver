@@ -41,7 +41,7 @@ class EhrController {
     */
    def list(int max, int offset, String sort, String order, String uid, String organizationUid)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

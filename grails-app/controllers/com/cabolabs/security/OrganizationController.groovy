@@ -6,7 +6,7 @@ import grails.transaction.Transactional
 
 //http://grails-plugins.github.io/grails-spring-security-core/guide/single.html#springSecurityUtils
 import grails.plugin.springsecurity.SpringSecurityUtils
-
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class OrganizationController {
@@ -15,9 +15,11 @@ class OrganizationController {
    
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+   def config = Holders.config.app
+   
    def index(int max, int offset, String sort, String order, String name, String number)
    {
-      max = Math.min(max ?: 10, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
