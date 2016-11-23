@@ -84,6 +84,11 @@ class BootStrap {
           (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
         }
       }
+      
+      String.metaClass.static.uuid = { ->
+         java.util.UUID.randomUUID() as String
+      }
+      
      
       // --------------------------------------------------------------------
      
@@ -621,8 +626,8 @@ class BootStrap {
      
      // Always regenerate indexes in deploy
      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-	  ti.indexAll()
-     
+	  ti.setupBaseOpts()
+     ti.indexAll()
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
