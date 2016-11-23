@@ -23,6 +23,12 @@ class DataValueIndex {
       tablePerHierarchy false // tabla por subclase
    }
    
+   static constraints = {
+      path(maxSize: 4096)
+      archetypePath(maxSize: 2048)
+   }
+   
+   
    public String toString()
    {
       return this.archetypeId + this.archetypePath

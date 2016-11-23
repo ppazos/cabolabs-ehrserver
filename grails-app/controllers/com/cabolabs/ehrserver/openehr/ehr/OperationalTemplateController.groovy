@@ -4,6 +4,7 @@ import grails.util.Holders
 import groovy.xml.MarkupBuilder
 import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
+import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 class OperationalTemplateController {
@@ -46,7 +47,7 @@ class OperationalTemplateController {
    
    
    /**
-    * 
+    * TODO: refactor to service, this should be transactional.
     * @param overwrite
     * @return
     */
@@ -90,10 +91,20 @@ class OperationalTemplateController {
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
-         def opt_uid = template.uid.value.text()
-         
          // OPT already uploaded, check if it needs to overwrite existing
+         def was_overwritten = false
+         
+         // check existing by OPT uid
+         def opt_uid = template.uid.value.text()
          def existing_opt = OperationalTemplateIndex.findByUid(opt_uid)
+         
+         // check existing by templateId
+         def opt_template_id
+         if (!existing_opt)
+         {
+            opt_template_id = template.template_id.value.text()
+            existing_opt = OperationalTemplateIndex.findByTemplateId( opt_template_id )
+         }
          if (existing_opt)
          {
             if (overwrite) // OPT exists and the user wants to overwrite
@@ -101,58 +112,22 @@ class OperationalTemplateController {
                def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
                existing_file.delete()
                
-               // FIXME: delete all and reindex all ...
-               
-               // deletes the the opt, operationalTemplateIndexItems and archetypeIndexItems
-               // below indexes are created again for the new OPT
-               OperationalTemplateIndexItem.findAllByTemplateId(existing_opt.templateId).each {
-                  it.delete()
-               }
-               existing_opt.referencedArchetypeNodes.each {
-                  it.delete() // FIXME: the problem with this is that if other OPT references the same path, but on the new update of the same template node was removed, we will lose a path.
-                  // The real solution would be to index everything again, for all the templates like before :)
-               }
-               existing_opt.delete()
+               // if was_overwritten, we do an indexAll, and that deletes all the OPT, 
+               // OPT items and archetype items, so there is mo need of deleting stuff here.
+               was_overwritten = true
             }
             else
             {
-               errors << "The OPT ${opt_uid} already exists, change it's UID or select to overwrite"
+               if (!opt_template_id)
+                  errors << "The OPT ${opt_uid} already exists, change it's UID or select to overwrite"
+               else
+                  errors << "The OPT ${opt_template_id} already exists, change it's UID or select to overwrite"
                return [errors: errors]
             }
          }
-         else // check by templateId because of tools the uid might vary for the same templateId, both uid and templateId should be unique
-         {
-            def opt_template_id = template.template_id.value.text()
-            existing_opt = OperationalTemplateIndex.findByTemplateId( opt_template_id )
-            
-            // refactor: is the same code as above
-            if (existing_opt)
-            {
-               if (overwrite) // OPT exists and the user wants to overwrite
-               {
-                  def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
-                  existing_file.delete()
-                  
-                  // deletes the the opt, operationalTemplateIndexItems and archetypeIndexItems
-                  // below indexes are created again for the new OPT
-                  OperationalTemplateIndexItem.findAllByTemplateId(existing_opt.templateId).each {
-                     it.delete()
-                  }
-                  existing_opt.referencedArchetypeNodes.each {
-                     it.delete() // FIXME: the problem with this is that if other OPT references the same path, but on the new update of the same template node was removed, we will lose a path.
-                     // The real solution would be to index everything again, for all the templates like before :) 
-                  }
-                  existing_opt.delete()
-               }
-               else
-               {
-                  errors << "The OPT ${opt_template_id} already exists, change it's UID or select to overwrite"
-                  return [errors: errors]
-               }
-            }
-         }
          
-         def indexer = new com.cabolabs.archetype.OperationalTemplateIndexer()
+         
+         def indexer = new OperationalTemplateIndexer()
          def opt = indexer.createOptIndex(template) // saves OperationalTemplateIndex
          
          // Prepare file
@@ -171,9 +146,16 @@ class OperationalTemplateController {
          flash.message = g.message(code:"opt.upload.success")
          
          
-         // Generates OPT and archetype item indexes for the uploaded OPT
-         indexer.index(template)
-         
+         if (was_overwritten)
+         {
+            indexer.indexAll()
+         }
+         else
+         {
+            // If there is no overwrite
+            // Generates OPT and archetype item indexes just for the uploaded OPT
+            indexer.index(template)
+         }
          
          // load opt in manager cache
          // TODO: just load the newly created ones
