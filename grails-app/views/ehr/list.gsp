@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="row row-grid">
-      <div class="col-lg-12">
+      <div class="col-md-8">
         <g:form class="form-inline" action="list">
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
@@ -34,6 +34,15 @@
           </div>
           <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
+      </div>
+      <div class="col-md-4">
+        <div class="btn-toolbar" role="toolbar">
+          <g:link action="create">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="['Ehr']" />
+            </button>
+          </g:link>
+        </div>
       </div>
     </div>
     <div class="row row-grid">
@@ -54,9 +63,9 @@
             <tbody>
               <g:each in="${list}" status="i" var="ehrInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                  <td><g:link action="showEhr" params="[patientUID:ehrInstance.subject.value]">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
+                  <td><g:link action="show" params="[uid:ehrInstance.uid]">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
                   <td>${fieldValue(bean: ehrInstance, field: "dateCreated")}</td>
-                  <td><g:link controller="person" action="show" params="[uid:ehrInstance.subject.value]">${ehrInstance.subject.value}</g:link></td>
+                  <td>${ehrInstance.subject.value}</td>
                   <td><g:link controller="organization" action="show" params="[uid:ehrInstance.organizationUid]">${fieldValue(bean: ehrInstance, field: "organizationUid")}</g:link></td>
                 </tr>
               </g:each>

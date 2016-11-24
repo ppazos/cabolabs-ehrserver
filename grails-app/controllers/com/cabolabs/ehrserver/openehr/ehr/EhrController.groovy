@@ -1,7 +1,7 @@
 package com.cabolabs.ehrserver.openehr.ehr
 
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.ehrserver.openehr.demographic.Person
+//import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvTextIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
@@ -18,6 +18,8 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 import com.cabolabs.security.User
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
+
+import grails.transaction.Transactional
 
 class EhrController {
 
@@ -110,35 +112,7 @@ class EhrController {
 
       [list: list, total: list.totalCount]
    }
-
-   
-   // GUI debug
-   def showEhr(String patientUID)
-   {
-      if (!patientUID)
-      {
-         flash.message = message(code:'ehr.showEhr.patientUidIsRequired')
-         redirect(url:request.getHeader('referer'))
-         return
-      }
-      
-      def c = Ehr.createCriteria()
-      def ehr = c.get {
-         subject {
-            eq ('value', patientUID)
-         }
-      }
-      
-      if (!ehr)
-      {
-         flash.message = message(code:'ehr.showEhr.ehrDoesntExistsForPatientUid', args:[patientUid])
-         //redirect(controller:'person', action:'list')
-         redirect(url:request.getHeader('referer'))
-         return
-      }
-      
-      return [ehr: ehr] 
-   }
+                   
    
    def show(String uid)
    {
@@ -157,11 +131,11 @@ class EhrController {
          return
       }
       
-      render(view:'showEhr', model:[ehr: ehr])
+      render(view:'show', model:[ehr: ehr])
    }
    
    /**
-    * Auxiliar de showEhr para mostrar las contributiosn y sus
+    * Auxiliar de show para mostrar las contributiosn y sus
     * compositions en una tabla y poder filtrarlas.
     * @return
     */
@@ -200,63 +174,33 @@ class EhrController {
       render(template:'ehrContributions', model:[contributions:contribs]) 
    }
    
-   /**
-    * From person.list
-    * 
-    * @param patientUID uid de la Person con rol paciente
-    * @return
-    */
-   def createEhr(String patientUID)
+   def create()
    {
-      if (!patientUID)
-      {
-         flash.message = message(code:'ehr.createEhr.patientUidIsRequired')
-         chain controller:'person', action: 'list' // with chain the action gets executed and maintains the flash
-         return
-      }
-      
-      def person = Person.findByUidAndRole(patientUID, 'pat')
-      if (!person)
-      {
-         flash.message = message(code:'ehr.createEhr.patientDoesntExists', args:[patientUID])
-         chain controller:'person', action: 'list'
-         return
-      }
-      
-      def c = Ehr.createCriteria()
-      def ehr = c.get {
-         subject {
-            eq ('value', patientUID)
-         }
-      }
-      
-      if (ehr)
-      {
-         flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
-         chain controller:'person', action: 'list'
-         return
-      }
-      else
-      {
-         ehr = new Ehr(
-            subject: new PatientProxy(
-               value: patientUID
-            ),
-            organizationUid: person.organizationUid
-         )
-         
-         if (!ehr.save(flush:true))
-         {
-            flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.uid])
-            render (view : '/person/list', model: [ehr: ehr])
-            return
-         }
-      }
-      
-      redirect(controller:'person', action:'list')
-      
-   } // createEhr
+      return [ehr: new Ehr()]
+   }
    
+   @Transactional
+   def save(Ehr ehr)
+   {
+      if (!ehr)
+      {
+         flash.message = message(code:'ehr.save.error')
+         redirect action:'create'
+         return
+      }
+      
+      //println ehr.subject.value // it's binded
+      
+      if (!ehr.save(flush:true))
+      {
+         flash.message = message(code:'ehr.save.error')
+         render (view: 'create', model: [ehr: ehr])
+         return
+      }
+      
+      flash.message = message(code:'ehr.save.ok', args:[ehr.uid])
+      redirect action:'list'
+   }
    
    /**
     * 

@@ -145,10 +145,13 @@
         
         <table class="table">
           <tbody>
-            <g:render template="/person/patientData" model="[person: ehr.subject.person]" />
             <tr>
               <th><g:message code="ehr.list.attr.uid" /></th>
               <td>${ehr.uid}</td>
+            </tr>
+             <tr>
+              <th><g:message code="ehr.list.attr.subject.value" /></th>
+              <td>${ehr.subject.value}</td>
             </tr>
             <tr>
               <th><g:message code="ehr.list.attr.organization" /></th>

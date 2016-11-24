@@ -33,15 +33,4 @@ class PatientProxy {
    // Para que salve en cascada al crear el Ehr
    // http://grails.org/doc/latest/guide/GORM.html#manyToOneAndOneToOne
    static belongsTo = [Ehr]
-   
-   static transients = ['person']
-   
-   /**
-    * Devuelve la Person correspondiente al value de este PatientProxy.
-    * @return
-    */
-   def getPerson()
-   {
-      return Person.findByUid(this.value)
-   }
 }

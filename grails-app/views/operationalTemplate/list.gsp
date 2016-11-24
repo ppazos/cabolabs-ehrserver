@@ -77,14 +77,6 @@
 			              <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
 			              <br/>
 			              <g:link action="archetypeItems" params="[uid: templateInstance.uid]">Archetype Indexes</g:link>
-			               <%--
-			               <g:hasEhr patientUID="${templateInstance.uid}">
-			                 <g:link controller="ehr" action="showEhr" params="[patientUID: templateInstance.uid]">Show EHR</g:link>
-			               </g:hasEhr>
-			               <g:dontHasEhr patientUID="${templateInstance.uid}">
-			                 <g:link controller="ehr" action="createEhr" params="[patientUID: templateInstance.uid]">Create EHR</g:link>
-			               </g:dontHasEhr>
-			               --%>
 			            </td>
 			          </tr>
 			        </g:each>

@@ -92,7 +92,7 @@
 			            <td>
 			              <g:if test="${personInstance.role == 'pat'}">
 			                 <g:hasEhr patientUID="${personInstance.uid}">
-			                   <g:link controller="ehr" action="showEhr" params="[patientUID: personInstance.uid]">Show EHR</g:link>
+			                   <g:link controller="ehr" action="show" params="[patientUID: personInstance.uid]">Show EHR</g:link>
 			                 </g:hasEhr>
 			                 <g:dontHasEhr patientUID="${personInstance.uid}">
 			                   <g:link controller="ehr" action="createEhr" params="[patientUID: personInstance.uid]">Create EHR</g:link>

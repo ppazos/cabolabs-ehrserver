@@ -492,7 +492,7 @@ class BootStrap {
      
      
      
-     
+     /*
      // Init id types
      if (PersonIdType.count() == 0)
      {
@@ -508,6 +508,7 @@ class BootStrap {
            it.save(failOnError:true, flush:true)
         }
      }
+     */
      
      
      //****** SECURITY *******
@@ -558,8 +559,8 @@ class BootStrap {
         //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
         
         new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+       // new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+        new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/versionedComposition/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
@@ -568,6 +569,7 @@ class BootStrap {
         new RequestMap(url: '/archetypeIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
+        
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
@@ -581,7 +583,7 @@ class BootStrap {
         
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
+        //new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
         
         // share/unshare queries and opts between orgs
         new RequestMap(url: '/resource/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
@@ -634,6 +636,7 @@ class BootStrap {
      optMan.loadAll()
      
      // Fake persons and roles
+     /*
      def persons = []
      if (Person.count() == 0)
      {
@@ -701,12 +704,35 @@ class BootStrap {
            }
         }
      }
+     */
+     
      if (Ehr.count() == 0)
      {
-        // Fake EHRs for patients
-        // Idem EhrController.createEhr
-        def ehr
+        def ehr_subject_uids = [
+           '11111111-1111-1111-1111-111111111111',
+           '22222222-1111-1111-1111-111111111111',
+           '33333333-1111-1111-1111-111111111111',
+           '44444444-1111-1111-1111-111111111111',
+           '55555555-1111-1111-1111-111111111111'
+        ]
         
+        
+        def ehr
+        def c = Organization.count()
+        
+        ehr_subject_uids.eachWithIndex { uid, i ->
+           ehr = new Ehr(
+              uid: uid, // the ehr id is the same as the patient just to simplify testing
+              subject: new PatientProxy(
+                 value: uid
+              ),
+              organizationUid: Organization.get(i % c + 1).uid
+           )
+         
+           if (!ehr.save()) println ehr.errors
+        }
+        
+        /*
         persons.eachWithIndex { p, i ->
         
            if (p.role == 'pat')
@@ -722,6 +748,7 @@ class BootStrap {
               if (!ehr.save()) println ehr.errors
            }
         }
+        */
      }
      
      def p1
