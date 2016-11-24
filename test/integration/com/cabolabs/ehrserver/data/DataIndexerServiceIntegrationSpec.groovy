@@ -9,6 +9,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.util.Holders
 import groovy.io.FileType
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 
 class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
 
@@ -40,7 +41,8 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       // prepare a single commit, then try to index
       setup:
          def ehr = Ehr.get(1)
-      
+         assert ehr != null
+
          def versionsXML = new File('test'+ PS +'resources'+ PS +'commit'+ PS +'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
          

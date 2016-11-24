@@ -93,6 +93,7 @@ environments {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
+      opt_repo = "opts" + PS
     }
   }
   production {
@@ -106,6 +107,7 @@ environments {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
+      opt_repo = "opts" + PS
     }
   }
   local_prod {
@@ -116,6 +118,7 @@ environments {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
+      opt_repo = "opts" + PS
     }
   }
   test {
@@ -123,6 +126,7 @@ environments {
     app {
        version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
        commit_logs = "commits" + PS
+       opt_repo = "opts" + PS + "tests" + PS
     }
   }
 }
@@ -161,7 +165,6 @@ app {
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
-   opt_repo = "opts" + PS
    
    security {
       min_password_length = 6
