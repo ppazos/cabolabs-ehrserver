@@ -1,9 +1,9 @@
 <%@ page import="com.cabolabs.ehrserver.openehr.ehr.Ehr" %><%@ page import="com.cabolabs.security.Organization" %>
-<div class="form-group ${hasErrors(bean: personInstance, field: 'subject.value', 'has-error')}">
+<div class="form-group ${hasErrors(bean: ehr, field: 'subject.value', 'has-error')}">
   <label class="control-label"><g:message code="ehr.subject.uid.attr" default="Subject UI" /></label>
   <g:textField name="subject.value" value="${ehr?.subject?.value}" class="form-control" />
 </div>
-<div class="form-group ${hasErrors(bean: personInstance, field: 'organizationUid', 'has-error')}">
+<div class="form-group ${hasErrors(bean: ehr, field: 'organizationUid', 'has-error')}">
   <label class="control-label"><g:message code="organization.uid.attr" default="Organization" /></label>
   <sec:ifAnyGranted roles="ROLE_ADMIN">
     <g:select name="organizationUid" from="${Organization.list()}"

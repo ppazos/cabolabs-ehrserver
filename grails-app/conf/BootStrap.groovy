@@ -14,7 +14,6 @@ import com.cabolabs.ehrserver.openehr.common.generic.*
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
-import com.cabolabs.ehrserver.identification.PersonIdType
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
@@ -389,32 +388,6 @@ class BootStrap {
         }
      }
      
-     
-     JSON.registerObjectMarshaller(Person) { person ->
-        return [uid: person.uid,
-                firstName: person.firstName,
-                lastName: person.lastName,
-                dob: person.dob,
-                sex: person.sex,
-                idCode: person.idCode,
-                idType: person.idType,
-                organizationUid: person.organizationUid
-               ]
-     }
-     
-     XML.registerObjectMarshaller(Person) { person, xml ->
-        xml.build {
-          uid(person.uid)
-          firstName(person.firstName)
-          lastName(person.lastName)
-          dob(person.dob)
-          sex(person.sex)
-          idCode(person.idCode)
-          idType(person.idType)
-          organizationUid(person.organizationUid)
-        }
-     }
-     
      /*
      XML.registerObjectMarshaller(new NameAwareMarshaller() {
         @Override
@@ -460,7 +433,7 @@ class BootStrap {
         xml.startNode pres.listName
            
            if (pres.list)
-              xml.convertAnother (pres.list ?: []) // this works, generates "person" nodes
+              xml.convertAnother (pres.list ?: []) // this works, generates "ehr" nodes
            else
               xml.convertAnother (pres.map ?: [:])
            
@@ -489,26 +462,6 @@ class BootStrap {
         
         // TODO: timing
      }
-     
-     
-     
-     /*
-     // Init id types
-     if (PersonIdType.count() == 0)
-     {
-        def idtypes = [
-           new PersonIdType(name:'DNI',  code:'DNI'),
-           new PersonIdType(name:'CI',   code:'CI'),
-           new PersonIdType(name:'Passport', code:'Passport'),
-           new PersonIdType(name:'SSN',  code:'SSN'),
-           new PersonIdType(name:'UUID', code:'UUID'),
-           new PersonIdType(name:'OID',  code:'OID')
-        ]
-        idtypes.each {
-           it.save(failOnError:true, flush:true)
-        }
-     }
-     */
      
      
      //****** SECURITY *******
@@ -559,7 +512,7 @@ class BootStrap {
         //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
         
         new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-       // new RequestMap(url: '/person/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+       
         new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/versionedComposition/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
@@ -583,7 +536,7 @@ class BootStrap {
         
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        //new RequestMap(url: '/personIdType/**', configAttribute: 'ROLE_ADMIN').save()
+        
         
         // share/unshare queries and opts between orgs
         new RequestMap(url: '/resource/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
@@ -635,77 +588,8 @@ class BootStrap {
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
      optMan.loadAll()
      
-     // Fake persons and roles
-     /*
-     def persons = []
-     if (Person.count() == 0)
-     {
-        persons = [
-           new Person(
-               firstName: 'Pablo',
-               lastName: 'Pazos',
-               dob: new Date(81, 9, 24),
-               sex: 'M',
-               idCode: '4116238-0',
-               idType: PersonIdType.get(1).code,
-               role: 'pat',
-               uid: '11111111-1111-1111-1111-111111111111'
-           ),
-           new Person(
-               firstName: 'Barbara',
-               lastName: 'Cardozo',
-               dob: new Date(87, 2, 19),
-               sex: 'F',
-               idCode: '1234567-0',
-               idType: PersonIdType.get(1).code,
-               role: 'pat',
-               uid: '22222222-1111-1111-1111-111111111111'
-           ),
-           new Person(
-               firstName: 'Carlos',
-               lastName: 'Cardozo',
-               dob: new Date(80, 2, 20),
-               sex: 'M',
-               idCode: '3453455-0',
-               idType: PersonIdType.get(1).code,
-               role: 'pat',
-               uid: '33333333-1111-1111-1111-111111111111'
-           ),
-           new Person(
-               firstName: 'Mario',
-               lastName: 'Gomez',
-               dob: new Date(64, 8, 19),
-               sex: 'M',
-               idCode: '5677565-0',
-               idType: PersonIdType.get(1).code,
-               role: 'pat',
-               uid: '44444444-1111-1111-1111-111111111111'
-           ),
-           new Person(
-               firstName: 'Carla',
-               lastName: 'Martinez',
-               dob: new Date(92, 1, 5),
-               sex: 'F',
-               idCode: '84848884-0',
-               idType: PersonIdType.get(1).code,
-               role: 'pat',
-               uid: '55555555-1111-1111-1111-111111111111'
-           )
-        ]
-        
-        def c = Organization.count()
-        persons.eachWithIndex { p, i ->
-           
-           p.organizationUid = Organization.get(i % c + 1).uid
-           
-           if (!p.save())
-           {
-              println p.errors
-           }
-        }
-     }
-     */
-     
+
+     // Sample EHRs for testing purposes
      if (Ehr.count() == 0)
      {
         def ehr_subject_uids = [
@@ -731,24 +615,6 @@ class BootStrap {
          
            if (!ehr.save()) println ehr.errors
         }
-        
-        /*
-        persons.eachWithIndex { p, i ->
-        
-           if (p.role == 'pat')
-           {
-              ehr = new Ehr(
-                 uid: p.uid, // the ehr id is the same as the patient just to simplify testing
-                 subject: new PatientProxy(
-                    value: p.uid
-                 ),
-                 organizationUid: p.organizationUid
-              )
-            
-              if (!ehr.save()) println ehr.errors
-           }
-        }
-        */
      }
      
      def p1

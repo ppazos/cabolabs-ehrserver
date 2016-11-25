@@ -17,7 +17,7 @@ class CompositionIndex {
    
    Date startTime // de la composition.context (solo para compositions event)
    
-   String subjectId // uid de la persona con rol paciente
+   String subjectId // references an EHR.subject.uid, simplifies querying
    
    String ehrUid // uid del ehr del subjectId
    

@@ -34,7 +34,7 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
    {
    }
 
-   
+   /*
    def createPersonPopulateValidParams(params) {
       assert params != null
 
@@ -266,4 +266,5 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
          !controller.response.xml.ehrs.isEmpty()
          controller.response.xml.ehrs.ehr.size() == 3
    }
+   */
 }

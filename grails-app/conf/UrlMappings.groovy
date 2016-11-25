@@ -11,22 +11,6 @@ class UrlMappings {
       /**
        * Use UIDs on webconsole show/edit
        */
-      "/person/show/${uid}"(
-         controller: 'person',
-         action: 'show'
-      )
-      "/person/edit/${uid}"(
-         controller: 'person',
-         action: 'edit'
-      )
-      "/person/update/${uid}"(
-         controller: 'person',
-         action: 'update'
-      )
-      "/person/delete/${uid}"(
-         controller: 'person',
-         action: 'delete'
-      )
       
       "/organization/show/${uid}"(
          controller: 'organization',
@@ -75,6 +59,7 @@ class UrlMappings {
       )
 
       // /rest/patientList por /rest/patients -- list of all patients
+      /*
       "/rest/patients"(
          controller: 'rest',
          action: 'patientList',
@@ -90,11 +75,12 @@ class UrlMappings {
          action: 'patient',
          method: 'GET'
       )
-      "/rest/person"( /* FIXME: we should have one url for creating people, now we have also /patients ^ */
+      "/rest/person"(
          controller: 'rest',
          action: 'createPerson',
          method: 'POST'
       )
+      */
       
       // /rest/queryList por /rest/queries -- list of all queries
       "/rest/queries"( 

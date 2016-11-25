@@ -18,7 +18,7 @@ class DoctorProxy {
    String namespace = "local"
    
    // Emula PARTY_PROXY.external_ref.type
-   // Apunta a una persona
+   // References an external PERSON record
    String type = "PERSON"
    
    // Identificador confiable del medico (no es su cedula, documento o pasaporte), es asignado por el sistema al crear el doctor

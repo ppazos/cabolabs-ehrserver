@@ -67,6 +67,7 @@ class EhrController {
             {
                like('organizationUid', '%'+organizationUid+'%')
             }
+            // TODO: subject.value
          }
       }
       else

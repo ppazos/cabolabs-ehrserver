@@ -95,12 +95,13 @@ class SecurityFilters {
          }
       }
       
+      
       /**
        * All the lists already filter by organization, 
        * this checks authorization for show/edit/save.
        * 
        **/
-      
+      /*
       person_save(controller:'person', action:'save') {
          before = {
             // params.organizationUid should be one of the orgs associated with the current user
@@ -247,6 +248,7 @@ class SecurityFilters {
             return true
          }
       }
+      */
       
       organization_show(controller:'organization', action:'show') {
          before = {

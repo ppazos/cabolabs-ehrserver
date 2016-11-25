@@ -19,7 +19,7 @@ class PatientProxy {
    String namespace = "local"
    
    // Emula PARTY_PROXY.external_ref.type
-   // Apunta a una persona
+   // References to an exteral PERSON record
    String type = "PERSON"
    
    // Identificador confiable del paciente (no es su cedula, documento o pasaporte), es asignado por el sistema al crear el paciente

@@ -765,6 +765,7 @@ class RestController {
    } // ehrGet
    
    
+   /*
    @SecuredStateless
    def patientList(String format, int max, int offset)
    {
@@ -814,16 +815,6 @@ class RestController {
          setReadOnly true
       }
       
-      /*
-       * TODO: we can return the total count, form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
-       * 
-       * Because that query includes pagination parameters (max and offset), this will return
-       * a PagedResultList which has a getTotalCount() method to return the total number of
-       * matching records for pagination. Two queries are still run, but they are run for
-       * you and the results and total count are combined in the PagedResultList.
-       * 
-       * So we can do subjects.totalCount
-       */
       
       // ===========================================================================
       // 2. Discusion por formato de salida
@@ -849,8 +840,9 @@ class RestController {
          renderFormatNotSupportedError()
       }
    } // patientList
+*/
    
-   
+   /*
    // Get patient data
    @SecuredStateless
    def patient(String uid, String format)
@@ -896,6 +888,7 @@ class RestController {
          renderFormatNotSupportedError()
       }
    }
+   */
    
    
    /*
@@ -1898,6 +1891,7 @@ class RestController {
    }
    
    
+   /*
    @Transactional
    @SecuredStateless
    def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
@@ -1997,6 +1991,8 @@ class RestController {
          renderError("Format $format not supported", '44325', 400)
       }
    }
+   
+   */
    
    @SecuredStateless
    def organizations(String format)

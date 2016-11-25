@@ -151,11 +151,6 @@
 	               <li>
 	                 <g:link controller="app" action="index"><i class="fa fa-dashboard"></i> Dashboard</g:link>
 	               </li>
-	               <%-- 
-	               <li>
-	                 <g:link controller="person" action="list" class="${(controllerName=='person')?'active':''}"><i class="fa fa-users"></i> <g:message code="person.list.title" /></g:link>
-	               </li>
-	               --%>
 	               <li>
 	                 <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
 	               </li>
@@ -193,13 +188,6 @@
 	                   <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
-	               <%--
-	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <li>
-                      <g:link controller="personIdType" action="index" class="${(controllerName=='personIdType')?'active':''}"><i class="glyphicon glyphicon glyphicon-tag"></i> <g:message code="desktop.idTypes" /></g:link>
-                    </li>
-                  </sec:ifAnyGranted>
-                  --%>
 	             </ul>
 	             
 	             <p id="powby">Powered by <a href="http://www.cabolabs.com" target="_blank">CaboLabs</a></p>

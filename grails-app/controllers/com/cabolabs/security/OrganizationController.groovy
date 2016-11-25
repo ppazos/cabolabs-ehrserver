@@ -120,36 +120,6 @@ class OrganizationController {
          respond organizationInstance.errors, view:'edit'
          return
       }
-      
-      // TODO check version (see PersonController.update)
-      /*
-       * def update(Long version)
-         {
-            println "update params "+ params
-            
-            def personInstance = params.personInstance
-      
-            if (version != null) {
-               if (personInstance.version > version) {
-                  personInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
-                          [message(code: 'person.label', default: 'Person')] as Object[],
-                          "Another user has updated this Person while you were editing")
-                  render(view: "edit", model: [personInstance: personInstance])
-                  return
-               }
-            }
-      
-            personInstance.properties = params
-      
-            if (!personInstance.save(flush: true)) {
-               render(view: "edit", model: [personInstance: personInstance])
-               return
-            }
-      
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
-            redirect action:'show', params:[uid:personInstance.uid]
-         }
-       */
 
       organizationInstance.save flush:true
 
