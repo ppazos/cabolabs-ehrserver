@@ -1,4 +1,4 @@
-import com.cabolabs.ehrserver.openehr.demographic.Person
+
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import grails.util.Holders
 

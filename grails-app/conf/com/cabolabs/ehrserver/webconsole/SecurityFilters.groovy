@@ -2,15 +2,11 @@ package com.cabolabs.ehrserver.webconsole
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.User
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
-
 import com.cabolabs.ehrserver.reporting.ActivityLog
-
 import grails.converters.*
 
 class SecurityFilters {

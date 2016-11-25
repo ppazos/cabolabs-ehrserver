@@ -192,6 +192,22 @@ class EhrController {
       
       //println ehr.subject.value // it's binded
       
+      // Check if there is an EHR for the same subject UID
+      def c = Ehr.createCriteria()
+      def existing_ehr = c.get {
+         subject {
+            eq('value', ehr.subject.value)
+         }
+      }
+      if (existing_ehr)
+      {
+         flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.subject.value, existing_ehr.uid])
+         redirect action: 'create'
+         return
+      }
+      
+      
+      
       if (!ehr.save(flush:true))
       {
          flash.message = message(code:'ehr.save.error')

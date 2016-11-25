@@ -18,7 +18,6 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
       def org = new Organization(name: 'Test Org', number: '556677').save(failOnError:true, flush: true)
       
       def user = new User(username: 'user', password: 'user', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
-      
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
       UserRole.create( user, role, true )

@@ -4,7 +4,6 @@ import grails.converters.*
 
 import java.text.SimpleDateFormat
 
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
@@ -52,7 +51,7 @@ import com.cabolabs.ehrserver.query.QueryShare
  */
 class RestController {
 
-   static allowedMethods = [login: "POST", commit: "POST", createPerson: "POST", contributions: "GET"]
+   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET"]
    
    def messageSource
    
