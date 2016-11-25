@@ -5,7 +5,6 @@ import grails.test.spock.IntegrationSpec
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.User
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 
 class RestControllerIntegrationSpec extends IntegrationSpec {

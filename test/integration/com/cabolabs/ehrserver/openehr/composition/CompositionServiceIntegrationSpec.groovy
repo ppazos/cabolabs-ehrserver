@@ -9,7 +9,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import groovy.io.FileType
 
 class CompositionServiceIntegrationSpec extends IntegrationSpec {
