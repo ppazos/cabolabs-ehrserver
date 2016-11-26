@@ -143,7 +143,7 @@ class EhrController {
    def ehrContributions(long id, String fromDate, String toDate, String qarchetypeId)
    {
       def contribs
-      def ehr = Ehr.get(id)
+      def ehr = Ehr.get(id) // TODO: use UID
       
       // parse de dates
       Date qFromDate
