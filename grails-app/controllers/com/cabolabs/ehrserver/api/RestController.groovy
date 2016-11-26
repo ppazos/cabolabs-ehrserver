@@ -303,8 +303,8 @@ class RestController {
          return
       }
       
-      println request.getClass() // org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper
-      println request.contentType // application/xml, application/json
+      //println request.getClass() // org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper
+      //println request.contentType // application/xml, application/json
 
       // FIXME: if the request is XML we can access an XmlSlurper instance from request.XML, so
       //        there is no need of accessing request.reader.text, the only problem is that request.XML
@@ -653,7 +653,7 @@ class RestController {
     * @return
     */
    @SecuredStateless
-   def ehrCreate(String uid, String subjectUid)
+   def ehrCreate(String uid, String subjectUid, String format)
    {
       if (!subjectUid)
       {
@@ -670,7 +670,7 @@ class RestController {
       }
       if (existing_ehr)
       {
-         renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.subject.value, existing_ehr.uid]), '998', 400)
+         renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[subjectUid, existing_ehr.uid]), '998', 400)
          return
       }
       
@@ -702,7 +702,25 @@ class RestController {
          ehr.uid = uid
       }
       
+      // TODO: check error and return it
       ehr.save(failOnError: true, flush: true)
+      
+      
+      if (!format || format == "xml")
+      {
+         render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == "json")
+      {
+         def result = ehr as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderFormatNotSupportedError()
+      }
    }
    
    /* TODO: should use the ehr.subject.value key not the Person.uid

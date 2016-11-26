@@ -499,7 +499,7 @@ class BootStrap {
          '/user/register', '/user/resetPassword', '/user/forgotPassword',
          '/simpleCaptcha/**',
          '/j_spring_security_logout',
-         '/rest/**',
+         '/rest/**', // REST security is handled by stateless security plugin
          '/ehr/showCompositionUI', // will be added as a rest service via url mapping
          '/user/profile'
         ])

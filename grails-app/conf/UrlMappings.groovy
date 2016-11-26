@@ -57,6 +57,11 @@ class UrlMappings {
          controller: 'rest',
          action: 'ehrForSubject'
       )
+      "/rest/ehrs"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'ehrCreate'
+      )
 
       // /rest/patientList por /rest/patients -- list of all patients
       /*
