@@ -51,7 +51,7 @@ import com.cabolabs.ehrserver.query.QueryShare
  */
 class RestController {
 
-   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET"]
+   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST"]
    
    def messageSource
    
@@ -93,7 +93,8 @@ class RestController {
       'queryShow': '09',     // GET /queries/$queryUid
       'query': '10',         // GET /queries/$queryUid/execute
       'queryList': '11',     // GET /queries
-      'contributions': '12'  // GET /contributions
+      'contributions': '12', // GET /contributions
+      'ehrCreate': '13'
    ]
    
    // FIXME: move logic to service
@@ -645,6 +646,66 @@ class RestController {
       }
    } // ehrList
    
+   /**
+    * 
+    * @param uid optional, if the client wants to set the uid externally.
+    * @param subjectUid
+    * @return
+    */
+   @SecuredStateless
+   def ehrCreate(String uid, String subjectUid)
+   {
+      if (!subjectUid)
+      {
+         renderError(message(code:'rest.ehrCreate.error.subjectUid.required'), '999', 400)
+         return
+      }
+      
+      // Check if there is an EHR for the same subject UID
+      def c = Ehr.createCriteria()
+      def existing_ehr = c.get {
+         subject {
+            eq('value', subjectUid)
+         }
+      }
+      if (existing_ehr)
+      {
+         renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.subject.value, existing_ehr.uid]), '998', 400)
+         return
+      }
+      
+      // Check if the uid is unique
+      if (uid)
+      {
+         existing_ehr = Ehr.findByUid(uid)
+         if (existing_ehr)
+         {
+            renderError(message(code:'ehr.createEhr.ehrUidAlreadyExists', args:[uid]), '997', 400)
+            return
+         }
+      }
+      
+      
+      // Get organization of the current user
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      
+      // Create the new EHR
+      def ehr = new Ehr(
+         organizationUid: _org.uid, 
+         subject: new PatientProxy(value: subjectUid)
+      )
+      
+      if (uid)
+      {
+         ehr.uid = uid
+      }
+      
+      ehr.save(failOnError: true, flush: true)
+   }
+   
+   /* TODO: should use the ehr.subject.value key not the Person.uid
    @SecuredStateless
    def ehrForSubject(String subjectUid, String format)
    {
@@ -709,6 +770,7 @@ class RestController {
          renderFormatNotSupportedError()
       }
    } // ehrForSubject
+   */
    
    
    @SecuredStateless
