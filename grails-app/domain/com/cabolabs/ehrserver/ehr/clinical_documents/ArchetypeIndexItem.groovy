@@ -7,7 +7,8 @@ class ArchetypeIndexItem {
    String rmTypeName
    
    // Name of the node by the archetype in the template language, can be empty.
-   String name
+   //String name
+   Map name // lang: name
    
    // if rmTypeName is DV_CODED_TEXT, it might define a reference to a terminology, for it's definition_code attribute.
    // In the OPT that value is in the referenceSetUri element, inside the defininig_code children element.
@@ -15,7 +16,7 @@ class ArchetypeIndexItem {
    String terminologyRef
    
    static constraints = {
-      name(nullable:true)
+      //name(nullable:true)
       path(size:1..1023)
       terminologyRef(nullable:true)
    }

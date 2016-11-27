@@ -786,8 +786,10 @@ resp.responseJSON.result.message +'</div>'
             // Adds options to the select
             $(data).each(function(i, didx) {
             
+              // using LocaleContextHolder becase request.locale.language always returns 'en'
+            
               $('select[name=view_archetype_path]').append(
-                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'">'+ didx.name +' {'+ didx.rmTypeName + '}</option>'
+                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'">'+ didx.name['ISO_639-1::${org.springframework.context.i18n.LocaleContextHolder.locale.language}'] +' {'+ didx.rmTypeName + '}</option>'
               );
             });
           },
@@ -1560,7 +1562,7 @@ resp.responseJSON.result.message +'</div>'
                     <td><g:message code="query.create.concept" /></td>
                     <td>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name +' ('+ it.archetypeId +')'}}"
+                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name['ISO_639-1::'+ request.locale.language] +' ('+ it.archetypeId +')'}}"
                                  noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
                     </td>
                   </tr>

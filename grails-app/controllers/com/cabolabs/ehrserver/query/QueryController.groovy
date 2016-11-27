@@ -403,6 +403,8 @@ class QueryController {
       // TODO: checkear params
 
       def datatypes = DataValues.valuesStringList()
+      
+      /*
       def list = ArchetypeIndexItem.withCriteria {
         resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
         projections {
@@ -417,6 +419,15 @@ class QueryController {
         {
           'in'('rmTypeName', datatypes)
         }
+      }
+      */
+      def list = ArchetypeIndexItem.withCriteria {
+         eq 'archetypeId', archetypeId
+         
+         if (datatypesOnly)
+         {
+           'in'('rmTypeName', datatypes)
+         }
       }
       
       render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
