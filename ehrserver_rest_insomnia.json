@@ -1,7 +1,7 @@
 {
   "_type": "export",
   "__export_format": 1,
-  "__export_date": "2016-11-25T00:29:19.393Z",
+  "__export_date": "2016-11-27T02:21:35.535Z",
   "__export_source": "insomnia.chrome.app:v2.7.0",
   "items": [
     {
@@ -846,6 +846,43 @@
             "panel_width": 0.5
           },
           "name": "commit XML (general teste)"
+        },
+        {
+          "_type": "request",
+          "_id": "req_1480200289703",
+          "url": "{{base_url}}/ehrs",
+          "method": "POST",
+          "body": "{}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVkbWluIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQifSwiaXNzdWVkX2F0IjoiMjAxNi0wOS0xMlQwOToyMzowOS4yMDYtMDQ6MDAifQ==.mBZmcyaSjUcFjblzmVOX5F24CBMwPDTHKV6S2y9nH2Q="
+            }
+          ],
+          "params": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "uid",
+              "value": ""
+            },
+            {
+              "name": "subjectUid",
+              "value": "327e3a5d-dd5c-4158-88e9-a77072a5d3ce"
+            }
+          ],
+          "authentication": {
+            "_type": "basic",
+            "username": "",
+            "password": ""
+          },
+          "__insomnia": {
+            "format": "json",
+            "panel_width": 0.5
+          },
+          "name": "ehrs POST"
         }
       ]
     }
