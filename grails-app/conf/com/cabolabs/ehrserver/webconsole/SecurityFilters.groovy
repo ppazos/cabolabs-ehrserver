@@ -7,6 +7,8 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.converters.*
 
 class SecurityFilters {
@@ -418,7 +420,7 @@ class SecurityFilters {
                   }
                   if (!found)
                   {
-                     flash.message = "The query is not shared with the organization used to login, please login with a query that is shared with an organization that you control"
+                     flash.message = "The query is not shared with the organization used to login, please login with an organization that the query is shared with"
                      chain controller: 'query', action: 'list'
                      return false
                   }
@@ -448,7 +450,7 @@ class SecurityFilters {
       /*
        * only the author can change a query from private to public.
        */
-      query_share(controller:'query', action:'update') {
+      query_update(controller:'query', action:'update') {
          before = {
             
             def auth = springSecurityService.authentication
@@ -492,6 +494,92 @@ class SecurityFilters {
             params.query = query
          }
       }
+      
+      opt_share(controller:'resource', action:'saveSharesOpt') {
+         before = {
+            
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER"))
+            {
+               flash.message = "You need and higher role to edit the shares"
+               chain controller: 'operationalTemplateIndex', action: 'list'
+               return false
+            }
+            
+
+            def auth = springSecurityService.authentication
+            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
+            def user = User.findByUsername(un)
+            //def org = Organization.findByNumber(auth.organization) // org in the login
+            def orgs = user.organizations
+            
+            if (!params.uid)
+            {
+               flash.message = "Template UID is required"
+               chain controller: 'operationalTemplateIndex', action: 'list'
+               return false
+            }
+            
+
+            def opt = OperationalTemplateIndex.findByUid(params.uid)
+            
+            if (!opt)
+            {
+               flash.message = "Template not found"
+               chain controller: 'operationalTemplateIndex', action: 'list'
+               return false
+            }
+            
+            if (opt.isPublic)
+            {
+               println "is public"
+
+               flash.message = "Can't share a public template, make it private first"
+               chain controller: 'operationalTemplateIndex', action: 'list'
+               return false
+            }
+            else
+            {
+               println "is private"
+               
+               // check if query is shared with the login org
+               def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
+               def found = false
+               shares.organization.each { share_org ->
+                  if (share_org.number == auth.organization)
+                  {
+                     found = true
+                     return true // break
+                  }
+               }
+               if (!found)
+               {
+                  flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
+                  chain controller: 'operationalTemplateIndex', action: 'list'
+                  return false
+               }
+
+            }
+            
+            // check that all the org uids submitted are accessible by the user
+            def orgUids = params.list('organizationUid')
+            orgUids.each { organizationUid ->
+               if(!orgs.uid.contains(organizationUid))
+               {
+                  flash.message = "You don't have access to the specified organization ${organizationUid}"
+                  chain controller: 'operationalTemplateIndex', action: 'list'
+                  return false
+               }
+            }
+
+
+            // pass the opt as param to avoid making the query again in the controller
+            params.opt = opt // it can be set on request also
+
+            return true
+         }
+      } // opt_share
+      
+      
       
       
    } // filters

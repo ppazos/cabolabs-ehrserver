@@ -172,7 +172,7 @@ app {
    
    l10n { // localization
       
-      locale = 'en'
+      locale = 'en' // FIXME: this will depend on the organization
       
       // general
       decimal_symbol = ',' // separa numero enteros de la fraccion decimal

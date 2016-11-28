@@ -404,23 +404,6 @@ class QueryController {
 
       def datatypes = DataValues.valuesStringList()
       
-      /*
-      def list = ArchetypeIndexItem.withCriteria {
-        resultTransformer(org.hibernate.criterion.CriteriaSpecification.ALIAS_TO_ENTITY_MAP) // Get a map with attr names instead of a list with values
-        projections {
-         groupProperty('archetypeId', 'archetypeId')
-         groupProperty('path', 'path')
-         property('rmTypeName', 'rmTypeName')
-         property('name', 'name')
-        }
-        eq 'archetypeId', archetypeId
-        
-        if (datatypesOnly)
-        {
-          'in'('rmTypeName', datatypes)
-        }
-      }
-      */
       def list = ArchetypeIndexItem.withCriteria {
          eq 'archetypeId', archetypeId
          

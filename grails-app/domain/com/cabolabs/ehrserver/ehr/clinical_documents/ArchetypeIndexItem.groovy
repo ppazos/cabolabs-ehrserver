@@ -15,6 +15,9 @@ class ArchetypeIndexItem {
    // https://github.com/ppazos/cabolabs-ehrserver/issues/137
    String terminologyRef
    
+   static belongsTo = OperationalTemplateIndex
+   static hasMany = [parentOpts: OperationalTemplateIndex]
+   
    static constraints = {
       //name(nullable:true)
       path(size:1..1023)

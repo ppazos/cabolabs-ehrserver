@@ -14,5 +14,6 @@ class OperationalTemplateIndex {
    // true => shared with all the organizations
    boolean isPublic
    
-   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem]
+   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem, 
+                     templateNodes: OperationalTemplateIndexItem]
 }

@@ -47,6 +47,14 @@
     
     <div class="row">
       <div class="col-md-12">
+        <g:if test="${!opt.isPublic}">
+          <g:link controller="resource" action="shareOpt" params="[uid:opt?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="opt.show.action.share" /></button></g:link>
+        </g:if>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
         <g:message code="common.format.xml" />
         <pre><code id="xml"></code></pre>
       </div>

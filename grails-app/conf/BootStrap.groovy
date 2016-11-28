@@ -23,6 +23,7 @@ import com.cabolabs.ehrserver.account.*
 import grails.converters.*
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
+import com.cabolabs.ehrserver.ResourceService
 
 class BootStrap {
 
@@ -30,6 +31,7 @@ class BootStrap {
    
    def mailService
    def grailsApplication
+   def resourceService
    
    def init = { servletContext ->
       
@@ -582,7 +584,10 @@ class BootStrap {
      // Always regenerate indexes in deploy
      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 	  ti.setupBaseOpts()
-     ti.indexAll()
+     ti.indexAll( Organization.get(1) )
+     
+     // TODO: because initially there are no shares, the indexAll 
+     //       wont share the OPTs with the org, so we do it manually here.
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
