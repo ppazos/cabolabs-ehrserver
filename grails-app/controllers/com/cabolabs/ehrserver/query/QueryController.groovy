@@ -41,7 +41,6 @@ class QueryController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
       
-      // login organization
       def org = session.organization
       def shares = QueryShare.findAllByOrganization(org)
       

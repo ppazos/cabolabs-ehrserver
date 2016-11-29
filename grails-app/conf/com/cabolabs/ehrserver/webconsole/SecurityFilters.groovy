@@ -485,7 +485,7 @@ class SecurityFilters {
                if (user.id != query.author.id)
                {
                   response.status = 400 // bad request
-                  render (text: [message: "Only the author of the query can set it as public", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
+                  render (text: [message: "Only the author of the query can make it public or private", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
                   return false
                }
             }

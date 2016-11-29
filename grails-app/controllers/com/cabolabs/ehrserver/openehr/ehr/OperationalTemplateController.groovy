@@ -19,18 +19,30 @@ class OperationalTemplateController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
       
-      def list
-      def c = OperationalTemplateIndex.createCriteria()
+      def org = session.organization
+      def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
       
-      list = c.list (max: max, offset: offset, sort: sort, order: order) {
+      def c = OperationalTemplateIndex.createCriteria()
+      def list = c.list (max: max, offset: offset, sort: sort, order: order) {
          if (concept)
          {
             like('concept', '%'+concept+'%')
          }
+         
+         if (shares)
+         {
+            or {
+               eq('isPublic', true)
+               'in'('id', shares.opt.id)
+            }
+         }
+         else
+         {
+            eq('isPublic', true)
+         }
       }
       
-      return [opts: list,
-              total: list.totalCount]
+      [opts: list, total: list.totalCount]
    }
    
    /**
@@ -53,6 +65,8 @@ class OperationalTemplateController {
     */
    def upload(boolean overwrite)
    {
+      println params
+      
       if (params.doit)
       {
          def errors = []
@@ -143,6 +157,7 @@ class OperationalTemplateController {
          
          flash.message = g.message(code:"opt.upload.success")
          
+         opt.isPublic = (params.isPublic != null)
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          indexer.templateIndex = opt // avoids creating another opt index internally and use the one created here
