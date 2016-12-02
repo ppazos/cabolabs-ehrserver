@@ -138,8 +138,10 @@ var queryDataRenderChart = function(data)
       *   o si quiero mostrar una etiqueta en el punto:
       *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
       */
-     var serie = { name: dviseries.name, data: [] };
-
+     var name = dviseries.name["ISO_639-1::"+ session_lang];
+     if (!name) name = ""; // case that the archetype item doesnt have a name translation to the current language, this should be avoided by listing only OPTs in the current lang.
+     var serie = { name: name, data: [] };
+     //console.log('name', dviseries, dviseries.name, dviseries.name["ISO_639-1::"+ session_lang]);
      $.each( dviseries.serie, function(ii, dvi) {
       
        //console.log('ii y dvi', ii, dvi);

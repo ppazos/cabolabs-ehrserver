@@ -81,6 +81,9 @@
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
     
+    <script type="text/javascript">
+      var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
+    </script>
     <asset:javascript src="query_test_and_execution.js" />
     <!-- /query test -->
     
@@ -445,7 +448,7 @@ resp.responseJSON.result.message +'</div>'
             // Si devuelve JSON (verifica si pedi json)
             if (format == 'json')
             {
-              console.log('form_datavalue success json');
+              //console.log('form_datavalue success json');
               
               // highlight
               code.addClass('json');

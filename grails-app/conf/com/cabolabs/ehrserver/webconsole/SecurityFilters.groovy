@@ -18,6 +18,9 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
+            
+            // lang to session
+            session.lang = org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language
          
             // TODO: refactor to a log filter
             def username
