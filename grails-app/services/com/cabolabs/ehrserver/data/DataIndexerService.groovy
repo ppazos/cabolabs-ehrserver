@@ -203,7 +203,7 @@ class DataIndexerService {
             if (idx)
             {
                // tries this with OBSERVATION, that triggers the exception:
-               // EH! No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
+               // No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
                def type = DataValues.valueOfString(idx.rmTypeName)
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
                def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
@@ -212,8 +212,9 @@ class DataIndexerService {
          }
          catch (IllegalArgumentException ex)
          {
-            // TODO: no need to process the except, is just that the current type should not be indexed
-            println "EH! "+ ex.message
+            // no need to process the except, is just that the current type should not be indexed.
+            // No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
+            // REF: https://github.com/ppazos/cabolabs-ehrserver/issues/486
          }
          
          // follow the recursion if there are children nodes
