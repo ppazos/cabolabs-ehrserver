@@ -48,7 +48,7 @@ class UrlMappings {
       )
 
       // /rest/ehrs/ehrUid/xxx -- one EHR based on ehrUid partition
-      "/rest/ehrs/ehrUid/$ehrUid"(
+      "/rest/ehrs/ehrUid/$uid"(
          controller: 'rest',
          action: 'ehrGet'
       )

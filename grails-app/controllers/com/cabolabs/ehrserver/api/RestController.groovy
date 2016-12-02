@@ -723,7 +723,7 @@ class RestController {
       }
    }
    
-   /* TODO: should use the ehr.subject.value key not the Person.uid
+   // TODO: should use the ehr.subject.value key not the Person.uid
    @SecuredStateless
    def ehrForSubject(String subjectUid, String format)
    {
@@ -733,26 +733,6 @@ class RestController {
          return
       }
       
-      // ===========================================================================
-      // 1. Paciente existe?
-      //
-      def _subject = Person.findByUidAndRole(subjectUid, 'pat')
-      if (!_subject)
-      {
-         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
-         return
-      }
-      
-      // Check if the org used to login is the org of the requested patient
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_subject.organizationUid != _org.uid)
-      {
-         renderError(message(code:'rest.error.cant_access_patient', args:[subjectUid]), "484", 401)
-         return
-      }
       
       // ===========================================================================
       // 2. Paciente tiene EHR?
@@ -765,7 +745,20 @@ class RestController {
       }
       if (!_ehr)
       {
+         // FIXME error in the output format
          render(status: 404, text:"<result><code>error</code><message>"+ message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]) +"</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         return
+      }
+      
+      
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      def _orgnum = request.securityStatelessMap.extradata.organization
+      def _org = Organization.findByNumber(_orgnum)
+      
+      if (_ehr.organizationUid != _org.uid)
+      {
+         renderError(message(code:'rest.error.user_cant_access_ehr', args:[_ehr.uid]), "483", 401)
          return
       }
       
@@ -788,13 +781,12 @@ class RestController {
          renderFormatNotSupportedError()
       }
    } // ehrForSubject
-   */
    
    
    @SecuredStateless
-   def ehrGet(String ehrUid, String format)
+   def ehrGet(String uid, String format)
    {
-      if (!ehrUid)
+      if (!uid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
          return
@@ -803,12 +795,12 @@ class RestController {
       // 1. EHR existe?
       def c = Ehr.createCriteria()
       def _ehr = c.get {
-         eq ('uid', ehrUid)
+         eq ('uid', uid)
       }
       
       if (!_ehr)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[uid]), "478", 404)
          return
       }
       
@@ -819,7 +811,7 @@ class RestController {
       
       if (_ehr.organizationUid != _org.uid)
       {
-         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         renderError(message(code:'rest.error.cant_access_ehr', args:[uid]), "483", 401)
          return
       }
       
@@ -842,132 +834,6 @@ class RestController {
          renderFormatNotSupportedError()
       }
    } // ehrGet
-   
-   
-   /*
-   @SecuredStateless
-   def patientList(String format, int max, int offset)
-   {
-      // Paginacion
-      if (!max) max = 15
-      if (!offset) offset = 0
-      
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      // ===========================================================================
-      // 1. Lista personas con rol paciente
-      //
-      //def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
-      
-      def c = Person.createCriteria()
-      def subjects = c.list (max: params.max, offset: params.offset) {
-
-         eq("role", "pat")
-         eq("organizationUid", _org.uid)
-         
-         // filters
-         if (params.firstName)
-         {
-            like('firstName', '%'+params.firstName+'%')
-         }
-         if (params.lastName)
-         {
-            like('lastName', '%'+params.lastName+'%')
-         }
-         if (params.sex)
-         {
-            eq('sex', params.sex) // sex should be eq
-         }
-         if (params.idCode)
-         {
-            like('idCode', '%'+params.idCode+'%')
-         }
-         if (params.idType)
-         {
-            eq('idType', params.idType) // idcode should be eq
-         }
-         
-         // TODO: filter by dob range
-         
-         setReadOnly true
-      }
-      
-      
-      // ===========================================================================
-      // 2. Discusion por formato de salida
-      //
-      def res = new PaginatedResults(listName:'patients', list:subjects, max:max, offset:offset)
-      
-      if (!format || format == "xml")
-      {
-         render(text: res as XML,
-                contentType:"text/xml",
-                encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = res as JSON
-         
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
-   } // patientList
-*/
-   
-   /*
-   // Get patient data
-   @SecuredStateless
-   def patient(String uid, String format)
-   {
-      log.info( "patient "+ params.toString() )
-      
-      if (!uid)
-      {
-         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
-         return
-      }
-      
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      def person = Person.findByRoleAndUid('pat', uid)
-      if (!person)
-      {
-         renderError(message(code:'rest.error.patient_doesnt_exists', args:[uid]), "477", 404)
-         return
-      }
-      
-      if (person.organizationUid != _org.uid)
-      {
-         renderError(message(code:'rest.error.cant_access_patient', args:[uid]), "484", 401)
-         return
-      }
-      
-      if (!format || format == "xml")
-      {
-         render(text: person as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = person as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
-   }
-   */
    
    
    /*
