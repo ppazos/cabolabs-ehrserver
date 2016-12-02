@@ -139,6 +139,9 @@
         <li>
           <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
         </li>
+        <li>
+          <g:link action="auth" params="[lang:'pt']" class="${(locale.language == 'pt')?'active':''}">PT</g:link>
+        </li>
       </ul>
 	 </nav>
   

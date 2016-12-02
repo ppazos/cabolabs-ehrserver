@@ -10,18 +10,144 @@ import com.cabolabs.ehrserver.reporting.ActivityLog
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.converters.*
+import javax.servlet.http.Cookie
+import org.springframework.beans.propertyeditors.LocaleEditor
+import org.springframework.web.servlet.support.RequestContextUtils
 
 class SecurityFilters {
    
    def springSecurityService
 
+   // REF https://github.com/Grails-Plugin-Consortium/grails-cookie/blob/master/src/main/groovy/grails/plugin/cookie/CookieHelper.groovy
+   /*
+   String getDefaultCookiePath(String path) {
+      String cookiePath
+      if (path) {
+          cookiePath = path
+      } else if (grailsApplication.config.grails.plugins.cookie.path.defaultStrategy == 'root') {
+          cookiePath = '/'
+      } else if (grailsApplication.config.grails.plugins.cookie.path.defaultStrategy == 'current') {
+          cookiePath = null
+      } else {
+          cookiePath = request.contextPath
+      }
+      cookiePath
+   }
+   */
+   def setLangCookie(String lang, response)
+   {
+      println "set lang cookie ${lang}"
+      
+      Cookie langCookie = new Cookie( 'lang', lang )
+      langCookie.path = '/'
+      langCookie.maxAge = 300 //604800
+      response.addCookie langCookie
+   }
+   
+   def setRequestLocale(String lang, request, response)
+   {
+      // sets the request locale
+      // REF https://github.com/grails/grails-core/blob/246b7264e8a638ada188ddba7a7a8812ba153399/grails-web-common/src/main/groovy/org/grails/web/i18n/ParamsAwareLocaleChangeInterceptor.groovy
+      def localeResolver = RequestContextUtils.getLocaleResolver(request)
+      def localeEditor = new LocaleEditor()
+      localeEditor.setAsText lang
+      localeResolver?.setLocale request, response, (Locale)localeEditor.value
+   }
+   
+   def getRequestLocale(request)
+   {
+      org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)
+   }
+   
    def filters = {
       all(controller:'*', action:'*') {
          before = {
+            request.cookies.each { println it.name +"> "+ it.value }
+            println "--"
+            //request.cookies.each { println "list: cookie ${it.properties}>" }
             
-            // lang to session
-            session.lang = org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language
-         
+            println 'lang cookie before '+ request.cookies.find{ it.name == 'lang' }?.value
+            println "++"
+            
+            /**
+             * 1. enter first time
+             *    cookie == null
+             *    params lang == null
+             *    request locale == browser lang
+             *    set session lang = request locale
+             * 
+             * 2. change lang without login in
+             *    cookie == null
+             *    params lang != null
+             *    set request locale = params lang (grails does this)
+             *    set session lang = params lang
+             * 
+             * 3. login
+             *    cookie == null
+             *    set org pref lang = session lang
+             *    set cookie = org pref lang // cookie is always equal to the latest change of the org pref lang
+             *    cookie != null
+             * 
+             * 4. enter with cookie set (use cookie to let grails know the previous used lang without login in)
+             *    cookie != null
+             *    set session lang = cookie
+             *    set request locale = cookie
+             *    
+             * 5. login with cookie set (nothing to do here...)
+             *    cookie != null
+             *    cookie == org pref lang (asset this just to test)
+             * 
+             * 6. enter with cookie set, and change the lang (this is the same as 4.)
+             *    cookie != null
+             *    params lang == null
+             *    set session lang = cookie
+             *    set request locale = cookie
+             *    
+             * 7. change the lang with cookie set
+             *    cookie != null
+             *    params lang != null
+             *    set request locale = params lang (grails does this)
+             *    set session lang = params lang
+             *    set cookie = params lang // updates the cookie to avoid the next request to take the old language,
+             *                             // on the login the same value will be used to set the org pref lang that
+             *                             // is equals to the session lang
+             * 
+             * 8. login
+             *    cookie != null
+             *    set org pref lang = session lang
+             *    // no need to update the cookie because will already have the same lang as the org, but we can double check
+             */
+            
+            def langCookie = request.cookies.find{ it.name == 'lang' }
+            if (langCookie)
+            {
+               if (params.lang) // 7. user changes the lang?
+               {
+                  session.lang = params.lang
+                  setRequestLocale(params.lang, request, response)
+                  langCookie.value = params.lang // update the cookie value
+               }
+               else // 4. & 6. get lang from cookie
+               {
+                  session.lang = langCookie.value
+                  setRequestLocale(session.lang, request, response)
+               }
+            }
+            else
+            {
+               if (params.lang) // 2. set the params lang to session
+               {
+                  session.lang = params.lang
+               }
+               else // 1. get the lang from the request as the browser sends it
+               {
+                  session.lang = getRequestLocale(request).language
+               }
+            }
+            
+            println 'lang cookie after '+ request.cookies.find{ it.name == 'lang' }?.value
+            println "++"
+            
             // TODO: refactor to a log filter
             def username
             def organizationUid
@@ -87,6 +213,17 @@ class SecurityFilters {
                if (!session.organization && auth instanceof com.cabolabs.security.UserPassOrgAuthToken)
                {
                   def org = Organization.findByNumber(auth.organization)
+                  if (org.preferredLanguage != session.lang)
+                  {
+                     org.preferredLanguage = session.lang // 3. & 8. set org pref lang
+                     org.save(failOnError: true)
+                     
+                     // add a cookie with the latest language selected,
+                     // so the next time that cookie can be checked and
+                     // the language set, even if the user is not yet
+                     // logged in.
+                     setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
+                  }
                   session.organization = org // to show the org name in the ui
                }
             }

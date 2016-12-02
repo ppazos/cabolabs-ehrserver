@@ -5,9 +5,11 @@ class Organization {
    String uid = java.util.UUID.randomUUID() as String
    String name
    String number // identifier of the organization to be used for user registration
+   String preferredLanguage
 
    static constraints = {
       number nullable: true
+      preferredLanguage nullable: true
    }
    
    def beforeInsert()
