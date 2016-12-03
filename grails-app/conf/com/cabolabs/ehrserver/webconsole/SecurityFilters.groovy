@@ -36,11 +36,11 @@ class SecurityFilters {
    */
    def setLangCookie(String lang, response)
    {
-      println "set lang cookie ${lang}"
+      //println "set lang cookie ${lang}"
       
       Cookie langCookie = new Cookie( 'lang', lang )
       langCookie.path = '/'
-      langCookie.maxAge = 300 //604800
+      langCookie.maxAge = 604800
       response.addCookie langCookie
    }
    
@@ -62,12 +62,9 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-            request.cookies.each { println it.name +"> "+ it.value }
-            println "--"
+            //request.cookies.each { println it.name +"> "+ it.value }
             //request.cookies.each { println "list: cookie ${it.properties}>" }
-            
-            println 'lang cookie before '+ request.cookies.find{ it.name == 'lang' }?.value
-            println "++"
+            //println 'lang cookie before '+ request.cookies.find{ it.name == 'lang' }?.value
             
             /**
              * 1. enter first time
@@ -125,7 +122,8 @@ class SecurityFilters {
                {
                   session.lang = params.lang
                   setRequestLocale(params.lang, request, response)
-                  langCookie.value = params.lang // update the cookie value
+                  //langCookie.value = params.lang // doesnt update the cookie value on the client
+                  setLangCookie(params.lang, response) // update the cookie value
                }
                else // 4. & 6. get lang from cookie
                {
@@ -144,10 +142,7 @@ class SecurityFilters {
                   session.lang = getRequestLocale(request).language
                }
             }
-            
-            println 'lang cookie after '+ request.cookies.find{ it.name == 'lang' }?.value
-            println "++"
-            
+
             // TODO: refactor to a log filter
             def username
             def organizationUid
