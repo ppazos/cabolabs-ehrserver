@@ -16,4 +16,10 @@ class OperationalTemplateIndex {
    
    static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem, 
                      templateNodes: OperationalTemplateIndexItem]
+   
+   static transients = ['lang']
+   def getLang()
+   {
+      this.language.split('::')[1]
+   }
 }

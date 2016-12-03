@@ -1562,10 +1562,18 @@ resp.responseJSON.result.message +'</div>'
                     <th><g:message code="query.create.value" /></th>
                   </tr>
                   <tr>
-                    <td><g:message code="query.create.concept" /></td>
+                    <td>
+                      <g:message code="query.create.concept" /><br/>
+                      <span class="info">
+                        <asset:image src="skin/information.png" />
+                        <span class="content">Only concepts translated to the current language are shown here.
+                        To see a concept here, you should upload a template that is defined for the current language *${session.lang}*.
+                        </span>
+                      </span>
+                    </td>
                     <td>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name['ISO_639-1::'+ request.locale.language] +' ('+ it.archetypeId +')'}}"
+                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name['ISO_639-1::'+ session.lang] +' ('+ it.archetypeId +')'}}"
                                  noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
                     </td>
                   </tr>

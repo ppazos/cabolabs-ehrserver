@@ -70,8 +70,8 @@ class QueryController {
    def create()
    {
       [queryInstance: new Query(params),
-      dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
-      concepts: ArchetypeIndexItem.findAllByPath('/'),
+      dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+      concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // only archetypes translated to the current lang
       templateIndexes: OperationalTemplateIndex.list()]
    }
    
@@ -97,8 +97,8 @@ class QueryController {
         view: 'create',
         model: [
           queryInstance: queryInstance,
-          dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/'), // to create filters or projections
-          concepts: ArchetypeIndexItem.findAllByPath('/'),
+          dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+          concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // only archetypes translated to the current lang
           templateIndexes: OperationalTemplateIndex.list(),
           mode: 'edit'
         ]
