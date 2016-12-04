@@ -25,7 +25,12 @@ class UserController {
    def userService
    def config = Holders.config.app
 
-   def index(int max, int offset, String sort, String order, String username)
+   def login()
+   {
+      // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
+   }
+   
+   def index(int max, int offset, String sort, String order, String username, String organizationUid)
    {
       max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
@@ -42,17 +47,43 @@ class UserController {
             {
                like('username', '%'+username+'%')
             }
+            if (organizationUid)
+            {
+               organizations {
+                  eq ('uid', organizationUid) // TODO: check if org exists
+               }
+            }
          }
       }
       else
       {
+         def loggedInUser = springSecurityService.currentUser
+         
+         def userHasAccessToOrg
+         if (organizationUid)
+         {
+            userHasAccessToOrg = loggedInUser.organizations.uid.contains( organizationUid )
+            if (!userHasAccessToOrg)
+            {
+               // Just show the message and return the default list
+               flash.mesage = "The current user doesn't have access to the organization with UID ${organizationUid}, or the organization doesn't exists"
+            }
+         }
+         
          // auth token used to login
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             organizations {
-               eq ('uid', org.uid)
+               if (organizationUid && userHasAccessToOrg)
+               {
+                  eq ('uid', organizationUid)
+               }
+               else
+               {
+                  eq ('uid', org.uid)
+               }
             }
             if (username)
             {
@@ -61,7 +92,7 @@ class UserController {
          }
       }
       
-      respond list, model:[userInstanceCount: list.totalCount]
+      render view: 'index', model: [userInstanceList: list, userInstanceCount: list.totalCount]
    }
    
    
@@ -142,36 +173,215 @@ class UserController {
 
    def show(User userInstance)
    {
-      def orgnumber = springSecurityService.authentication.organization
+      def loggedInUser = springSecurityService.currentUser
       
-      // FIXME: instead of checking if the logged user is not and admin trying to show an admin, it should check
-      //        if the logged user has less permisssions than the userInstance.
-      
-      // If the user is admin (can see all) or
-      // the userInstance has the same org as the logged user and the userInstance is not an admin.
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") ||
-          (
-           userInstance.organizations.count { it.number == orgnumber } > 0 &&
-           !userInstance.authoritiesContains("ROLE_ADMIN")
-          )
-         )
+      // cant see the details of a user with higher authority
+      // be careful: for the same roles, higherThan returns true
+      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
       {
-          respond userInstance
-          return
+         flash.message = message(code:"notEnoughPermissionsTo.show.user")
+         redirect action:'index'
+         return
       }
-      flash.message = "You don't have permissions to access the user"
-      redirect action:'index'
+      
+      // Admins can access all users
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         respond userInstance
+         return
+      }
+      else
+      {
+         // If not admin, the user should be on an organization of the loggerInUser
+         if (loggedInUser.organizations.disjoint( userInstance.organizations ))
+         {
+            flash.message = message(code:"notEnoughPermissionsTo.show.user")
+            redirect action:'index'
+            return
+         }
+
+         respond userInstance
+         return
+      }
    }
    
-   def login()
+   
+   def create()
    {
-      // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
+      respond new User(params)
    }
 
-   /**
-    * 
-    * @return
-    */
+   @Transactional
+   def save(User userInstance)
+   {
+      if (userInstance == null)
+      {
+         notFound()
+         return
+      }
+
+      try
+      {
+         userService.saveAndNotify(userInstance, params)
+      }
+      catch (Exception e)
+      {
+         render model: [userInstance: userInstance], view:'create'
+         return
+      }
+      
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
+            redirect userInstance
+         }
+         '*' { respond userInstance, [status: CREATED] }
+      }
+   }
+
+   def edit(User userInstance)
+   {
+      // TODO: refactor - same code as show
+      def loggedInUser = springSecurityService.currentUser
+      
+      // cant see the details of a user with higher authority
+      // be careful: for the same roles, higherThan returns true
+      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
+      {
+         flash.message = message(code:"notEnoughPermissionsTo.show.user")
+         redirect action:'index'
+         return
+      }
+      
+      // Admins can access all users
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         respond userInstance
+         return
+      }
+      else
+      {
+         // If not admin, the user should be on an organization of the loggerInUser
+         if (loggedInUser.organizations.disjoint( userInstance.organizations ))
+         {
+            flash.message = message(code:"notEnoughPermissionsTo.show.user")
+            redirect action:'index'
+            return
+         }
+
+         respond userInstance
+         return
+      }
+   }
+
+   @Transactional
+   def update(User userInstance)
+   {
+      if (userInstance == null)
+      {
+         notFound()
+         return
+      }
+      
+      // TODO: refactor - same code as show
+      def loggedInUser = springSecurityService.currentUser
+      
+      // cant see the details of a user with higher authority
+      // be careful: for the same roles, higherThan returns true
+      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
+      {
+         flash.message = message(code:"notEnoughPermissionsTo.show.user")
+         redirect action:'index'
+         return
+      }
+      
+      // Admins can access all users
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         // do nothing, let update
+      }
+      else
+      {
+         // If not admin, the user should be on an organization of the loggerInUser
+         if (loggedInUser.organizations.disjoint( userInstance.organizations ))
+         {
+            flash.message = message(code:"notEnoughPermissionsTo.show.user")
+            redirect action:'index'
+            return
+         }
+
+         // do nothing, let update
+      }
+      
+      
+      // Selected roles from edit view
+      def roles = params.list('role')
+      
+      // if the user is editing his data and can't remove the highest role
+      // e.g. admins cant remove their own admin role
+      if (loggedInUser.id == userInstance.id)
+      {
+         def highestRole = loggedInUser.higherAuthority
+         if (!roles.contains(highestRole.authority))
+         {
+            flash.message = message(code: "user.update.cantRemoveHighestRole", args:[highestRole.authority])
+            render model: [userInstance: userInstance], view:'edit'
+            return
+         }
+      }
+      
+      
+      // Update organizations
+      // Remove current
+
+      def orgsToRemove = []
+      orgsToRemove += userInstance.organizations
+      orgsToRemove.each { org ->
+         userInstance.removeFromOrganizations(org)
+      }
+      
+      userInstance.organizations.clear()
+      
+
+      // Associate new
+      def orgUids = params.list("organizationUid")
+      def newOrgs = Organization.findAllByUidInList(orgUids)
+      newOrgs.each { newOrg ->
+         userInstance.addToOrganizations(newOrg)
+      }
+      
+      
+      // Role updating
+      
+      // Delete all current roles
+      def currentRoles = UserRole.findAllByUser(userInstance)
+      currentRoles*.delete(flush: true)
+      
+      // Add selected roles
+      
+      roles.each { authority ->
+         
+         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
+      }
+
+      // / Role updating
+      
+      
+      if (!userInstance.save(flush:true))
+      {
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
+
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'User.label', default: 'User'), userInstance.id])
+            redirect userInstance
+         }
+         '*'{ respond userInstance, [status: OK] }
+      }
+   }
+
    def register()
    {
       //println params
@@ -251,157 +461,6 @@ class UserController {
       }
    }
    
-   def create() {
-      respond new User(params)
-   }
-
-   @Transactional
-   def save(User userInstance)
-   {
-      if (userInstance == null)
-      {
-         notFound()
-         return
-      }
-
-      try
-      {
-         userService.saveAndNotify(userInstance, params)
-      }
-      catch (Exception e)
-      {
-         render model: [userInstance: userInstance], view:'create'
-         return
-      }
-      
-      request.withFormat {
-         form multipartForm {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-            redirect userInstance
-         }
-         '*' { respond userInstance, [status: CREATED] }
-      }
-   }
-
-   def edit(User userInstance)
-   {
-      def orgnumber = springSecurityService.authentication.organization
-      
-      // FIXME: instead of checking if the logged user is not and admin trying to show an admin, it should check
-      //        if the logged user has less permisssions than the userInstance.
-      
-      // If the user is admin (can see all) or
-      // the userInstance has the same org as the logged user and the userInstance is not an admin.
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") ||
-          (
-           userInstance.organizations.count { it.number == orgnumber } > 0 &&
-           !userInstance.authoritiesContains("ROLE_ADMIN")
-          )
-         )
-      {
-         respond userInstance
-         return
-      }
-      flash.message = "You don't have permissions to access the user"
-      redirect action:'index'
-   }
-
-   @Transactional
-   def update(User userInstance)
-   {
-      if (userInstance == null)
-      {
-         notFound()
-         return
-      }
-      
-      // FIXME: move this check to a service
-      // check that I can update the userInstance
-      def orgnumber = springSecurityService.authentication.organization
-      // If the user is admin (can see all) or
-      // the userInstance has the same org as the logged user and the userInstance is not an admin.
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
-          !(
-           userInstance.organizations.count { it.number == orgnumber } > 0 &&
-           !userInstance.authoritiesContains("ROLE_ADMIN")
-          )
-         )
-      {
-         flash.message = "You don't have permissions to access the user"
-         redirect action:'index'
-         return
-      }
-      
-      
-      
-      // Selected roles from edit view
-      def roles = params.list('role')
-      
-      // if the user is editing his data and it is an admin, he can't remove the admin role
-      def loggedUser = springSecurityService.currentUser
-      if (loggedUser.id == userInstance.id && userInstance.authoritiesContains('ROLE_ADMIN'))
-      {
-         if (!roles.contains('ROLE_ADMIN'))
-         {
-            flash.message = "You can't remove your ADMIN role"
-            respond userInstance, view:'edit'
-            return
-         }
-         
-         // FIXME: same for org manager if the orgman role is the highest
-      }
-      
-      
-      // Update organizations
-      // Remove current
-
-      def orgsToRemove = []
-      orgsToRemove += userInstance.organizations
-      orgsToRemove.each { org ->
-         userInstance.removeFromOrganizations(org)
-      }
-      
-      userInstance.organizations.clear()
-      
-
-      // Associate new
-      def orgUids = params.list("organizationUid")
-      def newOrgs = Organization.findAllByUidInList(orgUids)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
-      
-      // Role updating
-      
-      // Delete all current roles
-      def currentRoles = UserRole.findAllByUser(userInstance)
-      currentRoles*.delete(flush: true)
-      
-      // Add selected roles
-      
-      roles.each { authority ->
-         
-         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
-      }
-
-      // / Role updating
-      
-      
-      if (!userInstance.save(flush:true))
-      {
-         render model: [userInstance: userInstance], view:'edit'
-         return
-      }
-
-      request.withFormat {
-         form multipartForm {
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'User.label', default: 'User'), userInstance.id])
-            redirect userInstance
-         }
-         '*'{ respond userInstance, [status: OK] }
-      }
-   }
 
    @Transactional
    def delete(User userInstance) {

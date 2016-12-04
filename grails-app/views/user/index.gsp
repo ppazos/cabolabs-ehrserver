@@ -1,3 +1,4 @@
+<%@ page import="com.cabolabs.security.Organization" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -18,6 +19,18 @@
           <div class="form-group">
             <label for="ipt_un"><g:message code="user.attr.username" /></label>
             <input type="text" class="form-control" name="username" id="ipt_un" value="${params?.username}" />
+          </div>
+          <div class="form-group">
+            <label class="control-label"><g:message code="entity.organization" /></label>
+				  <sec:ifAnyGranted roles="ROLE_ADMIN">
+				    <g:select name="organizationUid" from="${Organization.list()}"
+				              optionKey="uid" optionValue="name"
+				              noSelection="${['':'Select One...']}"
+				              value="${params?.organizationUid ?: ''}" class="form-control" />
+				  </sec:ifAnyGranted>
+				  <sec:ifNotGranted roles="ROLE_ADMIN">
+				    <g:selectWithCurrentUserOrganizations name="organizationUid" value="${params?.organizationUid ?: session.organization.uid}" class="form-control" />
+				</sec:ifNotGranted>
           </div>
           <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
