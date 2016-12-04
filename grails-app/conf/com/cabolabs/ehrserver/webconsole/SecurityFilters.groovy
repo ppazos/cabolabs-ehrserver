@@ -715,7 +715,5 @@ class SecurityFilters {
       } // opt_share
       
       
-      
-      
    } // filters
 }

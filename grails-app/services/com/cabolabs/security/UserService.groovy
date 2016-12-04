@@ -27,7 +27,6 @@ class UserService {
     
    def saveAndNotify(User userInstance, params)
    {
-      println "save and notify"
       if (!userInstance.password)
       {
          userInstance.enabled = false

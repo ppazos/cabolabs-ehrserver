@@ -219,7 +219,30 @@ class UserController {
          notFound()
          return
       }
+      
+      def loggedInUser = springSecurityService.currentUser
 
+      // All the organizations assigned to the new user should be accesible by the current user
+      def orgs = params.list("organizationUid")
+      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
+      if (notAllowedOrg)
+      {
+         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
+         render model: [userInstance: userInstance], view:'create'
+         return
+      }
+      
+      // All the roles assigned to the new user should be lower o equal to the highest role of the current user
+      def roles = params.list('role')
+      def highestRole = loggedInUser.higherAuthority
+      def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
+      if (notAllowedRole)
+      {
+         flash.message = message(code:"cantAssingRole.save.user", args:[notAllowedRole])
+         render model: [userInstance: userInstance], view:'create'
+         return
+      }
+      
       try
       {
          userService.saveAndNotify(userInstance, params)
@@ -314,14 +337,37 @@ class UserController {
       }
       
       
-      // Selected roles from edit view
+
+      // All the organizations assigned to the new user should be accesible by the current user
+      def orgs = params.list("organizationUid")
+      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
+      if (notAllowedOrg)
+      {
+         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
+      
+      // All the roles assigned to the new user should be lower o equal to the highest role of the current user
       def roles = params.list('role')
+      def highestRole = loggedInUser.higherAuthority
+      def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
+      if (notAllowedRole)
+      {
+         flash.message = message(code:"cantAssingRole.save.user", args:[notAllowedRole])
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
+      
+      
+      // Selected roles from edit view
+      //def roles = params.list('role')
       
       // if the user is editing his data and can't remove the highest role
       // e.g. admins cant remove their own admin role
       if (loggedInUser.id == userInstance.id)
       {
-         def highestRole = loggedInUser.higherAuthority
+         //def highestRole = loggedInUser.higherAuthority
          if (!roles.contains(highestRole.authority))
          {
             flash.message = message(code: "user.update.cantRemoveHighestRole", args:[highestRole.authority])
