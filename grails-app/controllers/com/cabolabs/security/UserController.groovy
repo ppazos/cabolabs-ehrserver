@@ -222,8 +222,18 @@ class UserController {
       
       def loggedInUser = springSecurityService.currentUser
 
-      // All the organizations assigned to the new user should be accesible by the current user
       def orgs = params.list("organizationUid")
+      def roles = params.list('role')
+      
+      // Organizations cant be empty
+      if (orgs.size() == 0)
+      {
+         flash.message = message(code:"user.update.oneOrganizationShouldBeSelected")
+         render model: [userInstance: userInstance], view:'create'
+         return
+      }
+      
+      // All the organizations assigned to the new user should be accesible by the current user
       def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
       if (notAllowedOrg)
       {
@@ -233,12 +243,25 @@ class UserController {
       }
       
       // All the roles assigned to the new user should be lower o equal to the highest role of the current user
-      def roles = params.list('role')
       def highestRole = loggedInUser.higherAuthority
       def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
       if (notAllowedRole)
       {
          flash.message = message(code:"cantAssingRole.save.user", args:[notAllowedRole])
+         render model: [userInstance: userInstance], view:'create'
+         return
+      }
+      
+      // Associate orgs
+      def newOrgs = Organization.findAllByUidInList(orgs)
+      newOrgs.each { newOrg ->
+         userInstance.addToOrganizations(newOrg)
+      }
+      
+      // roles cant be empty
+      if (roles.size() == 0)
+      {
+         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
          render model: [userInstance: userInstance], view:'create'
          return
       }
@@ -336,10 +359,28 @@ class UserController {
          // do nothing, let update
       }
       
+      def orgs = params.list("organizationUid")
+      def roles = params.list('role')
       
+      
+      // Organizations cant be empty
+      if (orgs.size() == 0)
+      
+      {
+         flash.message = message(code:"user.update.oneOrganizationShouldBeSelected")
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
+      
+      // roles cant be empty
+      if (roles.size() == 0)
+      {
+         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
 
       // All the organizations assigned to the new user should be accesible by the current user
-      def orgs = params.list("organizationUid")
       def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
       if (notAllowedOrg)
       {
@@ -349,7 +390,6 @@ class UserController {
       }
       
       // All the roles assigned to the new user should be lower o equal to the highest role of the current user
-      def roles = params.list('role')
       def highestRole = loggedInUser.higherAuthority
       def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
       if (notAllowedRole)
@@ -358,16 +398,12 @@ class UserController {
          render model: [userInstance: userInstance], view:'edit'
          return
       }
-      
-      
-      // Selected roles from edit view
-      //def roles = params.list('role')
+
       
       // if the user is editing his data and can't remove the highest role
       // e.g. admins cant remove their own admin role
       if (loggedInUser.id == userInstance.id)
       {
-         //def highestRole = loggedInUser.higherAuthority
          if (!roles.contains(highestRole.authority))
          {
             flash.message = message(code: "user.update.cantRemoveHighestRole", args:[highestRole.authority])
@@ -390,8 +426,7 @@ class UserController {
       
 
       // Associate new
-      def orgUids = params.list("organizationUid")
-      def newOrgs = Organization.findAllByUidInList(orgUids)
+      def newOrgs = Organization.findAllByUidInList(orgs)
       newOrgs.each { newOrg ->
          userInstance.addToOrganizations(newOrg)
       }

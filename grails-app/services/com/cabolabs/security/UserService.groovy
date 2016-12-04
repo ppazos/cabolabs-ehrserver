@@ -33,13 +33,6 @@ class UserService {
          userInstance.setPasswordToken()
       }
       
-      // Associate orgs
-      def orgUids = params.list("organizationUid")
-      def newOrgs = Organization.findAllByUidInList(orgUids)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
       userInstance.save(failOnError:true)
 
       // TODO: UserRole ORG_* needs a reference to the org, since the user
