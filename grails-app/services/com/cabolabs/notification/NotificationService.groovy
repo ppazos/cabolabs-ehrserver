@@ -49,11 +49,14 @@ class NotificationService {
       String message
       
       if (userRegistered)
-         message = '<p>We received your registration. You can login using these organization numbers {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
+         message = '<p>We received your registration. You can login using these organization number: {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
       else
         message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
 
-      message = message.replaceFirst ( /\{0\}/ , organizationNumbers.toString())
+     if (organizationNumbers.size() == 1)
+        message = message.replaceFirst ( /\{0\}/ , organizationNumbers[0].toString())
+     else
+        message = message.replaceFirst ( /\{0\}/ , organizationNumbers.toString())
 
       
       this.sendMail(recipient, 'Welcome to CaboLabs EHRServer!', message)
