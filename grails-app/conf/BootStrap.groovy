@@ -714,7 +714,12 @@ class BootStrap {
         new Notification(name:'notif 3', language:'en', text:'Look at me!', forOrganization:Organization.get(1).uid),
         new Notification(name:'notif 4', language:'en', text:'Look at me!', forUser:1),
         new Notification(name:'notif 5', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid),
-        new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1)
+        new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1),
+        
+        new Notification(name:'notif 7', language:'es', text:'mirame!'),
+        new Notification(name:'notif 8', language:'es', text:'mirame', forSection:'ehr'),
+        new Notification(name:'notif 9', language:'es', text:'mirame!', forOrganization:Organization.get(1).uid),
+        new Notification(name:'notif 10', language:'es', text:'mirame!', forUser:1)
      ]
      
      def statuses = []

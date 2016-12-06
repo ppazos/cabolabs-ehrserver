@@ -18,11 +18,14 @@ class Notification {
       forUser nullable: true
    }
    
-   static newNotifications(String forSection, String forOrganization, Long forUser)
+   static newNotifications(String forSection, String forOrganization, Long forUser, String lang)
    {
       def c = NotificationStatus.createCriteria()
       def list = c.list {
          eq('status', 'new')
+         notification {
+           eq('language', lang)
+         }
          if (forUser)
          {
             user {

@@ -34,6 +34,10 @@
   <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
   <asset:javascript src="sb-admin-2.js" />
   
+  <!-- Global notifications -->
+  <asset:javascript src="notification.js" />
+  <asset:link rel="stylesheet" href="notification.css" type="text/css" />
+  
   <g:layoutHead/>
   <style type="text/css">
   #main_menu {
@@ -93,6 +97,14 @@
       */
      $('tr > th.sortable.sorted.asc').append('<span class="glyphicon glyphicon-triangle-bottom"></span>');
      $('tr > th.sortable.sorted.desc').append('<span class="glyphicon glyphicon-triangle-top"></span>');
+     
+     /**
+      * Get notifications.
+      */
+      notification_get(
+        '${createLink(controller:'notification', action:'newNotifications')}',
+        '${createLink(controller:'notification', action:'dismiss')}',
+        '${controllerName}');
 	 });
    </g:javascript>
   </head>
