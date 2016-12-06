@@ -25,6 +25,8 @@ import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
 import com.cabolabs.ehrserver.ResourceService
 
+import com.cabolabs.ehrserver.notification.*
+
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
@@ -513,6 +515,8 @@ class BootStrap {
         // works for /app
         //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
         
+        new RequestMap(url: '/notification/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+        
         new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
        
         new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
@@ -701,6 +705,37 @@ class BootStrap {
          }
       }
       */
+     
+     
+     // Test notifications
+     def notifs = [
+        new Notification(name:'notif 1', language:'en', text:'Look at me!'),
+        new Notification(name:'notif 2', language:'en', text:'Look at me!', forSection:'ehr'),
+        new Notification(name:'notif 3', language:'en', text:'Look at me!', forOrganization:Organization.get(1).uid),
+        new Notification(name:'notif 4', language:'en', text:'Look at me!', forUser:1),
+        new Notification(name:'notif 5', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid),
+        new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1)
+     ]
+     
+     def statuses = []
+     notifs.each { notif ->
+        if (!notif.forUser)
+        {
+           User.list().each { user ->
+              statuses << new NotificationStatus(user:user, notification:notif)
+           }
+        }
+        else
+        {
+           statuses << new NotificationStatus(user:User.get(notif.forUser), notification:notif)
+        }
+        
+        notif.save(failOnError: true)
+     }
+     
+     statuses.each { status ->
+        status.save(failOnError: true)
+     }
    }
    
    def destroy = {
