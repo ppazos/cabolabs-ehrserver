@@ -182,7 +182,7 @@
 	               </li>
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
 	                 <li>
-	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.templates" /></g:link>
+	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
@@ -200,6 +200,11 @@
 	                   <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+                    <li>
+                      <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
+                    </li>
+                  </sec:ifAnyGranted>
 	             </ul>
 	             
 	             <p id="powby">Powered by <a href="http://www.cabolabs.com" target="_blank">CaboLabs</a></p>

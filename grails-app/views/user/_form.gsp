@@ -17,7 +17,7 @@
    <label for="organizationUid"><g:message code="user.organizations.label" default="Organizations" /><span class="required-indicator">*</span></label>
    <sec:ifAnyGranted roles="ROLE_ADMIN">
      <g:select name="organizationUid" from="${Organization.list()}"
-               optionKey="uid" optionValue="name" value="${userInstance?.organizations}"
+               optionKey="uid" optionValue="${{it.name +' '+ it.uid}}" value="${userInstance?.organizations}"
                multiple="true" size="5" class="form-control" />
    </sec:ifAnyGranted>
    <sec:ifNotGranted roles="ROLE_ADMIN">
