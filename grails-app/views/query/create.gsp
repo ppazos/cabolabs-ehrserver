@@ -108,6 +108,7 @@
         set_private:  function () { this.isPublic = false; },
         set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
+        get_name:     function () { return this.name; },
         set_format:   function (format) { this.format = format; },
         set_group:    function (group) { this.group = group; },
         set_template_id: function (template_id) {
@@ -225,6 +226,12 @@
         if (action != 'save' && action != 'update') throw "Action is not save or update";
       
         query.set_name($('input[name=name]').val());
+
+        if (!query.get_name())
+        {
+           alert('Please specify a name for the query');
+           return;
+        }
 
         if ( $('input[name=isPublic]').is(':checked') ) query.set_public();
         else query.set_private();
