@@ -21,7 +21,7 @@ function notification_get( get_not_url, dismiss_url, forSection )
              console.log(data);
            })
            .fail(function() {
-             alert( "error" );
+             //alert( "error" );
            })
            .always(function() {
              //alert( "finished" );
