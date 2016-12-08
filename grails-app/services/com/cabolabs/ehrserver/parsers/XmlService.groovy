@@ -132,8 +132,8 @@ class XmlService {
     */
    def checkContributions(GPathResult versions)
    {
-      println "check contributions"
-      println versions.version.collect { it.contribution.id.value.text() }
+      //println "check contributions"
+      //println versions.version.collect { it.contribution.id.value.text() }
 
       // All contribution ids are the same?
       def firstContributionId
