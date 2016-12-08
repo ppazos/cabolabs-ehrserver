@@ -223,7 +223,8 @@ class BootStrap {
      
      JSON.registerObjectMarshaller(Organization) { o ->
         return [uid: o.uid,
-                name: o.name
+                name: o.name,
+                number: o.number
                ]
      }
      
@@ -231,6 +232,7 @@ class BootStrap {
         xml.build {
           uid(o.uid)
           name(o.name)
+          number(o.number)
         }
      }
      
@@ -707,6 +709,7 @@ class BootStrap {
       */
      
      
+     /*
      // Test notifications
      def notifs = [
         new Notification(name:'notif 1', language:'en', text:'Look at me!'),
@@ -741,6 +744,7 @@ class BootStrap {
      statuses.each { status ->
         status.save(failOnError: true)
      }
+     */
    }
    
    def destroy = {
