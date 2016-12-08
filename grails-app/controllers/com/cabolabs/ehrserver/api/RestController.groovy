@@ -42,6 +42,7 @@ import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncode
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.exceptions.XmlValidationException
 
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.query.QueryShare
@@ -395,7 +396,7 @@ class RestController {
 
           commitLoggerService.log(request, contribution.uid, true, content)
       }
-      catch (ValidationException e) // xsd error
+      catch (XmlValidationException e) // xsd error
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content)

@@ -132,29 +132,44 @@ class XmlService {
     */
    def checkContributions(GPathResult versions)
    {
-      if (versions.version.size() == 1) return // nothing to check
-      
+      println "check contributions"
+      println versions.version.collect { it.contribution.id.value.text() }
+
       // All contribution ids are the same?
       def firstContributionId
       def loopContributionId
-      versions.version.each { versionXML ->
-         
-         loopContributionId = versionXML.contribution.id.value.text()
-         if (!loopContributionId)
-         {
-            throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')
-         }
-         
-         // Set the first contribution uid, then compare the first with the rest,
-         // one is different, throw an exception.
-         if (!firstContributionId) firstContributionId = loopContributionId
-         else
-         {
-            if (firstContributionId != loopContributionId)
+      
+      if (versions.version.size() > 1)
+      {
+         versions.version.each { versionXML ->
+            
+            loopContributionId = versionXML.contribution.id.value.text()
+            if (!loopContributionId)
             {
-               throw new CommitContributionReferenceException("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+               throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')
+            }
+            
+            // Set the first contribution uid, then compare the first with the rest,
+            // one is different, throw an exception.
+            if (!firstContributionId) firstContributionId = loopContributionId
+            else
+            {
+               if (firstContributionId != loopContributionId)
+               {
+                  throw new CommitContributionReferenceException("two versions in the same commit reference different contributions ${firstContributionId} and ${loopContributionId}")
+               }
             }
          }
+      }
+      else
+      {
+         firstContributionId = versions.version[0].contribution.id.value.text()
+      }
+      
+      // All the contribution UIDs can be the same, but there might exist a contribution done previously, with the same UID
+      if (Contribution.countByUid(firstContributionId) != 0)
+      {
+         throw new CommitContributionReferenceException("the committed contribution id already exists ${firstContributionId}, maybe your previous commit used the same id?")
       }
    }
    
