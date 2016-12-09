@@ -435,25 +435,28 @@ class RestController {
          commitLoggerService.log(request, null, false, content)
          
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
-         println e.message +" "+ e.getClass().getSimpleName()
          
-         // trace
-         StringWriter writer = new StringWriter()
-         PrintWriter printWriter = new PrintWriter( writer )
-         e.printStackTrace( printWriter )
-         printWriter.flush()
-         String stackTrace = writer.toString() // FIXME: return only on dev
+         def trace
+         if (grails.utils.Environment.current == grails.utils.Environment.DEVELOPMENT)
+         {
+            // trace to string
+            StringWriter writer = new StringWriter()
+            PrintWriter printWriter = new PrintWriter( writer )
+            e.printStackTrace( printWriter )
+            printWriter.flush()
+            trace = writer.toString() // FIXME: return only on dev
+            
+            //println stackTrace
+            //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
+   //         def appCtx = grailsApplication.getMainContext()
+   //         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+   //         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
+   //            [e.message +" trace: "+ stackTrace] as Object[],
+   //            "error",
+   //            locale)
+         }
          
-         //println stackTrace
-         //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
-//         def appCtx = grailsApplication.getMainContext()
-//         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-//         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
-//            [e.message +" trace: "+ stackTrace] as Object[],
-//            "error",
-//            locale)
-         
-         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
+         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message + ((trace) ? " trace: "+ trace : "")]), '468', 400)
          return
       }
       
