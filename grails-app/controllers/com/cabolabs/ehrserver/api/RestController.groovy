@@ -46,6 +46,7 @@ import com.cabolabs.ehrserver.exceptions.XmlValidationException
 
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.query.QueryShare
+import grails.util.Environment
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
@@ -173,41 +174,83 @@ class RestController {
       {
          renderError(e.message, 'e01.0001', 401)
       }
-  }
+   }
    
    
-   // FIXME this is customized for the commit but used from other endpoints
    private void renderError(String msg, String errorCode, int status)
    {
+      renderError(msg, errorCode, status, [], null)
+   }
+   
+   // FIXME this is customized for the commit but used from other endpoints
+   private void renderError(String msg, String errorCode, int status, List detailedErrors, Exception ex)
+   {
+      /*
+       * result
+       *   type
+       *   status
+       *   message
+       *   details
+       *     item detailedErrors[0]
+       *     item detailedErrors[1]
+       *     ...
+       *   trace // DEV ONLY
+       */
+      
       // Format comes from current request
       withFormat {
          xml {
-            println "render error XML"
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
-                  type {
-                     code('AR')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
+                  type('AR')                         // application reject
                   message(msg)
                   code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
+                  
+                  if (detailedErrors)
+                  {
+                     details {
+                        detailedErrors.each { error ->
+                           item(error)
+                        }
+                     }
+                  }
+                  
+                  if (ex && Environment.current == Environment.DEVELOPMENT)
+                  {
+                     StringWriter writer = new StringWriter()
+                     PrintWriter printWriter = new PrintWriter( writer )
+                     org.codehaus.groovy.runtime.StackTraceUtils.sanitize(ex).printStackTrace(printWriter)
+                     printWriter.flush()
+                     String _trace = writer.toString()
+                     
+                     trace( _trace )
+                  }
                }
             }
          }
          json {
-            println "render error JSON"
             def error = [
                result: [
-                  type: [
-                     code: 'AR',
-                     codeSystem: 'HL7::TABLES::TABLE_8'
-                  ],
+                  type: 'AR',
                   message: msg,
                   code: 'EHR_SERVER::API::ERRORS::'+ errorCode
                ]
             ]
             
-            //println "error json struct"
+            if (detailedErrors)
+            {
+               error.result.details = detailedErrors
+            }
+            if (ex && Environment.current == Environment.DEVELOPMENT)
+            {
+               StringWriter writer = new StringWriter()
+               PrintWriter printWriter = new PrintWriter( writer )
+               org.codehaus.groovy.runtime.StackTraceUtils.sanitize(ex).printStackTrace(printWriter)
+               printWriter.flush()
+               String _trace = writer.toString()
+               
+               error.result.trace = _trace
+            }
             
             //render error as JSON
             def result = error as JSON
@@ -343,6 +386,7 @@ class RestController {
          }
          catch (Exception e)
          {
+            // if the JSON fails to convert to XML, parsedVersions will be empty
             // if _parsedVersions is empty, the error is reported below
          }
       }
@@ -401,25 +445,16 @@ class RestController {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content)
          
-         // TODO: JSON response
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-               }
-               message(message(code:'rest.commit.error.versionsDontValidate'))
-               details {
-                  
-                  xmlService.validationErrors.each { i, errorList ->
-                     errorList.each { errorText ->
-                        
-                        item('Error on version #'+ i +') '+ errorText)
-                     }
-                  }
-               }
+         def detailedErrors = []
+         
+         xmlService.validationErrors.each { i, errorList ->
+            errorList.each { errorText ->
+               
+               detailedErrors << message(code:'api.commit.versionValidation.errors', args:[i]) +': '+ errorText
             }
          }
+         
+         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009', 400, detailedErrors)
          return
       }
       catch (UndeclaredThrowableException e)
@@ -436,27 +471,7 @@ class RestController {
          
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          
-         def trace
-         if (grails.utils.Environment.current == grails.utils.Environment.DEVELOPMENT)
-         {
-            // trace to string
-            StringWriter writer = new StringWriter()
-            PrintWriter printWriter = new PrintWriter( writer )
-            e.printStackTrace( printWriter )
-            printWriter.flush()
-            trace = writer.toString() // FIXME: return only on dev
-            
-            //println stackTrace
-            //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
-   //         def appCtx = grailsApplication.getMainContext()
-   //         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-   //         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
-   //            [e.message +" trace: "+ stackTrace] as Object[],
-   //            "error",
-   //            locale)
-         }
-         
-         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message + ((trace) ? " trace: "+ trace : "")]), '468', 400)
+         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
       }
       
@@ -465,10 +480,7 @@ class RestController {
          xml {
             render(contentType:"text/xml", encoding:"UTF-8") {
                result {
-                  type {
-                     code('AA')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
+                  type ('AA')                         // application reject
                   message('Versions successfully committed to EHR '+ ehrUid)
                   // has no error code
                }
@@ -478,17 +490,13 @@ class RestController {
             render(contentType:"application/json", encoding:"UTF-8") {
                [
                   result: [
-                     type: [
-                        code: 'AA',
-                        codeSystem: 'HL7::TABLES::TABLE_8'
-                     ],
+                     type: 'AA',
                      message: 'Versions successfully committed to EHR '+ ehrUid
                   ]
                ]
             }
          }
       }
-      
       
    } // commit
 
@@ -578,20 +586,6 @@ class RestController {
          return
       }
       
-      // ======================================================================
-      // The result Version have the same XML format as the one used for commit
-      
-      // Get the version file
-      /*
-      def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
-      if (!vf.exists() || !vf.canRead())
-      {
-         // This is another case that shouldn't happen, will happen only if the files are deleted from disk
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
-         return
-      }
-      */
-      
       def vf
       try
       {
@@ -611,26 +605,13 @@ class RestController {
    @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
-      // TODO: fromDate, toDate
-      
-      // test rest security
-      //println "hello ${request.securityStatelessMap}" // [extradata:[organization:1234], issued_at:2015-12-27T14:26:53.802-03:00, username:admin]
-      
-      // Paginacion
       if (!max) max = 30
       if (!offset) offset = 0
       
       // organization number used on the API login
       def _orgnum = request.securityStatelessMap.extradata.organization
       def _org = Organization.findByNumber(_orgnum)
-      
-      // Lista ehrs
       def _ehrs = Ehr.findAllByOrganizationUid(_org.uid, [max: max, offset: offset, readOnly: true])
-      
-      // ===========================================================================
-      // 3. Discusion por formato de salida
-      //
-      
       def res = new PaginatedResults(listName:'ehrs', list:_ehrs, max:max, offset:offset)
       
       if (!format || format == "xml")
@@ -706,9 +687,15 @@ class RestController {
          ehr.uid = uid
       }
       
-      // TODO: check error and return it
-      ehr.save(failOnError: true, flush: true)
-      
+      try
+      {
+         ehr.save(failOnError: true)
+      }
+      catch (Exception e)
+      {
+         renderError(message(code:'ehr.createEhr.saveError'), '159', 400, [], e)
+         return
+      }
       
       if (!format || format == "xml")
       {
@@ -916,12 +903,10 @@ class RestController {
       def res = new PaginatedResults(listName:'queries', list:_queries, max:max, offset:offset)
       
       withFormat {
-      
          xml {
             render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-         
             def result = res as JSON
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
@@ -1839,109 +1824,6 @@ class RestController {
          render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
    }
    
-   
-   /*
-   @Transactional
-   @SecuredStateless
-   def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
-                    String role, String organizationUid, boolean createEhr, String format)
-   {
-      if (!format)
-      {
-         params.format = 'json' // this is to make withFormat works because uses the request params
-         format = 'json'
-      }
-      
-      if (!organizationUid)
-      {
-         renderError('organizationUid required', '5556', 400) // Bad Request
-         return
-      }
-      
-      if (Organization.countByUid(organizationUid) == 0)
-      {
-         renderError("Organization $organizationUid doesn't exists", '1237', 400) // Bad Request
-         return
-      }
-      
-      // FIXME: this should be on a service
-      // Does the request comes from someone who has access to the organization?
-      def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
-      if (!_user.organizations.uid.contains(organizationUid))
-      {
-         renderError("Don't have permissions over the organization $organizationUid", '4764', 403)
-         return
-      }
-      
-      
-      // I think this is binded automatically to the person on save
-      // dob to date
-      params.dob = DateParser.tryParse(dob)
-      
-      
-      // same as personcontroller.save
-      def personInstance = new Person(params)
-      
-      if (!personInstance.save(flush: true))
-      {
-         def errors = ""
-         personInstance.errors.allErrors.each { 
-            
-            errors += messageSource.getMessage(it, null) + "\n"
-         }
-         
-         renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
-         return
-      }
-      
-      if (personInstance.role == "pat" && createEhr)
-      {
-         // from EhrController.createEhr
-         def ehr = new Ehr(
-            subject: new PatientProxy(
-               value: personInstance.uid
-            ),
-            organizationUid: personInstance.organizationUid
-         )
-         
-         if (!ehr.save(flish:true))
-         {
-            renderError('Not able to save EHR', '1236', 500) // Internal Server Error
-            return
-         }
-      }
-      
-
-         
-      def data = [
-         firstName: personInstance.firstName,
-         lastName: personInstance.lastName,
-         dob: personInstance.dob, // Date is marshalled by the JSON marshaller
-         sex: personInstance.sex,
-         idCode: personInstance.idCode,
-         idType: personInstance.idType, 
-         role: personInstance.organizationUid, 
-         organizationUid: personInstance.organizationUid,
-         uid: personInstance.uid
-      ]
-      if (!format || format == 'xml')
-      {
-         println "XML"
-         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         println "JSON"
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderError("Format $format not supported", '44325', 400)
-      }
-   }
-   
-   */
    
    @SecuredStateless
    def organizations(String format)
