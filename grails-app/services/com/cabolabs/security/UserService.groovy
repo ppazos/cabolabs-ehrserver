@@ -1,13 +1,13 @@
 package com.cabolabs.security
 
 import grails.transaction.Transactional
-import com.cabolabs.security.User
 import org.springframework.security.core.authority.AuthorityUtils
 
 @Transactional
 class UserService {
 
    def notificationService
+   def springSecurityService
    
    def getByUsername(String username)
    {
@@ -49,5 +49,35 @@ class UserService {
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
+   }
+   
+   def updateOrganizations(User user, List newOrgUids)
+   {
+      /**
+       * Update organizations.
+       */
+      def newOrgs = newOrgUids.collect { Organization.findByUid( it ) }
+
+      // current orgs that are not selected on the new orgs will be deleted if the logged user have them
+      def orgsToRemove = user.organizations - newOrgs
+      def currentOrgs = user.organizations.collect()
+      
+      def loggedInUser = springSecurityService.currentUser
+      
+      // keep current orgs if the logged user dont have the orgs
+      // do not add new org if the logged user dont have that org
+      
+      def canBeRemovedOrgs = orgsToRemove.find { loggedInUser.organizations.uid.contains( it.uid ) }
+      canBeRemovedOrgs.each {
+         user.removeFromOrganizations(it)
+      }
+      
+      def canBeAddedOrgs = newOrgs.findAll { loggedInUser.organizations.uid.contains( it.uid ) }
+      canBeAddedOrgs.each {
+         if (!user.organizations.contains(it)) // add the org in newOrgs only if it not already assocaited to the user
+         {
+            user.addToOrganizations(it)
+         }
+      }
    }
 }

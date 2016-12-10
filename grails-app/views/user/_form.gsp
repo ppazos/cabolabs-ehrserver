@@ -13,17 +13,18 @@
 </div>
 
 <sec:ifLoggedIn><!-- new user from admin gui -->
-<div class="form-group ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
-   <label for="organizationUid"><g:message code="user.organizations.label" default="Organizations" /><span class="required-indicator">*</span></label>
-   <sec:ifAnyGranted roles="ROLE_ADMIN">
-     <g:select name="organizationUid" from="${Organization.list()}"
-               optionKey="uid" optionValue="${{it.name +' '+ it.uid}}" value="${userInstance?.organizations}"
-               multiple="true" size="5" class="form-control" />
-   </sec:ifAnyGranted>
-   <sec:ifNotGranted roles="ROLE_ADMIN">
-     <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" class="form-control" />
-   </sec:ifNotGranted>
-</div>
+  <div class="form-group ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
+    <label for="organizationUid"><g:message code="user.organizations.label" default="Organizations" /><span class="required-indicator">*</span></label>
+    <sec:ifAnyGranted roles="ROLE_ADMIN">
+      <g:select name="organizationUid" from="${Organization.list()}"
+                optionKey="uid" optionValue="${{it.name +' '+ it.uid}}" value="${userInstance?.organizations}"
+                multiple="true" size="5" class="form-control" />
+    </sec:ifAnyGranted>
+    <sec:ifNotGranted roles="ROLE_ADMIN">
+      <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" class="form-control" />
+    </sec:ifNotGranted>
+    <span><g:message code="user.edit.canOnlyEditAssociatedOrgs" /></span>
+  </div>
 </sec:ifLoggedIn>
 <sec:ifNotLoggedIn><!-- register -->
   <div class="form-group required">

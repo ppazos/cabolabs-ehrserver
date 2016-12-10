@@ -361,8 +361,7 @@ class UserController {
       
       def orgs = params.list("organizationUid")
       def roles = params.list('role')
-      
-      
+            
       // Organizations cant be empty
       if (orgs.size() == 0)
       
@@ -379,15 +378,17 @@ class UserController {
          render model: [userInstance: userInstance], view:'edit'
          return
       }
-
-      // All the organizations assigned to the new user should be accesible by the current user
-      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
-      if (notAllowedOrg)
-      {
-         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
-         render model: [userInstance: userInstance], view:'edit'
-         return
-      }
+      
+      
+      /**
+       * Update orgs.
+       */
+      userService.updateOrganizations(userInstance, orgs)
+      
+      
+      /**
+       * Update roles.
+       */
       
       // All the roles assigned to the new user should be lower o equal to the highest role of the current user
       def highestRole = loggedInUser.higherAuthority
@@ -411,26 +412,6 @@ class UserController {
             return
          }
       }
-      
-      
-      // Update organizations
-      // Remove current
-
-      def orgsToRemove = []
-      orgsToRemove += userInstance.organizations
-      orgsToRemove.each { org ->
-         userInstance.removeFromOrganizations(org)
-      }
-      
-      userInstance.organizations.clear()
-      
-
-      // Associate new
-      def newOrgs = Organization.findAllByUidInList(orgs)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
       
       // Role updating
       
