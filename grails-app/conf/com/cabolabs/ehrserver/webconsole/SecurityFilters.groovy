@@ -62,11 +62,10 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-            //request.cookies.each { println it.name +"> "+ it.value }
-            //request.cookies.each { println "list: cookie ${it.properties}>" }
-            //println 'lang cookie before '+ request.cookies.find{ it.name == 'lang' }?.value
             
             /**
+             * Lang check
+             * 
              * 1. enter first time
              *    cookie == null
              *    params lang == null
@@ -143,7 +142,10 @@ class SecurityFilters {
                }
             }
 
-            // TODO: refactor to a log filter
+            
+            /**
+             * Activity log.
+             */
             def username
             def organizationUid
             if (controllerName == 'rest')
@@ -194,9 +196,11 @@ class SecurityFilters {
             // TODO: file log failure
             if (!alog.save()) println "activity log is not saving "+ alog.errors
             
-         }
-         after = { Map model ->
-
+            
+            
+            /**
+             * set session.organization to be used on actions to filter by current org without querying.
+             */
             // this only applies to UI, avoid processing for API
             // forwardURI condition was added since some user endpoints are not in the RestController
             if (controllerName != 'rest' && !request.forwardURI.contains('rest'))
@@ -222,9 +226,11 @@ class SecurityFilters {
                   session.organization = org // to show the org name in the ui
                }
             }
+            
+         }
+         after = { Map model ->
          }
          afterView = { Exception e ->
-
          }
       }
       

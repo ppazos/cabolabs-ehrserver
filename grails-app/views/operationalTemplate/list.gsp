@@ -58,9 +58,7 @@
 		          <g:sortableColumn property="language" title="${message(code: 'template.language.label', default: 'language')}" />
 		          <g:sortableColumn property="uid" title="${message(code: 'template.uid.label', default: 'uid')}" />
 		          <g:sortableColumn property="archetypeId" title="${message(code: 'template.archetypeId.label', default: 'root archetype')}" />
-		          <th>
-		            Actions
-		          </th>
+		          <th></th>
 		        </tr>
 		      </thead>
 		      <tbody>
