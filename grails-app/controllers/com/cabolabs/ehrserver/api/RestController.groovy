@@ -633,6 +633,7 @@ class RestController {
       )
       u.setPasswordToken()
       
+      def error = false
       User.withTransaction{ status ->
       
          try
@@ -661,9 +662,14 @@ class RestController {
             
             status.setRollbackOnly()
             
-            renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400)
-            return
+            error = true
          }
+      }
+      
+      if (error)
+      {
+         renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400)
+         return
       }
       
       def data = [
