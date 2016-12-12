@@ -55,8 +55,6 @@ class RestController {
 
    static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST"]
    
-   def messageSource
-   
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
