@@ -189,13 +189,16 @@
                   </div>
                   
                 </fieldset>
-                <fieldset>
-                  <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
-                    <g:link controller="user" action="register">
-                      <b><g:message code="springSecurity.login.register.label"/></b>
-                    </g:link>
-                  </div>
-                </fieldset>
+                
+                <g:if test="${grailsApplication.config.app.allow_web_user_register.toBoolean()}">
+                  <fieldset>
+                    <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
+                      <g:link controller="user" action="register">
+                        <b><g:message code="springSecurity.login.register.label"/></b>
+                      </g:link>
+                    </div>
+                  </fieldset>
+                </g:if>
               </form>
             </div>
           </div>

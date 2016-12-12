@@ -94,6 +94,7 @@ environments {
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
       opt_repo = "opts" + PS
+      allow_web_user_register = false
     }
   }
   production {
@@ -108,6 +109,7 @@ environments {
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
       opt_repo = "opts" + PS
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
     }
   }
   local_prod {
@@ -119,6 +121,7 @@ environments {
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
       opt_repo = "opts" + PS
+      allow_web_user_register = true
     }
   }
   test {
@@ -127,6 +130,7 @@ environments {
        version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
        commit_logs = "commits" + PS
        opt_repo = "opts" + PS + "tests" + PS
+       allow_web_user_register = true
     }
   }
 }

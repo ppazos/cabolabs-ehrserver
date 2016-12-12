@@ -13,11 +13,14 @@ import grails.converters.*
 import javax.servlet.http.Cookie
 import org.springframework.beans.propertyeditors.LocaleEditor
 import org.springframework.web.servlet.support.RequestContextUtils
+import grails.util.Holders
 
 class SecurityFilters {
    
    def springSecurityService
    def messageSource
+   
+   static def config = Holders.config.app
 
    // REF https://github.com/Grails-Plugin-Consortium/grails-cookie/blob/master/src/main/groovy/grails/plugin/cookie/CookieHelper.groovy
    /*
@@ -258,6 +261,22 @@ class SecurityFilters {
             return true
          }
       }
+      
+      
+      allow_user_register_check(controller:'user', action:'register') {
+         before = {
+            
+            if (!config.allow_web_user_register.toBoolean()) // toBoolean needed because the env var is string
+            {
+               flash.message = messageSource.getMessage('user.register.notAllowed', null, getRequestLocale(request))
+               redirect controller: 'app'
+               return false
+            }
+
+            return true
+         }
+      }
+      
       
       organization_show(controller:'organization', action:'show') {
          before = {
