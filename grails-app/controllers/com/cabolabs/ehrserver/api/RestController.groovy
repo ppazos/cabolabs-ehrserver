@@ -266,31 +266,11 @@ class RestController {
             println "render error *"
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
-                  type {
-                     code('AR')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
+                  type ('AR')                         // application reject
                   message(msg)
                   code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
                }
             }
-         }
-      }
-   }
-   
-   private void renderFormatNotSupportedError()
-   {
-      def error_code = 'e'+ endpoint_codes[actionName] +'.'+ format_error_code
-      
-      // 400 Bad Request
-      render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-         result {
-            type {
-               code('AR')                         // application reject
-               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-            }
-            message(message(code:'rest.error.formatNotSupported'))
-            code('EHR_SERVER::API::ERRORS::'+ error_code) // sys::service::concept::code
          }
       }
    }
@@ -625,10 +605,6 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrList
    
    /**
@@ -708,10 +684,6 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    }
    
    // TODO: should use the ehr.subject.value key not the Person.uid
@@ -767,10 +739,6 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrForSubject
    
    
@@ -820,10 +788,6 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrGet
    
    
@@ -858,10 +822,6 @@ class RestController {
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderFormatNotSupportedError()
       }
    }
 
@@ -1213,10 +1173,6 @@ class RestController {
          {
             render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
          }
-         else
-         {
-            renderFormatNotSupportedError()
-         }
       }
    } // query
    
@@ -1312,7 +1268,6 @@ class RestController {
       }
       else
       {
-         // since this is not actually an endpoint, is just for query test from the UI, dont uses renderFormatNotSupportedError()
          render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
       return

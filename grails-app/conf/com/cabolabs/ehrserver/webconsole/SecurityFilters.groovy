@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.RequestContextUtils
 class SecurityFilters {
    
    def springSecurityService
+   def messageSource
 
    // REF https://github.com/Grails-Plugin-Consortium/grails-cookie/blob/master/src/main/groovy/grails/plugin/cookie/CookieHelper.groovy
    /*
@@ -235,159 +236,28 @@ class SecurityFilters {
       }
       
       
-      /**
-       * All the lists already filter by organization, 
-       * this checks authorization for show/edit/save.
-       * 
-       **/
-      /*
-      person_save(controller:'person', action:'save') {
-         before = {
-            // params.organizationUid should be one of the orgs associated with the current user
-            // 
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def us = User.findByUsername(un)
-            def orgs = us.organizations
-            //def org = Organization.findByNumber(auth.organization) // organization used to login
-            
-            if (!params.organizationUid || !orgs.uid.contains(params.organizationUid))
-            {
-               flash.message = "You don't have access to the specified organization"
-               chain controller: 'person', action: 'create' // back action uses chain to show the flash, with redirect that does not work.
-               return false
-            }
-            
-            return true
-         }
-      }
       
-      person_update(controller:'person', action:'update') {
+      rest_check_format(controller:'rest', action:'*') {
          before = {
             
-            println "a person update filter params "+ params
-            
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def us = User.findByUsername(un)
-            def orgs = us.organizations
-            
-            if (!params.uid)
+            if (!['', null, 'xml', 'json'].contains(params.format))
             {
-               flash.message = "Person UID is required"
-               chain controller: 'person', action: 'list'
+               // bad request in XML
+               render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                  result {
+                     type('AR')                         // application reject
+                     message(
+                        messageSource.getMessage('rest.error.formatNotSupported', [params.format] as Object[], getRequestLocale(request))
+                     )
+                     code('EHR_SERVER::API::ERRORS::0066') // sys::service::concept::code
+                  }
+               }
                return false
             }
-            
-            def p = Person.findByUid(params.uid)
-            
-            if (!p || !orgs.uid.contains(p.organizationUid))
-            {
-               flash.message = "You don't have access to that person!"
-               chain controller: 'person', action: 'list' // back action uses chain to show the flash, with redirect that does not work.
-               return false
-            }
-            
-            params.personInstance = p
-            
+
             return true
          }
       }
-      
-      person_delete(controller:'person', action:'delete') {
-         before = {
-            
-            println "person delete filter params "+ params
-            
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def us = User.findByUsername(un)
-            def orgs = us.organizations
-            
-            if (!params.uid)
-            {
-               flash.message = "Person UID is required"
-               chain controller: 'person', action: 'list'
-               return false
-            }
-            
-            def p = Person.findByUid(params.uid)
-            
-            if (!p || !orgs.uid.contains(p.organizationUid))
-            {
-               flash.message = "You don't have access to that person!"
-               chain controller: 'person', action: 'list' // back action uses chain to show the flash, with redirect that does not work.
-               return false
-            }
-            
-            params.personInstance = p
-            
-            return true
-         }
-      }
-      
-      person_show(controller:'person', action:'show') {
-         before = {
-            
-            // user.organizationUid should be one of the orgs associated with the current user
-            //
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def us = User.findByUsername(un)
-            def orgs = us.organizations
-            
-            if (!params.uid)
-            {
-               flash.message = "Person UID is required"
-               chain controller: 'person', action: 'list'
-               return false
-            }
-            
-            def p = Person.findByUid(params.uid)
-            
-            if (!p || !orgs.uid.contains(p.organizationUid))
-            {
-               flash.message = "You don't have access to that person!"
-               chain controller: 'person', action: 'list' // back action uses chain to show the flash, with redirect that does not work.
-               return false
-            }
-            
-            params.personInstance = p
-            return true
-         }
-      }
-      
-      person_edit(controller:'person', action:'edit') {
-         before = {
-            
-            // user.organizationUid should be one of the orgs associated with the current user
-            //
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username
-            def us = User.findByUsername(un)
-            def orgs = us.organizations
-            
-            if (!params.uid)
-            {
-               flash.message = "Person UID is required"
-               chain controller: 'person', action: 'list'
-               return false
-            }
-            
-            def p = Person.findByUid(params.uid)
-            
-            if (!p || !orgs.uid.contains(p.organizationUid))
-            {
-               flash.message = "You don't have access to that person!"
-               chain controller: 'person', action: 'list' // back action uses chain to show the flash, with redirect that does not work.
-               return false
-            }
-            
-            params.personInstance = p
-            return true
-         }
-      }
-      */
       
       organization_show(controller:'organization', action:'show') {
          before = {
