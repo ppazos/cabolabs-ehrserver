@@ -62,30 +62,12 @@ class UrlMappings {
          controller: 'rest',
          action: 'ehrCreate'
       )
-
-      // /rest/patientList por /rest/patients -- list of all patients
-      /*
-      "/rest/patients"(
+      
+      "/rest/users"(
+         method: 'POST',
          controller: 'rest',
-         action: 'patientList',
-         method: 'GET'
+         action: 'userRegister'
       )
-      "/rest/patients"(
-         controller: 'rest',
-         action: 'createPerson',
-         method: 'POST'
-      )          
-      "/rest/patients/$uid"( 
-         controller: 'rest',
-         action: 'patient',
-         method: 'GET'
-      )
-      "/rest/person"(
-         controller: 'rest',
-         action: 'createPerson',
-         method: 'POST'
-      )
-      */
       
       // /rest/queryList por /rest/queries -- list of all queries
       "/rest/queries"( 

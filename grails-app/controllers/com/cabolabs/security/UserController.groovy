@@ -458,7 +458,6 @@ class UserController {
         
          def u = new User(
             username: params.username,
-            //password: params.password,
             email: params.email,
             enabled: false
          )

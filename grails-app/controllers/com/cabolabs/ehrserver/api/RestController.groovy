@@ -36,6 +36,9 @@ import org.springframework.security.authentication.AuthenticationProvider
 
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
+import com.cabolabs.security.UserRole
+import com.cabolabs.security.Organization
+import com.cabolabs.security.Role
 
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
 
@@ -53,13 +56,14 @@ import grails.util.Environment
  */
 class RestController {
 
-   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST"]
+   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST", userRegister: "POST"]
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
    def versionFSRepoService
    def commitLoggerService
+   def notificationService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -604,6 +608,84 @@ class RestController {
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
    } // ehrList
+   
+   
+   /**
+    * The register is only for the same org as the auth user.
+    * The default role is ROLE_USER, it can be changed from the web console.
+    * @param username
+    * @param email
+    * @return
+    */
+   @SecuredStateless
+   def userRegister(String username, String email)
+   {
+      if (!username || !email)
+      {
+         renderError(message(code:'rest.userRegister.error.usernameAndEmail.required'), '999', 400)
+         return
+      }
+      
+      def u = new User(
+         username: params.username,
+         email: params.email,
+         enabled: false
+      )
+      u.setPasswordToken()
+      
+      User.withTransaction{ status ->
+      
+         try
+         {
+            def _orgnum = request.securityStatelessMap.extradata.organization
+            def o = Organization.findByNumber(_orgnum)
+            
+            
+            // needs an organization before saving
+            u.addToOrganizations(o)
+            u.save(failOnError: true)
+            
+            
+            // TODO: UserRole ORG_* needs a reference to the org, since the user
+            //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
+            //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
+            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true ) // the user is creating the organization, it should be manager also
+            
+            // reset password request notification
+            notificationService.sendUserCreatedEmail( u.email, [u], true )
+         }
+         catch (Exception e)
+         {
+            println e.message
+            println u.errors
+            
+            status.setRollbackOnly()
+            
+            renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400)
+            return
+         }
+      }
+      
+      def data = [
+         username: u.username,
+         email: u.email,
+         organizations: u.organizations
+      ]
+      
+      withFormat {
+         xml {
+            def result = data as XML
+            render(text: result, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+
+            def result = data as JSON
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
+   }
+   
+   
    
    /**
     * 
