@@ -11,6 +11,8 @@ class User implements Serializable {
    String username
    String password
    String email
+
+   boolean isVirtual = false // virtual users for ApiKey
    
    boolean enabled // false until the password is set
    boolean accountExpired

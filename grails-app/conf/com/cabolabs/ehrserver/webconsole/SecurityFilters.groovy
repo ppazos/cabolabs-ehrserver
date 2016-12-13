@@ -184,7 +184,7 @@ class SecurityFilters {
                if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
                {
                   username = auth.principal.username
-
+                  
                   def _org = Organization.findByNumber(auth.organization)
                   organizationUid = _org.uid
                }

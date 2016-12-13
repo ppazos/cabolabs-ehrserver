@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.security.Organization" %>
+<%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.account.ApiKey" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -154,6 +154,32 @@
               });
             });
         </script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <h2><g:message code="organization.show.apikeys" /></h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 stats">
+        <g:link action="generateApiKey" params="[organizationUid: params.uid]" class="create">Generate API Key</g:link>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 stats">
+        <g:set var="apikeys" value="${ApiKey.findAllByOrganization(organizationInstance)}" />
+        <table>
+          <g:each in="${apikeys}" var="key">
+            <tr>
+              <td>
+                <textarea cols="80" rows="6">${key.token}</textarea>
+              </td>
+              <td><g:link action="deleteApiKey" id="${key.id}" class="delete">Remove</g:link></td>
+            </tr>
+          </g:each>
+        </table>
       </div>
     </div>
   </body>

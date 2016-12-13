@@ -7,11 +7,13 @@ import grails.transaction.Transactional
 //http://grails-plugins.github.io/grails-spring-security-core/guide/single.html#springSecurityUtils
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
+import com.cabolabs.ehrserver.account.ApiKey
 
 @Transactional(readOnly = true)
 class OrganizationController {
 
    def springSecurityService
+   def statelessTokenProvider
    
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -145,6 +147,38 @@ class OrganizationController {
          }
          '*'{ render status: NO_CONTENT }
       }
+   }
+
+   @Transactional
+   def generateApiKey(String organizationUid)
+   {
+      if (!organizationUid)
+      {
+
+      }
+
+      def org = Organization.findByUid(organizationUid)
+      if (!org)
+      {
+
+      }
+
+      def virtualUser = new User(username: String.random(50),
+                                 password: String.uuid(),
+                                 email: String.random(50) + '@virtual.com',
+                                 isVirtual: true,
+                                 enabled: true,
+                                 organizations: [org])
+
+      virtualUser.save(failOnError: true)
+
+      def key = new ApiKey(organization: org,
+                           user: virtualUser,
+                           token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number]))
+
+      key.save(failOnError: true)
+
+      redirect action:'show', params:[uid:org.uid]
    }
 
    protected void notFound()

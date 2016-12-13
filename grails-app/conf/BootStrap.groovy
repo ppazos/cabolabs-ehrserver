@@ -88,6 +88,13 @@ class BootStrap {
         }
       }
       
+      String.metaClass.static.random = { n ->
+        def alphabet = 'a'..'z'
+        new Random().with {
+          (1..n).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
+        }
+      }
+
       String.metaClass.static.uuid = { ->
          java.util.UUID.randomUUID() as String
       }
