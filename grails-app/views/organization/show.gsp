@@ -157,29 +157,50 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
         <h2><g:message code="organization.show.apikeys" /></h2>
+        <p><g:message code="organization.show.apikeysDescription" /></p>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12 stats">
-        <g:link action="generateApiKey" params="[organizationUid: params.uid]" class="create">Generate API Key</g:link>
+    <div class="row row-grid">
+      <div class="col-lg-12">
+        <div class="btn-toolbar" role="toolbar">
+          <fieldset class="buttons">
+	         <g:link action="generateApiKey" params="[organizationUid: params.uid]" class="create">
+	           <button type="button" class="btn btn-default btn-md">
+	             <span class="fa fa-key fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.generate" />
+	           </button>
+	         </g:link>
+	       </fieldset>
+	     </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12 stats">
+    <div class="row row-grid">
+      <div class="col-lg-12">
         <g:set var="apikeys" value="${ApiKey.findAllByOrganization(organizationInstance)}" />
-        <table>
-          <g:each in="${apikeys}" var="key">
-            <tr>
-              <td>
-                <textarea cols="80" rows="6">${key.token}</textarea>
-              </td>
-              <td><g:link action="deleteApiKey" id="${key.id}" class="delete">Remove</g:link></td>
-            </tr>
-          </g:each>
-        </table>
+        <div class="table-responsive">
+	       <table class="table table-striped table-bordered table-hover">
+	         <tr>
+	           <th><g:message code="apikey.attr.token" /></th>
+	           <th width="10%"></th>
+	         </tr>
+	         <g:each in="${apikeys}" var="key">
+	            <tr>
+	              <td>
+	                <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
+	              </td>
+	              <td>
+	                <g:link action="deleteApiKey" id="${key.id}" class="delete">
+	                  <button type="button" class="btn btn-default btn-md">
+				           <span class="fa fa-times fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.remove" />
+				         </button>
+	                </g:link>
+	              </td>
+	            </tr>
+	         </g:each>
+	       </table>
+	     </div>
       </div>
     </div>
   </body>
