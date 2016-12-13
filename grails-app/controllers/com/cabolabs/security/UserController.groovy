@@ -43,6 +43,7 @@ class UserController {
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('isVirtual', false)
             if (username)
             {
                like('username', '%'+username+'%')
@@ -75,6 +76,7 @@ class UserController {
          def org = Organization.findByNumber(auth.organization)
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('isVirtual', false)
             organizations {
                if (organizationUid && userHasAccessToOrg)
                {
