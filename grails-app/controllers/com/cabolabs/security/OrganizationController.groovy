@@ -111,8 +111,6 @@ class OrganizationController {
    @Transactional
    def update(String uid, Long version)
    {
-      println "update "+ params +" uid: "+ uid
-      
       def organizationInstance = Organization.findByUid(uid)
       organizationInstance.properties = params
       organizationInstance.validate()
@@ -131,7 +129,6 @@ class OrganizationController {
    @Transactional
    def delete(Organization organizationInstance)
    {
-
       if (organizationInstance == null)
       {
          notFound()
@@ -150,17 +147,21 @@ class OrganizationController {
    }
 
    @Transactional
-   def generateApiKey(String organizationUid)
+   def generateApiKey(String uid)
    {
-      if (!organizationUid)
+      if (!uid)
       {
-
+         flash.message = message(code: 'default.error.uidParamIsRequired')
+         redirect action: 'index'
+         return
       }
 
-      def org = Organization.findByUid(organizationUid)
+      def org = Organization.findByUid(uid)
       if (!org)
       {
-
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), uid])
+         redirect action: 'index'
+         return
       }
 
       def virtualUser = new User(username: String.random(50),
@@ -181,6 +182,22 @@ class OrganizationController {
       redirect action:'show', params:[uid:org.uid]
    }
 
+   @Transactional
+   def deleteApiKey(ApiKey key)
+   {
+      if (!key)
+      {
+         println "null"
+      }
+      
+      // Need to delete the key first because the key has a not null constraint to the user
+      def keyUser = key.user
+      key.delete()
+      keyUser.delete()
+      
+      redirect action: 'show', params: [uid: key.organization.uid]
+   }
+   
    protected void notFound()
    {
       request.withFormat {

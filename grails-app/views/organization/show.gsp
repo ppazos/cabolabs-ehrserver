@@ -167,7 +167,7 @@
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
-	         <g:link action="generateApiKey" params="[organizationUid: params.uid]" class="create">
+	         <g:link action="generateApiKey" params="[uid: params.uid]" class="create">
 	           <button type="button" class="btn btn-default btn-md">
 	             <span class="fa fa-key fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.generate" />
 	           </button>
