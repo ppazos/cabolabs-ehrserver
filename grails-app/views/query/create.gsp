@@ -880,8 +880,8 @@ resp.responseJSON.result.message +'</div>'
                   break;
                 }
                 
-                console.log('possible values', datatype, possible_values);
-                console.log('conditions', conditions);
+                //console.log('possible values', datatype, attr, possible_values);
+                //console.log('conditions', conditions);
                 // =======================================================================================================
                 
                 
@@ -925,7 +925,6 @@ resp.responseJSON.result.message +'</div>'
                     if (attr == 'denominator') input_type = 'number';
                   break;
                 }
-                
                 
                 
                 // indexes of operand and value should be linked.
