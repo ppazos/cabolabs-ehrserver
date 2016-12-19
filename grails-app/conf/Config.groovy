@@ -99,28 +99,28 @@ environments {
   }
   production {
     grails.logging.jul.usebridge = false
-    //grails.dbconsole.enabled = true // FIXME: this is for testing in prod
+    //grails.dbconsole.enabled = true // this is for testing in prod
     // System.getenv('OPENSHIFT_APP_DNS') == "ehrserver-cabolabs2.rhcloud.com"
     grails.serverURL = "https://" + System.getenv('OPENSHIFT_APP_DNS') //"https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
     
     grails.app.context = '/' // use domain.com/ instead of domain.com/ehr
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
-      version_repo = "versions" + PS
-      commit_logs = "commits" + PS
-      opt_repo = "opts" + PS
+      version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
+      commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
+      opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
       allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
     }
   }
   local_prod {
     grails.logging.jul.usebridge = false
-    grails.serverURL = "http://localhost:8085/ehr-0.7"
+    grails.serverURL = "http://localhost:8085/ehr-0.8"
     //grails.app.context = '/' // use domain.com/ instead of domain.com/ehr
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
-      version_repo = "versions" + PS
-      commit_logs = "commits" + PS
-      opt_repo = "opts" + PS
+      version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
+      commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
+      opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
       allow_web_user_register = true
     }
   }
