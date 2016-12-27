@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'compositionIndex.label', default: 'CompositionIndex')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="compositionIndex.list.title" /></title>
     <style>
      .icon {
        width: 64px;
@@ -15,6 +14,12 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="compositionIndex.list.title" /></h1>
+      </div>
+    </div>
+    
+    <div class="row row-grid">
+      <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <g:link class="list" controller="operationalTemplate" action="list">
             <button type="button" class="btn btn-default btn-md">
@@ -24,14 +29,8 @@
         </div>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
-	     <h1><g:message code="compositionIndex.list.title" /></h1>
-      </div>
-    </div>
 
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	      <g:if test="${flash.message}">
 	        <div class="message" role="status">${flash.message}</div>
