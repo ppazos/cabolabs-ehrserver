@@ -32,11 +32,12 @@
 			   <label><input type="radio" name="overwrite" value="true" />Yes</label>
 			   <br/>
 			   
-			   
-            <label>Is public?
-              <g:checkBox name="isPublic" value="${false}" />
-            </label>
-			   <br/>
+			   <sec:ifAnyGranted roles="ROLE_ADMIN">
+              <label>Is public?
+                <g:checkBox name="isPublic" value="${false}" />
+              </label>
+			     <br/>
+			   </sec:ifAnyGranted>
 		
 		      <div class="btn-toolbar" role="toolbar">
 		        <input type="file" name="opt" value="${params.opt}" class="btn btn-default btn-md" required="required" />
