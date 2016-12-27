@@ -535,8 +535,8 @@ class BootStrap {
         new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/archetypeIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         
         
         // the rest of the operations should be open and security is checked inside the action

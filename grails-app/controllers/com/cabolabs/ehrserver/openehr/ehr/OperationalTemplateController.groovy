@@ -65,8 +65,6 @@ class OperationalTemplateController {
     */
    def upload(boolean overwrite)
    {
-      println params
-      
       if (params.doit)
       {
          def errors = []
@@ -118,6 +116,7 @@ class OperationalTemplateController {
             opt_template_id = template.template_id.value.text()
             existing_opt = OperationalTemplateIndex.findByTemplateId( opt_template_id )
          }
+         
          if (existing_opt)
          {
             if (overwrite) // OPT exists and the user wants to overwrite

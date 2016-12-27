@@ -180,7 +180,7 @@
 	               <li>
 	                 <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
 	               </li>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
 	                 <li>
 	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
 	                 </li>
