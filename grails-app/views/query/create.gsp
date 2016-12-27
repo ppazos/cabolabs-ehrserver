@@ -1545,16 +1545,20 @@ resp.responseJSON.result.message +'</div>'
                   <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']" class="form-control input-sm" />
                 </td>
               </tr>
-              <tr>
-                <td>
-                  <label for="isPublic">
-                    <g:message code="query.show.isPublic.attr" default="Is public?" /> *
-                  </label>
-                </td>
-                <td>
-                  <g:checkBox name="isPublic" value="${queryInstance.isPublic}" />
-                </td>
-              </tr>
+              
+              <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <tr>
+                  <td>
+                    <label for="isPublic">
+                      <g:message code="query.show.isPublic.attr" default="Is public?" /> *
+                    </label>
+                  </td>
+                  <td>
+                    <g:checkBox name="isPublic" value="${queryInstance.isPublic}" />
+                  </td>
+                </tr>
+              </sec:ifAnyGranted>
+    
             </table>
           </div>
     
