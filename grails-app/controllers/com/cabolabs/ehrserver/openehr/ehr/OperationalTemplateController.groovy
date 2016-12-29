@@ -6,11 +6,13 @@ import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 
 class OperationalTemplateController {
 
    def config = Holders.config.app
    def xmlValidationService
+   def springSecurityService
    
    def list(int max, int offset, String sort, String order, String concept)
    {
@@ -105,22 +107,48 @@ class OperationalTemplateController {
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
-         // check existing by OPT uid
-         def opt_uid = template.uid.value.text()
-         def existing_opt = OperationalTemplateIndex.findByUid(opt_uid)
          
-         // check existing by templateId
-         def opt_template_id
-         if (!existing_opt)
-         {
-            opt_template_id = template.template_id.value.text()
-            existing_opt = OperationalTemplateIndex.findByTemplateId( opt_template_id )
+         // check existing by OPT uid or templateId, shared with an org of the current user
+         def opt_uid = template.uid.value.text()
+         def opt_template_id = template.template_id.value.text()
+         
+         def user = springSecurityService.currentUser
+         def orgs = user.organizations
+         def c = OperationalTemplateIndexShare.createCriteria()
+         def shares = c.list {
+            // exists an OPT with uid or template id?
+            opt {
+               or {
+                  eq('uid', opt_uid)
+                  eq('templateId', opt_template_id)
+               }
+            }
+            // only for the current user orgs
+            'in'('organization', orgs)
+            /*
+            organizations {
+               // 'in'(id, orgs.id)
+            }
+            */
          }
          
-         if (existing_opt)
+         // 1. there is one share, with the session org => overwrite if specified
+         // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
+         // 3. there are many shares => can't overwrite, should remove the shares first
+         
+         if (shares.size() == 1)
          {
+            //println "shares size is 1"
+            if (shares[0].organization.id != session.organization.id)
+            {
+               errors << "There exists an OPT with the same uid or templateId shared with another of your organizations (${shares[0].organization.name}), login with that organization to overwrite or share the OPT from that org iwth the current organization (${session.organization.name})"
+               return [errors: errors]
+            }
+            
+            // Can overwrite if it was specified
             if (overwrite) // OPT exists and the user wants to overwrite
             {
+               def existing_opt = shares[0].opt
                def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
                existing_file.delete()
                
@@ -129,15 +157,20 @@ class OperationalTemplateController {
             }
             else
             {
-               if (!opt_template_id)
-                  errors << "The OPT ${opt_uid} already exists, change it's UID or select to overwrite"
-               else
-                  errors << "The OPT ${opt_template_id} already exists, change it's UID or select to overwrite"
+               errors << "The OPT already exists, change it's UID and templateId or select to overwrite it"
                return [errors: errors]
             }
          }
-         
-         
+         else if (shares.size() > 1)
+         {
+            //println "shares size is > 1"
+            errors << "There exists an OPT with the same uid or templateId shared with many of your organizations, if you want to overwrite this OPT, unshare it from other organizations and keep the share for the current organization ${session.organization.name}, then try to upload again."
+            return [errors: errors]
+         }
+         else
+         {
+            //println "shares size is 0"
+         }
          
          def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
          

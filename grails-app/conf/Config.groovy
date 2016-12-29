@@ -94,7 +94,7 @@ environments {
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
       opt_repo = "opts" + PS
-      allow_web_user_register = false
+      allow_web_user_register = true
     }
   }
   production {
