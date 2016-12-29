@@ -20,10 +20,10 @@ class DataIndexerService {
    def config = Holders.config.app
    def versionFSRepoService
    
-   def generateIndexes()
+   def generateIndexes(CompositionIndex compoIndex)
    {
       // compositions with data to be indexed
-      def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
+      //def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
      
       // created indexes will be loaded here
       def indexes = []
@@ -42,69 +42,68 @@ class DataIndexerService {
      
       // Para cada composition
       // El compoIndex se crea en el commit
-      compoIdxs.each { compoIndex ->
          
-         if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
-         {
-            // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
-            log.warn "The committed composition ${compoIndex.uid} references a template that is not loaded ${compoIndex.templateId}. Indexing is avoided until the template is loaded."
-            return
-         }
-       
-         indexes = []
-       
-         // load xml file from filesystem
-         version = compoIndex.getParent()
-       
-         try
-         {
-            versionFile = versionFSRepoService.getExistingVersionFile(version)
-         }
-         catch (FileNotFoundException e)
-         {
-            log.warn "avoid indexing version "+ version.uid +" "+ e.message
-            return // Continue with next compoIdx
-         }
-       
-         versionXml = versionFile.getText()
-         parsedVersion = parser.parseText(versionXml)
-       
+      if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
+      {
+         // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
+         log.warn "The committed composition ${compoIndex.uid} references a template that is not loaded ${compoIndex.templateId}. Indexing is avoided until the template is loaded."
+         return
+      }
+    
+      indexes = []
+    
+      // load xml file from filesystem
+      version = compoIndex.getParent()
+    
+      try
+      {
+         versionFile = versionFSRepoService.getExistingVersionFile(version)
+      }
+      catch (FileNotFoundException e)
+      {
+         log.warn "avoid indexing version "+ version.uid +" "+ e.message
+         return // Continue with next compoIdx
+      }
+    
+      versionXml = versionFile.getText()
+      parsedVersion = parser.parseText(versionXml)
+    
 //       error from error handler?
 //       if (message)
 //       {
 //         println "IndexDataJob XML ERROR: "+ message
 //         message = null // empty for the next parse
 //       }
-       
-         compoParsed = parsedVersion.data
-       
-         recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
-       
-         // empty if the OPT for the compo is not loaded in the server
-         indexes.each { didx ->
-         
-            //println didx.archetypePath
-         
-            if (!didx.save())
-            {
-               log.info didx.errors.toString()
-               // if one index created fails to save, the whole indexing process is rolled back
-            
-               throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
-            }
-            else
-            {
-               log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
-            }
-         }
-       
-         // Marca como indexado
-         compoIndex.dataIndexed = true
-       
-         if (!compoIndex.save())
+    
+      compoParsed = parsedVersion.data
+    
+      recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
+    
+      // empty if the OPT for the compo is not loaded in the server
+      indexes.each { didx ->
+      
+         //println didx.archetypePath
+      
+         if (!didx.save())
          {
-            log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
+            log.info didx.errors.toString()
+            // if one index created fails to save, the whole indexing process is rolled back
+         
+            throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
          }
+         else
+         {
+            log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
+         }
+      }
+    
+      // Marca como indexado
+      compoIndex.dataIndexed = true
+    
+      if (!compoIndex.save())
+      {
+         log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
+         throw new DataIndexException('CompiIndex failed to save omn indexing', compoIndex.errors)
       }
    }
    

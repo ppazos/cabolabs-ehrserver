@@ -25,9 +25,14 @@ class DataIndexException extends ValidationException {
       this.index = index
    }
    
+   public DataIndexException(String message, Errors e)
+   {
+      super(message, e)
+   }
+   
    @Override
    public String getMessage()
    {
-      return super.getMessage() +'. Index: '+ index
+      return super.getMessage() + (index ? '. Index: '+ index : '')
    }
 }

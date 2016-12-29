@@ -564,8 +564,8 @@ class BootStrap {
      {
         def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
         def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
-        def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
-        def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
+        //def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
+        //def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
         def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
      }
      if (User.count() == 0)
@@ -595,9 +595,12 @@ class BootStrap {
      
      
      // Always regenerate indexes in deploy
-     def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-	  ti.setupBaseOpts()
-     ti.indexAll( Organization.get(1) )
+     if (OperationalTemplateIndex.count() == 0)
+     {
+        def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+	     ti.setupBaseOpts()
+        ti.indexAll( Organization.get(1) )
+     }
      
      // TODO: because initially there are no shares, the indexAll 
      //       wont share the OPTs with the org, so we do it manually here.
