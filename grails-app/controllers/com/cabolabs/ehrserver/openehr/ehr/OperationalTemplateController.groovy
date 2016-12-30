@@ -22,27 +22,7 @@ class OperationalTemplateController {
       if (!order) order = 'asc'
       
       def org = session.organization
-      def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
-      
-      def c = OperationalTemplateIndex.createCriteria()
-      def list = c.list (max: max, offset: offset, sort: sort, order: order) {
-         if (concept)
-         {
-            like('concept', '%'+concept+'%')
-         }
-         
-         if (shares)
-         {
-            or {
-               eq('isPublic', true)
-               'in'('id', shares.opt.id)
-            }
-         }
-         else
-         {
-            eq('isPublic', true)
-         }
-      }
+      def list = OperationalTemplateIndex.forOrg(org).likeConcept(concept).list (max: max, offset: offset, sort: sort, order: order)
       
       [opts: list, total: list.totalCount]
    }
@@ -125,11 +105,6 @@ class OperationalTemplateController {
             }
             // only for the current user orgs
             'in'('organization', orgs)
-            /*
-            organizations {
-               // 'in'(id, orgs.id)
-            }
-            */
          }
          
          // 1. there is one share, with the session org => overwrite if specified

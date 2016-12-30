@@ -13,6 +13,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import java.io.FileNotFoundException
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
+import com.cabolabs.security.Organization
 
 @Transactional
 class DataIndexerService {
@@ -20,15 +21,13 @@ class DataIndexerService {
    def config = Holders.config.app
    def versionFSRepoService
    
+   
    def generateIndexes(CompositionIndex compoIndex)
    {
-      // compositions with data to be indexed
-      //def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
-     
       // created indexes will be loaded here
       def indexes = []
 
-      def version, versionFile, versionXml, parsedVersion, compoParsed
+      def version, versionFile, versionXml, parsedVersion, compoParsed, org
      
      
       // Error handler to avoid:
@@ -38,16 +37,15 @@ class DataIndexerService {
       // the 'setErrorHandler' method to fix this.
       def message
       def parser = new XmlSlurper(false, false)
-//     parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
+      // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
      
-      // Para cada composition
-      // El compoIndex se crea en el commit
-      
-      // FIXME: this should be filtered by org on the OptShare
-      if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
+
+      // This filters by org on the OptShare
+      org = Organization.findByUid(compoIndex.organizationUid)
+      if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {
          // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
-         log.warn "The committed composition ${compoIndex.uid} references a template that is not loaded ${compoIndex.templateId}. Indexing is avoided until the template is loaded."
+         log.warn "The committed composition ${compoIndex.uid} references a template "${compoIndex.templateId}" that is not loaded. Indexing is avoided until the template is loaded."
          return
       }
     
@@ -62,7 +60,7 @@ class DataIndexerService {
       }
       catch (FileNotFoundException e)
       {
-         log.warn "avoid indexing version "+ version.uid +" "+ e.message
+         log.error "Committed file not found, avoiding indexing version "+ version.uid +" "+ e.message
          return // Continue with next compoIdx
       }
     

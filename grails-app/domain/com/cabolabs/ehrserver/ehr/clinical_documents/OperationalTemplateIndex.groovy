@@ -22,4 +22,30 @@ class OperationalTemplateIndex {
    {
       this.language.split('::')[1]
    }
+   
+   static namedQueries = {
+      forOrg { org ->
+         
+         def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
+         
+         if (shares)
+         {
+            or {
+               eq('isPublic', true)
+               'in'('id', shares.opt.id)
+            }
+         }
+         else
+         {
+            eq('isPublic', true)
+         }
+      }
+      
+      likeConcept { concept ->
+         if (concept)
+         {
+            like('concept', '%'+concept+'%')
+         }
+      }
+   }
 }
