@@ -1,4 +1,4 @@
-package com.cabolabs.security;
+package com.cabolabs.security
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.util.Assert
 //import org.springframework.security.authentication.AuthenticationManager
@@ -84,9 +85,20 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      
      // If authentication fails, always throws an AuthenticationException.
      
+     // result is UserPassOrgAuthToken, and it's attr principal is GrailsUser
+     // GrailsUser extends User and has an attr id with the id of the user
+     // https://github.com/grails-plugins/grails-spring-security-core/blob/master/src/main/groovy/grails/plugin/springsecurity/userdetails/GrailsUser.groovy
      auth = this.getAuthenticationManager().authenticate(auth) // can throw AuthenticationException if auth fails
      
-     
+     // cant make queries without the transaction because there is no hibernate session
+     User.withTransaction { status ->
+        def user = User.get(auth.principal.id)
+        if (user.authorities.contains( new Role('ROLE_USER') ))
+        {
+           //println "valid user but cant login into the web console"
+           throw new InsufficientAuthenticationException("Your role is not allowed to login through the web console.")
+        }
+     }
      
      // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
      SecurityContextHolder.getContext().setAuthentication(auth)
