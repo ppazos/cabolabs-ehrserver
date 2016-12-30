@@ -55,7 +55,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          assert CompositionIndex.countByDataIndexed(false) == 1
-         dataIndexerService.generateIndexes()
+         dataIndexerService.generateIndexes( CompositionIndex.findByDataIndexed(false) )
          assert CompositionIndex.countByDataIndexed(true) == 1
           
       then:

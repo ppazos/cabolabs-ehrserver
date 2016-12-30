@@ -42,7 +42,8 @@ class DataIndexerService {
      
       // Para cada composition
       // El compoIndex se crea en el commit
-         
+      
+      // FIXME: this should be filtered by org on the OptShare
       if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
       {
          // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
