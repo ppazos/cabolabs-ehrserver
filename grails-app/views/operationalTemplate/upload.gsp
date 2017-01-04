@@ -26,14 +26,13 @@
         </g:if>
         <g:form action="upload" enctype="multipart/form-data" useToken="true">
           
-          Overwrite if OPT exists:
-          
-          <label><input type="radio" name="overwrite" value="false" checked="true" />No</label>
-          <label><input type="radio" name="overwrite" value="true" />Yes</label>
+          <g:message code="opt.upload.label.overwrite" />
+          <label><input type="radio" name="overwrite" value="false" checked="true" /><g:message code="default.no" /></label>
+          <label><input type="radio" name="overwrite" value="true" /><g:message code="default.yes" /></label>
           <br/>
          
           <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <label>Is public?
+            <label><g:message code="opt.upload.label.isPublic" />
               <g:checkBox name="isPublic" value="${false}" />
             </label>
             <br/>
@@ -42,7 +41,7 @@
           <div class="btn-toolbar" role="toolbar">
             <input type="file" name="opt" value="${params.opt}" class="btn btn-default btn-md" required="required" />
             <br/>
-            <input type="submit" class="upload btn btn-default btn-md" name="doit" value="Upload" />
+            <input type="submit" class="upload btn btn-default btn-md" name="doit" value="${g.message(code:'opt.upload.label.upload')}" />
           </div>
         </g:form>
       </div>

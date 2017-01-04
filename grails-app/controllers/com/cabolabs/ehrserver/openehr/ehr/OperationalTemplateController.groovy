@@ -57,7 +57,7 @@ class OperationalTemplateController {
          // Add file empty check
          if(f.empty)
          {
-            errors << "No OPT was uploaded"
+            errors << message(code:"opt.upload.error.noOPT")
             return [errors: errors]
          }
 
@@ -116,7 +116,7 @@ class OperationalTemplateController {
             //println "shares size is 1"
             if (shares[0].organization.id != session.organization.id)
             {
-               errors << "There exists an OPT with the same uid or templateId shared with another of your organizations (${shares[0].organization.name}), login with that organization to overwrite or share the OPT from that org iwth the current organization (${session.organization.name})"
+               errors << message(code:"opt.upload.error.alreadyExistsNotInOrg", args:[shares[0].organization.name, session.organization.name]) //"There exists an OPT with the same uid or templateId shared with another of your organizations (${shares[0].organization.name}), login with that organization to overwrite or share the OPT from that org iwth the current organization (${session.organization.name})"
                return [errors: errors]
             }
             
@@ -132,14 +132,14 @@ class OperationalTemplateController {
             }
             else
             {
-               errors << "The OPT already exists, change it's UID and templateId or select to overwrite it"
+               errors << message(code:"opt.upload.error.alreadyExists")
                return [errors: errors]
             }
          }
          else if (shares.size() > 1)
          {
             //println "shares size is > 1"
-            errors << "There exists an OPT with the same uid or templateId shared with many of your organizations, if you want to overwrite this OPT, unshare it from other organizations and keep the share for the current organization ${session.organization.name}, then try to upload again."
+            errors << message(code:"opt.upload.error.alreadyExistsInManyOrgs", args:[session.organization.name])
             return [errors: errors]
          }
          else
@@ -202,7 +202,7 @@ class OperationalTemplateController {
       
       if (!opt)
       {
-         flash.message = 'Template not found'
+         flash.message = message(code:"opt.common.error.templateNotFound")
          redirect action:'list'
          return
       }
@@ -222,7 +222,7 @@ class OperationalTemplateController {
       
       if (!opt)
       {
-         flash.message = 'Template not found'
+         flash.message = message(code:"opt.common.error.templateNotFound")
          redirect action:'list'
          return
       }
