@@ -147,7 +147,7 @@ class OrganizationController {
    }
 
    @Transactional
-   def generateApiKey(String uid)
+   def generateApiKey(String uid, String systemId)
    {
       if (!uid)
       {
@@ -156,30 +156,40 @@ class OrganizationController {
          return
       }
 
-      def org = Organization.findByUid(uid)
-      if (!org)
+      if (params.doit)
       {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), uid])
-         redirect action: 'index'
-         return
+         if (!systemId)
+         {
+            flash.message = message(code: 'default.error.systemIsRequired')
+            return
+         }
+         
+         def org = Organization.findByUid(uid)
+         if (!org)
+         {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), uid])
+            redirect action: 'index'
+            return
+         }
+   
+         def virtualUser = new User(username: String.random(50),
+                                    password: String.uuid(),
+                                    email: String.random(50) + '@virtual.com',
+                                    isVirtual: true,
+                                    enabled: true,
+                                    organizations: [org])
+   
+         virtualUser.save(failOnError: true)
+   
+         def key = new ApiKey(organization: org,
+                              user: virtualUser,
+                              systemId: systemId,
+                              token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number]))
+   
+         key.save(failOnError: true)
+   
+         redirect action:'show', params:[uid:org.uid]
       }
-
-      def virtualUser = new User(username: String.random(50),
-                                 password: String.uuid(),
-                                 email: String.random(50) + '@virtual.com',
-                                 isVirtual: true,
-                                 enabled: true,
-                                 organizations: [org])
-
-      virtualUser.save(failOnError: true)
-
-      def key = new ApiKey(organization: org,
-                           user: virtualUser,
-                           token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number]))
-
-      key.save(failOnError: true)
-
-      redirect action:'show', params:[uid:org.uid]
    }
 
    @Transactional

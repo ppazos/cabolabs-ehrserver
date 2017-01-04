@@ -40,14 +40,9 @@
         </table>
         
         <div class="btn-toolbar" role="toolbar">
-          <g:form url="[resource:organizationInstance, action:'delete']" method="DELETE">
-            <fieldset class="buttons">
-              <g:link action="edit" id="${organizationInstance.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
-              <%--
-              <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-              --%>
-            </fieldset>
-          </g:form>
+          <fieldset class="buttons">
+            <g:link action="edit" id="${organizationInstance.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+          </fieldset>
         </div>
 	   </div>
     </div>
@@ -182,11 +177,15 @@
         <div class="table-responsive">
 	       <table class="table table-striped table-bordered table-hover">
 	         <tr>
+	           <th><g:message code="apikey.attr.systemId" /></th>
 	           <th><g:message code="apikey.attr.token" /></th>
 	           <th width="10%"></th>
 	         </tr>
 	         <g:each in="${apikeys}" var="key">
 	            <tr>
+	              <td>
+	                ${key.systemId}
+	              </td>
 	              <td>
 	                <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
 	              </td>
