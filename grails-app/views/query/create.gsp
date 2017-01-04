@@ -114,6 +114,14 @@
         set_template_id: function (template_id) {
           if (template_id != null) this.template_id = template_id;
         },
+        has_criteria: function ()
+        {
+           return this.where.length != 0;
+        },
+        has_projections: function ()
+        {
+           return this.select.length != 0;
+        },
         add_criteria: function (archetype_id, path, rm_type_name, criteria)
         {
           if (this.type != 'composition') return false;
@@ -230,6 +238,19 @@
         if (!query.get_name())
         {
            alert('Please specify a name for the query');
+           return;
+        }
+
+        if (!query.has_criteria() && !query.has_projections())
+        {
+           if (query.get_type() == 'datavalue')
+           {
+              alert('The projections are empty, please select at least one data point');
+           }
+           else
+           {
+              alert('The criteriais empty, please set at least one condition');
+           }
            return;
         }
 
