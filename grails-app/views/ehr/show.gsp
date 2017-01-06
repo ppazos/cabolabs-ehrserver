@@ -167,6 +167,12 @@
             </tr>
           </tbody>
         </table>
+        
+        <div class="btn-toolbar" role="toolbar">
+          <fieldset class="buttons">
+            <g:link action="delete" onclick="return confirm('${message(code:'default.button.delete.confirm.message')}');" params="[uid: ehr.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-trash-o fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" /></button></g:link>
+          </fieldset>
+        </div>
       </div>
     </div>
 

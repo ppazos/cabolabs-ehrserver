@@ -238,4 +238,29 @@ class EhrController {
    {
       render(text: compositionService.compositionAsXml(uid), contentType: "text/xml", encoding:"UTF-8")
    }
+   
+   def delete(String uid)
+   {
+      if (!uid)
+      {
+         flash.message = message(code:'ehr.show.uidIsRequired')
+         redirect(url:request.getHeader('referer'))
+         return
+      }
+      
+      def ehr = Ehr.findByUid(uid)
+      if (!ehr)
+      {
+         flash.message = message(code:'ehr.show.ehrDoesntExistsForUid', args:[uid])
+         redirect(url:request.getHeader('referer'))
+         return
+      }
+      
+      ehr.deleted = true
+      
+      ehr.save(failOnError: true)
+      
+      flash.message = message(code:'ehr.delete.deletedOk')
+      redirect action: 'list'
+   }
 }
