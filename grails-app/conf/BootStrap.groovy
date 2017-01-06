@@ -491,9 +491,9 @@ class BootStrap {
      if (Organization.count() == 0)
      {
         // Sample organizations
-        organizations << new Organization(name: 'Hospital de Clinicas', number: '1234')
-        organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
-        organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
+        organizations << new Organization(name: 'CaboLabs', number: '123456')
+        //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+        //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
         
         organizations.each {
            it.save(failOnError:true, flush:true)
@@ -520,10 +520,7 @@ class BootStrap {
             new RequestMap(url: url, configAttribute: 'permitAll').save()
         }
        
-        // sections
-        // works for /app
-        //new RequestMap(url: '/app/**', configAttribute: 'ROLE_ADMIN').save()
-        
+        // sections        
         new RequestMap(url: '/notification/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
         
         new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
@@ -552,7 +549,6 @@ class BootStrap {
         new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         
-        
         // share/unshare queries and opts between orgs
         new RequestMap(url: '/resource/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
         
@@ -560,32 +556,35 @@ class BootStrap {
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
      }
+     
      if (Role.count() == 0 )
      {
+        // Create roles
         def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
         def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
-        //def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
-        //def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
         def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
      }
+     
      if (User.count() == 0)
      {
-        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com',  password: 'admin', enabled: true)
-        adminUser.organizations = [organizations[0], organizations[1]]
+        // Create users
+        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
+        adminUser.organizations = [organizations[0]]
         adminUser.save(failOnError: true,  flush: true)
         
-        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com',  password: 'orgman', enabled: true)
-        orgManUser.organizations = [organizations[0], organizations[1]]
+        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
+        orgManUser.organizations = [organizations[0]]
         orgManUser.save(failOnError: true,  flush: true)
         
-        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ADMIN')), true )
-        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
-        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
-        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_ORG_CLINICAL_MANAGER')), true )
-        //UserRole.create( godlikeUser, (Role.findByAuthority('ROLE_USER')), true )
+        def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
+        user.organizations = [organizations[0]]
+        user.save(failOnError: true,  flush: true)
         
+
+        // Associate roles
         UserRole.create( adminUser, (Role.findByAuthority('ROLE_ADMIN')), true )
         UserRole.create( orgManUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+        UserRole.create( user, (Role.findByAuthority('ROLE_USER')), true )
      }
 
      //****** SECURITY *******
@@ -610,6 +609,7 @@ class BootStrap {
      optMan.loadAll()
      
 
+     /*
      // Sample EHRs for testing purposes
      if (Ehr.count() == 0)
      {
@@ -637,35 +637,40 @@ class BootStrap {
            if (!ehr.save()) println ehr.errors
         }
      }
+     */
      
-     def p1
-     if (Plan.count() == 0)
-     {
-        // Create plans
-        p1 = new Plan(
-          name: "Free Educational",
-          maxTransactions: 50,
-          maxDocuments: 100,
-          repositorySize: 1024*15*120, // allows 120 documents of 15KB
-          totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
-          period: Plan.periods.MONTHLY
-        )
+     
+      // Create plans
+      def p1
+      if (Plan.count() == 0)
+      {
+         // Create plans
+         p1 = new Plan(
+           name: "Free Educational",
+           maxTransactions: 50,
+           maxDocuments: 100,
+           repositorySize: 1024*15*120, // allows 120 documents of 15KB
+           totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
+           period: Plan.periods.MONTHLY
+         )
         
-        p1.save(failOnError: true)
-     }
-     else
-     {
-        p1 = Plan.get(1)
-     }
+         p1.save(failOnError: true)
+      }
+      else
+      {
+         p1 = Plan.get(1)
+      }
      
-     // Associate free plans by default
-     def orgs = Organization.list()
-     orgs.each { org ->
-       if (!PlanAssociation.findByOrganizationUid(org.uid))
-       {
-          p1.associate( org )
-       }
-     }
+      // Associate free plans by default
+      def orgs = Organization.list()
+      orgs.each { org ->
+         if (!PlanAssociation.findByOrganizationUid(org.uid))
+         {
+            p1.associate( org )
+         }
+      }
+      
+     
      
       // ============================================================
       // migration for latest changes
