@@ -69,7 +69,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
        def codes = [:]
        def code
        
-       optMan.getNode(archetypeId, path + '/defining_code')?.xmlNode.code_list.each {
+       // if the coded text doesn't have a constraint, xmlNode is null
+       // https://github.com/ppazos/cabolabs-ehrserver/issues/528
+       optMan.getNode(archetypeId, path + '/defining_code')?.xmlNode?.code_list.each {
           
           code = it.text()
           codes[code] = optMan.getText(archetypeId, code) // at00XX -> name
