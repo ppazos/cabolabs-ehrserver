@@ -29,7 +29,6 @@ class DataIndexerService {
 
       def version, versionFile, versionXml, parsedVersion, compoParsed, org
      
-     
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
       // set, which is probably not what is desired.  Parser will use a default
@@ -39,13 +38,12 @@ class DataIndexerService {
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
      
-
       // This filters by org on the OptShare
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {
          // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
-         log.warn "The committed composition ${compoIndex.uid} references a template "${compoIndex.templateId}" that is not loaded. Indexing is avoided until the template is loaded."
+         log.warn "The committed composition ${compoIndex.uid} references a template '${compoIndex.templateId}' that is not loaded. Indexing is avoided until the template is loaded."
          return
       }
     
