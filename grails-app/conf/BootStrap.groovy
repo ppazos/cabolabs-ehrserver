@@ -490,6 +490,8 @@ class BootStrap {
      def organizations = []
      if (Organization.count() == 0)
      {
+        println "Creating sample organization"
+        
         // Sample organizations
         organizations << new Organization(name: 'CaboLabs', number: '123456')
         //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
@@ -567,6 +569,8 @@ class BootStrap {
      
      if (User.count() == 0)
      {
+        println "Creating sample users"
+        
         // Create users
         def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
         adminUser.organizations = [organizations[0]]
@@ -596,6 +600,8 @@ class BootStrap {
      // Always regenerate indexes in deploy
      if (OperationalTemplateIndex.count() == 0)
      {
+        println "Indexing Operational Templates"
+        
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 	     ti.setupBaseOpts()
         ti.indexAll( Organization.get(1) )
