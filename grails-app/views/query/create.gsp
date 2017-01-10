@@ -249,7 +249,7 @@
            }
            else
            {
-              alert('The criteriais empty, please set at least one condition');
+              alert('The criteria is empty, please set at least one condition');
            }
            return;
         }
