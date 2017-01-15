@@ -25,26 +25,48 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    
    def log = Logger.getLogger('com.cabolabs.ehrserver.data.DataIndexerServiceIntegrationSpec')
    
+   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   
+   private createOrganization()
+   {
+      def org = new Organization(uid: orgUid, name: 'Test', number: '111999')
+      org.save(failOnError: true)
+   }
+   
+   private createEHR()
+   {
+      def ehr = new Ehr(
+         uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
+         subject: new PatientProxy(
+            value: patientUid
+         ),
+         organizationUid: Organization.findByUid(orgUid).uid
+      )
+    
+      ehr.save(failOnError: true)
+   }
+   
    
    def setup()
    {
       // used by the service, mock the version repo where commits are stored
       //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
-      def uid = '11111111-1111-1111-1111-111111111111'
-      def ehr = new Ehr(
-         uid: uid, // the ehr id is the same as the patient just to simplify testing
-         subject: new PatientProxy(
-            value: uid
-         ),
-         organizationUid: Organization.get(1).uid
-      )
-    
-      if (!ehr.save()) println ehr.errors
+      createOrganization()
+      createEHR()
    }
 
    def cleanup()
    {
-      // empty the temp version store
+      def ehr = Ehr.findByUid(ehrUid)
+      ehr.delete()
+      
+      def org = Organization.findByUid(orgUid)
+      org.delete()
+
+      
+      // empty the temp version store, TODO: make the cleanup per test case
       def temp = new File(Holders.config.app.version_repo)
       println "***** DELETE FROM "+ temp.path
       temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) {
@@ -53,11 +75,14 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       }
    }
 
-   void "test simple count inbdex"()
+   void "test simple count index"()
    {
       // prepare a single commit, then try to index
       setup:
-         def ehr = Ehr.get(1)
+         // Need template "Test all datatypes" to be shared with the org,
+         // if is not shared the commit will say that the version cant ve indexed
+      
+         def ehr = Ehr.findByUid(ehrUid)
          assert ehr != null
 
          def versionsXML = new File('test'+ PS +'resources'+ PS +'commit'+ PS +'test_commit_1.xml').text
@@ -65,29 +90,33 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
 
          def slurper = new XmlSlurper(false, false)
          def parsedVersions = slurper.parseText(versionsXML)
-log.warn "pre commit"
+
          assert CompositionIndex.count() == 0
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-log.warm "post commit"
          assert CompositionIndex.count() == 1
+         
+         // The OPT associated with the compo index should be shared with the org or be public
+         // Here we manke the OPT public.
+         def compoIndex = CompositionIndex.findByDataIndexed(false)
+         def opt = OperationalTeplateIndex.findBtTemplateId(compoIndex.templateId)
+         opt.isPublic = true
+         opt.save(failOnError: true)
 
       when:
-println "E"
-         def compoIndex = CompositionIndex.findByDataIndexed(false)
+         //def compoIndex = CompositionIndex.findByDataIndexed(false)
          assert compoIndex != null
          assert CompositionIndex.countByDataIndexed(false) == 1
          
          // The template for the instance is loaded
          assert OperationalTemplateIndex.countByTemplateId( compoIndex.templateId ) == 1
          
-         println compoIndex.organizationUid
-         assert Organization.get(1).uid == compoIndex.organizationUid
+         println compoIndex.templateId
+         assert orgUid == compoIndex.organizationUid
          
          // OperationalTemplateIndexer should generated the shares on bootstrap from indexAll
-         println "shares "+ OperationalTemplateIndexShare.list()
+         //println "shares "+ OperationalTemplateIndexShare.list()
          
          dataIndexerService.generateIndexes( CompositionIndex.findByDataIndexed(false) )
-println "F"
          assert CompositionIndex.countByDataIndexed(true) == 1
           
       then:

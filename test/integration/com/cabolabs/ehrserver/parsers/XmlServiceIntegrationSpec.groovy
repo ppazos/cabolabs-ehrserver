@@ -7,7 +7,9 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.Organization
 
 import groovy.io.FileType
 import spock.lang.Ignore
@@ -22,54 +24,52 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    def xmlService
    
    private static String PS = System.getProperty("file.separator")
+   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   
+   private createOrganization()
+   {
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      org.save(failOnError: true)
+   }
+   
+   private createEHR()
+   {
+      def ehr = new Ehr(
+         uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
+         subject: new PatientProxy(
+            value: patientUid
+         ),
+         organizationUid: Organization.findByUid(orgUid).uid
+      )
+    
+      ehr.save(failOnError: true)
+   }
    
    
    def setup()
    {
       // used by the service, mock the version repo where commits are stored
       //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+      createOrganization()
+      createEHR()
    }
 
    def cleanup()
    {
-      /*
-       * org.springframework.dao.DataIntegrityViolationException: Hibernate operation: could not execute statement; SQL [n/a]; Cannot delete or update a p
-arent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCE
-S `composition_index` (`id`)); nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or u
-pdate a parent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`)
-REFERENCES `composition_index` (`id`))
-        at com.cabolabs.ehrserver.parsers.XmlServiceIntegrationSpec.cleanup(XmlServiceIntegrationSpec.groovy:46)
-Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constr
-aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCES `composition_index` (`id`))
+      def ehr = Ehr.findByUid(ehrUid)
+      ehr.delete()
       
-      // clean database
-      VersionedComposition.list().each { it.delete() }
-      Version.list().each { version ->
-         //version.commitAudit.delete() // AuditDetails
-         version.data.delete() // CompositionIndex
-         version.contribution.removeFromVersions(version)
-         version.delete()
-      }
-      Contribution.list().each { contrib ->
-         //contrib.audit.delete() // AuditDetails
-         contrib.ehr.removeFromContributions(contrib)
-         contrib.delete()
-      }
-      */
-      
-      /*
-      // empty the temp version store
-      def temp = new File(Holders.config.app.version_repo)
-      println "***** DELETE FROM "+ temp.path
-      temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
-      */
+      def org = Organization.findByUid(orgUid)
+      org.delete()
    }
 
    
    void "commit single / valid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -96,7 +96,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit single / invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -127,7 +127,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit single / invalid version with empty datatype nodes"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_empty_datatypes.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -160,7 +160,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "multiple / all valid versions"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -191,7 +191,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "multiple / one invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_one_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -220,7 +220,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "multiple / all invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -249,7 +249,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit same version twice"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -285,7 +285,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit 2 compos, and new version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          
@@ -323,7 +323,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit new version without previous version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          
@@ -357,7 +357,7 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit with an existing file with the same version id on the version repo"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          

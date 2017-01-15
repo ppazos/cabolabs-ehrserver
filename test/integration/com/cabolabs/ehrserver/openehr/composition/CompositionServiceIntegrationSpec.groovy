@@ -1,14 +1,21 @@
 package com.cabolabs.ehrserver.openehr.composition
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+
 import grails.test.spock.IntegrationSpec
+
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.Organization
 import com.cabolabs.util.DateParser
+
 import grails.util.Holders
+
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+
 import groovy.io.FileType
 
 class CompositionServiceIntegrationSpec extends IntegrationSpec {
@@ -485,9 +492,36 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    </lifecycle_state>
  </version>/$
    
- 
+   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   
+   private createOrganization()
+   {
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      org.save(failOnError: true)
+   }
+   
+   private createEHR()
+   {
+      def ehr = new Ehr(
+         uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
+         subject: new PatientProxy(
+            value: patientUid
+         ),
+         organizationUid: Organization.findByUid(orgUid).uid
+      )
+    
+      ehr.save(failOnError: true)
+   }
+   
+   
    def setup()
    {
+      createOrganization()
+      createEHR()
+   
+      
       /*
       println Ehr.list()
       println Ehr.list().uid
@@ -502,7 +536,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       def parsedVersion = parser.parseText(xml)
       
       // 2. get EHR
-      def ehr = Ehr.get(1)
+      def ehr = Ehr.findByUid(ehrUid)
       
       
       // 3. create CompositionIndex for an existing version XML
@@ -562,6 +596,11 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      def ehr = Ehr.findByUid(ehrUid)
+      ehr.delete()
+      
+      def org = Organization.findByUid(orgUid)
+      org.delete()
    }
 
    void "test composition as XML"()
