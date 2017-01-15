@@ -13,6 +13,7 @@ import groovy.io.FileType
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 
+
 import com.cabolabs.security.Organization
 import java.util.logging.Logger
 
@@ -98,7 +99,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          // The OPT associated with the compo index should be shared with the org or be public
          // Here we manke the OPT public.
          def compoIndex = CompositionIndex.findByDataIndexed(false)
-         def opt = OperationalTeplateIndex.findBtTemplateId(compoIndex.templateId)
+         def opt = OperationalTemplateIndex.findByTemplateId(compoIndex.templateId)
          opt.isPublic = true
          opt.save(failOnError: true)
 

@@ -37,8 +37,8 @@ class DataIndexerService {
       def message
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
-println "1"
-      // This filters by org on the OptShare
+
+            // This filters by org on the OptShare
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {
@@ -46,7 +46,7 @@ println "1"
          log.warn "The committed composition ${compoIndex.uid} references a template '${compoIndex.templateId}' that is not loaded. Indexing is avoided until the template is loaded."
          return
       }
-println "2"
+
       indexes = []
     
       // load xml file from filesystem
@@ -61,7 +61,7 @@ println "2"
          log.error "Committed file not found, avoiding indexing version "+ version.uid +" "+ e.message
          return // Continue with next compoIdx
       }
-println "3"
+
       versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
     
@@ -76,7 +76,6 @@ println "3"
     
       recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
 
-println "4"
 
       // empty if the OPT for the compo is not loaded in the server
       indexes.each { didx ->
@@ -104,7 +103,6 @@ println "4"
          log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
          throw new DataIndexException('CompiIndex failed to save omn indexing', compoIndex.errors)
       }
-      println "5"
    }
    
    /**
