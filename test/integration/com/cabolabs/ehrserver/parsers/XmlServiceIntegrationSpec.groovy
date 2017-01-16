@@ -50,8 +50,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      // used by the service, mock the version repo where commits are stored
-      //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
       createOrganization()
       createEHR()
    }
