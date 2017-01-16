@@ -101,6 +101,16 @@
         where: [], // DataCriteria
         select: [], // DataGet
         group: 'none',
+        reset:        function () {
+           this.id = undefined;
+           this.id_gen = 0;
+           this.format = undefined;
+           this.template_id = undefined;
+           this.criteriaLogic = undefined;
+           this.where = [];
+           this.select = [];
+           this.group = 'none';
+        },
         set_id:       function (id) { this.id = id; }, // for edit/update
         set_type:     function (type) { this.type = type; }, // composition or datavalue
         get_type:     function () { return this.type; }, // composition or datavalue
@@ -1371,6 +1381,20 @@ resp.responseJSON.result.message +'</div>'
          */
         $('select[name=type]').change( function() {
 
+          // If the query has some data and the user doesn't confirm, the type should not be changed
+          if ((query.has_criteria() || query.has_projections()) && !confirm('Changing the query type will delete the current projections or criteria. Are you sure do you want to change the type?'))
+          {
+             console.log('cancel tpy change', this, $('.last-selected', this));
+             $(this).val( $('.last-selected', this).val() ); // selects the previous value, so the select doesnt change
+             return false;
+          }
+
+          // last selected is removed from the previous selected option
+          $('.last-selected', this).removeClass('last-selected');
+
+          // last selected is added to the current select
+          $('option:selected', this).addClass('last-selected');
+
           // Limpia las tablas de criterios y seleccion cuando
           // se cambia el tipo de la query para evitar errores.
           clearCriteriaAndSelection();
@@ -1380,6 +1404,10 @@ resp.responseJSON.result.message +'</div>'
           // tanto los comunes como los particulares para busqueda de compositions
           // o de data_values
           $('.query_build').hide();
+          
+          
+          // Id the query has some data, it is deleted to the clean instance of query.
+          query.reset();
           
           if (this.value != '')
           {
