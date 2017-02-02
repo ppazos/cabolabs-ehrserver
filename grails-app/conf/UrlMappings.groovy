@@ -26,7 +26,7 @@ class UrlMappings {
       )
       
       
-      "/rest/profile/${username}"(
+      "/rest/users/${username}"(
          controller: 'user',
          action: 'profile'
       )
