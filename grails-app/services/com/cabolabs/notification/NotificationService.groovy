@@ -39,7 +39,7 @@ class NotificationService {
    {
       def user = messageData[0]
       
-      println "sendUserCreatedEmail user.organizations "+ user.organizations
+      //println "sendUserCreatedEmail user.organizations "+ user.organizations
       
       def token = user.passwordToken
       def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
@@ -49,14 +49,16 @@ class NotificationService {
       String message
       
       if (userRegistered)
-         message = '<p>We received your registration. You can login using these organization number: {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
+         message = '<p>We received your registration. You can login using this username <b>{0}</b> and organization number: {1}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
       else
-        message = '<p>A user was created for you. You can login using these organization numbers {0}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
+        message = '<p>A user was created for you. You can login using this username <b>{0}</b> and organization numbers {1}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
 
+     message = message.replaceFirst ( /\{0\}/ , user.username)
+        
      if (organizationNumbers.size() == 1)
-        message = message.replaceFirst ( /\{0\}/ , organizationNumbers[0].toString())
+        message = message.replaceFirst ( /\{1\}/ , organizationNumbers[0].toString())
      else
-        message = message.replaceFirst ( /\{0\}/ , organizationNumbers.toString())
+        message = message.replaceFirst ( /\{1\}/ , organizationNumbers.toString())
 
       
       this.sendMail(recipient, 'Welcome to CaboLabs EHRServer!', message)
@@ -66,7 +68,7 @@ class NotificationService {
    {
       def user = messageData[0]
       
-      println "sendForgotPasswordEmail"
+      //println "sendForgotPasswordEmail"
       
       def token = user.passwordToken
       def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
