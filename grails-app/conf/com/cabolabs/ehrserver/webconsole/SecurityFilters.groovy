@@ -193,9 +193,45 @@ class SecurityFilters {
                   }
                   else
                   {
+                     // check data in the JWT token: username and organization
                      username = request.securityStatelessMap.username
                      
+                     
+                     if (User.countByUsername(username) == 0)
+                     {
+                        // TODO: send in the request format (add support to json)
+                        render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                           result {
+                              type('AR')                         // application reject
+                              message(
+                                 messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request))
+                              )
+                              code('EHR_SERVER::API::ERRORS::987653') // sys::service::concept::code
+                           }
+                        }
+                        return false
+                     }
+                     
+                     
                      def _orgnum = request.securityStatelessMap.extradata.organization
+                     
+                     
+                     if (Organization.countByNumber(_orgnum) == 0)
+                     {
+                        // TODO: send in the request format (add support to json)
+                        render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                           result {
+                              type('AR')                         // application reject
+                              message(
+                                 messageSource.getMessage('rest.error.token.organizationDoesntExists', [_orgnum] as Object[], getRequestLocale(request))
+                              )
+                              code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
+                           }
+                        }
+                        return false
+                     }
+                     
+                     
                      def _org = Organization.findByNumber(_orgnum)
                      organizationUid = _org.uid
                   }
