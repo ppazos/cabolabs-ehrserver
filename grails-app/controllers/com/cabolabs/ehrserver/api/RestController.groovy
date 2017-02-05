@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -31,6 +30,7 @@ import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
@@ -443,7 +443,52 @@ class RestController {
           * Note that this will override the time_committed from the version in the XML received.
           */
 
-          commitLoggerService.log(request, contribution.uid, true, content)
+         commitLoggerService.log(request, contribution.uid, true, content)
+          
+          
+          
+         // Check if the OPT is loaded for each compo committed, return warning if not.
+          
+         def _orgnum = request.securityStatelessMap.extradata.organization
+         def _org = Organization.findByNumber(_orgnum)
+         def warnings = []
+         contribution.versions.each { version ->
+             
+            if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(version.data.templateId) == 0)
+            {
+               warnings << message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid])
+            }
+         }
+          
+         if (warnings.size() > 0)
+         {
+            // TODO: this is not an error, but we use the same method for simplicity, we might want to ad a warning type of result.
+            renderError(message(code:'api.commit.warning.verionsCommittedWithWarnings'), '1324', 200, warnings, null)
+         }
+         else
+         {
+            withFormat {
+               xml {
+                  render(contentType:"text/xml", encoding:"UTF-8") {
+                     result {
+                        type ('AA')                         // application reject
+                        message('Versions successfully committed to EHR '+ ehrUid)
+                        // has no error code
+                     }
+                  }
+               }
+               json {
+                  render(contentType:"application/json", encoding:"UTF-8") {
+                     [
+                        result: [
+                           type: 'AA',
+                           message: 'Versions successfully committed to EHR '+ ehrUid
+                        ]
+                     ]
+                  }
+               }
+            }
+         }
       }
       catch (XmlValidationException e) // xsd error
       {
@@ -459,7 +504,7 @@ class RestController {
             }
          }
          
-         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009', 400, detailedErrors)
+         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009', 400, detailedErrors, null)
          return
       }
       catch (UndeclaredThrowableException e)
@@ -478,29 +523,6 @@ class RestController {
          
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
-      }
-      
-      
-      withFormat {
-         xml {
-            render(contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type ('AA')                         // application reject
-                  message('Versions successfully committed to EHR '+ ehrUid)
-                  // has no error code
-               }
-            }
-         }
-         json {
-            render(contentType:"application/json", encoding:"UTF-8") {
-               [
-                  result: [
-                     type: 'AA',
-                     message: 'Versions successfully committed to EHR '+ ehrUid
-                  ]
-               ]
-            }
-         }
       }
       
    } // commit
