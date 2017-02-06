@@ -467,12 +467,14 @@ class RestController {
          }
          else
          {
+            def msg = message(code:'api.commit.ok', args:[ehrUid])
+            
             withFormat {
                xml {
                   render(contentType:"text/xml", encoding:"UTF-8") {
                      result {
                         type ('AA')                         // application reject
-                        message('Versions successfully committed to EHR '+ ehrUid)
+                        message(msg)
                         // has no error code
                      }
                   }
@@ -482,7 +484,7 @@ class RestController {
                      [
                         result: [
                            type: 'AA',
-                           message: 'Versions successfully committed to EHR '+ ehrUid
+                           message: msg
                         ]
                      ]
                   }
