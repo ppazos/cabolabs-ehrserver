@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -61,7 +60,7 @@ class DataIndexerService {
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
 
-            // This filters by org on the OptShare
+      // This filters by org on the OptShare
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {
@@ -200,7 +199,8 @@ class DataIndexerService {
       // TODO: instead of calculating the archetypePath, I can use the templateId and path
       //      to query ArchetypeIndexItem and get the archetypeId and archetypePath from there.
       // ArchetypeIndexItem uses the archetypeId and archetypePath to search
-      def idx = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, archetypePath)
+      //def idx = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, archetypePath)
+      
       
       // FIXME:
       // Va a haber un problema con multiples datos para las mismas
@@ -220,15 +220,24 @@ class DataIndexerService {
       {
          try
          {
-            if (idx)
-            {
+            //if (idx)
+            //{
                // tries this with OBSERVATION, that triggers the exception:
                // No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
-               def type = DataValues.valueOfString(idx.rmTypeName)
+            
+               // Taking the type from the committed compo instead of the ArchetypeIndexItem avoids the
+               // problem of having two alternative types for the same path, with that, the indexing
+               // tries to process the first type it founds instead of the type in hte committed compo.
+               //def type = DataValues.valueOfString(idx.rmTypeName)
+               def type = DataValues.valueOfString(node.'@xsi:type'.text())
+               
+               println node.name() +' '+ node.'@xsi:type'.text() +' '+ type
+               
+               
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
                def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
                indexes << dataIndex
-            }
+            //}
          }
          catch (IllegalArgumentException ex)
          {
