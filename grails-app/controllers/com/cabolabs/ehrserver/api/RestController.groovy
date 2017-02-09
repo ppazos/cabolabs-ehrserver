@@ -294,6 +294,15 @@ class RestController {
                   type ('AR')                         // application reject
                   message(msg)
                   code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
+                  
+                  if (detailedErrors)
+                  {
+                     details {
+                        detailedErrors.each { error ->
+                           item(error)
+                        }
+                     }
+                  }
                }
             }
          }
