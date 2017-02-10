@@ -37,7 +37,7 @@ def PS = System.getProperty("file.separator")
 
 
 // CORS
-cors.url.pattern = '/rest/*'
+cors.url.pattern = '/api/*'
 cors.headers = ['Access-Control-Allow-Origin': '*']
 cors.enabled = true
 

@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import grails.util.Holders
 
@@ -579,6 +578,9 @@ class BootStrap {
         new RequestMap(url: '/stats/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
+        
+        new RequestMap(url: '/rest/queryCompositions', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/rest/queryData', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
      }
      
      if (Role.count() == 0 )
