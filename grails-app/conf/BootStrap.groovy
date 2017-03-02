@@ -636,6 +636,7 @@ class BootStrap {
      
      // OPT loading
      def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
+     optMan.unloadAll()
      optMan.loadAll()
      
 

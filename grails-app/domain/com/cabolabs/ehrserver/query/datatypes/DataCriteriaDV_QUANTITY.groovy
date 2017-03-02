@@ -55,6 +55,7 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
      */
     static List criteriaSpec(String archetypeId, String path)
     {
+       println archetypeId +" "+ path
        def optMan = OptManager.getInstance()
 //       def arch = optMan.getReferencedArchetype(archetypeId)
        
