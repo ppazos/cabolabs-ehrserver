@@ -231,7 +231,7 @@ class DataIndexerService {
                //def type = DataValues.valueOfString(idx.rmTypeName)
                def type = DataValues.valueOfString(node.'@xsi:type'.text())
                
-               println node.name() +' '+ node.'@xsi:type'.text() +' '+ type
+               println 'recursiveIndexData '+ node.name() +' '+ node.'@xsi:type'.text() +' '+ type
                
                
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
@@ -280,7 +280,8 @@ class DataIndexerService {
         archetypePath: archetypePath,
         owner: owner,
         magnitude: new Double( node.magnitude.text() ),
-        units: node.units.text()
+        units: node.units.text(),
+        rmTypeName: 'DV_QUANTITY'
       )
    }
    
@@ -301,7 +302,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        magnitude: new Long( node.magnitude.text() )
+        magnitude: new Long( node.magnitude.text() ),
+        rmTypeName: 'DV_COUNT'
       )
    }
    
@@ -324,7 +326,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        value: node.value.text()
+        value: node.value.text(),
+        rmTypeName: 'DV_DURATION'
         //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
       )
    }
@@ -449,7 +452,8 @@ class DataIndexerService {
         numerator: numerator,
         denominator: denominator,
         type: type,
-        precision: ((node.precision.text()) ? new Integer(node.precision.text()) : -1)
+        precision: ((node.precision.text()) ? new Integer(node.precision.text()) : -1),
+        rmTypeName: 'DV_PROPORTION'
       )
    }
    
@@ -476,7 +480,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        value: node.value.text()
+        value: node.value.text(),
+        rmTypeName: 'DV_TEXT'
       )
    }
    
@@ -499,7 +504,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        value: new Boolean(node.value.text())
+        value: new Boolean(node.value.text()),
+        rmTypeName: 'DV_BOOLEAN'
       )
    }
    
@@ -534,7 +540,8 @@ class DataIndexerService {
         owner: owner,
         value: node.value.text(),
         code: node.defining_code.code_string.text(),
-        terminologyId: node.defining_code.terminology_id.value.text()
+        terminologyId: node.defining_code.terminology_id.value.text(),
+        rmTypeName: 'DV_CODED_TEXT'
       )
    }
    
@@ -568,7 +575,8 @@ class DataIndexerService {
         value: new Integer( node.value.text() ),
         symbol_value: node.symbol.value.text(),
         symbol_code: node.symbol.defining_code.code_string.text(),
-        symbol_terminology_id: node.symbol.defining_code.terminology_id.value.text()
+        symbol_terminology_id: node.symbol.defining_code.terminology_id.value.text(),
+        rmTypeName: 'DV_ORDINAL'
       )
    }
    
@@ -591,7 +599,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        value: DateParser.tryParse(node.value.text())
+        value: DateParser.tryParse(node.value.text()),
+        rmTypeName: 'DV_DATE_TIME'
       )
    }
    
@@ -613,7 +622,8 @@ class DataIndexerService {
         path: path,
         archetypePath: archetypePath,
         owner: owner,
-        value: DateParser.tryParse(node.value.text())
+        value: DateParser.tryParse(node.value.text()),
+        rmTypeName: 'DV_DATE'
       )
    }
    
@@ -632,7 +642,8 @@ class DataIndexerService {
         identifier: node.id.text(),
         type: node.type.text(),
         issuer: node.issuer.text(),
-        assigner: node.assigner.text()
+        assigner: node.assigner.text(),
+        rmTypeName: 'DV_IDENTIFIER'
       )
    }
 }

@@ -154,13 +154,13 @@
           
           return this.id_gen;
         },
-        add_projection: function (archetype_id, path)
+        add_projection: function (archetype_id, path, rm_type_name)
         {
           if (this.type != 'datavalue') return false;
 
           this.id_gen++;
           
-          this.select[this.id_gen - 1] = {pid: this.id_gen, archetype_id: archetype_id, path: path};
+          this.select[this.id_gen - 1] = {pid: this.id_gen, archetype_id: archetype_id, path: path, rmTypeName: rm_type_name};
 
           // when items are removed and then added, there are undefined entries in the array
           // this cleans the undefined items so the server doesnt receive empty values.
@@ -750,10 +750,10 @@ resp.responseJSON.result.message +'</div>'
       // DATA QUERY CREATE/EDIT =========
       // =================================
       
-      var dom_add_selection = function (archetype_id, path) {
+      var dom_add_selection = function (archetype_id, path, rm_type_name) {
 
         // query object mgt
-        pid = query.add_projection(archetype_id, path);
+        pid = query.add_projection(archetype_id, path, rm_type_name);
         query.log();
 
         // shows the projection in the UI
@@ -787,7 +787,11 @@ resp.responseJSON.result.message +'</div>'
           return;
         }
 
-        dom_add_selection($('select[name=view_archetype_id]').val(), $('select[name=view_archetype_path]').val());
+        dom_add_selection(
+          $('select[name=view_archetype_id]').val(),
+          $('select[name=view_archetype_path]').val(),
+          $('select[name=view_archetype_path] option:selected').data('type')
+        );
         
         
          // Notifica que la condicion fue agregada
@@ -1285,7 +1289,7 @@ resp.responseJSON.result.message +'</div>'
              queryInstance.select.each { data_get ->
                 
                 // Updates the UI and the query object
-                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'");'
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ data_get.rmTypeName +'");'
              }
           }
           

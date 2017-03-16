@@ -237,7 +237,7 @@ class Query {
          json.select.each { projection ->
             
             this.addToSelect(
-               new DataGet(archetypeId: projection.archetype_id, path: projection.path)
+               new DataGet(archetypeId: projection.archetype_id, path: projection.path, rmTypeName: projection.rmTypeName)
             )
          }
       }
@@ -298,6 +298,7 @@ class Query {
                and {
                   eq('archetypeId', dataGet.archetypeId)
                   eq('archetypePath', dataGet.path)
+                  eq('rmTypeName', dataGet.rmTypeName) // gets a specific DV in case alteratives exist for the same arch and path
                }
             }
          }
@@ -364,16 +365,18 @@ class Query {
          // Usa ruta absoluta para agrupar.
          absPath = dataGet.archetypeId + dataGet.path
          
+         // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
+         // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
-         resHeaders[absPath]['type'] = dataidx.rmTypeName
+         resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLE above
          resHeaders[absPath]['name'] = dataidx.name
          
-         switch (dataidx.rmTypeName)
+         switch (dataGet.rmTypeName)
          {
             case 'DV_QUANTITY':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() //['magnitude', 'units']
@@ -409,7 +412,7 @@ class Query {
                resHeaders[absPath]['attrs'] = DataCriteriaDV_IDENTIFIER.attributes()
             break
             default:
-               throw new Exception("type "+dataidx.rmTypeName+" not supported")
+               throw new Exception("type "+dataGet.rmTypeName+" not supported")
          }
       }
       
@@ -584,14 +587,15 @@ class Query {
          // Usa ruta absoluta para agrupar.
          absPath = dataGet.archetypeId + dataGet.path
          
-
+         // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
+         // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
 
          resGrouped[absPath] = [:]
-         resGrouped[absPath]['type'] = dataidx.rmTypeName // type va en cada columna
+         resGrouped[absPath]['type'] = dataGet.rmTypeName // type va en cada columna
          resGrouped[absPath]['name'] = dataidx.name // name va en cada columna, nombre asociado a la path por la que se agrupa
          
          // FIXME: hay tipos de datos que no deben graficarse
@@ -605,7 +609,7 @@ class Query {
             //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
             // Datos de cada path seleccionada dentro de la composition
-            switch (dataidx.rmTypeName)
+            switch (dataGet.rmTypeName)
             {
                case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
@@ -659,7 +663,7 @@ class Query {
                                                    date:        dvi.owner.startTime]
                break
                default:
-                  throw new Exception("type "+dataidx.rmTypeName+" not supported")
+                  throw new Exception("type "+dataGet.rmTypeName+" not supported")
             }
             
             // para cada fila quiero fecha y uid de la composition

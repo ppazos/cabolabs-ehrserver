@@ -301,7 +301,7 @@ class BootStrap {
         else
         {
            j << [group:         q.group] // Group is only for datavalue
-           j << [projections:   q.select.collect { [archetypeId: it.archetypeId, path: it.path] }]
+           j << [projections:   q.select.collect { [archetypeId: it.archetypeId, path: it.path, rmTypeName: it.rmTypeName] }]
         }
         
         return j

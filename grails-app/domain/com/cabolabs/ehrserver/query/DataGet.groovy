@@ -34,6 +34,7 @@ class DataGet {
    
    String archetypeId
    String path
+   String rmTypeName
    
    // TODO: poner name para mostrar en la definicion
    //       de la consulta, se saca de ArchetypeIndexItem o del

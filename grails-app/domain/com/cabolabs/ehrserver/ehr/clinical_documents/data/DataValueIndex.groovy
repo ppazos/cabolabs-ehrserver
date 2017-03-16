@@ -31,6 +31,7 @@ class DataValueIndex {
    String archetypeId
    String path
    String archetypePath
+   String rmTypeName
    
    CompositionIndex owner
    
