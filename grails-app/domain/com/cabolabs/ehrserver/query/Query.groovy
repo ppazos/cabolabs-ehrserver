@@ -709,9 +709,8 @@ class Query {
            * llegue una path a un tipo que no corresponde, el error de tipo
            * no sucederia nunca, asi no hay que tirar except aca.
            */
-         def dataidx
+         //def dataidx
          def idxtype
-         
          this.where.eachWithIndex { dataCriteria, i ->
              
             // Aux to build the query FROM
@@ -722,10 +721,14 @@ class Query {
              
             //println "archId "+ dataCriteria.archetypeId
             //println "path "+ dataCriteria.path
-             
-            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
-            idxtype = dataidx?.rmTypeName
-             
+            
+            // PROBLEM: for alternatives, this returns only one alternative DV
+            //dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
+            //idxtype = dataidx?.rmTypeName
+            
+            // FIX to the problem: we have the DV in the DataCriteria
+            idxtype = dataCriteria.rmTypeName
+            
             // ================================================================
             // TODO:
             // Since GRAILS 2.4 it seems that exists can be done in Criteria,
