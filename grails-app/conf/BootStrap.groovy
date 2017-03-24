@@ -792,6 +792,7 @@ class BootStrap {
      }
      */
       
+      /*
       com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex.list().each {
          it.delete()
       }
@@ -813,7 +814,7 @@ class BootStrap {
       DataCriteria.list().each {
          it.delete()
       }
-      
+      */
    }
    
    def destroy = {
