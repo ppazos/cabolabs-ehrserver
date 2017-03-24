@@ -106,6 +106,7 @@ class DataIndexerService {
       
          if (!didx.save())
          {
+            log.info "index error: ("+ didx.templateId +") "+didx.archetypeId + didx.archetypePath +" "+ didx.rmTypeName +" "+ didx.getClass().getSimpleName() +' for compo '+ didx.owner.uid
             log.info didx.errors.toString()
             // if one index created fails to save, the whole indexing process is rolled back
          
