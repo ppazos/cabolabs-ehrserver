@@ -791,6 +791,29 @@ class BootStrap {
         status.save(failOnError: true)
      }
      */
+      
+      com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex.list().each {
+         it.delete()
+      }
+      CompositionIndex.list().each {
+         it.dataIndexed = false
+         it.save()
+      }
+      
+      
+      QueryShare.list().each {
+         it.delete()
+      }
+      Query.list().each {
+         it.delete()
+      }
+      DataGet.list().each {
+         it.delete()
+      }
+      DataCriteria.list().each {
+         it.delete()
+      }
+      
    }
    
    def destroy = {
