@@ -61,7 +61,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    def cleanup()
    {
       def ehr = Ehr.findByUid(ehrUid)
-      ehr.delete()
+      ehr.delete(failOnError: true)
       
       def org = Organization.findByUid(orgUid)
       org.delete()

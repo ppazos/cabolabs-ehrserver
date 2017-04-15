@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -76,6 +75,7 @@ class EhrController {
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
+         println "admin"
          /*
           * if the criteria is empty, does the same as .list (works as expected)
           */
@@ -95,6 +95,7 @@ class EhrController {
       }
       else
       {
+         println "not admin"
          // auth token used to login
          def auth = springSecurityService.authentication
          //def org = Organization.findByNumber(auth.organization)
@@ -133,7 +134,7 @@ class EhrController {
           * So we can do subjects.totalCount
           */
       }
-
+      
       [list: list, total: list.totalCount]
    }
                    

@@ -1,7 +1,9 @@
 package com.cabolabs.security
 
 import grails.test.spock.IntegrationSpec
+import grails.test.mixin.TestFor
 
+@TestFor(UserService)
 class UserServiceIntegrationSpec extends IntegrationSpec {
 
    def userService
@@ -18,7 +20,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       
       def org = new Organization(name: 'Test Org', number: '556677').save(failOnError:true, flush: true)
       
-      def user = new User(username: 'user', password: 'user', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
+      def user = new User(username: 'testuser', password: 'testuser', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
       
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
@@ -30,16 +32,27 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      // deletes the created instances
+      def user = User.findByUsername("testuser")
+      def role = Role.findByAuthority('ROLE_XYZ')
+      
+      UserRole.remove(user, role)
+      user.delete(flush: true)
+      role.delete(flush: true)
+      
+      User.findByUsername("norole").delete(flush: true)
+      
+      Organization.findByNumber("556677").delete(flush: true)
    }
 
    void "test getByUsername existing user"()
    {
       when:
-         def user = userService.getByUsername('user')
+         def user = userService.getByUsername('testuser')
       
       then:
          assert user != null
-         assert user.username == 'user'
+         assert user.username == 'testuser'
    }
    
    void "test getByUsername non existing user"()
@@ -54,7 +67,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    void "test getUserAuthorities admin user"()
    {
       when:
-         def user = userService.getByUsername('user')
+         def user = userService.getByUsername('testuser')
          def authorities = userService.getUserAuthorities(user)
          println authorities
       

@@ -1,10 +1,10 @@
 package com.cabolabs.security
 
 import grails.test.spock.IntegrationSpec
+import grails.test.mixin.TestFor
 
+@TestFor(UserController)
 class UserControllerIntegrationSpec extends IntegrationSpec {
-   
-   def controller
    
    // services used in the controller
    def springSecurityService
@@ -13,11 +13,9 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      controller = new UserController()
-      
       def org = new Organization(name: 'Test Org', number: '556677').save(failOnError:true, flush: true)
       
-      def user = new User(username: 'user', password: 'user', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
+      def user = new User(username: 'testuser', password: 'testuser', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
       UserRole.create( user, role, true )
@@ -25,6 +23,15 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      // deletes the created instances
+      def user = User.findByUsername("testuser")
+      def role = Role.findByAuthority('ROLE_XYZ')
+      
+      UserRole.remove(user, role)
+      user.delete(flush: true)
+      role.delete(flush: true)
+      
+      Organization.findByNumber("556677").delete(flush: true)
    }
 
       
@@ -52,7 +59,7 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
    void "test reset password with valid token, post to reset, no new password"()
    {
       setup:
-        def user = User.findByUsername('user')
+        def user = User.findByUsername('testuser')
         user.setPasswordToken()
         user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)
@@ -72,7 +79,7 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
    void "test reset password with valid token, post to reset, new password, without confirm"()
    {
       setup:
-        def user = User.findByUsername('user')
+        def user = User.findByUsername('testuser')
         user.setPasswordToken()
         user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)
@@ -98,7 +105,7 @@ class UserControllerIntegrationSpec extends IntegrationSpec {
    void "test reset password with valid token, post to reset, new password, with confirm"()
    {
       setup:
-        def user = User.findByUsername('user')
+        def user = User.findByUsername('testuser')
         user.setPasswordToken()
         user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)

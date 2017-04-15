@@ -14,7 +14,7 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
    def setup()
    {
       def org = new Organization(name: 'Hospital de Clinicas 2', number: '99999').save(flush:true, failOnError:true)
-      def user = new User(username:"user", password:"pass", email:"e@m.com", organizations:[org]).save(flush:true, failOnError:true)
+      def user = new User(username:"testuser", password:"testpass", email:"e@m.com", organizations:[org]).save(flush:true, failOnError:true)
       /*
       controller.springSecurityService = [
         encodePassword: 'admin',
@@ -31,6 +31,9 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      // deletes the created instances
+      User.findByUsername("testuser").delete()
+      Organization.findByNumber("99999").delete()
    }
 
    /*

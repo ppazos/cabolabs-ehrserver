@@ -3,11 +3,15 @@ package com.cabolabs.ehrserver.openehr.ehr
 import grails.test.spock.IntegrationSpec
 
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
 
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+
+@TestFor(EhrController)
+//@Mock([Ehr, Role, User, UserRole, Organization])
 class EhrControllerIntegrationSpec extends IntegrationSpec {
 
-   def controller
    def messageSource
    
    private static String PS = System.getProperty("file.separator")
@@ -21,8 +25,21 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
       org.save(failOnError: true)
    }
    
+   private createAdmin()
+   {
+      println "createAdmin"
+      def user = new User(
+         username: 'testadmin', password: 'testadmin',
+         email: 'testadmin@domain.com',
+         organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
+      
+      def role = Role.findByAuthority("ROLE_ADMIN") // created in bootstrap
+      UserRole.create( user, role, true )
+   }
+   
    private createEHR()
    {
+      println "createEHR"
       def ehr = new Ehr(
          uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
          subject: new PatientProxy(
@@ -36,16 +53,19 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
+      println "setup"
       createOrganization()
       createEHR()
+      createAdmin()
       
-      controller = new EhrController()
+      //controller = new EhrController()
       
       // mock logged user
+      // TODO: check why for some reason this user is an admin but the SpringSecurityUtils on the controller list says its not.
       controller.springSecurityService = [
          authentication : [
             principal: [
-               username: 'admin'
+               username: 'testadmin'
             ]
          ]
       ]
@@ -53,18 +73,38 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      println "cleanup"
+
+      def user = User.findByUsername("testadmin")
+      def role = Role.findByAuthority('ROLE_ADMIN')
+      
+      UserRole.remove(user, role)
+      user.delete(flush: true)
+      
       def ehr = Ehr.findByUid(ehrUid)
-      ehr.delete()
+      ehr.delete(flush: true)
       
       def org = Organization.findByUid(orgUid)
-      org.delete()
+      org.delete(flush: true)
    }
 
+   /*
+    * try this for controller.list with role admin...
+    * 
+    * SpringSecurityUtils.doWithAuth('superuser') {
+         controller.save()
+      }
+    */
+   
    void "test default list"()
    {
+      println "1"
       when:
          controller.request.method = "GET"
          def model = controller.list()
+         println model
+         println "ehrs "+ Ehr.count()
+         println Ehr.findByUid(ehrUid).deleted
       
        then:
           assert controller.response.status == 200
@@ -82,6 +122,7 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    
    void "test filtered list"()
    {
+      println "2"
       when:
          controller.request.method = "GET"
          controller.params.uid = "123" // only one EHR with UID that contains 123
@@ -97,17 +138,19 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    
    void "test show without UID"()
    {
+      println "3"
       when:
          controller.request.method = "GET"
          def model = controller.show()
       
        then:
           assert controller.response.status == 302 // makes a redirect to the page that triggered the show without the uid
-          assert controller.flash.message == messageSource.getMessage('ehr.show.uidIsRequired', null, controller.request.getLocale())
+          assert controller.flash.message == 'ehr.show.uidIsRequired'
    }
    
    void "test show non existing UID"()
    {
+      println "4"
       when:
          controller.request.method = "GET"
          controller.params.uid = '1234542324'
@@ -115,7 +158,7 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
       
        then:
           assert controller.response.status == 302 // makes a redirect to the page that triggered the show without the uid
-          assert controller.flash.message == messageSource.getMessage('ehr.show.ehrDoesntExistsForUid', ['1234542324'] as Object[], controller.request.getLocale())
+          assert controller.flash.message == 'ehr.show.ehrDoesntExistsForUid' //messageSource.getMessage('ehr.show.ehrDoesntExistsForUid', ['1234542324'] as Object[], controller.request.getLocale())
    }
    
    void "test show existing UID"()
@@ -166,8 +209,13 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    {
       when:
          controller.request.method = "POST"
-         controller.params.organizationUid = Organization.get(1).uid
-         controller.params['subject.value'] = '12345678'
+         
+         //controller.params.organizationUid = Organization.get(1).uid
+         //controller.params['subject.value'] = '12345678'
+         
+         def e = new Ehr([organizationUid: Organization.get(1).uid, 'subject.value': '12345678'])
+         controller.params.ehr = e
+         
          def count1 = Ehr.count()
          def model = controller.save()
          def count2 = Ehr.count()
@@ -176,7 +224,7 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
          assert count1 + 1 == count2
          println controller.flash.message // FIXME: it is not showing the UID of the new EHR
          assert controller.response.status == 302 // makes a redirect to the page that triggered the show without the uid
-         assert controller.flash.message == messageSource.getMessage('ehr.save.ok', [Ehr.last().uid] as Object[], controller.request.getLocale())
+         assert controller.flash.message == 'ehr.save.ok' //messageSource.getMessage('ehr.save.ok', [Ehr.last().uid] as Object[], controller.request.getLocale())
 
    }
 }

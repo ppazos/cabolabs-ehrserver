@@ -1,7 +1,9 @@
 package com.cabolabs.ehrserver.parsers
 
 import grails.test.spock.IntegrationSpec
+import grails.test.mixin.TestFor
 
+@TestFor(XmlValidationService)
 class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
 
    def xmlValidationService

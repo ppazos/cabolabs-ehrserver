@@ -13,8 +13,10 @@ import com.cabolabs.security.Organization
 
 import groovy.io.FileType
 import spock.lang.Ignore
-import grails.util.Holders
+//import grails.util.Holders
+import grails.test.mixin.TestFor
 
+@TestFor(XmlService)
 class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    // it seems integration tests are transactional by default, so if an exception occurs, the session is rolledback at the end of each test case,
@@ -22,6 +24,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    //static transactional = false
    
    def xmlService
+   def config = grailsApplication.config // Holders.config
    
    private static String PS = System.getProperty("file.separator")
    private String ehrUid = '11111111-1111-1111-1111-111111111123'
@@ -57,10 +60,10 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    def cleanup()
    {
       def ehr = Ehr.findByUid(ehrUid)
-      ehr.delete()
+      ehr.delete(flush: true)
       
       def org = Organization.findByUid(orgUid)
-      org.delete()
+      org.delete(flush: true)
    }
 
    
@@ -87,8 +90,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 1
       
       cleanup:
-         println "commit single / valid version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit single / valid version DELETE CREATED FILES FROM "+ config.app.version_repo
+         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit single / invalid version"()
@@ -116,7 +119,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
@@ -150,7 +153,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
@@ -177,13 +180,13 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 2
       
       cleanup:
-         println "multiple / all valid versions DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "multiple / all valid versions DELETE CREATED FILES FROM "+ config.app.version_repo
+         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "multiple / one invalid version"()
@@ -210,7 +213,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
@@ -239,7 +242,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
@@ -271,13 +274,13 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          
          // just one version file should be created in the filesystem, the one for the first commit
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 1
       
       cleanup:
-         println "commit same version twice DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit same version twice DELETE CREATED FILES FROM "+ config.app.version_repo
+         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit 2 compos, and new version"()
@@ -309,13 +312,13 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 2
       
       cleanup:
-         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ config.app.version_repo
+         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    void "commit new version without previous version"()
@@ -342,7 +345,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
@@ -361,7 +364,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          // copy file into the version repo
          def source = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml')
-         java.nio.file.Files.copy(source.toPath(), new File(Holders.config.app.version_repo + PS + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
+         java.nio.file.Files.copy(source.toPath(), new File(config.app.version_repo + PS + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
          
          // commit same file via the commit processing
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
@@ -380,7 +383,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
+         assert new File(config.app.version_repo).listFiles()
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
