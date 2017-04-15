@@ -7,7 +7,6 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
 import com.cabolabs.ehrserver.parsers.XmlService
 import com.cabolabs.ehrserver.parsers.XmlValidationService
-import com.cabolabs.ehrserver.openehr.demographic.Person
 
 import com.cabolabs.ehrserver.api.RestController
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
@@ -25,7 +24,7 @@ import grails.util.Holders
  */
 @TestFor(RestController)
 @TestMixin(GrailsUnitTestMixin)
-@Mock([ Ehr,Person,Organization,
+@Mock([ Ehr,Organization,
    PatientProxy, DoctorProxy,
    OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
    DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
@@ -46,19 +45,10 @@ class RestControllerSpec extends Specification {
       def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
       hospital.save(failOnError:true, flush:true)
       
-      def patient = new Person(
-         firstName: 'Pablo', lastName: 'Pazos',
-         dob: new Date(81, 9, 24), sex: 'M',
-         idCode: '4116238-0', idType: 'CI',
-         role: 'pat',
-         uid: patientUid,
-         organizationUid: hospital.uid
-      )
-      patient.save(failOnError:true, flush:true)
-      
+
       def ehr = new Ehr(
          subject: new PatientProxy(
-            value: patient.uid
+            value: patientUid
          ),
          organizationUid: patient.organizationUid
       )

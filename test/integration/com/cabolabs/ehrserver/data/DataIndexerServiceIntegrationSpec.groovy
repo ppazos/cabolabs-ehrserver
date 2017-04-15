@@ -79,7 +79,8 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    void "test simple count index"()
    {
       // prepare a single commit, then try to index
-      setup:
+      setup: "simulates a commit of a test composition, creates a compoIndex, without indexing data"
+      
          // Need template "Test all datatypes" to be shared with the org,
          // if is not shared the commit will say that the version cant ve indexed
       
@@ -95,32 +96,34 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
          assert CompositionIndex.count() == 1
+         assert CompositionIndex.countByDataIndexed(false) == 1 // there is 1 compoIndex and should not be indexed
          
          // The OPT associated with the compo index should be shared with the org or be public
          // Here we manke the OPT public.
          def compoIndex = CompositionIndex.findByDataIndexed(false)
+         
+         assert compoIndex != null
+         
          def opt = OperationalTemplateIndex.findByTemplateId(compoIndex.templateId)
          opt.isPublic = true
          opt.save(failOnError: true)
 
-      when:
-         //def compoIndex = CompositionIndex.findByDataIndexed(false)
-         assert compoIndex != null
-         assert CompositionIndex.countByDataIndexed(false) == 1
-         
-         // The template for the instance is loaded
-         assert OperationalTemplateIndex.countByTemplateId( compoIndex.templateId ) == 1
-         
-         println compoIndex.templateId
+      when: "generate data indexes for the committed composition"
+      
+         assert OperationalTemplateIndex.count() > 0 // OPTs are loaded in bootstrap
+         assert OperationalTemplateIndex.countByTemplateId( compoIndex.templateId ) == 1 // The template for the instance is loaded
          assert orgUid == compoIndex.organizationUid
+         
+         println "compoIndex.templateId "+ compoIndex.templateId
          
          // OperationalTemplateIndexer should generated the shares on bootstrap from indexAll
          //println "shares "+ OperationalTemplateIndexShare.list()
          
-         dataIndexerService.generateIndexes( CompositionIndex.findByDataIndexed(false) )
-         assert CompositionIndex.countByDataIndexed(true) == 1
+         dataIndexerService.generateIndexes( compoIndex )
+         assert CompositionIndex.countByDataIndexed(true) == 1 // the compo is marked as indexed
           
-      then:
+      then: "check indexed data"
+      
          // commit was ok
          notThrown Exception // this shouldn't throw any exceptions
       
@@ -131,9 +134,14 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          
          // indexing was ok
-         assert DataValueIndex.count() == 2
+         assert DataValueIndex.count() == 1
          assert DvCountIndex.count() == 1
          assert DvCountIndex.first().magnitude == 3
-         assert DvCodedTextIndex.first().value == "event"
+         
+         // compo.category is no longer being indexed because of the change
+         // on DataIndexerService.recursiveIndexData,
+         // line: def type = DataValues.valueOfString(node.'@xsi:type'.text())
+         // but it is OK because the category is saved on the compo index.
+         //assert DvCodedTextIndex.first().value == "event"
    }
 }

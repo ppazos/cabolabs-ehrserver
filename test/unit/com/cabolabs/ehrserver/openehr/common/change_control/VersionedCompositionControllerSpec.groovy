@@ -4,12 +4,11 @@ import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition;
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import grails.test.mixin.*
 import spock.lang.*
 
 @TestFor(VersionedCompositionController)
-@Mock([VersionedComposition, Ehr, PatientProxy, Person])
+@Mock([VersionedComposition, Ehr, PatientProxy])
 class VersionedCompositionControllerSpec extends Specification {
 
     void setupSpec()

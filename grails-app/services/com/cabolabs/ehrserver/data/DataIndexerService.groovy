@@ -98,6 +98,7 @@ class DataIndexerService {
     
       recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex )
 
+      log.debug "index count: "+ indexes.size()
 
       // empty if the OPT for the compo is not loaded in the server
       indexes.each { didx ->
@@ -106,8 +107,8 @@ class DataIndexerService {
       
          if (!didx.save())
          {
-            log.info "index error: ("+ didx.templateId +") "+didx.archetypeId + didx.archetypePath +" "+ didx.rmTypeName +" "+ didx.getClass().getSimpleName() +' for compo '+ didx.owner.uid
-            log.info didx.errors.toString()
+            log.error "index error: ("+ didx.templateId +") "+didx.archetypeId + didx.archetypePath +" "+ didx.rmTypeName +" "+ didx.getClass().getSimpleName() +' for compo '+ didx.owner.uid
+            log.error didx.errors.toString()
             // if one index created fails to save, the whole indexing process is rolled back
          
             throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
@@ -118,7 +119,7 @@ class DataIndexerService {
          }
       }
     
-      // Marca como indexado
+      // all indexes created were saved correctly!
       compoIndex.dataIndexed = true
     
       if (!compoIndex.save())
@@ -230,10 +231,12 @@ class DataIndexerService {
                // problem of having two alternative types for the same path, with that, the indexing
                // tries to process the first type it founds instead of the type in hte committed compo.
                //def type = DataValues.valueOfString(idx.rmTypeName)
+            
+               // FIXME: because of this change, only attributes with explicit type will be indexed
+               //        the problem is RM attributes won't be indexed like ACTION.time.
                def type = DataValues.valueOfString(node.'@xsi:type'.text())
                
                println 'recursiveIndexData '+ node.name() +' '+ node.'@xsi:type'.text() +' '+ type
-               
                
                def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
                def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)

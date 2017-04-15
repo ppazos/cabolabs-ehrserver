@@ -5,7 +5,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Contribution;
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.ehrserver.openehr.demographic.Person
 
 import org.junit.*
 
@@ -15,29 +14,15 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr;
 import grails.test.mixin.*
 
 @TestFor(ContributionController)
-@Mock([Contribution, Ehr, Version, AuditDetails, PatientProxy, DoctorProxy, Person])
+@Mock([Contribution, Ehr, Version, AuditDetails, PatientProxy, DoctorProxy])
 class ContributionControllerTests {
 
    void setUp()
    {
-      def pat = new Person(
-            firstName: 'Pablo',
-            lastName: 'Pazos',
-            dob: new Date(81, 9, 24),
-            sex: 'M',
-            idCode: '4116238-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: '463456346345654',
-            organizationUid: '1234-1234-1234')
-
-      if (!pat.save()) println p.errors
-     
-     
       // Crea EHRs para los pacientes de prueba
       // Idem EhrController.createEhr
       def ehr = new Ehr(
-         subject: new PatientProxy( value: pat.uid ),
+         subject: new PatientProxy( value: '463456346345654' ),
          organizationUid: '1234-1234-1234'
       )
       if (!ehr.save()) println ehr.errors
@@ -93,5 +78,4 @@ class ContributionControllerTests {
 
         assert model.contributionInstance == contribution
     }
-
 }

@@ -1,11 +1,10 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
-import com.cabolabs.security.Organization
-import com.cabolabs.ehrserver.openehr.demographic.Person
-import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.security.Organizationimport com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.test.mixin.*
@@ -15,27 +14,19 @@ import grails.test.mixin.Mock
 
 
 @TestMixin(GrailsUnitTestMixin)
-@Mock([Contribution,Version,VersionedComposition,Ehr,Person,Organization,PatientProxy,DoctorProxy,CompositionIndex])
+@Mock([Contribution,Version,VersionedComposition,Ehr,Organization,PatientProxy,DoctorProxy,CompositionIndex])
 class ContributionSpec extends Specification {
 
+   static String patientUid = '1111-1111-1111'
+   
     def setup()
     {
        def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
        hospital.save(failOnError:true, flush:true)
        
-       def patient = new Person(
-          firstName: 'Pablo', lastName: 'Pazos',
-          dob: new Date(81, 9, 24), sex: 'M',
-          idCode: '4116238-0', idType: 'CI',
-          role: 'pat',
-          uid: '1111-1111-1111',
-          organizationUid: hospital.uid
-       )
-       patient.save(failOnError:true, flush:true)
-       
        def ehr = new Ehr(
           subject: new PatientProxy(
-             value: patient.uid
+             value: patientUid
           ),
           organizationUid: patient.organizationUid
        )
@@ -50,7 +41,6 @@ class ContributionSpec extends Specification {
     {
        when:
           def ehr = Ehr.get(1)
-          def pat = Person.get(1)
           
           def c = new Contribution(
              uid: '1234-4567-6789',
@@ -83,7 +73,7 @@ class ContributionSpec extends Specification {
                    uid:         '3454-3456-3456',
                    category:    'event',
                    startTime:   new Date(),
-                   subjectId:   pat.uid,
+                   subjectId:   patientUid,
                    ehrUid:      ehr.uid,
                    organizationUid: ehr.organizationUid,
                    archetypeId: 'openEHR-EHR-COMPOSITION.signos.v1',
@@ -105,7 +95,7 @@ class ContributionSpec extends Specification {
                    uid:         '3454-3456-3457',
                    category:    'event',
                    startTime:   new Date(),
-                   subjectId:   pat.uid,
+                   subjectId:   patientUid,
                    ehrUid:      ehr.uid,
                    organizationUid: ehr.organizationUid,
                    archetypeId: 'openEHR-EHR-COMPOSITION.signos.v1',
@@ -127,7 +117,7 @@ class ContributionSpec extends Specification {
                    uid:         '3454-3456-3458',
                    category:    'event',
                    startTime:   new Date(),
-                   subjectId:   pat.uid,
+                   subjectId:   patientUid,
                    ehrUid:      ehr.uid,
                    organizationUid: ehr.organizationUid,
                    archetypeId: 'openEHR-EHR-COMPOSITION.signos.v1',

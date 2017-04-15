@@ -800,8 +800,9 @@ class BootStrap {
          it.dataIndexed = false
          it.save()
       }
+      */
       
-      
+      /*
       QueryShare.list().each {
          it.delete()
       }
