@@ -1,9 +1,7 @@
 package com.cabolabs.security
 
 import grails.test.spock.IntegrationSpec
-import grails.test.mixin.TestFor
 
-@TestFor(UserService)
 class UserServiceIntegrationSpec extends IntegrationSpec {
 
    def userService

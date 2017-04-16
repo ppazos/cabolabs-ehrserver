@@ -13,10 +13,8 @@ import com.cabolabs.security.Organization
 
 import groovy.io.FileType
 import spock.lang.Ignore
-//import grails.util.Holders
-import grails.test.mixin.TestFor
+import grails.util.Holders
 
-@TestFor(XmlService)
 class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    // it seems integration tests are transactional by default, so if an exception occurs, the session is rolledback at the end of each test case,
@@ -24,7 +22,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    //static transactional = false
    
    def xmlService
-   def config = grailsApplication.config // Holders.config
+   def config = Holders.config // grailsApplication.config // Holders.config
    
    private static String PS = System.getProperty("file.separator")
    private String ehrUid = '11111111-1111-1111-1111-111111111123'

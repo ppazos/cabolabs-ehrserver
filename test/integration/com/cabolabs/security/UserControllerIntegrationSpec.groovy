@@ -2,14 +2,17 @@ package com.cabolabs.security
 
 import grails.test.spock.IntegrationSpec
 import grails.test.mixin.TestFor
+import org.codehaus.groovy.grails.test.support.GrailsTestTransactionInterceptor // F
 
 @TestFor(UserController)
 class UserControllerIntegrationSpec extends IntegrationSpec {
    
    // services used in the controller
+   /*
    def springSecurityService
    def simpleCaptchaService
    def notificationService
+   */
    
    def setup()
    {

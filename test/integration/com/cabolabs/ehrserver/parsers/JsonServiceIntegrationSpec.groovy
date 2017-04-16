@@ -2,9 +2,7 @@ package com.cabolabs.ehrserver.parsers
 
 import grails.test.spock.IntegrationSpec
 import groovy.json.JsonSlurper
-import grails.test.mixin.TestFor
 
-@TestFor(JsonService)
 class JsonServiceIntegrationSpec extends IntegrationSpec {
 
    def jsonService

@@ -17,7 +17,6 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 
-import com.cabolabs.ehrserver.indexing.IndexDataJob
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
@@ -31,7 +30,7 @@ import com.cabolabs.ehrserver.query.*
 @TestMixin(GrailsUnitTestMixin)
 @Mock([ Ehr,Organization,
    PatientProxy, DoctorProxy,
-   OperationalTemplateIndex, IndexDefinition, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
+   OperationalTemplateIndex, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
    DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex
  ])
 class IndexDataJobSpec extends Specification {
