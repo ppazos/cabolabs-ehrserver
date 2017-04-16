@@ -388,7 +388,6 @@ class UserController {
             
       // Organizations cant be empty
       if (orgs.size() == 0)
-      
       {
          flash.message = message(code:"user.update.oneOrganizationShouldBeSelected")
          render model: [userInstance: userInstance], view:'edit'
