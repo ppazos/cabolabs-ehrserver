@@ -75,7 +75,6 @@ class EhrController {
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         println "admin"
          /*
           * if the criteria is empty, does the same as .list (works as expected)
           */
@@ -95,7 +94,6 @@ class EhrController {
       }
       else
       {
-         println "not admin"
          // auth token used to login
          def auth = springSecurityService.authentication
          //def org = Organization.findByNumber(auth.organization)
@@ -213,7 +211,6 @@ class EhrController {
          redirect action:'create'
          return
       }
-      
       //println ehr.subject.value // it's binded
       
       // Check if there is an EHR for the same subject UID
@@ -223,6 +220,7 @@ class EhrController {
             eq('value', ehr.subject.value)
          }
       }
+      
       if (existing_ehr)
       {
          flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.subject.value, existing_ehr.uid])
@@ -231,14 +229,13 @@ class EhrController {
       }
       
       
-      
       if (!ehr.save(flush:true))
       {
          flash.message = message(code:'ehr.save.error')
          render (view: 'create', model: [ehr: ehr])
          return
       }
-      
+
       flash.message = message(code:'ehr.save.ok', args:[ehr.uid])
       redirect action:'list'
    }

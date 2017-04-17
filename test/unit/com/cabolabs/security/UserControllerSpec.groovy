@@ -1,12 +1,29 @@
 package com.cabolabs.security
 
+/*
+ * This test is complete and updated. 2017-04-16
+ * 
+ * The UserControllerIntegrationSpec test were added to this unit test
+ * because of some issues with integration tests and @Transactional make
+ * impossible to implement as integration.
+ * 
+ * This is a possible solution, should be tried:
+ * http://stackoverflow.com/questions/39831355/grails-spock-unit-test-requires-to-mock-transaction-manager
+ * 
+ * This should be used  to test the UserController.
+ */
+
+import java.util.List;
+
 import grails.test.mixin.*
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
 import spock.lang.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.SpringSecurityService
 
 @TestFor(UserController)
-@Mock([User, Role, UserRole])
+@Mock([User, Role, UserRole, Organization])
 class UserControllerSpec extends Specification {
 
    // this is executed before al the tests, allows metaprogramming.
@@ -20,8 +37,6 @@ class UserControllerSpec extends Specification {
    
    def setup()
    {
-      println "setup"
-      
       // mock logged in user
       // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
       def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
@@ -44,13 +59,24 @@ class UserControllerSpec extends Specification {
         currentUser: loggedInUser
       ]
       
+      
+      controller.userService = [
+         saveAndNotify : { User userInstance, params ->
+            
+            userInstance.save(failOnError:true) // need to save the user, if not the save test fails
+         },
+         updateOrganizations : { User user, List newOrgUids -> return }
+      ]
+      /* this doesnt work, the mock above does
       controller.userService = new UserService()
+      
+      // mocking injection
+      controller.userService.springSecurityService = controller.springSecurityService
+      */
    }
    
    def cleanup()
    {
-      println "cleanup"
-      
       def user = User.findByUsername("admin")
       def role = Role.findByAuthority('ROLE_ADMIN')
       
@@ -63,15 +89,54 @@ class UserControllerSpec extends Specification {
       controller.springSecurityService = []
    }
    
+   /*
+    * A valid user has
+    * - an id (it is saved)
+    * - has a role
+    * - is associated with one organization
+    */
+   def generateValidUser(boolean nodata = false)
+   {
+      def params = new GrailsParameterMap(request) //[:] // GrailsParameterMap allows to use methods like list(name) used in the code
+      if (!nodata)
+      {
+         populateValidParams(params)
+      }
+      def user = new User(params)
+      
+      // should have an organization
+      def org = Organization.findByNumber("1234")
+      user.addToOrganizations(org)
+      
+      // sould have an id
+      user.save(flush: true)
+      
+      // should have 1 role
+      def role
+      if (Role.countByAuthority('ROLE_USER') == 0)
+      {
+         role = new Role(authority: 'ROLE_USER')
+         role.save(failOnError:true, flush: true)
+      }
+      else
+      {
+         role = Role.findByAuthority('ROLE_USER')
+      }
+      
+      UserRole.create( user, role, true )
+      
+      return user
+   }
    
+
    def populateValidParams(params)
    {
         assert params != null
         // TODO: Populate valid properties like...
-        params["username"] = 'testuset' // should not be admin, that user is created to be the logged in user.
-        params["password"] = 'testuset'
-        params["email"] = 'testuset@m.com'
-        params["organizationUid"] = '1234'
+        params["username"] = 'testuser' // should not be admin, that user is created to be the logged in user.
+        params["password"] = 'testuser'
+        params["email"] = 'testuser@m.com'
+        //params["organizationUid"] = '1234'
    }
 
    void "Test metaprogramming"()
@@ -108,51 +173,85 @@ class UserControllerSpec extends Specification {
       when:"The save action is executed with an invalid instance"
             controller.request.method = 'POST'
             request.contentType = FORM_CONTENT_TYPE
-            def user = new User()
-            user.validate()
+            
+            def user = generateValidUser(true) // generates user, role, org etc without user data
+            user.validate() // invalid, user doesnt have data
+            
             controller.save(user)
 
       then:"The create view is rendered again with the correct model"
-        
             view == "/user/create"
             model.userInstance != null // returns a default instance to fill fields with default values
 
-
-      when:"The save action is executed with a valid instance"
+            
+      when:"The save action is executed with a valid instance but missing params"
             response.reset()
-            controller.request.method = 'POST'
-            request.contentType = FORM_CONTENT_TYPE
+            
             populateValidParams(params)
             user = new User(params)
             
-            println "valid "+ user.validate() +" "+ user.errors
+            // no organizationUid and role params
+
+            controller.save(user)
+
+      then:"Back to user/create to add the missing params"
+         view == '/user/create'
+         model.userInstance.username == user.username
+         controller.flash.message == 'user.update.oneOrganizationShouldBeSelected'
+
+         
+      when:"The save action is executed with a valid instance but org doesnt belong to the logged user"
+            response.reset()
+            
+            populateValidParams(params)
+            user = new User(params)
+            
+            // params needed for save
+            controller.params.organizationUid = ['an uid that doesnt belong to the logged user']
+            controller.params.role = ['ROLE_USER']
 
             controller.save(user)
 
       then:"A redirect is issued to the show action"
-      println response.redirectedUrl
-      println " view "+ view
-      println " model "+ model
-      // view /user/create           // CHECK: is not redirecting to show!
-      // model [userInstance:admin]
-      
-            controller.flash.message != null
+            view == '/user/create'
+            model.userInstance.username == user.username
+            controller.flash.message == 'cantAssingOrganization.save.user'
             User.count() == 1
+            
+            
+      when:"The save action is executed with a valid instance"
+            response.reset()
+            
+            populateValidParams(params)
+            user = new User(params)
+            
+            // params needed for save
+            controller.params.organizationUid = [ Organization.findByNumber('1234').uid ]
+            controller.params.role = ['ROLE_USER']
+
+            controller.save(user)
+
+      then:"A redirect is issued to the show action"
+            controller.flash.message == 'default.created.message'
+            response.redirectedUrl == "/user/show/$user.id"
+            model.userInstance.username == user.username
+            User.count() == 2
    }
 
+   
    void "Test that the show action returns the correct model"()
    {
-      /*
-       setup:
-          SpringSecurityService.metaClass.getAuthentication { ->
-             return [
-                username: 'user',
-                password: 'pass',
-                organization: '1234'
-             ]
-          }
-          //controller.springSecurityService =  new SpringSecurityService()
-       */
+//      
+//       setup:
+//          SpringSecurityService.metaClass.getAuthentication { ->
+//             return [
+//                username: 'user',
+//                password: 'pass',
+//                organization: '1234'
+//             ]
+//          }
+//          //controller.springSecurityService =  new SpringSecurityService()
+//      
         when:"The show action is executed with a null domain"
             controller.show(null)
 
@@ -160,29 +259,16 @@ class UserControllerSpec extends Specification {
             response.status == 404
 
         when:"A domain instance is passed to the show action"
-            populateValidParams(params)
-            def user = new User(params)
+            def user = generateValidUser()
             controller.show(user)
 
         then:"A model is populated containing the domain instance"
             model.userInstance == user
    }
+   
 
    void "Test that the edit action returns the correct model"()
    {
-      /*
-       given:
-          def svcMock = mockFor(SpringSecurityService)
-          //svcMock.authentication
-          svcMock.demand.getAuthentication {
-             return [
-                username: 'user',
-                password: 'pass',
-                organization: '1234'
-             ]
-          }
-          controller.springSecurityService = svcMock.createMock()
-        */
         when:"The edit action is executed with a null domain"
             controller.edit(null)
 
@@ -190,90 +276,197 @@ class UserControllerSpec extends Specification {
             response.status == 404
 
         when:"A domain instance is passed to the edit action"
-            populateValidParams(params)
-            def user = new User(params)
+            def user = generateValidUser()
             controller.edit(user)
 
         then:"A model is populated containing the domain instance"
             model.userInstance == user
    }
+   
 
    void "Test the update action performs an update on a valid domain instance"()
    {
-        when:"Update is called for a domain instance that doesn't exist"
+      when:"Update is called for a domain instance that doesn't exist"
             controller.request.method = 'PUT'
             request.contentType = FORM_CONTENT_TYPE
             controller.update(null)
 
-        then:"A 404 error is returned"
-            println response.redirectedUrl
-            //response.redirectedUrl == '/user/index'
+      then:"A 404 error is returned"
+            response.redirectedUrl == '/user/index'
             flash.message != null
 
 
-        when:"An invalid domain instance is passed to the update action"
+      when:"An invalid domain instance is passed to the update action"
             response.reset()
-            controller.request.method = 'PUT'
-            def user = new User()
-            user.validate()
+
+            def user = generateValidUser(true) // generates user, role, org etc without user data
+            user.validate() // invalid, doesnt have data
             
             // params needed for update
-            controller.params.organizationUid = '1234'
+            controller.params.organizationUid = ['an uid that doesnt belong to the logged user']
             controller.params.role = ['ROLE_USER']
             
-            
-            // a valid user should have 1 role
-            def role = new Role(authority: 'ROLE_USER')
-            role.save(failOnError:true, flush: true)
-            UserRole.create( user, role, true )
-            
-            
             controller.update(user)
 
-        then:"The edit view is rendered again with the invalid instance"
-            view == 'edit'
+      then:"The edit view is rendered again with the invalid instance"
+            view == '/user/edit'
             model.userInstance == user
-
             
-        when:"A valid domain instance is passed to the update action"
+            
+      when:"A valid domain instance but with an org uid that doesnt belongs to the logged in user"
             response.reset()
-            controller.request.method = 'PUT'
-            populateValidParams(params)
-            user = new User(params).save(flush: true)
+
+            user = generateValidUser()
             
+            // params needed for update
+            controller.params.organizationUid = ['ghjkgjhkhjghj']
+            controller.params.role = ['ROLE_USER']
             
             controller.update(user)
 
-        then:"A redirect is issues to the show action"
-        println response.redirectedUrl
-            //response.redirectedUrl == "/user/show/$user.id"
-            flash.message != null
+      then:"A redirect is issues to the show action"
+            controller.flash.message == 'cantAssingOrganization.save.user'
+            view == "/user/edit"
+            model.userInstance == user
+            
+            
+      when:"A valid domain instance is passed to the update action"
+            response.reset()
+
+            // uses the same user created on the previous case, to avoid unique username violation
+            //user = generateValidUser()
+            
+            // params needed for update
+            controller.params.organizationUid = [ Organization.findByNumber('1234').uid ]
+            controller.params.role = ['ROLE_USER']
+
+            controller.update(user)
+      
+       then:"A redirect is issues to the show action"
+            controller.flash.message == 'default.updated.message'
+            response.redirectedUrl == "/user/show/$user.id"
    }
 
-    void "Test that the delete action deletes an instance if it exists"() {
-        when:"The delete action is called for a null instance"
+   
+   void "Test that the delete action deletes an instance if it exists"()
+   {
+      when:"The delete action is called for a null instance"
             controller.request.method = 'DELETE'
             request.contentType = FORM_CONTENT_TYPE
             controller.delete(null)
 
-        then:"A 404 is returned"
+      then:"A 404 is returned"
             response.redirectedUrl == '/user/index'
             flash.message != null
 
-        when:"A domain instance is created"
+            
+      when:"A domain instance is created"
             response.reset()
-            populateValidParams(params)
-            def user = new User(params).save(flush: true)
+            def user = generateValidUser()
 
-        then:"It exists"
+      then:"It exists"
             User.count() == 2 // counts also the logged in user
 
-        when:"The domain instance is passed to the delete action"
+            
+      when:"The domain instance is passed to the delete action"
             controller.delete(user)
 
-        then:"The instance is deleted"
+      then:"The instance is deleted"
             User.count() == 1 // leaves the logged in user
             response.redirectedUrl == '/user/index'
             flash.message != null
-    }
+   }
+   
+   
+   void "test reset password with no token"()
+   {
+      when:
+        controller.resetPassword()
+      
+      then:
+        controller.response.redirectedUrl == '/login/auth'
+        controller.flash.message == 'Token no present and needed for reseting password, try reseting again'
+   }
+   
+   void "test reset password with invalid token"()
+   {
+      when:
+        controller.params.token = 'invalid token'
+        controller.resetPassword()
+      
+      then:
+        controller.response.redirectedUrl == '/login/auth'
+        controller.flash.message == "Password reset was already done, if you don't remember your password, click on 'Forgot password?'"
+   }
+   
+   void "test reset password with valid token, post to reset, no new password"()
+   {
+      setup:
+        def user = generateValidUser()
+        //def user = User.findByUsername('testuser')
+        user.setPasswordToken()
+        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        user.save(flush:true)
+        
+      when:
+        controller.params.token = user.resetPasswordToken
+        controller.request.method = "POST"
+        def res = controller.resetPassword()
+      
+      then:
+        //println res // null
+        //println controller
+        //println controller.modelAndView // null, can't check the returned view
+        controller.flash.message == "Please enter your new password and confirm it"
+   }
+   
+   void "test reset password with valid token, post to reset, new password, without confirm"()
+   {
+      setup:
+        def user = generateValidUser()
+        user.setPasswordToken()
+        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        user.save(flush:true)
+        
+      when:
+        controller.params.token = user.resetPasswordToken
+        controller.params.newPassword = 'newPassword'
+        controller.request.method = "POST"
+        def res = controller.resetPassword()
+        user.refresh()
+      
+      then:
+        // TODO: check the value of the new password stored
+        controller.flash.message == "Please enter your new password and confirm it"
+        /*
+        user.enabled == true
+        user.resetPasswordToken == null
+        controller.response.redirectedUrl == '/login/auth'
+        controller.flash.message == "Password was reset!"
+        */
+   }
+   
+   void "test reset password with valid token, post to reset, new password, with confirm"()
+   {
+      setup:
+        def user = generateValidUser()
+        user.setPasswordToken()
+        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        user.save(flush:true)
+        
+      when:
+        controller.params.token = user.resetPasswordToken
+        controller.params.newPassword = 'newPassword'
+        controller.params.confirmNewPassword = 'newPassword'
+        controller.request.method = "POST"
+        def res = controller.resetPassword()
+        user.refresh()
+      
+      then:
+        // TODO: check the value of the new password stored
+        user.enabled == true
+        user.resetPasswordToken == null
+        controller.response.redirectedUrl == '/login/auth'
+        controller.flash.message == "Password was reset!"
+   }
 }

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -55,20 +54,21 @@ class UserService {
          userInstance.enabled = false
          userInstance.setPasswordToken()
       }
-      
+            
       userInstance.save(failOnError:true)
-
+            
       // TODO: UserRole ORG_* needs a reference to the org, since the user
       //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
       //UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
 
       // Add selected roles
       def roles = params.list('role')
+            
       roles.each { authority ->
          
          UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
       }
-
+      
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
@@ -76,11 +76,9 @@ class UserService {
    
    def updateOrganizations(User user, List newOrgUids)
    {
-      /**
-       * Update organizations.
-       */
+      // Update organizations.
       def newOrgs = newOrgUids.collect { Organization.findByUid( it ) }
-
+      
       // current orgs that are not selected on the new orgs will be deleted if the logged user have them
       def orgsToRemove = user.organizations - newOrgs
       def currentOrgs = user.organizations.collect()

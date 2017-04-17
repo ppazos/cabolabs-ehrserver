@@ -34,4 +34,5 @@ before_script:
   
 script: ./grailsw refresh-dependencies
      && ./grailsw "test-app -integration -echoOut"
+     && ./grailsw "test-app -unit UserControllerSpec"
 

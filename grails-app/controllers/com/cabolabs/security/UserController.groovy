@@ -197,6 +197,12 @@ class UserController {
 
    def show(User userInstance)
    {
+      if (userInstance == null)
+      {
+         notFound()
+         return
+      }
+      
       def loggedInUser = springSecurityService.currentUser
       
       // cant see the details of a user with higher authority
@@ -257,7 +263,7 @@ class UserController {
          return
       }
       
-      // All the organizations assigned to the new user should be accesible by the current user
+      // All the organizations assigned to the new user should be accessible by the current user
       def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
       if (notAllowedOrg)
       {
@@ -276,18 +282,19 @@ class UserController {
          return
       }
       
-      // Associate orgs
-      def newOrgs = Organization.findAllByUidInList(orgs)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
       // roles cant be empty
       if (roles.size() == 0)
       {
          flash.message = message(code:"user.update.oneRoleShouldBeSelected")
          render model: [userInstance: userInstance], view:'create'
          return
+      }
+      
+      
+      // Associate orgs
+      def newOrgs = Organization.findAllByUidInList(orgs)
+      newOrgs.each { newOrg ->
+         userInstance.addToOrganizations(newOrg)
       }
       
       try
@@ -311,6 +318,12 @@ class UserController {
 
    def edit(User userInstance)
    {
+      if (userInstance == null)
+      {
+         notFound()
+         return
+      }
+      
       // TODO: refactor - same code as show
       def loggedInUser = springSecurityService.currentUser
       
@@ -353,7 +366,6 @@ class UserController {
          return
       }
       
-      // TODO: refactor - same code as show
       def loggedInUser = springSecurityService.currentUser
       
       // cant see the details of a user with higher authority
@@ -394,25 +406,16 @@ class UserController {
          return
       }
       
-      // roles cant be empty
-      if (roles.size() == 0)
+      // All the organizations assigned to the new user should be accessible by the current user
+      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
+      if (notAllowedOrg)
       {
-         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
+         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
          render model: [userInstance: userInstance], view:'edit'
          return
       }
       
-      
-      /**
-       * Update orgs.
-       */
-      userService.updateOrganizations(userInstance, orgs)
-      
-      
-      /**
-       * Update roles.
-       */
-      
+      // Update roles.
       // All the roles assigned to the new user should be lower o equal to the highest role of the current user
       def highestRole = loggedInUser.higherAuthority
       def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
@@ -422,7 +425,14 @@ class UserController {
          render model: [userInstance: userInstance], view:'edit'
          return
       }
-
+      
+      // roles cant be empty
+      if (roles.size() == 0)
+      {
+         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
+         render model: [userInstance: userInstance], view:'edit'
+         return
+      }
       
       // if the user is editing his data and can't remove the highest role
       // e.g. admins cant remove their own admin role
@@ -435,6 +445,11 @@ class UserController {
             return
          }
       }
+      
+      
+      // Update orgs.
+      userService.updateOrganizations(userInstance, orgs)
+      
       
       // Role updating
       
@@ -457,7 +472,7 @@ class UserController {
          render model: [userInstance: userInstance], view:'edit'
          return
       }
-
+      
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.updated.message', args: [message(code: 'User.label', default: 'User'), userInstance.id])
