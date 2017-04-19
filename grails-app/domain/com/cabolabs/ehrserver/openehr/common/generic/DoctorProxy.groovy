@@ -30,9 +30,7 @@ import javax.xml.bind.annotation.XmlAccessType
  * Emula a common.generic.PARTY_IDENTIFIED que hereda de PARTY_PROXY.
  * 
  * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
- *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
 class DoctorProxy {
 
    // Emula PARTY_PROXY.external_ref.namespace

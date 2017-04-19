@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import groovy.util.slurpersupport.GPathResult
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.openehr.common.change_control.Commit
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
@@ -51,14 +52,23 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
+      println "setup"
       createOrganization()
       createEHR()
    }
 
    def cleanup()
    {
+      println "cleanup"
       def ehr = Ehr.findByUid(ehrUid)
-      ehr.delete(flush: true)
+      ehr.delete(flush: true) // deletes all the contributions, versions, audit details, doctor proxies in cascade
+      
+      /* all zero!
+      println Contribution.count()
+      println Version.count()
+      println VersionedComposition.count()
+      println CompositionIndex.count()
+      */
       
       def org = Organization.findByUid(orgUid)
       org.delete(flush: true)
@@ -67,7 +77,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    
    void "commit single / valid version"()
    {
-      setup:
+      setup: "gets the existing EHR and prepares the commit (simulates the controller commit)"
          def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
@@ -77,8 +87,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions = slurper.parseText(versionsXML)
          
          
-      when:
+      when: "does the commit"
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         
          
       then:
          notThrown Exception // this shouldn't throw any exceptions
@@ -86,11 +97,20 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
+         //println "commits "+ Commit.count() // 0, Commit is not used...
+      
       
       cleanup:
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
          println "commit single / valid version DELETE CREATED FILES FROM "+ config.app.version_repo
          new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+
+
    
    void "commit single / invalid version"()
    {
@@ -121,6 +141,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
+   
    
    // for https://github.com/ppazos/cabolabs-ehrserver/issues/366
    void "commit single / invalid version with empty datatype nodes"()
@@ -156,6 +177,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .size() == 0
    }
    
+   
    void "multiple / all valid versions"()
    {
       setup:
@@ -183,9 +205,16 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .size() == 2
       
       cleanup:
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
+         
          println "multiple / all valid versions DELETE CREATED FILES FROM "+ config.app.version_repo
          new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
    
    void "multiple / one invalid version"()
    {
@@ -216,6 +245,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .size() == 0
    }
    
+   
    void "multiple / all invalid version"()
    {
       setup:
@@ -244,6 +274,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
+   
    
    void "commit same version twice"()
    {
@@ -277,9 +308,15 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .size() == 1
       
       cleanup:
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
          println "commit same version twice DELETE CREATED FILES FROM "+ config.app.version_repo
          new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
    
    void "commit 2 compos, and new version"()
    {
@@ -315,9 +352,15 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .size() == 2
       
       cleanup:
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
          println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ config.app.version_repo
          new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
    
    void "commit new version without previous version"()
    {
@@ -347,6 +390,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
                                                          .findAll { it.name ==~ /.*\.xml/ }
                                                          .size() == 0
    }
+   
    
    /**
     * there is an issue with this test, while the rollback is done correctly on functional testing, here is not detected and if gives 1 contribution.

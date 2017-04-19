@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
 // FIXME: this is the representation of a VERSION<COMPOSITION> not VERSION<T>
-//@XmlAccessorType(XmlAccessType.FIELD)
 class Version {
 
    // Now assigned by the client:
@@ -108,8 +107,6 @@ class Version {
    {
       return uid.split("::")[2]
    }
-   
-   
    
    static transients = ['objectId', 'creatingSystemId', 'versionTreeId']
    

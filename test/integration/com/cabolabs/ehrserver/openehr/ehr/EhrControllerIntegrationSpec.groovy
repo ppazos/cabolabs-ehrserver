@@ -5,13 +5,9 @@ import grails.test.spock.IntegrationSpec
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.security.*
 
-import grails.test.mixin.TestFor
-
-@TestFor(EhrController)
-//@Mock([Ehr, Role, User, UserRole, Organization])
 class EhrControllerIntegrationSpec extends IntegrationSpec {
 
-   def messageSource
+   EhrController controller = new EhrController()
    
    private static String PS = System.getProperty("file.separator")
    private String ehrUid = '11111111-1111-1111-1111-111111111123'
@@ -57,7 +53,11 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
       createEHR()
       createAdmin()
       
-      //controller = new EhrController()
+      // message in controllers return always the code, useful for testing
+      controller.metaClass.message = {args -> 
+        //println args // keys: code (M), default (O), args (O)
+        args.code
+      }
       
       // mock logged user
       // TODO: check why for some reason this user is an admin but the SpringSecurityUtils on the controller list says its not.

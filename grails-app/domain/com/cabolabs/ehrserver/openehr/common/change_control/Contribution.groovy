@@ -29,7 +29,7 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 /**
  * La contribution queda pendiente/incompleta hasta que no se envien todas las versiones referenciadas.
  * 
- * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  *
  */
 class Contribution {
@@ -62,9 +62,9 @@ class Contribution {
    }
    
    static mapping = {
-      audit column:'contrib_audit' // En algunos dbms audit o audit_id son reservados
-      audit cascade: 'save-update'
-      versions cascade: 'save-update'
+      audit column: 'contrib_audit' // En algunos dbms audit o audit_id son reservados
+      audit cascade: 'all' //'save-update'
+      versions cascade: 'all' //'save-update'
    }
    
    static belongsTo = [Ehr]
@@ -77,21 +77,4 @@ class Contribution {
       this.yearMonthGroup = Integer.parseInt( new SimpleDateFormat("yyyyMM").format(d) )
       this.yearGroup      = Integer.parseInt( new SimpleDateFormat("yyyy").format(d) )
    }
-   
-   /* we sre not using this and is causing problems with grails that uses equals internally
-   @Override
-   public boolean equals(Object other)
-   {
-      if (!other || !other.instanceOf(Contribution)) return false
-
-      return this.uid.equals(other.uid)
-   }
-   
-   @Override
-   public int hashCode()
-   {
-      // http://stackoverflow.com/questions/113511/hash-code-implementation
-      return this.uid.hashCode()
-   }
-   */
 }

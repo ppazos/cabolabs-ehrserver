@@ -27,7 +27,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 
-//@XmlAccessorType(XmlAccessType.FIELD)
 class AuditDetails {
 
    // Identificador del sistema al que fue commiteado el cambio en el EHR

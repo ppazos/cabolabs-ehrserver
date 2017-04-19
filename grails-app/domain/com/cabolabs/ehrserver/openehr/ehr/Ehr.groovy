@@ -31,10 +31,9 @@ import javax.xml.bind.annotation.*
 /**
  * Representa el EHR de un paciente.
  *
- * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
 class Ehr {
 
    // The id of the EHR system on which this EHR was created
@@ -52,9 +51,7 @@ class Ehr {
    
    // Root of the directory tree
    Folder directory
-   // Causes errors when creating Folders with ehr null
-   //static hasOne = [directory: Folder] // needed to set 1 to 1 rel with Folder, Folder has: Ehr ehr. See http://grails.github.io/grails-doc/2.2.1/ref/Domain%20Classes/hasOne.html
-   
+
    // multitenancy
    String organizationUid
    
@@ -71,6 +68,7 @@ class Ehr {
    }
    
    static mapping = {
+      contributions cascade: 'all' //'save-update'
    }
    
    // For testing purposes
