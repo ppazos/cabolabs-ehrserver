@@ -363,7 +363,7 @@ class Query {
       this.select.each { dataGet ->
          
          // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path
+         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
          
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
          // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
@@ -373,7 +373,7 @@ class Query {
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
-         resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLE above
+         resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLEM above
          resHeaders[absPath]['name'] = dataidx.name
          
          switch (dataGet.rmTypeName)
@@ -479,7 +479,7 @@ class Query {
             colValues = [type: colData['type'], path: _absPath] // pongo la path para debug
             
             // dvi para la columna actual
-            dvi = dvis.find{ (it.archetypeId + it.archetypePath) == _absPath && it.owner.id == compoId}
+            dvi = dvis.find{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
             
             if (dvi)
             {
@@ -576,7 +576,7 @@ class Query {
       def resGrouped = [:]
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
-      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath }
+      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>' }
       
 
       // Usa ruta absoluta para agrupar.
@@ -585,7 +585,7 @@ class Query {
       this.select.each { dataGet ->
          
          // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path
+         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
          
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
          // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
