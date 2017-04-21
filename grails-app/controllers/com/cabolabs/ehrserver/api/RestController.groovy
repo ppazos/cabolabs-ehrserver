@@ -383,6 +383,14 @@ class RestController {
       // ref: http://stackoverflow.com/questions/9464398/reading-from-a-file-using-the-input-type-file-in-grails
       
       def content = request.reader?.text
+      
+      if (!content)
+      {
+         commitLoggerService.log(request, null, false, null)
+         renderError(message(code:'rest.commit.error.emptyRequest'), '4012', 400)
+         return
+      }
+      
       def versionsXML, _parsedVersions
       if (request.contentType == "application/json")
       {
