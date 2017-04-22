@@ -23,7 +23,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    //static transactional = false
    
    def xmlService
-   def config = Holders.config // grailsApplication.config // Holders.config
+   def config = Holders.config
    
    private static String PS = System.getProperty("file.separator")
    private String ehrUid = '11111111-1111-1111-1111-111111111123'
