@@ -25,6 +25,9 @@ package com.cabolabs.security
 class Role implements Serializable {
 
 	private static final long serialVersionUID = 1
+   static final String AD = 'ROLE_ADMIN'
+   static final String AM = 'ROLE_ACCOUNT_MANAGER'
+   static final String OM = 'ROLE_ORG_MANAGER'
 
 	String authority
 
@@ -60,10 +63,16 @@ class Role implements Serializable {
    {
       //println this.authority +" higherThan "+ r.authority
       if (this.authority == r.authority) return true // we consider x higher than x in the role hierarchy
-      if (this.authority == 'ROLE_ADMIN') return true // admins is higher than anything if r is not admin (both admins is considered in the 1st case)
-      if (r.authority == 'ROLE_ADMIN') return false // admin on r, higher than anything
-      if (this.authority == 'ROLE_ORG_MANAGER') return true // below admin, orgman is higher, both orgmans is considered on case 1
-      if (r.authority == 'ROLE_ORG_MANAGER') return false
+      
+      if (this.authority == AD) return true // admins is higher than anything if r is not admin (both admins is considered in the 1st case)
+      if (r.authority == AD) return false // admin on r, higher than anything
+      
+      if (this.authority == AM) return true // below admin, accmgt is higher, both accmgt is considered on case 1
+      if (r.authority == AM) return false
+      
+      if (this.authority == OM) return true // below admin, orgman is higher, both orgmans is considered on case 1
+      if (r.authority == OM) return false
+      
       return true // all the other roles have the same power
    }
 }

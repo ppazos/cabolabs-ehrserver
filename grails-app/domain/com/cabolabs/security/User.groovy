@@ -93,10 +93,13 @@ class User implements Serializable {
       // custom logic to avoid many queries for using authoritiesContains
       def roles = UserRole.findAllByUser(this)*.role
       
-      def role = roles.find { it.authority == 'ROLE_ADMIN' }
+      def role = roles.find { it.authority == Role.AD }
       if (role) return role
       
-      role = roles.find { it.authority == 'ROLE_ORG_MANAGER' }
+      role = roles.find { it.authority == Role.AM }
+      if (role) return role
+      
+      role = roles.find { it.authority == Role.OM }
       if (role) return role
       
       return roles[0] // any other role
