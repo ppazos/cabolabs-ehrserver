@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -23,9 +22,12 @@
 
 package com.cabolabs.ehrserver.account
 
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
+import grails.converters.*
 
 class StatsController {
 
@@ -39,6 +41,80 @@ class StatsController {
    }
    
    /**
+    * Admin get stats for an account manager user
+    * @return
+    */
+   @SecuredStateless
+   def userAccountStats(String username)
+   {
+      /*
+      // 0. token should be for an admin
+      // 1. username should be account manager
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      if (!_user.authoritiesContains(Role.AD))
+      {
+         // 0.
+      }
+      */
+      def accmgt = User.findByUsername(username)
+      /*
+      if (!accmgt.authoritiesContains(Role.AM))
+      {
+         // 1.
+      }
+      */
+      def organizations = accmgt.organizations
+      
+      // For now the period is just the current month, variable period later.
+      long from = firstDayOfCurrentMonth()
+      long to = firstDayOfNextMonth()
+      def dfrom = new Date(from)
+      def dto   = new Date(to)
+      
+      def stats = [from: from, to: to, organizations: [:]]
+      organizations.each { org ->
+         
+         stats.organizations[org.uid] =
+            [
+              transactions: Contribution.byOrgInPeriod(org.uid, dfrom, dto).count(),
+              documents: Version.byOrgInPeriod(org.uid, dfrom, dto).count(),
+              size: versionFSRepoService.getRepoSizeInBytesBetween(org.uid, dfrom, dto)
+            ]
+      }
+      
+      return stats as JSON
+   }
+   
+   private long firstDayOfCurrentMonth()
+   {
+      def cal = Calendar.getInstance()
+      cal.set(Calendar.DATE, 1) // 1st day current month
+      
+      // zero time
+      cal.set(Calendar.HOUR_OF_DAY, 0)
+      cal.set(Calendar.MINUTE, 0)
+      cal.set(Calendar.SECOND, 0)
+     
+      return cal.getTimeInMillis()
+   }
+   
+   private long firstDayOfNextMonth()
+   {
+      def cal = Calendar.getInstance()
+      
+      cal.set(Calendar.DATE, 1) // 1st day current month
+      
+      // zero time
+      cal.set(Calendar.HOUR_OF_DAY, 0)
+      cal.set(Calendar.MINUTE, 0)
+      cal.set(Calendar.SECOND, 0)
+      
+      cal.add(Calendar.MONTH, 1) // next month 1st day
+      return cal.getTimeInMillis()
+   }
+   
+   /**
     * Show detailed stats for an organization in an interval of time.
     * Dates come as epoch times.
     */
@@ -49,20 +125,8 @@ class StatsController {
       // so "to" should be next months 1st day on time 0
       if (!to)
       {
-         def cal = Calendar.getInstance()
-         cal.set(Calendar.DATE, 1) // 1st day current month
-         
-         // zero time
-         cal.set(Calendar.HOUR_OF_DAY, 0)
-         cal.set(Calendar.MINUTE, 0)
-         cal.set(Calendar.SECOND, 0)
-        
-         from = cal.getTimeInMillis()
-         
-         //cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE))
-         cal.add(Calendar.MONTH, 1) // next month 1st day
-         
-         to = cal.getTimeInMillis()
+         from = firstDayOfCurrentMonth()
+         to = firstDayOfNextMonth()
       }
    
       def dfrom = new Date(from)
@@ -70,38 +134,6 @@ class StatsController {
       
       println dfrom
       println dto
-   
-      // Number of transactions
-      def contributions = Contribution.withCriteria {
-        
-        projections {
-           count()
-        }
-        
-        eq('organizationUid', uid)
-        audit {
-          //between('timeCommitted', dfrom, dto)
-          ge('timeCommitted', dfrom) // dfrom <= timeCommitted < dto
-          lt('timeCommitted', dto)
-        }
-      }
-      
-      // Number of documents and size in bytes (more than one document per transaction is allowed)
-      def versions = Version.withCriteria {
-         
-         projections {
-           count()
-         }
-        
-         contribution {
-            eq('organizationUid', uid)
-         }
-         commitAudit {
-            //between('timeCommitted', dfrom, dto)
-            ge('timeCommitted', dfrom) // dfrom <= timeCommitted < dto
-            lt('timeCommitted', dto)
-         }
-      }
       
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
       
@@ -109,6 +141,11 @@ class StatsController {
       def org = Organization.findByUid(uid)
       def plan_association = Plan.activeOn(org, dfrom) // can be null!
       
-      [transactions: contributions[0], documents: versions[0], size: size, plan: plan_association?.plan, plan_association: plan_association, from: from, to: to]
+      [transactions: Contribution.byOrgInPeriod(organizations[0].uid, dfrom, dto).count(),
+       documents: Version.byOrgInPeriod(organizations[0].uid, dfrom, dto).count(),
+       size: size,
+       plan: plan_association?.plan,
+       plan_association: plan_association,
+       from: from, to: to]
    }
 }

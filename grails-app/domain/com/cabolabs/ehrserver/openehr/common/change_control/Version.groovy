@@ -115,4 +115,16 @@ class Version {
    static constraints = {
       contribution(nullable:false) // La version debe estar dentro de una contribution
    }
+   
+   static namedQueries = {
+      byOrgInPeriod { uid, from, to ->
+         contribution {
+            eq('organizationUid', uid)
+         }
+         commitAudit {
+            ge('timeCommitted', from) // dfrom <= timeCommitted < dto
+            lt('timeCommitted', to)
+         }
+      }
+   }
 }

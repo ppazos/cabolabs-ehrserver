@@ -77,4 +77,14 @@ class Contribution {
       this.yearMonthGroup = Integer.parseInt( new SimpleDateFormat("yyyyMM").format(d) )
       this.yearGroup      = Integer.parseInt( new SimpleDateFormat("yyyy").format(d) )
    }
+   
+   static namedQueries = {
+      byOrgInPeriod { uid, from, to ->
+         eq('organizationUid', uid)
+         audit {
+           ge('timeCommitted', from) // dfrom <= timeCommitted < dto
+           lt('timeCommitted', to)
+         }
+      }
+   }
 }
