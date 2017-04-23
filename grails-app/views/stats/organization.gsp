@@ -135,7 +135,7 @@
            </div>
          </div>
        </div>
-       <g:link controller="versionedComposition" action="list">
+       <g:link controller="versionedComposition" action="index">
          <div class="panel-footer">
            <span class="pull-left"><g:message code="desktop.view_details" /></span>
            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -157,7 +157,7 @@
            </div>
          </div>
        </div>
-       <g:link controller="versionedComposition" action="list">
+       <g:link controller="versionedComposition" action="index">
          <div class="panel-footer">
            <span class="pull-left"><g:message code="desktop.view_details" /></span>
            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
