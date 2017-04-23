@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -142,7 +141,7 @@ class EhrTagLib {
       def loggedInUser = springSecurityService.currentUser
       if(loggedInUser)
       {
-         def roles = Role.list()
+         def roles = Role.list() // all the roles!
          
          def args = [:]
          args.name = attrs.name
@@ -166,19 +165,40 @@ class EhrTagLib {
             args.size = 5
          }
          
-         if (loggedInUser.authoritiesContains('ROLE_ORG_MANAGER'))
+         if (loggedInUser.authoritiesContains(Role.OM))
          {
-            //roles.removeAll { it.authority == 'ROLE_ADMIN' } // all roles minus admin, removeAll modifies the collection
-            //args.from = roles
-            args.from.removeElement('ROLE_ADMIN')
+            args.from.removeElement(Role.AD)
+            args.from.removeElement(Role.AM)
          }
-         else if (!loggedInUser.authoritiesContains('ROLE_ADMIN'))
+         else if (loggedInUser.authoritiesContains(Role.AM))
+         {
+            args.from.removeElement(Role.AD)
+         }
+         else if (!loggedInUser.authoritiesContains(Role.AD))
          {
             // non admins can't assign any roles
             return
          }
          
          out << g.select(args)
+      }
+   }
+   
+   def canEditUser = { attrs, body ->
+      
+      def userInstance = attrs.userInstance // user to edit
+      def userHigherRole = userInstance.getHigherAuthority()
+      
+      def loggedInUser = springSecurityService.currentUser
+      if(loggedInUser)
+      {
+         def roles = loggedInUser.authorities
+         
+         // if the logged user has a role higher than the highest role of the user, he can edit it.
+         if (roles.any { it.higherThan(userHigherRole) })
+         {
+            out << body()
+         }
       }
    }
 }

@@ -713,7 +713,6 @@ class RestController {
             
             // TODO: UserRole ORG_* needs a reference to the org, since the user
             //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-            //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
             UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true ) // the user is creating the organization, it should be manager also
             
             // reset password request notification

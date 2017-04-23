@@ -59,7 +59,6 @@ class UserService {
             
       // TODO: UserRole ORG_* needs a reference to the org, since the user
       //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-      //UserRole.create( userInstance, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
 
       // Add selected roles
       def roles = params.list('role')

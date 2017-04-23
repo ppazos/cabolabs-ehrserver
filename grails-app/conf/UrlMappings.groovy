@@ -131,6 +131,12 @@ class UrlMappings {
          action: 'userRegister'
       )
       
+      // management API
+      "/mgt/v1/stats/$username"{
+         controller: 'stats'
+         action: 'userAccountStats'
+      }
+      
 
       "/$controller/$action?/$id?"{
          constraints {

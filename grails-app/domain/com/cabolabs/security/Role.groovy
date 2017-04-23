@@ -28,7 +28,8 @@ class Role implements Serializable {
    static final String AD = 'ROLE_ADMIN'
    static final String AM = 'ROLE_ACCOUNT_MANAGER'
    static final String OM = 'ROLE_ORG_MANAGER'
-
+   static final String US = 'ROLE_USER'
+   
 	String authority
 
 	Role(String authority) {

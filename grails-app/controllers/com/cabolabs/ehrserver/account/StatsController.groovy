@@ -141,8 +141,8 @@ class StatsController {
       def org = Organization.findByUid(uid)
       def plan_association = Plan.activeOn(org, dfrom) // can be null!
       
-      [transactions: Contribution.byOrgInPeriod(organizations[0].uid, dfrom, dto).count(),
-       documents: Version.byOrgInPeriod(organizations[0].uid, dfrom, dto).count(),
+      [transactions: Contribution.byOrgInPeriod(uid, dfrom, dto).count(),
+       documents: Version.byOrgInPeriod(uid, dfrom, dto).count(),
        size: size,
        plan: plan_association?.plan,
        plan_association: plan_association,

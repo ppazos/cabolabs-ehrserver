@@ -444,7 +444,7 @@ class SecurityFilters {
       query_share(controller:'resource', action:'saveSharesQuery') {
          before = {
             
-            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER"))
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
             {
                flash.message = "You need and higher role to edit the shares"
                chain controller: 'query', action: 'list'
@@ -587,7 +587,7 @@ class SecurityFilters {
       opt_share(controller:'resource', action:'saveSharesOpt') {
          before = {
             
-            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER"))
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
             {
                flash.message = "You need and higher role to edit the shares"
                chain controller: 'operationalTemplateIndex', action: 'list'
@@ -667,6 +667,36 @@ class SecurityFilters {
             return true
          }
       } // opt_share
+      
+      
+      // 0. token should be for an admin
+      // 1. username should be account manager
+      mgt_api_stats(controller:'stats', action:'userAccountStats') {
+         before = {
+            
+            /* TODO
+             * 
+            if (!['', null, 'xml', 'json'].contains(params.format))
+            {
+               // bad request in XML
+               render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                  result {
+                     type('AR')                         // application reject
+                     message(
+                        messageSource.getMessage('rest.error.formatNotSupported', [params.format] as Object[], getRequestLocale(request))
+                     )
+                     code('EHR_SERVER::API::ERRORS::0066') // sys::service::concept::code
+                  }
+               }
+               return false
+            }
+            */
+
+            return true
+         }
+      }
+      
+      
       
       
    } // filters

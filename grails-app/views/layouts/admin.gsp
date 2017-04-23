@@ -173,7 +173,7 @@
 	               <li>
 	                 <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
 	               </li>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                     <li>
                       <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
                     </li>
@@ -184,12 +184,12 @@
 	               <li>
 	                 <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
 	               </li>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
 	                 <li>
 	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
 	                 <li>
 	                   <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-user"></i> <g:message code="desktop.user" /></g:link>
 	                 </li>
@@ -199,12 +199,12 @@
 	                   <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
 	                 <li>
 	                   <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER">
+	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                     <li>
                       <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
                     </li>

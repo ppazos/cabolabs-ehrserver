@@ -147,13 +147,13 @@ class UserController {
       
       
       def allowed = (
-         _user.authoritiesContains('ROLE_ADMIN') || // admins access everything
+         _user.authoritiesContains(Role.AD) || // admins access everything
          (
             ( u.organizations.count{ it.number == _orgnum } == 1 ) && // organization of the logged user match one of the organizations of the requested user
             (
                u.username == _username || // user want to access self profile
                ( // org managers can see users with lees power than them
-                  _user.authoritiesContains('ROLE_ORG_MANAGER') && _user.higherAuthority.higherThan( u.higherAuthority )
+                  (_user.authoritiesContains(Role.OM) || _user.authoritiesContains(Role.AM)) && _user.higherAuthority.higherThan( u.higherAuthority )
                )
             )
          )
@@ -522,8 +522,8 @@ class UserController {
                
                // TODO: UserRole ORG_* needs a reference to the org, since the user
                //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-               //UserRole.create( u, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
-               UserRole.create( u, (Role.findByAuthority('ROLE_ORG_MANAGER')), true ) // the user is creating the organization, it should be manager also
+               // the user is creating the organization, it should be manager also, because is the first, is account manager
+               UserRole.create( u, (Role.findByAuthority(Role.AM)), true )
                
                // associate the basic plan to the new org
                def p1 = Plan.get(1)

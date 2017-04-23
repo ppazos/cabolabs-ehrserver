@@ -85,7 +85,7 @@ class User implements Serializable {
    
    /**
     * returns the highest role assigned to the user.
-    * ROLE_ADMIN > ROLE_ORG_MANAGER > any other role
+    * ROLE_ADMIN > ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER > any other role
     * @return
     */
    Role getHigherAuthority()

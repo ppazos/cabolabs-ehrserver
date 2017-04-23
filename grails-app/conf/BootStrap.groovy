@@ -537,58 +537,60 @@ class BootStrap {
          '/j_spring_security_logout',
          '/api/**', // REST security is handled by stateless security plugin
          '/ehr/showCompositionUI', // will be added as a rest service via url mapping
-         '/user/profile'
+         '/user/profile',
+         '/mgt/**' // management api
         ])
         {
             new RequestMap(url: url, configAttribute: 'permitAll').save()
         }
        
         // sections        
-        new RequestMap(url: '/notification/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+        new RequestMap(url: '/notification/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
-        new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+        new RequestMap(url: '/app/index',                    configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
        
-        new RequestMap(url: '/ehr/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/versionedComposition/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/contribution/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/folder/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
-        new RequestMap(url: '/query/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ORG_STAFF').save()
+        new RequestMap(url: '/ehr/**',                       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/versionedComposition/**',      configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/contribution/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/folder/**',                    configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/query/**',                     configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/archetypeIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/compositionIndex/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/operationalTemplate/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/archetypeIndexItem/**',        configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
         
         // the rest of the operations should be open and security is checked inside the action
-        new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/show/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/edit/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/update/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/create', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/save', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/delete', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/user/resetPasswordRequest/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/show/**',                 configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/edit/**',                 configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/update/**',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/create',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/save',                    configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/delete',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/user/resetPasswordRequest/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
-        new RequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/organization/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/role/**',                      configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/organization/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
         // share/unshare queries and opts between orgs
-        new RequestMap(url: '/resource/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/resource/**',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
-        new RequestMap(url: '/stats/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/stats/**',                     configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
         
-        new RequestMap(url: '/rest/queryCompositions', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
-        new RequestMap(url: '/rest/queryData', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER').save()
+        new RequestMap(url: '/rest/queryCompositions',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
      }
      
      if (Role.count() == 0 )
      {
         // Create roles
-        def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
-        def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
-        def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
+        def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+        def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
+        def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+        def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
      }
      
      if (User.count() == 0)
@@ -600,6 +602,10 @@ class BootStrap {
         adminUser.organizations = [organizations[0]]
         adminUser.save(failOnError: true,  flush: true)
         
+        def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
+        accManUser.organizations = [organizations[0]]
+        accManUser.save(failOnError: true,  flush: true)
+        
         def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
         orgManUser.organizations = [organizations[0]]
         orgManUser.save(failOnError: true,  flush: true)
@@ -610,9 +616,10 @@ class BootStrap {
         
 
         // Associate roles
-        UserRole.create( adminUser, (Role.findByAuthority('ROLE_ADMIN')), true )
-        UserRole.create( orgManUser, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
-        UserRole.create( user, (Role.findByAuthority('ROLE_USER')), true )
+        UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), true )
+        UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), true )
+        UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), true )
+        UserRole.create( user,       (Role.findByAuthority(Role.US)), true )
      }
 
      //****** SECURITY *******
