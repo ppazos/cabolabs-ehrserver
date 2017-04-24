@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -24,8 +23,7 @@
 package com.cabolabs.ehrserver.webconsole
 
 import grails.plugin.springsecurity.SpringSecurityUtils
-import com.cabolabs.security.User
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
@@ -45,6 +43,32 @@ class SecurityFilters {
    
    static def config = Holders.config.app
 
+   String format(request, params)
+   {
+      def format
+      def accept = request.getHeader('Accept')
+      
+      if (params.format)
+      {
+         if (params.format == 'json') return 'json'
+         if (params.format == 'xml') return 'xml'
+         return 'json' // format not supported but present, take json as default
+      }
+      if (accept.contains('application/json')) return 'json'
+      if (accept.contains('application/xml')) return 'xml'
+      if (accept.contains('text/xml')) return 'xml'
+      
+      return 'json' // take json as default
+   }
+   
+   /**
+    * map = [json: {}, xml: {}]
+    */
+   def forFormat( Map map, request, params )
+   {   
+      map[format(request, params)]()
+   }
+   
    // REF https://github.com/Grails-Plugin-Consortium/grails-cookie/blob/master/src/main/groovy/grails/plugin/cookie/CookieHelper.groovy
    /*
    String getDefaultCookiePath(String path) {
@@ -89,7 +113,7 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-            
+                        
             /**
              * Lang check
              * 
@@ -669,33 +693,152 @@ class SecurityFilters {
       } // opt_share
       
       
-      // 0. token should be for an admin
-      // 1. username should be account manager
+
+
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {
             
-            /* TODO
-             * 
-            if (!['', null, 'xml', 'json'].contains(params.format))
+            // 0. auth user is admin
+            // 1. username is not empty
+            // 2. user for username exists
+            // 3. username param is for an account manager user
+            
+            def _token_username = request.securityStatelessMap.username
+            def _token_user = User.findByUsername(_token_username)
+                        
+            if (!_token_user.authoritiesContains(Role.AD))
             {
-               // bad request in XML
-               render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                  result {
-                     type('AR')                         // application reject
-                     message(
-                        messageSource.getMessage('rest.error.formatNotSupported', [params.format] as Object[], getRequestLocale(request))
-                     )
-                     code('EHR_SERVER::API::ERRORS::0066') // sys::service::concept::code
+               forFormat([
+                  xml : {
+                     render(status: 403, contentType:"text/xml", encoding:"UTF-8") {
+                        result {
+                           type('AR')
+                           message("You don't have access to this API")
+                           code('99999') // FIXME
+                        }
+                     }
+                  },
+                  json : {
+                     def error = [
+                        result: [
+                           type: 'AR',
+                           message: "You don't have access to this API",
+                           code: '99999' // FIXME
+                        ]
+                     ]
+
+                     response.status = 403
+                     
+                     // JSONP
+                     if (params.callback) result = "${params.callback}( ${result} )"
+                     render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
                   }
-               }
+               ], request, params)
+            
                return false
             }
-            */
+               
+            if (!params.username)
+            {
+               forFormat([
+                  xml : {
+                     render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                        result {
+                           type('AR')
+                           message("username is required")
+                           code('99999') // FIXME
+                        }
+                     }
+                  },
+                  json : {
+                     def error = [
+                        result: [
+                           type: 'AR',
+                           message: "username is required",
+                           code: '99999' // FIXME
+                        ]
+                     ]
 
-            return true
+                     response.status = 400
+                     
+                     // JSONP
+                     if (params.callback) result = "${params.callback}( ${result} )"
+                     render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
+                  }
+               ], request, params)
+               
+               return false
+            }
+               
+               
+            def accmgt = User.findByUsername(params.username)
+            
+            if (!accmgt)
+            {
+               forFormat([
+                  xml : {
+                     render(status: 404, contentType:"text/xml", encoding:"UTF-8") {
+                        result {
+                           type('AR')
+                           message("User not found")
+                           code('99999') // FIXME
+                        }
+                     }
+                  },
+                  json : {
+                     def error = [
+                        result: [
+                           type: 'AR',
+                           message: "User not found",
+                           code: '99999' // FIXME
+                        ]
+                     ]
+
+                     response.status = 404
+                     
+                     // JSONP
+                     if (params.callback) result = "${params.callback}( ${result} )"
+                     render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
+                  }
+               ], request, params)
+               
+               return false
+            }
+               
+            if (!accmgt.authoritiesContains(Role.AM))
+            {
+               forFormat([
+                  xml : {
+                     render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                        result {
+                           type('AR')
+                           message("User is not account manager")
+                           code('99999') // FIXME
+                        }
+                     }
+                  },
+                  json : {
+                     def error = [
+                        result: [
+                           type: 'AR',
+                           message: "User is not account manager",
+                           code: '99999' // FIXME
+                        ]
+                     ]
+
+                     response.status = 400
+                     
+                     // JSONP
+                     if (params.callback) result = "${params.callback}( ${result} )"
+                     render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
+                  }
+               ], request, params)
+               
+               
+               return false
+            }
          }
-      }
-      
+      } // stats
       
       
       

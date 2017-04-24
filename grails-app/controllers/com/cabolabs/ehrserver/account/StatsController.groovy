@@ -47,23 +47,7 @@ class StatsController {
    @SecuredStateless
    def userAccountStats(String username)
    {
-      /*
-      // 0. token should be for an admin
-      // 1. username should be account manager
-      def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
-      if (!_user.authoritiesContains(Role.AD))
-      {
-         // 0.
-      }
-      */
       def accmgt = User.findByUsername(username)
-      /*
-      if (!accmgt.authoritiesContains(Role.AM))
-      {
-         // 1.
-      }
-      */
       def organizations = accmgt.organizations
       
       // For now the period is just the current month, variable period later.
@@ -83,7 +67,8 @@ class StatsController {
             ]
       }
       
-      return stats as JSON
+      // TODO: support XML by withFormat
+      render stats as JSON
    }
    
    private long firstDayOfCurrentMonth()

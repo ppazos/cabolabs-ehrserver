@@ -132,10 +132,10 @@ class UrlMappings {
       )
       
       // management API
-      "/mgt/v1/stats/$username"{
-         controller: 'stats'
+      "/mgt/v1/stats/$username"(
+         controller: 'stats',
          action: 'userAccountStats'
-      }
+      )
       
 
       "/$controller/$action?/$id?"{
