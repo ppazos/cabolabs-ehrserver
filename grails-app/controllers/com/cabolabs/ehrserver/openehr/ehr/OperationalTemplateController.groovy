@@ -58,6 +58,11 @@ class OperationalTemplateController {
       def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
       ti.indexAll(session.organization)
       
+      // load opt in manager cache
+      def optMan = OptManager.getInstance()
+      optMan.unloadAll()
+      optMan.loadAll()
+      
       redirect(action: "list")
    }
    
