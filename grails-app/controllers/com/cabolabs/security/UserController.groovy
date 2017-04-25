@@ -378,11 +378,7 @@ class UserController {
       }
       
       // Admins can access all users
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         // do nothing, let update
-      }
-      else
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // If not admin, the user should be on an organization of the loggerInUser
          if (loggedInUser.organizations.disjoint( userInstance.organizations ))
@@ -391,9 +387,9 @@ class UserController {
             redirect action:'index'
             return
          }
-
-         // do nothing, let update
       }
+      
+      // update allowed
       
       def orgs = params.list("organizationUid")
       def roles = params.list('role')
