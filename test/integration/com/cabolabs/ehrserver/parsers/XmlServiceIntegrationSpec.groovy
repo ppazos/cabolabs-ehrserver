@@ -16,6 +16,12 @@ import groovy.io.FileType
 import spock.lang.Ignore
 import grails.util.Holders
 
+/**
+ * This mainly tests commits without the controller, just goes directly to the service.
+ * 
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
+ *
+ */
 class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    // it seems integration tests are transactional by default, so if an exception occurs, the session is rolledback at the end of each test case,
@@ -276,6 +282,37 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    }
    
    
+   void "multiple / dupliacted compo.uid"()
+   {
+      setup:
+         def ehr = Ehr.findByUid(ehrUid)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_same_compo_uid.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         // should throw an exception
+         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         
+      then:
+         Exception e = thrown() // TODO: use specific exception type
+         assert xmlService.validationErrors.size() == 0
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(config.app.version_repo).listFiles()
+                                                         .findAll { it.name ==~ /.*\.xml/ }
+                                                         .size() == 0
+   }
+   
+   
+   
    void "commit same version twice"()
    {
       setup:
@@ -318,7 +355,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    }
    
    
-   void "commit 2 compos, and new version"()
+   void "commit 2 compo versions for the same document"()
    {
       setup:
          def ehr = Ehr.findByUid(ehrUid)

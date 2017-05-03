@@ -144,6 +144,28 @@ class XmlService {
       this.validationErrors = errors
       
       if (this.validationErrors.size() > 0) throw new XmlValidationException('There are errors in the XML versions')
+      
+      
+      // if there are many compos, and some have uid, the uid should be unique between the compos
+      if (versions.version.size() > 1)
+      {
+         def cuids = versions.version.data.uid.value.collect { it.text() }
+         
+         // false do not modifies the collection
+         if (cuids.unique(false).size() < cuids.size())
+         {
+            throw new CommitCantCreateNewVersionException("Some composition uids are present and are not unique}")
+         }
+
+         
+         // If a compo.uid exists in the XML, it should bet exist on the database, avoid weird cases of reusing UIDs for testing.
+         cuids.each { cuid ->
+            if (CompositionIndex.countByUid(cuid) > 0)
+            {
+               throw new CommitCantCreateNewVersionException("The composition uid "+ cuid +" already exists in the database, be sure your system is generating random UIDs and not reusing them")
+            }
+         }
+      }
    }
    
    
