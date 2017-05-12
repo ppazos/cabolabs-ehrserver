@@ -83,6 +83,7 @@
     
     <script type="text/javascript">
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
+      <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>
     </script>
     <asset:javascript src="query_test_and_execution.js" />
     <!-- /query test -->
@@ -655,6 +656,7 @@ resp.responseJSON.result.message +'</div>'
 
         var archetype_id = $('select[name=view_archetype_id]').val();
         var path = $('select[name=view_archetype_path]').val();
+        var name = $('select[name=view_archetype_path] option:selected').data('name');
         var type = $('select[name=view_archetype_path] option:selected').data('type');
         var spec = $('input[name=criteria]', fieldset).data('spec');
         
@@ -707,6 +709,7 @@ resp.responseJSON.result.message +'</div>'
            '<tr data-id="'+ cid +'">'+
            '<td>'+ archetype_id +'</td>'+
            '<td>'+ path +'</td>'+
+           '<td>'+ name +'</td>'+
            '<td>'+ type +'</td>'+
            '<td>'+ criteria_str +'</td>'+
            '<td>'+
@@ -750,7 +753,7 @@ resp.responseJSON.result.message +'</div>'
       // DATA QUERY CREATE/EDIT =========
       // =================================
       
-      var dom_add_selection = function (archetype_id, path, rm_type_name) {
+      var dom_add_selection = function (archetype_id, path, name, rm_type_name) {
 
         // query object mgt
         pid = query.add_projection(archetype_id, path, rm_type_name);
@@ -760,6 +763,7 @@ resp.responseJSON.result.message +'</div>'
         $('#selection').append(
           '<tr data-id="'+ pid +'">'+
           '<td>'+ archetype_id +'</td><td>'+ path +'</td>'+
+          '<td>'+ name +'</td><td>'+ rm_type_name +'</td>'+
           '<td>'+
             '<div class="btn-toolbar" role="toolbar">'+
               '<a href="#" class="removeSelection">'+
@@ -790,6 +794,7 @@ resp.responseJSON.result.message +'</div>'
         dom_add_selection(
           $('select[name=view_archetype_id]').val(),
           $('select[name=view_archetype_path]').val(),
+          $('select[name=view_archetype_path] option:selected').data('name'),
           $('select[name=view_archetype_path] option:selected').data('type')
         );
         
@@ -831,10 +836,10 @@ resp.responseJSON.result.message +'</div>'
             // Adds options to the select
             $(data).each(function(i, didx) {
             
-              // using LocaleContextHolder becase request.locale.language always returns 'en'
-            
               $('select[name=view_archetype_path]').append(
-                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'">'+ didx.name['ISO_639-1::${org.springframework.context.i18n.LocaleContextHolder.locale.language}'] +' {'+ didx.rmTypeName + '}</option>'
+                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'">'+ 
+                didx.name['ISO_639-1::${session.lang}'] +
+                ' {'+ didx.rmTypeName + '}</option>'
               );
             });
           },
@@ -1749,6 +1754,7 @@ resp.responseJSON.result.message +'</div>'
                   <tr>
                     <th><g:message code="query.create.archetype_id" /></th>
                     <th><g:message code="query.create.path" /></th>
+                    <th><g:message code="query.create.name" /></th>
                     <th><g:message code="query.create.type" /></th>
                     <th><g:message code="query.create.criteria" /></th>
                     <th></th>
@@ -1809,38 +1815,39 @@ resp.responseJSON.result.message +'</div>'
             <h3><g:message code="query.create.projections" /></h3>
             <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
             <a name="selection"></a>
-           <div class="table-responsive">
-             <table class="table table-striped table-bordered table-hover" id="selection">
-              <tr>
-                <th><g:message code="query.create.archetype_id" /></th>
-                <th><g:message code="query.create.path" /></th>
-                <th></th>
-              </tr>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover" id="selection">
+                <tr>
+                  <th><g:message code="query.create.archetype_id" /></th>
+                  <th><g:message code="query.create.path" /></th>
+                  <th><g:message code="query.create.name" /></th>
+                  <th><g:message code="query.create.type" /></th>
+                  <th></th>
+                </tr>
               </table>
-           </div>
+            </div>
             
           </div><!-- query_datavalue -->
-          
 
-            <script>
-              // Toggles the query test on and off.
-              var toggle_test = function() { 
+          <script>
+            // Toggles the query test on and off.
+            var toggle_test = function() { 
                 
-                // Test options for each type of query
-                if ( $('select[name=type]').val() == 'composition' )
-                {
-                   $('div#query_test_composition').show();
-                   $('div#query_test_datavalue').hide();
-                }
-                else
-                {
-                   $('div#query_test_composition').hide();
-                   $('div#query_test_datavalue').show();
-                }
+              // Test options for each type of query
+              if ( $('select[name=type]').val() == 'composition' )
+              {
+                $('div#query_test_composition').show();
+                $('div#query_test_datavalue').hide();
+              }
+              else
+              {
+                $('div#query_test_composition').hide();
+                $('div#query_test_datavalue').show();
+              }
                 
-                $('#query_test').toggle('slow');
-              };
-            </script>
+              $('#query_test').toggle('slow');
+            };
+          </script>
 
           <div class="btn-toolbar bottom" role="toolbar">
             <a href="javascript:void(0);" onclick="javascript:toggle_test();" id="test_query">
