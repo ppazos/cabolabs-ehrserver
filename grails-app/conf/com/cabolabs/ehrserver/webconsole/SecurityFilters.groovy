@@ -705,7 +705,8 @@ class SecurityFilters {
             
             def _token_username = request.securityStatelessMap.username
             def _token_user = User.findByUsername(_token_username)
-                        
+            
+            // Note API Keys can't access this, should be a fully authenticated user.
             if (!_token_user.authoritiesContains(Role.AD))
             {
                forFormat([
