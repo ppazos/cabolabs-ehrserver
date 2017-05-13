@@ -1209,7 +1209,7 @@ resp.responseJSON.result.message +'</div>'
           {
              // similar code to dom_add_criteria_2 in JS
              
-             def attrs, attrValueField, attrOperandField, value, operand
+             def attrs, attrValueField, attrOperandField, value, operand, name
              println 'var criteria;'
              
              queryInstance.where.each { data_criteria ->
@@ -1266,11 +1266,16 @@ resp.responseJSON.result.message +'</div>'
                 
                 println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
                 
+
+                name = data_criteria.indexItem.name['ISO_639-1::'+ session.lang]
+
+                
                 println """
                   \$('#criteria').append(
                      '<tr data-id="'+ cid +'">'+
                      '<td>${data_criteria.archetypeId}</td>'+
                      '<td>${data_criteria.path}</td>'+
+                     '<td>${name}</td>'+
                      '<td>${data_criteria.rmTypeName}</td>'+
                      '<td>'+ criteria_str +'</td>'+
                      '<td>'+
@@ -1290,11 +1295,13 @@ resp.responseJSON.result.message +'</div>'
           }
           else
           {
-             //print 'alert("datavalue");'
+             def name
              queryInstance.select.each { data_get ->
                 
+                name = data_get.indexItem.name['ISO_639-1::'+ session.lang]
+
                 // Updates the UI and the query object
-                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ data_get.rmTypeName +'");'
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'");'
              }
           }
           

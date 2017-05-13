@@ -24,6 +24,7 @@ package com.cabolabs.ehrserver.query
 
 import grails.util.Holders
 import com.cabolabs.ehrserver.data.DataValues
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 
 /**
  * WHERE archId/path operand value 
@@ -63,6 +64,8 @@ class DataCriteria {
    int spec // index of the criteria spec selected
    
    String alias // for the query, private
+   
+   static transients = ['indexItem']
    
    static constraints = {
       rmTypeName(inList: DataValues.valuesStringList() )
@@ -213,5 +216,10 @@ class DataCriteria {
       sql = sql[0..-6] // removes the last AND
       
       return sql
+   }
+   
+   ArchetypeIndexItem getIndexItem()
+   {
+      return ArchetypeIndexItem.findByArchetypeIdAndPathAndRmTypeName(this.archetypeId, this.path, this.rmTypeName)
    }
 }

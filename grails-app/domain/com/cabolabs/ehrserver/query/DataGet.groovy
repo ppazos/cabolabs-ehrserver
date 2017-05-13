@@ -22,6 +22,8 @@
 
 package com.cabolabs.ehrserver.query
 
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+
 /**
  * SELECT archId/path
  * 
@@ -42,4 +44,11 @@ class DataGet {
    //       tiene el nodeId)
    
    static belongsTo = [Query]
+   
+   static transients = ['indexItem']
+   
+   ArchetypeIndexItem getIndexItem()
+   {
+      return ArchetypeIndexItem.findByArchetypeIdAndPathAndRmTypeName(this.archetypeId, this.path, this.rmTypeName)
+   }
 }
