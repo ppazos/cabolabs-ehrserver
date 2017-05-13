@@ -89,6 +89,10 @@
     font-size: 0.8em;
     padding: 5px;
   }
+  
+  .menu_vertical_separator {
+    border-bottom: 3px solid #ddd;
+  }
   </style>
   <g:javascript>
     // Used to access the assets root from JS code.
@@ -167,7 +171,7 @@
 	         <div class="navbar-default sidebar" role="navigation">
 	           <div class="sidebar-nav navbar-collapse">
 	             <ul class="nav" id="side-menu">
-	               <li>
+	               <li class="menu_vertical_separator">
 	                 <g:link controller="app" action="index"><i class="fa fa-dashboard"></i> Dashboard</g:link>
 	               </li>
                   
@@ -176,45 +180,48 @@
 	                   <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
+                  
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
 	                 <li>
 	                   <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-user"></i> <g:message code="desktop.user" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
+                  
 	               <sec:ifAnyGranted roles="ROLE_ADMIN">
-	                 <li>
+	                 <li class="menu_vertical_separator">
 	                   <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
                   
-                  
-	               <li>
-	                 <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
-	               </li>
-	               <li>
-	                 <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
-	               </li>
-	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+	                 <li>
+	                   <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
+	                 </li>
+	                 <li>
+	                   <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
+	                 </li>
                     <li>
                       <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
                     </li>
+	                 <li class="menu_vertical_separator">
+	                   <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
+	                 </li>
                   </sec:ifAnyGranted>
-	               <li>
-	                 <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
-	               </li>
                   
-	               <li>
-	                 <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
-	               </li>
+                  <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+	                 <li class="menu_vertical_separator">
+	                   <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+	                 </li>
+                  </sec:ifAnyGranted>
                   
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-	                 <li>
+	                 <li class="menu_vertical_separator">
 	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
                   
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                    <li>
+                    <li class="menu_vertical_separator">
                       <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
                     </li>
                   </sec:ifAnyGranted>
