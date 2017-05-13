@@ -48,6 +48,8 @@ import com.cabolabs.ehrserver.ResourceService
 
 import com.cabolabs.ehrserver.notification.*
 
+import grails.util.Environment
+
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
@@ -507,23 +509,7 @@ class BootStrap {
      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
 
      
-
-     def organizations = []
-     if (Organization.count() == 0)
-     {
-        println "Creating sample organization"
-        
-        // Sample organizations
-        organizations << new Organization(name: 'CaboLabs', number: '123456')
-        //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
-        //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
-        
-        organizations.each {
-           it.save(failOnError:true, flush:true)
-        }
-     }
-     else organizations = Organization.list()
-     
+     // Permissions
      if (RequestMap.count() == 0)
      {
         for (String url in [
@@ -584,67 +570,92 @@ class BootStrap {
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
      }
      
-     if (Role.count() == 0 )
-     {
-        // Create roles
-        def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
-        def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
-        def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
-        def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
-     }
+     println Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
      
-     if (User.count() == 0)
+     // Do not create data if testing, tests will create their own data.
+     if (Environment.current != Environment.TEST)
      {
-        println "Creating sample users"
+        println "Not testing"
+     
+        def organizations = []
+        if (Organization.count() == 0)
+        {
+           println "Creating sample organization"
+           
+           // Sample organizations
+           organizations << new Organization(name: 'CaboLabs', number: '123456')
+           //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
+           //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
+           
+           organizations.each {
+              it.save(failOnError:true, flush:true)
+           }
+        }
+        else organizations = Organization.list()
         
-        // Create users
-        def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
-        adminUser.organizations = [organizations[0]]
-        adminUser.save(failOnError: true,  flush: true)
         
-        def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
-        accManUser.organizations = [organizations[0]]
-        accManUser.save(failOnError: true,  flush: true)
+        if (Role.count() == 0 )
+        {
+           // Create roles
+           def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+           def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
+           def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+           def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
+        }
         
-        def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
-        orgManUser.organizations = [organizations[0]]
-        orgManUser.save(failOnError: true,  flush: true)
-        
-        def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
-        user.organizations = [organizations[0]]
-        user.save(failOnError: true,  flush: true)
-        
+        if (User.count() == 0)
+        {
+           println "Creating sample users"
+           
+           // Create users
+           def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
+           adminUser.organizations = [organizations[0]]
+           adminUser.save(failOnError: true,  flush: true)
+           
+           def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
+           accManUser.organizations = [organizations[0]]
+           accManUser.save(failOnError: true,  flush: true)
+           
+           def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
+           orgManUser.organizations = [organizations[0]]
+           orgManUser.save(failOnError: true,  flush: true)
+           
+           def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
+           user.organizations = [organizations[0]]
+           user.save(failOnError: true,  flush: true)
+           
 
-        // Associate roles
-        UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), true )
-        UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), true )
-        UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), true )
-        UserRole.create( user,       (Role.findByAuthority(Role.US)), true )
-     }
-
-     //****** SECURITY *******
-     
-     
-     log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
-     
-     
-     // Always regenerate indexes in deploy
-     if (OperationalTemplateIndex.count() == 0)
-     {
-        println "Indexing Operational Templates"
+           // Associate roles
+           UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), true )
+           UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), true )
+           UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), true )
+           UserRole.create( user,       (Role.findByAuthority(Role.US)), true )
+        }
         
-        def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-	     ti.setupBaseOpts()
-        ti.indexAll( Organization.get(1) )
-     }
+        
+        log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
+        
+        
+        // Always regenerate indexes in deploy
+        if (OperationalTemplateIndex.count() == 0)
+        {
+           println "Indexing Operational Templates"
+           
+           def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+           ti.setupBaseOpts()
+           ti.indexAll( Organization.get(1) )
+        }
+        
+        // TODO: because initially there are no shares, the indexAll 
+        //       wont share the OPTs with the org, so we do it manually here.
+        
+        // OPT loading
+        def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
+        optMan.unloadAll()
+        optMan.loadAll()
      
-     // TODO: because initially there are no shares, the indexAll 
-     //       wont share the OPTs with the org, so we do it manually here.
+     } // not TEST ENV
      
-     // OPT loading
-     def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
-     optMan.unloadAll()
-     optMan.loadAll()
      
 
      /*

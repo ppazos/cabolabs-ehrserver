@@ -70,8 +70,8 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
          def model = controller.userAccountStats(username)
          
       then:
-         println model
-         model != null
+         //println controller.response.text
+         controller.response.json.organizations.keySet()[0] == orgUid
          controller.response.status == status
          
       where:
