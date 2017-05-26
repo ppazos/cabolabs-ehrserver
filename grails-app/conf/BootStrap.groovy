@@ -771,7 +771,24 @@ class BootStrap {
          }
       }
       */
-     
+      /* needed for 0.9 - 0.9.5
+      // Fill rm_type_name for data_value_index for old indexes
+      def aii
+      com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex.list().each { dvi ->
+         println dvi.archetypeId+" "+dvi.archetypePath
+         aii = ArchetypeIndexItem.findByArchetypeIdAndPath(dvi.archetypeId, dvi.archetypePath)
+         println "aii " + aii
+         if (aii)
+         {
+         dvi.rmTypeName = aii.rmTypeName
+         dvi.save()
+         }
+         else
+         {
+            println "not aii!!!"
+         }
+      }
+     */
      
      /*
      // Test notifications
