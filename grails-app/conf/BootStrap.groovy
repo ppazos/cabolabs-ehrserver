@@ -570,13 +570,11 @@ class BootStrap {
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
      }
      
-     println Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+     //println Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
      
      // Do not create data if testing, tests will create their own data.
      if (Environment.current != Environment.TEST)
      {
-        println "Not testing"
-     
         def organizations = []
         if (Organization.count() == 0)
         {

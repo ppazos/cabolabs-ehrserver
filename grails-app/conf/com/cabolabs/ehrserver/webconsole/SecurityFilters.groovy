@@ -272,16 +272,20 @@ class SecurityFilters {
                   organizationUid = _org.uid
                }
             }
+            
             def alog = new ActivityLog(
-                            username: username, // can be null
+                            username:        username, // can be null
                             organizationUid: organizationUid,
-                            action: controllerName+':'+actionName,
-                            objectId: params.id, // can be null
-                            objectUid: params.uid, // can be null
-                            clientIp: request.remoteAddr)
+                            action:          controllerName+':'+actionName,
+                            objectId:        params.id, // can be null
+                            objectUid:       params.uid, // can be null
+                            remoteAddr:      request.remoteAddr,
+                            clientIp:        request.getHeader("Client-IP"), // can be null
+                            xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+                            referer:         request.getHeader('referer')) // can be null
             
             // TODO: file log failure
-            if (!alog.save()) println "activity log is not saving "+ alog.errors
+            if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
             
             
             

@@ -30,12 +30,19 @@ class ActivityLog {
    String action
    Long objectId    // when using db ids (we try to avoid this case)
    String objectUid // most ids will be uids
+   String remoteAddr
    String clientIp
+   String xForwardedFor
+   String referer
    
    static constraints = {
       username nullable: true
       objectId nullable: true
       objectUid nullable: true
       organizationUid nullable: true
+      remoteAddr nullable: true
+      clientIp nullable: true
+      xForwardedFor nullable: true
+      referer nullable: true
    }
 }
