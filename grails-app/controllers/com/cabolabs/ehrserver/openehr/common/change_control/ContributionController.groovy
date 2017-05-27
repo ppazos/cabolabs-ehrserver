@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -24,9 +23,13 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import org.springframework.dao.DataIntegrityViolationException
+
 import grails.plugin.springsecurity.SpringSecurityUtils
+
 import com.cabolabs.security.Organization
+import com.cabolabs.security.User
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
+
 import grails.util.Holders
 
 class ContributionController {
@@ -42,7 +45,7 @@ class ContributionController {
       redirect(action: "list", params: params)
    }
 
-   def list(int max, int offset, String sort, String order, String ehdUid)
+   def list(int max, int offset, String sort, String order, String ehdUid, String orgUid)
    {
       max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
@@ -52,13 +55,38 @@ class ContributionController {
       def list, org
       def c = Contribution.createCriteria()
       
+      if (orgUid)
+      {
+         if (Organization.countByUid(orgUid) == 0)
+         {
+            flash.message = "contribution.list.feedback.orgNotFoundShowingForCurrentOrg"
+            orgUid = null
+         }
+         else
+         {
+            // Have access to orgUid?
+            def us = User.findByUsername(springSecurityService.authentication.principal.username)
+            if (!us.organizations.uid.contains(orgUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            {
+               flash.message = "contribution.list.feedback.cantAccessOrgShowingForCurrentOrg"
+               orgUid = null
+            }
+         }
+      }
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         /*
-         list = Contribution.list(params)
-         cnt = Contribution.count()
-         */
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+           
+            // for admins, if not orgUid, display for all orgs
+            
+            if (orgUid)
+            {
+               ehr {
+                 eq("organizationUid", orgUid)
+               }
+            }
+            
             if (ehdUid)
             {
                ehr {
@@ -73,11 +101,16 @@ class ContributionController {
          def auth = springSecurityService.authentication
          org = Organization.findByNumber(auth.organization)
          
-         //list = Contribution.findAllByOrganizationUid(org.uid, params)
-         //cnt = Contribution.countByOrganizationUid(org.uid)
-         
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            eq ('organizationUid', org.uid)
+            if (!orgUid)
+            {
+               flash.message = "contribution.list.feedback.showingForCurrentOrg"
+               eq("organizationUid", org.uid)
+            }
+            else
+            {
+               eq("organizationUid", orgUid)
+            }
             if (ehdUid)
             {
                ehr {

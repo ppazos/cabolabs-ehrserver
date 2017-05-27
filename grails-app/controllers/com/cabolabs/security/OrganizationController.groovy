@@ -123,7 +123,7 @@ class OrganizationController {
 
       
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
-      redirect action:'show', id:organizationInstance.id
+      redirect action:'show', params:[uid:organizationInstance.uid]
    }
 
    def edit()

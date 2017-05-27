@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -30,6 +29,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
+import com.cabolabs.security.User
 import grails.util.Holders
 
 @Transactional(readOnly = true)
@@ -38,7 +38,7 @@ class VersionedCompositionController {
    def springSecurityService
    def config = Holders.config.app
    
-   def index(int max, int offset, String sort, String order, String ehdUid)
+   def index(int max, int offset, String sort, String order, String ehdUid, String orgUid)
    {
       max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
@@ -47,10 +47,39 @@ class VersionedCompositionController {
       
       def list
       def c = VersionedComposition.createCriteria()
+          
+      if (orgUid)
+      {
+         if (Organization.countByUid(orgUid) == 0)
+         {
+            flash.message = "versionedComposition.index.feedback.orgNotFoundShowingForCurrentOrg"
+            orgUid = null
+         }
+         else
+         {
+            // Have access to orgUid?
+            def us = User.findByUsername(springSecurityService.authentication.principal.username)
+            if (!us.organizations.uid.contains(orgUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            {
+               flash.message = "versionedComposition.index.feedback.cantAccessOrgShowingForCurrentOrg"
+               orgUid = null
+            }
+         }
+      }
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            
+            // for admins, if not orgUid, display for all orgs
+            
+            if (orgUid)
+            {
+               ehr {
+                 eq("organizationUid", orgUid)
+               }
+            }
+            
             if (ehdUid)
             {
                ehr {
@@ -67,7 +96,16 @@ class VersionedCompositionController {
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             ehr {
-               eq("organizationUid", org.uid)
+               if (!orgUid)
+               {
+                  flash.message = "versionedComposition.index.feedback.showingForCurrentOrg"
+                  eq("organizationUid", org.uid)
+               }
+               else
+               {
+                  eq("organizationUid", orgUid)
+               }
+               
                if (ehdUid)
                {
                   like('uid', '%'+ehdUid+'%')
