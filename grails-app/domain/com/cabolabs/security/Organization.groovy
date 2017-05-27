@@ -30,7 +30,7 @@ class Organization {
    String preferredLanguage
 
    static constraints = {
-      number nullable: true
+      number nullable: true, unique: true
       preferredLanguage nullable: true
    }
    
