@@ -294,5 +294,13 @@ grails {
               "mail.smtp.socketFactory.fallback":"false"
               ]
      */
+     /*
+     for testing
+     grails.mail.disabled=true
+     
+     ref http://padcom13.blogspot.com.uy/2011/01/testing-sending-emails-with-grails.html
+     
+     or ref: https://stackoverflow.com/questions/8884186/how-to-integration-test-email-body-in-a-grails-service-that-uses-the-mail-plugin
+     */
    }
 }
