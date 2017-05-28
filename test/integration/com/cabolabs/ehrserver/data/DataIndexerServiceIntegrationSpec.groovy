@@ -56,6 +56,24 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
       createOrganization()
       createEHR()
+      
+      
+      // Load test OPTs
+      // Always regenerate indexes in deploy
+      if (OperationalTemplateIndex.count() == 0)
+      {
+        println "Indexing Operational Templates"
+        
+        def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+        ti.setupBaseOpts()
+        ti.indexAll( Organization.get(1) )
+      }
+     
+      // OPT loading
+      def optMan = com.cabolabs.openehr.opt.manager.OptManager.getInstance( Holders.config.app.opt_repo )
+      optMan.unloadAll()
+      optMan.loadAll()
+      // /Load test OPTs
    }
 
    def cleanup()
