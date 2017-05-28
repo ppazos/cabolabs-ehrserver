@@ -111,7 +111,7 @@ class NotificationService {
    def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!', String message)
    {
       mailService.sendMail {
-         from grailsApplication.config.grails.mail.username //"pablo.pazos@cabolabs.com"
+         from grailsApplication.config.grails.mail.default.from //.username //"pablo.pazos@cabolabs.com"
          to recipient
          subject title
          //body 'How are you?'
