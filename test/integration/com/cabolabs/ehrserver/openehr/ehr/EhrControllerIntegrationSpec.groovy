@@ -16,6 +16,7 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    
    private createOrganization()
    {
+      println "NEW ORGANIZATION EhrController"
       def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
       org.save(failOnError: true)
    }

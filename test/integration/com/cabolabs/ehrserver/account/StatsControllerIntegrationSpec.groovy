@@ -11,6 +11,7 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
    
    private createOrganization()
    {
+      println "NEW ORGANIZATION StatsController"
       def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
       org.save(failOnError: true)
    }
@@ -64,7 +65,7 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
    {
       setup:
          // setup rest token user
-         controller.request.securityStatelessMap = [username: 'testadmin', extradata:[organization:'123456']]
+         controller.request.securityStatelessMap = [username: 'testadmin', extradata:[organization:'123456', org_uid:orgUid]]
       
       when:
          def model = controller.userAccountStats(username)

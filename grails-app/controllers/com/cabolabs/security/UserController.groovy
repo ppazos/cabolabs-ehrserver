@@ -126,7 +126,7 @@ class UserController {
    {
       // username and organization number used on the API login
       def _username = request.securityStatelessMap.username
-      def _orgnum = request.securityStatelessMap.extradata.organization
+      def org_uid = request.securityStatelessMap.extradata.org_uid
       def _user = User.findByUsername(_username)
       
 
@@ -149,7 +149,7 @@ class UserController {
       def allowed = (
          _user.authoritiesContains(Role.AD) || // admins access everything
          (
-            ( u.organizations.count{ it.number == _orgnum } == 1 ) && // organization of the logged user match one of the organizations of the requested user
+            ( u.organizations.count{ it.uid == org_uid } == 1 ) && // organization of the logged user match one of the organizations of the requested user
             (
                u.username == _username || // user want to access self profile
                ( // org managers can see users with lees power than them

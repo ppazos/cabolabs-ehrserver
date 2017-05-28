@@ -237,17 +237,16 @@ class SecurityFilters {
                      }
                      
                      
-                     def _orgnum = request.securityStatelessMap.extradata.organization
-                     
-                     
-                     if (Organization.countByNumber(_orgnum) == 0)
+                     def org_uid = request.securityStatelessMap.extradata.org_uid
+
+                     if (Organization.countByUid(org_uid) == 0)
                      {
                         // TODO: send in the request format (add support to json)
                         render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
                            result {
                               type('AR')                         // application reject
                               message(
-                                 messageSource.getMessage('rest.error.token.organizationDoesntExists', [_orgnum] as Object[], getRequestLocale(request))
+                                 messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
                               )
                               code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
                            }
@@ -255,9 +254,7 @@ class SecurityFilters {
                         return false
                      }
                      
-                     
-                     def _org = Organization.findByNumber(_orgnum)
-                     organizationUid = _org.uid
+                     organizationUid = org_uid
                   }
                }
             }

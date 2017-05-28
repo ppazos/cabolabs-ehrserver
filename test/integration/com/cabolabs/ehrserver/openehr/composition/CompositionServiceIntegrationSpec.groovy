@@ -498,6 +498,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    
    private createOrganization()
    {
+      println "NEW ORGANIZATION CompositionService"
       def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
       org.save(failOnError: true)
    }
@@ -597,10 +598,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    def cleanup()
    {
       def ehr = Ehr.findByUid(ehrUid)
-      ehr.delete()
+      ehr.delete(flush: true)
       
       def org = Organization.findByUid(orgUid)
-      org.delete()
+      org.delete(flush: true)
    }
 
    void "test composition as XML"()

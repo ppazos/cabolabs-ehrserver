@@ -175,7 +175,7 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
          
       when:
          controller.request.method = "POST" // if GET, returns status 405
-         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number]] // mock JWT data
+         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number, org_uid: orgUid]] // mock JWT data
          controller.params.format = 'xml'
          controller.patientList()
          
@@ -256,7 +256,7 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
       
       when:
          controller.request.method = "POST" // if GET, returns status 405
-         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number]] // mock JWT data
+         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number, org_uid: orgUid]] // mock JWT data
          controller.params.format = 'xml'
          controller.ehrList()
          

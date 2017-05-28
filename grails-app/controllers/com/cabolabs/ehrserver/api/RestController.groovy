@@ -157,16 +157,13 @@ class RestController {
             throw new LockedException("Account locked")
          }
          
-         
          // Check password
-         assert this.passwordEncoder != null
+         //assert this.passwordEncoder != null
          
          if (!passwordEncoder.isPasswordValid(user.password, password, null))
          {
             throw new BadCredentialsException("Authentication failed")
          }
-         
-         //println 'orgn '+ organization_number
          
          if (!organization_number) // null or empty
          {
@@ -176,24 +173,18 @@ class RestController {
          // Check organization
          Organization org = Organization.findByNumber(organization_number)
          
-         //println 'org '+ org
-         
          if (org == null)
          {
-            //System.out.println( "organization with number does not exists" )
             throw new BadCredentialsException("Authentication failed")
          }
-         
-         //println 'user orgs '+ user.organizations
-         
+
          if (!user.organizations.find{ it.uid == org.uid })
          {
-            //System.out.println( "organization is not associated with user 2" )
             throw new BadCredentialsException("Authentication failed - check the organization number")
          }
       
          // TODO: refresh token
-         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number])] as JSON)
+         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number, org_uid: org.uid])] as JSON)
       }
       catch (Exception e)
       {
@@ -462,12 +453,10 @@ class RestController {
 
          commitLoggerService.log(request, contribution.uid, true, content)
           
-          
-          
+         
          // Check if the OPT is loaded for each compo committed, return warning if not.
-          
-         def _orgnum = request.securityStatelessMap.extradata.organization
-         def _org = Organization.findByNumber(_orgnum)
+         
+         def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
          def warnings = []
          contribution.versions.each { version ->
              
@@ -585,10 +574,8 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
          return
@@ -654,10 +641,7 @@ class RestController {
       if (!max) max = 30
       if (!offset) offset = 0
       
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      def _ehrs = Ehr.findAllByOrganizationUid(_org.uid, [max: max, offset: offset, readOnly: true])
+      def _ehrs = Ehr.findAllByOrganizationUid(request.securityStatelessMap.extradata.org_uid, [max: max, offset: offset, readOnly: true])
       def res = new PaginatedResults(listName:'ehrs', list:_ehrs, max:max, offset:offset)
       
       if (!format || format == "xml")
@@ -702,9 +686,7 @@ class RestController {
       
          try
          {
-            def _orgnum = request.securityStatelessMap.extradata.organization
-            def o = Organization.findByNumber(_orgnum)
-            
+            def o = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
             
             // needs an organization before saving
             u.addToOrganizations(o)
@@ -796,14 +778,9 @@ class RestController {
       }
       
       
-      // Get organization of the current user
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      
       // Create the new EHR
       def ehr = new Ehr(
-         organizationUid: _org.uid, 
+         organizationUid: request.securityStatelessMap.extradata.org_uid, 
          subject: new PatientProxy(value: subjectUid)
       )
       
@@ -865,10 +842,7 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.user_cant_access_ehr', args:[_ehr.uid]), "483", 401)
          return
@@ -914,10 +888,7 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.cant_access_ehr', args:[uid]), "483", 401)
          return
@@ -984,8 +955,7 @@ class RestController {
       if (!order) order = 'asc'
       
       // login organization
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
+      def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
       def shares = QueryShare.findAllByOrganization(_org)
       
       def c = Query.createCriteria()
@@ -1046,9 +1016,7 @@ class RestController {
       }
       
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      String organizationUid = _org.uid
+      String organizationUid = request.securityStatelessMap.extradata.org_uid
       
       
       if (ehrUid)
@@ -1679,10 +1647,7 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "0004", 401)
          return
