@@ -7,6 +7,14 @@
 	</label>
 	<g:textField name="name" required="" value="${organizationInstance?.name}" class="form-control" />
 </div>
+
+<sec:ifAnyGranted roles="ROLE_ADMIN">
+   <label for="name">
+		<g:message code="organization.associated.label" default="Associate to me" />
+	</label>
+	<g:checkBox name="assign" value="${true}" class="checkbox" checked="false" />
+</sec:ifAnyGranted>
+
 <%--
 <div class="fieldcontain ${hasErrors(bean: organizationInstance, field: 'number', 'error')} required">
 	<label for="number">
