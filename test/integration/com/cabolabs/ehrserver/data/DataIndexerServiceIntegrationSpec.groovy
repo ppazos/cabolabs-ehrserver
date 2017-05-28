@@ -33,7 +33,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    private createOrganization()
    {
       def org = new Organization(uid: orgUid, name: 'Test', number: '111999')
-      org.save(failOnError: true)
+      org.save(failOnError: true, flush: true)
    }
    
    private createEHR()
@@ -66,7 +66,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
         
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         ti.setupBaseOpts()
-        ti.indexAll( Organization.get(1) )
+        ti.indexAll( Organization.findByUid(orgUid) )
       }
      
       // OPT loading
@@ -123,6 +123,11 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          assert compoIndex != null
          
          def opt = OperationalTemplateIndex.findByTemplateId(compoIndex.templateId)
+         
+         if (!opt) println "OPT '${compoIndex.templateId}' not loaded"
+         
+         assert opt != null
+         
          opt.isPublic = true
          opt.save(failOnError: true)
 
