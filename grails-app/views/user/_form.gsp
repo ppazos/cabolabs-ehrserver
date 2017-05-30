@@ -34,13 +34,13 @@
 </sec:ifNotLoggedIn>
 
 <sec:ifLoggedIn>
-<div class="form-group">
-  <label for="role">
-    <g:message code="user.roles.label" default="Roles" />
-    <span class="required-indicator">*</span>
-  </label>
-  <g:selectWithRolesICanAssign name="role" value="${params?.role}" user_values="${userInstance?.authorities?.authority}" multiple="true" class="form-control" />
-</div>
+  <div class="form-group">
+    <label for="role">
+      <g:message code="user.roles.label" default="Roles" />
+      <span class="required-indicator">*</span>
+    </label>
+    <g:selectWithRolesICanAssign name="role" value="${params?.role}" user_values="${userInstance?.authorities?.authority}" multiple="true" class="form-control" />
+  </div>
 </sec:ifLoggedIn>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">

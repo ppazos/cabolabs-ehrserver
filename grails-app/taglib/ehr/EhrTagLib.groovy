@@ -165,19 +165,18 @@ class EhrTagLib {
             args.size = 5
          }
          
-         if (loggedInUser.authoritiesContains(Role.OM))
+         // Check the higest role not containes!
+         def hrole = loggedInUser.higherAuthority
+         
+         if (hrole.authority != Role.AD)
          {
             args.from.removeElement(Role.AD)
-            args.from.removeElement(Role.AM)
-         }
-         else if (loggedInUser.authoritiesContains(Role.AM))
-         {
-            args.from.removeElement(Role.AD)
-         }
-         else if (!loggedInUser.authoritiesContains(Role.AD))
-         {
-            // non admins can't assign any roles
-            return
+            if (hrole.authority != Role.AM)
+            {
+               args.from.removeElement(Role.AM)
+               
+               // If user is not admin or account mgt, is org man because user cant login on the console.
+            }
          }
          
          out << g.select(args)
