@@ -24,6 +24,7 @@ package com.cabolabs.security
 
 import grails.transaction.Transactional
 import org.springframework.security.core.authority.AuthorityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional
 class UserService {
@@ -77,7 +78,7 @@ class UserService {
    {
       // Update organizations.
       def newOrgs = newOrgUids.collect { Organization.findByUid( it ) }
-      
+
       // current orgs that are not selected on the new orgs will be deleted if the logged user have them
       def orgsToRemove = user.organizations - newOrgs
       def currentOrgs = user.organizations.collect()
@@ -87,12 +88,30 @@ class UserService {
       // keep current orgs if the logged user dont have the orgs
       // do not add new org if the logged user dont have that org
       
-      def canBeRemovedOrgs = orgsToRemove.find { loggedInUser.organizations.uid.contains( it.uid ) }
+      def canBeRemovedOrgs
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         canBeRemovedOrgs = orgsToRemove.find { loggedInUser.organizations.uid.contains( it.uid ) }
+      }
+      else // admins can remove any org
+      {
+         canBeRemovedOrgs = orgsToRemove
+      }
+      
       canBeRemovedOrgs.each {
          user.removeFromOrganizations(it)
       }
       
-      def canBeAddedOrgs = newOrgs.findAll { loggedInUser.organizations.uid.contains( it.uid ) }
+      def canBeAddedOrgs
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         canBeAddedOrgs = newOrgs.findAll { loggedInUser.organizations.uid.contains( it.uid ) }
+      }
+      else // admins can add any org
+      {
+         canBeAddedOrgs = newOrgs
+      }
+         
       canBeAddedOrgs.each {
          if (!user.organizations.contains(it)) // add the org in newOrgs only if it not already assocaited to the user
          {

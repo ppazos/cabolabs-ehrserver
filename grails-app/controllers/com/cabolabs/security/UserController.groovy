@@ -263,13 +263,17 @@ class UserController {
          return
       }
       
-      // All the organizations assigned to the new user should be accessible by the current user
-      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
-      if (notAllowedOrg)
+      // Admins can assign all the orgs
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
-         render model: [userInstance: userInstance], view:'create'
-         return
+         // All the organizations assigned to the new user should be accessible by the current user
+         def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
+         if (notAllowedOrg)
+         {
+            flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
+            render model: [userInstance: userInstance], view:'create'
+            return
+         }
       }
       
       // All the roles assigned to the new user should be lower o equal to the highest role of the current user
@@ -402,13 +406,17 @@ class UserController {
          return
       }
       
-      // All the organizations assigned to the new user should be accessible by the current user
-      def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
-      if (notAllowedOrg)
+      // Admins can assign/unassing all the orgs
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
-         render model: [userInstance: userInstance], view:'edit'
-         return
+         // All the organizations assigned to the new user should be accessible by the current user
+         def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
+         if (notAllowedOrg)
+         {
+            flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
+            render model: [userInstance: userInstance], view:'edit'
+            return
+         }
       }
       
       // Update roles.
