@@ -158,7 +158,7 @@ var queryDataRenderChart = function(data)
    
    // ========================================
    // Test chart
-   if (series.length > 1)
+   if (series.length > 0)
      renderchart(series);
    // ========================================
 }; // queryDataRenderChart
