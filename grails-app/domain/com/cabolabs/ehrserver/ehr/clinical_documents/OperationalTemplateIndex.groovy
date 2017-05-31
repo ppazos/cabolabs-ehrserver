@@ -70,4 +70,8 @@ class OperationalTemplateIndex {
          }
       }
    }
+   
+   static mapping = {
+      templateNodes cascade: "all-delete-orphan" // delete nodes when opti is deleted
+   }
 }

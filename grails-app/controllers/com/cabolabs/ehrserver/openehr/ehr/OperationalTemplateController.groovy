@@ -63,6 +63,8 @@ class OperationalTemplateController {
       optMan.unloadAll()
       optMan.loadAll()
       
+      println "loaded opts: " + optMan.getLoadedOpts()
+      
       redirect(action: "list")
    }
    
