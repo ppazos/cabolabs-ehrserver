@@ -58,6 +58,7 @@
 		          <g:sortableColumn property="language" title="${message(code: 'template.language.label', default: 'language')}" />
 		          <g:sortableColumn property="uid" title="${message(code: 'template.uid.label', default: 'uid')}" />
 		          <g:sortableColumn property="archetypeId" title="${message(code: 'template.archetypeId.label', default: 'root archetype')}" />
+                <g:sortableColumn property="isPublic" title="${message(code: 'template.isPublic.label', default: 'is public')}" />
 		          <th></th>
 		        </tr>
 		      </thead>
@@ -65,7 +66,7 @@
 		        <g:set var="sameLangTemplates" value="${opts.findAll{ it.lang == session.lang }}" />
 		        <g:set var="otherLangTemplates" value="${opts.findAll{ it.lang != session.lang }}" />
 		        
-		        <tr><td colspan="6"><h3>Templates accessible with your current language</h3></td></tr>
+		        <tr><td colspan="7"><h3>Templates accessible with your current language</h3></td></tr>
 			     <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
 			       <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 		            <td>
@@ -75,6 +76,7 @@
 		            <td>${fieldValue(bean: templateInstance, field: "language")}</td>
 		            <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
 		            <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
+                  <td>${templateInstance.isPublic.toString()}</td>
 		            <td>
 		              <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
 		              <br/>
@@ -84,7 +86,7 @@
 			     </g:each>
 			     
 			     <tr>
-			       <td colspan="6">
+			       <td colspan="7">
 			         <h3>Templates not accessible with your current language</h3>
 			         <p>These templates won't be shown on the Query Builder. You should load templates with the same
 			         language as your that you will use, change your language from the login screen, or share the
@@ -100,6 +102,7 @@
                   <td>${fieldValue(bean: templateInstance, field: "language")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
+                  <td>${templateInstance.isPublic.toString()}</td>
                   <td>
                     <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
                     <br/>
