@@ -69,7 +69,23 @@ class NotificationController {
       def statuses = []
       if (!notificationInstance.forUser)
       {
-         User.list().each { user ->
+         def users
+         if (notificationInstance.forOrganization)
+         {
+            def c = User.createCriteria()
+            users = c.list {
+               eq('isVirtual', false)
+               organizations {
+                  eq ('uid', notificationInstance.forOrganization)
+               }
+            }
+         }
+         else
+         {
+            users = User.list()
+         }
+         
+         users.each { user ->
             statuses << new NotificationStatus(user:user, notification:notificationInstance)
          }
       }
