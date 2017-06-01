@@ -615,11 +615,13 @@ class SecurityFilters {
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
             {
                flash.message = "You need and higher role to edit the shares"
-               chain controller: 'operationalTemplateIndex', action: 'list'
+               chain controller: 'operationalTemplate', action: 'list'
                return false
             }
             
-
+            // Admins can share wiht any org
+            def canShareWithAnyOrg = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
+            
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def user = User.findByUsername(un)
@@ -629,7 +631,7 @@ class SecurityFilters {
             if (!params.uid)
             {
                flash.message = "Template UID is required"
-               chain controller: 'operationalTemplateIndex', action: 'list'
+               chain controller: 'operationalTemplate', action: 'list'
                return false
             }
             
@@ -639,61 +641,68 @@ class SecurityFilters {
             if (!opt)
             {
                flash.message = "Template not found"
-               chain controller: 'operationalTemplateIndex', action: 'list'
+               chain controller: 'operationalTemplate', action: 'list'
                return false
             }
             
             if (opt.isPublic)
             {
-               println "is public"
-
                flash.message = "Can't share a public template, make it private first"
-               chain controller: 'operationalTemplateIndex', action: 'list'
+               chain controller: 'operationalTemplate', action: 'list'
                return false
             }
             else
             {
-               println "is private"
-               
-               // check if query is shared with the login org
-               def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-               def found = false
-               shares.organization.each { share_org ->
-                  if (share_org.number == auth.organization)
+               // for admins this is no needed, admin can be logged in with any org and share with any org
+               if (!canShareWithAnyOrg)
+               {
+                  // check if query is shared with the login org
+                  def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
+                  def found = false
+                  shares.organization.each { share_org ->
+                     if (share_org.number == auth.organization)
+                     {
+                        found = true
+                        return true // break
+                     }
+                  }
+                  if (!found)
                   {
-                     found = true
-                     return true // break
+                     flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
+                     chain controller: 'operationalTemplate', action: 'list'
+                     return false
                   }
                }
-               if (!found)
-               {
-                  flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
-                  chain controller: 'operationalTemplateIndex', action: 'list'
-                  return false
-               }
-
             }
             
-            // check that all the org uids submitted are accessible by the user
-            def orgUids = params.list('organizationUid')
-            orgUids.each { organizationUid ->
-               if(!orgs.uid.contains(organizationUid))
+            
+            // admins can do anything without being in the org
+            if (!canShareWithAnyOrg)
+            {
+               // check that all the org uids submitted are accessible by the user
+               def orgUids = params.list('organizationUid')
+               def orgNotInUserOrgs = false
+               orgUids.each { organizationUid ->
+                  if(!orgs.uid.contains(organizationUid))
+                  {
+                     orgNotInUserOrgs = true
+                     flash.message = "You don't have access to the specified organization ${organizationUid}"
+                     return true // break from each
+                  }
+               }
+               
+               if (orgNotInUserOrgs)
                {
-                  flash.message = "You don't have access to the specified organization ${organizationUid}"
-                  chain controller: 'operationalTemplateIndex', action: 'list'
+                  chain controller: 'operationalTemplate', action: 'list'
                   return false
                }
             }
-
 
             // pass the opt as param to avoid making the query again in the controller
             params.opt = opt // it can be set on request also
-
             return true
          }
       } // opt_share
-      
-      
 
 
       mgt_api_stats(controller:'stats', action:'userAccountStats') {

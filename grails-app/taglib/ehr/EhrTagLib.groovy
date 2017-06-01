@@ -25,6 +25,8 @@ package ehr
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Role
+import com.cabolabs.security.Organization
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class EhrTagLib {
    
@@ -113,7 +115,17 @@ class EhrTagLib {
       if(loggedInUser)
       {
          def args = [:]
-         args.from = loggedInUser.organizations
+         
+         // admins will see every org
+         if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
+         {
+            args.from = Organization.list()
+         }
+         else
+         {
+            args.from = loggedInUser.organizations
+         }
+         
          args.optionKey = 'uid'
          args.optionValue = {it.name +' '+ it.uid} //'name'
          args.noSelection = ['':'Select One...'] // TODO: i18n
