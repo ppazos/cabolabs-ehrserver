@@ -17,7 +17,7 @@
     <div id="edit-notification" class="content scaffold-edit" role="main">
       <h1><g:message code="default.edit.label" /></h1>
       <g:if test="${flash.message}">
-      <div class="message" role="status">${flash.message}</div>
+        <div class="alert alert-info" role="alert">${flash.message}</div>
       </g:if>
       <g:hasErrors bean="${notificationInstance}">
       <ul class="errors" role="alert">

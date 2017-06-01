@@ -18,42 +18,28 @@
 		<div id="list-plan" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
-				<div class="message" role="status">${flash.message}</div>
+				<div class="alert alert-info" role="alert">${flash.message}</div>
 			</g:if>
 			<table>
 			<thead>
 					<tr>
-					
 						<g:sortableColumn property="period" title="${message(code: 'plan.period.label', default: 'Period')}" />
-					
 						<g:sortableColumn property="maxDocuments" title="${message(code: 'plan.maxDocuments.label', default: 'Max Documents')}" />
-					
 						<g:sortableColumn property="maxTransactions" title="${message(code: 'plan.maxTransactions.label', default: 'Max Transactions')}" />
-					
 						<g:sortableColumn property="name" title="${message(code: 'plan.name.label', default: 'Name')}" />
-					
 						<g:sortableColumn property="repositorySize" title="${message(code: 'plan.repositorySize.label', default: 'Repository Size')}" />
-					
 						<g:sortableColumn property="totalRepositorySize" title="${message(code: 'plan.totalRepositorySize.label', default: 'Total Repository Size')}" />
-					
 					</tr>
 				</thead>
 				<tbody>
 				<g:each in="${planInstanceList}" status="i" var="planInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-					
 						<td><g:link action="show" id="${planInstance.id}">${fieldValue(bean: planInstance, field: "period")}</g:link></td>
-					
 						<td>${fieldValue(bean: planInstance, field: "maxDocuments")}</td>
-					
 						<td>${fieldValue(bean: planInstance, field: "maxTransactions")}</td>
-					
 						<td>${fieldValue(bean: planInstance, field: "name")}</td>
-					
 						<td>${fieldValue(bean: planInstance, field: "repositorySize")}</td>
-					
 						<td>${fieldValue(bean: planInstance, field: "totalRepositorySize")}</td>
-					
 					</tr>
 				</g:each>
 				</tbody>

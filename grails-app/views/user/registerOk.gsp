@@ -37,7 +37,7 @@
 	     <div class="col-lg-12">
 	       <h1><g:message code="user.registerOk.label" args="[entityName]" /></h1>
 	       <g:if test="${flash.message}">
-	         <div class="message" role="status">${flash.message}</div>
+	         <div class="alert alert-info" role="alert">${flash.message}</div>
 	       </g:if>
 	       <g:message code="user.registerOk.text" />
 	       <p>

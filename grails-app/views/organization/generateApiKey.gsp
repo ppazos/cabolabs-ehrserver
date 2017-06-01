@@ -10,7 +10,7 @@
         <div id="create-organization" class="content scaffold-create" role="main">
           <h1><g:message code="organization.generateApiKey.title" /></h1>
           <g:if test="${flash.message}">
-            <div class="message" role="status">${flash.message}</div>
+            <div class="alert alert-info" role="alert">${flash.message}</div>
           </g:if>
           <g:form action="generateApiKey" >
             <input type="hidden" name="uid" value="${params.uid}" />

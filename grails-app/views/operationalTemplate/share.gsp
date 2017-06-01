@@ -13,7 +13,7 @@
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
-          <div class="message" role="status">${flash.message}</div><br/>
+          <div class="alert alert-info" role="alert">${flash.message}</div><br/>
         </g:if>
 
         <p>The share with the current organization wont be deleted if you unselect it here, 

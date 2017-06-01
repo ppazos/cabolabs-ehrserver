@@ -37,7 +37,7 @@
     <div class="row row-grid">
       <div class="col-lg-12">
 	      <g:if test="${flash.message}">
-	        <div class="message" role="status"><g:message code="${flash.message}" args="${flash.args}" /></div>
+	        <div class="alert alert-info" role="alert"><g:message code="${flash.message}" args="${flash.args}" /></div>
 	      </g:if>
 	      
          <div class="table-responsive">

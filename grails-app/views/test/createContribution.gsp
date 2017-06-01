@@ -13,7 +13,7 @@
     <div id="create-ehr" class="content scaffold-create" role="main">
       <h1>createContribution test</h1>
       <g:if test="${flash.message}">
-        <div class="message" role="status">${flash.message}</div>
+        <div class="alert alert-info" role="alert">${flash.message}</div>
       </g:if>
     </div>
     

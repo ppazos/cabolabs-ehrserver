@@ -19,43 +19,35 @@
 		<div id="show-plan" class="content scaffold-show" role="main">
 			<h1><g:message code="default.show.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
+			  <div class="alert alert-info" role="alert">${flash.message}</div>
 			</g:if>
 			<ol class="property-list plan">
 			
 				<g:if test="${planInstance?.period}">
 				<li class="fieldcontain">
 					<span id="period-label" class="property-label"><g:message code="plan.period.label" default="Period" /></span>
-					
-						<span class="property-value" aria-labelledby="period-label"><g:fieldValue bean="${planInstance}" field="period"/></span>
-					
+					<span class="property-value" aria-labelledby="period-label"><g:fieldValue bean="${planInstance}" field="period"/></span>
 				</li>
 				</g:if>
 			
 				<g:if test="${planInstance?.maxDocuments}">
 				<li class="fieldcontain">
 					<span id="maxDocuments-label" class="property-label"><g:message code="plan.maxDocuments.label" default="Max Documents" /></span>
-					
-						<span class="property-value" aria-labelledby="maxDocuments-label"><g:fieldValue bean="${planInstance}" field="maxDocuments"/></span>
-					
+				  <span class="property-value" aria-labelledby="maxDocuments-label"><g:fieldValue bean="${planInstance}" field="maxDocuments"/></span>
 				</li>
 				</g:if>
 			
 				<g:if test="${planInstance?.maxTransactions}">
 				<li class="fieldcontain">
 					<span id="maxTransactions-label" class="property-label"><g:message code="plan.maxTransactions.label" default="Max Transactions" /></span>
-					
-						<span class="property-value" aria-labelledby="maxTransactions-label"><g:fieldValue bean="${planInstance}" field="maxTransactions"/></span>
-					
+					<span class="property-value" aria-labelledby="maxTransactions-label"><g:fieldValue bean="${planInstance}" field="maxTransactions"/></span>
 				</li>
 				</g:if>
 			
 				<g:if test="${planInstance?.name}">
 				<li class="fieldcontain">
 					<span id="name-label" class="property-label"><g:message code="plan.name.label" default="Name" /></span>
-					
-						<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${planInstance}" field="name"/></span>
-					
+					<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${planInstance}" field="name"/></span>
 				</li>
 				</g:if>
 			

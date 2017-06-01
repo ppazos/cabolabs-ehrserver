@@ -14,7 +14,7 @@
     <div class="row">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
-          <div class="message" role="status"><g:message code="${flash.message}" /></div>
+          <div class="alert alert-info" role="alert"><g:message code="${flash.message}" /></div>
         </g:if>
       
         <g:if test="${errors}">
