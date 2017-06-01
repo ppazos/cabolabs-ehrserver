@@ -42,17 +42,17 @@ class UserControllerSpec extends Specification {
       def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
       organization.save(failOnError:true, flush: true)
 
-      def loggedInUser = new User(username:"admin", password:"admin", email:"e@m.com") //, organizations:[organization])
+      def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com") //, organizations:[organization])
       loggedInUser.addToOrganizations(organization)
       loggedInUser.save(failOnError:true, flush: true)
       
-      def role = new Role(authority: 'ROLE_ADMIN')
+      def role = new Role(authority: 'ROLE_ORG_MANAGER')
       role.save(failOnError:true, flush: true)
       
       UserRole.create( loggedInUser, role, true )
       
       controller.springSecurityService = [
-        encodePassword: 'admin',
+        encodePassword: 'orgman',
         reauthenticate: { String u -> true},
         loggedIn: true,
         principal: loggedInUser,
