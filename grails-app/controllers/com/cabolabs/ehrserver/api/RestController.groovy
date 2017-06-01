@@ -42,6 +42,8 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 
+import com.cabolabs.ehrserver.notification.Notification
+
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import java.lang.reflect.UndeclaredThrowableException
@@ -463,6 +465,15 @@ class RestController {
             if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(version.data.templateId) == 0)
             {
                warnings << message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid])
+               
+               def admins = User.allForRole('ROLE_ADMIN')
+               admins.each{ admin ->
+                  new Notification(
+                     name:    'Template Not Loaded For Commit',
+                     language: 'en', /* TODO: lang should be the preferred by the org 0 of the admin */
+                     text:     message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid]),
+                     forUser:  admin.id).save()
+               }
             }
          }
           

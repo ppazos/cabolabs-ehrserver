@@ -66,6 +66,7 @@ class NotificationController {
    
    def save(Notification notificationInstance)
    {
+/* now done in the notification job
       def statuses = []
       if (!notificationInstance.forUser)
       {
@@ -93,13 +94,13 @@ class NotificationController {
       {
          statuses << new NotificationStatus(user:User.get(notificationInstance.forUser), notification:notificationInstance)
       }
-      
-      notificationInstance.save(failOnError: true)
-      
+*/
+      notificationInstance.save(failOnError: true) // TODO: validation and return to notification create
+/*
       statuses.each { status ->
          status.save(failOnError: true)
       }
-      
+*/
       redirect action: 'show', id: notificationInstance.id
    }
    

@@ -166,6 +166,16 @@ class User implements Serializable {
       organizations lazy: false
    }
    
+   static List allForRole(authority)
+   {
+      def urs = UserRole.withCriteria {
+         role {
+            eq('authority', authority)
+         }
+      }
+      return urs.user
+   }
+   
    def setPasswordToken()
    {
       this.resetPasswordToken = java.util.UUID.randomUUID() as String

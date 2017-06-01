@@ -34,6 +34,8 @@ class Notification {
    
    Date dateCreated
    
+   boolean sent = false // used by the job that creates the notification statuses
+   
    static constraints = {
       forSection nullable: true
       forOrganization nullable: true
