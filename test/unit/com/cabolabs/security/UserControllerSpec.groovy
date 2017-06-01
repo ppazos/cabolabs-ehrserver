@@ -26,13 +26,16 @@ import grails.plugin.springsecurity.SpringSecurityService
 @Mock([User, Role, UserRole, Organization])
 class UserControllerSpec extends Specification {
 
-   // this is executed before al the tests, allows metaprogramming.
+   // this is executed before all the tests, allows metaprogramming.
    def setupSpec()
    {
+    /*
       // without this actions that check permissions fail
       SpringSecurityUtils.metaClass.static.ifAllGranted = { String role ->
-         return true
+         return controller.loggedInUser.authoritiesContains(role)
+      
       }
+      */
    }
    
    def setup()
@@ -56,7 +59,8 @@ class UserControllerSpec extends Specification {
         reauthenticate: { String u -> true},
         loggedIn: true,
         principal: loggedInUser,
-        currentUser: loggedInUser
+        currentUser: loggedInUser,
+        authentication: [username:'orgman', organization:'1234']
       ]
       
       
@@ -73,11 +77,16 @@ class UserControllerSpec extends Specification {
       // mocking injection
       controller.userService.springSecurityService = controller.springSecurityService
       */
+
+      // without this actions that check permissions fail
+      SpringSecurityUtils.metaClass.static.ifAllGranted = { String _role ->
+         return controller.springSecurityService.principal.authoritiesContains(_role)
+      }
    }
    
    def cleanup()
    {
-      def user = User.findByUsername("admin")
+      def user = User.findByUsername("orgman")
       def role = Role.findByAuthority('ROLE_ORG_MANAGER')
       
       UserRole.remove(user, role)
@@ -145,7 +154,7 @@ class UserControllerSpec extends Specification {
           def ret = SpringSecurityUtils.ifAllGranted("pepe")
           
       then:
-         ret == true
+         ret == false
    }
    
    void "Test the index action returns the correct model"()
