@@ -78,7 +78,7 @@ class UserControllerSpec extends Specification {
    def cleanup()
    {
       def user = User.findByUsername("admin")
-      def role = Role.findByAuthority('ROLE_ADMIN')
+      def role = Role.findByAuthority('ROLE_ORG_MANAGER')
       
       UserRole.remove(user, role)
       user.delete(flush: true)
@@ -156,7 +156,7 @@ class UserControllerSpec extends Specification {
         then:"The model is correct"
             model.userInstanceList.size() == 1 // the logged in user is returned
             model.userInstanceCount == 1
-            model.userInstanceList[0].username == "admin"
+            model.userInstanceList[0].username == "orgman"
    }
 
    void "Test the create action returns the correct model"()
