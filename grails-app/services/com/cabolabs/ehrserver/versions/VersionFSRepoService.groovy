@@ -36,10 +36,10 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 class VersionFSRepoService {
    
    def config = Holders.config.app
-
+   
    def getRepoSizeInBytes()
    {
-      def r = new File(config.version_repo)
+      def r = new File(config.version_repo.withTrailSeparator())
       return r.directorySize()
    }
    
@@ -80,7 +80,7 @@ class VersionFSRepoService {
       // if we add the size to the version on the DB we don't need to process the file system
       def v, size = 0
       orgversions.each { fileUid ->
-         v = new File(config.version_repo + fileUid +'.xml')
+         v = new File(config.version_repo.withTrailSeparator() + fileUid +'.xml')
          
          if (filter.call(v))
          {
@@ -101,7 +101,7 @@ class VersionFSRepoService {
     */
    def getExistingVersionFile(Version version) throws FileNotFoundException
    {
-      def f = new File(config.version_repo + version.fileUid +'.xml')
+      def f = new File(config.version_repo.withTrailSeparator() + version.fileUid +'.xml')
       if (!f.exists())
       {
          throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
@@ -116,7 +116,7 @@ class VersionFSRepoService {
     */
    def getNonExistingVersionFile(Version version) throws FileAlreadyExistsException
    {
-      def f = new File(config.version_repo + version.fileUid +'.xml')
+      def f = new File(config.version_repo.withTrailSeparator() + version.fileUid +'.xml')
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")

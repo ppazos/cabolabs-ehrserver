@@ -67,6 +67,8 @@ class BootStrap {
       // file system checks
       def commits_repo = new File(Holders.config.app.commit_logs)
       def versions_repo = new File(Holders.config.app.version_repo)
+      def opt_repo = new File(Holders.config.app.opt_repo)
+      
       if (!commits_repo.exists())
       {
          throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
@@ -74,6 +76,10 @@ class BootStrap {
       if (!versions_repo.exists())
       {
          throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
+      }
+      if (!opt_repo.exists())
+      {
+         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
       }
       // /file system checks
       
@@ -122,6 +128,12 @@ class BootStrap {
          java.util.UUID.randomUUID() as String
       }
       
+      // adds trailing path separator to a file path if it doesnt have it
+      String.metaClass.withTrailSeparator = {
+         def PS = System.getProperty("file.separator")
+         if (!delegate.endsWith(PS)) delegate += PS
+         return delegate
+      }
      
       // --------------------------------------------------------------------
      
@@ -648,7 +660,7 @@ class BootStrap {
         //       wont share the OPTs with the org, so we do it manually here.
         
         // OPT loading
-        def optMan = OptManager.getInstance( Holders.config.app.opt_repo )
+        def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
         optMan.unloadAll()
         optMan.loadAll()
      

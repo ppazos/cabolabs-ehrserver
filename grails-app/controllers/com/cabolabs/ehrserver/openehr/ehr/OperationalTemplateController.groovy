@@ -153,7 +153,7 @@ class OperationalTemplateController {
             if (overwrite) // OPT exists and the user wants to overwrite
             {
                def existing_opt = shares[0].opt
-               def existing_file = new File(config.opt_repo + existing_opt.fileUid + '.opt')
+               def existing_file = new File(config.opt_repo.withTrailSeparator() + existing_opt.fileUid + '.opt')
                existing_file.delete()
                
                // delete all the indexes of the opt
@@ -179,7 +179,7 @@ class OperationalTemplateController {
          def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
          
          // Prepare file
-         def destination = config.opt_repo + opt.fileUid + '.opt' //f.getOriginalFilename()
+         def destination = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt' //f.getOriginalFilename()
          File fileDest = new File( destination )
          fileDest << xml
          
@@ -220,7 +220,7 @@ class OperationalTemplateController {
          return
       }
       
-      def opt_file = new File(config.opt_repo + opt.fileUid +".opt")
+      def opt_file = new File(config.opt_repo.withTrailSeparator() + opt.fileUid +".opt")
       
       [opt_xml: opt_file.getText(), opt: opt]
    }

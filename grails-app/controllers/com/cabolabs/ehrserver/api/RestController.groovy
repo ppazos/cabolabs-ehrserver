@@ -1188,7 +1188,6 @@ class RestController {
                    
                    // adds the version, not just the composition
                    version = compoIndex.getParent()
-                   //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
                    
                    try
                    {
@@ -1227,7 +1226,6 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
                 
                 try
                 {
@@ -1540,7 +1538,6 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
    
                 try
                 {
@@ -1578,7 +1575,6 @@ class RestController {
              
             // adds the version, not just the composition
             version = compoIndex.getParent()
-            //buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
             
             try
             {
