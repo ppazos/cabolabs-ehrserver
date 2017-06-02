@@ -221,8 +221,11 @@
 	               </sec:ifAnyGranted>
                   
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                    <li class="menu_vertical_separator">
+                    <li>
                       <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
+                    </li>
+                    <li class="menu_vertical_separator">
+                      <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.logs" /></g:link>
                     </li>
                   </sec:ifAnyGranted>
 	             </ul>

@@ -47,6 +47,11 @@ class UrlMappings {
          action: 'update'
       )
       
+      name logs: "/logs"(
+         controller: 'activityLog',
+         action: 'index'
+      )
+      
       "/api/v1/login"(
          method: 'POST',
          controller: 'rest',
