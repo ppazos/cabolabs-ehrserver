@@ -12,7 +12,7 @@
     </div>
     
     <div class="row row-grid">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <g:form class="form-inline" action="list">
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
@@ -23,16 +23,16 @@
           <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="upload">
             <button type="button" class="btn btn-default btn-md">
-              <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <g:message code="opt.upload.label" />
+              <span class="fa fa-upload" aria-hidden="true"></span>
             </button>
           </g:link>
           <g:link action="generate">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+              <span class="fa fa-refresh fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
             </button>
           </g:link>
           <g:link controller="compositionIndex" action="list">

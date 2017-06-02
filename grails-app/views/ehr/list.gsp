@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="row row-grid">
-      <div class="col-md-8">
+      <div class="col-md-10">
         <g:form class="form-inline" action="list">
           <input type="hidden" name="sort" value="${params.sort}" />
           <input type="hidden" name="order" value="${params.order}" />
@@ -35,11 +35,11 @@
           <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
         </g:form>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-2">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="['Ehr']" />
+              <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>

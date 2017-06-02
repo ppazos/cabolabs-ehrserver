@@ -27,7 +27,7 @@
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="common.action.create" />
+              <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>
