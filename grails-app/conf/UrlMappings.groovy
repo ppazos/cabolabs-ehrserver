@@ -130,6 +130,10 @@ class UrlMappings {
          controller: 'rest',
          action: 'userRegister'
       )
+      "/api/v1/templates"(
+         controller: 'rest',
+         action: 'templates'
+      )
       
       // management API
       "/mgt/v1/stats/$username"(

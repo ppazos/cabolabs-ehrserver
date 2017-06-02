@@ -137,6 +137,31 @@ class BootStrap {
      
       // --------------------------------------------------------------------
      
+
+     JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
+        return [templateId:  opt.templateId,
+                concept:     opt.concept,
+                language:    opt.language,
+                uid:         opt.uid,
+                archetypeId: opt.archetypeId,
+                archetypeConcept: opt.archetypeConcept,
+                isPublic:    opt.isPublic]
+     }
+     
+     XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
+        xml.build {
+          templateId(opt.templateId)
+          concept(opt.concept)
+          language(opt.language)
+          uid(opt.uid)
+          archetypeId(opt.archetypeId)
+          archetypeConcept(opt.archetypeConcept)
+          isPublic(opt.isPublic)
+        }
+     }
+     
+
+
      // Marshallers
      JSON.registerObjectMarshaller(Date) {
         //println "JSON DATE MARSHAL"

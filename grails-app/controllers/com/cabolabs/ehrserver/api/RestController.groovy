@@ -33,6 +33,7 @@ import com.cabolabs.ehrserver.api.structures.PaginatedResults
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
@@ -1914,6 +1915,36 @@ class RestController {
       else if (format == 'json')
       {
          render(text: _user.organizations as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
+      }
+   }
+
+   @SecuredStateless
+   def templates(String format)
+   {
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      def orgs = _user.organizations
+
+      def shares = OperationalTemplateIndexShare.withCriteria {
+         or {
+            'in'('organization', orgs)
+            opt {
+               eq('isPublic', true)
+            }
+         }
+      }
+
+      if (!format || format == 'xml')
+      {
+         render(text: shares.opt as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text: shares.opt as JSON, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
