@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %>
+<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Commit" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -29,15 +29,38 @@
              </tr>
             </thead>
             <tbody>
-            <g:each in="${activityLogInstanceList}" status="i" var="activityLogInstance">
-             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-               <td><g:link controller="logs" action="show" id="${activityLogInstance.id}">${fieldValue(bean: activityLogInstance, field: "username")}</g:link></td>
-               <td>${fieldValue(bean: activityLogInstance, field: "objectId")}</td>
-               <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
-               <td>${fieldValue(bean: activityLogInstance, field: "clientIp")}</td>
-               <td><g:formatDate date="${activityLogInstance.timestamp}" /></td>
-             </tr>
-            </g:each>
+              <g:each in="${activityLogInstanceList}" status="i" var="activityLogInstance">
+                <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                  <td><g:link controller="logs" action="show" id="${activityLogInstance.id}">${fieldValue(bean: activityLogInstance, field: "username")}</g:link></td>
+                  <td>${fieldValue(bean: activityLogInstance, field: "objectId")}</td>
+                  <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
+                  <td>${fieldValue(bean: activityLogInstance, field: "clientIp")}</td>
+                  <td><g:formatDate date="${activityLogInstance.timestamp}" /></td>
+                </tr>
+                <g:set var="commit" value="${Commit.findByActivityLog(activityLogInstance)}" />
+                <g:if test="${commit}">
+                  <tr>
+                    <td colspan="5" style="padding:0;">
+                      <table class="table" style="margin:0;">
+                        <tr>
+                          <th>EHR</th>
+                          <th>Contribution</th>
+                          <th>Type</th>
+                          <th>Language</th>
+                          <th>Successful commit?</th>
+                        </tr>
+                        <tr>
+                          <td>${commit.ehrUid}</td>
+                          <td>${commit.contributionUid}</td>
+                          <td>${commit.contentType}</td>
+                          <td>${commit.locale}</td>
+                          <td>${commit.success}</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </g:if>
+              </g:each>
             </tbody>
           </table>
         </div>

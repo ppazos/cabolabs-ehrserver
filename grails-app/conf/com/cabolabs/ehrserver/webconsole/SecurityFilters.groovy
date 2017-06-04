@@ -114,7 +114,8 @@ class SecurityFilters {
    {
       def avoid_activity_log = [
         [controller:'activityLog', action:'*'], // avoid loading activity logs of loading activity logs :()
-        [controller:'notification', action:'newNotifications'] // avoid checking for notifications via AJAX
+        [controller:'notification', action:'newNotifications'], // avoid checking for notifications via AJAX
+        [controller:'notification', action:'dismiss'] // avoid logging the dismiss of a notification in the web console
       ]
 
       def matching_controller_avoids = avoid_activity_log.findAll { it.controller == controller } // can be a list of rules
@@ -222,7 +223,9 @@ class SecurityFilters {
                  */
                 def username
                 def organizationUid
-                if (controllerName == 'rest')
+                
+                // also consider endpoints outside rest, TODO: stats API.
+                if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName))
                 {
                    if (actionName == 'login')
                       username = params.username
@@ -240,6 +243,8 @@ class SecurityFilters {
                       }
                       else
                       {
+                         // FIXME: do the checks after the activity log, so if there is an error, it gets logged.
+                      
                          // check data in the JWT token: username and organization
                          username = request.securityStatelessMap.username
                          
@@ -302,10 +307,16 @@ class SecurityFilters {
                                 remoteAddr:      request.remoteAddr,
                                 clientIp:        request.getHeader("Client-IP"), // can be null
                                 xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
-                                referer:         request.getHeader('referer')) // can be null
+                                referer:         request.getHeader('referer'), // can be null
+                                requestURI:      request.forwardURI,
+                                matchedURI:      request.requestURI)
+                                 
                 
                 // TODO: file log failure
                 if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+                
+                // experiment to link commit log to this activityLog
+                session.activity_log_id = alog.id
             }
             
             

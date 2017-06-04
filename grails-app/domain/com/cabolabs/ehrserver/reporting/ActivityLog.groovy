@@ -34,6 +34,8 @@ class ActivityLog {
    String clientIp
    String xForwardedFor
    String referer
+   String requestURI // received url - /ehr/logs
+   String matchedURI // internal matched url - /ehr/grails/activityLog/index.dispatch
    
    static constraints = {
       username nullable: true
@@ -44,5 +46,7 @@ class ActivityLog {
       clientIp nullable: true
       xForwardedFor nullable: true
       referer nullable: true
+      requestURI nullable: true
+      matchedURI nullable: true
    }
 }

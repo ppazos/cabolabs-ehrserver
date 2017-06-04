@@ -3,59 +3,73 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'activityLog.label', default: 'ActivityLog')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="activityLog.show.title" /></title>
   </head>
   <body>
-    <div id="show-activityLog" class="content scaffold-show" role="main">
-      <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-      <g:if test="${flash.message}">
-        <div class="alert alert-info" role="alert">${flash.message}</div>
-      </g:if>
-      <ol class="property-list activityLog">
+    <div class="row">
+      <div class="col-lg-12">
+      <h1><g:message code="activityLog.show.title" /></h1>
+      </div>
+    </div>
+    
+    <div class="row row-grid">
+      <div class="col-lg-12">
       
-        <g:if test="${activityLogInstance?.username}">
-        <li class="fieldcontain">
-          <span id="username-label" class="property-label"><g:message code="activityLog.username.label" default="Username" /></span>
-          <span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${activityLogInstance}" field="username"/></span>
-        </li>
-        </g:if>
+	     <g:if test="${flash.message}">
+	       <div class="alert alert-info" role="alert">${flash.message}</div>
+	     </g:if>
+        
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="activityLog.timestamp.label" default="Timestamp" /></th>
+              <td><g:formatDate date="${activityLogInstance?.timestamp}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="user.attr.username" default="Username" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="username"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.organizationUid.label" default="Organization UID" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="organizationUid" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.action.label" default="Action" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="action"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.objectId.label" default="Object Id" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="objectId"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.objectUid.label" default="Object UID" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="objectUid"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.clientIp.label" default="Client Ip" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="clientIp"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.remoteAddr.label" default="remoteAddr" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="remoteAddr" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.xForwardedFor.label" default="xForwardedFor" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="xForwardedFor" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.referer.label" default="referer" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="referer" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="activityLog.requestURI.label" default="requestURI" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="requestURI" /></td>
+            </tr>
+            
+          </tbody>
+        </table>
       
-        <g:if test="${activityLogInstance?.objectId}">
-        <li class="fieldcontain">
-          <span id="objectId-label" class="property-label"><g:message code="activityLog.objectId.label" default="Object Id" /></span>
-          <span class="property-value" aria-labelledby="objectId-label"><g:fieldValue bean="${activityLogInstance}" field="objectId"/></span>
-        </li>
-        </g:if>
-      
-        <g:if test="${activityLogInstance?.action}">
-        <li class="fieldcontain">
-          <span id="action-label" class="property-label"><g:message code="activityLog.action.label" default="Action" /></span>
-          <span class="property-value" aria-labelledby="action-label"><g:fieldValue bean="${activityLogInstance}" field="action"/></span>
-        </li>
-        </g:if>
-      
-        <g:if test="${activityLogInstance?.clientIp}">
-        <li class="fieldcontain">
-          <span id="clientIp-label" class="property-label"><g:message code="activityLog.clientIp.label" default="Client Ip" /></span>
-          <span class="property-value" aria-labelledby="clientIp-label"><g:fieldValue bean="${activityLogInstance}" field="clientIp"/></span>
-        </li>
-        </g:if>
-      
-        <g:if test="${activityLogInstance?.timestamp}">
-        <li class="fieldcontain">
-          <span id="timestamp-label" class="property-label"><g:message code="activityLog.timestamp.label" default="Timestamp" /></span>
-          <span class="property-value" aria-labelledby="timestamp-label"><g:formatDate date="${activityLogInstance?.timestamp}" /></span>
-        </li>
-        </g:if>
-      
-      </ol>
-      <g:form url="[resource:activityLogInstance, action:'delete']" method="DELETE">
-        <fieldset class="buttons">
-          <g:link class="edit" action="edit" resource="${activityLogInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-          <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-        </fieldset>
-      </g:form>
+      </div>
     </div>
   </body>
 </html>

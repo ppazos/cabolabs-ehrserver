@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -27,6 +26,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Commit
 import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
+import com.cabolabs.ehrserver.reporting.ActivityLog
 
 @Transactional
 class CommitLoggerService {
@@ -37,7 +37,7 @@ class CommitLoggerService {
     * If the content (xml or json) was read from the request, we won't be able to read it again,
     * reading twice from the request will result on a java.io.IOException "stream closed"
     */
-   def log(HttpServletRequest request, String contributionUid, boolean success, String content)
+   def log(HttpServletRequest request, String contributionUid, boolean success, String content, session)
    {
       // http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html
       def clientIP = request.remoteAddr
@@ -114,7 +114,8 @@ class CommitLoggerService {
         contentLength: contentLength,
         url: url,
         username: authUser,
-        success: success
+        success: success,
+        activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null)
       )
       
       commit.save(failOnError: true)
