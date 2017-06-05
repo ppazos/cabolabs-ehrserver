@@ -34,20 +34,20 @@ class UrlMappings {
        * Use UIDs on webconsole show/edit
        */
       
-      "/organization/show/${uid}"(
+      "/organization/show/$uid"(
          controller: 'organization',
          action: 'show'
       )
-      "/organization/edit/${uid}"(
+      "/organization/edit/$uid"(
          controller: 'organization',
          action: 'edit'
       )
-      "/organization/update/${uid}"(
+      "/organization/update/$uid"(
          controller: 'organization',
          action: 'update'
       )
       
-      "/logs/show/${id}" {
+      "/logs/show/$id" {
          controller = 'activityLog'
          action = 'show'
       }
@@ -56,13 +56,12 @@ class UrlMappings {
          action = 'index'
       }
       
-      
       "/api/v1/login"(
          method: 'POST',
          controller: 'rest',
          action: 'login'
       )
-      "/api/v1/users/${username}"(
+      "/api/v1/users/$username"(
          controller: 'user',
          action: 'profile'
       )
@@ -85,10 +84,18 @@ class UrlMappings {
          controller: 'rest',
          action: 'ehrCreate'
       )
+      /*
       "/api/v1/contributions"(
          controller: 'rest',
          action: 'contributions'
       )
+      */
+      // /contributions?ehrUid to GET /ehrs/{ehdUid}/contributions
+      "/api/v1/ehrs/$ehrUid/contributions"(
+         controller: 'rest',
+         action: 'contributions'
+      )
+      
       "/api/v1/compositions"(
          controller: 'rest',
          action: 'findCompositions'
