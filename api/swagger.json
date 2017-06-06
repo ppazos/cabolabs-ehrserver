@@ -725,7 +725,7 @@
         }
       }
     },
-    "/commit": {
+    "/ehrs/{ehrUid}/compositions": {
       "post": {
         "summary": "Commit multiple compositions into an EHR.",
         "tags": [
@@ -751,8 +751,8 @@
             "default": "json"
           },
           {
-            "name": "uid",
-            "in": "query",
+            "name": "ehrUid",
+            "in": "path",
             "type": "string",
             "required": true
           },

@@ -95,8 +95,14 @@ class UrlMappings {
          controller: 'rest',
          action: 'contributions'
       )
+      "/api/v1/ehrs/$ehrUid/compositions"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'commit'
+      )
       
       "/api/v1/compositions"(
+         method: 'GET',
          controller: 'rest',
          action: 'findCompositions'
       )
@@ -104,11 +110,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'getComposition'
       )
-      "/api/v1/commit"(
-         method: 'POST',
-         controller: 'rest',
-         action: 'commit'
-      )
+      
       "/api/v1/queries"(
          controller: 'rest',
          action: 'queryList'

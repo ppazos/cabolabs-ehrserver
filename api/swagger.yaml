@@ -502,7 +502,7 @@ paths:
                   uid:
                     '@xsi:type': HIER_OBJECT_ID
                     value: d6fa1aa6-cfc7-4c28-ba51-555ee55b0ae1
-  /commit:
+  '/ehrs/{ehrUid}/compositions':
     post:
       summary: Commit multiple compositions into an EHR.
       tags:
@@ -521,8 +521,8 @@ paths:
             - xml
             - json
           default: json
-        - name: uid
-          in: query
+        - name: ehrUid
+          in: path
           type: string
           required: true
         - name: versions
