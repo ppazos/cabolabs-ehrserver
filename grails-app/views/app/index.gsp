@@ -185,7 +185,7 @@
                 <i class="glyphicon glyphicon-search gi-4x"></i>
               </div>
               <div class="col-xs-9 text-right">
-                <div class="huge">${Query.count()}</div>
+                <div class="huge">${count_queries}</div>
                 <div><g:message code="desktop.queries" /></div>
               </div>
             </div>

@@ -64,27 +64,34 @@ class QueryController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
       
-      def org = session.organization
-      def shares = QueryShare.findAllByOrganization(org)
-      
-      def c = Query.createCriteria()
-      def list = c.list (max: max, offset: offset, sort: sort, order: order) {
-        if (name)
-        {
-          like('name', '%'+name+'%')
-        }
-        
-        if (shares)
-        {
-           or {
-              eq('isPublic', true)
-              'in'('id', shares.query.id)
-           }
-        }
-        else
-        {
-           eq('isPublic', true)
-        }
+      def list
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = Query.list(max: max, offset: offset, sort: sort, order: order)
+      }
+      else
+      {
+         def org = session.organization
+         def shares = QueryShare.findAllByOrganization(org)
+         
+         def c = Query.createCriteria()
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            if (name)
+            {
+               like('name', '%'+name+'%')
+            }
+            if (shares)
+            {
+               or {
+                  eq('isPublic', true)
+                  'in'('id', shares.query.id)
+               }
+            }
+            else
+            {
+               eq('isPublic', true)
+            }
+         }
       }
       
       [queryInstanceList: list, queryInstanceTotal: list.totalCount]

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -26,6 +25,8 @@ package app
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.query.Query
+import com.cabolabs.ehrserver.query.QueryShare
 
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -47,13 +48,13 @@ class AppController {
       //println springSecurityService.getCurrentUser() // error porque espera que springSecurityService.getPrincipal() sea Grails User
       
       // Count EHRs
-      def count_ehrs
-      def count_contributions
+      def count_ehrs, count_contributions, count_queries
       def version_repo_sizes = [:] // org => versio repo size
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          count_ehrs = Ehr.count()
          count_contributions = Contribution.count()
+         count_queries = Query.count()
          
          def orgs = Organization.list()
          
@@ -66,15 +67,36 @@ class AppController {
       }
       else
       {
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         //def auth = springSecurityService.authentication
+         //def org = Organization.findByNumber(auth.organization)
+         def org = session.organization
          
          count_ehrs = Ehr.countByOrganizationUid(org.uid)
          count_contributions = Contribution.countByOrganizationUid(org.uid)
          
+         
+         def shares = QueryShare.findAllByOrganization(org)
+         def c = Query.createCriteria()
+         count_queries = c.count() {
+            if (shares)
+            {
+               or {
+                  eq('isPublic', true)
+                  'in'('id', shares.query.id)
+               }
+            }
+            else
+            {
+               eq('isPublic', true)
+            }
+         }
+         
          version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
       }
       
-      [count_ehrs:count_ehrs, count_contributions:count_contributions, version_repo_sizes: version_repo_sizes]
+      [count_ehrs:count_ehrs, 
+      count_contributions:count_contributions, 
+      count_queries: count_queries,
+      version_repo_sizes: version_repo_sizes]
    }
 }
