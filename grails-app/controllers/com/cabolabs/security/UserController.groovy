@@ -35,12 +35,14 @@ import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.account.*
+import com.cabolabs.ehrserver.api.ApiResponsesService
 
 @Transactional(readOnly = false)
 class UserController {
 
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
    
+   def apiResponsesService
    def simpleCaptchaService
    def notificationService
    def springSecurityService
@@ -128,7 +130,6 @@ class UserController {
       def _username = request.securityStatelessMap.username
       def org_uid = request.securityStatelessMap.extradata.org_uid
       def _user = User.findByUsername(_username)
-      
 
       // user I want to access
       def u = User.findByUsername(username)
@@ -136,15 +137,14 @@ class UserController {
       {
          withFormat {
             xml {
-               render(status: 404, contentType: "text/xml", text: "<result>User doesn't exists</result>", encoding:"UTF-8")
+               render(status: 404, contentType: "text/xml", text: apiResponsesService.feedback_xml("User doesn\'t exists", 'AR', 53445), encoding:"UTF-8")
             }
             json {
-               render(status: 404, contentType: "application/json", text: '{"result": "User doesn\'t exists"}', encoding:"UTF-8")
+               render(status: 404, contentType: "application/json", text: apiResponsesService.feedback_json("User doesn\'t exists", 'AR', 53445), encoding:"UTF-8")
             }
          }
          return
       }
-      
       
       def allowed = (
          _user.authoritiesContains(Role.AD) || // admins access everything
@@ -163,18 +163,15 @@ class UserController {
       {
          withFormat {
             xml {
-               render(status: 401, contentType: "text/xml", text: '<result>Unauthorized to access user info</result>', encoding:"UTF-8")
+               render(status: 401, contentType: "text/xml", text: apiResponsesService.feedback_xml("Unauthorized to access user info", 'AR', 53445), encoding:"UTF-8")
             }
             json {
-               render(status: 401, contentType: "application/json", text: '{"result": "Unauthorized to access user info"}', encoding:"UTF-8")
+               render(status: 401, contentType: "application/json", text: apiResponsesService.feedback_json("Unauthorized to access user info", 'AR', 53445), encoding:"UTF-8")
             }
          }
          return
       }
 
-      
-      // allowed
-      
       def data = [
          username: u.username,
          email: u.email,

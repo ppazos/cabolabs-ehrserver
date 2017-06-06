@@ -90,16 +90,12 @@ class RestController {
    def versionFSRepoService
    def commitLoggerService
    def notificationService
+   def apiResponsesService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
-   
-   
-   // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
-   
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
-   
    
    // test stateless security
    def statelessTokenProvider
@@ -219,60 +215,30 @@ class RestController {
       // Format comes from current request
       withFormat {
          xml {
-            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type('AR')                         // application reject
-                  message(msg)
-                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
-                  
-                  if (detailedErrors)
-                  {
-                     details {
-                        detailedErrors.each { error ->
-                           item(error)
-                        }
-                     }
-                  }
-                  
-                  if (ex && Environment.current == Environment.DEVELOPMENT)
-                  {
-                     StringWriter writer = new StringWriter()
-                     PrintWriter printWriter = new PrintWriter( writer )
-                     org.codehaus.groovy.runtime.StackTraceUtils.sanitize(ex).printStackTrace(printWriter)
-                     printWriter.flush()
-                     String _trace = writer.toString()
-                     
-                     trace( _trace )
-                  }
-               }
+            if (ex && Environment.current == Environment.DEVELOPMENT)
+            {
+               render(
+                 status: status,
+                 text: apiResponsesService.feedback_xml(msg, 'AR', errorCode, detailedErrors, ex),
+                 contentType: "text/xml",
+                 encoding: "UTF-8")
+            }
+            else
+            {
+               render(
+                 status: status,
+                 text: apiResponsesService.feedback_xml(msg, 'AR', errorCode, detailedErrors),
+                 contentType: "text/xml",
+                 encoding: "UTF-8")
             }
          }
          json {
-            def error = [
-               result: [
-                  type: 'AR',
-                  message: msg,
-                  code: 'EHR_SERVER::API::ERRORS::'+ errorCode
-               ]
-            ]
-            
-            if (detailedErrors)
-            {
-               error.result.details = detailedErrors
-            }
+            def result 
             if (ex && Environment.current == Environment.DEVELOPMENT)
-            {
-               StringWriter writer = new StringWriter()
-               PrintWriter printWriter = new PrintWriter( writer )
-               org.codehaus.groovy.runtime.StackTraceUtils.sanitize(ex).printStackTrace(printWriter)
-               printWriter.flush()
-               String _trace = writer.toString()
-               
-               error.result.trace = _trace
-            }
+               result = apiResponsesService.feedback_json(msg, 'AR', errorCode, detailedErrors, ex)
+            else
+               result = apiResponsesService.feedback_json(msg, 'AR', errorCode, detailedErrors)
             
-            //render error as JSON
-            def result = error as JSON
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             
@@ -834,7 +800,6 @@ class RestController {
          return
       }
       
-      
       // ===========================================================================
       // 2. Paciente tiene EHR?
       //
@@ -846,8 +811,7 @@ class RestController {
       }
       if (!_ehr)
       {
-         // FIXME error in the output format
-         render(status: 404, text:"<result><code>error</code><message>"+ message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]) +"</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]), "455", 404)
          return
       }
       
@@ -1752,27 +1716,17 @@ class RestController {
    @SecuredStateless
    def getComposition(String uid, String format)
    {
-      // uid required
       if (!uid)
       {
-         if (!format || format == 'xml')
-            render(status: 400, text:'<error>uid is required</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 400, text:'{"error": "uid is required"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'ehr.show.uidIsRequired'), '479', 400)
          return
       }
-      
       
       def cindex = CompositionIndex.findByUid(uid)
       
       if (!cindex)
       {
-         if (!format || format == 'xml')
-            render(status: 404, text:'<error>composition not found</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 404, text:'{"error": "composition not found"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '479', 404)
          return
       }
       
@@ -1784,7 +1738,6 @@ class RestController {
          renderError(message(code:'query.execute.error.user_cant_access_composition'), '479', 403)
          return
       }
-      
 
       withFormat {
          json {
