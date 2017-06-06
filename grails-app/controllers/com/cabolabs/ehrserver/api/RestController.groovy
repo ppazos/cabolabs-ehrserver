@@ -524,7 +524,7 @@ class RestController {
     * @return
     */
    @SecuredStateless
-   def checkout(String ehrUid, String compositionUid)
+   def checkout(String ehrUid, String compositionUid, String format)
    {
       if (!ehrUid)
       {
@@ -537,7 +537,6 @@ class RestController {
          renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
          return
       }
-      
       
       def c = Ehr.createCriteria()
       def _ehr = c.get {
@@ -559,7 +558,7 @@ class RestController {
          return
       }
       
-      
+      // Checks
       def versions = Version.withCriteria {
          data {
             eq('uid', compositionUid)
@@ -588,29 +587,28 @@ class RestController {
          return
       }
       
-      def version = versions[0]
-      
-      // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
-      if(version.contribution.ehr.uid != ehrUid)
-      {
-         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414', 500)
-         return
-      }
-      
-      def vf
+
       try
       {
-         vf = versionFSRepoService.getExistingVersionFile(version)
+         withFormat {
+            json {
+               render(text: compositionService.compositionAsJson(compositionUid), contentType:"application/json", encoding:"UTF-8")
+            }
+            xml {
+               render(text: compositionService.compositionAsXml(compositionUid), contentType:"text/xml", encoding:"UTF-8")
+            }
+         }
       }
       catch (FileNotFoundException e)
       {
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500) // this should not happen :)
          return
       }
-      
-      def xml = vf.getText()
-      
-      render(text: xml, contentType:"text/xml", encoding:"UTF-8")
+      catch (Exception e)
+      {
+         renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '415', 404)
+         return
+      }
    }
    
    @SecuredStateless
