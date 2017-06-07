@@ -1789,19 +1789,34 @@ class RestController {
       def dFromDate
       def dToDate
       
-      // FIXME: cuando sea servicio no hay ui
       // mandatory parameters not present so it is 400 Bad Request
-      if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
+      if (!ehrUid && !subjectId)
       {
-         if (!format || format == 'xml')
-            render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 400, text:'{"error": "ehrUid or subjectUid are required"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'rest.error.findCompositions.subjectIdOrEhrUidRequire'), '403', 400)
          return
       }
       
-      // FIXME: Si el formato esta mal va a tirar una except!
+      def ehr 
+      if (ehrUid)
+      {
+         ehr = Ehr.findByUid(ehrUid)
+      }
+      else
+      {
+         ehr = Ehr.withCriteria {
+            subject {
+               eq('value', subjectId)
+            }
+         }
+      }
+      
+      if (ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehr.uid, request.securityStatelessMap.extradata.org_uid]), "462", 401)
+         return
+      }
+      
+      // Si el formato esta mal va a tirar una except!
       // https://github.com/ppazos/cabolabs-ehrserver/issues/364
       if (fromDate)
       {
@@ -1823,8 +1838,9 @@ class RestController {
          }
       }
       
+      // we know that ehrUid or sujectId are present, and the ehr belongs to the current org
       def idxs = CompositionIndex.withCriteria {
-         
+      
          if (ehrUid)
             eq('ehrUid', ehrUid)
          
@@ -1851,13 +1867,11 @@ class RestController {
       
       def res = new PaginatedResults(listName:'result', list:idxs, max:max, offset:offset)
       
-      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index
       if (!format || format == 'xml')
          render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      else if (format == 'json')
+      else (format == 'json')
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
-      else
-         render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
+
    }
    
    
