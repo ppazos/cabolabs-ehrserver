@@ -510,7 +510,6 @@ class SecurityFilters {
                return false
             }
             
-
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def user = User.findByUsername(un)
@@ -524,7 +523,6 @@ class SecurityFilters {
                return false
             }
             
-
             def query = Query.findByUid(params.uid)
             
             if (!query)
@@ -558,6 +556,14 @@ class SecurityFilters {
                {
                   // check if query is shared with the login org
                   def shares = QueryShare.findAllByQuery(query)
+                  def orgCanAccess = (shares.organization.find{ it.uid == organizationUid } != null)
+                  if (!orgCanAccess)
+                  {
+                     flash.message = "The query is not shared with the organization used to login, please login with an organization that the query is shared with"
+                     chain controller: 'query', action: 'list'
+                     return false
+                  }
+                  /*
                   def found = false
                   shares.organization.each { share_org ->
                      if (share_org.number == auth.organization)
@@ -572,6 +578,7 @@ class SecurityFilters {
                      chain controller: 'query', action: 'list'
                      return false
                   }
+                  */
                }
             }
             

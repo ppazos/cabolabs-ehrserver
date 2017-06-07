@@ -27,6 +27,7 @@ import grails.converters.*
 import java.text.SimpleDateFormat
 
 import com.cabolabs.ehrserver.query.Query
+import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
@@ -74,7 +75,6 @@ import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.ehrserver.exceptions.XmlValidationException
 
 import grails.transaction.Transactional
-import com.cabolabs.ehrserver.query.QueryShare
 import grails.util.Environment
 
 /**
@@ -992,7 +992,6 @@ class RestController {
       // organization number used on the API login
       String organizationUid = request.securityStatelessMap.extradata.org_uid
       
-      
       if (ehrUid)
       {
          def ehr = Ehr.findByUid(ehrUid)
@@ -1016,12 +1015,23 @@ class RestController {
          return
       }
       
-      
       def query = Query.findByUid(queryUid)      
       if (!query)
       {
          renderError(message(code:'query.execute.error.queryDoesntExists', args:[queryUid]), '456', 404)
          return
+      }
+      
+      // query can be accessed by current org?
+      if (!query.isPublic)
+      {
+         def shares = QueryShare.findAllByQuery(query)
+         def orgCanAccess = (shares.organization.find{ it.uid == organizationUid } != null)
+         if (!orgCanAccess)
+         {
+            renderError(message(code:'query.execute.error.cantAccessQuery', args:[queryUid]), '446', 401)
+            return
+         }
       }
       
       // --------------------------------------------------------------
@@ -1065,7 +1075,6 @@ class RestController {
          return
       }
       
-      
       // measuring query timing
       def start_time = System.currentTimeMillis()
       // /measuring query timing
@@ -1080,7 +1089,6 @@ class RestController {
       // If not format is specified, take the query format.
       if (!format) format = query.format
          
-      
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
