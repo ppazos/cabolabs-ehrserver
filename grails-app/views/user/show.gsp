@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %><%@ page import="com.cabolabs.security.Role" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -47,13 +47,26 @@
                   <table class="table table-striped table-bordered table-hover">
                     <thead>
                       <tr>
-                        <th><g:message code="user.organizations.label" default="Organizations" /> &gt;</th>
-                        <g:each in="${organizations}" var="org">
-                          <th>${org.name}</th>
+                        <th><g:message code="user.organizations.label" default="Organizations" /></th>
+                        <g:each in="${Role.list()}" var="role">
+                          <th>${role.authority}</th>
                         </g:each>
                       </tr>
                     </thead>
                     <tbody>
+                      <g:each in="${roles}" status="i" var="roleOrg">
+                        <g:set var="org" value="${roleOrg.key}" />
+                        <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                          <th>${org.name}</th>
+                          <g:each in="${Role.list()}" var="role">
+                            <td>
+                              <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" disabled="true" />
+                            </td>
+                          </g:each>
+                        </tr>
+                      </g:each>
+                    
+                      <%--
                       <g:each in="${roles}" status="i" var="role">
                         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                           <th>${role.authority}</th>
@@ -64,6 +77,7 @@
                           </g:each>
                         </tr>
                       </g:each>
+                      --%>
                     </tbody>
                   </table>
                 </div>

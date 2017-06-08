@@ -78,10 +78,10 @@ class User implements Serializable {
     * ROLE_ADMIN > ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER > any other role
     * @return
     */
-   Role getHigherAuthority()
+   Role getHigherAuthority(Organization org)
    {
       // custom logic to avoid many queries for using authoritiesContains
-      def roles = UserRole.findAllByUser(this)*.role
+      def roles = UserRole.findAllByUserAndOrganization(this, org)*.role
       
       def role = roles.find { it.authority == Role.AD }
       if (role) return role

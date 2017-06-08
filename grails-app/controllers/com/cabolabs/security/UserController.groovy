@@ -61,7 +61,7 @@ class UserController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
       
-      def list
+      def list, count
       def c = User.createCriteria()
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
@@ -79,11 +79,32 @@ class UserController {
                }
             }
          }
+         
+         count = list.totalCount
       }
       else
       {
+         // current user lists only users from the current org
+         
          def loggedInUser = springSecurityService.currentUser
          
+         UserRole.findByOrganization(session.organization)
+         
+         def urs = UserRole.withCriteria {
+            eq('organization', session.organization)
+            if (username)
+            {
+               user {
+                  like('username', '%'+username+'%')
+               }
+            }
+         }
+         
+         // cant paginate because the search is on user role.
+         list = urs.user.unique()
+         count = list.size()
+         
+         /*
          def userHasAccessToOrg
          if (organizationUid)
          {
@@ -116,9 +137,10 @@ class UserController {
                like('username', '%'+username+'%')
             }
          }
+         */
       }
       
-      render view: 'index', model: [userInstanceList: list, userInstanceCount: list.totalCount]
+      render view: 'index', model: [userInstanceList: list, userInstanceCount: count]
    }
    
    
@@ -153,7 +175,7 @@ class UserController {
             (
                u.username == _username || // user want to access self profile
                ( // org managers can see users with lees power than them
-                  (_user.authoritiesContains(Role.OM) || _user.authoritiesContains(Role.AM)) && _user.higherAuthority.higherThan( u.higherAuthority )
+                  (_user.authoritiesContains(Role.OM) || _user.authoritiesContains(Role.AM)) && _user.getHigherAuthority(session.organization).higherThan( u.getHigherAuthority(session.organization) )
                )
             )
          )
@@ -202,9 +224,15 @@ class UserController {
       
       def loggedInUser = springSecurityService.currentUser
       
+      println "ME "+ loggedInUser.getHigherAuthority(session.organization)
+      println "HIM "+ userInstance.getHigherAuthority(session.organization)
+      println "higher me "+ loggedInUser.getHigherAuthority(session.organization).higherThan( userInstance.getHigherAuthority(session.organization) )
+      
+      // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
+      
       // cant see the details of a user with higher authority
       // be careful: for the same roles, higherThan returns true
-      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
+      if (!loggedInUser.getHigherAuthority(session.organization).higherThan( userInstance.getHigherAuthority(session.organization) ))
       {
          flash.message = message(code:"notEnoughPermissionsTo.show.user")
          redirect action:'index'
@@ -221,35 +249,67 @@ class UserController {
       }
       else
       {
+         println loggedInUser.organizations
+         println userInstance.organizations
+         println loggedInUser.organizations.disjoint( userInstance.organizations )
+      /*
          // If not admin, the user should be on an organization of the loggerInUser
          if (loggedInUser.organizations.disjoint( userInstance.organizations ))
          {
             flash.message = message(code:"notEnoughPermissionsTo.show.user")
             redirect action:'index'
             return
-         }
+         }*/
 
          respond userInstance, [model: [roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]]
          return
       }
    }
    
+   /**
+    * Roles are per org.
+    */
    private rolesICanAssign()
    {
-      // roles the current user can assign
-      def roles = Role.list()
-      def loggedInUser = springSecurityService.currentUser
-      def hrole = loggedInUser.higherAuthority
-      if (hrole.authority != Role.AD)
+      def rolesPerOrgICanAssing = [:] // org -> roles
+      
+      // Admins can assign all roles to all orgs
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         roles.removeAll { it.authority == Role.AD }
-         if (hrole.authority != Role.AM)
-         {
-            roles.removeAll { it.authority == Role.AM }
+         def organizations = Organization.list()
+         def roles = Role.list()
+         organizations.each { org ->
+            rolesPerOrgICanAssing[org] = roles
+         }
+      }
+      else
+      {
+         // roles the current user can assign
+         def roles
+         def loggedInUser = springSecurityService.currentUser
+         def userRoles = UserRole.findAllByUser(loggedInUser) // orgs the user can access and his role on each
+         
+         userRoles.each { userRole ->
+            roles = Role.list()
+            def hrole = loggedInUser.getHigherAuthority(userRole.organization)
+            if (hrole.authority != Role.AD)
+            {
+               roles.removeAll { it.authority == Role.AD }
+               if (hrole.authority != Role.AM)
+               {
+                  roles.removeAll { it.authority == Role.AM }
+                  if (hrole.authority == Role.US) // user cant assign any roles on that org
+                  {
+                     roles = []
+                  }
+               }
+            }
+            
+            rolesPerOrgICanAssing[userRole.organization] = roles
          }
       }
       
-      return roles
+      return rolesPerOrgICanAssing
    }
    
    private organizationsICanAssign()
@@ -287,6 +347,15 @@ class UserController {
          return
       }
       
+      if (!userInstance.password)
+      {
+         userInstance.enabled = false
+         userInstance.setPasswordToken()
+      }
+           
+      // need to save before creating UserRole, so UserRole can be saved
+      userInstance.save(failOnError:true)
+      
       def loggedInUser = springSecurityService.currentUser
 
       //def orgs = params.list("organizationUid")
@@ -295,10 +364,24 @@ class UserController {
       // TODO: allow the user to have no orgs/roles. In that case, do not send the email notification
       //       because they can't login. For those, on the update send the email on the update, when
       //       the user deosn't have an org and an org is associated.
-      def orguids, org
+      def orguids, org, inRoles, roles
       def _rolesICanAssign = rolesICanAssign()
       def _organizationsICanAssign = organizationsICanAssign()
-      
+      _rolesICanAssign.each { orgRoles ->
+         org = orgRoles.key
+         roles = orgRoles.value
+         
+         // org uid -> authorities
+         inRoles = params.list(org.uid)
+         
+         inRoles.each { assignRole ->
+            if (roles.authority.contains(assignRole)) // I can assign this role on this org
+            {
+               UserRole.create(userInstance, Role.findByAuthority(assignRole), org, true)
+            }
+         }
+      }
+      /*
       _rolesICanAssign.each { role ->
          orguids = params.list(role.authority) // org uid list, can be empty
          println "ORG UIDS "+ orguids
@@ -315,14 +398,7 @@ class UserController {
             }
          }
       }
-      
-      if (!userInstance.password)
-      {
-         userInstance.enabled = false
-         userInstance.setPasswordToken()
-      }
-            
-      userInstance.save(failOnError:true)
+      */
       
       // TODO: email notification
       // TODO: check I can assign the roles, and I can associate those roles to the orgs
@@ -404,9 +480,12 @@ class UserController {
       // TODO: refactor - same code as show
       def loggedInUser = springSecurityService.currentUser
       
+      // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
+      
+      
       // cant see the details of a user with higher authority
       // be careful: for the same roles, higherThan returns true
-      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
+      if (!loggedInUser.getHigherAuthority(session.organization).higherThan( userInstance.getHigherAuthority(session.organization) ))
       {
          flash.message = message(code:"notEnoughPermissionsTo.show.user")
          redirect action:'index'
@@ -423,6 +502,7 @@ class UserController {
       }
       else
       {
+         /*
          // If not admin, the user should be on an organization of the loggerInUser
          if (loggedInUser.organizations.disjoint( userInstance.organizations ))
          {
@@ -430,6 +510,7 @@ class UserController {
             redirect action:'index'
             return
          }
+         */
 
          respond userInstance, [model: [roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]]
          return
@@ -439,6 +520,8 @@ class UserController {
    @Transactional
    def update(User userInstance)
    {
+      println "update "+ params
+      
       if (userInstance == null)
       {
          notFound()
@@ -455,19 +538,37 @@ class UserController {
       // TODO: if the user has orgs, and is removed from all the orgs, 1. send an email to the user,
       //       2. and disable the account. 3. empty the password. Removing all the orgs is like disabling
       //       the account.
-      def orguids, org
+      def orguids, org, inRoles, roles
       def _rolesICanAssign = rolesICanAssign()
       def _organizationsICanAssign = organizationsICanAssign()
       
       // Removes current roles, for the roles and orgs the current user can assign
       def userRoles = UserRole.findAllByUser(userInstance)
       userRoles.each { userRole ->
-         if (_rolesICanAssing.contains(userRole.role) && _organizationsICanAssign.contains(userRole.organization))
+
+         // this condition checks 1. that I can assign roles on that org, 2. I can assign that specific role on that org
+         if (_rolesICanAssign[userRole.organization].contains(userRole.role))
          {
-            UserRole.remove( userInstance, role, org, true )
+            UserRole.remove( userInstance, userRole.role, userRole.organization, true )
          }
       }
       
+      _rolesICanAssign.each { orgRoles ->
+         org = orgRoles.key
+         roles = orgRoles.value
+         
+         // org uid -> authorities
+         inRoles = params.list(org.uid)
+         
+         inRoles.each { assignRole ->
+            if (roles.authority.contains(assignRole)) // I can assign this role on this org
+            {
+               UserRole.create(userInstance, Role.findByAuthority(assignRole), org, true)
+            }
+         }
+      }
+      
+      /*
       // only processes roles that can be assigned by the current user
       _rolesICanAssign.each { role ->
          orguids = params.list(role.authority) // org uid list, can be empty
@@ -479,6 +580,7 @@ class UserController {
             }
          }
       }
+      */
       
       // Let the user to have no roles, that is an user not associated with any org, so they can't login
       // but their accounts are still on the database, and can be associated later to an org & role.

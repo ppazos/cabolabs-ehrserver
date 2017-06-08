@@ -86,9 +86,19 @@ class UserRole implements Serializable {
       println org
 		def instance = new UserRole(user, role, org)
       println instance
-		if (!instance.save(flush: flush, insert: true))
+      try {
+         if (!instance.save(flush: flush, insert: true))
+         {
+            println instance.errors
+         }
+      }
+      catch (e)
       {
-         println instance.errors
+         println e.getClass() // NPE
+         println e.message // null
+         println e.cause // null
+         println e.cause?.getClass()
+         println e.cause?.message
       }
 		instance
 	}
@@ -133,7 +143,7 @@ class UserRole implements Serializable {
 	}
 
 	static mapping = {
-		id composite: ['user', 'role']
+		id composite: ['user', 'role', 'organization']
 		version false
 	}
 }

@@ -144,6 +144,7 @@ class EhrTagLib {
       }
    }
    
+   // FIXME: the roles I can assign are per organization!
    /**
     * Admins can assign any role.
     * OrgAdmins can assig OrgAdmins and OrgStaff.
@@ -178,7 +179,7 @@ class EhrTagLib {
          }
          
          // Check the higest role not containes!
-         def hrole = loggedInUser.higherAuthority
+         def hrole = loggedInUser.getHigherAuthority(session.organization)
          
          if (hrole.authority != Role.AD)
          {
@@ -198,7 +199,7 @@ class EhrTagLib {
    def canEditUser = { attrs, body ->
       
       def userInstance = attrs.userInstance // user to edit
-      def userHigherRole = userInstance.getHigherAuthority()
+      def userHigherRole = userInstance.getHigherAuthority(session.organization)
       
       def loggedInUser = springSecurityService.currentUser
       if(loggedInUser)
