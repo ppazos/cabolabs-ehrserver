@@ -26,7 +26,9 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
 
 import org.apache.commons.lang.builder.HashCodeBuilder
-
+/**
+ * A User plays a Role in an Organization.
+ */
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable {
 
@@ -34,11 +36,13 @@ class UserRole implements Serializable {
 
 	User user
 	Role role
+   Organization organization
 
-	UserRole(User u, Role r) {
+	UserRole(User u, Role r, Organization o) {
 		this()
 		user = u
 		role = r
+      organization = o
 	}
 
 	@Override
@@ -47,7 +51,7 @@ class UserRole implements Serializable {
 			return false
 		}
 
-		other.user?.id == user?.id && other.role?.id == role?.id
+		other.user?.id == user?.id && other.role?.id == role?.id && other.organization?.id == organization?.id 
 	}
 
 	@Override
@@ -55,6 +59,7 @@ class UserRole implements Serializable {
 		def builder = new HashCodeBuilder()
 		if (user) builder.append(user.id)
 		if (role) builder.append(role.id)
+      if (organization) builder.append(organization.id)
 		builder.toHashCode()
 	}
 
@@ -62,27 +67,36 @@ class UserRole implements Serializable {
 		criteriaFor(userId, roleId).get()
 	}
 
-	static boolean exists(long userId, long roleId) {
-		criteriaFor(userId, roleId).count()
+	static boolean exists(long userId, long roleId, long orgId) {
+		criteriaFor(userId, roleId, orgId).count()
 	}
 
-	private static DetachedCriteria criteriaFor(long userId, long roleId) {
+	private static DetachedCriteria criteriaFor(long userId, long roleId, long orgId) {
 		UserRole.where {
 			user == User.load(userId) &&
 			role == Role.load(roleId)
+         organization == Organization.load(orgId)
 		}
 	}
 
-	static UserRole create(User user, Role role, boolean flush = false) {
-		def instance = new UserRole(user, role)
-		instance.save(flush: flush, insert: true)
+	static UserRole create(User user, Role role, Organization org, boolean flush = false) {
+      println "UserRole.create"
+      println user
+      println role
+      println org
+		def instance = new UserRole(user, role, org)
+      println instance
+		if (!instance.save(flush: flush, insert: true))
+      {
+         println instance.errors
+      }
 		instance
 	}
 
-	static boolean remove(User u, Role r, boolean flush = false) {
-		if (u == null || r == null) return false
+	static boolean remove(User u, Role r, Organization o, boolean flush = false) {
+		if (u == null || r == null || o == null) return false
 
-		int rowCount = UserRole.where { user == u && role == r }.deleteAll()
+		int rowCount = UserRole.where { user == u && role == r && organization == o }.deleteAll()
 
 		if (flush) { UserRole.withSession { it.flush() } }
 
@@ -107,10 +121,10 @@ class UserRole implements Serializable {
 
 	static constraints = {
 		role validator: { Role r, UserRole ur ->
-			if (ur.user == null || ur.user.id == null) return
+			if (ur.user == null || ur.user.id == null || ur.organization.id == null) return
 			boolean existing = false
 			UserRole.withNewSession {
-				existing = UserRole.exists(ur.user.id, r.id)
+				existing = UserRole.exists(ur.user.id, r.id, ur.organization.id)
 			}
 			if (existing) {
 				return 'userRole.exists'

@@ -78,11 +78,9 @@ class UserSpec extends Specification {
                 new Organization(name: 'd')
              ]
              
-             
              orgs.each { o ->
                 o.save(failOnError: true)
              }
-             
              
              orgs.each { o ->
                 u.addToOrganizations(o)

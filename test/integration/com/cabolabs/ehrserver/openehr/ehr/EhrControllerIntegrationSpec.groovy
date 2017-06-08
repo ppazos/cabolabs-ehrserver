@@ -77,14 +77,14 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
 
       def user = User.findByUsername("testadmin")
       def role = Role.findByAuthority('ROLE_ADMIN')
+      def org = Organization.findByUid(orgUid)
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
       
-      def org = Organization.findByUid(orgUid)
       org.delete(flush: true)
    }
 

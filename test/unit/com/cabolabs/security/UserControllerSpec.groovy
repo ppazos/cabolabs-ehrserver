@@ -88,12 +88,13 @@ class UserControllerSpec extends Specification {
    {
       def user = User.findByUsername("orgman")
       def role = Role.findByAuthority('ROLE_ORG_MANAGER')
+      def org = Organization.findByNumber("1234")
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       role.delete(flush: true)
       
-      Organization.findByNumber("1234").delete(flush: true)
+      org.delete(flush: true)
       
       controller.springSecurityService = []
    }

@@ -33,9 +33,7 @@ class User implements Serializable {
    String username
    String password
    String email
-
    boolean isVirtual = false // virtual users for ApiKey
-   
    boolean enabled // false until the password is set
    boolean accountExpired
    boolean accountLocked
@@ -46,8 +44,8 @@ class User implements Serializable {
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    
-   List organizations = []
-   static hasMany = [organizations: Organization]
+   //List organizations = []
+   //static hasMany = [organizations: Organization]
    
    User(String username, String password)
    {
@@ -61,14 +59,6 @@ class User implements Serializable {
    {
       username?.hashCode() ?: 0
    }
-
-   /*
-   @Override
-   boolean equals(other)
-   {
-      is(other) || (other.instanceOf(User) && other.username == username)
-   }
-   */
 
    @Override
    String toString()
@@ -135,7 +125,7 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority']
+   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations']
 
    static constraints = {
       username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
@@ -151,6 +141,7 @@ class User implements Serializable {
       
       resetPasswordToken nullable: true
       
+      /*
       organizations validator: { val, obj ->
          //println "validator "+ val
          if (!val || val.size() == 0)
@@ -159,11 +150,19 @@ class User implements Serializable {
             obj.errors.rejectValue('organizations', 'user.organizations.empty')
          }
       }
+      */
    }
 
    static mapping = {
       password column: '`password`'
-      organizations lazy: false
+      //organizations lazy: false
+   }
+   
+   def getOrganizations()
+   {
+      UserRole.withNewSession { 
+         UserRole.findAllByUser(this).organization
+      }
    }
    
    static List allForRole(authority)

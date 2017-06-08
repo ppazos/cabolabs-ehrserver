@@ -33,14 +33,15 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       // deletes the created instances
       def user = User.findByUsername("testuser")
       def role = Role.findByAuthority('ROLE_XYZ')
+      def org = Organization.findByNumber("556677")
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       role.delete(flush: true)
       
       User.findByUsername("norole").delete(flush: true)
       
-      Organization.findByNumber("556677").delete(flush: true)
+      org.delete(flush: true)
    }
 
    void "test getByUsername existing user"()

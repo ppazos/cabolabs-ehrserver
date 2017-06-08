@@ -98,6 +98,26 @@ class UserService {
          canBeRemovedOrgs = orgsToRemove
       }
       
+      /*
+      // If the user is the last account manager of the org, don't remove the org
+      if (user.getHigherAuthority() == Role.AM)
+      {
+         // users of the same organizations that have the role account manager
+         def userroles = UserRole.withCriteria {
+            user {
+               'in'('organizations', user.organizations)
+            }
+            role {
+               eq('authority', Role.AM)
+            }
+         }
+         
+         userroles.each { userrole ->
+            ...
+         }
+      }
+      */
+      
       canBeRemovedOrgs.each {
          user.removeFromOrganizations(it)
       }

@@ -645,27 +645,27 @@ class BootStrap {
            
            // Create users
            def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
-           adminUser.organizations = [organizations[0]]
+           //adminUser.organizations = [organizations[0]]
            adminUser.save(failOnError: true,  flush: true)
            
            def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
-           accManUser.organizations = [organizations[0]]
+           //accManUser.organizations = [organizations[0]]
            accManUser.save(failOnError: true,  flush: true)
            
            def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
-           orgManUser.organizations = [organizations[0]]
+           //orgManUser.organizations = [organizations[0]]
            orgManUser.save(failOnError: true,  flush: true)
            
            def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
-           user.organizations = [organizations[0]]
+           //user.organizations = [organizations[0]]
            user.save(failOnError: true,  flush: true)
            
 
            // Associate roles
-           UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), true )
-           UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), true )
-           UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), true )
-           UserRole.create( user,       (Role.findByAuthority(Role.US)), true )
+           UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), organizations[0], true )
+           UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
+           UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
+           UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
         }
         
         

@@ -34,9 +34,40 @@
               <th><g:message code="user.attr.email" default="Email" /></th>
               <td><g:fieldValue bean="${userInstance}" field="email"/></td>
             </tr>
+            <%--
             <tr>
               <th><g:message code="user.attr.organizations" default="Organizations" /></th>
               <td><g:select name="organizations" from="${userInstance.organizations}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" class="form-control" disabled="disabled" /></td>
+            </tr>
+            --%>
+            <tr>
+              <th><g:message code="user.attr.organizations" default="Organizations" /></th>
+              <td>
+                <div class="table-responsive">
+                  <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th><g:message code="user.organizations.label" default="Organizations" /> &gt;</th>
+                        <g:each in="${organizations}" var="org">
+                          <th>${org.name}</th>
+                        </g:each>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <g:each in="${roles}" status="i" var="role">
+                        <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                          <th>${role.authority}</th>
+                          <g:each in="${organizations}" var="org">
+                            <td>
+                              <input type="checkbox" name="${role.authority}" ${(userRoles.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${org.uid}" disabled="true" />
+                            </td>
+                          </g:each>
+                        </tr>
+                      </g:each>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
             </tr>
             <tr>
               <th><g:message code="user.attr.account_expired" default="Account Expired" /></th>

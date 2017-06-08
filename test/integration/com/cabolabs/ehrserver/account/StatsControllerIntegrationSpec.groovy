@@ -24,7 +24,7 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
          organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
       
       def role = Role.findByAuthority(Role.AD) // role created in bootstrap
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, Organization.findByUid(orgUid), true )
       
       
       user = new User(
@@ -33,7 +33,7 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
          organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
       
       role = Role.findByAuthority(Role.AM) // role created in bootstrap
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, Organization.findByUid(orgUid), true )
    }
    
    
@@ -45,19 +45,19 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      def org = Organization.findByUid(orgUid)
       def user = User.findByUsername("testadmin")
       def role = Role.findByAuthority(Role.AD)
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       
       user = User.findByUsername("accman")
       role = Role.findByAuthority(Role.AM)
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
 
-      def org = Organization.findByUid(orgUid)
       org.delete(flush: true)
    }
 

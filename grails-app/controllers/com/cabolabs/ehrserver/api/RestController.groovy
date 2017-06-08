@@ -668,10 +668,7 @@ class RestController {
             u.addToOrganizations(o)
             u.save(failOnError: true)
             
-            
-            // TODO: UserRole ORG_* needs a reference to the org, since the user
-            //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true ) // the user is creating the organization, it should be manager also
+            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), o, true )
             
             // reset password request notification
             notificationService.sendUserCreatedEmail( u.email, [u], true )
@@ -682,7 +679,6 @@ class RestController {
             println u.errors
             
             status.setRollbackOnly()
-            
             error = true
          }
       }
