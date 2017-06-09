@@ -47,7 +47,8 @@ class UserService {
       // http://docs.spring.io/autorepo/docs/spring-security/3.2.1.RELEASE/apidocs/org/springframework/security/core/authority/AuthorityUtils.html
       return AuthorityUtils.createAuthorityList(authstr as String[]) // List<GrantedAuthority>
    }
-    
+   
+   /*
    def saveAndNotify(User userInstance, params)
    {
       if (!userInstance.password)
@@ -73,7 +74,8 @@ class UserService {
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
    }
-   
+   */
+   /*
    def updateOrganizations(User user, List newOrgUids)
    {
       // Update organizations.
@@ -98,25 +100,30 @@ class UserService {
          canBeRemovedOrgs = orgsToRemove
       }
       
-      /*
       // If the user is the last account manager of the org, don't remove the org
-      if (user.getHigherAuthority() == Role.AM)
-      {
-         // users of the same organizations that have the role account manager
-         def userroles = UserRole.withCriteria {
-            user {
-               'in'('organizations', user.organizations)
-            }
-            role {
-               eq('authority', Role.AM)
-            }
-         }
-         
-         userroles.each { userrole ->
-            ...
-         }
-      }
-      */
+      
+      
+      
+      //The higest role cant be removed by himself on his record, and if other user can 
+      //remove the ACCMAN role, it should beACCMAN, so this ensures one ACCMAN is always active.
+      //   
+      //if (user.getHigherAuthority() == Role.AM)
+      //{
+      //   // users of the same organizations that have the role account manager
+      //   def userroles = UserRole.withCriteria {
+      //      user {
+      //         'in'('organizations', user.organizations)
+      //      }
+      //      role {
+      //         eq('authority', Role.AM)
+      //      }
+      //   }
+      //   
+      //   userroles.each { userrole ->
+      //      ...
+      //   }
+      //}
+      
       
       canBeRemovedOrgs.each {
          user.removeFromOrganizations(it)
@@ -139,4 +146,5 @@ class UserService {
          }
       }
    }
+   */
 }

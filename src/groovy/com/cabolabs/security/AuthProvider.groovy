@@ -94,7 +94,10 @@ class AuthProvider implements AuthenticationProvider
        def password = auth.credentials // plain text entered by the user
        def organization_number = auth.organization
        
-       def user = userService.getByUsername(username) //User.findByUsername(username)
+       def user
+       User.withNewSession { 
+          user = User.findByUsername(username)
+       }
        if (user == null)
        {
           log.info("No matching account")

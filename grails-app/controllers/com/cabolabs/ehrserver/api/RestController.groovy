@@ -99,7 +99,7 @@ class RestController {
    
    // test stateless security
    def statelessTokenProvider
-   def userService
+   //def userService
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
    
    // This is used to generate controlled error codes.
@@ -134,7 +134,7 @@ class RestController {
       
       try
       {
-         def user = userService.getByUsername(username) //User.findByUsername(username)
+         def user = User.findByUsername(username)
          if (user == null)
          {
             throw new UsernameNotFoundException("No matching account")

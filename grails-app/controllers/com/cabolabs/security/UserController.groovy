@@ -46,7 +46,7 @@ class UserController {
    def simpleCaptchaService
    def notificationService
    def springSecurityService
-   def userService
+   //def userService
    def config = Holders.config.app
 
    def login()
@@ -379,19 +379,11 @@ class UserController {
       // need to save before creating UserRole, so UserRole can be saved
       if (!userInstance.save(flush:true))
       {
-         render model: [userInstance: userInstance], view:'create'
+         render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
          return
       }
       
-      
       def loggedInUser = springSecurityService.currentUser
-
-      //def orgs = params.list("organizationUid")
-      //def roles = params.list('role')
-      
-      // TODO: allow the user to have no orgs/roles. In that case, do not send the email notification
-      //       because they can't login. For those, on the update send the email on the update, when
-      //       the user deosn't have an org and an org is associated.
       def orguids, org, roles
       def _rolesICanAssign = rolesICanAssign()
 
@@ -410,65 +402,10 @@ class UserController {
          }
       }
       
-      // TODO: email notification
-      // TODO: check I can assign the roles, and I can associate those roles to the orgs
-      
-      /*
-      // Organizations cant be empty
-      if (orgs.size() == 0)
-      {
-         flash.message = message(code:"user.update.oneOrganizationShouldBeSelected")
-         render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
-         return
-      }
-      
-      // Admins can assign all the orgs
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         // All the organizations assigned to the new user should be accessible by the current user
-         def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
-         if (notAllowedOrg)
-         {
-            flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
-            render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
-            return
-         }
-      }
-      
-      // All the roles assigned to the new user should be lower o equal to the highest role of the current user
-      def highestRole = loggedInUser.higherAuthority
-      def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
-      if (notAllowedRole)
-      {
-         flash.message = message(code:"cantAssingRole.save.user", args:[notAllowedRole])
-         render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
-         return
-      }
-      
-      // roles cant be empty
-      if (roles.size() == 0)
-      {
-         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
-         render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
-         return
-      }
-      
-      // Associate orgs
-      def newOrgs = Organization.findAllByUidInList(orgs)
-      newOrgs.each { newOrg ->
-         userInstance.addToOrganizations(newOrg)
-      }
-      
-      try
-      {
-         userService.saveAndNotify(userInstance, params)
-      }
-      catch (Exception e)
-      {
-         render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
-         return
-      }
-      */
+      // email notification
+      // TODO: schedule emails
+      // token to create the URL for the email is in the userInstance
+      notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
       
       request.withFormat {
          form multipartForm {
@@ -528,7 +465,7 @@ class UserController {
       
       // User should have one org assigned, if not we lose tack of the user and can't be managed.
       def userRoles
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // admins manage user roles on any org
       {
          userRoles = UserRole.findAllByUser(userInstance)
       }
@@ -561,27 +498,31 @@ class UserController {
       }
 
       def loggedInUser = springSecurityService.currentUser
-      
-      // TODO: check I can remove roles already assigned to the orgs associated with me
-      // TODO: can't remove roles from orgs that I'm not associated with, keep those intact!
-      
-      // TODO: for users without orgs, if an org comes in the params, send the email notification
-      //       to reset their password.
-      // TODO: if the user has orgs, and is removed from all the orgs, 1. send an email to the user,
-      //       2. and disable the account. 3. empty the password. Removing all the orgs is like disabling
-      //       the account.
-      def orguids, org, roles
+      def orguids, org, roles, highestRole
       def _rolesICanAssign = rolesICanAssign()
       
-      
-      // Removes current roles, for the roles and orgs the current user can assign
+      // Removes current roles, for the roles and orgs the current user can assign, if those roles were removed.
       userRoles.each { userRole ->
 
          // check if a role that the user already has is coming on params => do not delete only delete
          // the onse that the user has and are not coming on the params (and the current user can manage)
          inRoles = params.list(userRole.organization.uid)
       
-         // this condition checks 1. that I can assign roles on that org, 2. I can assign that specific role on that org
+         // if user is self, can't remove his highest role on this org
+         if (loggedInUser.id == userInstance.id)
+         {
+            // TODO: this leaves a consistent state but the user doesn't know what is happening, we need to show notifications.
+            // flash.message = message(code: "user.update.cantRemoveHighestRole", args:[highestRole.authority])
+            highestRole = userInstance.getHigherAuthority(userRole.organization)
+            if (!inRoles.contains(highestRole.authority))
+            {
+               return // avoids executing the rest of the each
+            }
+         }
+         
+         // this condition checks 1. that I can assign roles on that org,
+         // 2. I can assign that specific role on that org
+         // 3. the role was removed from the user in the UI, if it wasn't removed, keep it
          if (_rolesICanAssign[userRole.organization].contains(userRole.role) && !inRoles.contains(userRole.role.authority))
          {
             UserRole.remove( userInstance, userRole.role, userRole.organization, true )
@@ -603,120 +544,6 @@ class UserController {
             }
          }
       }
-      
-      /*
-      // only processes roles that can be assigned by the current user
-      _rolesICanAssign.each { role ->
-         orguids = params.list(role.authority) // org uid list, can be empty
-         orguids.each { uid ->
-            org = Organization.findByUid(uid)
-            if (_organizationsICanAssign.contains(org)) // check current user can assign this org
-            {
-               UserRole.create( userInstance, role, org, true )
-            }
-         }
-      }
-      */
-      
-      /*
-      // cant see the details of a user with higher authority
-      // be careful: for the same roles, higherThan returns true
-      if (!loggedInUser.higherAuthority.higherThan( userInstance.higherAuthority ))
-      {
-         flash.message = message(code:"notEnoughPermissionsTo.show.user")
-         redirect action:'index'
-         return
-      }
-      
-      // Admins can access all users
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         // If not admin, the user should be on an organization of the loggerInUser
-         if (loggedInUser.organizations.disjoint( userInstance.organizations ))
-         {
-            flash.message = message(code:"notEnoughPermissionsTo.show.user")
-            redirect action:'index'
-            return
-         }
-      }
-      
-      // update allowed
-      
-      def orgs = params.list("organizationUid")
-      def roles = params.list('role')
-            
-      // Organizations cant be empty
-      if (orgs.size() == 0)
-      {
-         flash.message = message(code:"user.update.oneOrganizationShouldBeSelected")
-         render model: [userInstance: userInstance], view:'edit'
-         return
-      }
-      
-      // Admins can assign/unassing all the orgs
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         // All the organizations assigned to the new user should be accessible by the current user
-         def notAllowedOrg = orgs.find { !loggedInUser.organizations.uid.contains(it) }
-         if (notAllowedOrg)
-         {
-            flash.message = message(code:"cantAssingOrganization.save.user", args:[notAllowedOrg])
-            render model: [userInstance: userInstance], view:'edit'
-            return
-         }
-      }
-      
-      // Update roles.
-      // All the roles assigned to the new user should be lower o equal to the highest role of the current user
-      def highestRole = loggedInUser.higherAuthority
-      def notAllowedRole = roles.find { !highestRole.higherThan( new Role(it) ) }
-      if (notAllowedRole)
-      {
-         flash.message = message(code:"cantAssingRole.save.user", args:[notAllowedRole])
-         render model: [userInstance: userInstance], view:'edit'
-         return
-      }
-      
-      // roles cant be empty
-      if (roles.size() == 0)
-      {
-         flash.message = message(code:"user.update.oneRoleShouldBeSelected")
-         render model: [userInstance: userInstance], view:'edit'
-         return
-      }
-      
-      // if the user is editing his data and can't remove the highest role
-      // e.g. admins cant remove their own admin role
-      if (loggedInUser.id == userInstance.id)
-      {
-         if (!roles.contains(highestRole.authority))
-         {
-            flash.message = message(code: "user.update.cantRemoveHighestRole", args:[highestRole.authority])
-            render model: [userInstance: userInstance], view:'edit'
-            return
-         }
-      }
-      
-      
-      // Update orgs.
-      userService.updateOrganizations(userInstance, orgs)
-      
-      
-      // Role updating
-      
-      // Delete all current roles
-      def currentRoles = UserRole.findAllByUser(userInstance)
-      currentRoles*.delete(flush: true)
-      
-      // Add selected roles
-      
-      roles.each { authority ->
-         
-         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
-      }
-
-      // / Role updating
-      */
       
       if (!userInstance.save(flush:true))
       {

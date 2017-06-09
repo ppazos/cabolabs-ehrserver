@@ -98,7 +98,7 @@ class VersionedCompositionController {
             ehr {
                if (!orgUid)
                {
-                  flash.message = "versionedComposition.index.feedback.showingForCurrentOrg"
+                  flash.message = message(code:"versionedComposition.index.feedback.showingForCurrentOrg")
                   eq("organizationUid", org.uid)
                }
                else

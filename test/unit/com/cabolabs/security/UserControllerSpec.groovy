@@ -56,7 +56,7 @@ class UserControllerSpec extends Specification {
         authentication: [username:'orgman', organization:'1234']
       ]
       
-      
+/*
       controller.userService = [
          saveAndNotify : { User userInstance, params ->
             
@@ -64,6 +64,8 @@ class UserControllerSpec extends Specification {
          },
          updateOrganizations : { User user, List newOrgUids -> return }
       ]
+*/
+      
       /* this doesnt work, the mock above does
       controller.userService = new UserService()
       
