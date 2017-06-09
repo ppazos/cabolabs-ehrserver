@@ -16,31 +16,31 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
       org.save(failOnError: true)
    }
    
-   private createUsers()
+   private createUsersAndRoles()
    {
+      def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+      def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+
+           
       def user = new User(
          username: 'testadmin', password: 'testadmin',
-         email: 'testadmin@domain.com',
-         organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
+         email: 'testadmin@domain.com').save(failOnError:true, flush: true)
       
-      def role = Role.findByAuthority(Role.AD) // role created in bootstrap
-      UserRole.create( user, role, Organization.findByUid(orgUid), true )
+      UserRole.create( user, adminRole, Organization.findByUid(orgUid), true )
       
       
       user = new User(
          username: 'accman', password: 'accman',
-         email: 'accman@domain.com',
-         organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
+         email: 'accman@domain.com').save(failOnError:true, flush: true)
       
-      role = Role.findByAuthority(Role.AM) // role created in bootstrap
-      UserRole.create( user, role, Organization.findByUid(orgUid), true )
+      UserRole.create( user, accountManagerRole, Organization.findByUid(orgUid), true )
    }
    
    
    def setup()
    {
       createOrganization()
-      createUsers()
+      createUsersAndRoles()
    }
 
    def cleanup()

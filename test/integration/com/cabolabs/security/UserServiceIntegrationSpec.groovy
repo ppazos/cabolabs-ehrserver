@@ -22,7 +22,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, org, true )
       
       def user_without_roles = new User(username: 'norole', password: 'norole', email: 'norole@domain.com', organizations: [org]).save(failOnError:true, flush: true)
    }
