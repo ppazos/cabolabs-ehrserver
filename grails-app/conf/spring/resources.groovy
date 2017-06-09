@@ -53,7 +53,7 @@ beans = {
       authenticationFailureHandler = ref('authenticationFailureHandler')
       
       // calls AbstractAuthenticationProcessingFilter.setRememberMeServices
-      rememberMeServices = ref("rememberMeServices")
+//      rememberMeServices = ref("rememberMeServices")
       
       // calls AbstractAuthenticationProcessingFilter.setRequiresAuthenticationRequestMatcher
       requiresAuthenticationRequestMatcher = ref('filterProcessUrlRequestMatcher')

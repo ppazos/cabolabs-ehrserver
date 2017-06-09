@@ -756,9 +756,11 @@ class SecurityFilters {
             
             def _token_username = request.securityStatelessMap.username
             def _token_user = User.findByUsername(_token_username)
+            //def _org_uid = request.securityStatelessMap.extradata.org_uid
+            //def org = Organization.findByUid(_org_uid)
             
             // Note API Keys can't access this, should be a fully authenticated user.
-            if (!_token_user.authoritiesContains(Role.AD))
+            if (!_token_user.authoritiesContains(Role.AD, session.organization))
             {
                forFormat([
                   xml : {
@@ -857,7 +859,7 @@ class SecurityFilters {
                return false
             }
                
-            if (!accmgt.authoritiesContains(Role.AM))
+            if (!accmgt.authoritiesContains(Role.AM, session.organization)) // FIXME org is the admin org, not the accmgt org.
             {
                forFormat([
                   xml : {
@@ -891,8 +893,6 @@ class SecurityFilters {
             }
          }
       } // stats
-      
-      
       
    } // filters
 }

@@ -80,43 +80,26 @@ class UserRole implements Serializable {
 	}
 
 	static UserRole create(User user, Role role, Organization org, boolean flush = false) {
-      println "UserRole.create"
-      println user
-      println role
-      println org
 		def instance = new UserRole(user, role, org)
-      println instance
-      try {
-         if (!instance.save(flush: flush, insert: true))
-         {
-            println instance.errors
-         }
-      }
-      catch (e)
+      if (!instance.save(flush: flush, insert: true))
       {
-         println e.getClass() // NPE
-         println e.message // null
-         println e.cause // null
-         println e.cause?.getClass()
-         println e.cause?.message
+         println instance.errors
       }
 		instance
 	}
 
-	static boolean remove(User u, Role r, Organization o, boolean flush = false) {
-		if (u == null || r == null || o == null) return false
+	static void remove(User u, Role r, Organization o, boolean flush = false) {
+		if (u == null || r == null || o == null) return
 
-		int rowCount = UserRole.where { user == u && role == r && organization == o }.deleteAll()
+		UserRole.where { user == u && role == r && organization == o }.list()*.delete()
 
 		if (flush) { UserRole.withSession { it.flush() } }
-
-		rowCount
 	}
 
 	static void removeAll(User u, boolean flush = false) {
 		if (u == null) return
 
-		UserRole.where { user == u }.deleteAll()
+		UserRole.where { user == u }.list()*.delete()
 
 		if (flush) { UserRole.withSession { it.flush() } }
 	}
@@ -124,7 +107,7 @@ class UserRole implements Serializable {
 	static void removeAll(Role r, boolean flush = false) {
 		if (r == null) return
 
-		UserRole.where { role == r }.deleteAll()
+		UserRole.where { role == r }.list()*.delete()
 
 		if (flush) { UserRole.withSession { it.flush() } }
 	}

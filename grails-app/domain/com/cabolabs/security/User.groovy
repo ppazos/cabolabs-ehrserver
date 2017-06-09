@@ -66,7 +66,7 @@ class User implements Serializable {
       username
    }
 
-   Set<Role> getAuthorities()
+   Set<Role> getAuthorities(Organization org)
    {
       // Avoids error of finding by a non saved instance.
       if (!this.id) return [] as Set
@@ -95,9 +95,9 @@ class User implements Serializable {
       return roles[0] // any other role
    }
    
-   boolean authoritiesContains(String role)
+   boolean authoritiesContains(String role, Organization org)
    {
-      return this.authorities.find { it.authority == role } != null
+      return this.getAuthorities(org).find { it.authority == role } != null
    }
 
    def beforeInsert()

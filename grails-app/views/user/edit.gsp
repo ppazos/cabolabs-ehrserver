@@ -1,4 +1,3 @@
-<%@ page import="com.cabolabs.security.User" %>
 <!DOCTYPE html>
 <html>
   <head>

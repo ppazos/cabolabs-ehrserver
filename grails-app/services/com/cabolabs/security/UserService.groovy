@@ -39,13 +39,13 @@ class UserService {
       return u
    }
     
-   def getUserAuthorities(User user)
+   def getUserAuthorities(User user, Organization org)
    {
-      def aus = user.authorities // Set<Role>
+      def aus = user.getAuthorities(org) // Set<Role>
       def authstr = aus.authority // List<String> with role names
       
       // http://docs.spring.io/autorepo/docs/spring-security/3.2.1.RELEASE/apidocs/org/springframework/security/core/authority/AuthorityUtils.html
-      return AuthorityUtils.createAuthorityList(authstr as String[]) // List<AuthorityUtils>
+      return AuthorityUtils.createAuthorityList(authstr as String[]) // List<GrantedAuthority>
    }
     
    def saveAndNotify(User userInstance, params)

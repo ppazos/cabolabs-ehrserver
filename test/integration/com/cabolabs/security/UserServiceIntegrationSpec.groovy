@@ -67,7 +67,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    {
       when:
          def user = userService.getByUsername('testuser')
-         def authorities = userService.getUserAuthorities(user)
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
          println authorities
       
       then:
@@ -79,7 +79,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    {
       when:
          def user = userService.getByUsername('norole')
-         def authorities = userService.getUserAuthorities(user)
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
          println authorities
       
       then:

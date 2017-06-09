@@ -29,13 +29,6 @@ class UserControllerSpec extends Specification {
    // this is executed before all the tests, allows metaprogramming.
    def setupSpec()
    {
-    /*
-      // without this actions that check permissions fail
-      SpringSecurityUtils.metaClass.static.ifAllGranted = { String role ->
-         return controller.loggedInUser.authoritiesContains(role)
-      
-      }
-      */
    }
    
    def setup()
@@ -80,7 +73,7 @@ class UserControllerSpec extends Specification {
 
       // without this actions that check permissions fail
       SpringSecurityUtils.metaClass.static.ifAllGranted = { String _role ->
-         return controller.springSecurityService.principal.authoritiesContains(_role)
+         return controller.springSecurityService.principal.authoritiesContains(_role, Organization.findByNumber("1234"))
       }
    }
    

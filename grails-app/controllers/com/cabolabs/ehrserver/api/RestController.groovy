@@ -1311,7 +1311,7 @@ class RestController {
       else
       {
          // use the orguid of the org used to login
-         organizationUid = session.organization.uid
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       
@@ -1408,7 +1408,7 @@ class RestController {
       else
       {
          // use the orguid of the org used to login
-         organizationUid = session.organization.uid
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       

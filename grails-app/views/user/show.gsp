@@ -34,12 +34,6 @@
               <th><g:message code="user.attr.email" default="Email" /></th>
               <td><g:fieldValue bean="${userInstance}" field="email"/></td>
             </tr>
-            <%--
-            <tr>
-              <th><g:message code="user.attr.organizations" default="Organizations" /></th>
-              <td><g:select name="organizations" from="${userInstance.organizations}" optionValue="${{it.name +' ('+ it.uid +')'}}" optionKey="uid" size="5" class="form-control" disabled="disabled" /></td>
-            </tr>
-            --%>
             <tr>
               <th><g:message code="user.attr.organizations" default="Organizations" /></th>
               <td>
@@ -65,19 +59,6 @@
                           </g:each>
                         </tr>
                       </g:each>
-                    
-                      <%--
-                      <g:each in="${roles}" status="i" var="role">
-                        <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                          <th>${role.authority}</th>
-                          <g:each in="${organizations}" var="org">
-                            <td>
-                              <input type="checkbox" name="${role.authority}" ${(userRoles.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${org.uid}" disabled="true" />
-                            </td>
-                          </g:each>
-                        </tr>
-                      </g:each>
-                      --%>
                     </tbody>
                   </table>
                 </div>
@@ -102,18 +83,6 @@
           </tbody>
         </table>
 	     
-	     <%-- if the user shown is admin, only can be edited if the logged user is admin (admins can edit any user)
-	          if the user shown is not admin, only can be edited if the logged user is org admin
-	    
-	     <g:if test="${ SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') || (!userInstance.authoritiesContains('ROLE_ADMIN') && SpringSecurityUtils.ifAllGranted('ROLE_ORG_MANAGER')) || (userInstance.id == Long.valueOf(sec.loggedInUserInfo(field:'id').toString())) }">
-		     --%>
-		     <%--
-		    <g:form url="[resource:userInstance, action:'delete']" method="DELETE">
-		      <fieldset class="buttons">
-		        <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-		      </fieldset>
-		    </g:form>
-		    --%>
 		  <g:canEditUser userInstance="${userInstance}">
 		    <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
 	       <g:form action="resetPasswordRequest" id="${userInstance.id}" method="post">

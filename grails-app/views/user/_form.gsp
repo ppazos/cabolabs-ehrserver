@@ -12,22 +12,6 @@
    <g:textField name="email" required="true" value="${userInstance?.email}" class="form-control"/>
 </div>
 
-<%--
-<sec:ifLoggedIn><!-- new user from web console -->
-  <div class="form-group ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
-    <label for="organizationUid"><g:message code="user.organizations.label" default="Organizations" /><span class="required-indicator">*</span></label>
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-      <g:select name="organizationUid" from="${Organization.list()}"
-                optionKey="uid" optionValue="${{it.name +' '+ it.uid}}" value="${userInstance?.organizations}"
-                multiple="true" size="5" class="form-control" />
-    </sec:ifAnyGranted>
-    <sec:ifNotGranted roles="ROLE_ADMIN">
-      <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" class="form-control" />
-    </sec:ifNotGranted>
-    <span><g:message code="user.edit.canOnlyEditAssociatedOrgs" /></span>
-  </div>
-</sec:ifLoggedIn>
---%>
 <sec:ifNotLoggedIn><!-- register -->
   <div class="form-group required">
 	 <label for="org_name"><g:message code="user.register.organization_name" default="Organization Name" /><span class="required-indicator">*</span></label>
@@ -67,15 +51,6 @@
       </table>
     </div>
   </div>
-  <%--
-  <div class="form-group">
-    <label for="role">
-      <g:message code="user.roles.label" default="Roles" />
-      <span class="required-indicator">*</span>
-    </label>
-    <g:selectWithRolesICanAssign name="role" value="${params?.role}" user_values="${userInstance?.authorities?.authority}" multiple="true" class="form-control" />
-  </div>
-  --%>
 </sec:ifLoggedIn>
 
 <sec:access expression="hasRole('ROLE_ADMIN')">
