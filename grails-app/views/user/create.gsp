@@ -2,14 +2,13 @@
 <html>
   <head>
    <meta name="layout" content="admin">
-   <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-   <title><g:message code="default.create.label" args="[entityName]" /></title>
+   <title><g:message code="user.create.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
 	     <div id="create-user" class="content scaffold-create" role="main">
-	       <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+	       <h1><g:message code="user.create.title" /></h1>
 	       <g:if test="${flash.message}">
 	         <div class="alert alert-info" role="alert">${flash.message}</div>
 	       </g:if>

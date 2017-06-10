@@ -99,7 +99,7 @@ class RestController {
    
    // test stateless security
    def statelessTokenProvider
-   def userService
+   //def userService
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
    
    // This is used to generate controlled error codes.
@@ -134,7 +134,7 @@ class RestController {
       
       try
       {
-         def user = userService.getByUsername(username) //User.findByUsername(username)
+         def user = User.findByUsername(username)
          if (user == null)
          {
             throw new UsernameNotFoundException("No matching account")
@@ -668,10 +668,7 @@ class RestController {
             u.addToOrganizations(o)
             u.save(failOnError: true)
             
-            
-            // TODO: UserRole ORG_* needs a reference to the org, since the user
-            //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), true ) // the user is creating the organization, it should be manager also
+            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), o, true )
             
             // reset password request notification
             notificationService.sendUserCreatedEmail( u.email, [u], true )
@@ -682,7 +679,6 @@ class RestController {
             println u.errors
             
             status.setRollbackOnly()
-            
             error = true
          }
       }
@@ -1315,7 +1311,7 @@ class RestController {
       else
       {
          // use the orguid of the org used to login
-         organizationUid = session.organization.uid
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       
@@ -1412,7 +1408,7 @@ class RestController {
       else
       {
          // use the orguid of the org used to login
-         organizationUid = session.organization.uid
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       

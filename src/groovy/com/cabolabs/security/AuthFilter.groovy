@@ -53,7 +53,6 @@ ref: http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authe
 */
 public class AuthFilter extends AbstractAuthenticationProcessingFilter implements ApplicationEventPublisherAware {
  
-  
   AuthProvider authProvider
   
   // redeclared because is private on superclass
@@ -116,7 +115,7 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      // cant make queries without the transaction because there is no hibernate session
      User.withTransaction { status ->
         def user = User.get(auth.principal.id)
-        if (user.authorities.contains( new Role('ROLE_USER') ))
+        if (user.getAuthorities(Organization.findByNumber(organization)).contains( new Role('ROLE_USER') ))
         {
            //println "valid user but cant login into the web console"
            throw new InsufficientAuthenticationException("Your role is not allowed to login through the web console.")
@@ -125,7 +124,7 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      
      // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
      SecurityContextHolder.getContext().setAuthentication(auth)
-     rememberMeServices.onLoginSuccess(request, response, auth)
+//     rememberMeServices.onLoginSuccess(request, response, auth)
      
      // TODO: catch auth exception and handle the lines below, then rethrow the except
      // SecurityContextHolder.clearContext();

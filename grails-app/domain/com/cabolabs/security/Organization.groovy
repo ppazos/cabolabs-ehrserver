@@ -55,4 +55,9 @@ class Organization {
       
       this.number = _number
    }
+   
+   @Override
+	boolean equals(other) {
+		is(other) || (other instanceof Organization && other.id == this.id)
+	}
 }

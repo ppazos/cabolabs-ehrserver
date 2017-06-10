@@ -32,14 +32,14 @@ grails.reload.enabled = true
 forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 512]
 grails.project.fork = [
    test: forkConfig, // configure settings for the test-app JVM
-   run: forkConfig, // configure settings for the run-app JVM
+   run: false, // configure settings for the run-app JVM
    war: forkConfig, // configure settings for the run-war JVM
    console: forkConfig // configure settings for the Swing console JVM
 ]
 
 grails {
    tomcat {
-       jvmArgs = ["-Duser.timezone=UTC"]
+       jvmArgs = ["-Duser.timezone=UTC", "-Dserver.port=8090"]
    }
 }
 

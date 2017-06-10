@@ -29,13 +29,6 @@ class UserControllerSpec extends Specification {
    // this is executed before all the tests, allows metaprogramming.
    def setupSpec()
    {
-    /*
-      // without this actions that check permissions fail
-      SpringSecurityUtils.metaClass.static.ifAllGranted = { String role ->
-         return controller.loggedInUser.authoritiesContains(role)
-      
-      }
-      */
    }
    
    def setup()
@@ -63,7 +56,7 @@ class UserControllerSpec extends Specification {
         authentication: [username:'orgman', organization:'1234']
       ]
       
-      
+/*
       controller.userService = [
          saveAndNotify : { User userInstance, params ->
             
@@ -71,6 +64,8 @@ class UserControllerSpec extends Specification {
          },
          updateOrganizations : { User user, List newOrgUids -> return }
       ]
+*/
+      
       /* this doesnt work, the mock above does
       controller.userService = new UserService()
       
@@ -80,7 +75,7 @@ class UserControllerSpec extends Specification {
 
       // without this actions that check permissions fail
       SpringSecurityUtils.metaClass.static.ifAllGranted = { String _role ->
-         return controller.springSecurityService.principal.authoritiesContains(_role)
+         return controller.springSecurityService.principal.authoritiesContains(_role, Organization.findByNumber("1234"))
       }
    }
    
@@ -88,12 +83,13 @@ class UserControllerSpec extends Specification {
    {
       def user = User.findByUsername("orgman")
       def role = Role.findByAuthority('ROLE_ORG_MANAGER')
+      def org = Organization.findByNumber("1234")
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       role.delete(flush: true)
       
-      Organization.findByNumber("1234").delete(flush: true)
+      org.delete(flush: true)
       
       controller.springSecurityService = []
    }

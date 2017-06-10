@@ -29,8 +29,9 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
          email: 'testadmin@domain.com',
          organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
       
-      def role = Role.findByAuthority("ROLE_ADMIN") // created in bootstrap
-      UserRole.create( user, role, true )
+      def adminRole = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+      
+      UserRole.create( user, adminRole, Organization.findByUid(orgUid), true )
    }
    
    private createEHR()
@@ -76,15 +77,15 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
       println "cleanup"
 
       def user = User.findByUsername("testadmin")
-      def role = Role.findByAuthority('ROLE_ADMIN')
+      def role = Role.findByAuthority(Role.AD)
+      def org = Organization.findByUid(orgUid)
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
       
-      def org = Organization.findByUid(orgUid)
       org.delete(flush: true)
    }
 

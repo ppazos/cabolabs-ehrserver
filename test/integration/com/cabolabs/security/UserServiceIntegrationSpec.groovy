@@ -22,7 +22,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, org, true )
       
       def user_without_roles = new User(username: 'norole', password: 'norole', email: 'norole@domain.com', organizations: [org]).save(failOnError:true, flush: true)
    }
@@ -33,14 +33,15 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       // deletes the created instances
       def user = User.findByUsername("testuser")
       def role = Role.findByAuthority('ROLE_XYZ')
+      def org = Organization.findByNumber("556677")
       
-      UserRole.remove(user, role)
+      UserRole.remove(user, role, org)
       user.delete(flush: true)
       role.delete(flush: true)
       
       User.findByUsername("norole").delete(flush: true)
       
-      Organization.findByNumber("556677").delete(flush: true)
+      org.delete(flush: true)
    }
 
    void "test getByUsername existing user"()
@@ -66,7 +67,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    {
       when:
          def user = userService.getByUsername('testuser')
-         def authorities = userService.getUserAuthorities(user)
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
          println authorities
       
       then:
@@ -78,7 +79,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    {
       when:
          def user = userService.getByUsername('norole')
-         def authorities = userService.getUserAuthorities(user)
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
          println authorities
       
       then:

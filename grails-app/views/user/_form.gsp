@@ -12,20 +12,6 @@
    <g:textField name="email" required="true" value="${userInstance?.email}" class="form-control"/>
 </div>
 
-<sec:ifLoggedIn><!-- new user from admin gui -->
-  <div class="form-group ${hasErrors(bean: userInstance, field: 'organizations', 'error')} required">
-    <label for="organizationUid"><g:message code="user.organizations.label" default="Organizations" /><span class="required-indicator">*</span></label>
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-      <g:select name="organizationUid" from="${Organization.list()}"
-                optionKey="uid" optionValue="${{it.name +' '+ it.uid}}" value="${userInstance?.organizations}"
-                multiple="true" size="5" class="form-control" />
-    </sec:ifAnyGranted>
-    <sec:ifNotGranted roles="ROLE_ADMIN">
-      <g:selectWithCurrentUserOrganizations name="organizationUid" value="${userInstance?.organizations}" multiple="true" class="form-control" />
-    </sec:ifNotGranted>
-    <span><g:message code="user.edit.canOnlyEditAssociatedOrgs" /></span>
-  </div>
-</sec:ifLoggedIn>
 <sec:ifNotLoggedIn><!-- register -->
   <div class="form-group required">
 	 <label for="org_name"><g:message code="user.register.organization_name" default="Organization Name" /><span class="required-indicator">*</span></label>
@@ -39,7 +25,31 @@
       <g:message code="user.roles.label" default="Roles" />
       <span class="required-indicator">*</span>
     </label>
-    <g:selectWithRolesICanAssign name="role" value="${params?.role}" user_values="${userInstance?.authorities?.authority}" multiple="true" class="form-control" />
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th><g:message code="user.organizations.label" default="Organizations" /></th>
+            <g:each in="${Role.list()}" var="role">
+              <th>${role.authority}</th>
+            </g:each>
+          </tr>
+        </thead>
+        <tbody>
+          <g:each in="${roles}" status="i" var="roleOrg">
+            <g:set var="org" value="${roleOrg.key}" />
+            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+              <th>${org.name}</th>
+              <g:each in="${Role.list()}" var="role">
+                <td>
+                  <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" ${(!roleOrg.value.contains(role))?'disabled="true"':''} />
+                </td>
+              </g:each>
+            </tr>
+          </g:each>
+        </tbody>
+      </table>
+    </div>
   </div>
 </sec:ifLoggedIn>
 

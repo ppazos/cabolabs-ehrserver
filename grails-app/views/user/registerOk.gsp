@@ -35,20 +35,17 @@
     <div class="container">
 	   <div class="row">
 	     <div class="col-lg-12">
-	       <h1><g:message code="user.registerOk.label" args="[entityName]" /></h1>
+	       <h1><g:message code="user.registerOk.label" /></h1>
 	       <g:if test="${flash.message}">
 	         <div class="alert alert-info" role="alert">${flash.message}</div>
 	       </g:if>
 	       <g:message code="user.registerOk.text" />
 	       <p>
-	         <h2>Next steps...</h2>
-	         <ol>
-	           <li>Remember your <b>username</b></li>
-	           <li>Check the email to get your <b>organization number</b></li>
-	           <li>Click on the link in the email to reset your <b>password</b></li>
-	           <li>Use username, password and organization number to <g:link controller="login" action="auth">login</g:link></li>
-	         </ol>
+            <g:message code="user.registerOk.nextSteps" />
 	       </p>
+          <p>
+            <g:link controller="login" action="auth" class="btn btn-success">login</g:link>
+          </p>
 	     </div>
 	   </div>
 	 </div>

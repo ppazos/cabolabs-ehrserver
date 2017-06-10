@@ -94,13 +94,15 @@ class AuthProvider implements AuthenticationProvider
        def password = auth.credentials // plain text entered by the user
        def organization_number = auth.organization
        
-       def user = userService.getByUsername(username) //User.findByUsername(username)
+       def user
+       User.withNewSession { 
+          user = User.findByUsername(username)
+       }
        if (user == null)
        {
           log.info("No matching account")
           throw new UsernameNotFoundException("No matching account")
        }
-       
        
        // Status checks
        if (!user.enabled)
@@ -121,7 +123,6 @@ class AuthProvider implements AuthenticationProvider
           throw new LockedException("Account locked")
        }
        
-       
        // Check password
        assert this.passwordEncoder != null
        
@@ -130,8 +131,6 @@ class AuthProvider implements AuthenticationProvider
           log.info("Authentication failed - invalid password")
           throw new BadCredentialsException("Authentication failed")
        }
-       
-       //println 'orgn '+ organization_number
        
        if (!organization_number) // null or empty
        {
@@ -144,8 +143,6 @@ class AuthProvider implements AuthenticationProvider
        Organization.withNewSession { 
           org = Organization.findByNumber(organization_number)
        }
-       
-       //println 'org '+ org
        
        if (org == null)
        {
@@ -160,13 +157,9 @@ class AuthProvider implements AuthenticationProvider
           log.info("Authentication failed - user not associated with existing organization")
           throw new BadCredentialsException("Authentication failed - check the organization number")
        }
-       
-     
+
        //auth.setAuthenticated(true)
-       //auth.authorities = userService.getUserAuthorities(user)
-       
-       //println "user authorities "+ userService.getUserAuthorities(user)
-       
+
        // sets authenticated true
        // TODO: do it in a userDetailsService
        // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
@@ -176,14 +169,12 @@ class AuthProvider implements AuthenticationProvider
                                         !user.accountExpired,
                                         !user.passwordExpired, // credentialsNonExpired
                                         !user.accountLocked,
-                                        userService.getUserAuthorities(user),
+                                        userService.getUserAuthorities(user, org),
                                         user.id)
        
-       //println "userDetails " + userDetails
-       
+       // The userDetails.authorities is not over our User is over the SpringSecurity User, so it doesnt require an org.
+       // http://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/core/userdetails/User.html
        auth = new UserPassOrgAuthToken(userDetails, password, organization_number, userDetails.authorities)
-       
-       //println "auth " + auth
        
        return auth
     }

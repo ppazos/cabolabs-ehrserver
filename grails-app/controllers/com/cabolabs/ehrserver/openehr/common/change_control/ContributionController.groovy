@@ -104,7 +104,7 @@ class ContributionController {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             if (!orgUid)
             {
-               flash.message = "contribution.list.feedback.showingForCurrentOrg"
+               flash.message = message(code:"contribution.list.feedback.showingForCurrentOrg")
                eq("organizationUid", org.uid)
             }
             else

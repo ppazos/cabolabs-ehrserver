@@ -74,16 +74,15 @@ class NotificationService {
       if (userRegistered)
          message = '<p>We received your registration. You can login using this username <b>{0}</b> and organization number: {1}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
       else
-        message = '<p>A user was created for you. You can login using this username <b>{0}</b> and organization numbers {1}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
+         message = '<p>A user was created for you. You can login using this username <b>{0}</b> and organization numbers {1}</p><p>But before, you need to reset your password, please go here: '+ url +'</p>'
 
-     message = message.replaceFirst ( /\{0\}/ , user.username)
+      message = message.replaceFirst ( /\{0\}/ , user.username)
         
-     if (organizationNumbers.size() == 1)
-        message = message.replaceFirst ( /\{1\}/ , organizationNumbers[0].toString())
-     else
-        message = message.replaceFirst ( /\{1\}/ , organizationNumbers.toString())
+      if (organizationNumbers.size() == 1)
+         message = message.replaceFirst ( /\{1\}/ , organizationNumbers[0].toString())
+      else
+         message = message.replaceFirst ( /\{1\}/ , organizationNumbers.toString())
 
-      
       this.sendMail(recipient, 'Welcome to CaboLabs EHRServer!', message)
    }
    
