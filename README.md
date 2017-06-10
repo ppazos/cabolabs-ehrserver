@@ -6,6 +6,7 @@
 ## Service-oriented clinical data repository for shared EHRs/EMRs/PHRs based on the [openEHR standard](http://openehr.org).
 
 ### [Latest documentation](http://cabolabs.com/en/projects)
+### [EHRServer SaaS](https://cloudehrserver.com/)
 
 ### Main features:
 
@@ -44,7 +45,7 @@
 
 ## REST API
 
-Latest documentation: https://docs.google.com/viewerng/viewer?url=http://cabolabs.com/software_resources/EHRServer_v0.7.pdf
+Latest documentation: https://docs.google.com/viewerng/viewer?url=http://cabolabs.com/software_resources/EHRServer_v0.9.5.pdf
 
      
 ### EHRServer workflows supported by clients
@@ -69,4 +70,4 @@ Version of the existing Compositions. All the Versions of a Composition are grou
 
 ### Staging server
 
-Want to try EHRServer? Just create an account here and help us testing! https://cabolabs-ehrserver.rhcloud.com/
+Want to try EHRServer? Just create an account here and help us testing! https://ehrserver-cabolabs2.rhcloud.com/
