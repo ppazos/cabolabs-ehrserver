@@ -160,7 +160,6 @@ class UrlMappings {
          action: 'userAccountStats'
       )
       
-
       "/$controller/$action?/$id?"{
          constraints {
             // apply constraints here

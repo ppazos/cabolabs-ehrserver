@@ -581,12 +581,10 @@ class UserController {
             enabled: false
          )
          def o
-        
-        
+
          // generates a passwrod reset token, used in the email notification
          u.setPasswordToken()
-        
-        
+
          User.withTransaction{ status ->
         
             try
@@ -597,14 +595,14 @@ class UserController {
                o.save(failOnError: true, flush:true)
                
                // needs an organization before saving
-               u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
+               //u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
                
                u.save(failOnError: true, flush:true)
                
                // TODO: UserRole ORG_* needs a reference to the org, since the user
                //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
                // the user is creating the organization, it should be manager also, because is the first, is account manager
-               UserRole.create( u, (Role.findByAuthority(Role.AM)), true )
+               UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
                
                // associate the basic plan to the new org
                def p1 = Plan.get(1)
@@ -625,9 +623,10 @@ class UserController {
          } // transaction
         
          // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
-        
          if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
          {
+            println u.errors
+            println o.errors
             flash.message = 'user.registerError.feedback'
             render view: "register", model: [userInstance: u, organizationInstance: o, captchaValid: captchaValid]
          }
@@ -636,11 +635,15 @@ class UserController {
             //notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
             // token to create the URL for the email is in the userInstance
             notificationService.sendUserCreatedEmail( u.email, [u], true )
-            render (view: "registerOk")
+            redirect(action:'registerOk')
          }
       }
    }
    
+   // just renders, needed because it shows the view in the right locale, without this it doesnt.
+   def registerOk()
+   {
+   }
 
    @Transactional
    def delete(User userInstance) {

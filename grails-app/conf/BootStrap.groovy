@@ -555,7 +555,7 @@ class BootStrap {
          '/assets/**', '/**/js/**', '/**/css/**', '/**/images/**', '/**/fonts/**',
          '/login', '/login.*', '/login/*',
          '/logout', '/logout.*', '/logout/*',
-         '/user/register', '/user/resetPassword', '/user/forgotPassword',
+         '/user/register', '/user/resetPassword', '/user/forgotPassword', '/user/registerOk',
          '/simpleCaptcha/**',
          '/j_spring_security_logout',
          '/api/**', // REST security is handled by stateless security plugin
