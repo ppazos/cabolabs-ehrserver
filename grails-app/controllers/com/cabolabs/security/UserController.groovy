@@ -51,7 +51,6 @@ class UserController {
 
    def set_org_for_tests(org)
    {
-      println "set org for tests"
       session.organization = org
    }
    
@@ -441,7 +440,7 @@ class UserController {
       {
          userRoles = UserRole.findAllByUserAndOrganization(userInstance, session.organization)
       }
-         
+      
       def _organizationsICanAssign = organizationsICanAssign()
       def inRoles, valid = false
       

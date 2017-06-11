@@ -38,11 +38,14 @@ class UserControllerSpec extends Specification {
       def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
       organization.save(failOnError:true, flush: true)
 
-      def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com") //, organizations:[organization])
+      def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com")
       loggedInUser.save(failOnError:true, flush: true)
       
       def role = new Role(authority: Role.OM)
       role.save(failOnError:true, flush: true)
+      
+      def userrole = new Role(authority: Role.US)
+      userrole.save(failOnError:true, flush: true)
       
       UserRole.create( loggedInUser, role, organization, true )
       
@@ -88,11 +91,13 @@ class UserControllerSpec extends Specification {
    {
       def user = User.findByUsername("orgman")
       def role = Role.findByAuthority(Role.OM)
+      def userrole = Role.findByAuthority(Role.US)
       def org = Organization.findByNumber("1234")
       
       UserRole.remove(user, role, org)
       user.delete(flush: true)
       role.delete(flush: true)
+      userrole.delete(flush: true)
       
       org.delete(flush: true)
       
@@ -121,16 +126,7 @@ class UserControllerSpec extends Specification {
       user.save(flush: true)
       
       // should have 1 role
-      def role
-      if (Role.countByAuthority('ROLE_USER') == 0)
-      {
-         role = new Role(authority: 'ROLE_USER')
-         role.save(failOnError:true, flush: true)
-      }
-      else
-      {
-         role = Role.findByAuthority('ROLE_USER')
-      }
+      def role = Role.findByAuthority(Role.US)
       
       UserRole.create( user, role, org, true )
       
@@ -294,7 +290,6 @@ class UserControllerSpec extends Specification {
             
             // params needed for update
             controller.params['no existing org'] = [] // no roles
-            //controller.params.role = ['ROLE_USER']
             
             controller.update(user)
 
@@ -310,7 +305,6 @@ class UserControllerSpec extends Specification {
             
             // params needed for update
             controller.params[Organization.findByNumber('1234').uid] = [] // no roles
-            //controller.params.role = ['ROLE_USER']
             
             controller.update(user)
 
@@ -334,6 +328,51 @@ class UserControllerSpec extends Specification {
        then:"A redirect is issues to the show action"
             controller.flash.message == 'default.updated.message'
             response.redirectedUrl == "/user/show/$user.id"
+   }
+   
+   void "Test avoid removing higher role from self"()
+   {
+      setup:
+         def accmanuser = new User(username:"accman", password:"accman", email:"accman@m.com")
+         accmanuser.save(failOnError:true, flush: true)
+            
+         def accman = new Role(authority: Role.AM)
+         accman.save(failOnError:true, flush: true)
+            
+         def org = Organization.get(1)
+            
+         UserRole.create( accmanuser, accman, org, true )
+
+         // logged user
+         controller.springSecurityService = [
+            encodePassword: 'accman',
+            reauthenticate: { String u -> true},
+            loggedIn: true,
+            principal: accmanuser,
+            currentUser: accmanuser,
+            authentication: [username:'accman', organization:'1234']
+         ]
+            
+      when: 
+         controller.request.method = 'PUT'
+         request.contentType = FORM_CONTENT_TYPE
+            
+         // params needed for update
+         controller.params[org.uid] = [Role.US] // should add this but not remove AM
+            
+         controller.update(accmanuser)
+      
+      then:
+         controller.response.status == 302
+         controller.flash.message == 'default.updated.message'
+         //response.redirectedUrl == "/user/show/$user.id"
+         accmanuser.getAuthorities(org).size() == 2 // adds user but maintains accman
+            
+      cleanup:
+         println "clean"
+         UserRole.remove(accmanuser, accman, org)
+         accmanuser.delete(flush: true)
+         accman.delete(flush: true)
    }
 
    
