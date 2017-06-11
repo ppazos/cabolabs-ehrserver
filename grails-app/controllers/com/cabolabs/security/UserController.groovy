@@ -49,6 +49,12 @@ class UserController {
    //def userService
    def config = Holders.config.app
 
+   def set_org_for_tests(org)
+   {
+      println "set org for tests"
+      session.organization = org
+   }
+   
    def login()
    {
       // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
@@ -56,6 +62,8 @@ class UserController {
    
    def index(int max, int offset, String sort, String order, String username, String organizationUid)
    {
+      println "index"
+      
       max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
@@ -88,10 +96,9 @@ class UserController {
          
          def loggedInUser = springSecurityService.currentUser
          
-         UserRole.findByOrganization(session.organization)
-         
+         def org = session.organization // with this in the criteria makes the unit test fail.
          def urs = UserRole.withCriteria {
-            eq('organization', session.organization)
+            eq('organization', org)
             if (username)
             {
                user {
@@ -103,41 +110,6 @@ class UserController {
          // cant paginate because the search is on user role.
          list = urs.user.unique()
          count = list.size()
-         
-         /*
-         def userHasAccessToOrg
-         if (organizationUid)
-         {
-            userHasAccessToOrg = loggedInUser.organizations.uid.contains( organizationUid )
-            if (!userHasAccessToOrg)
-            {
-               // Just show the message and return the default list
-               flash.mesage = "The current user doesn't have access to the organization with UID ${organizationUid}, or the organization doesn't exists"
-            }
-         }
-         
-         // auth token used to login
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
-         
-         list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            eq('isVirtual', false)
-            organizations {
-               if (organizationUid && userHasAccessToOrg)
-               {
-                  eq ('uid', organizationUid)
-               }
-               else
-               {
-                  eq ('uid', org.uid)
-               }
-            }
-            if (username)
-            {
-               like('username', '%'+username+'%')
-            }
-         }
-         */
       }
       
       render view: 'index', model: [userInstanceList: list, userInstanceCount: count]
@@ -202,15 +174,11 @@ class UserController {
          return
       }
 
-      println "user "+ u
-      println "orgs "+ u.organizations
       def data = [
          username: u.username,
          email: u.email,
          organizations: u.organizations
       ]
-      
-      println data
       
       withFormat {
          xml {
@@ -506,7 +474,7 @@ class UserController {
 
          // check if a role that the user already has is coming on params => do not delete only delete
          // the onse that the user has and are not coming on the params (and the current user can manage)
-         inRoles = params.list(userRole.organization.uid)
+         inRoles = params.list(userRole.organization.uid) // this is also checking the org in params exists!
       
          // if user is self, can't remove his highest role on this org
          if (loggedInUser.id == userInstance.id)
