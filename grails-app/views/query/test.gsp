@@ -53,7 +53,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" class="form-control withsize" />
+              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':g.message(code:'defaut.select.selectOne')]}" class="form-control withsize" />
             </td>
           </tr>
           <tr>

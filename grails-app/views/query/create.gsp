@@ -248,7 +248,7 @@
 
         if (!query.get_name())
         {
-           alert('Please specify a name for the query');
+           alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}');
            return;
         }
 
@@ -256,11 +256,11 @@
         {
            if (query.get_type() == 'datavalue')
            {
-              alert('The projections are empty, please select at least one data point');
+              alert('${g.message(code:"query.create.emptyProjections")}');
            }
            else
            {
-              alert('The criteria is empty, please set at least one condition');
+              alert('${g.message(code:"query.create.emptyCriteria")}');
            }
            return;
         }
@@ -472,8 +472,6 @@ resp.responseJSON.result.message +'</div>'
          })
          .done(function( res ) {
          
-            //console.log(res);
-            
             // Vacia donde se va a mostrar la tabla o el chart
             $('#chartContainer').empty();
             
@@ -617,7 +615,7 @@ resp.responseJSON.result.message +'</div>'
         console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
         if ( $('select[name=view_archetype_path]').val() == null )
         {
-          alert('Please select a datapoint to define a query criteria');
+          alert('${g.message(code:"query.create.selectDatapoint")}');
           return false;
         }
         
@@ -633,7 +631,7 @@ resp.responseJSON.result.message +'</div>'
         
         if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
         {
-          alert('Please select a datapoint to define a query criteria');
+          alert('${g.message(code:"query.create.selectCriteria")}');
           return false;
         }
         else // case when criteria spec is selected and maybe some values are not filled in
@@ -649,7 +647,7 @@ resp.responseJSON.result.message +'</div>'
         }
         if (!complete)
         {
-          alert('Please fill all the criteria values');
+          alert('${g.message(code:"query.create.fillCriteria")}');
           return false;
         }
         // =======================================================================================
@@ -868,7 +866,7 @@ resp.responseJSON.result.message +'</div>'
           dataType: 'json',
           success: function(spec, textStatus) {
 
-            console.log(spec);
+            //console.log(spec);
 
             $('#composition_criteria_builder').empty();
             
@@ -1400,7 +1398,7 @@ resp.responseJSON.result.message +'</div>'
           // If the query has some data and the user doesn't confirm, the type should not be changed
           if ((query.has_criteria() || query.has_projections()) && !confirm('Changing the query type will delete the current projections or criteria. Are you sure do you want to change the type?'))
           {
-             console.log('cancel tpy change', this, $('.last-selected', this));
+             //console.log('cancel type change', this, $('.last-selected', this));
              $(this).val( $('.last-selected', this).val() ); // selects the previous value, so the select doesnt change
              return false;
           }
@@ -1532,7 +1530,7 @@ resp.responseJSON.result.message +'</div>'
           // Si la tabla de criterio solo tiene el tr del cabezal, no tiene criterio seleccionado
           if ($('tr', '#criteria').length == 1)
           {
-            alert('Debe especificar algun criterio de busqueda');
+            alert('${g.message(code:"query.create.missingCriteria")}');
             return false;
           }
           
@@ -1543,7 +1541,7 @@ resp.responseJSON.result.message +'</div>'
         {
           if ($('tr', '#selection').length == 1)
           {
-            alert('Debe especificar la seleccion de valores de la busqueda');
+            alert('${g.message(code:"query.create.missingProjections")}');
             return false;
           }
           
@@ -1641,8 +1639,8 @@ resp.responseJSON.result.message +'</div>'
                       <g:message code="query.create.concept" /><br/>
                       <span class="info">
                         <asset:image src="skin/information.png" />
-                        <span class="content">Only concepts translated to the current language are shown here.
-                        To see a concept here, you should upload a template that is defined for the current language *${session.lang}*.
+                        <span class="content">
+                          <g:message code="query.create.conceptInfo" args="[session.lang]" />
                         </span>
                       </span>
                     </td>
@@ -1736,8 +1734,8 @@ resp.responseJSON.result.message +'</div>'
                     </td>
                     <td>
                       <select name="criteriaLogic" class="form-control input-sm">
-                        <option value="AND" selected="selected">AND</option>
-                        <option value="OR">OR</option>
+                        <option value="AND" selected="selected"><g:message code="query.create.criteriaAND" /></option>
+                        <option value="OR"><g:message code="query.create.criteriaOR" /></option>
                       </select>
                     </td>
                  </tr>
