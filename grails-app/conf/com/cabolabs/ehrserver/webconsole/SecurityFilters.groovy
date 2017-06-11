@@ -134,7 +134,7 @@ class SecurityFilters {
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-                        
+         
             /**
              * Lang check
              * 
@@ -218,105 +218,114 @@ class SecurityFilters {
             
             if (canCreateLog(controllerName, actionName))
             {
-                /**
-                 * Activity log.
-                 */
-                def username
-                def organizationUid
+               /**
+                * Activity log.
+                */
+               def username
+               def organizationUid
+               
+               // also consider endpoints outside rest, TODO: stats API.
+               if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName))
+               {
+                  if (actionName == 'login')
+                  {
+                     username = params.username
+                  }
+                  else
+                  {
+                     // exceptions for rest: actions that are not endpoints
+                     // FIXME: we need to move these actions to the query controller or just use the query endpoint for data testing
+                     if (['queryCompositions', 'queryData'].contains(actionName))
+                     {
+                        def auth = springSecurityService.authentication
+                        if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
+                        {
+                           username = auth.principal.username
+                        }
+                     }
+                     else
+                     {
+                        // FIXME: do the checks after the activity log, so if there is an error, it gets logged.
+                     
+                        // check data in the JWT token: username and organization
+                        username = request.securityStatelessMap.username
+                        
+                        if (User.countByUsername(username) == 0)
+                        {
+                           // TODO: send in the request format (add support to json)
+                           render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                              result {
+                                 type('AR')                         // application reject
+                                 message(
+                                    messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request))
+                                 )
+                                 code('EHR_SERVER::API::ERRORS::987653') // sys::service::concept::code
+                              }
+                           }
+                           return false
+                        }
+                        
+                        
+                        def org_uid = request.securityStatelessMap.extradata.org_uid
+                        if (Organization.countByUid(org_uid) == 0)
+                        {
+                           // TODO: send in the request format (add support to json)
+                           render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                              result {
+                                 type('AR')                         // application reject
+                                 message(
+                                    messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
+                                 )
+                                 code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
+                              }
+                           }
+                           return false
+                        }
+                        
+                        organizationUid = org_uid
+                     }
+                  }
+               }
+               else
+               {
+                  def auth = springSecurityService.authentication
+                  
+                  if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
+                  {
+                     username = auth.principal.username
+                     
+                     def _org = Organization.findByNumber(auth.organization)
+                     organizationUid = _org.uid
+                  }
+                  else // not logged in,
+                  {
+                     // captures login/auth, login/authFail
+                     if (controllerName == 'login')
+                     {
+                        username = params.username // username is empty, asked on stack overflow how to get the username on failed logins
+                     }
+                  }
+               }
                 
-                // also consider endpoints outside rest, TODO: stats API.
-                if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName))
-                {
-                   if (actionName == 'login')
-                      username = params.username
-                   else
-                   {
-                      // exceptions for rest: actions that are not endpoints
-                      // FIXME: we need to move these actions to the query controller or just use the query endpoint for data testing
-                      if (['queryCompositions', 'queryData'].contains(actionName))
-                      {
-                         def auth = springSecurityService.authentication
-                         if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
-                         {
-                            username = auth.principal.username
-                         }
-                      }
-                      else
-                      {
-                         // FIXME: do the checks after the activity log, so if there is an error, it gets logged.
-                      
-                         // check data in the JWT token: username and organization
-                         username = request.securityStatelessMap.username
-                         
-                         
-                         if (User.countByUsername(username) == 0)
-                         {
-                            // TODO: send in the request format (add support to json)
-                            render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                               result {
-                                  type('AR')                         // application reject
-                                  message(
-                                     messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request))
-                                  )
-                                  code('EHR_SERVER::API::ERRORS::987653') // sys::service::concept::code
-                               }
-                            }
-                            return false
-                         }
-                         
-                         
-                         def org_uid = request.securityStatelessMap.extradata.org_uid
-
-                         if (Organization.countByUid(org_uid) == 0)
-                         {
-                            // TODO: send in the request format (add support to json)
-                            render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                               result {
-                                  type('AR')                         // application reject
-                                  message(
-                                     messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
-                                  )
-                                  code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
-                               }
-                            }
-                            return false
-                         }
-                         
-                         organizationUid = org_uid
-                      }
-                   }
-                }
-                else
-                {
-                   def auth = springSecurityService.authentication
-                   if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
-                   {
-                      username = auth.principal.username
-                      
-                      def _org = Organization.findByNumber(auth.organization)
-                      organizationUid = _org.uid
-                   }
-                }
-                
-                def alog = new ActivityLog(
-                                username:        username, // can be null
-                                organizationUid: organizationUid,
-                                action:          controllerName+':'+actionName,
-                                objectId:        params.id, // can be null
-                                objectUid:       params.uid, // can be null
-                                remoteAddr:      request.remoteAddr,
-                                clientIp:        request.getHeader("Client-IP"), // can be null
-                                xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
-                                referer:         request.getHeader('referer'), // can be null
-                                requestURI:      request.forwardURI,
-                                matchedURI:      request.requestURI)
+               def alog = new ActivityLog(
+                  username:        username, // can be null
+                  organizationUid: organizationUid,
+                  action:          controllerName+':'+actionName,
+                  objectId:        params.id, // can be null
+                  objectUid:       params.uid, // can be null
+                  remoteAddr:      request.remoteAddr,
+                  clientIp:        request.getHeader("Client-IP"), // can be null
+                  xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+                  referer:         request.getHeader('referer'), // can be null
+                  requestURI:      request.forwardURI,
+                  matchedURI:      request.requestURI)
                                  
                 
-                // TODO: file log failure
-                if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
-                
-                // experiment to link commit log to this activityLog
-                session.activity_log_id = alog.id
+               // TODO: file log failure
+               if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+               
+               // experiment to link commit log to this activityLog
+               session.activity_log_id = alog.id
             }
             
             
@@ -355,7 +364,6 @@ class SecurityFilters {
          afterView = { Exception e ->
          }
       }
-      
       
       
       rest_check_format(controller:'rest', action:'*') {
