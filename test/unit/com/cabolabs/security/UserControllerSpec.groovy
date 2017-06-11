@@ -39,13 +39,12 @@ class UserControllerSpec extends Specification {
       organization.save(failOnError:true, flush: true)
 
       def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com") //, organizations:[organization])
-      loggedInUser.addToOrganizations(organization)
       loggedInUser.save(failOnError:true, flush: true)
       
-      def role = new Role(authority: 'ROLE_ORG_MANAGER')
+      def role = new Role(authority: Role.OM)
       role.save(failOnError:true, flush: true)
       
-      UserRole.create( loggedInUser, role, true )
+      UserRole.create( loggedInUser, role, organization, true )
       
       controller.springSecurityService = [
         encodePassword: 'orgman',
@@ -55,6 +54,12 @@ class UserControllerSpec extends Specification {
         currentUser: loggedInUser,
         authentication: [username:'orgman', organization:'1234']
       ]
+      
+      controller.notificationService = [
+         sendUserCreatedEmail: { mail, params -> println "Email sent ${mail}" }
+      ]
+      
+      controller.set_org_for_tests(organization)
       
 /*
       controller.userService = [
@@ -82,7 +87,7 @@ class UserControllerSpec extends Specification {
    def cleanup()
    {
       def user = User.findByUsername("orgman")
-      def role = Role.findByAuthority('ROLE_ORG_MANAGER')
+      def role = Role.findByAuthority(Role.OM)
       def org = Organization.findByNumber("1234")
       
       UserRole.remove(user, role, org)
@@ -111,7 +116,6 @@ class UserControllerSpec extends Specification {
       
       // should have an organization
       def org = Organization.findByNumber("1234")
-      user.addToOrganizations(org)
       
       // sould have an id
       user.save(flush: true)
@@ -128,7 +132,7 @@ class UserControllerSpec extends Specification {
          role = Role.findByAuthority('ROLE_USER')
       }
       
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, org, true )
       
       return user
    }
@@ -200,29 +204,11 @@ class UserControllerSpec extends Specification {
             controller.save(user)
 
       then:"Back to user/create to add the missing params"
-         view == '/user/create'
-         model.userInstance.username == user.username
-         controller.flash.message == 'user.update.oneOrganizationShouldBeSelected'
-
-         
-      when:"The save action is executed with a valid instance but org doesnt belong to the logged user"
-            response.reset()
-            
-            populateValidParams(params)
-            user = new User(params)
-            
-            // params needed for save
-            controller.params.organizationUid = ['an uid that doesnt belong to the logged user']
-            controller.params.role = ['ROLE_USER']
-
-            controller.save(user)
-
-      then:"A redirect is issued to the show action"
             view == '/user/create'
             model.userInstance.username == user.username
-            controller.flash.message == 'cantAssingOrganization.save.user'
+            controller.flash.message == 'user.update.oneRoleShouldBeSelected'
             User.count() == 1
-            
+
             
       when:"The save action is executed with a valid instance"
             response.reset()
@@ -231,8 +217,7 @@ class UserControllerSpec extends Specification {
             user = new User(params)
             
             // params needed for save
-            controller.params.organizationUid = [ Organization.findByNumber('1234').uid ]
-            controller.params.role = ['ROLE_USER']
+            controller.params[ Organization.findByNumber('1234').uid ] = ['ROLE_USER']
 
             controller.save(user)
 
@@ -308,8 +293,8 @@ class UserControllerSpec extends Specification {
             user.validate() // invalid, doesnt have data
             
             // params needed for update
-            controller.params.organizationUid = ['an uid that doesnt belong to the logged user']
-            controller.params.role = ['ROLE_USER']
+            controller.params['no existing org'] = [] // no roles
+            //controller.params.role = ['ROLE_USER']
             
             controller.update(user)
 
@@ -324,13 +309,13 @@ class UserControllerSpec extends Specification {
             user = generateValidUser()
             
             // params needed for update
-            controller.params.organizationUid = ['ghjkgjhkhjghj']
-            controller.params.role = ['ROLE_USER']
+            controller.params[Organization.findByNumber('1234').uid] = [] // no roles
+            //controller.params.role = ['ROLE_USER']
             
             controller.update(user)
 
       then:"A redirect is issues to the show action"
-            controller.flash.message == 'cantAssingOrganization.save.user'
+            controller.flash.message == 'user.update.oneRoleShouldBeSelected'
             view == "/user/edit"
             model.userInstance == user
             
@@ -342,8 +327,7 @@ class UserControllerSpec extends Specification {
             //user = generateValidUser()
             
             // params needed for update
-            controller.params.organizationUid = [ Organization.findByNumber('1234').uid ]
-            controller.params.role = ['ROLE_USER']
+            controller.params[Organization.findByNumber('1234').uid] = ['ROLE_USER']
 
             controller.update(user)
       
