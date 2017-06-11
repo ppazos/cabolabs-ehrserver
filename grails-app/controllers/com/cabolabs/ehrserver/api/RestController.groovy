@@ -212,32 +212,32 @@ class RestController {
        *   trace // DEV ONLY
        */
       
+      def type = ((status in 200..299) ? 'AA' : 'AR')
+      def result
+      
       // Format comes from current request
       withFormat {
          xml {
             if (ex && Environment.current == Environment.DEVELOPMENT)
             {
-               render(
-                 status: status,
-                 text: apiResponsesService.feedback_xml(msg, 'AR', errorCode, detailedErrors, ex),
-                 contentType: "text/xml",
-                 encoding: "UTF-8")
+               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
             }
             else
             {
-               render(
-                 status: status,
-                 text: apiResponsesService.feedback_xml(msg, 'AR', errorCode, detailedErrors),
-                 contentType: "text/xml",
-                 encoding: "UTF-8")
+               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
             }
+            
+            render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-            def result 
             if (ex && Environment.current == Environment.DEVELOPMENT)
-               result = apiResponsesService.feedback_json(msg, 'AR', errorCode, detailedErrors, ex)
+            {
+               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors, ex)
+            }
             else
-               result = apiResponsesService.feedback_json(msg, 'AR', errorCode, detailedErrors)
+            {
+               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors)
+            }
             
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
@@ -248,13 +248,12 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            println "render error *"
+            //println "render error *"
             render(status: status, contentType:"text/xml", encoding:"UTF-8") {
                result {
                   type ('AR')                         // application reject
                   message(msg)
                   code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
-                  
                   if (detailedErrors)
                   {
                      details {
@@ -354,8 +353,6 @@ class RestController {
       def versionsXML, _parsedVersions
       if (request.contentType == "application/json")
       {
-         println "JSON"
-         
          // JSON to XML, then process as XML
          // the json is transformed to xml and processed as an xml commit internally
          versionsXML = jsonService.json2xml(content)
@@ -374,10 +371,10 @@ class RestController {
       }
       else if (["application/xml", "text/xml"].contains(request.contentType))
       {
-         println "XML"
          def slurper = new XmlSlurper(false, false)
          _parsedVersions = slurper.parseText(content)
       }
+      // TODO: else content type not supported!
       
       if (!_parsedVersions)
       {
@@ -385,10 +382,6 @@ class RestController {
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
-      
-      //println "class "+ _parsedVersions.getClass() // groovy.util.slurpersupport.NodeChild
-      //println _parsedVersions.children()*.name()
-      //println _parsedVersions.version.size()
       
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
@@ -404,7 +397,6 @@ class RestController {
          return
       }
       
-
       try
       {
          // throws exceptions for any error
@@ -447,7 +439,7 @@ class RestController {
          if (warnings.size() > 0)
          {
             // TODO: this is not an error, but we use the same method for simplicity, we might want to ad a warning type of result.
-            renderError(message(code:'api.commit.warning.verionsCommittedWithWarnings'), '1324', 200, warnings, null)
+            renderError(message(code:'api.commit.warning.verionsCommittedWithWarnings'), '1324', 202, warnings, null)
          }
          else
          {
@@ -455,16 +447,16 @@ class RestController {
             
             withFormat {
                xml {
-                  render(contentType:"text/xml", encoding:"UTF-8") {
+                  render(status: 201, contentType:"text/xml", encoding:"UTF-8") {
                      result {
-                        type ('AA')                         // application reject
+                        type ('AA')
                         message(msg)
-                        // has no error code
+ 
                      }
                   }
                }
                json {
-                  render(contentType:"application/json", encoding:"UTF-8") {
+                  render(status: 201, contentType:"application/json", encoding:"UTF-8") {
                      [
                         result: [
                            type: 'AA',
@@ -510,7 +502,6 @@ class RestController {
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
       }
-      
    } // commit
 
 
