@@ -18,31 +18,10 @@ class NotificationServiceIntegrationSpec extends IntegrationSpec {
    {
    }
 
-   void "sendUserRegisteredEmail"()
+   void "sendUserRegisteredOrCreatedEmail"()
    {
       when:
-         def email = notificationService.sendUserRegisteredEmail(recipient, messageData)
-         
-      then:
-         email != null
-         email instanceof org.springframework.mail.javamail.MimeMailMessage
-         
-         def html = new String(email.mimeMessage.content) // https://docs.oracle.com/javaee/7/api/javax/mail/internet/MimeMessage.html?is-external=true
-         def body = html.substring(html.indexOf("<body>"), html.indexOf("</body>")+7);
-         //println body
-         def xml = new XmlSlurper().parseText(body)
-         xml.div.div[0].h3.text() == 'Hi there!'
-         xml.div.div[1].p.text().contains('org_name')
-         
-      where:
-         recipient = 'a@b.com'
-         messageData =['org_name', 'org_number']
-   }
-   
-   void "sendUserCreatedEmail"()
-   {
-      when:
-         def email = notificationService.sendUserCreatedEmail(recipient, messageData, userRegistered)
+         def email = notificationService.sendUserRegisteredOrCreatedEmail(recipient, messageData, userRegistered)
          
       then:
          email != null

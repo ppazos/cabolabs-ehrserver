@@ -599,9 +599,8 @@ class UserController {
          }
          else
          {
-            //notificationService.sendUserRegisteredEmail(u.email, [o.name, o.number])
             // token to create the URL for the email is in the userInstance
-            notificationService.sendUserCreatedEmail( u.email, [u], true )
+            notificationService.sendUserRegisteredOrCreatedEmail( u.email, [u], true )
             redirect(action:'registerOk')
          }
       }
