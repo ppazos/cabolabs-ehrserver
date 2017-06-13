@@ -220,6 +220,9 @@ class Query {
                case 'DataCriteriaDV_IDENTIFIER':
                   condition = new DataCriteriaDV_IDENTIFIER(criteria)
                break
+               case 'DataCriteriaDV_MULTIMEDIA':
+                  condition = new DataCriteriaDV_MULTIMEDIA(criteria)
+               break
             }
 
             this.addToWhere(condition)
@@ -411,6 +414,9 @@ class Query {
             case 'DV_IDENTIFIER':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_IDENTIFIER.attributes()
             break
+            case 'DV_MULTIMEDIA':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_MULTIMEDIA.attributes()
+            break
             default:
                throw new Exception("type "+dataGet.rmTypeName+" not supported")
          }
@@ -527,6 +533,11 @@ class Query {
                      colValues['type'] = dvi.type
                      colValues['issuer'] = dvi.issuer
                      colValues['assigner'] = dvi.assigner
+                  break
+                  case 'DV_MULTIMEDIA':
+                     colValues['mediaType'] = dvi.mediaType
+                     colValues['size'] = dvi.size
+                     colValues['alternateText'] = dvi.alternateText
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
@@ -656,11 +667,17 @@ class Query {
                                                    magnitude:   dvi.magnitude]
                break
                case 'DV_IDENTIFIER':
-                  resGrouped[absPath]['serie'] << [id:          dvi.identifier,  // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                  resGrouped[absPath]['serie'] << [id:          dvi.identifier, // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
                                                    type:        dvi.type,
                                                    issuer:      dvi.issuer,
                                                    assigner:    dvi.assigner,
                                                    date:        dvi.owner.startTime]
+               break
+               case 'DV_MULTIMEDIA':
+                  resGrouped[absPath]['serie'] << [mediaType:     dvi.mediaType,
+                                                   size:          dvi.size,
+                                                   alternateText: dvi.alternateText,
+                                                   date:          dvi.owner.startTime]
                break
                default:
                   throw new Exception("type "+dataGet.rmTypeName+" not supported")
@@ -805,6 +822,10 @@ class Query {
                case 'DV_IDENTIFIER':
                   fromMap['DvIdentifierIndex'] = 'dvidi'
                   where += " AND dvidi.id = dvi.id "
+               break
+               case 'DV_MULTIMEDIA':
+                  fromMap['DvMultimediaIndex'] = 'dvmmd'
+                  where += " AND dvmmd.id = dvi.id "
                break
                default:
                   throw new Exception("type $idxtype not supported")

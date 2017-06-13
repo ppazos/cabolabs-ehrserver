@@ -904,17 +904,22 @@ resp.responseJSON.result.message +'</div>'
                 
                 
                 // =======================================================================================================
-                // If this has possible values from the template
+                // If this has possible values from the template or another source like MM.mediaTypes is a constraint.
+                // After getting the values, the attribute is removed to avoid processing it as a condition.
                 var possible_values;
                 switch (datatype)
                 {
                   case 'DV_CODED_TEXT':
                     possible_values = conditions['codes'];
-                    delete conditions['codes']; // Deletes the codes attribute
+                    delete conditions['codes'];
                   break;
                   case 'DV_QUANTITY':
                     possible_values = conditions['units'];
-                    delete conditions['units']; // Deletes the codes attribute
+                    delete conditions['units'];
+                  break;
+                  case 'DV_MULTIMEDIA':
+                    possible_values = conditions['mediaTypes'];
+                    delete conditions['mediaTypes'];
                   break;
                 }
                 
@@ -961,6 +966,9 @@ resp.responseJSON.result.message +'</div>'
                   case 'DV_PROPORTION':
                     if (attr == 'numerator') input_type = 'number';
                     if (attr == 'denominator') input_type = 'number';
+                  break;
+                  case 'DV_MULTIMEDIA':
+                    if (attr == 'size') input_type = 'number';
                   break;
                 }
                 

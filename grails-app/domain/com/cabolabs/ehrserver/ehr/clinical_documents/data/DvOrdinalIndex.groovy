@@ -1,9 +1,11 @@
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
- * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
+ * at CaboLabs Health Informatics (www.cabolabs.com).
  *
- * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI,
+ * you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
  *
  * Any modifications to the provided source code can be stated below this notice.
  *

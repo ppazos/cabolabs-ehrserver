@@ -488,6 +488,9 @@ class QueryController {
         case 'DV_IDENTIFIER':
          res = DataCriteriaDV_IDENTIFIER.criteriaSpec(archetypeId, path)
         break
+        case 'DV_MULTIMEDIA':
+         res = DataCriteriaDV_MULTIMEDIA.criteriaSpec(archetypeId, path)
+        break
       }
       
       render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")

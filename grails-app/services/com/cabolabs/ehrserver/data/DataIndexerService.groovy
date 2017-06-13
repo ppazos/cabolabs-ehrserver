@@ -650,4 +650,37 @@ class DataIndexerService {
         rmTypeName: 'DV_IDENTIFIER'
       )
    }
+   
+   private DvMultimediaIndex create_DV_MULTIMEDIA_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner)
+   {
+      /*
+      <value xsi:type="DV_MULTIMEDIA">
+        <alternate_text>blablabla</alternate_text>
+        <data>gfsdfhgshd554ydtfh45hde45rth</data>
+        <media_type>
+          <terminology_id>
+            <value>IANA</value>
+          </terminology_id>
+          <code_string>image/jpeg</code_string>
+        </media_type>
+        <size>345345</size>
+      </value>
+      */
+      return new DvMultimediaIndex(
+        templateId: templateId,
+        archetypeId: archetypeId,
+        path: path,
+        archetypePath: archetypePath,
+        owner: owner,
+        alternateText: node.alternate_text.text(),
+        data: node.data.text().decodeBase64(), // byte[]
+        mediaType: node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
+        size: new Integer( node.size.text() ),
+        rmTypeName: 'DV_QUANTITY'
+      )
+   }
 }
