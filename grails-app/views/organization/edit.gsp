@@ -25,9 +25,9 @@
             <g:hiddenField name="version" value="${organizationInstance?.version}" />
             <fieldset class="form">
               <g:render template="form"/>
-            </fieldset>
-            <fieldset class="buttons">
-              <g:actionSubmit class="save btn btn-default btn-md" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+              <div style="text-align:right;">
+                <g:actionSubmit class="save btn btn-success btn-md" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+              </div>
             </fieldset>
           </g:form>
         </div>

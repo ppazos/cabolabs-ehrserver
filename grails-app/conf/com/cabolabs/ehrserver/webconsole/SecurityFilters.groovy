@@ -468,12 +468,16 @@ class SecurityFilters {
                return false
             }
             
-            // For now admins don't have edit access for organizations that belong to other users
-            if (!orgs.uid.contains(o.uid))
+            // admins can edit any org
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
             {
-               flash.message = "You don't have access to that organization!"
-               chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
-               return false
+               // user is associated with the org?
+               if (!orgs.uid.contains(o.uid))
+               {
+                  flash.message = "You don't have access to that organization!"
+                  chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
+                  return false
+               }
             }
             
             params.organizationInstance = o
@@ -492,11 +496,15 @@ class SecurityFilters {
             def orgs = us.organizations
             //def org = Organization.findByNumber(auth.organization) // organization used to login
             
-            if (!params.uid || !orgs.uid.contains(params.uid))
+            // admins can edit any org
+            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
             {
-               flash.message = "You don't have access to the specified organization"
-               chain controller: 'organization', action: 'index'
-               return false
+               if (!params.uid || !orgs.uid.contains(params.uid))
+               {
+                  flash.message = "You don't have access to the specified organization"
+                  chain controller: 'organization', action: 'index'
+                  return false
+               }
             }
             
             return true
