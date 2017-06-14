@@ -620,27 +620,40 @@ class SecurityFilters {
          }
       } // query_share
       
+      query_edit(controller:'query', action:'edit') {
+         before = {
+         
+            if (!params.uid)
+            {
+               flash.message = 'query.execute.error.queryUidMandatory'
+               redirect(action:'list')
+               return
+            }
+         
+            def query = Query.findByUid(params.uid)
+            def user = springSecurityService.getCurrentUser()
+         
+            // only the author can edit a public query
+            // this is to avoid chaos :)
+            // not the author
+            if (query.isPublic && user.id != query.author.id)
+            {
+               flash.message = "Only the author of the query can edit a public query"
+               chain controller: 'query', action: 'show', params: params
+               return false
+            }
+            
+            params.query = query
+         }
+      }
       
       /*
-       * only the author can change a query from private to public.
+       * Query update is done via AJAX from the Query Builder screen.
        */
       query_update(controller:'query', action:'update') {
          before = {
             
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def user = User.findByUsername(un)
-            //def org = Organization.findByNumber(auth.organization) // org in the login
-            //def orgs = user.organizations
-            
-            /* TODO check that json is coming
-            if (!params.uid)
-            {
-               flash.message = "Query UID is required"
-               chain controller: 'query', action: 'list'
-               return false
-            }
-            */
+            def user = springSecurityService.getCurrentUser()
 
             def json = request.JSON.query
             def query = Query.get(json.id) // the id comes in the json object
@@ -652,7 +665,16 @@ class SecurityFilters {
                return false
             }
             
-            // want to make it public or private
+            // only the author can edit a public query
+            if (query.isPublic && user.id != query.author.id)
+            {
+               response.status = 400 // bad request
+               render (text: [message: "Only the author of the query can edit a public query", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
+               return false
+            }
+            
+            /*
+            // only the author can change a query from private to public.
             if (query.isPublic != json['isPublic'])
             {
                // not the author
@@ -663,6 +685,7 @@ class SecurityFilters {
                   return false
                }
             }
+            */
             
             params.json = json
             params.query = query
@@ -685,7 +708,6 @@ class SecurityFilters {
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def user = User.findByUsername(un)
-            //def org = Organization.findByNumber(auth.organization) // org in the login
             def orgs = user.organizations
             
             if (!params.uid)
@@ -694,7 +716,6 @@ class SecurityFilters {
                chain controller: 'operationalTemplate', action: 'list'
                return false
             }
-            
 
             def opt = OperationalTemplateIndex.findByUid(params.uid)
             

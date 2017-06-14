@@ -105,20 +105,45 @@ class QueryController {
       templateIndexes: OperationalTemplateIndex.list()]
    }
    
-   def edit (String uid)
+   /**
+    * @param name
+    * @param qarchetypeId
+    * @param type composition | datavalue
+    * @param format xml | json formato por defecto
+    * @param group none | composition | path agrupamiento por defecto
+    * @return
+    */
+   def save(String name, String type, String format, String group)
    {
-      if (!uid)
+      //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
+      //println request.JSON.query.getClass()
+
+      def query = Query.newInstance(request.JSON.query)
+      
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/340
+      def user = springSecurityService.getCurrentUser()
+      query.author = user
+      
+      
+      // TODO: errors in json to be displayed
+      if (!query.save(flush:true)) println query.errors.allErrors
+      
+      // private queries should be shared with the current org
+      if (!query.isPublic)
       {
-         flash.message = 'query.execute.error.queryUidMandatory'
-         redirect(action:'list')
-         return
+         resourceService.shareQuery(query, session.organization)
       }
       
-      def queryInstance = Query.findByUid(uid)
+      render query as JSON
+   }
+   
+   def edit ()
+   {
+      def queryInstance = params.query // set on filter
       
       if (!queryInstance)
       {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), uid])
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), params.uid])
          redirect(action: "list")
          return
       }
@@ -134,7 +159,30 @@ class QueryController {
         ]
       )
    }
-   
+      
+   def update()
+   {
+      //def json = request.JSON.query
+      //def query = Query.get(json.id) // the id comes in the json object
+      
+      def json = params.json
+      def query = params.query
+      query.updateInstance(json)
+      
+      
+      // TODO: error as json
+      if (!query.save(flush:true)) println query.errors.allErrors
+      
+      
+      // public queries dont have shares
+      if (query.isPublic) resourceService.cleanSharesQuery(query)
+      else // private queries should be shared with the current org
+      {
+         resourceService.shareQuery(query, session.organization)
+      }
+      
+      render query as JSON
+   }
 
    /** FIXME: move this to a test
     * Diagnostic tests for some HQL queries that didn't seems to work well.
@@ -273,66 +321,6 @@ class QueryController {
       
       return params
    }
-
-
-   /**
-    * 
-    * @param name
-    * @param qarchetypeId
-    * @param type composition | datavalue
-    * @param format xml | json formato por defecto
-    * @param group none | composition | path agrupamiento por defecto
-    * @return
-    */
-   def save(String name, String type, String format, String group)
-   {
-      //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
-      //println request.JSON.query.getClass()
-
-      def query = Query.newInstance(request.JSON.query)
-      
-      // https://github.com/ppazos/cabolabs-ehrserver/issues/340
-      def user = springSecurityService.getCurrentUser()
-      query.author = user
-      
-      
-      // TODO: errors in json to be displayed
-      if (!query.save(flush:true)) println query.errors.allErrors
-      
-      // private queries should be shared with the current org
-      if (!query.isPublic)
-      {
-         resourceService.shareQuery(query, session.organization)
-      }
-      
-      render query as JSON
-   }
-   
-   
-   def update()
-   {
-      //def json = request.JSON.query
-      //def query = Query.get(json.id) // the id comes in the json object
-      
-      def json = params.json
-      def query = params.query
-      query.updateInstance(json)
-      
-      
-      // TODO: error as json
-      if (!query.save(flush:true)) println query.errors.allErrors
-      
-      
-      // public queries dont have shares
-      if (query.isPublic) resourceService.cleanSharesQuery(query)
-      else // private queries should be shared with the current org
-      {
-         resourceService.shareQuery(query, session.organization)
-      }
-      
-      render query as JSON
-   }
-   
 
    /**
     * This action shows the query UI on the server.

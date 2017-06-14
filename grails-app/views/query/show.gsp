@@ -113,16 +113,20 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:link action="edit" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
+          <g:if test="${!queryInstance.isPublic || queryInstance.author.id.toString() == sec.loggedInUserInfo(field: 'id').toString()}">
+            <g:link action="edit" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
+          </g:if>
           
           <g:if test="${!queryInstance.isPublic}">
             <g:link controller="resource" action="shareQuery" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>
           </g:if>
-
+          
+          <%--
           <g:form method="DELETE" action="delete" style="display:inline">
             <input type="hidden" name="uid" value="${queryInstance.uid}" />
             <g:submitButton class="btn btn-default btn-md" name="delete" value="${g.message(code:'query.execute.action.delete')}" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');" />
           </g:form>
+          --%>
         </div>
       </div>
     </div>
