@@ -3,121 +3,138 @@
 <!--[if IE 7 ]>   <html lang="en" class="no-js ie7"> <![endif]-->
 <!--[if IE 8 ]>   <html lang="en" class="no-js ie8"> <![endif]-->
 <!--[if IE 9 ]>   <html lang="en" class="no-js ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"><!--<![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en" class="no-js"><!--<![endif]-->
   <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title><g:layoutTitle default="CaboLabs &copy;"/></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-  
-  <g:javascript library="jquery" plugin="jquery" />
-  <asset:javascript src="jquery.blockUI.js" />
-  
-  <!-- Bootstrap Core CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  
-  <!-- MetisMenu CSS -->
-  <asset:link rel="stylesheet" href="metisMenu.min.css" type="text/css" />
-  <asset:javascript src="metisMenu.min.js" />
-  
-  <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
-  
-  
-  <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
-  <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
-  <asset:javascript src="bootstrap-datetimepicker.min.js" />
-  
-  
-  <!-- Custom CSS -->
-  <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
-  <asset:javascript src="sb-admin-2.js" />
-  
-  <!-- Global notifications -->
-  <asset:javascript src="notification.js" />
-  <asset:link rel="stylesheet" href="notification.css" type="text/css" />
-  
-  <g:layoutHead/>
-  <style type="text/css">
-  #main_menu {
-    text-align: center;
-  }
-  #main_menu .active {
-    background-color: #efefef;
-    box-shadow: 0 -2px 2px 0px #aaaaaa; /* x_offset y_offset blur spread_distance color */
-  }
-  .navbar-header img {
-    max-height: 20px;
-  }
-  ul.navbar-top-links {
-    text-align: center;
-  }
-  ul.navbar-top-links > li:first-child {
-    margin: 0;
-    padding: 15px 0 15px 15px;
-    margin-left: 15px;
-  }
-  
-  /** Adding vertical space between rows when needed **/
-  /* usage <div class="row row-grid"> */
-  .row.row-grid {
-    margin-top: 15px;
-  }
-  h1 {
-    margin: 10px 0 10px 0;
-  }
-  
-  /**
-   * Style for arrow to active sortable column.
-   */
-  tr > th.sortable.sorted.asc > a,
-  tr > th.sortable.sorted.desc > a {
-    margin-right: 5px;
-  }
-  
-  #powby {
-    width: 180px;
-    text-align: center;
-    position: fixed;
-    bottom: 10px;
-    cursor: pointer;
-    color: #337ab7;
-  }
-  #app_version {
-    font-size: 0.8em;
-    padding: 5px;
-  }
-  
-  .menu_vertical_separator {
-    border-bottom: 3px solid #ddd;
-  }
-  </style>
-  <g:javascript>
-    // Used to access the assets root from JS code.
-    // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
-    window.grailsSupport = {
-     assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
-     baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
-    };
-    
-    $(function() {
-     /**
-      * Add arrow to active sortable column.
-      */
-     $('tr > th.sortable.sorted.asc').append('<span class="glyphicon glyphicon-triangle-bottom"></span>');
-     $('tr > th.sortable.sorted.desc').append('<span class="glyphicon glyphicon-triangle-top"></span>');
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title><g:layoutTitle default="CaboLabs &copy;"/></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+     
+    <g:javascript library="jquery" plugin="jquery" />
+    <asset:javascript src="jquery.blockUI.js" />
+     
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+     
+    <!-- MetisMenu CSS -->
+    <asset:link rel="stylesheet" href="metisMenu.min.css" type="text/css" />
+    <asset:javascript src="metisMenu.min.js" />
+     
+    <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
+     
+     
+    <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
+    <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
+    <asset:javascript src="bootstrap-datetimepicker.min.js" />
+     
+     
+    <!-- Custom CSS -->
+    <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
+    <asset:javascript src="sb-admin-2.js" />
+     
+    <!-- Global notifications -->
+    <asset:javascript src="notification.js" />
+    <asset:link rel="stylesheet" href="notification.css" type="text/css" />
+     
+    <g:layoutHead/>
+    <style type="text/css">
+     #main_menu {
+       text-align: center;
+     }
+     #main_menu .active {
+       background-color: #efefef;
+       box-shadow: 0 -2px 2px 0px #aaaaaa; /* x_offset y_offset blur spread_distance color */
+     }
+     .navbar-header img {
+       max-height: 20px;
+     }
+     ul.navbar-top-links {
+       text-align: center;
+     }
+     ul.navbar-top-links > li:first-child {
+       margin: 0;
+       padding: 15px 0 15px 15px;
+       margin-left: 15px;
+     }
+     
+     /** Adding vertical space between rows when needed **/
+     /* usage <div class="row row-grid"> */
+     .row.row-grid {
+       margin-top: 15px;
+     }
+     h1 {
+       margin: 10px 0 10px 0;
+     }
      
      /**
-      * Get notifications.
+      * Style for arrow to active sortable column.
       */
-      notification_get(
-        '${createLink(controller:'notification', action:'newNotifications')}',
-        '${createLink(controller:'notification', action:'dismiss')}',
-        '${controllerName}');
-	 });
-   </g:javascript>
+     tr > th.sortable.sorted.asc > a,
+     tr > th.sortable.sorted.desc > a {
+       margin-right: 5px;
+     }
+     
+     #powby {
+       width: 180px;
+       text-align: center;
+       position: fixed;
+       bottom: 10px;
+       cursor: pointer;
+       color: #337ab7;
+     }
+     #app_version {
+       font-size: 0.8em;
+       padding: 5px;
+     }
+     
+     .menu_vertical_separator {
+       border-bottom: 3px solid #ddd;
+     }
+    </style>
+    <g:javascript>
+      // Used to access the assets root from JS code.
+      // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
+      window.grailsSupport = {
+        assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
+        baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
+      };
+       
+      $(function() {
+        /**
+         * Add arrow to active sortable column.
+         */
+        $('tr > th.sortable.sorted.asc').append('<span class="glyphicon glyphicon-triangle-bottom"></span>');
+        $('tr > th.sortable.sorted.desc').append('<span class="glyphicon glyphicon-triangle-top"></span>');
+        
+        /**
+         * Get notifications.
+         */
+         notification_get(
+           '${createLink(controller:'notification', action:'newNotifications')}',
+           '${createLink(controller:'notification', action:'dismiss')}',
+           '${controllerName}');
+      });
+    
+      /**
+       * List filters.
+       */
+      $(function() {
+        $(".btn.filter").on('click', (function() {
+          $(this).toggleClass( "btn-primary" );
+        }));
+
+        $("#filter-reset").on('click', function() {
+          // reset doesnt blank the fields but put the fields on the original state that might be with value, we need to blank.
+          $(this).closest('form').find("input[type=text], select").val("");
+          
+          // reload to update the list without filters
+          $('.form.filter')[0].submit();
+        });
+      });
+    </g:javascript>
   </head>
   <body>	  
 	 <div id="wrapper">
@@ -266,7 +283,7 @@
     </div>
     
     <script type="text/javascript"> 
-    $(document).ready(function() { 
+    $(function() { // ready
 
        $('#powby').click(function() { 
          $.blockUI({

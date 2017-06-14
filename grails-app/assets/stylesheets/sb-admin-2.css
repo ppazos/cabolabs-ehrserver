@@ -385,3 +385,8 @@ div.btn-toolbar {
     margin-top: 0;
   }
 }
+
+/* fix margin when I have an anchor un the btn-toolbar instead of a button, the anchor has the button inside though */
+.btn-toolbar>a {
+    margin-left: 5px;
+}

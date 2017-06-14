@@ -4,14 +4,6 @@
   <head>
     <meta name="layout" content="admin">
     <title><g:message code="ehr.list.title" /></title>
-    <style>
-     /* adjusts the filder input width */
-     @media (min-width: 768px) {
-      #ipt_uid, #ipt_orguid {
-       width: 310px;
-      }
-     }
-    </style>
   </head>
   <body>
     <div class="row">
@@ -20,23 +12,11 @@
       </div>
     </div>
     <div class="row row-grid">
-      <div class="col-md-10">
-        <g:form class="form-inline" action="list">
-          <input type="hidden" name="sort" value="${params.sort}" />
-          <input type="hidden" name="order" value="${params.order}" />
-          <div class="form-group">
-            <label for="ipt_uid"><g:message code="filters.uid" /></label>
-            <input type="text" class="form-control" name="uid" id="ipt_uid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.uid}" />
-          </div>
-          <div class="form-group">
-            <label for="ipt_orguid"><g:message code="filters.organizationUid" /></label>
-            <input type="text" class="form-control" name="organizationUid" id="ipt_orguid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.organizationUid}" />
-          </div>
-          <button type="submit" class="btn btn-default"><g:message code="common.action.filter" /></button>
-        </g:form>
-      </div>
-      <div class="col-md-2">
+      <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
+          <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
+            <span class="fa fa-filter" aria-hidden="true"></span>
+          </button>
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
@@ -45,6 +25,42 @@
         </div>
       </div>
     </div>
+    
+    <div class="row row-grid collapse" id="collapse-filter">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+
+           <g:form class="form filter" action="list">
+             <input type="hidden" name="sort" value="${params.sort}" />
+             <input type="hidden" name="order" value="${params.order}" />
+             <div class="form-group">
+               <label for="ipt_uid"><g:message code="filters.uid" /></label>
+               <input type="text" class="form-control" name="uid" id="ipt_uid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.uid}" />
+             </div>
+             <div class="form-group">
+               <label for="ipt_orguid"><g:message code="filters.organizationUid" /></label>
+               <input type="text" class="form-control" name="organizationUid" id="ipt_orguid" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.organizationUid}" />
+             </div>
+             <div class="btn-toolbar" role="toolbar">
+               <button type="submit" name="filter" class="btn btn-primary"><span class="fa fa-share" aria-hidden="true"></span></button>
+               <button type="reset" id="filter-reset" class="btn btn-default"><span class="fa fa-trash " aria-hidden="true"></span></button>
+             </div>
+           </g:form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    if (${params.containsKey('filter')})
+    {
+      $("#collapse-filter").addClass('in');
+      $(".btn.filter").toggleClass( "btn-primary" );
+    }
+    </script>
+    
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
