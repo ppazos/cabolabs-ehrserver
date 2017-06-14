@@ -369,7 +369,7 @@ class SecurityFilters {
       rest_check_format(controller:'rest', action:'*') {
          before = {
             
-            if (!['', null, 'xml', 'json'].contains(params.format))
+            if (!['', null, 'xml', 'json', 'html'].contains(params.format)) // queryCompositions support html
             {
                // bad request in XML
                render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
