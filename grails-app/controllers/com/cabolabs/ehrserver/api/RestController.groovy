@@ -248,22 +248,8 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            //println "render error *"
-            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type ('AR')                         // application reject
-                  message(msg)
-                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
-                  if (detailedErrors)
-                  {
-                     details {
-                        detailedErrors.each { error ->
-                           item(error)
-                        }
-                     }
-                  }
-               }
-            }
+            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
+            render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
