@@ -36,6 +36,7 @@ import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import java.io.FileNotFoundException
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 
 @Transactional
 class DataIndexerService {
@@ -76,7 +77,12 @@ class DataIndexerService {
     
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(version)
+         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
+      }
+      catch (VersionRepoNotAccessibleException e)
+      {
+         log.warning e.message
+         return // continue with next compoIndex
       }
       catch (FileNotFoundException e)
       {

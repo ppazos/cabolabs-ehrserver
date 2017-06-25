@@ -61,6 +61,8 @@ import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
 
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
 import com.cabolabs.security.UserRole
@@ -1146,8 +1148,13 @@ class RestController {
                    
                    try
                    {
-                      vf = versionFSRepoService.getExistingVersionFile(version)
+                      vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
                       buff = vf.getText()
+                   }
+                   catch (VersionRepoNotAccessibleException e)
+                   {
+                      log.warning e.message
+                      return // continue with next compoIndex
                    }
                    catch (FileNotFoundException e)
                    {
@@ -1184,8 +1191,13 @@ class RestController {
                 
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(version)
+                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
                    buff = vf.getText()
+                }
+                catch (VersionRepoNotAccessibleException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
                 }
                 catch (FileNotFoundException e)
                 {
@@ -1496,8 +1508,13 @@ class RestController {
    
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(version)
+                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
                    buff = vf.getText()
+                }
+                catch (VersionRepoNotAccessibleException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
                 }
                 catch (FileNotFoundException e)
                 {
@@ -1533,8 +1550,13 @@ class RestController {
             
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(version)
+               vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
                buff = vf.getText()
+            }
+            catch (VersionRepoNotAccessibleException e)
+            {
+               log.warning e.message
+               return // continue with next compoIndex
             }
             catch (FileNotFoundException e)
             {

@@ -26,6 +26,7 @@ import grails.util.Holders
 import java.io.FileNotFoundException
 import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 
 /**
  * Operations related to the file system based version repo.
@@ -36,21 +37,44 @@ class VersionFSRepoService {
    
    def config = Holders.config.app
    
+   /*
+    * Operations for the whole version repo.
+    */
+   def canWriteRepo()
+   {
+      return new File(config.version_repo).canWrite()
+   }
+   
+   def repoExists()
+   {
+      return new File(config.version_repo).exists()
+   }
+   
    def getRepoSizeInBytes()
    {
       def r = new File(config.version_repo.withTrailSeparator())
       return r.directorySize()
    }
-   
-   def getRepoSizeInBytes(String orguid)
+
+   /*
+    * Operations for the version repo per organization.
+    */
+   def canWriteRepoOrg(String orguid)
    {
-      return getRepoSizeInBytesFiltered(orguid, filter_null)
+      return new File(config.version_repo.withTrailSeparator() + orguid).canWrite()
    }
    
-   def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
+   def repoExistsOrg(String orguid)
    {
-      return getRepoSizeInBytesFiltered(orguid, filter_file_last_modified_between.curry(from.time).curry(to.time))
+      return new File(config.version_repo.withTrailSeparator() + orguid).exists()
    }
+   
+   def getRepoSizeInBytesOrg(String orguid)
+   {
+      def r = new File(config.version_repo.withTrailSeparator() + orguid)
+      return r.directorySize()
+   }
+   
    
    /**
     * The following closures are for reusing the code to calculate the
@@ -64,6 +88,16 @@ class VersionFSRepoService {
       return true
    }
    
+   def getRepoSizeInBytes(String orguid)
+   {
+      return getRepoSizeInBytesFiltered(orguid, filter_null)
+   }
+   
+   def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
+   {
+      return getRepoSizeInBytesFiltered(orguid, filter_file_last_modified_between.curry(from.time).curry(to.time))
+   }
+
    private int getRepoSizeInBytesFiltered(String orguid, Closure filter)
    {
       def c = Version.createCriteria()
@@ -98,9 +132,19 @@ class VersionFSRepoService {
     * Note: the exception is declared to avoid groovy wrap it in an UndeclaredThrowableException
     * ref http://stackoverflow.com/questions/19987720/exception-thrown-from-service-not-being-caught-in-controller
     */
-   def getExistingVersionFile(Version version) throws FileNotFoundException
+   def getExistingVersionFile(String orguid, Version version) throws FileNotFoundException, VersionRepoNotAccessibleException
    {
-      def f = new File(config.version_repo.withTrailSeparator() + version.fileUid +'.xml')
+      if (!existsRepo() || !canWriteRepo())
+      {
+         throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
+      }
+      
+      if (!existsRepoOrg(orguid))
+      {
+         throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo.withTrailSeparator() + orguid}")
+      }
+      
+      def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
       if (!f.exists())
       {
          throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
@@ -113,9 +157,22 @@ class VersionFSRepoService {
     * @param version_uid
     * @return
     */
-   def getNonExistingVersionFile(Version version) throws FileAlreadyExistsException
+   def getNonExistingVersionFile(String orguid, Version version) throws FileAlreadyExistsException, VersionRepoNotAccessibleException
    {
-      def f = new File(config.version_repo.withTrailSeparator() + version.fileUid +'.xml')
+      if (!existsRepo() || !canWriteRepo())
+      {
+         throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
+      }
+      
+      // TODO: The orguid folder is created just the first time,
+      // it might be better to crete it whe nthe organization is created.
+      if (!existsRepoOrg(orguid))
+      {
+         // Creates the orguid subfolder
+         new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
+      }
+      
+      def f = new File(config.version_repo.withTrailSeparator() + orguid + version.fileUid +'.xml')
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")

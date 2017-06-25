@@ -103,7 +103,7 @@ class XmlService {
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
-      storeVersionXMLs(versions, contribution)
+      storeVersionXMLs(ehr, versions, contribution)
       
       
       // Save the contribution with all the versions
@@ -285,7 +285,7 @@ class XmlService {
     * @param versions
     * @return
     */
-   def storeVersionXMLs(GPathResult versions, Contribution contribution)
+   def storeVersionXMLs(Ehr ehr, GPathResult versions, Contribution contribution)
    {
       // CHECK: the compo in version.data doesn't have the injected 
       // compo.uid that parsedCompositions[i] does have.
@@ -296,17 +296,17 @@ class XmlService {
          | Error Warning:  org.apache.xerces.parsers.SAXParser: Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
        */
       
-      // FIXME: this check should be done on startup
-      if (!new File(config.version_repo).canWrite()) throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
-      
-      
       def file, path, version
       versions.version.each { versionXML ->
          
          try
          {
             version = contribution.versions.find { it.uid == versionXML.uid.text()}
-            file = versionFSRepoService.getNonExistingVersionFile( version )
+            file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
+         }
+         catch (VersionRepoNotAccessibleException e)
+         {
+            throw new RuntimeException(e.message, e)
          }
          catch (FileAlreadyExistsException e)
          {
