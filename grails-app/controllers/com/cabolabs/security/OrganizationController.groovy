@@ -221,7 +221,7 @@ class OrganizationController {
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
-                              token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number]))
+                              token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number, org_uid: org.uid]))
    
          key.save(failOnError: true)
    
