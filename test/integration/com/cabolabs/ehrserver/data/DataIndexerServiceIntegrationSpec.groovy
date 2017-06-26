@@ -86,7 +86,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
 
       
       // empty the temp version store, TODO: make the cleanup per test case
-      def temp = new File(Holders.config.app.version_repo)
+      def temp = new File(Holders.config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator())
       println "***** DELETE FROM "+ temp.path
       temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) {
          println it.path

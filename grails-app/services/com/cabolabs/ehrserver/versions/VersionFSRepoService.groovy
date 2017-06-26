@@ -134,12 +134,12 @@ class VersionFSRepoService {
     */
    def getExistingVersionFile(String orguid, Version version) throws FileNotFoundException, VersionRepoNotAccessibleException
    {
-      if (!existsRepo() || !canWriteRepo())
+      if (!repoExists() || !canWriteRepo())
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
       
-      if (!existsRepoOrg(orguid))
+      if (!repoExistsOrg(orguid))
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo.withTrailSeparator() + orguid}")
       }
@@ -159,20 +159,20 @@ class VersionFSRepoService {
     */
    def getNonExistingVersionFile(String orguid, Version version) throws FileAlreadyExistsException, VersionRepoNotAccessibleException
    {
-      if (!existsRepo() || !canWriteRepo())
+      if (!repoExists() || !canWriteRepo())
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
       
       // TODO: The orguid folder is created just the first time,
       // it might be better to crete it whe nthe organization is created.
-      if (!existsRepoOrg(orguid))
+      if (!repoExistsOrg(orguid))
       {
          // Creates the orguid subfolder
          new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
       }
       
-      def f = new File(config.version_repo.withTrailSeparator() + orguid + version.fileUid +'.xml')
+      def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")
