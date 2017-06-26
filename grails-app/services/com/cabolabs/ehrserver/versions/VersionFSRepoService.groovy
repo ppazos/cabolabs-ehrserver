@@ -165,7 +165,7 @@ class VersionFSRepoService {
       }
       
       // TODO: The orguid folder is created just the first time,
-      // it might be better to crete it whe nthe organization is created.
+      // it might be better to create it whe nthe organization is created.
       if (!repoExistsOrg(orguid))
       {
          // Creates the orguid subfolder

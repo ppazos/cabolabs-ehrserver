@@ -33,6 +33,32 @@ class CommitLoggerService {
    
    def config = Holders.config.app
 
+   /*
+    * Operations for the whole version repo.
+    */
+   private boolean canWriteRepo()
+   {
+      return new File(config.commit_logs).canWrite()
+   }
+   
+   private boolean repoExists()
+   {
+      return new File(config.commit_logs).exists()
+   }
+   
+   /*
+    * Operations for the version repo per organization.
+    */
+   private boolean canWriteRepoOrg(String orguid)
+   {
+      return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
+   }
+   
+   private boolean repoExistsOrg(String orguid)
+   {
+      return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+   }
+   
    /**
     * If the content (xml or json) was read from the request, we won't be able to read it again,
     * reading twice from the request will result on a java.io.IOException "stream closed"
@@ -122,11 +148,23 @@ class CommitLoggerService {
       
       if (logContent)
       {
+         String orguid = request.securityStatelessMap.extradata.org_uid
+         
+         // TODO: The orguid folder is created just the first time,
+         // it might be better to create it whe nthe organization is created.
+         if (!repoExistsOrg(orguid))
+         {
+            // Creates the orguid subfolder
+            new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
+         }
+         
          // save the json or xml to the commit log
          def ext = '.xml'
          if (contentType == 'application/json') ext = '.json'
          
-         def commitLog = new File(config.commit_logs.withTrailSeparator() + commit.fileUid + ext)
+         def commitLog = new File(config.commit_logs.withTrailSeparator() + 
+                                  orguid.withTrailSeparator() + 
+                                  commit.fileUid + ext)
          commitLog << logContent
       }
    }
