@@ -113,8 +113,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
          VersionedComposition.list()*.delete(flush: true)
          
-         println "commit single / valid version DELETE CREATED FILES FROM "+ config.app.version_repo
-         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit single / valid version DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
 
 
@@ -144,9 +144,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
    
    
@@ -179,9 +179,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
    
    
@@ -207,9 +207,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 2
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 2
       
       cleanup:
          println "test cleanup"
@@ -218,8 +218,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          VersionedComposition.list()*.delete(flush: true)
          
          
-         println "multiple / all valid versions DELETE CREATED FILES FROM "+ config.app.version_repo
-         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "multiple / all valid versions DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    
@@ -247,9 +247,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
    
    
@@ -277,9 +277,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
    
    
@@ -307,9 +307,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
    
    
@@ -341,9 +341,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          
          // just one version file should be created in the filesystem, the one for the first commit
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 1
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 1
       
       cleanup:
          println "test cleanup"
@@ -351,8 +351,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
          VersionedComposition.list()*.delete(flush: true)
          
-         println "commit same version twice DELETE CREATED FILES FROM "+ config.app.version_repo
-         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit same version twice DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    
@@ -385,9 +385,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 2
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 2
       
       cleanup:
          println "test cleanup"
@@ -395,8 +395,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
          VersionedComposition.list()*.delete(flush: true)
          
-         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ config.app.version_repo
-         new File(config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
    
@@ -424,9 +424,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
    
    
@@ -444,7 +444,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          // copy file into the version repo
          def source = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml')
-         java.nio.file.Files.copy(source.toPath(), new File(config.app.version_repo + PS + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
+         java.nio.file.Files.copy(source.toPath(), new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator() + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
          
          // commit same file via the commit processing
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
@@ -463,8 +463,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
 }
