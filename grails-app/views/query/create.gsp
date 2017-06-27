@@ -834,11 +834,15 @@ resp.responseJSON.result.message +'</div>'
             // Adds options to the select
             $(data).each(function(i, didx) {
             
-              $('select[name=view_archetype_path]').append(
-                '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'">'+ 
-                didx.name['ISO_639-1::${session.lang}'] +
-                ' {'+ didx.rmTypeName + '}</option>'
-              );
+              // if there is no name for the current lang, the node is from a template that is on another language, should not be on the query create.
+              if (didx.name['ISO_639-1::${session.lang}'])
+              {
+                $('select[name=view_archetype_path]').append(
+                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'">'+ 
+                  didx.name['ISO_639-1::${session.lang}'] +
+                  ' {'+ didx.rmTypeName + '}</option>'
+                );
+              }
             });
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {

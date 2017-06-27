@@ -25,6 +25,7 @@ package com.cabolabs.ehrserver.query.datatypes
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+import org.springframework.web.context.request.RequestContextHolder
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
@@ -89,22 +90,14 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
       // The path received points to the DV_CODED_TEXT, the codes are in the child CODE_PRHASE
       def codes = [:]
       def code
-      
+      def lang = RequestContextHolder.currentRequestAttributes().session.lang
       // if the coded text doesn't have a constraint, xmlNode is null
       // https://github.com/ppazos/cabolabs-ehrserver/issues/528
       optMan.getNode(archetypeId, path + '/defining_code')?.xmlNode?.code_list.each {
         
         code = it.text()
-        codes[code] = optMan.getText(archetypeId, code) // at00XX -> name
+        codes[code] = optMan.getText(archetypeId, code, lang) // at00XX -> name
       }
-      
-      /*
-      arch.getNode(path + '/defining_code').xmlNode.code_list.each {
-        
-        code = it.text()
-        codes[code] = arch.getText(code) // at00XX -> name
-      }
-      */
       
       def spec = [
         [
