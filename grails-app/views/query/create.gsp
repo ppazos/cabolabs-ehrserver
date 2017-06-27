@@ -1634,7 +1634,7 @@ resp.responseJSON.result.message +'</div>'
           </div>
     
           
-          <!-- Aqui van los campos comunes a ambos tipos de query -->
+          <%-- campos comunes a ambos tipos de query --%>
           <div id="query_common" class="query_build">
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover">
@@ -1654,15 +1654,21 @@ resp.responseJSON.result.message +'</div>'
                     </td>
                     <td>
                       <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10" from="${concepts}" optionKey="archetypeId" optionValue="${{it.name['ISO_639-1::'+ session.lang] +' ('+ it.archetypeId +')'}}"
-                                 noSelection="${['':g.message(code:'query.create.please_select_concept')]}" class="form-control withsize" />
+                      <g:select name="view_archetype_id" size="10"
+                                from="${concepts}"
+                                optionKey="archetypeId"
+                                optionValue="${{it.name['ISO_639-1::'+ session.lang] +' ('+ it.archetypeId +')'}}"
+                                noSelection="${['':g.message(code:'query.create.please_select_concept')]}"
+                                class="form-control withsize" />
                     </td>
                   </tr>
                   <tr>
                     <td><g:message code="query.create.datapoint" /></td>
                     <td>
                       <%-- Se setean las options al elegir un arquetipo --%>
-                      <select name="view_archetype_path" size="5" class="form-control withsize"></select>
+                      <select name="view_archetype_path" size="10" class="form-control withsize">
+                        <option><g:message code="query.create.please_select_concept" /></option>
+                      </select>
                     </td>
                   </tr>
                </table>
@@ -1674,7 +1680,12 @@ resp.responseJSON.result.message +'</div>'
     
           <div id="query_composition" class="query_build">
           
-            <div id="composition_criteria_builder" class="form-horizontal"></div>
+            <h2><g:message code="query.create.criteria_builder"/></h2>
+            
+            <%-- conditions depending on the data type selected from path --%>
+            <div id="composition_criteria_builder" class="form-horizontal">
+              <g:message code="query.create.select_concept_and_data" />
+            </div>
             
             <div class="btn-toolbar" role="toolbar">
               <a href="#" id="addCriteria">
@@ -1694,85 +1705,86 @@ resp.responseJSON.result.message +'</div>'
             sino se especifica aqui puede pasarse como parametro de la query
             -->
             
-            <h2><g:message code="query.create.criteria" /></h2>
+            <a name="criteria"></a>
+            <h3><g:message code="query.create.criteria" /></h3>
+            
+            <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover" id="criteria">
+                <tr>
+                  <th><g:message code="query.create.archetype_id" /></th>
+                  <th><g:message code="query.create.path" /></th>
+                  <th><g:message code="query.create.name" /></th>
+                  <th><g:message code="query.create.type" /></th>
+                  <th><g:message code="query.create.criteria" /></th>
+                  <th></th>
+                </tr>
+              </table>
+            </div>
+            
+            <h2><g:message code="query.create.parameters" /></h2>
              
             <!-- Indices de nivel 1 -->
             <div class="table-responsive">
-             <table class="table table-striped table-bordered table-hover" id="query_setup">
-                 <tr>
-                    <td>
-                      <g:message code="query.create.criteria.filterByDocumentType" />
-                      <span class="info">
-                        <asset:image src="skin/information.png" />
-                         <span class="content">
-                           Selecting a document type will narrow the query to get only this type of document as a result.
-                         </span>
+              <table class="table table-striped table-bordered table-hover" id="query_setup">
+                <tr>
+                  <td>
+                    <g:message code="query.create.criteria.filterByDocumentType" />
+                    <span class="info">
+                      <asset:image src="skin/information.png" />
+                      <span class="content">
+                        Selecting a document type will narrow the query to get only this type of document as a result.
                       </span>
-                    </td>
-                    <td>
-                      <g:select name="templateId" size="5"
-                                from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
-                    </td>
-                 </tr>
-                 <tr>
-                    <td>
-                      <g:message code="query.create.show_ui" />
-                      <span class="info">
-                        <asset:image src="skin/information.png" />
-                        <span class="content">
-                          <g:message code="query.create.show_ui_help" />
-                        </span>
-                      </span>
-                    </td>
-                    <td>
-                      <select name="showUI" class="form-control input-sm">
-                        <option value="false" selected="selected"><g:message code="default.no" /></option>
-                        <option value="true"><g:message code="default.yes" /></option>
-                      </select>
-                    </td>
-                 </tr>
-                 <tr>
-                    <td>
-                      <g:message code="query.create.criteria_logic" />
-                      <span class="info">
-                        <span class="content">
-                          <g:message code="query.create.criteria_logic_help" />
-                        </span>
-                      </span>
-                    </td>
-                    <td>
-                      <select name="criteriaLogic" class="form-control input-sm">
-                        <option value="AND" selected="selected"><g:message code="query.create.criteriaAND" /></option>
-                        <option value="OR"><g:message code="query.create.criteriaOR" /></option>
-                      </select>
-                    </td>
-                 </tr>
-                 <tr>
-                    <td><g:message code="query.create.default_format" /></td>
-                    <td>
-                      <select name="composition_format" class="form-control input-sm">
-                        <option value="xml" selected="selected">XML</option>
-                        <option value="json">JSON</option>
-                      </select>
-                    </td>
-                 </tr>
-               </table>
-             </div>
-            
-            <a name="criteria"></a>
-            <h3><g:message code="query.create.conditions" /></h3>
-            <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
-            <div class="table-responsive">
-             <table class="table table-striped table-bordered table-hover" id="criteria">
-                  <tr>
-                    <th><g:message code="query.create.archetype_id" /></th>
-                    <th><g:message code="query.create.path" /></th>
-                    <th><g:message code="query.create.name" /></th>
-                    <th><g:message code="query.create.type" /></th>
-                    <th><g:message code="query.create.criteria" /></th>
-                    <th></th>
-                  </tr>
-               </table>
+                    </span>
+                  </td>
+                  <td>
+                    <g:select name="templateId" size="5"
+                              from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
+                  </td>
+                </tr>
+                <tr>
+                 <td>
+                   <g:message code="query.create.show_ui" />
+                   <span class="info">
+                     <asset:image src="skin/information.png" />
+                     <span class="content">
+                       <g:message code="query.create.show_ui_help" />
+                     </span>
+                   </span>
+                 </td>
+                 <td>
+                   <select name="showUI" class="form-control input-sm">
+                     <option value="false" selected="selected"><g:message code="default.no" /></option>
+                     <option value="true"><g:message code="default.yes" /></option>
+                   </select>
+                 </td>
+                </tr>
+                <tr>
+                 <td>
+                   <g:message code="query.create.criteria_logic" />
+                   <span class="info">
+                     <span class="content">
+                       <g:message code="query.create.criteria_logic_help" />
+                     </span>
+                   </span>
+                 </td>
+                 <td>
+                   <select name="criteriaLogic" class="form-control input-sm">
+                     <option value="AND" selected="selected"><g:message code="query.create.criteriaAND" /></option>
+                     <option value="OR"><g:message code="query.create.criteriaOR" /></option>
+                   </select>
+                 </td>
+                </tr>
+                <tr>
+                  <td><g:message code="query.create.default_format" /></td>
+                  <td>
+                    <select name="composition_format" class="form-control input-sm">
+                      <option value="xml" selected="selected">XML</option>
+                      <option value="json">JSON</option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div><!-- query_composition -->
             
@@ -1780,50 +1792,17 @@ resp.responseJSON.result.message +'</div>'
             
           <div id="query_datavalue" class="query_build">
     
-           <div class="btn-toolbar" role="toolbar">
-             <a href="#" id="addSelection">
-               <button type="button" class="btn btn-default btn-md">
-                 <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.addProjection" default="Add projection" />
-               </button>
-             </a>
-           </div>
-           
-            <h2><g:message code="query.create.filters" /></h2>
+            <h2><g:message code="query.create.dataprojection" /></h2>
     
-            <!--
-            ehrUid, archetypeId (tipo de doc), rango de fechas, formato
-            y agrupacion son todos parametros de la query.
-            
-            Aqui se pueden fijar SOLO algunos de esos parametros
-            a modo de filtro.
+            <g:message code="query.create.select_concept_and_data_projection" />
     
-            TODO: para los que no se pueden fijar aqui, inluir en la
-            definicion de la query si son obligatorios o no.
-            -->
-            
-            <div class="table-responsive">
-             <table class="table table-striped table-bordered table-hover">
-              <tr>
-                <td><g:message code="query.create.default_format" /></td>
-                <td>
-                  <select name="format" class="form-control input-sm">
-                    <option value="xml" selected="selected">XML</option>
-                    <option value="json">JSON</option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td><g:message code="query.create.default_group" /></td>
-                <td>
-                  <select name="group" size="3" class="form-control withsize">
-                    <option value="none" selected="selected"><g:message code="query.create.none" /></option>
-                    <option value="composition"><g:message code="query.create.composition" /></option>
-                    <option value="path"><g:message code="query.create.path" /></option>
-                  </select>
-                </td>
-              </tr>
-              </table>
-           </div>
+            <div class="btn-toolbar" role="toolbar">
+              <a href="#" id="addSelection">
+                <button type="button" class="btn btn-default btn-md">
+                  <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="query.create.addProjection" default="Add projection" />
+                </button>
+              </a>
+            </div>
             
             <h3><g:message code="query.create.projections" /></h3>
             <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
@@ -1839,7 +1818,43 @@ resp.responseJSON.result.message +'</div>'
                 </tr>
               </table>
             </div>
+           
+            <h2><g:message code="query.create.filters" /></h2>
+    
+            <!--
+            ehrUid, archetypeId (tipo de doc), rango de fechas, formato
+            y agrupacion son todos parametros de la query.
             
+            Aqui se pueden fijar SOLO algunos de esos parametros
+            a modo de filtro.
+    
+            TODO: para los que no se pueden fijar aqui, inluir en la
+            definicion de la query si son obligatorios o no.
+            -->
+            
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover">
+                <tr>
+                  <td><g:message code="query.create.default_format" /></td>
+                  <td>
+                    <select name="format" class="form-control input-sm">
+                      <option value="xml" selected="selected">XML</option>
+                      <option value="json">JSON</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><g:message code="query.create.default_group" /></td>
+                  <td>
+                    <select name="group" size="3" class="form-control withsize">
+                      <option value="none" selected="selected"><g:message code="query.create.none" /></option>
+                      <option value="composition"><g:message code="query.create.composition" /></option>
+                      <option value="path"><g:message code="query.create.path" /></option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </div><!-- query_datavalue -->
 
           <script>
