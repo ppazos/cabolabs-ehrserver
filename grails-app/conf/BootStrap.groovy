@@ -694,7 +694,7 @@ class BootStrap {
      
      
 
-     /*
+     
      // Sample EHRs for testing purposes
      if (Ehr.count() == 0)
      {
@@ -722,7 +722,7 @@ class BootStrap {
            if (!ehr.save()) println ehr.errors
         }
      }
-     */
+     
      
      
       // Create plans
