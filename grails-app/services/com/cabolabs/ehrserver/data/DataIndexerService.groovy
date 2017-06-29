@@ -383,8 +383,22 @@ class DataIndexerService {
    }
    
    // TODO: SECTION
-   // TODO: EVALUATION
    // TODO: ADMIN_ENTRY
+   
+   private void process_EVALUATION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'data': '_ask_node_', // ITEM_STRUCTURE
+         'protocol': '_ask_node_' // ITEM_STRUCTURE
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
    
    private void process_ACTION_index(
       GPathResult node,
@@ -751,19 +765,6 @@ class DataIndexerService {
       )
    }
    
-   // for ACTIVITY.timing
-   private void process_DV_PARSABLE_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner, List indexes)
-   {
-      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths text "+ paths
-      
-      // TODO
-   }
-   
    private void process_DV_DURATION_index(
       GPathResult node,
       String templateId, String path,
@@ -873,6 +874,35 @@ class DataIndexerService {
       )
    }
    
+   // for ACTIVITY.timing
+   private void process_DV_PARSABLE_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths parsable "+ paths
+      
+      /*
+      <value xsi:type="DV_PARSABLE">
+        <value>20170629</value>
+        <formalism>iso8601</formalism>
+      </value>
+      */
+      
+      indexes << new DvParsableIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        value:         node.value.text(),
+        formalism:     node.formalism.text(),
+        rmTypeName:    'DV_PARSABLE'
+      )
+   }
+   
    // for String RM attributes like ACTIVITY.action_archetype_id
    private void process_String_index(
       GPathResult node,
@@ -892,31 +922,6 @@ class DataIndexerService {
     * Methods to create individual indexes for each datavalue
     */
    
-   /*
-   private DvQuantityIndex create_DV_QUANTITY_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del
-      // atributo de tipo DV_QUANTITY
-      //<value xsi:type="DV_QUANTITY">
-      //  <magnitude>120</magnitude>
-      //  <units>mm[Hg]</units>
-      //</value>
-      return new DvQuantityIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        magnitude: new Double( node.magnitude.text() ),
-        units: node.units.text(),
-        rmTypeName: 'DV_QUANTITY'
-      )
-   }
-   */
    /*
    private DvCountIndex create_DV_COUNT_index(
       GPathResult node,
@@ -965,12 +970,15 @@ class DataIndexerService {
    }
    */
  
-   private DvProportionIndex create_DV_PROPORTION_index(
+   private void process_DV_PROPORTION_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
-      CompositionIndex owner)
+      CompositionIndex owner, List indexes)
    {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths proportion "+ paths
+      
       /**
       * <xs:complexType name="DV_ORDERED" abstract="true">
            <xs:complexContent>
@@ -1075,17 +1083,17 @@ class DataIndexerService {
       
       println "DvPropotion parse: "+ numerator +"/"+ denominator
       
-      return new DvProportionIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        numerator: numerator,
-        denominator: denominator,
-        type: type,
-        precision: ((node.precision.text()) ? new Integer(node.precision.text()) : -1),
-        rmTypeName: 'DV_PROPORTION'
+      indexes << new DvProportionIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        numerator:     numerator,
+        denominator:   denominator,
+        type:          type,
+        precision:     ((node.precision.text()) ? new Integer(node.precision.text()) : -1),
+        rmTypeName:    'DV_PROPORTION'
       )
    }
    
