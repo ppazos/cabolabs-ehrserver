@@ -373,11 +373,18 @@ class DataIndexerService {
    {
       // start time is already indexed by compo index
       def attributes = [
+         'location': 'String',
+         //'health_care_facility': 'PARTY_IDENTIFIED', // TODO, might be indexed with the compo
          'setting': 'DV_CODED_TEXT',
+         'other_context': '_ask_node_' // ITEM_STRUCTURE
       ]
       
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
+   
+   // TODO: SECTION
+   // TODO: EVALUATION
+   // TODO: ADMIN_ENTRY
    
    private void process_ACTION_index(
       GPathResult node,
@@ -389,7 +396,8 @@ class DataIndexerService {
       def attributes = [
          'time': 'DV_DATE_TIME',
          'description': '_ask_node_', // ITEM_STRUCTURE
-         'ism_transition': 'ISM_TRANSITION'
+         'ism_transition': 'ISM_TRANSITION',
+         'protocol': '_ask_node_' // ITEM_STRUCTURE
       ]
       
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
@@ -403,6 +411,103 @@ class DataIndexerService {
    {
       // TODO: https://github.com/ppazos/cabolabs-ehrserver/issues/643
    }
+   
+   private void process_INSTRUCTION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'narrative': 'DV_TEXT',
+         'expiry_time': 'DV_DATE_TIME',
+         'protocol': '_ask_node_', // ITEM_STRUCTURE
+         'activities': 'ACTIVITY'
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   private void process_ACTIVITY_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'description': '_ask_node_', // ITEM_STRUCTURE
+         'timing': 'DV_PARSABLE',
+         'action_archetype_id': 'String'
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   private void process_OBSERVATION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'data': 'HISTORY',
+         'state': 'HISTORY',
+         'protocol': '_ask_node_' // ITEM_STRUCTURE
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   private void process_HISTORY_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'origin': 'DV_DATE_TIME',
+         'period': 'DV_DURATION',
+         'duration': 'DV_DURATION',
+         'summary': '_ask_node_', // ITEM_STRUCTURE
+         'events': '_ask_node_' // POINT_EVENT, INTERVAL_EVENT
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   // FIXME: if this is called, the committer is using the abstract type EVENT
+   // instead of POINT_EVENT, should return a warning.
+   private void process_EVENT_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // For now treate EVENT as POINT_EVENT
+      process_POINT_EVENT_index(node, templateId, path, archetypeId, archetypePath, owner, indexes)
+   }
+   
+   private void process_POINT_EVENT_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      // start time is already indexed by compo index
+      def attributes = [
+         'time': 'DV_DATE_TIME',
+         'state': '_ask_node_', // ITEM_STRUCTURE
+         'data': '_ask_node_' // ITEM_STRUCTURE
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   // TODO: INTERVAL_EVENT
    
    private void process_ITEM_TREE_index(
       GPathResult node,
@@ -471,7 +576,7 @@ class DataIndexerService {
             }
             
             def method = 'process_'+type+'_index'
-            println "method "+ method +" node "+ child_attr_node.name() +" "+ child_attr_node.getClass()
+            println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
             this."$method"(child_attr_node, templateId, paths.templatePath, paths.rootArchetype, paths.archetypePath, owner, indexes)
          }
       }
@@ -543,6 +648,30 @@ class DataIndexerService {
       )
    }
    
+   private void process_DV_DATE_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths date "+ paths
+      
+      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
+      //<time>
+      //  <value>20070920</value>
+      //</time>
+      indexes << new DvDateIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        value:         DateParser.tryParse(node.value.text()),
+        rmTypeName:    'DV_DATE'
+      )
+   }
+   
    private void process_DV_DATE_TIME_index(
       GPathResult node,
       String templateId, String path,
@@ -569,7 +698,7 @@ class DataIndexerService {
       )
    }
    
-   private void create_DV_QUANTITY_index(
+   private void process_DV_QUANTITY_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
@@ -585,7 +714,7 @@ class DataIndexerService {
         <units>mm[Hg]</units>
       </value>
       */
-      indexes << DvQuantityIndex(
+      indexes << new DvQuantityIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
         path:          paths.templatePath,
@@ -597,27 +726,185 @@ class DataIndexerService {
       )
    }
    
+   private void process_DV_COUNT_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths count "+ paths
+      
+      /*
+      <value xsi:type="DV_COUNT">
+        <magnitude>120</magnitude>
+      </value>
+      */
+      indexes << new DvCountIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        magnitude:     new Long( node.magnitude.text() ),
+        rmTypeName:    'DV_COUNT'
+      )
+   }
+   
+   // for ACTIVITY.timing
+   private void process_DV_PARSABLE_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths text "+ paths
+      
+      // TODO
+   }
+   
+   private void process_DV_DURATION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths duration "+ paths
+      println "DV_DURATION "+ node.toString()
+      /*
+      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
+      <value xsi:type="DV_DURATION">
+        <value>PT30M</value> // 30 mins
+      </value>
+      */
+      indexes << new DvDurationIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        value:         node.value.text(),
+        rmTypeName:    'DV_DURATION'
+        //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
+      )
+   }
+   
+   private void process_DV_BOOLEAN_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths boolean "+ paths
+      
+      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
+      //<value xsi:type="DV_BOOLEAN">
+      //   <value>true</value>
+      // </value>
+      indexes << new DvBooleanIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        value:         new Boolean(node.value.text()),
+        rmTypeName:    'DV_BOOLEAN'
+      )
+   }
+   
+   private void process_DV_IDENTIFIER_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths identifier "+ paths
+      
+      indexes << new DvIdentifierIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        identifier:    node.id.text(),
+        type:          node.type.text(),
+        issuer:        node.issuer.text(),
+        assigner:      node.assigner.text(),
+        rmTypeName:    'DV_IDENTIFIER'
+      )
+   }
+   
+   private void process_DV_ORDINAL_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths identifier "+ paths
+      
+      //<value xsi:type="DV_ORDINAL">
+      // <value>234</value>
+      // <symbol>
+      //   <value>Right arm</value>
+      //   <defining_code>
+      //    <terminology_id>
+      //      <value>local</value>
+      //    </terminology_id>
+      //    <code_string>at0025</code_string>
+      //   </defining_code>
+      // </symbol>
+      //</value>
+      indexes << new DvOrdinalIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
+        value:         new Integer( node.value.text() ),
+        symbol_value:  node.symbol.value.text(),
+        symbol_code:   node.symbol.defining_code.code_string.text(),
+        symbol_terminology_id: node.symbol.defining_code.terminology_id.value.text(),
+        rmTypeName:    'DV_ORDINAL'
+      )
+   }
+   
+   // for String RM attributes like ACTIVITY.action_archetype_id
+   private void process_String_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      println "paths text "+ paths
+      
+      // TODO
+   }
+   
    
    
    /* ---------------------------------------------------------------------
     * Methods to create individual indexes for each datavalue
     */
    
+   /*
    private DvQuantityIndex create_DV_QUANTITY_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      //println "templateId 2: "+ templateId
-      
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
-      <value xsi:type="DV_QUANTITY">
-        <magnitude>120</magnitude>
-        <units>mm[Hg]</units>
-      </value>
-      */
+      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del
+      // atributo de tipo DV_QUANTITY
+      //<value xsi:type="DV_QUANTITY">
+      //  <magnitude>120</magnitude>
+      //  <units>mm[Hg]</units>
+      //</value>
       return new DvQuantityIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -629,18 +916,18 @@ class DataIndexerService {
         rmTypeName: 'DV_QUANTITY'
       )
    }
-   
+   */
+   /*
    private DvCountIndex create_DV_COUNT_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      <value xsi:type="DV_COUNT">
-        <magnitude>120</magnitude>
-      </value>
-      */
+      //
+      //<value xsi:type="DV_COUNT">
+      //  <magnitude>120</magnitude>
+      //</value>
       return new DvCountIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -651,7 +938,8 @@ class DataIndexerService {
         rmTypeName: 'DV_COUNT'
       )
    }
-   
+   */
+   /*
    private DvDurationIndex create_DV_DURATION_index(
       GPathResult node,
       String templateId, String path,
@@ -659,12 +947,11 @@ class DataIndexerService {
       CompositionIndex owner)
    {
       println "DV_DURATION "+ node.toString()
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
-      <value xsi:type="DV_DURATION">
-        <value>PT30M</value> // 30 mins
-      </value>
-      */
+      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
+      //<value xsi:type="DV_DURATION">
+      //  <value>PT30M</value> // 30 mins
+      //</value>
+      //
       return new DvDurationIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -676,7 +963,7 @@ class DataIndexerService {
         //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
       )
    }
-   
+   */
  
    private DvProportionIndex create_DV_PROPORTION_index(
       GPathResult node,
@@ -806,18 +1093,17 @@ class DataIndexerService {
       return (Math.floor(num1) == num1)
    }
    
+   /*
    private DvTextIndex create_DV_TEXT_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
-      <value xsi:type="DV_TEXT">
-        <value>Right arm</value>
-      </value>
-      */
+      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
+      //<value xsi:type="DV_TEXT">
+      //  <value>Right arm</value>
+      //</value>
       
       return new DvTextIndex(
         templateId: templateId,
@@ -829,20 +1115,18 @@ class DataIndexerService {
         rmTypeName: 'DV_TEXT'
       )
    }
-   
+   */
+   /*
    private DvBooleanIndex create_DV_BOOLEAN_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
-      * <value xsi:type="DV_BOOLEAN">
-      *   <value>true</value>
-      * </value>
-      */
-      
+      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
+      //<value xsi:type="DV_BOOLEAN">
+      //   <value>true</value>
+      // </value>
       return new DvBooleanIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -853,25 +1137,24 @@ class DataIndexerService {
         rmTypeName: 'DV_BOOLEAN'
       )
    }
-   
+   */
+   /*
    private DvCodedTextIndex create_DV_CODED_TEXT_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
-      <value xsi:type="DV_CODED_TEXT">
-        <value>Right arm</value>
-        <defining_code>
-          <terminology_id>
-            <value>local</value>
-          </terminology_id>
-          <code_string>at0025</code_string>
-        </defining_code>
-      </value>
-      */
+      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
+      //<value xsi:type="DV_CODED_TEXT">
+      //  <value>Right arm</value>
+      //  <defining_code>
+      //    <terminology_id>
+      //      <value>local</value>
+      //    </terminology_id>
+      //    <code_string>at0025</code_string>
+      //  </defining_code>
+      //</value>
       
       // Throws an exception if the node has xsi:type="..." attribute,
       // because the xmlns:xsi is not defined in the node.
@@ -889,28 +1172,26 @@ class DataIndexerService {
         rmTypeName: 'DV_CODED_TEXT'
       )
    }
-   
-   
+   */
+   /*
    private DvOrdinalIndex create_DV_ORDINAL_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      <value xsi:type="DV_ORDINAL">
-       <value>234</value>
-       <symbol>
-         <value>Right arm</value>
-         <defining_code>
-          <terminology_id>
-            <value>local</value>
-          </terminology_id>
-          <code_string>at0025</code_string>
-         </defining_code>
-       </symbol>
-      </value>
-      */
+      //<value xsi:type="DV_ORDINAL">
+      // <value>234</value>
+      // <symbol>
+      //   <value>Right arm</value>
+      //   <defining_code>
+      //    <terminology_id>
+      //      <value>local</value>
+      //    </terminology_id>
+      //    <code_string>at0025</code_string>
+      //   </defining_code>
+      // </symbol>
+      //</value>
       return new DvOrdinalIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -924,20 +1205,18 @@ class DataIndexerService {
         rmTypeName: 'DV_ORDINAL'
       )
    }
-   
-   
+   */
+   /*
    private DvDateTimeIndex create_DV_DATE_TIME_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
-      <time>
-        <value>20070920T104614,156+0930</value>
-      </time>
-      */
+      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
+      //<time>
+      //  <value>20070920T104614,156+0930</value>
+      //</time>
       return new DvDateTimeIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -948,19 +1227,18 @@ class DataIndexerService {
         rmTypeName: 'DV_DATE_TIME'
       )
    }
-   
+   */
+   /*
    private DvDateIndex create_DV_DATE_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
       CompositionIndex owner)
    {
-      /*
-      * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
-      <time>
-        <value>20070920</value>
-      </time>
-      */
+      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
+      //<time>
+      //  <value>20070920</value>
+      //</time>
       return new DvDateIndex(
         templateId: templateId,
         archetypeId: archetypeId,
@@ -971,7 +1249,8 @@ class DataIndexerService {
         rmTypeName: 'DV_DATE'
       )
    }
-   
+   */
+   /*
    private DvIdentifierIndex create_DV_IDENTIFIER_index(
       GPathResult node,
       String templateId, String path,
@@ -991,7 +1270,7 @@ class DataIndexerService {
         rmTypeName: 'DV_IDENTIFIER'
       )
    }
-   
+   */
    private DvMultimediaIndex create_DV_MULTIMEDIA_index(
       GPathResult node,
       String templateId, String path,

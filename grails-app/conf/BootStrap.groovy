@@ -619,7 +619,7 @@ class BootStrap {
            println "Creating sample organization"
            
            // Sample organizations
-           organizations << new Organization(name: 'CaboLabs', number: '123456')
+           organizations << new Organization(name: 'CaboLabs', number: '123456', uid:'123456') // uid just for testing here!
            //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
            //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
            
