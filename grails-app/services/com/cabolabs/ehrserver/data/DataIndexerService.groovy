@@ -104,10 +104,7 @@ class DataIndexerService {
     
       compoParsed = parsedVersion.data
     
-      // TEST
       process_COMPOSITION_index(compoParsed, compoIndex.templateId, '', compoIndex.archetypeId, '', compoIndex, indexes)
-    
-      // TEST
       //recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex, optMan )
 
       log.debug "index count: "+ indexes.size()
@@ -150,6 +147,7 @@ class DataIndexerService {
     * @param archetypeId
     * @param owner
     */
+   /*
    private void recursiveIndexData(
       String path, String archetypePath,
       GPathResult node, List indexes,
@@ -294,7 +292,7 @@ class DataIndexerService {
          }
       }
    } // recursiveIndexData
-   
+   */
    
    private Map getChildPathsAndRootArchetype(node, templatePath, archetypePath, archetypeId)
    {
@@ -340,12 +338,55 @@ class DataIndexerService {
       return [templatePath: outTemplatePath, archetypePath: outArchetypePath, rootArchetype: archetypeId]
    }
    
+    /*
+     generic method to do all the recursive calls
+    */
+   private void keepProcessing(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes,
+      Map attributes)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
+      //println "paths "+ paths
+      
+      // this continues the recursion, the code is generic can be reused
+      def child_type
+      attributes.each { attr, type ->
+      
+         //println "children in $attr "+ node[attr].size() +" "+ node[attr]*.'@xsi:type'
+      
+         // node[attr] can be multiple, and we need to process individual nodes in $method
+         node[attr].each { child_attr_node ->
+         
+            if (type == '_ask_node_')
+            {
+               child_type = child_attr_node['@xsi:type']
+            }
+            else
+            {
+               child_type = type
+            }
+            
+            def method = 'process_'+ child_type +'_index'
+            println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
+            this."$method"(child_attr_node, templateId, paths.templatePath, paths.rootArchetype, paths.archetypePath, owner, indexes)
+         }
+      }
+   }
+   
    /*
    def methodMissing(String name, args)
    {
       println "-- Method Missing "+ name +" "+ args*.getClass() +" ----------------------------------------------"
    }
    */
+   
+   // TODO:
+   // Refactor all these methods are just implementing a map of class => [attribute]
+   // the real logic is on the generic method keepProcessing.
+   //
    
    private void process_COMPOSITION_index(
       GPathResult node,
@@ -382,8 +423,31 @@ class DataIndexerService {
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
    
-   // TODO: SECTION
-   // TODO: ADMIN_ENTRY
+   private void process_SECTION_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def attributes = [
+         'items': '_ask_node_' // CONTENT_ITEM
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
+   
+   private void process_ADMIN_ENTRY_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes)
+   {
+      def attributes = [
+         'data': '_ask_node_' // ITEM_STRUCTURE
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
+   }
    
    private void process_EVALUATION_index(
       GPathResult node,
@@ -391,7 +455,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'data': '_ask_node_', // ITEM_STRUCTURE
          'protocol': '_ask_node_' // ITEM_STRUCTURE
@@ -406,7 +469,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'time': 'DV_DATE_TIME',
          'description': '_ask_node_', // ITEM_STRUCTURE
@@ -432,7 +494,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'narrative': 'DV_TEXT',
          'expiry_time': 'DV_DATE_TIME',
@@ -449,7 +510,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'description': '_ask_node_', // ITEM_STRUCTURE
          'timing': 'DV_PARSABLE',
@@ -465,7 +525,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'data': 'HISTORY',
          'state': 'HISTORY',
@@ -481,7 +540,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'origin': 'DV_DATE_TIME',
          'period': 'DV_DURATION',
@@ -522,6 +580,9 @@ class DataIndexerService {
    }
    
    // TODO: INTERVAL_EVENT
+   // TODO: ITEM_LIST
+   // TODO: ITEM_TABLE
+   // TODO: ITEM_SINGLE
    
    private void process_ITEM_TREE_index(
       GPathResult node,
@@ -529,10 +590,14 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'items': '_ask_node_' // CLUSTER, ELEMENT
       ]
+      
+      println "Tree children"
+      node.items.each {
+         println it.name() +" "+it.'@xsi:type'
+      }
       
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
@@ -543,7 +608,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'items': '_ask_node_' // CLUSTER, ELEMENT
       ]
@@ -557,7 +621,6 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // start time is already indexed by compo index
       def attributes = [
          'value': '_ask_node_' // any data value
       ]
@@ -565,36 +628,8 @@ class DataIndexerService {
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
    
-   /*
-     generic method to do all the recursive calls
-    */
-   private void keepProcessing(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner, List indexes,
-      Map attributes)
-   {
-      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      //println "paths "+ paths
-      
-      // this continues the recursion, the code is generic can be reused
-      attributes.each { attr, type ->
-      
-         // node[attr] can be multiple, and we need to process individual nodes in $method
-         node[attr].each { child_attr_node ->
-         
-            if (type == '_ask_node_')
-            {
-               type = child_attr_node['@xsi:type']
-            }
-            
-            def method = 'process_'+type+'_index'
-            println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
-            this."$method"(child_attr_node, templateId, paths.templatePath, paths.rootArchetype, paths.archetypePath, owner, indexes)
-         }
-      }
-   }
+   
+   // DVs
    
    private void process_DV_TEXT_index(
       GPathResult node,
@@ -603,7 +638,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths text "+ paths
+      //println "paths text "+ paths
       
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
@@ -630,7 +665,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths coded text "+ paths
+      //println "paths coded text "+ paths
 
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
@@ -669,7 +704,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths date "+ paths
+      //println "paths date "+ paths
       
       //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
       //<time>
@@ -693,7 +728,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths date time "+ paths
+      //println "paths date time "+ paths
       
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
@@ -719,7 +754,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths quantity "+ paths
+      //println "paths quantity "+ paths
       
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
@@ -747,7 +782,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths count "+ paths
+      //println "paths count "+ paths
       
       /*
       <value xsi:type="DV_COUNT">
@@ -772,8 +807,8 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths duration "+ paths
-      println "DV_DURATION "+ node.toString()
+      //println "paths duration "+ paths
+      //println "DV_DURATION "+ node.toString()
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
       <value xsi:type="DV_DURATION">
@@ -799,7 +834,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths boolean "+ paths
+      //println "paths boolean "+ paths
       
       // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
       //<value xsi:type="DV_BOOLEAN">
@@ -823,7 +858,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths identifier "+ paths
+      //println "paths identifier "+ paths
       
       indexes << new DvIdentifierIndex(
         templateId:    templateId,
@@ -846,7 +881,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths identifier "+ paths
+      //println "paths identifier "+ paths
       
       //<value xsi:type="DV_ORDINAL">
       // <value>234</value>
@@ -882,7 +917,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths parsable "+ paths
+      //println "paths parsable "+ paths
       
       /*
       <value xsi:type="DV_PARSABLE">
@@ -898,7 +933,7 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         node.value.text(),
-        formalism:     node.formalism.text(),
+        formalism:     node.formalism.text().toLowerCase(), // formalism is always lower case, this is to avoid case issues from the client
         rmTypeName:    'DV_PARSABLE'
       )
    }
@@ -911,9 +946,10 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths text "+ paths
+      //println "paths String "+ paths
       
       // TODO
+      println "String index not implemented"
    }
    
    
