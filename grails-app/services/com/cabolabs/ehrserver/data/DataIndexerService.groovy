@@ -37,7 +37,11 @@ import java.io.FileNotFoundException
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
-import com.cabolabs.openehr.opt.manager.OptManager 
+import com.cabolabs.openehr.opt.manager.OptManager
+
+import com.cabolabs.security.User
+import com.cabolabs.ehrserver.notification.Notification
+import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 
 @Transactional
 class DataIndexerService {
@@ -110,10 +114,12 @@ class DataIndexerService {
       log.debug "index count: "+ indexes.size()
 
       // empty if the OPT for the compo is not loaded in the server
+      
+      def aidx 
       indexes.each { didx ->
       
          //println didx.archetypePath
-      
+
          if (!didx.save())
          {
             log.error "index error: ("+ didx.templateId +") "+didx.archetypeId + didx.archetypePath +" "+ didx.rmTypeName +" "+ didx.getClass().getSimpleName() +' for compo '+ didx.owner.uid
@@ -126,6 +132,23 @@ class DataIndexerService {
          {
             log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
          }
+         
+         // check if the AII exists, if not, the indexed value wont be able to be queried
+         // there is a known issue with paths to ism_transitions, this is to check if besides that there is another path that do not match between OPT indexes and DV indexes
+         aidx = ArchetypeIndexItem.findByArchetypeIdAndPath(didx.archetypeId, didx.archetypePath)
+         if (!aidx)
+         {
+            new DataValueIndexLog(index: didx, message: 'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath).save()
+            
+            def admins = User.allForRole('ROLE_ADMIN')
+            admins.each{ admin ->
+               new Notification(
+                  name:     'There is no ArchetypeIndexItem for the DataValueIndex',
+                  language: 'en', /* TODO: lang should be the preferred by the org 0 of the admin */
+                  text:     'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath,
+                  forUser:  admin.id).save()
+            }
+         }
       }
     
       // all indexes created were saved correctly!
@@ -137,162 +160,6 @@ class DataIndexerService {
          throw new DataIndexException('CompiIndex failed to save omn indexing', compoIndex.errors)
       }
    }
-   
-   /**
-    * @param path parent node path, absolute to the template, empty for the root node.
-    * @param archetypePath absolute path to a root archetype but not to the template, used for querying.
-    * @param node
-    * @param indexes will contain all the indexes created by the recursion
-    * @param templateId
-    * @param archetypeId
-    * @param owner
-    */
-   /*
-   private void recursiveIndexData(
-      String path, String archetypePath,
-      GPathResult node, List indexes,
-      String templateId, String archetypeId,
-      CompositionIndex owner, OptManager optMan)
-   {
-      //println "recursiveIndexData "+ path
-      //println "templateId 1: "+ templateId
-      
-      // TODO:
-      // Como no todos los nodos tienen el tipo de forma explicita (xsi:type)
-      // tengo que consultar al arquetipo para saber el tipo del nodo.
-      // Necesito el archetype_id (esta en el XML) y la path (es la idxpath).
-      
-      // En realidad el tipo lo dice la definicion de los indices (ArchetypeIndexItem),
-      // y puedo hacer lookup del tipo usando archetypeId+path.
-      
- 
-      // Path del template para el indice (absoluta)
-      String idxpath
-      
-      // La path del root va sin nombre, ej. sin esto el root que es / seria /data
-      if (path == '')
-      {
-        idxpath = '/'
-        archetypePath = '/'
-      }
-      else if (!node.'@archetype_node_id'.isEmpty()) // Si tiene archetype_node_id
-      {
-        // Para que los hijos de la raiz no empiecen con //
-        if (path == '/') path = ''
-        if (archetypePath == '/') archetypePath = ''
-        
-        // Si es un nodo atNNNN
-        if (node.'@archetype_node_id'.text().startsWith('at'))
-        {
-          idxpath = path + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
-          archetypePath = archetypePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
-        }
-        else // Si es un archetypeId
-        {
-          //idxpath = path + '/' + node.name()
-          idxpath = path + '/' + node.name() + '[archetype_id='+ node.'@archetype_node_id'.text() +']'
-          archetypePath = '/' // This node is an archetype root because it has an archetypeId
-          archetypeId = node.'@archetype_node_id'.text()
-        }
-      }
-      else // No tiene archetype_node_id
-      {
-        // Para que los hijos de la raiz no empiecen con //
-        if (path == '/') path = ''
-        if (archetypePath == '/') archetypePath = ''
-        
-        idxpath = path + '/' + node.name()
-        archetypePath = archetypePath + '/' + node.name()
-      }
-      
-      //println "tempPath: "+ idxpath
-      //println "archPath: "+ archetypePath
-      
-      // TODO: instead of calculating the archetypePath, I can use the templateId and path
-      //      to query ArchetypeIndexItem and get the archetypeId and archetypePath from there.
-      // ArchetypeIndexItem uses the archetypeId and archetypePath to search
-      //def idx = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, archetypePath)
-      
-      
-      // FIXME:
-      // Va a haber un problema con multiples datos para las mismas
-      // paths de tipos estructurados, ej.: vienen 2 DvQuantity con
-      // la misma path (son hermanos), y tengo que garantizar que el
-      // magnitude de uno no se mezcla con el units del otro.
-      //
-      // Esto lo podria manejar con un puntero al element contenedor
-      // que seria un id falso de uso interno para indicar que 2 o mas
-      // datos simples pertenecen a la misma instancia de un datatype
-      // estructurado (en realidad seria como el id de la instancia
-      // del datatype)
-      
-
-      // if the node has children (all datavalues have children!)
-      if (!node.children().isEmpty())
-      {
-         println "Template "+ owner.templateId
-         def opt = optMan.getOpt(owner.templateId)
-         
-         if (opt) println "OPT Found"
-         else println "OPT not found"
-         
-         println "Template path "+ idxpath
-         def obj = opt?.getNode(idxpath)
-         
-         if (obj) println "Node type: "+ obj.rmTypeName
-         else
-         {
-            println "OBJ not found, OPT has these paths"
-            opt.nodes.keySet().each {
-               println it
-            }
-         }
-         
-         if (obj)
-         {
-            def method = 'process_'+type+'_index' // ej. process_COMPOSITION_index(...)
-            this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner, indexes)
-         }
-         else
-         {
-            try
-            {
-               //if (idx)
-               //{
-                  // tries this with OBSERVATION, that triggers the exception:
-                  // No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
-               
-                  // Taking the type from the committed compo instead of the ArchetypeIndexItem avoids the
-                  // problem of having two alternative types for the same path, with that, the indexing
-                  // tries to process the first type it founds instead of the type in hte committed compo.
-                  //def type = DataValues.valueOfString(idx.rmTypeName)
-               
-                  // FIXME: because of this change, only attributes with explicit type will be indexed
-                  //        the problem is RM attributes won't be indexed like ACTION.time.
-                  def type = DataValues.valueOfString(node.'@xsi:type'.text())
-                  
-                  println 'recursiveIndexData '+ node.name() +' '+ node.'@xsi:type'.text() +' '+ type
-                  
-                  def method = 'create_'+type+'_index' // ej. create_DV_CODED_TEXT_index(...)
-                  def dataIndex = this."$method"(node, templateId, idxpath, archetypeId, archetypePath, owner)
-                  indexes << dataIndex
-               //}
-            }
-            catch (IllegalArgumentException ex)
-            {
-               // no need to process the except, is just that the current type should not be indexed.
-               // No enum constant com.cabolabs.ehrserver.data.DataValues.OBSERVATION
-               // REF: https://github.com/ppazos/cabolabs-ehrserver/issues/486
-            }
-            
-            // follow the recursion if there are children nodes
-            node.children().each { subnode ->
-               recursiveIndexData( idxpath, archetypePath, subnode, indexes, templateId, archetypeId, owner, optMan )
-            }
-         }
-      }
-   } // recursiveIndexData
-   */
    
    private Map getChildPathsAndRootArchetype(node, templatePath, archetypePath, archetypeId)
    {
@@ -338,6 +205,15 @@ class DataIndexerService {
       return [templatePath: outTemplatePath, archetypePath: outArchetypePath, rootArchetype: archetypeId]
    }
    
+   /**
+    * @param path parent node path, absolute to the template, empty for the root node.
+    * @param archetypePath absolute path to a root archetype but not to the template, used for querying.
+    * @param node
+    * @param indexes will contain all the indexes created by the recursion
+    * @param templateId
+    * @param archetypeId
+    * @param owner
+    */
     /*
      generic method to do all the recursive calls
     */
@@ -693,7 +569,8 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def attributes = [
-         'value': '_ask_node_' // any data value
+         'value': '_ask_node_', // any data value
+         'null_flavour': 'DV_CODED_TEXT'
       ]
       
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
