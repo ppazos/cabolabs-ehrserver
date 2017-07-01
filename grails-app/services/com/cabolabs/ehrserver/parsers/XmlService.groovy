@@ -565,6 +565,23 @@ class XmlService {
          compoUid = version.data.uid.value.text() // takes the existing compo uid
       }
       
+      /* // TODO: when we support device created data, type should be taken from the XML, and the class might not be DoctorProxy but Actor.
+       <composer xsi:type="PARTY_IDENTIFIED">
+         <external_ref>
+           <id xsi:type="HIER_OBJECT_ID">
+             <value>84e1cbc5-87a8-4253-acb2-56ba35b6ef93</value>
+           </id>
+           <namespace>DEMOGRAPHIC</namespace>
+           <type>PERSON</type>
+         </external_ref>
+         <name>Dr. Yamamoto</name>
+       </composer>      
+      */
+      def composer = new DoctorProxy(
+         value: version.data.composer.external_ref.id.value.text(),
+         name: version.data.composer.name.text()
+      )
+      
       /*
        * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
        *   <name>
@@ -589,7 +606,8 @@ class XmlService {
          ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId: version.data.@archetype_node_id.text(),
-         templateId:  version.data.archetype_details.template_id.value.text()
+         templateId:  version.data.archetype_details.template_id.value.text(),
+         composer: composer
       )
       
       return compoIndex
