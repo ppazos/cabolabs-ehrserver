@@ -19,38 +19,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-package com.cabolabs.ehrserver.ehr.clinical_documents
-
-import org.springframework.dao.DataIntegrityViolationException
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 
-class CompositionIndexController {
+class DataValueIndexController {
 
    def config = Holders.config.app
-   
-   def index()
-   {
-      redirect(action: "list", params: params)
-   }
 
-   def list(Integer max)
+   def index(Integer max)
    {
       params.max = Math.min(max ?: config.list_max, 100)
-      [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
+      [datavalues: DataValueIndex.list(params), total: DataValueIndex.count()]
    }
-
-   def show(Long id)
+   
+   def reindex()
    {
-      def compositionIndexInstance = CompositionIndex.get(id)
-      if (!compositionIndexInstance)
-      {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'compositionIndex.label', default: 'CompositionIndex'), id])
-         redirect(action: "list")
-         return
+      // Delete all current indexes
+      DataValueIndex.executeUpdate('DELETE FROM DataValueIndex')
+      
+      // Mark current compos as not indexed, the indexer will catch up on the next round
+      CompositionIndex.list().each {
+         it.dataIndexed = false
+         it.save()
       }
-
-      [compositionIndexInstance: compositionIndexInstance]
+      
+      flash.message = 'datavalueindex.reindex.indexingExecuted'
+      redirect action:'index'
    }
 }

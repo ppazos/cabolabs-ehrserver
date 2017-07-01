@@ -582,6 +582,7 @@ class BootStrap {
         new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
+        new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
