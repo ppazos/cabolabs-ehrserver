@@ -609,7 +609,7 @@ class BootStrap {
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
      }
      
-     //println Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+     //println "Current ENV: "+ Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
      
      // Do not create data if testing, tests will create their own data.
      if (Environment.current != Environment.TEST)
@@ -690,40 +690,36 @@ class BootStrap {
         def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
         optMan.unloadAll()
         optMan.loadAll()
-     
-     } // not TEST ENV
-     
-     
-
-     
-     // Sample EHRs for testing purposes
-     if (Ehr.count() == 0)
-     {
-        def ehr_subject_uids = [
-           '11111111-1111-1111-1111-111111111111',
-           '22222222-1111-1111-1111-111111111111',
-           '33333333-1111-1111-1111-111111111111',
-           '44444444-1111-1111-1111-111111111111',
-           '55555555-1111-1111-1111-111111111111'
-        ]
         
         
-        def ehr
-        def c = Organization.count()
-        
-        ehr_subject_uids.eachWithIndex { uid, i ->
-           ehr = new Ehr(
-              uid: uid, // the ehr id is the same as the patient just to simplify testing
-              subject: new PatientProxy(
-                 value: uid
-              ),
-              organizationUid: Organization.get(i % c + 1).uid
-           )
-         
-           if (!ehr.save()) println ehr.errors
+        // Sample EHRs for testing purposes
+        if (Ehr.count() == 0)
+        {
+           println "Creating sample EHRs"
+           def ehr_subject_uids = [
+              '11111111-1111-1111-1111-111111111111',
+              '22222222-1111-1111-1111-111111111111',
+              '33333333-1111-1111-1111-111111111111',
+              '44444444-1111-1111-1111-111111111111',
+              '55555555-1111-1111-1111-111111111111'
+           ]
+           
+           def ehr
+           def c = Organization.count()
+           
+           ehr_subject_uids.eachWithIndex { uid, i ->
+              ehr = new Ehr(
+                 uid: uid, // the ehr id is the same as the patient just to simplify testing
+                 subject: new PatientProxy(
+                    value: uid
+                 ),
+                 organizationUid: Organization.get(i % c + 1).uid
+              )
+            
+              if (!ehr.save()) println ehr.errors
+           }
         }
-     }
-     
+     } // not TEST ENV
      
      
       // Create plans

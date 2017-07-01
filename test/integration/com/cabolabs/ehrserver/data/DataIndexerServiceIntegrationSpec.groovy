@@ -157,7 +157,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          
          // indexing was ok
-         assert DataValueIndex.count() == 1
+         assert DataValueIndex.count() == 4
          assert DvCountIndex.count() == 1
          assert DvCountIndex.first().magnitude == 3
          

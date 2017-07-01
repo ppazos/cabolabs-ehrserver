@@ -541,6 +541,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       
       
       // 3. create CompositionIndex for an existing version XML
+      def composer = new DoctorProxy(
+         value: '5323452345-23452334-23452345',
+         name: 'Dr. House'
+      )
 
       def compoIndex = new CompositionIndex(
          uid:         parsedVersion.data.uid.value.text(),
@@ -550,7 +554,8 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId: parsedVersion.data.@archetype_node_id.text(),
-         templateId:  parsedVersion.data.archetype_details.template_id.value.text()
+         templateId:  parsedVersion.data.archetype_details.template_id.value.text(),
+         composer: composer
       )
       
       def commitAudit = new AuditDetails(
