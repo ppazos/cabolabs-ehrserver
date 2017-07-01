@@ -485,7 +485,13 @@ class DataIndexerService {
       String archetypeId, String archetypePath,
       CompositionIndex owner, List indexes)
    {
-      // TODO: https://github.com/ppazos/cabolabs-ehrserver/issues/643
+      def attributes = [
+         'current_state': 'DV_CODED_TEXT',
+         'transition': 'DV_CODED_TEXT',
+         'careflow_step': 'DV_CODED_TEXT'
+      ]
+      
+      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
    
    private void process_INSTRUCTION_index(
