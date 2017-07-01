@@ -19,13 +19,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
 /** 
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
-class DvTextIndex extends DataValueIndex {
+class LocatableRefIndex extends DataValueIndex {
 
-   String value
+   String locatable_ref_path // the attribute in the RM is path but it colides with the DVIndex.path
+   String namespace
+   String type
+   String value // OBJECT_VERSION_ID.value
+
+   static constraints = {
+   }
 }
