@@ -232,8 +232,13 @@
                   </sec:ifAnyGranted>
                   
 	               <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-	                 <li class="menu_vertical_separator">
+	                 <li>
 	                   <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
+	                 </li>
+	               </sec:ifAnyGranted>
+                  <sec:ifAnyGranted roles="ROLE_ADMIN">
+	                 <li class="menu_vertical_separator">
+	                   <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-database "></i> <g:message code="desktop.data" /></g:link>
 	                 </li>
 	               </sec:ifAnyGranted>
                   

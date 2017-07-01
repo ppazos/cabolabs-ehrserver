@@ -23,6 +23,7 @@
 package com.cabolabs.ehrserver.ehr.clinical_documents
 
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 
 /**
  * Modela una instancei a de indice a nivel de documento (nivel 1).
@@ -52,7 +53,8 @@ class CompositionIndex {
    // multitenancy, copy of ehr.organizationUid
    String organizationUid
    
-   // TODO: composerName para busquedas like %
+   DoctorProxy composer
+   
    // TODO: name (de Locatable) para busqueda like %
    
    def getParent()

@@ -25,6 +25,7 @@ package com.cabolabs.ehrserver.openehr.common.generic
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 
 /**
  * Emula a common.generic.PARTY_IDENTIFIED que hereda de PARTY_PROXY.
@@ -59,5 +60,5 @@ class DoctorProxy {
    }
    
    // Para que AuditDetails salve su DoctorProxy en cascada
-   static belongsTo = [AuditDetails]
+   static belongsTo = [AuditDetails, CompositionIndex]
 }

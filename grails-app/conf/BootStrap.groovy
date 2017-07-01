@@ -582,6 +582,7 @@ class BootStrap {
         new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
+        new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -619,7 +620,7 @@ class BootStrap {
            println "Creating sample organization"
            
            // Sample organizations
-           organizations << new Organization(name: 'CaboLabs', number: '123456')
+           organizations << new Organization(name: 'CaboLabs', number: '123456', uid:'123456') // uid just for testing here!
            //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
            //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
            
@@ -694,7 +695,7 @@ class BootStrap {
      
      
 
-     /*
+     
      // Sample EHRs for testing purposes
      if (Ehr.count() == 0)
      {
@@ -722,7 +723,7 @@ class BootStrap {
            if (!ehr.save()) println ehr.errors
         }
      }
-     */
+     
      
      
       // Create plans

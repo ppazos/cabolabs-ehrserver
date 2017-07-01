@@ -19,13 +19,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-/** 
- * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
- */
-class DvTextIndex extends DataValueIndex {
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import grails.util.Holders
 
-   String value
+class DataValueIndexController {
+
+   def config = Holders.config.app
+
+   def index(Integer max)
+   {
+      params.max = Math.min(max ?: config.list_max, 100)
+      [datavalues: DataValueIndex.list(params), total: DataValueIndex.count()]
+   }
+   
+   def reindex()
+   {
+      // Delete all current indexes
+      DataValueIndex.executeUpdate('DELETE FROM DataValueIndex')
+      
+      // Mark current compos as not indexed, the indexer will catch up on the next round
+      CompositionIndex.list().each {
+         it.dataIndexed = false
+         it.save()
+      }
+      
+      flash.message = 'datavalueindex.reindex.indexingExecuted'
+      redirect action:'index'
+   }
 }
