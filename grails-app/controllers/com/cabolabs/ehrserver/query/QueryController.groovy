@@ -428,6 +428,8 @@ class QueryController {
          {
            'in'('rmTypeName', datatypes)
          }
+         
+         order("path", "asc")
       }
       
       render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")

@@ -223,6 +223,15 @@ class Query {
                case 'DataCriteriaDV_MULTIMEDIA':
                   condition = new DataCriteriaDV_MULTIMEDIA(criteria)
                break
+               case 'DataCriteriaDV_PARSABLE':
+                  condition = new DataCriteriaDV_PARSABLE(criteria)
+               break
+               case 'DataCriteriaString':
+                  condition = new DataCriteriaString(criteria)
+               break
+               case 'DataCriteriaLOCATABLE_REF':
+                  condition = new DataCriteriaLOCATABLE_REF(criteria)
+               break
             }
 
             this.addToWhere(condition)
@@ -417,6 +426,15 @@ class Query {
             case 'DV_MULTIMEDIA':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_MULTIMEDIA.attributes()
             break
+            case 'DV_PARSABLE':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_PARSABLE.attributes()
+            break
+            case 'String':
+               resHeaders[absPath]['attrs'] = DataCriteriaString.attributes()
+            break
+            case 'LOCATABLE_REF':
+               resHeaders[absPath]['attrs'] = DataCriteriaLOCATABLE_REF.attributes()
+            break
             default:
                throw new Exception("type "+dataGet.rmTypeName+" not supported")
          }
@@ -538,6 +556,16 @@ class Query {
                      colValues['mediaType'] = dvi.mediaType
                      colValues['size'] = dvi.size
                      colValues['alternateText'] = dvi.alternateText
+                  break
+                  case 'DV_PARSABLE':
+                     colValues['value'] = dvi.value
+                     colValues['formalism'] = dvi.formalism
+                  break
+                  case 'String':
+                     colValues['value'] = dvi.value
+                  break
+                  case 'LOCATABLE_REF':
+                     colValues['locatable_ref_path'] = dvi.locatable_ref_path
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
@@ -678,6 +706,16 @@ class Query {
                                                    size:          dvi.size,
                                                    alternateText: dvi.alternateText,
                                                    date:          dvi.owner.startTime]
+               break
+               case 'DV_PARSABLE':
+                  resGrouped[absPath]['serie'] << [value:         dvi.value,
+                                                   formalism:     dvi.formalism]
+               break
+               case 'String':
+                  resGrouped[absPath]['serie'] << [value:         dvi.value]
+               break
+               case 'LOCATABLE_REF':
+                  resGrouped[absPath]['serie'] << [locatable_ref_path: dvi.locatable_ref_path]
                break
                default:
                   throw new Exception("type "+dataGet.rmTypeName+" not supported")
@@ -826,6 +864,18 @@ class Query {
                case 'DV_MULTIMEDIA':
                   fromMap['DvMultimediaIndex'] = 'dvmmd'
                   where += " AND dvmmd.id = dvi.id "
+               break
+               case 'DV_PARSABLE':
+                  fromMap['DvParsableIndex'] = 'dpab'
+                  where += " AND v.id = dvi.id "
+               break
+               case 'String':
+                  fromMap['StringIndex'] = 'dstg'
+                  where += " AND dstg.id = dvi.id "
+               break
+               case 'LOCATABLE_REF':
+                  fromMap['LocatableRefIndex'] = 'dlor'
+                  where += " AND dlor.id = dvi.id "
                break
                default:
                   throw new Exception("type $idxtype not supported")

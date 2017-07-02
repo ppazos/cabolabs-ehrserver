@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,52 +19,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 package com.cabolabs.ehrserver.query.datatypes
 
 import com.cabolabs.ehrserver.query.DataCriteria
 
-class DataCriteriaDV_TEXT extends DataCriteria {
+class DataCriteriaDV_PARSABLE extends DataCriteria {
 
    String valueValue
-
-   // Comparison operands
    String valueOperand
-
    
-   DataCriteriaDV_TEXT()
+   List formalismValue
+   String formalismOperand
+   
+   DataCriteriaDV_PARSABLE()
    {
-      rmTypeName = 'DV_TEXT'
-      alias = 'dti'
+      rmTypeName = 'DV_PARSABLE'
+      alias = 'dpab'
    }
    
-   //static hasMany = [valueValues: String] // FIXME: this should be one value since no spec requires a in_list or range.
+   static hasMany = [formalismValue: String]
    
    static constraints = {
    }
-   static mapping = {
-      valueValue column: "dv_text_value"
-   }
    
-   /**
-    * Metadata that defines the types of criteria supported to search
-    * by conditions over DV_QUANTITY.
-    * @return
-    */
    static List criteriaSpec(String archetypeId, String path)
    {
-      return [
+      def spec = [
         [
           value: [
-            contains:  'value', // ilike %value%
-            eq:  'value'
+            contains: 'value' // ilike %value%
+          ],
+          formalism: [
+            in_list: 'list'
+          ]
+        ],
+        [
+          formalism: [
+            in_list: 'list'
           ]
         ]
       ]
+      
+      // TODO: get formalisms from parsable index constraint
+      //if (units.size() > 0) spec[0].units.units = units
+      
+      return spec
    }
    
    static List attributes()
    {
-      return ['value']
+      return ['value', 'formalism']
+   }
+   
+   String toString()
+   {
+      return this.getClass().getSimpleName() +": "+ this.valueOperand +" "+ this.valueValue +" "+ this.formalismOperand +" "+ this.formalismValue.toString()
    }
 }

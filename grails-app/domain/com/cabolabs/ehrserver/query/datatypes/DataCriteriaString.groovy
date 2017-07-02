@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,19 +19,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-/** 
- * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
- */
-class LocatableRefIndex extends DataValueIndex {
+package com.cabolabs.ehrserver.query.datatypes
 
-   // path to the instruction inside a version, from compo root
-   String locatable_ref_path // the attribute in the RM is path but it colides with the DVIndex.path
-   String namespace
-   String type
-   String value // OBJECT_VERSION_ID.value
+import com.cabolabs.ehrserver.query.DataCriteria
+
+class DataCriteriaString extends DataCriteria {
+
+   String valueValue
+   String valueOperand
+
+   DataCriteriaString()
+   {
+      rmTypeName = 'String'
+      alias = 'dstg'
+   }
 
    static constraints = {
+   }
+   
+   static List criteriaSpec(String archetypeId, String path)
+   {
+      return [
+        [
+          value: [
+            contains:  'value', // ilike %value%
+            eq:  'value'
+          ]
+        ]
+      ]
+   }
+   
+   static List attributes()
+   {
+      return ['value']
    }
 }

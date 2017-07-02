@@ -36,7 +36,10 @@ public enum DataValues {
    DV_DURATION,
    DV_DATE,
    DV_IDENTIFIER,
-   DV_MULTIMEDIA
+   DV_MULTIMEDIA,
+   DV_PARSABLE,
+   String, // Need string for the String attributes that need to be indexed from OPTs like INSTRUCTION_DETAILS.activity_id
+   LOCATABLE_REF // Not a DV but we have indexed it for querying INSTRUCTION_DETAILS.instruction_id
    
    /**
     * This is to solve a bug on adl parser it uses Java types instead of RM ones
