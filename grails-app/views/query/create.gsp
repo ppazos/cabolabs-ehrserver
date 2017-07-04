@@ -67,6 +67,13 @@
         font-size: 12px;
         border-radius: 3px;
       }
+      
+      /* null flavour paths hidden by default */
+      option.null_flavour {
+        display: none;
+        background-color: #eeeeee;
+      }
+      
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -819,10 +826,21 @@ resp.responseJSON.result.message +'</div>'
           
             /*
             didx
-             archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1
-             name: 'value'
-             path: '/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
-             rmTypeName: "DV_QUANTITY"
+             {
+               "class": "com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem",
+               "id": 38,
+               "archetypeId": "openEHR-EHR-INSTRUCTION.medication_order.v1",
+               "name": {
+                  "ISO_639-1::en": "Order.action_archetype_id"
+               },
+               "parentOpts": [{
+                  "class": "com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex",
+                  "id": 2
+               }],
+               "path": "/activities[at0001]/action_archetype_id",
+               "rmTypeName": "String",
+               "terminologyRef": null
+            }
             */
 
             // Saca las options que haya
@@ -833,14 +851,14 @@ resp.responseJSON.result.message +'</div>'
             
             // Adds options to the select
             $(data).each(function(i, didx) {
-            
+
               // if there is no name for the current lang, the node is from a template that is on another language, should not be on the query create.
               if (didx.name['ISO_639-1::${session.lang}'])
               {
                 $('select[name=view_archetype_path]').append(
-                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'">'+ 
-                  didx.name['ISO_639-1::${session.lang}'] +
-                  ' {'+ didx.rmTypeName + '}</option>'
+                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'"'+
+                  (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+ 
+                  didx.name['ISO_639-1::${session.lang}'] +' ('+ didx.rmTypeName + ')</option>'
                 );
               }
             });
@@ -1169,6 +1187,18 @@ resp.responseJSON.result.message +'</div>'
       
     
       $(document).ready(function() {
+      
+        $('input[name=display_null_flavour]').on('change', function(evt) {
+        
+          if (this.checked)
+          {
+            $('option.null_flavour').css('display', 'block');
+          }
+          else
+          {
+            $('option.null_flavour').css('display', 'none');
+          }
+        });
       
         $('select[name=type]').val(""); // select empty option by default
         
@@ -1673,6 +1703,9 @@ resp.responseJSON.result.message +'</div>'
                       <select name="view_archetype_path" size="10" class="form-control withsize">
                         <option><g:message code="query.create.please_select_concept" /></option>
                       </select>
+                      <div>
+                        <label><input type="checkbox" name="display_null_flavour" /> <g:message code="query.create.label.displayNullFlavours" /></label>
+                      </div>
                     </td>
                   </tr>
                </table>
