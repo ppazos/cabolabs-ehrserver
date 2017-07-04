@@ -120,6 +120,25 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
         spec[0].code.codes = codes
         spec[0].terminologyId.codes = ['local': 'local'] // if the terms are defined in the archetype, the terminology is local
       }
+      else if (path.endsWith('/null_flavour')) // show valid null flavour codes
+      {
+         // TODO: support getting this from i18n openehr terminology
+         /*
+         <group name="null flavours">
+          <concept id="271" rubric="no information"/>
+          <concept id="253" rubric="unknown"/>
+          <concept id="272" rubric="masked"/>
+          <concept id="273" rubric="not applicable"/>
+         </group>
+         */
+         spec[0].code.codes = [
+            253: 'unknown',
+            271: 'no information',
+            272: 'masked',
+            273: 'not applicable'
+         ]
+         spec[0].terminologyId.codes = ['openehr': 'openehr'] // if the terms are defined in the archetype, the terminology is local
+      }
       else
       {
         // https://github.com/ppazos/cabolabs-ehrserver/issues/154
