@@ -473,10 +473,11 @@ class Query {
    
    private Map queryDataGroupByComposition(res, resHeaders)
    {
-      def dvi
+      def coldvis
       def colValues // lista de valores de una columna
       def uid
       def resGrouped = [:]
+      def elem
       
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
@@ -500,79 +501,86 @@ class Query {
             //println "header: " + path + " " + colData
             //resGrouped[compoId]['colValues']['type'] = idxtype
             
-            colValues = [type: colData['type'], path: _absPath] // pongo la path para debug
+            // values contain 1 element if there is only 1 DV occurrence, or many elements
+            // as occurrences of that node exist.
+            colValues = [type: colData['type'], path: _absPath, values:[]] // pongo la path para debug
             
             // dvi para la columna actual
-            dvi = dvis.find{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
+            // pueden ser varios si hay multiples ocurrencias del mismo nodo
+            coldvis = dvis.findAll{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
             
-            if (dvi)
-            {
+            coldvis.each { dvi ->
+            
+               elem = [:]
+            
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
                   case 'DV_QUANTITY':
-                     colValues['magnitude'] = dvi.magnitude
-                     colValues['units'] = dvi.units
+                     elem['magnitude'] = dvi.magnitude
+                     elem['units'] = dvi.units
                   break
                   case 'DV_CODED_TEXT':
-                     colValues['value'] = dvi.value
-                     colValues['code'] = dvi.code
+                     elem['value'] = dvi.value
+                     elem['code'] = dvi.code
                   break
                   case 'DV_TEXT':
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case ['DV_DATE_TIME', 'DV_DATE']:
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case 'DV_BOOLEAN':
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case 'DV_COUNT':
-                     colValues['magnitude'] = dvi.magnitude
+                     elem['magnitude'] = dvi.magnitude
                   break
                   case 'DV_PROPORTION':
-                     colValues['numerator'] = dvi.numerator
-                     colValues['denominator'] = dvi.denominator
-                     colValues['type'] = dvi.type
-                     colValues['precision'] = dvi.precision
+                     elem['numerator'] = dvi.numerator
+                     elem['denominator'] = dvi.denominator
+                     elem['type'] = dvi.type
+                     elem['precision'] = dvi.precision
                   break
                   case 'DV_ORDINAL':
-                     colValues['value'] = dvi.value
-                     colValues['symbol_value'] = dvi.symbol_value
-                     colValues['symbol_code'] = dvi.symbol_code
-                     colValues['symbol_terminology_id'] = dvi.symbol_terminology_id
+                     elem['value'] = dvi.value
+                     elem['symbol_value'] = dvi.symbol_value
+                     elem['symbol_code'] = dvi.symbol_code
+                     elem['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
                   case 'DV_DURATION':
-                     colValues['value'] = dvi.value
-                     colValues['magnitude'] = dvi.magnitude
+                     elem['value'] = dvi.value
+                     elem['magnitude'] = dvi.magnitude
                   break
                   case 'DV_IDENTIFIER':
-                     colValues['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
-                     colValues['type'] = dvi.type
-                     colValues['issuer'] = dvi.issuer
-                     colValues['assigner'] = dvi.assigner
+                     elem['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                     elem['type'] = dvi.type
+                     elem['issuer'] = dvi.issuer
+                     elem['assigner'] = dvi.assigner
                   break
                   case 'DV_MULTIMEDIA':
-                     colValues['mediaType'] = dvi.mediaType
-                     colValues['size'] = dvi.size
-                     colValues['alternateText'] = dvi.alternateText
+                     elem['mediaType'] = dvi.mediaType
+                     elem['size'] = dvi.size
+                     elem['alternateText'] = dvi.alternateText
                   break
                   case 'DV_PARSABLE':
-                     colValues['value'] = dvi.value
-                     colValues['formalism'] = dvi.formalism
+                     elem['value'] = dvi.value
+                     elem['formalism'] = dvi.formalism
                   break
                   case 'String':
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case 'LOCATABLE_REF':
-                     colValues['locatable_ref_path'] = dvi.locatable_ref_path
+                     elem['locatable_ref_path'] = dvi.locatable_ref_path
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
                
-               resGrouped[uid]['cols'] << colValues
-            }
+               colValues.values << elem
+            } // each dvi
+            
+            resGrouped[uid]['cols'] << colValues
          }
       }
       

@@ -205,34 +205,24 @@ var renderchart = function(series)
 
 var queryDataRenderTable = function(data)
 {
+  console.log('queryDataRenderTable');
+  console.log(data);
+  
   var headers = data[0];
   var rows = data[1];
-  var table = $('<table></table>');
-  
+  var table = $('<table width="100%"></table>');
   
   // ================================================================
   // Muestra headesr y subheaders
-  
-  htmlsubheaders = ''; // subheaders para cada header
   htmlheaders = '<tr>';
+  $.each(headers, function(path, header) {
   
-  $.each(headers, function(path, subheaders) {
-  
-    console.log('path y subheaders', path, subheaders);
-    
+    //console.log('path y subheaders', path, subheaders);
     // TODO: deberia ser archetype+path para que sea absoluta
     // name es el nombre del ArchetypeIndexItem coorespondiente al archId y path del DataValueIndex
-    htmlheaders += '<th colspan="'+ subheaders.attrs.length +'" title="'+ path +'">'+ subheaders.name +'</th>';
-    
-    $.each(subheaders.attrs, function(i, attr)
-    {
-      console.log('attr', attr);
-      htmlsubheaders += '<td>'+ attr +'</td>';
-    });
-    
+    htmlheaders += '<th title="'+ path +'">'+ header.name['ISO_639-1::'+ session_lang] +' ('+ header.type +')</th>';
   });
   htmlheaders +='<th></th></tr>'; // th extra para las acciones de ver composition de cada fila
-  
   
   // =================================================================
   // Muestra cada fila
@@ -246,19 +236,33 @@ var queryDataRenderTable = function(data)
   
     // itera por columnas (headesrs = paths)
     htmlrows += '<tr>';
-    $.each(data.cols, function(ix, colvalues) { // evito attr type y path, los demas son los atributos de los subheaders que dependen del type del datavalue
+    $.each(data.cols, function(column, colvalues) { // evito attr type y path, los demas son los atributos de los subheaders que dependen del type del datavalue
     
-      console.log('ix y colvalues', ix, colvalues);
-    
-      // itera por atributos simples de datavalues de cada columna (subheaders)
-      $.each(colvalues, function(attr, value) {
+      //console.log('colvalues', colvalues);
+      htmlrows += '<td>';
       
-        console.log('attr y value', attr, value);
+      elem_columns = headers[colvalues.path].attrs; // units, magnitude
+      //console.log('elem_columns', elem_columns);
       
-        if (attr == 'path' || attr == 'type') return true;
-      
-        htmlrows += '<td>'+ value +'</td>';
+      htmlrows += '<table width="100%"><tr>';
+      $.each(elem_columns, function(jjj, colattr) {
+         htmlrows += '<th>'+ colattr +'</th>';
       });
+      htmlrows += '</tr>';
+      
+      // itera por atributos simples de datavalues de cada columna (subheaders)
+      $.each(colvalues.values, function(iii, elem) {
+        
+        //console.log('elem', elem);
+        htmlrows += '<tr>';
+        $.each(elem, function(attr, value) {
+          htmlrows += '<td>'+ value +'</td>';
+        });
+        htmlrows += '</tr>';
+      });
+      htmlrows += '</table>';
+      
+      htmlrows += '</td>';
     });
     
     // links a composition
@@ -268,8 +272,7 @@ var queryDataRenderTable = function(data)
     htmlrows += '</td></tr>';
   });
   
-  
   // Uso el chartContainer para mostrar la tabla
-  table.html( htmlheaders + htmlsubheaders + htmlrows );
+  table.html( htmlheaders + htmlrows );
   $('#chartContainer').append(table);
 }; // queryDataRenderTable
