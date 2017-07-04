@@ -29,6 +29,10 @@ class DvParsableIndex extends DataValueIndex {
    String value // might need to map to another column name
    String formalism
 
+   static mapping = {
+     value column: "parsable_index_value"
+   }
+   
    static constraints = {
       formalism inList:[
          "text/xml",
@@ -37,5 +41,6 @@ class DvParsableIndex extends DataValueIndex {
          "text/html",
          "iso8601" // this is to parse time expressions for activity.timing, we don't know if this is date, datetime, duration or period.
       ]
+      value(maxSize: 2147483647) //2GB, Groovy Integer.MAX_VALUE: http://docs.groovy-lang.org/next/html/documentation/core-syntax.html#_numbers
    }
 }

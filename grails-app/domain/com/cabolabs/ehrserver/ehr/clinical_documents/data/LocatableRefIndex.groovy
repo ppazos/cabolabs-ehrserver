@@ -33,5 +33,6 @@ class LocatableRefIndex extends DataValueIndex {
    String value // OBJECT_VERSION_ID.value
 
    static constraints = {
+      locatable_ref_path(maxSize: 2048)
    }
 }
