@@ -145,16 +145,16 @@ class Query {
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      this.name     = json['name']
-      this.type     = json['type']
-      this.isPublic = json['isPublic']
-      this.format   = ( json['format'] ) ? json['format'] : 'xml' 
+      this.name       = json['name']
+      this.type       = json['type']
+      this.isPublic   = json['isPublic']
+      this.format     = ( json['format'] ) ? json['format'] : 'xml' 
+      this.templateId = json['template_id']
       
       if (this.type == 'composition')
       {
          this.criteriaLogic = json['criteriaLogic']
-         this.templateId    = json['template_id']
-         
+
          this.where.each {
             it.delete()
          }
@@ -317,7 +317,7 @@ class Query {
          
          // WHERE level 1 filters
          owner { // CompositionIndex
-            
+            if (templateId) eq('templateId', templateId)
             if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
             if (from) ge('startTime', from) // greater or equal

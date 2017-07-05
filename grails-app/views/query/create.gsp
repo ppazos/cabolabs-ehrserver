@@ -281,6 +281,7 @@
         {
            query.set_format( $('select[name=format]').val() );
            query.set_group( $('select[name=group]').val() ); // for datavalue query
+           query.set_template_id( $('select[name=dv_templateId]').val() );
         }
         else
         {
@@ -453,6 +454,8 @@ resp.responseJSON.result.message +'</div>'
         query.set_format($('select[name=format]').val());
         query.set_group($('select[name=group]').val()); // for datavalue query
 
+        query.set_template_id( $('select[name=dv_templateId]').val() );
+        
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
@@ -1223,9 +1226,6 @@ resp.responseJSON.result.message +'</div>'
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
           
-          
-          println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
-          
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           println 'query.set_id("'+ queryInstance.id +'");'
@@ -1243,10 +1243,10 @@ resp.responseJSON.result.message +'</div>'
             println 'query.set_template_id("'+ queryInstance.templateId +'");'
           
           
-          
-          
           if (queryInstance.type == 'composition')
           {
+             println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
+             
              // similar code to dom_add_criteria_2 in JS
              
              def attrs, attrValueField, attrOperandField, value, operand, name
@@ -1333,8 +1333,10 @@ resp.responseJSON.result.message +'</div>'
                 criteria_str = ""
              }
           }
-          else
+          else // datavalue
           {
+             println '$("select[name=dv_templateId]").val("'+ queryInstance.templateId +'");'
+             
              def name
              queryInstance.select.each { data_get ->
                 
@@ -1871,6 +1873,21 @@ resp.responseJSON.result.message +'</div>'
             
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover">
+                <tr>
+                  <td>
+                    <g:message code="query.create.criteria.filterByDocumentType" />
+                    <span class="info">
+                      <asset:image src="skin/information.png" />
+                      <span class="content">
+                        Selecting a document type will narrow the query to get only this type of document as a result.
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <g:select name="dv_templateId" size="5"
+                              from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
+                  </td>
+                </tr>
                 <tr>
                   <td><g:message code="query.create.default_format" /></td>
                   <td>
