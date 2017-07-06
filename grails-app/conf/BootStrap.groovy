@@ -597,6 +597,8 @@ class BootStrap {
         new RequestMap(url: '/role/**',                      configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
+        new RequestMap(url: '/messaging/**',                 configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        
         // share/unshare queries and opts between orgs
         new RequestMap(url: '/resource/**',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
