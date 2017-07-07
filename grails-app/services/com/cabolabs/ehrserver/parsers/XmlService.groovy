@@ -384,17 +384,13 @@ class XmlService {
    */
    def parseVersions(Ehr ehr, GPathResult versionsXML, Date auditTimeCommitted, Contribution contribution)
    {
-      def commitAudit, compoIndex, version
+      def commitAudit, compoIndex, version, existingPersistentCompo
       def dataOut = []
       
       versionsXML.version.eachWithIndex { parsedVersion, i ->
       
-         //println "parseVersion "+ parsedVersion.uid.value.text()
-         
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
-         //println "commitAudit: "+ commitAudit
-         
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
          
 
@@ -410,71 +406,116 @@ class XmlService {
             data: compoIndex
          )
          
+         // Verify correct parameters for persistent commit
+         // If the version is a persistent composition, and for the EHR there is already a version,
+         // the change type should be "modification", if not, CommitWrongChangeTypeException
+         // If everything is OK, the version UID should be checked: it should be the same as the compo index for the ehrid and archetype checked above.
          
-         // ================================================================
-         // Necesito verificar por el versionado, sino me guarda 2 versions con isLatestVersion en true
-         
-         // TODO: documentar
-         // Si hay una nueva VERSION, del cliente viene con el ID de la version que se esta actualizando
-         // y el servidor actualiza el VERSION.uid con la version nueva en VersionTreeId.
-         // El cliente solo setea el id de la primera version, cuando es creation.
-         
-         // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
-         if (Version.countByUid(version.uid) == 1)
+         if (compoIndex.category == "persistent")
          {
-            if (version.commitAudit.changeType == "creation")
+            existingPersistentCompo = CompositionIndex.findByCategoryAndArchetypeIdAndEhrUid(compoIndex.category, compoIndex.archetypeId, compoIndex.ehrUid)
+            
+            if (version.commitAudit.changeType == "creation" && existingPersistentCompo)
             {
-               //IllegalArgumentException
-               throw new CommitWrongChangeTypeException("A version with UID ${version.uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error.")
+               throw new CommitWrongChangeTypeException("A persistent composition for ${compoIndex.archetypeId} already exists in the EHR ${compoIndex.ehrUid}, so the change type should not be 'creation', it should be 'modification'.")
             }
             
-            // change type is not creation
-
-            
-            // Verifies that the commit is a new version of the latestVersion
-            // Avoid committing an amendment for a version that is not the latest.
-            // This keeps consistency for the linear versioning we support.
-            def versionedComposition = VersionedComposition.findByUid(version.objectId)
-            def lastVersion = versionedComposition.latestVersion
-            if (lastVersion.uid != version.uid)
+            if (version.commitAudit.changeType != "creation" && !existingPersistentCompo)
             {
-               throw new CommitCantCreateNewVersionException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please checkout the latest version ${lastVersion.uid}")
+               throw new CommitWrongChangeTypeException("A persistent composition for ${compoIndex.archetypeId} does not exists in the EHR ${compoIndex.ehrUid}, the change type should be 'creation' and it is ${version.commitAudit.changeTyp}")
             }
             
-            
-            // Commit is for the last version of the compo
-            
-            def previousLastVersion = lastVersion //Version.findByUid(version.uid)
-            previousLastVersion.data.lastVersion = false // lastVersion pasa a estar solo en CompoIndex por https://github.com/ppazos/cabolabs-ehrserver/issues/66
-            
+            // Persistent compo versioning process
+            // It is modification and exists a persistent compo for the archid and ehruid
+            if (version.commitAudit.changeType == "modification" && existingPersistentCompo)
+            {
+               // check if the version has the right objectid, if should exist the VersionedCompo for that object id
+               def versionedComposition = VersionedComposition.findByUid(version.objectId)
+               if (!versionedComposition)
+               {
+                  throw new RuntimeException("Version.uid.objectId doesn't correspond to an existing versioned object. Please use the checkout service to get the right uid and be able to commit a new version for a persistent composition")
+               }
+               
+               def lastVersion = versionedComposition.latestVersion
+               if (lastVersion.uid != version.uid)
+               {
+                  throw new CommitCantCreateNewVersionException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please use the checkout service to get the latest version uid")
+               }
+               
+               def previousLastVersion = lastVersion
+               previousLastVersion.data.lastVersion = false
+               
+               if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
 
-            // FIXME: si falla, rollback. Este servicio deberia ser transaccional
-            // This is adding (I dont know why) the version to the contribution.versions list
-            if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
+               // +1 version tree id of version.uid
+               version.addTrunkVersion()
 
-            //println "POST previousVersion.save"
-            //println (previousLastVersion as grails.converters.XML)
-            
-            
-            // +1 en el version tree id de version.uid
-            version.addTrunkVersion()
-            // version se salva luego con la contribution
-            
-
+               // Update the XML with the new version uid.
+               parsedVersion.uid.value = version.uid
+            }
+         }
+         else // event
+         {
             // ================================================================
-            // Update the XML with the new version uid.
-            //
-            // The new version.uid was updated in memory and saved into the DB,
-            // for checkout purposes we need also to update it in the XML version
-            // received, because the version uid received is for the previous version
-            // but the saved version is the one that will be checked out, so should
-            // have the next version uid.
+            // Necesito verificar por el versionado, sino me guarda 2 versions con isLatestVersion en true
             
-            // This searches for the version id in the XML string and changes
-            // it with the new version uid. This will be saved to a file by the controller.
-            parsedVersion.uid.value = version.uid // Aca ya agrega la version a contribution.versions!!!! en modification
+            // TODO: documentar
+            // Si hay una nueva VERSION, del cliente viene con el ID de la version que se esta actualizando
+            // y el servidor actualiza el VERSION.uid con la version nueva en VersionTreeId.
+            // El cliente solo setea el id de la primera version, cuando es creation.
             
-            // ================================================================
+            // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
+            if (Version.countByUid(version.uid) == 1)
+            {
+               if (version.commitAudit.changeType == "creation")
+               {
+                  //IllegalArgumentException
+                  throw new CommitWrongChangeTypeException("A version with UID ${version.uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error.")
+               }
+               
+               // change type is not creation
+
+               // Verifies that the commit is a new version of the latestVersion
+               // Avoid committing an amendment for a version that is not the latest.
+               // This keeps consistency for the linear versioning we support.
+               def versionedComposition = VersionedComposition.findByUid(version.objectId)
+               def lastVersion = versionedComposition.latestVersion
+               if (lastVersion.uid != version.uid)
+               {
+                  throw new CommitCantCreateNewVersionException("A change type ${version.commitAudit.changeType} was received for a version that is not the latest, please checkout the latest version ${lastVersion.uid}")
+               }
+               
+               // Commit is for the last version of the compo
+               def previousLastVersion = lastVersion
+               previousLastVersion.data.lastVersion = false
+               
+
+               // FIXME: si falla, rollback. Este servicio deberia ser transaccional
+               // This is adding (I dont know why) the version to the contribution.versions list
+               if (!previousLastVersion.save()) println previousLastVersion.errors.allErrors
+
+               //println "POST previousVersion.save"
+               //println (previousLastVersion as grails.converters.XML)
+               
+               // +1 version tree id of version.uid
+               version.addTrunkVersion()
+               // version se salva luego con la contribution
+
+               // ================================================================
+               // Update the XML with the new version uid.
+               //
+               // The new version.uid was updated in memory and saved into the DB,
+               // for checkout purposes we need also to update it in the XML version
+               // received, because the version uid received is for the previous version
+               // but the saved version is the one that will be checked out, so should
+               // have the next version uid.
+               
+               // This searches for the version id in the XML string and changes
+               // it with the new version uid. This will be saved to a file by the controller.
+               parsedVersion.uid.value = version.uid // Aca ya agrega la version a contribution.versions!!!! en modification
+               
+               // ================================================================
+            }
          }
 
          dataOut[i] = version
@@ -545,9 +586,11 @@ class XmlService {
       }
       
       // Check if the committed compo has an uid, if not, the server assigns one
-      def compoUid = (java.util.UUID.randomUUID() as String)
+      def compoUid
       if (version.data.uid.size() == 0)
       {
+         compoUid = (java.util.UUID.randomUUID() as String)
+         
          // Add the compo uid to the XML
          // Supongo que la COMPOSITION NO tiene un UID
          // With + groovy adds the new node after the name node to be compliant with the XSD
@@ -607,7 +650,7 @@ class XmlService {
          organizationUid: ehr.organizationUid,
          archetypeId: version.data.@archetype_node_id.text(),
          templateId:  version.data.archetype_details.template_id.value.text(),
-         composer: composer
+         composer:    composer
       )
       
       return compoIndex
