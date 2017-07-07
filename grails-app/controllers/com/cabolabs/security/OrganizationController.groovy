@@ -209,9 +209,9 @@ class OrganizationController {
             return
          }
    
-         def virtualUser = new User(username: String.random(50),
+         def virtualUser = new User(username: 'apikey'+String.random(50),
                                     password: String.uuid(),
-                                    email: String.random(50) + '@virtual.com',
+                                    email: String.random(50) + '@apikey.com',
                                     isVirtual: true,
                                     enabled: true,
                                     organizations: [org])

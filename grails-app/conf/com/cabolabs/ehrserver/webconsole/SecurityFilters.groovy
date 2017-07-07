@@ -42,6 +42,7 @@ class SecurityFilters {
    
    def springSecurityService
    def messageSource
+   def apiResponsesService
    
    static def config = Holders.config.app
 
@@ -227,11 +228,11 @@ class SecurityFilters {
                def organizationUid
                
                // also consider endpoints outside rest, TODO: stats API.
-               if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName))
+               if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName)) // API call?
                {
                   if (actionName == 'login')
                   {
-                     username = params.username
+                     username = params.username // no need of checking if the username exists, that is done by the login itself :)
                   }
                   else
                   {
@@ -254,16 +255,37 @@ class SecurityFilters {
                         
                         if (User.countByUsername(username) == 0)
                         {
-                           // TODO: send in the request format (add support to json)
-                           render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                              result {
-                                 type('AR')                         // application reject
-                                 message(
-                                    messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request))
-                                 )
-                                 code('EHR_SERVER::API::ERRORS::987653') // sys::service::concept::code
-                              }
+                           def result
+                           if (username.startsWith("apikey"))
+                           {
+                              result = apiResponsesService.feedback(
+                                 messageSource.getMessage('rest.error.token.apiKeyExpired', null, getRequestLocale(request)),
+                                 'AR',
+                                 '987654',
+                                 params.format)
                            }
+                           else
+                           {
+                              result = apiResponsesService.feedback(
+                                 messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request)),
+                                 'AR',
+                                 '987653',
+                                 params.format)
+                           }
+                           
+                           switch (params.format?.toLowerCase())
+                           {
+                              case 'xml':
+                                 render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                              break
+                              case 'json':
+                                 response.status = 400
+                                 render(text:result, contentType:"application/json", encoding:"UTF-8")
+                              break
+                              default:
+                                 render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                           }
+                           
                            return false
                         }
                         
@@ -288,7 +310,7 @@ class SecurityFilters {
                      }
                   }
                }
-               else
+               else // Web Console, not API
                {
                   def auth = springSecurityService.authentication
                   

@@ -9,6 +9,16 @@ import grails.util.Environment
 @Transactional
 class ApiResponsesService {
    
+   def feedback(message, type, code, format)
+   {
+      if (!format) format = 'json'
+      format = format.toLowerCase()
+      
+      if (format == 'json') return feedback_json(message, type, code)
+      if (format == 'xml') return feedback_xml(message, type, code)
+      return feedback_json(message, type, code) // default
+   }
+   
    def feedback_json(message, type, code)
    {
       return feedback_json(message, type, code, [])

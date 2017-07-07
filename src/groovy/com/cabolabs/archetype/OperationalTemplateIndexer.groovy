@@ -113,7 +113,7 @@ class OperationalTemplateIndexer {
       {
          def nodeId = node.node_id.text()
          if (!nodeId) nodeId = node.parent().parent().node_id.text()
-         println "nodeID "+ nodeId +" "+ node.name() +" "+ archetypeId +" "+ path +" "+ relPath
+         //println "nodeID "+ nodeId +" "+ node.name() +" "+ archetypeId +" "+ path +" "+ relPath
          name = getText(parent, nodeId)
       }
       else
