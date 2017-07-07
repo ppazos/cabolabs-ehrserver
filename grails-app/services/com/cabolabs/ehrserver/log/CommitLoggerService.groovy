@@ -144,6 +144,8 @@ class CommitLoggerService {
         activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null)
       )
       
+      if (!commit.validate()) println commit.errors
+      
       commit.save(failOnError: true)
       
       if (logContent)

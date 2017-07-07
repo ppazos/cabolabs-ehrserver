@@ -345,6 +345,13 @@ class RestController {
          // the json is transformed to xml and processed as an xml commit internally
          versionsXML = jsonService.json2xml(content)
          
+         if (!versionsXML) // if empty, JSON is invalid, excepts are cached internally in the service
+         {
+            commitLoggerService.log(request, null, false, null, session)
+            renderError(message(code:'rest.commit.error.invalidJSON'), '50112', 400)
+            return
+         }
+         
          //println "versionsXML from JSON "+ versionsXML
          
          def slurper = new XmlSlurper(false, false)
@@ -360,7 +367,16 @@ class RestController {
       else if (["application/xml", "text/xml"].contains(request.contentType))
       {
          def slurper = new XmlSlurper(false, false)
-         _parsedVersions = slurper.parseText(content)
+         try
+         {
+            _parsedVersions = slurper.parseText(content)
+         }
+         catch (org.xml.sax.SAXParseException sex) // checks malformed XML
+         {
+            commitLoggerService.log(request, null, false, null, session)
+            renderError(message(code:'rest.commit.error.invalidXML'), '50111', 400, [], sex)
+            return
+         }
       }
       // TODO: else content type not supported!
       
@@ -483,6 +499,16 @@ class RestController {
       }
       catch (Exception e)
       {
+         // When two commits of creation for the persistent compo to the same EHR
+         // happen, an error is thrown, that is OK, but here fails in the log saying
+         // that failed to lazily initialize a collection of role:
+         // com.cabolabs.ehrserver.openehr.ehr.Ehr.contributions, could not initialize proxy
+         // - no Session, and ehr.isAttached() here returns false I don't know why.
+         // This fixes that by attaching a the EHR to the session.
+         if (!ehr.isAttached()) {
+            ehr.attach()
+         }
+
          commitLoggerService.log(request, null, false, content, session)
          
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
