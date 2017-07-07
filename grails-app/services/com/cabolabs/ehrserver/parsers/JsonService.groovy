@@ -107,7 +107,8 @@ class JsonService {
       }
       catch (Exception e)
       {
-         e.printStackTrace()
+         //e.printStackTrace()
+         log.error("JsonService couldn't parse JSON 1")
       }
       finally
       {
@@ -118,7 +119,8 @@ class JsonService {
          }
          catch (IOException e)
          {
-            e.printStackTrace()
+            //e.printStackTrace()
+            log.error("JsonService couldn't parse JSON 2")
          }
       }
       

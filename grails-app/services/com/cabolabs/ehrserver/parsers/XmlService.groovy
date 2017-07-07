@@ -433,7 +433,7 @@ class XmlService {
                def versionedComposition = VersionedComposition.findByUid(version.objectId)
                if (!versionedComposition)
                {
-                  throw new RuntimeException("Version.uid.objectId doesn't correspond to an existing versioned object. Please use the checkout service to get the right uid and be able to commit a new version for a persistent composition")
+                  throw new RuntimeException("version.uid..value.objectId ${version.objectId} doesn't correspond to an existing versioned object. Please use the checkout service to get the right uid and be able to commit a new version for a persistent composition")
                }
                
                def lastVersion = versionedComposition.latestVersion
