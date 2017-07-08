@@ -26,6 +26,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import groovy.util.slurpersupport.GPathResult
@@ -54,6 +55,10 @@ class XmlService {
    def xmlValidationService
    def versionFSRepoService
    
+   def CHANGE_TYPE_CREATION = 249
+   def CHANGE_TYPE_AMENDMENT = 250
+   def CHANGE_TYPE_MODIFICATION = 251
+   def CHANGE_TYPE_DELETED = 523
    
    def processCommit(Ehr ehr, GPathResult versions, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
    {
@@ -235,7 +240,7 @@ class XmlService {
          def versionedComposition
          switch (version.commitAudit.changeType)
          {
-            case 'creation':
+            case ChangeType.CREATION:
             
                versionedComposition = new VersionedComposition(
                   uid: version.objectId,
@@ -246,7 +251,7 @@ class XmlService {
                versionedComposition.save(flush:true, failOnError:true)
                
             break
-            case ['amendment', 'modification']:
+            case [ChangeType.AMENDMENT, ChangeType.MODIFICATION]:
                
                versionedComposition = VersionedComposition.findByUid(version.objectId)
 
@@ -415,19 +420,19 @@ class XmlService {
          {
             existingPersistentCompo = CompositionIndex.findByCategoryAndArchetypeIdAndEhrUid(compoIndex.category, compoIndex.archetypeId, compoIndex.ehrUid)
             
-            if (version.commitAudit.changeType == "creation" && existingPersistentCompo)
+            if (version.commitAudit.changeType == ChangeType.CREATION && existingPersistentCompo)
             {
                throw new CommitWrongChangeTypeException("A persistent composition for ${compoIndex.archetypeId} already exists in the EHR ${compoIndex.ehrUid}, so the change type should not be 'creation', it should be 'modification'.")
             }
             
-            if (version.commitAudit.changeType != "creation" && !existingPersistentCompo)
+            if (version.commitAudit.changeType != ChangeType.CREATION && !existingPersistentCompo)
             {
                throw new CommitWrongChangeTypeException("A persistent composition for ${compoIndex.archetypeId} does not exists in the EHR ${compoIndex.ehrUid}, the change type should be 'creation' and it is ${version.commitAudit.changeTyp}")
             }
             
             // Persistent compo versioning process
             // It is modification and exists a persistent compo for the archid and ehruid
-            if (version.commitAudit.changeType == "modification" && existingPersistentCompo)
+            if (version.commitAudit.changeType == ChangeType.MODIFICATION && existingPersistentCompo)
             {
                // check if the version has the right objectid, if should exist the VersionedCompo for that object id
                def versionedComposition = VersionedComposition.findByUid(version.objectId)
@@ -467,7 +472,7 @@ class XmlService {
             // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
             if (Version.countByUid(version.uid) == 1)
             {
-               if (version.commitAudit.changeType == "creation")
+               if (version.commitAudit.changeType == ChangeType.CREATION)
                {
                   //IllegalArgumentException
                   throw new CommitWrongChangeTypeException("A version with UID ${version.uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error.")
@@ -529,6 +534,8 @@ class XmlService {
    
    private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted)
    {
+      def change_type_code = version.commit_audit.change_type.defining_code.code_string.text()
+      
       // Parse AuditDetails from Version.commit_audit
       return new AuditDetails(
          systemId:      version.commit_audit.system_id.text(),
@@ -544,7 +551,7 @@ class XmlService {
           * in a separate client context.
           */
          timeCommitted: auditTimeCommitted, //Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
-         changeType:    version.commit_audit.change_type.value.text(),
+         changeType:    ChangeType.fromValue(change_type_code as short),
          committer: new DoctorProxy(
             name: version.commit_audit.committer.name.text()
             // TODO: id
@@ -700,7 +707,7 @@ class XmlService {
              */
             timeCommitted: auditTimeCommitted,
             //,
-            // changeType solo se soporta 'creation' por ahora
+            // changeType is only for the version audit, not for the contribution audit
             //
             // El committer de la contribution es el mismo committer de todas
             // las versiones, cada version tiene su committer debe ser el mismo.

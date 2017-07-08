@@ -13,6 +13,7 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 
@@ -557,11 +558,11 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          templateId:  parsedVersion.data.archetype_details.template_id.value.text(),
          composer: composer
       )
-      
+      def change_type_code = parsedVersion.commit_audit.change_type.defining_code.code_string.text()
       def commitAudit = new AuditDetails(
          systemId:      parsedVersion.commit_audit.system_id.text(),
          timeCommitted: new Date(),
-         changeType:    parsedVersion.commit_audit.change_type.value.text(),
+         changeType:    ChangeType.fromValue(change_type_code as short),
          committer: new DoctorProxy(
             name: parsedVersion.commit_audit.committer.name.text()
          )

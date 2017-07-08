@@ -1,7 +1,8 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
-import com.cabolabs.ehrserver.openehr.common.change_control.Contribution;
+import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
+import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
@@ -40,7 +41,7 @@ class ContributionControllerTests {
         params["audit"] = new AuditDetails(
             systemId: "CABOLABS EHR",
             timeCommitted: new Date(),
-            changeType: "creation",
+            changeType: ChangeType.CREATION,
             committer: new DoctorProxy( name: "Dr. House")
         )
         params["uid"] = '35634634634634563'

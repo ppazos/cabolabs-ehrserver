@@ -2,6 +2,7 @@ package com.cabolabs.ehrserver.openehr.common.change_control
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.security.Organization
@@ -65,7 +66,7 @@ class ContributionSpec extends Specification {
                 commitAudit: new AuditDetails(
                    systemId: 'EMR1',
                    timeCommitted: new Date(),
-                   changeType:    'creation',
+                   changeType:    ChangeType.CREATION,
                    committer: new DoctorProxy(
                       name: 'Dr. House'
                    )
@@ -87,7 +88,7 @@ class ContributionSpec extends Specification {
                 commitAudit: new AuditDetails(
                    systemId: 'EMR1',
                    timeCommitted: new Date(),
-                   changeType:    'creation',
+                   changeType:    ChangeType.CREATION,
                    committer: new DoctorProxy(
                       name: 'Dr. House'
                    )
@@ -107,9 +108,9 @@ class ContributionSpec extends Specification {
                 uid: '1234-1236::EMR1::1',
                 lifecycleState: 'completed',
                 commitAudit: new AuditDetails(
-                   systemId: 'EMR1',
+                   systemId:     'EMR1',
                    timeCommitted: new Date(),
-                   changeType:    'creation',
+                   changeType:    ChangeType.CREATION,
                    committer: new DoctorProxy(
                       name: 'Dr. House'
                    )

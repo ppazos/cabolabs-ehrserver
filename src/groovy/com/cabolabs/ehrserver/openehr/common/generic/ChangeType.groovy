@@ -22,34 +22,38 @@
 
 package com.cabolabs.ehrserver.openehr.common.generic
 
-import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
-import com.cabolabs.ehrserver.openehr.common.change_control.Version
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAccessType
-
-class AuditDetails {
-
-   // Identificador del sistema al que fue commiteado el cambio en el EHR
-   String systemId = "ISIS_EHR" // FIXME: debe salir de config
+enum ChangeType {
    
-   // Lo establece el servidor cuando recibe un commit
-   Date timeCommitted
+   CREATION(249 as short),
+   AMENDMENT(250 as short),
+   MODIFICATION(251 as short),
+   DELETED(523 as short)
    
-   //String changeType //= "creation" // otros valores: deleted, amendment, modification, attestation, addition
-   ChangeType changeType
+   // TODO: SYNTHESIS, ATTESTATION, UNKNOWN?
    
-   DoctorProxy committer
+   private final short value
    
-   static constraints = {
-      // is nullable for Contribution.audit
-      changeType(nullable:true) //, inList:["creation","amendment","modification","synthesis","deleted","attestation","unknown"])
+   short getValue()
+   {
+      return this.value
    }
    
-   // Para que Contribution salve su AuditDetails en cascada
-   static belongsTo = [Contribution, Version]
-   
-   public String toString()
+   ChangeType(short val)
    {
-      return this.getClass().getSimpleName() +' '+ changeType.toString() +' '+ systemId +' '+ timeCommitted
+      this.value = val
+   }
+
+   static ChangeType fromValue(short v)
+   {
+      for(ChangeType e: ChangeType.values())
+      {
+         if(e.value == v)
+         {
+           return e
+         }
+      }
+     
+      throw new IllegalArgumentException("Not valid ChangeType value ${v}")
    }
 }
+   
