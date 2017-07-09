@@ -82,16 +82,14 @@
      }
      
      #powby {
-       width: 180px;
-       text-align: center;
-       position: fixed;
-       bottom: 10px;
        cursor: pointer;
        color: #337ab7;
+       font-size: 0.8em;
+       padding: 5px;
      }
      #app_version {
        font-size: 0.8em;
-       padding: 5px;
+       padding: 10px 5px 5px 5px;
      }
      
      .menu_vertical_separator {
@@ -263,7 +261,7 @@
                </sec:ifAnyGranted>
             </ul>
             <div align="center" id="app_version">EHRServer v<g:meta name="app.version"/></div>
-            <p id="powby">Powered by CaboLabs</p>
+            <div align="center" id="powby">Powered by CaboLabs</div>
           </div>
         <!-- /.sidebar-collapse -->
         </div>
