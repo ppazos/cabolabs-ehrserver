@@ -21,11 +21,10 @@
     <div class="row row-grid">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:link class="list" controller="operationalTemplate" action="list">
+          <g:link class="list" controller="dataValueIndex" action="index">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="opt.list.title" />
-            </button>
-          </g:link>
+              <span class="fa fa-database fa-fw" aria-hidden="true"></span> <g:message code="desktop.data" />
+            </button></g:link>
         </div>
       </div>
     </div>

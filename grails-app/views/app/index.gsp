@@ -61,10 +61,6 @@
         width: 540px;
       }
       
-      h1 {
-        background-color: #ddd;
-      }
-      
       .error {
         /* TODO: meter icono de error ! */
         border: 1px solid #f00;

@@ -70,8 +70,18 @@
        margin-top: 15px;
      }
      h1 {
-       margin: 10px 0 10px 0;
+       margin: 10px 0 0 0;
+       padding-bottom: 10px;
+       border-bottom: 1px solid #eee;
      }
+     
+     /* redefinition of Hx size from boostrap to make them smaller */
+     h1 { font-size: 30px; line-height: 40px; line-height:1.1; }
+     h2 { font-size: 24px; line-height: 40px; margin: 10px 0 10px 0; line-height:1.1; }
+     h3 { font-size: 18px; line-height: 40px; margin: 10px 0 10px 0; line-height:1.1; }
+     h4 { font-size: 16px; line-height: 20px; margin: 10px 0 10px 0; line-height:1.1; }
+     h5 { font-size: 14px; line-height: 20px; margin: 5px 0 5px 0; line-height:1.1; }
+     h6 { font-weight: bold; margin: 5px 0 5px 0; line-height:1.1; }
      
      /**
       * Style for arrow to active sortable column.
