@@ -146,22 +146,19 @@
     <div id="wrapper">
       <!-- Navigation -->
       <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-       <div class="navbar-header">
-         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-           <span class="sr-only">Toggle navigation</span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-         </button>
-         <!-- LOGO -->
-         <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
-         <!-- /LOGO -->
-       </div>
-       <!-- /.navbar-header -->
-  
-       <!-- TOP MENU -->
-       <sec:ifLoggedIn>
-         <ul class="nav navbar-top-links navbar-right">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+        </div>
+
+        <!-- TOP MENU -->
+        <sec:ifLoggedIn>
+          <ul class="nav navbar-top-links navbar-right">
            <li style="padding-right:15px;">
              <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>
              &commat;
@@ -191,135 +188,110 @@
              <!-- /.dropdown-user -->
            </li>
            <!-- /.dropdown -->
-         </ul>
+          </ul>
            
-         <!-- LEFT MENU -->
-         <div class="navbar-default sidebar" role="navigation">
-           <div class="sidebar-nav navbar-collapse">
-            <ul class="nav" id="side-menu">
-              <li class="menu_vertical_separator">
-                <g:link controller="app" action="index" class="${(controllerName=='app')?'active':''}"><i class="fa fa-dashboard"></i> Dashboard</g:link>
-              </li>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                <li>
-                  <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                <li>
-                  <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-user"></i> <g:message code="desktop.user" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN">
+          <!-- LEFT MENU -->
+          <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+              <ul class="nav" id="side-menu">
                 <li class="menu_vertical_separator">
-                  <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
+                  <g:link controller="app" action="index" class="${(controllerName=='app')?'active':''}"><i class="fa fa-dashboard"></i> Dashboard</g:link>
                 </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                <li>
-                  <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
-                </li>
-                <li>
-                  <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
-                </li>
-                 <li>
-                   <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
-                 </li>
-                <li class="menu_vertical_separator">
-                  <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                <li class="menu_vertical_separator">
-                  <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                <li>
-                  <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <li class="menu_vertical_separator">
-                  <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-database "></i> <g:message code="desktop.data" /></g:link>
-                </li>
-              </sec:ifAnyGranted>
-               
-              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                 <li>
-                   <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
-                 </li>
-                 <li class="menu_vertical_separator">
-                   <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
-                 </li>
-               </sec:ifAnyGranted>
-            </ul>
-            <div align="center" id="app_version">EHRServer v<g:meta name="app.version"/></div>
-            <div align="center" id="powby">Powered by CaboLabs</div>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li>
+                    <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li>
+                    <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-user"></i> <g:message code="desktop.user" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li class="menu_vertical_separator">
+                    <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li>
+                    <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
+                  </li>
+                  <li>
+                    <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
+                  </li>
+                  <li>
+                    <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
+                  </li>
+                  <li class="menu_vertical_separator">
+                    <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li class="menu_vertical_separator">
+                    <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li>
+                    <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li class="menu_vertical_separator">
+                    <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-database "></i> <g:message code="desktop.data" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                  <li>
+                    <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
+                  </li>
+                  <li class="menu_vertical_separator">
+                    <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
+              </ul>
+              <div align="center" id="app_version">EHRServer v<g:meta name="app.version"/></div>
+              <div align="center" id="powby">
+                <a href="#" data-toggle="modal" data-target="#license_notice">Powered by CaboLabs</a>
+              </div>
+            </div>
           </div>
-        <!-- /.sidebar-collapse -->
-        </div>
-        <!-- /.navbar-static-side -->
         </sec:ifLoggedIn>
       </nav>
-  
-      <!-- BODY -->
+
       <div id="page-wrapper">
         <g:layoutBody/>
         <div class="footer" role="contentinfo"></div>
         <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
       </div>
-      <!-- /BODY -->
     </div>
    
-    <div id="license_notice" style="display:none; cursor: default;"> 
-      <h1 align="center">License Notice</h1> 
-      <p>Copyright 2011-2017 <a href="http://cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
-      <p>The EHRServer was designed and developed by Pablo Pazos Gutierrez &lt;pablo.pazos@cabolabs.com&gt; at CaboLabs Health Informatics (<a href="http://cabolabs.com" target="_blank">www.cabolabs.com</a>).</p>
-      <p>You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.</p>
-      <p>Any modifications to the provided source code can be stated below this notice.
-      <p>Licensed under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License.
-      You may obtain a copy of the License at</p>
-      <p align="center"><a href="http://www.apache.org/licenses/LICENSE-2.0 target="_blank">http://www.apache.org/licenses/LICENSE-2.0</a><p>
-      <p>Unless required by applicable law or agreed to in writing, software
-      distributed under the License is distributed on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-      See the License for the specific language governing permissions and
-      limitations under the License.</p>
-      <p align="center"><input type="button" id="close" value="Close" /></p> 
+    <div id="license_notice" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="license_modal_label">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="license_modal_label">License Notice</h4>
+          </div>
+          <div class="modal-body">
+            <p>Copyright 2011-2017 <a href="http://cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
+            <p>The EHRServer was designed and developed by Pablo Pazos Gutierrez &lt;pablo.pazos@cabolabs.com&gt; at CaboLabs Health Informatics (<a href="http://cabolabs.com" target="_blank">www.cabolabs.com</a>).</p>
+            <p>You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.</p>
+            <p>Any modifications to the provided source code can be stated below this notice.
+            <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+            You may obtain a copy of the License at</p>
+            <p align="center"><a href="http://www.apache.org/licenses/LICENSE-2.0 target="_blank">http://www.apache.org/licenses/LICENSE-2.0</a><p>
+            <p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+            limitations under the License.</p>
+          </div>
+        </div>
+      </div>
     </div>
     
     <script type="text/javascript"> 
     $(function() { // ready
 
-       /* TODO: rewrite using bootstrap modals */
-       $('#powby').click(function() { 
-         $.blockUI({
-           message: $('#license_notice'),
-           centerY: true,
-           centerX: true,
-           css: {
-             width: '80%',
-             textAlign: 'left',
-             left: '10%',
-             top: '5%',
-             padding: '10px'
-           }
-         }); 
-       });
-
-       $('#close').click(function() { 
-         $.unblockUI(); 
-         return false; 
-       });
-       
       $('#feedback_modal').on('submit', function(e) {
         e.preventDefault(); // prevent native submit
         $(this).ajaxSubmit({
@@ -331,6 +303,8 @@
           },
           error: function(a,b,c) {
             console.log(a,b,c);
+            alrt = '<div class="alert alert-warning alert-dismissible global" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>An error occurred sending your feedback, please try again later.</div>';
+            $('body').append('<div class="global_alert_container">'+ alrt +'</div>');
           }
         });
       });
@@ -339,46 +313,46 @@
     
     <!-- feedback modal form -->
     <div class="modal fade" id="feedback_modal" tabindex="-1" role="dialog" aria-labelledby="feedback_modal_label">
-     <div class="modal-dialog" role="document">
-       <g:form url="[controller:'messaging', action: 'feedback']" role="form" id="feedback_form">
-       <div class="modal-content">
-         <div class="modal-header">
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-           <h4 class="modal-title" id="feedback_modal_label"><g:message code="ehrserver.messaging.feedbackform.title" /></h4>
-         </div>
-         <div class="modal-body">
+      <div class="modal-dialog" role="document">
+        <g:form url="[controller:'messaging', action: 'feedback']" role="form" id="feedback_form">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="feedback_modal_label"><g:message code="ehrserver.messaging.feedbackform.title" /></h4>
+          </div>
+          <div class="modal-body">
 
-           <div class="form-group">
-             <label>Your feedback</label>
-             <textarea class="form-control" rows="3" name="message" required="required"></textarea>
-           </div>
-           <div class="form-group">
-             <label>About</label>
-             <div class="radio">
-               <label>
-                 <input name="about" value="Question" checked="" type="radio" /> Question
-               </label>
-             </div>
-             <div class="radio">
-               <label>
-                 <input name="about" value="Issue" type="radio" /> Issue
-               </label>
-             </div>
-             <div class="radio">
-               <label>
-                 <input name="about" value="Improvement" type="radio" /> Improvement
-               </label>
-             </div>
-           </div>
+            <div class="form-group">
+              <label>Your feedback</label>
+              <textarea class="form-control" rows="3" name="message" required="required"></textarea>
+            </div>
+            <div class="form-group">
+              <label>About</label>
+              <div class="radio">
+                <label>
+                  <input name="about" value="Question" checked="" type="radio" /> Question
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input name="about" value="Issue" type="radio" /> Issue
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input name="about" value="Improvement" type="radio" /> Improvement
+                </label>
+              </div>
+            </div>
 
-         </div>
-         <div class="modal-footer">
-           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button type="submit" class="btn btn-primary">Send</button>
-         </div>
-       </div>
-       </g:form>
-     </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send</button>
+          </div>
+        </div>
+        </g:form>
+      </div>
     </div>
   </body>
 </html>
