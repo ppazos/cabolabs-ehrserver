@@ -286,6 +286,7 @@ class SecurityFilters {
                                  render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
                            }
                            
+                            // TODO: should create activity log and admin notification
                            return false
                         }
                         
@@ -303,10 +304,33 @@ class SecurityFilters {
                                  code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
                               }
                            }
+                           
+                           // TODO: should create activity log and admin notification
                            return false
                         }
                         
                         organizationUid = org_uid
+                        
+                        /*
+                        if the user was removed from the org, the token is still valid but it can't access that org
+                        */
+                        def us = User.findByUsername(username)
+                        def orgs = us.organizations
+                        if (!orgs.find{ it.uid == org_uid })
+                        {
+                           render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                              result {
+                                 type('AR')                         // application reject
+                                 message(
+                                    messageSource.getMessage('rest.error.token.userDoesntBelongToOrganization', [username, org_uid] as Object[], getRequestLocale(request))
+                                 )
+                                 code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
+                              }
+                           }
+                           
+                           // TODO: should create activity log and admin notification
+                           return false
+                        }
                      }
                   }
                }
