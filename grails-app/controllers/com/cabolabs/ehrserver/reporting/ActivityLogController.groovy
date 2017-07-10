@@ -25,18 +25,47 @@ package com.cabolabs.ehrserver.reporting
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.util.Holders
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional(readOnly = true)
 class ActivityLogController {
 
    def config = Holders.config.app
    
-   def index(Integer max) {
+   def index(int max, int offset, String sort, String order)
+   {
       params.max = Math.min(max ?: config.list_max, 100)
-      respond ActivityLog.list(params), model:[activityLogInstanceCount: ActivityLog.count()]
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'desc'
+      
+      def c = ActivityLog.createCriteria()
+      def list
+      
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+         }
+      }
+      else
+      {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('organizationUid', session.organization.uid)
+         }
+      }
+      
+      respond list, model:[activityLogInstanceCount: list.totalCount]
    }
 
-   def show(ActivityLog activityLogInstance) {
+   def show(ActivityLog activityLogInstance)
+   {
+      // filter by current org! because it is accessed by id
+      if (!activityLogInstance || activityLogInstance.organizationUid != session.organization.uid)
+      {
+         flash.message = message(code:'activityLog.show.cantAccessLog')
+         redirect action:'index'
+         return
+      }
       respond activityLogInstance
    }
 
