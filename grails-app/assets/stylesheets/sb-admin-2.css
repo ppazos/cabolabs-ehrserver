@@ -27,7 +27,7 @@ body {
 }
 
 .table>tbody>tr>th, .table>tbody>tr>td {
-  border-top: 0; /* changes boot css */
+  border-top: 0; /* changes bootstrap css */
   border-bottom: 1px solid #ddd;
 }
 

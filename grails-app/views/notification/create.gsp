@@ -10,8 +10,7 @@
         <h1><g:message code="notification.create.title" /></h1>
       </div>
     </div>
-    
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
          <g:if test="${flash.message}">
            <div class="alert alert-info" role="alert">${flash.message}</div>
@@ -30,7 +29,9 @@
 	          <g:render template="form"/>
 	        </fieldset>
 	        <fieldset class="buttons">
-	          <g:submitButton name="create" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label')}" />
+             <div class="btn-toolbar" role="toolbar">
+	            <g:submitButton name="create" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label')}" />
+             </div>
 	        </fieldset>
 	      </g:form>
       </div>
