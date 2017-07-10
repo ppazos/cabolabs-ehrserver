@@ -115,26 +115,25 @@ class OrganizationController {
       log.info "luego de has errors"
       organizationInstance.save flush:true
       
+      def user = springSecurityService.loadCurrentUser()
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
          if (params.assign)
          {
             // Assign org to logged user
-            def user = springSecurityService.loadCurrentUser()
-            user.addToOrganizations(organizationInstance)
+            UserRole.create( user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true )
             user.save(flush:true)
          }
       }
       else
       {
          // Assign org to logged user
-         def user = springSecurityService.loadCurrentUser()
-         user.addToOrganizations(organizationInstance)
+         // uses the higher role on the current org to assign on the new org
+         UserRole.create( user, user.getHigherAuthority(session.organization), organizationInstance, true )
          user.save(flush:true)
       }
-
-
       
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
       redirect action:'show', params:[uid:organizationInstance.uid]

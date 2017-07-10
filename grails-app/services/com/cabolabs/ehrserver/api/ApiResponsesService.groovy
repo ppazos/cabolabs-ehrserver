@@ -9,6 +9,8 @@ import grails.util.Environment
 @Transactional
 class ApiResponsesService {
    
+   def grailsApplication
+   
    def feedback(message, type, code, format)
    {
       if (!format) format = 'json'
@@ -36,7 +38,18 @@ class ApiResponsesService {
       
       if (details)
       {
-         feedback.result.details = details
+         def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+         feedback.result.details = []
+         details.each {
+            if (it instanceof String)
+            {
+               feedback.result.details << it
+            }
+            else if (it instanceof org.springframework.validation.FieldError) // validation error
+            {
+               feedback.result.details << g.message(error: it)
+            }
+         }
       }
       
       return feedback as JSON
@@ -54,7 +67,18 @@ class ApiResponsesService {
       
       if (details)
       {
-         feedback.result.details = details
+         def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+         feedback.result.details = []
+         details.each {
+            if (it instanceof String)
+            {
+               feedback.result.details << it
+            }
+            else if (it instanceof org.springframework.validation.FieldError) // validation error
+            {
+               feedback.result.details << g.message(error: it) // resolves each validation error!
+            }
+         }
       }
       
       if (exception && Environment.current == Environment.DEVELOPMENT)

@@ -669,19 +669,17 @@ class RestController {
          {
             def o = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
             
-            // needs an organization before saving
-            u.addToOrganizations(o)
             u.save(failOnError: true)
             
             UserRole.create( u, (Role.findByAuthority('ROLE_USER')), o, true )
             
             // reset password request notification
-            notificationService.sendUserCreatedEmail( u.email, [u], true )
+            notificationService.sendUserRegisteredOrCreatedEmail( u.email, [u], false )
          }
          catch (Exception e)
          {
-            println e.message
-            println u.errors
+            //println e.message
+            //println u.errors
             
             status.setRollbackOnly()
             error = true
@@ -690,7 +688,7 @@ class RestController {
       
       if (error)
       {
-         renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400)
+         renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400, u.errors.getAllErrors(), null)
          return
       }
       

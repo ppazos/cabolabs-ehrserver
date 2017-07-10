@@ -83,7 +83,7 @@ class UserSpec extends Specification {
              }
              
              orgs.each { o ->
-                u.addToOrganizations(o)
+                UserRole.create( u, (Role.findByAuthority('ROLE_ADMIN')), o, true )
              }
           }
 

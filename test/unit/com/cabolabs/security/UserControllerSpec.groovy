@@ -59,7 +59,7 @@ class UserControllerSpec extends Specification {
       ]
       
       controller.notificationService = [
-         sendUserCreatedEmail: { mail, params -> println "Email sent ${mail}" }
+         sendUserRegisteredOrCreatedEmail: { mail, params -> println "Email sent ${mail}" }
       ]
       
       controller.set_org_for_tests(organization)

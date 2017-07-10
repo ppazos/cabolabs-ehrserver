@@ -42,11 +42,8 @@ class NotificationService {
    def sendUserRegisteredOrCreatedEmail(String recipient, List messageData, boolean userRegistered = false)
    {
       def user = messageData[0]
-      
-      //println "sendUserCreatedEmail user.organizations "+ user.organizations
-      
       def token = user.passwordToken
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
+      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
       def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
       
       def organizationNumbers = user.organizations*.number

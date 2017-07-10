@@ -372,7 +372,7 @@ class UserController {
       // email notification
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
-      notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
+      notificationService.sendUserRegisteredOrCreatedEmail( userInstance.email, [userInstance] )
       
       request.withFormat {
          form multipartForm {
@@ -532,8 +532,6 @@ class UserController {
 
    def register()
    {
-      //println params
-      
       if (!params.register) // show view
       {
          render view: "register", model: [userInstance: new User(params)]
@@ -560,9 +558,6 @@ class UserController {
                // 
                o = new Organization(name: params.org_name)
                o.save(failOnError: true, flush:true)
-               
-               // needs an organization before saving
-               //u.addToOrganizations(o).save(failOnError: true, flush:true) // FIXME: this is saving the user and we save the user below
                
                u.save(failOnError: true, flush:true)
                
