@@ -23,6 +23,7 @@
 package com.cabolabs.ehrserver.notification
 
 import com.cabolabs.security.User
+import com.cabolabs.security.UserRole
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
@@ -52,13 +53,15 @@ class NotificationJob {
             def users
             if (notificationInstance.forOrganization)
             {
-               def c = User.createCriteria()
-               users = c.list {
-                  eq('isVirtual', false)
-                  organizations {
-                     eq ('uid', notificationInstance.forOrganization)
+               def urs = UserRole.withCriteria {
+                  organization {
+                     eq('uid', notificationInstance.forOrganization)
+                  }
+                  user {
+                     eq('isVirtual', false)
                   }
                }
+               users = urs.user.unique() // unique avoids the same notif to go to a user that has 2 roles in the same org
             }
             else
             {
