@@ -69,7 +69,7 @@ class ApiResponsesService {
       {
          def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
          feedback.result.details = []
-         details.each {
+         details.each { // TODO: add this to XML feedback
             if (it instanceof String)
             {
                feedback.result.details << it

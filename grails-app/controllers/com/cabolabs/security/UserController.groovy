@@ -61,8 +61,6 @@ class UserController {
    
    def index(int max, int offset, String sort, String order, String username, String organizationUid)
    {
-      println "index"
-      
       max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
