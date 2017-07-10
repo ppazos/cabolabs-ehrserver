@@ -1,4 +1,3 @@
-
 <%@ page import="com.cabolabs.ehrserver.account.Plan" %>
 <!DOCTYPE html>
 <html>

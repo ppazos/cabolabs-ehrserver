@@ -16,7 +16,6 @@
       <h1><g:message code="user.show.title" /></h1>
       </div>
     </div>
-    
     <div class="row row-grid">
       <div class="col-lg-12">
       
@@ -84,11 +83,15 @@
         </table>
 	     
 		  <g:canEditUser userInstance="${userInstance}">
-		    <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
-	       <g:form action="resetPasswordRequest" id="${userInstance.id}" method="post">
-	         <input type="hidden" name="email" value="${userInstance.email}" />
-	         <button type="submit" class="btn btn-warning">${message(code: "springSecurity.reset.button")}</button>
-	       </g:form>
+          <div class="btn-toolbar" role="toolbar">
+            <fieldset class="buttons">
+              <g:link action="edit" resource="${userInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+              <g:form action="resetPasswordRequest" id="${userInstance.id}" method="post">
+                <input type="hidden" name="email" value="${userInstance.email}" />
+                <button type="submit" class="btn btn-warning">${message(code: "springSecurity.reset.button")}</button>
+              </g:form>
+            </fieldset>
+          </div>
 	     </g:canEditUser>
 	     
       </div>

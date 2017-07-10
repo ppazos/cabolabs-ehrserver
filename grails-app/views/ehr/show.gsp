@@ -135,8 +135,7 @@
         <h1 class="hidden_uid"><g:message code="ehr.show.title" /></h1>
       </div>
     </div>
-    
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
         
         <g:if test="${flash.message}">

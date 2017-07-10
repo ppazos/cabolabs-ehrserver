@@ -10,21 +10,6 @@
         <h1><g:message code="folder.show.title" /></h1>
       </div>
     </div>
-    
-    <div class="row row-grid">
-      <div class="col-md-8">
-      </div>
-      <div class="col-md-4">
-        <div class="btn-toolbar" role="toolbar">
-          <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="common.action.create" />
-            </button>
-          </g:link>
-        </div>
-      </div>
-    </div>
-    
     <div class="row row-grid">
       <div class="col-lg-12">
       
@@ -73,7 +58,7 @@
             </g:each>
           </span>
         </g:if>
-	     
+	     <%--
 	     <div class="btn-toolbar" role="toolbar">
           <g:link action="edit" id="${folderInstance?.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
           <g:link action="delete" id="${folderInstance?.id}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
@@ -82,6 +67,7 @@
             </button>
           </g:link>
         </div>
+        --%>
       </div>
     </div>
   </body>

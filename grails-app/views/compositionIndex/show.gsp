@@ -3,29 +3,15 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'compositionIndex.label', default: 'CompositionIndex')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="compositionIndex.show.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <div class="btn-toolbar" role="toolbar">
-          <g:link action="list">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="default.list.label" args="[entityName]" />
-            </button>
-          </g:link>
-        </div>
+        <h1><g:message code="compositionIndex.show.title" /></h1>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.show.label" args="[entityName]" /></h1>
-      </div>
-    </div>
-
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="message" role="status">${flash.message}</div>

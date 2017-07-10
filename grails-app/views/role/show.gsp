@@ -10,7 +10,6 @@
         <h1><g:message code="role.show.title" /></h1>
       </div>
     </div>
-    
     <div class="row row-grid">
       <div class="col-lg-12">
       

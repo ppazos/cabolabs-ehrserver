@@ -11,8 +11,7 @@
         <h1 class="hidden_uid"><g:message code="notification.show.title" /></h1>
       </div>
     </div>
-    
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
         
         <g:if test="${flash.message}">
@@ -64,38 +63,33 @@
           </tbody>
         </table>
 
-
-      
-      
-      
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead>
-            <tr>
-              <th>status</th>
-              <th>user</th>
-            </tr>
-          </thead>
-          <tbody>
-	         <g:each in="${statuses}" var="status">
-	           <tr>
-	             <td>${status.status}</td>
-	             <td>${status.user}</td>
-	           </tr>
-	         </g:each>
-	       </tbody>
-	      </table>
-	    </div>
-      
-      <%--
-      <g:form url="[resource:notificationInstance, action:'delete']" method="DELETE">
-        <fieldset class="buttons">
-          <g:link class="edit" action="edit" resource="${notificationInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-          <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-        </fieldset>
-      </g:form>
-      --%>
-       
+        <div class="table-responsive">
+           <table class="table table-striped table-bordered table-hover">
+             <thead>
+               <tr>
+                 <th>status</th>
+                 <th>user</th>
+               </tr>
+             </thead>
+             <tbody>
+               <g:each in="${statuses}" var="status">
+                 <tr>
+                   <td>${status.status}</td>
+                   <td>${status.user}</td>
+                 </tr>
+               </g:each>
+             </tbody>
+            </table>
+         </div>
+         
+        <%--
+        <g:form url="[resource:notificationInstance, action:'delete']" method="DELETE">
+          <fieldset class="buttons">
+            <g:link class="edit" action="edit" resource="${notificationInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+            <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+          </fieldset>
+        </g:form>
+        --%>
       </div>
     </div>
   </body>
