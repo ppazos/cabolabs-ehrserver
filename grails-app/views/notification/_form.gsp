@@ -4,7 +4,12 @@
   <label class="control-label" for="forSection">
     <g:message code="notification.list.attr.forSection" />
   </label>
-  <g:textField name="forSection" value="${notificationInstance?.forSection}" class="form-control"/>
+  <%--<g:textField name="forSection" value="${notificationInstance?.forSection}" class="form-control"/>--%>
+  <select name="forSection" class="form-control">
+    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.logicalPropertyName }.logicalPropertyName - ['simpleCaptcha', 'rest', 'dbdoc', 'login', 'logout', 'test', 'stats', 'messaging', 'plan'] }">
+      <option value="${c}">${c}</option>
+    </g:each>
+  </select>
 </div>
 
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'forOrganization', 'error')} ">
