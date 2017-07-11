@@ -428,6 +428,23 @@ class UserController {
          return
       }
       
+      def loggedInUser = springSecurityService.currentUser
+      
+      // current user can't block it's own account
+      // we keep the flags as before the edit, loading from db
+      if (loggedInUser.id == userInstance.id)
+      {
+         // get user has the flags aleady changed!!!
+         def dbuser = User.get(userInstance.id)
+         dbuser.refresh() // this solves the issue, it might be due caching...
+         
+
+         userInstance.enabled = dbuser.enabled
+         userInstance.accountExpired = dbuser.accountExpired
+         userInstance.accountLocked = dbuser.accountLocked
+         userInstance.passwordExpired = dbuser.passwordExpired
+      }
+      
       // User should have one org assigned, if not we lose tack of the user and can't be managed.
       def userRoles
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // admins manage user roles on any org
@@ -462,7 +479,7 @@ class UserController {
          return
       }
 
-      def loggedInUser = springSecurityService.currentUser
+      
       def orguids, org, roles, highestRole
       def _rolesICanAssign = rolesICanAssign()
       
@@ -481,7 +498,7 @@ class UserController {
             highestRole = userInstance.getHigherAuthority(userRole.organization)
             if (!inRoles.contains(highestRole.authority))
             {
-               return // avoids executing the rest of the each
+               return // avoids executing the rest of the each, current userRole is not removed
             }
          }
          
@@ -509,6 +526,7 @@ class UserController {
             }
          }
       }
+      
       
       if (!userInstance.save(flush:true))
       {
