@@ -37,6 +37,15 @@
                 <label for="ipt_un"><g:message code="user.attr.username" /></label>
                 <input type="text" class="form-control" name="username" id="ipt_un" value="${params?.username}" />
               </div>
+              <sec:ifAnyGranted roles="ROLE_ADMIN">
+              <div class="form-group">
+                <label for="organizationUid"><g:message code="entity.organization" /></label>
+                <g:select name="organizationUid" from="${Organization.list()}"
+				              optionKey="uid" optionValue="name"
+				              noSelection="${['':'Select One...']}"
+                          value="${params?.organizationUid ?: ''}" class="form-control" />
+              </div>
+              </sec:ifAnyGranted>
               <div class="btn-toolbar" role="toolbar">
                 <button type="submit" name="filter" class="btn btn-primary"><span class="fa fa-share" aria-hidden="true"></span></button>
                 <button type="reset" id="filter-reset" class="btn btn-default"><span class="fa fa-trash " aria-hidden="true"></span></button>
