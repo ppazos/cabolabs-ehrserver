@@ -1829,6 +1829,12 @@ class RestController {
          }
       }
       
+      if (!ehr)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_exists_no_id'), "465", 404)
+         return
+      }
+      
       if (ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehr.uid, request.securityStatelessMap.extradata.org_uid]), "462", 401)
