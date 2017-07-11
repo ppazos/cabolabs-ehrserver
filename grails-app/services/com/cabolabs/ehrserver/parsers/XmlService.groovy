@@ -140,7 +140,11 @@ class XmlService {
       
       versions.version.eachWithIndex { versionXML, i ->
          
-         if (!xmlValidationService.validateVersion(versionXML, namespaceMap))
+         if (!versionXML.data.'@xsi:type'.text() != 'COMPOSITION')
+         {
+            errors[i] = ['version.data.xsi:type should be "COMPOSITION"']
+         }
+         else if (!xmlValidationService.validateVersion(versionXML, namespaceMap)) // XSD validation
          {
             errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
          }
