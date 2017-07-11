@@ -537,7 +537,7 @@ class SecurityFilters {
       organization_update(controller:'organization', action:'update') {
          before = {
             
-            println "org update filter params "+ params
+            //println "org update filter params "+ params
             
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
