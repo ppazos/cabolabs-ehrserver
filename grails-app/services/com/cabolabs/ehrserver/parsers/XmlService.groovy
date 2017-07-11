@@ -140,7 +140,7 @@ class XmlService {
       
       versions.version.eachWithIndex { versionXML, i ->
          
-         if (!versionXML.data.'@xsi:type'.text() != 'COMPOSITION')
+         if (versionXML.data.'@xsi:type'.text() != 'COMPOSITION')
          {
             errors[i] = ['version.data.xsi:type should be "COMPOSITION"']
          }
