@@ -206,7 +206,7 @@ class OperationalTemplateController {
          optMan.unloadAll()
          optMan.loadAll()
          
-         redirect action:'upload'
+         redirect action:'show', params:[uid:opt.uid]
       }
    }
    
