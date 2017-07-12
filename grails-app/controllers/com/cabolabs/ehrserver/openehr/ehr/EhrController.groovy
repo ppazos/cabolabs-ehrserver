@@ -180,16 +180,19 @@ class EhrController {
          // Busca por atributos de CompositionIndex
          // Puede no venir ningun criterio y se deberia devolver
          // todas las contribs del ehr, TODO: paginacion!
-         versions {
-            data {
-               if (qarchetypeId)
-                  eq('archetypeId', qarchetypeId)
-               
-               if (qFromDate)
-                  ge('startTime', qFromDate)
+         if (qarchetypeId || qFromDate || qToDate)
+         {
+            versions {
+               data {
+                  if (qarchetypeId)
+                     eq('archetypeId', qarchetypeId)
                   
-               if (qToDate)
-                  le('startTime', qToDate)
+                  if (qFromDate)
+                     ge('startTime', qFromDate)
+                     
+                  if (qToDate)
+                     le('startTime', qToDate)
+               }
             }
          }
       }
