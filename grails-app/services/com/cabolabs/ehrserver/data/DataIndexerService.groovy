@@ -908,17 +908,6 @@ class DataIndexerService {
 
         rmTypeName:    'LOCATABLE_REF'
       )
-      
-      /*
-      def attributes = [
-         'path': 'String',
-         'namespace': 'String',
-         'type': 'String',
-         'value': 'String' // OBJECT_VERSION_ID.value
-      ]
-      
-      keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
-      */
    }
    
    // for String RM attributes like ACTIVITY.action_archetype_id
@@ -942,59 +931,6 @@ class DataIndexerService {
       )
    }
    
-   
-   
-   /* ---------------------------------------------------------------------
-    * Methods to create individual indexes for each datavalue
-    */
-   
-   /*
-   private DvCountIndex create_DV_COUNT_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      //
-      //<value xsi:type="DV_COUNT">
-      //  <magnitude>120</magnitude>
-      //</value>
-      return new DvCountIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        magnitude: new Long( node.magnitude.text() ),
-        rmTypeName: 'DV_COUNT'
-      )
-   }
-   */
-   /*
-   private DvDurationIndex create_DV_DURATION_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      println "DV_DURATION "+ node.toString()
-      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
-      //<value xsi:type="DV_DURATION">
-      //  <value>PT30M</value> // 30 mins
-      //</value>
-      //
-      return new DvDurationIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: node.value.text(),
-        rmTypeName: 'DV_DURATION'
-        //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
-      )
-   }
-   */
  
    private void process_DV_PROPORTION_index(
       GPathResult node,
@@ -1003,7 +939,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths proportion "+ paths
+      //println "paths proportion "+ paths
       
       /**
       * <xs:complexType name="DV_ORDERED" abstract="true">
@@ -1126,191 +1062,15 @@ class DataIndexerService {
    private boolean isIntegral(double num) {
       return (Math.floor(num1) == num1)
    }
-   
-   /*
-   private DvTextIndex create_DV_TEXT_index(
+
+   private void process_DV_MULTIMEDIA_index(
       GPathResult node,
       String templateId, String path,
       String archetypeId, String archetypePath,
-      CompositionIndex owner)
+      CompositionIndex owner, List indexes)
    {
-      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
-      //<value xsi:type="DV_TEXT">
-      //  <value>Right arm</value>
-      //</value>
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       
-      return new DvTextIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: node.value.text(),
-        rmTypeName: 'DV_TEXT'
-      )
-   }
-   */
-   /*
-   private DvBooleanIndex create_DV_BOOLEAN_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
-      //<value xsi:type="DV_BOOLEAN">
-      //   <value>true</value>
-      // </value>
-      return new DvBooleanIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: new Boolean(node.value.text()),
-        rmTypeName: 'DV_BOOLEAN'
-      )
-   }
-   */
-   /*
-   private DvCodedTextIndex create_DV_CODED_TEXT_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_CODED_TEXT.
-      //<value xsi:type="DV_CODED_TEXT">
-      //  <value>Right arm</value>
-      //  <defining_code>
-      //    <terminology_id>
-      //      <value>local</value>
-      //    </terminology_id>
-      //    <code_string>at0025</code_string>
-      //  </defining_code>
-      //</value>
-      
-      // Throws an exception if the node has xsi:type="..." attribute,
-      // because the xmlns:xsi is not defined in the node.
-      //println "DvCodedTextIndex "+ groovy.xml.XmlUtil.serialize(node)
-      
-      return new DvCodedTextIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: node.value.text(),
-        code: node.defining_code.code_string.text(),
-        terminologyId: node.defining_code.terminology_id.value.text(),
-        rmTypeName: 'DV_CODED_TEXT'
-      )
-   }
-   */
-   /*
-   private DvOrdinalIndex create_DV_ORDINAL_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      //<value xsi:type="DV_ORDINAL">
-      // <value>234</value>
-      // <symbol>
-      //   <value>Right arm</value>
-      //   <defining_code>
-      //    <terminology_id>
-      //      <value>local</value>
-      //    </terminology_id>
-      //    <code_string>at0025</code_string>
-      //   </defining_code>
-      // </symbol>
-      //</value>
-      return new DvOrdinalIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: new Integer( node.value.text() ),
-        symbol_value: node.symbol.value.text(),
-        symbol_code: node.symbol.defining_code.code_string.text(),
-        symbol_terminology_id: node.symbol.defining_code.terminology_id.value.text(),
-        rmTypeName: 'DV_ORDINAL'
-      )
-   }
-   */
-   /*
-   private DvDateTimeIndex create_DV_DATE_TIME_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
-      //<time>
-      //  <value>20070920T104614,156+0930</value>
-      //</time>
-      return new DvDateTimeIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: DateParser.tryParse(node.value.text()),
-        rmTypeName: 'DV_DATE_TIME'
-      )
-   }
-   */
-   /*
-   private DvDateIndex create_DV_DATE_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
-      //<time>
-      //  <value>20070920</value>
-      //</time>
-      return new DvDateIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        value: DateParser.tryParse(node.value.text()),
-        rmTypeName: 'DV_DATE'
-      )
-   }
-   */
-   /*
-   private DvIdentifierIndex create_DV_IDENTIFIER_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
-      return new DvIdentifierIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
-        identifier: node.id.text(),
-        type: node.type.text(),
-        issuer: node.issuer.text(),
-        assigner: node.assigner.text(),
-        rmTypeName: 'DV_IDENTIFIER'
-      )
-   }
-   */
-   private DvMultimediaIndex create_DV_MULTIMEDIA_index(
-      GPathResult node,
-      String templateId, String path,
-      String archetypeId, String archetypePath,
-      CompositionIndex owner)
-   {
       /*
       <value xsi:type="DV_MULTIMEDIA">
         <alternate_text>blablabla</alternate_text>
@@ -1324,17 +1084,17 @@ class DataIndexerService {
         <size>345345</size>
       </value>
       */
-      return new DvMultimediaIndex(
-        templateId: templateId,
-        archetypeId: archetypeId,
-        path: path,
-        archetypePath: archetypePath,
-        owner: owner,
+      indexes <<  new DvMultimediaIndex(
+        templateId:    templateId,
+        archetypeId:   paths.rootArchetype,
+        path:          paths.templatePath,
+        archetypePath: paths.archetypePath,
+        owner:         owner,
         alternateText: node.alternate_text.text(),
-        data: node.data.text().decodeBase64(), // byte[]
-        mediaType: node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
-        size: new Integer( node.size.text() ),
-        rmTypeName: 'DV_QUANTITY'
+        data:          node.data.text().decodeBase64(), // byte[]
+        mediaType:     node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
+        size:          new Integer( node.size.text() ),
+        rmTypeName:   'DV_QUANTITY'
       )
    }
 }
