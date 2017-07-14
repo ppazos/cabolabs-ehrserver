@@ -62,6 +62,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
 
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
 
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
@@ -472,7 +473,7 @@ class RestController {
             }
          }
       }
-      catch (XmlValidationException e) // xsd error
+      catch (XmlValidationException | CommitWrongChangeTypeException e) // xsd and other validation errors
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content, session)

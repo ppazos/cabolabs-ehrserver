@@ -45,6 +45,12 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
+// https://stackoverflow.com/questions/21138173/grails-saving-multiple-object-rollback-all-object-if-one-fails-to-save
+import org.springframework.transaction.interceptor.TransactionAspectSupport
+
+//import grails.transaction.Transactional
+
+//@Transactional
 class XmlService {
 
    static transactional = true
@@ -72,10 +78,12 @@ class XmlService {
       //   - check all version have the same contribution id, error if not
       checkContributions(versions)
       
+      checkVersions(versions)
+
       // Parse contribution once, since it is the same for all versions
       //  - create the contrib and associated it with the ehr
       def contribution = parseCurrentContribution(versions.version[0], ehr, auditSystemId, auditTimeCommitted, auditCommitter)
-      
+
       // For each version committed
       //  Parse compo index
       //  Check if a version exists with the uid in the version XML (it can be 0 or 1, 1 is the case of modification/amendment)
@@ -91,7 +99,6 @@ class XmlService {
       // just checking :)
       assert contribution.versions != null
       assert contribution.versions.size() > 0
-      
       
       // VersionedComposition creation by processing the change type
       // For each version in the contribution
@@ -118,7 +125,7 @@ class XmlService {
 
       // TEST: this might save the contrib and there is no need of saving the contrib later
       ehr.addToContributions( contribution )
-      
+
       return contribution
    }
    
@@ -166,7 +173,6 @@ class XmlService {
             throw new CommitCantCreateNewVersionException("Some composition uids are present and are not unique}")
          }
 
-         
          // If a compo.uid exists in the XML, it should bet exist on the database, avoid weird cases of reusing UIDs for testing.
          cuids.each { cuid ->
             if (CompositionIndex.countByUid(cuid) > 0)
@@ -194,6 +200,7 @@ class XmlService {
       
       if (versions.version.size() > 1)
       {
+         // all versions reference the same contribution id
          versions.version.each { versionXML ->
             
             loopContributionId = versionXML.contribution.id.value.text()
@@ -219,11 +226,35 @@ class XmlService {
          firstContributionId = versions.version[0].contribution.id.value.text()
       }
       
-      // All the contribution UIDs can be the same, but there might exist a contribution done previously, with the same UID
+      // there are no previous contributions with the same id
       if (Contribution.countByUid(firstContributionId) != 0)
       {
          throw new CommitContributionReferenceException("the committed contribution id already exists ${firstContributionId}, maybe your previous commit used the same id?")
       }
+   }
+   
+   /*
+    * version.uid should not exist if change type is creation
+    */
+   def checkVersions(GPathResult versions)
+   {
+      def errors = [:]
+      def uid
+      versions.version.eachWithIndex { parsedVersion, i ->
+         uid = parsedVersion.uid.value.text()
+         if (
+            Version.countByUid(uid) == 1 &&
+            parsedVersion.commit_audit.change_type.defining_code.code_string.text() == '249'
+            )
+         {
+            // TODO: i18n
+            errors[i] = ["A version with UID ${uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error."]
+         }
+      }
+      
+      this.validationErrors = errors
+      
+      if (this.validationErrors.size() > 0) throw new CommitWrongChangeTypeException('There are duplicated version uids with change type creation')
    }
    
    
@@ -476,11 +507,13 @@ class XmlService {
             // Si ya hay una version, el tipo de cambio no puede ser creation (verificacion extra)
             if (Version.countByUid(version.uid) == 1)
             {
+               /* this is checked on checkVersions, here we know change type is NOT creation.
                if (version.commitAudit.changeType == ChangeType.CREATION)
                {
                   //IllegalArgumentException
                   throw new CommitWrongChangeTypeException("A version with UID ${version.uid} already exists, but the change type is 'creation'. If you want to create a new version, the changeType should be 'amendment' or 'modification'. If not, might committed the same version twice by error.")
                }
+               */
                
                // change type is not creation
 
