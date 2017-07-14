@@ -42,7 +42,7 @@ class NotificationServiceIntegrationSpec extends IntegrationSpec {
    void "sendForgotPasswordEmail"()
    {
       when:
-         def email = notificationService.sendForgotPasswordEmail(recipient, messageData, userRegistered)
+         def email = notificationService.sendForgotPasswordEmail(recipient, messageData)
          
       then:
          email != null
@@ -55,8 +55,7 @@ class NotificationServiceIntegrationSpec extends IntegrationSpec {
          xml.div.div[1].p.text().contains( out )
          
       where:
-         recipient | messageData               | userRegistered | out
-         'a@b.com' | [dummyUser, 'org_number'] | false          | 'We received a password reset request for your email a@b.com'
-         'a@b.com' | [dummyUser, 'org_number'] | true           | 'We received a password reset request for your email a@b.com'
+         recipient | messageData               |  out
+         'a@b.com' | [dummyUser, 'org_number'] | 'We received a password reset request for your email a@b.com'
    }
 }

@@ -66,7 +66,7 @@ class NotificationService {
       this.sendMail(recipient, g.message(code:'notificationService.sendUserRegisteredOrCreatedEmail.subject'), message)
    }
    
-   def sendForgotPasswordEmail(String recipient, List messageData, boolean userRegistered = false)
+   def sendForgotPasswordEmail(String recipient, List messageData)
    {
       def user = messageData[0]
       
