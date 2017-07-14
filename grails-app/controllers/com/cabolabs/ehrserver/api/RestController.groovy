@@ -1950,4 +1950,53 @@ class RestController {
          renderError("Format $format not supported", '44325', 400)
       }
    }
+   
+   @SecuredStateless
+   def getTemplate(String uid, String format)
+   {
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      def orgs = _user.organizations
+
+      def shares = OperationalTemplateIndexShare.withCriteria {
+         or { // checks permissions
+            'in'('organization', orgs)
+            opt {
+               eq('isPublic', true)
+            }
+         }
+         opt {
+            eq('uid', uid)
+         }
+      }
+      
+      if (shares.size() == 0)
+      {
+         renderError("OPT not found", '444555', 404)
+         return
+      }
+      
+      
+      def opt = shares[0].opt
+      def src = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt'
+      File opt_file = new File( src )
+      def opt_xml = opt_file.getText()
+      
+       render(text: opt_xml, contentType:"text/xml", encoding:"UTF-8")
+
+      /*
+      if (!format || format == 'xml')
+      {
+         render(text: shares.opt as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text: shares.opt as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
+      }
+      */
+   }
 }

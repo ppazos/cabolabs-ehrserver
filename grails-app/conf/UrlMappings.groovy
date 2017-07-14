@@ -153,6 +153,10 @@ class UrlMappings {
          controller: 'rest',
          action: 'templates'
       )
+      "/api/v1/templates/$uid"(
+         controller: 'rest',
+         action: 'getTemplate'
+      )
       
       // management API
       "/mgt/v1/stats/$username"(
