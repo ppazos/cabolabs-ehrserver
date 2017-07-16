@@ -146,7 +146,8 @@ class DataCriteria {
          }
          else if (criteriaValueType == 'list')
          {
-            assert operand == 'in_list'
+            //assert operand == 'in_list'
+            assert ['in_list', 'contains_like'].contains(operand)
             criteria[attr] =  [(operand): value]
          }
          else if (criteriaValueType == 'range')
@@ -194,14 +195,26 @@ class DataCriteria {
          }
          else if (criteriaValueType == 'list')
          {
-            assert operand == 'in_list'
+            //assert operand == 'in_list'
+            assert ['in_list', 'contains_like'].contains(operand)
             
-            sql += this.alias +'.'+ attr +' IN ('
-            
-            value.each { singleValue ->
-               sql += singleValue.asSQLValue(operand) +','
+            if (operand == 'contains_like')
+            {
+               sql += '('
+               value.each { singleValue ->
+                  sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
+               }
+               sql = sql[0..-5] + ')' // removes last OR
             }
-            sql = sql[0..-2] + ')' // removes last ,
+            else
+            {
+               sql += this.alias +'.'+ attr +' IN ('
+               
+               value.each { singleValue ->
+                  sql += singleValue.asSQLValue(operand) +','
+               }
+               sql = sql[0..-2] + ')' // removes last ,
+            }
          }
          else if (criteriaValueType == 'range')
          {

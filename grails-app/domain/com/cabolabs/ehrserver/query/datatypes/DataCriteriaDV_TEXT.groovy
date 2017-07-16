@@ -26,11 +26,13 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_TEXT extends DataCriteria {
 
-   String valueValue
+   //String valueValue
+   List valueValue
 
    // Comparison operands
    String valueOperand
 
+   static hasMany = [valueValue: String]
    
    DataCriteriaDV_TEXT()
    {
@@ -42,9 +44,11 @@ class DataCriteriaDV_TEXT extends DataCriteria {
    
    static constraints = {
    }
+   /*
    static mapping = {
       valueValue column: "dv_text_value"
    }
+   */
    
    /**
     * Metadata that defines the types of criteria supported to search
@@ -56,7 +60,8 @@ class DataCriteriaDV_TEXT extends DataCriteria {
       return [
         [
           value: [
-            contains:  'value', // ilike %value%
+            //contains:  'value', // ilike %value%
+            contains_like: 'list', // a like %value0% OR a like %value1% OR ...
             eq:  'value'
           ]
         ]

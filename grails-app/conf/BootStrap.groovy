@@ -89,7 +89,8 @@ class BootStrap {
       
       // Used by query builder, all return String
       String.metaClass.asSQLValue = { operand ->
-        if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
+        //if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
+        if (['contains', 'contains_like'].contains(operand)) return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
         return "'"+ delegate +"'"
       }
       Double.metaClass.asSQLValue = { operand ->
