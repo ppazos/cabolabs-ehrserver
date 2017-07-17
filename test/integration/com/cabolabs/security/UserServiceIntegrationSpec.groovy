@@ -63,16 +63,25 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
          assert user == null
    }
    
-   void "test getUserAuthorities admin user"()
+   void "test getByUsername null username"()
+   {
+      when:
+         def user = userService.getByUsername(null)
+      
+      then:
+         assert user == null
+   }
+   
+   void "test getUserAuthorities for existing user with roles"()
    {
       when:
          def user = userService.getByUsername('testuser')
          def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
-         println authorities
       
       then:
          assert authorities != null
          assert authorities.size() == 1
+         assert authorities[0].authority == "ROLE_XYZ"
    }
    
    void "test getUserAuthorities user with no roles"()
@@ -80,7 +89,6 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       when:
          def user = userService.getByUsername('norole')
          def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
-         println authorities
       
       then:
          assert authorities != null

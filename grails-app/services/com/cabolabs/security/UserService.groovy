@@ -47,32 +47,4 @@ class UserService {
       // http://docs.spring.io/autorepo/docs/spring-security/3.2.1.RELEASE/apidocs/org/springframework/security/core/authority/AuthorityUtils.html
       return AuthorityUtils.createAuthorityList(authstr as String[]) // List<GrantedAuthority>
    }
-   
-   /*
-   def saveAndNotify(User userInstance, params)
-   {
-      if (!userInstance.password)
-      {
-         userInstance.enabled = false
-         userInstance.setPasswordToken()
-      }
-            
-      userInstance.save(failOnError:true)
-            
-      // TODO: UserRole ORG_* needs a reference to the org, since the user
-      //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
-
-      // Add selected roles
-      def roles = params.list('role')
-            
-      roles.each { authority ->
-         
-         UserRole.create( userInstance, (Role.findByAuthority(authority)), true )
-      }
-      
-      // TODO: schedule emails
-      // token to create the URL for the email is in the userInstance
-      notificationService.sendUserCreatedEmail( userInstance.email, [userInstance] )
-   }
-   */
 }
