@@ -26,7 +26,6 @@ class UserSpec extends Specification {
        def adminRole = new Role(authority: 'ROLE_ADMIN').save(failOnError: true, flush: true)
        def orgManagerRole = new Role(authority: 'ROLE_ORG_MANAGER').save(failOnError: true, flush: true)
        def clinicalManagerRole = new Role(authority: 'ROLE_ORG_CLINICAL_MANAGER').save(failOnError: true, flush: true)
-       def staffRole = new Role(authority: 'ROLE_ORG_STAFF').save(failOnError: true, flush: true)
        def userRole = new Role(authority: 'ROLE_USER').save(failOnError: true, flush: true)
     }
 
@@ -79,14 +78,12 @@ class UserSpec extends Specification {
                 new Organization(name: 'd')
              ]
              
-             
              orgs.each { o ->
                 o.save(failOnError: true)
              }
              
-             
              orgs.each { o ->
-                u.addToOrganizations(o)
+                UserRole.create( u, (Role.findByAuthority('ROLE_ADMIN')), o, true )
              }
           }
 
@@ -144,9 +141,7 @@ class UserSpec extends Specification {
           )
           uorgman2.save(failOnError: true)
           
-          UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_STAFF')), true )
           UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
-          
           
        then:
           uadmin.higherAuthority.authority == 'ROLE_ADMIN'

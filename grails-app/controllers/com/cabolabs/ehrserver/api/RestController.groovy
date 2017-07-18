@@ -1,14 +1,40 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.ehrserver.api
 
 import grails.converters.*
+
 import java.text.SimpleDateFormat
-import com.cabolabs.ehrserver.openehr.demographic.Person
+
 import com.cabolabs.ehrserver.query.Query
+import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.query.DataGet
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
@@ -18,12 +44,14 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Organization
 
+import com.cabolabs.ehrserver.notification.Notification
+
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import java.lang.reflect.UndeclaredThrowableException
 import javax.xml.bind.ValidationException
-
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -32,40 +60,49 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
+
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
+
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
+import com.cabolabs.security.UserRole
+import com.cabolabs.security.Organization
+import com.cabolabs.security.Role
+
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
+
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.exceptions.XmlValidationException
 
 import grails.transaction.Transactional
+import grails.util.Environment
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class RestController {
 
-   static allowedMethods = [login: "POST", commit: "POST", createPerson: "POST", contributions: "GET"]
-   
-   def messageSource
+   static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST", userRegister: "POST"]
    
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
+   def versionFSRepoService
+   def commitLoggerService
+   def notificationService
+   def apiResponsesService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
-   
-   
-   // TODO: un index con la lista de servicios y parametros de cada uno (para testing)
-   
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
    
-   
    // test stateless security
    def statelessTokenProvider
-   def userService
+   //def userService
    def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
    
    // This is used to generate controlled error codes.
@@ -85,7 +122,8 @@ class RestController {
       'queryShow': '09',     // GET /queries/$queryUid
       'query': '10',         // GET /queries/$queryUid/execute
       'queryList': '11',     // GET /queries
-      'contributions': '12'  // GET /contributions
+      'contributions': '12', // GET /contributions
+      'ehrCreate': '13'
    ]
    
    // FIXME: move logic to service
@@ -97,13 +135,9 @@ class RestController {
       String password = params.password
       String organization_number = params.organization
       
-      //UserPassOrgAuthToken auth = new UserPassOrgAuthToken(username, password, organization)
-      //def username = auth.principal
-      //def password = auth.credentials // plain text entered by the user
-      //def organization_number = auth.organization
       try
       {
-         def user = userService.getByUsername(username) //User.findByUsername(username)
+         def user = User.findByUsername(username)
          if (user == null)
          {
             throw new UsernameNotFoundException("No matching account")
@@ -125,16 +159,13 @@ class RestController {
             throw new LockedException("Account locked")
          }
          
-         
          // Check password
-         assert this.passwordEncoder != null
+         //assert this.passwordEncoder != null
          
          if (!passwordEncoder.isPasswordValid(user.password, password, null))
          {
             throw new BadCredentialsException("Authentication failed")
          }
-         
-         //println 'orgn '+ organization_number
          
          if (!organization_number) // null or empty
          {
@@ -144,68 +175,73 @@ class RestController {
          // Check organization
          Organization org = Organization.findByNumber(organization_number)
          
-         //println 'org '+ org
-         
          if (org == null)
          {
-            //System.out.println( "organization with number does not exists" )
             throw new BadCredentialsException("Authentication failed")
          }
-         
-         //println 'user orgs '+ user.organizations
-         
+
          if (!user.organizations.find{ it.uid == org.uid })
          {
-            //System.out.println( "organization is not associated with user 2" )
             throw new BadCredentialsException("Authentication failed - check the organization number")
          }
       
          // TODO: refresh token
-         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number])] as JSON)
+         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number, org_uid: org.uid])] as JSON)
       }
       catch (Exception e)
       {
-         println e.getClass()
-         render(status: 401, text: e.message)
+         renderError(e.message, 'e01.0001', 401)
       }
-  }
+   }
    
    
-   // FIXME this is customized for the commit but used from other endpoints
    private void renderError(String msg, String errorCode, int status)
    {
+      renderError(msg, errorCode, status, [], null)
+   }
+   
+   // FIXME this is customized for the commit but used from other endpoints
+   private void renderError(String msg, String errorCode, int status, List detailedErrors, Exception ex)
+   {
+      /*
+       * result
+       *   type
+       *   status
+       *   message
+       *   details
+       *     item detailedErrors[0]
+       *     item detailedErrors[1]
+       *     ...
+       *   trace // DEV ONLY
+       */
+      
+      def type = ((status in 200..299) ? 'AA' : 'AR')
+      def result
+      
       // Format comes from current request
       withFormat {
          xml {
-            println "render error XML"
-            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type {
-                     code('AR')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
-                  message(msg)
-                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
-               }
+            if (ex && Environment.current == Environment.DEVELOPMENT)
+            {
+               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
             }
+            else
+            {
+               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
+            }
+            
+            render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-            println "render error JSON"
-            def error = [
-               result: [
-                  type: [
-                     code: 'AR',
-                     codeSystem: 'HL7::TABLES::TABLE_8'
-                  ],
-                  message: msg,
-                  code: 'EHR_SERVER::API::ERRORS::'+ errorCode
-               ]
-            ]
+            if (ex && Environment.current == Environment.DEVELOPMENT)
+            {
+               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors, ex)
+            }
+            else
+            {
+               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors)
+            }
             
-            //println "error json struct"
-            
-            //render error as JSON
-            def result = error as JSON
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             
@@ -215,34 +251,8 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            println "render error *"
-            render(status: status, contentType:"text/xml", encoding:"UTF-8") {
-               result {
-                  type {
-                     code('AR')                         // application reject
-                     codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-                  }
-                  message(msg)
-                  code('EHR_SERVER::API::ERRORS::'+ errorCode) // sys::service::concept::code
-               }
-            }
-         }
-      }
-   }
-   
-   private void renderFormatNotSupportedError()
-   {
-      def error_code = 'e'+ endpoint_codes[actionName] +'.'+ format_error_code
-      
-      // 400 Bad Request
-      render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-         result {
-            type {
-               code('AR')                         // application reject
-               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-            }
-            message(message(code:'rest.error.formatNotSupported'))
-            code('EHR_SERVER::API::ERRORS::'+ error_code) // sys::service::concept::code
+            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
+            render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
@@ -264,16 +274,19 @@ class RestController {
 
       if (!ehrUid)
       {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       if (!auditSystemId)
       {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
       if (!auditCommitter)
       {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
          return
       }
@@ -281,6 +294,7 @@ class RestController {
       def ehr = Ehr.findByUid(ehrUid)
       if (!ehr)
       {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
          return
       }
@@ -290,10 +304,18 @@ class RestController {
       def _user = User.findByUsername(_username)
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
          return
       }
+      
+      //println request.getClass() // org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper
+      //println request.contentType // application/xml, application/json
 
+      // FIXME: if the request is XML we can access an XmlSlurper instance from request.XML, so
+      //        there is no need of accessing request.reader.text, the only problem is that request.XML
+      //        will be null if Content-Type is not specified on the request.
+      
       /*
        * <versions>
        *  <version>
@@ -301,41 +323,89 @@ class RestController {
        *  </version>
        * </version>
        */
-      def versionsXML = request.reader?.text // GString
+      // Works only if the XML is directly in the body, if the content type
+      // is form urlencoded, it should be accessed via a param. If the content
+      // type is multipart/form-data, it should be request.getFile('paramname')
+      // content type application/xml is accessed via request.reader?.text
+      // ref: http://stackoverflow.com/questions/3831680/httpservletrequest-get-json-post-data
+      // ref: http://stackoverflow.com/questions/9464398/reading-from-a-file-using-the-input-type-file-in-grails
       
-      // 2. versions deben venir 1 por lo menos haber una
-      if (!versionsXML)
+      def content = request.reader?.text
+      
+      if (!content)
       {
+         commitLoggerService.log(request, null, false, null, session)
+         renderError(message(code:'rest.commit.error.emptyRequest'), '4012', 400)
+         return
+      }
+      
+      def versionsXML, _parsedVersions
+      if (request.contentType == "application/json")
+      {
+         // JSON to XML, then process as XML
+         // the json is transformed to xml and processed as an xml commit internally
+         versionsXML = jsonService.json2xml(content)
+         
+         if (!versionsXML) // if empty, JSON is invalid, excepts are cached internally in the service
+         {
+            commitLoggerService.log(request, null, false, null, session)
+            renderError(message(code:'rest.commit.error.invalidJSON'), '50112', 400)
+            return
+         }
+         
+         //println "versionsXML from JSON "+ versionsXML
+         
+         def slurper = new XmlSlurper(false, false)
+         try {
+            _parsedVersions = slurper.parseText(versionsXML)
+         }
+         catch (Exception e)
+         {
+            // if the JSON fails to convert to XML, parsedVersions will be empty
+            // if _parsedVersions is empty, the error is reported below
+         }
+      }
+      else if (["application/xml", "text/xml"].contains(request.contentType))
+      {
+         def slurper = new XmlSlurper(false, false)
+         try
+         {
+            _parsedVersions = slurper.parseText(content)
+         }
+         catch (org.xml.sax.SAXParseException sex) // checks malformed XML
+         {
+            commitLoggerService.log(request, null, false, null, session)
+            renderError(message(code:'rest.commit.error.invalidXML'), '50111', 400, [], sex)
+            return
+         }
+      }
+      // TODO: else content type not supported!
+      
+      if (!_parsedVersions)
+      {
+         commitLoggerService.log(request, null, false, null, session)
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
       
-      
-      def slurper = new XmlSlurper(false, false)
-      def _parsedVersions = slurper.parseText(versionsXML)
-      
-      
-      //println "class "+ _parsedVersions.getClass() // groovy.util.slurpersupport.NodeChild
-      //println _parsedVersions.children()*.name()
-      //println _parsedVersions.version.size()
-      
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
+         commitLoggerService.log(request, null, false, content, session)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
+         commitLoggerService.log(request, null, false, content, session)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
       
-
       try
       {
          // throws exceptions for any error
-         xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
+         def contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
 
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -346,69 +416,106 @@ class RestController {
           * 
           * Note that this will override the time_committed from the version in the XML received.
           */
-      }
-      catch (ValidationException e) // xsd error
-      {
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            result {
-               type {
-                  code('AR')                         // application reject
-                  codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
+
+         commitLoggerService.log(request, contribution.uid, true, content, session)
+          
+         
+         // Check if the OPT is loaded for each compo committed, return warning if not.
+         
+         def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
+         def warnings = []
+         contribution.versions.each { version ->
+             
+            if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(version.data.templateId) == 0)
+            {
+               warnings << message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid])
+               
+               def admins = User.allForRole('ROLE_ADMIN')
+               admins.each{ admin ->
+                  new Notification(
+                     name:    'Template Not Loaded For Commit',
+                     language: 'en', /* TODO: lang should be the preferred by the org 0 of the admin */
+                     text:     message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid]),
+                     forUser:  admin.id).save()
                }
-               message(message(code:'rest.commit.error.versionsDontValidate'))
-               details {
-                  
-                  xmlService.validationErrors.each { i, errorList ->
-                     errorList.each { errorText ->
-                        
-                        item('Error on version #'+ i +') '+ errorText)
+            }
+         }
+          
+         if (warnings.size() > 0)
+         {
+            // TODO: this is not an error, but we use the same method for simplicity, we might want to ad a warning type of result.
+            renderError(message(code:'api.commit.warning.verionsCommittedWithWarnings'), '1324', 202, warnings, null)
+         }
+         else
+         {
+            def msg = message(code:'api.commit.ok', args:[ehrUid])
+            
+            withFormat {
+               xml {
+                  render(status: 201, contentType:"text/xml", encoding:"UTF-8") {
+                     result {
+                        type ('AA')
+                        message(msg)
+ 
                      }
+                  }
+               }
+               json {
+                  render(status: 201, contentType:"application/json", encoding:"UTF-8") {
+                     [
+                        result: [
+                           type: 'AA',
+                           message: msg
+                        ]
+                     ]
                   }
                }
             }
          }
+      }
+      catch (XmlValidationException | CommitWrongChangeTypeException e) // xsd and other validation errors
+      {
+         // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
+         commitLoggerService.log(request, null, false, content, session)
+         
+         def detailedErrors = []
+         
+         xmlService.validationErrors.each { i, errorList ->
+            errorList.each { errorText ->
+               
+               detailedErrors << message(code:'api.commit.versionValidation.errors', args:[i]) +': '+ errorText
+            }
+         }
+         
+         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009', 400, detailedErrors, null)
          return
       }
       catch (UndeclaredThrowableException e)
       {
+         commitLoggerService.log(request, null, false, content, session)
+         
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
          return
       }
       catch (Exception e)
       {
-         log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
-         println e.message +" "+ e.getClass().getSimpleName()
-         
-         // trace
-         StringWriter writer = new StringWriter()
-         PrintWriter printWriter = new PrintWriter( writer )
-         e.printStackTrace( printWriter )
-         printWriter.flush()
-         String stackTrace = writer.toString() // FIXME: return only on dev
-         
-         //println stackTrace
-         //println "Mensaje >: "+ g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace])
-//         def appCtx = grailsApplication.getMainContext()
-//         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-//         println "Mensaje >: "+ appCtx.getMessage("rest.commit.error.cantProcessCompositions",
-//            [e.message +" trace: "+ stackTrace] as Object[],
-//            "error",
-//            locale)
-         
-         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message +" trace: "+ stackTrace]), '468', 400)
-         return
-      }
-      
-      render(contentType:"text/xml", encoding:"UTF-8") {
-         result {
-            type {
-               code('AA')                         // application reject
-               codeSystem('HL7::TABLES::TABLE_8') // http://amisha.pragmaticdata.com/~gunther/oldhtml/tables.html
-            }
-            message('Versions successfully committed to EHR '+ ehrUid)
-            // has no error code
+         // When two commits of creation for the persistent compo to the same EHR
+         // happen, an error is thrown, that is OK, but here fails in the log saying
+         // that failed to lazily initialize a collection of role:
+         // com.cabolabs.ehrserver.openehr.ehr.Ehr.contributions, could not initialize proxy
+         // - no Session, and ehr.isAttached() here returns false I don't know why.
+         // This fixes that by attaching a the EHR to the session.
+         if (!ehr.isAttached()) {
+            ehr.attach()
          }
+
+         commitLoggerService.log(request, null, false, content, session)
+         
+         log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
+         
+         renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
+         return
       }
    } // commit
 
@@ -423,7 +530,7 @@ class RestController {
     * @return
     */
    @SecuredStateless
-   def checkout(String ehrUid, String compositionUid)
+   def checkout(String ehrUid, String compositionUid, String format)
    {
       if (!ehrUid)
       {
@@ -436,7 +543,6 @@ class RestController {
          renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
          return
       }
-      
       
       def c = Ehr.createCriteria()
       def _ehr = c.get {
@@ -451,16 +557,14 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
          return
       }
       
-      
+      // Checks
       def versions = Version.withCriteria {
          data {
             eq('uid', compositionUid)
@@ -489,55 +593,37 @@ class RestController {
          return
       }
       
-      def version = versions[0]
-      
-      // Double check: not really necessary (if the client has the compoUid is because it already has permissions.
-      if(version.contribution.ehr.uid != ehrUid)
+
+      try
       {
-         renderError(message(code:'rest.commit.error.contributionInconsistency'), '414', 500)
+         withFormat {
+            json {
+               render(text: compositionService.compositionAsJson(compositionUid), contentType:"application/json", encoding:"UTF-8")
+            }
+            xml {
+               render(text: compositionService.compositionAsXml(compositionUid), contentType:"text/xml", encoding:"UTF-8")
+            }
+         }
+      }
+      catch (FileNotFoundException e)
+      {
+         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500) // this should not happen :)
          return
       }
-      
-      // ======================================================================
-      // The result Version have the same XML format as the one used for commit
-      
-      // Get the version file
-      def vf = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml")
-      if (!vf.exists() || !vf.canRead())
+      catch (Exception e)
       {
-         // This is another case that shouldn't happen, will happen only if the files are deleted from disk
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500)
+         renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '415', 404)
          return
       }
-      
-      def xml = vf.getText()
-      
-      render(text: xml, contentType:"text/xml", encoding:"UTF-8")
    }
    
    @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
-      // TODO: fromDate, toDate
-      
-      // test rest security
-      //println "hello ${request.securityStatelessMap}" // [extradata:[organization:1234], issued_at:2015-12-27T14:26:53.802-03:00, username:admin]
-      
-      // Paginacion
       if (!max) max = 30
       if (!offset) offset = 0
       
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      // Lista ehrs
-      def _ehrs = Ehr.findAllByOrganizationUid(_org.uid, [max: max, offset: offset, readOnly: true])
-      
-      // ===========================================================================
-      // 3. Discusion por formato de salida
-      //
-      
+      def _ehrs = Ehr.findAllByOrganizationUid(request.securityStatelessMap.extradata.org_uid, [max: max, offset: offset, readOnly: true])
       def res = new PaginatedResults(listName:'ehrs', list:_ehrs, max:max, offset:offset)
       
       if (!format || format == "xml")
@@ -551,40 +637,164 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrList
    
+   
+   /**
+    * The register is only for the same org as the auth user.
+    * The default role is ROLE_USER, it can be changed from the web console.
+    * @param username
+    * @param email
+    * @return
+    */
+   @SecuredStateless
+   def userRegister(String username, String email)
+   {
+      if (!username || !email)
+      {
+         renderError(message(code:'rest.userRegister.error.usernameAndEmail.required'), '999', 400)
+         return
+      }
+      
+      def u = new User(
+         username: params.username,
+         email: params.email,
+         enabled: false
+      )
+      u.setPasswordToken()
+      
+      def error = false
+      User.withTransaction{ status ->
+      
+         try
+         {
+            def o = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
+            
+            u.save(failOnError: true)
+            
+            UserRole.create( u, (Role.findByAuthority('ROLE_USER')), o, true )
+            
+            // reset password request notification
+            notificationService.sendUserRegisteredOrCreatedEmail( u.email, [u], false )
+         }
+         catch (Exception e)
+         {
+            //println e.message
+            //println u.errors
+            
+            status.setRollbackOnly()
+            error = true
+         }
+      }
+      
+      if (error)
+      {
+         renderError(message(code:'rest.userRegister.errorRegisteringUser'), '400', 400, u.errors.getAllErrors(), null)
+         return
+      }
+      
+      def data = [
+         username: u.username,
+         email: u.email,
+         organizations: u.organizations
+      ]
+      
+      withFormat {
+         xml {
+            def result = data as XML
+            render(text: result, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+
+            def result = data as JSON
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
+   }
+   
+   
+   
+   /**
+    * 
+    * @param uid optional, if the client wants to set the uid externally.
+    * @param subjectUid
+    * @return
+    */
+   @SecuredStateless
+   def ehrCreate(String uid, String subjectUid, String format)
+   {
+      if (!subjectUid)
+      {
+         renderError(message(code:'rest.ehrCreate.error.subjectUid.required'), '999', 400)
+         return
+      }
+      
+      // Check if there is an EHR for the same subject UID
+      def c = Ehr.createCriteria()
+      def existing_ehr = c.get {
+         subject {
+            eq('value', subjectUid)
+         }
+      }
+      if (existing_ehr)
+      {
+         renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[subjectUid, existing_ehr.uid]), '998', 400)
+         return
+      }
+      
+      // Check if the uid is unique
+      if (uid)
+      {
+         existing_ehr = Ehr.findByUid(uid)
+         if (existing_ehr)
+         {
+            renderError(message(code:'ehr.createEhr.ehrUidAlreadyExists', args:[uid]), '997', 400)
+            return
+         }
+      }
+      
+      
+      // Create the new EHR
+      def ehr = new Ehr(
+         organizationUid: request.securityStatelessMap.extradata.org_uid, 
+         subject: new PatientProxy(value: subjectUid)
+      )
+      
+      if (uid)
+      {
+         ehr.uid = uid
+      }
+      
+      try
+      {
+         ehr.save(failOnError: true)
+      }
+      catch (Exception e)
+      {
+         renderError(message(code:'ehr.createEhr.saveError'), '159', 400, [], e)
+         return
+      }
+      
+      if (!format || format == "xml")
+      {
+         render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == "json")
+      {
+         def result = ehr as JSON
+         // JSONP
+         if (params.callback) result = "${params.callback}( ${result} )"
+         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      }
+   }
+   
+   // TODO: should use the ehr.subject.value key not the Person.uid
    @SecuredStateless
    def ehrForSubject(String subjectUid, String format)
    {
       if (!subjectUid)
       {
          renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
-         return
-      }
-      
-      // ===========================================================================
-      // 1. Paciente existe?
-      //
-      def _subject = Person.findByUidAndRole(subjectUid, 'pat')
-      if (!_subject)
-      {
-         //render(status: 500, text:"<result><code>error</code><message>No existe el paciente $subjectUid</message></result>", contentType:"text/xml", encoding:"UTF-8")
-         renderError(message(code:'rest.error.patient_doesnt_exists', args:[subjectUid]), "477", 404)
-         return
-      }
-      
-      // Check if the org used to login is the org of the requested patient
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_subject.organizationUid != _org.uid)
-      {
-         renderError(message(code:'rest.error.cant_access_patient', args:[subjectUid]), "484", 401)
          return
       }
       
@@ -599,7 +809,16 @@ class RestController {
       }
       if (!_ehr)
       {
-         render(status: 404, text:"<result><code>error</code><message>"+ message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]) +"</message></result>", contentType:"text/xml", encoding:"UTF-8")
+         renderError(message(code:'rest.error.patient_doesnt_have_ehr', args:[subjectUid]), "455", 404)
+         return
+      }
+      
+      
+      // Check if the org used to login is the org of the requested ehr
+      // organization number used on the API login
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
+      {
+         renderError(message(code:'rest.error.user_cant_access_ehr', args:[_ehr.uid]), "483", 401)
          return
       }
       
@@ -617,17 +836,13 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrForSubject
    
    
    @SecuredStateless
-   def ehrGet(String ehrUid, String format)
+   def ehrGet(String uid, String format)
    {
-      if (!ehrUid)
+      if (!uid)
       {
          renderError(message(code:'rest.error.ehr_uid_required'), "456", 400)
          return
@@ -636,23 +851,20 @@ class RestController {
       // 1. EHR existe?
       def c = Ehr.createCriteria()
       def _ehr = c.get {
-         eq ('uid', ehrUid)
+         eq ('uid', uid)
       }
       
       if (!_ehr)
       {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
+         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[uid]), "478", 404)
          return
       }
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
-         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
+         renderError(message(code:'rest.error.cant_access_ehr', args:[uid]), "483", 401)
          return
       }
       
@@ -670,144 +882,7 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    } // ehrGet
-   
-   
-   @SecuredStateless
-   def patientList(String format, int max, int offset)
-   {
-      // Paginacion
-      if (!max) max = 15
-      if (!offset) offset = 0
-      
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      // ===========================================================================
-      // 1. Lista personas con rol paciente
-      //
-      //def subjects = Person.findAllByRoleAndOrganizationUid('pat', _org.uid, [max: max, offset: offset, readOnly: true])
-      
-      def c = Person.createCriteria()
-      def subjects = c.list (max: params.max, offset: params.offset) {
-
-         eq("role", "pat")
-         eq("organizationUid", _org.uid)
-         
-         // filters
-         if (params.firstName)
-         {
-            like('firstName', '%'+params.firstName+'%')
-         }
-         if (params.lastName)
-         {
-            like('lastName', '%'+params.lastName+'%')
-         }
-         if (params.sex)
-         {
-            eq('sex', params.sex) // sex should be eq
-         }
-         if (params.idCode)
-         {
-            like('idCode', '%'+params.idCode+'%')
-         }
-         if (params.idType)
-         {
-            eq('idType', params.idType) // idcode should be eq
-         }
-         
-         // TODO: filter by dob range
-         
-         setReadOnly true
-      }
-      
-      /*
-       * TODO: we can return the total count, form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
-       * 
-       * Because that query includes pagination parameters (max and offset), this will return
-       * a PagedResultList which has a getTotalCount() method to return the total number of
-       * matching records for pagination. Two queries are still run, but they are run for
-       * you and the results and total count are combined in the PagedResultList.
-       * 
-       * So we can do subjects.totalCount
-       */
-      
-      // ===========================================================================
-      // 2. Discusion por formato de salida
-      //
-      def res = new PaginatedResults(listName:'patients', list:subjects, max:max, offset:offset)
-      
-      if (!format || format == "xml")
-      {
-         render(text: res as XML,
-                contentType:"text/xml",
-                encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = res as JSON
-         
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
-   } // patientList
-   
-   
-   // Get patient data
-   @SecuredStateless
-   def patient(String uid, String format)
-   {
-      log.info( "patient "+ params.toString() )
-      
-      if (!uid)
-      {
-         renderError(message(code:'rest.error.patient_uid_required'), "455", 400)
-         return
-      }
-      
-      // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      def person = Person.findByRoleAndUid('pat', uid)
-      if (!person)
-      {
-         renderError(message(code:'rest.error.patient_doesnt_exists', args:[uid]), "477", 404)
-         return
-      }
-      
-      if (person.organizationUid != _org.uid)
-      {
-         renderError(message(code:'rest.error.cant_access_patient', args:[uid]), "484", 401)
-         return
-      }
-      
-      if (!format || format == "xml")
-      {
-         render(text: person as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = person as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
-   }
    
    
    /*
@@ -817,156 +892,81 @@ class RestController {
    @SecuredStateless
    def queryShow(String queryUid, String format)
    {
-      println params
-      
       if (!queryUid)
       {
-         //render(status: 500, text:"<result><code>error</code><message>uid es obligatorio</message></result>", contentType:"text/xml", encoding:"UTF-8")
-          renderError(message(code:'rest.error.query_uid_required'), "455", 400)
+         renderError(message(code:'rest.error.query_uid_required'), "455", 400)
          return
       }
       
-      def query=Query.findByUid(queryUid)
+      def query = Query.findByUid(queryUid)
        
       if (!query)
       {
-         //render(status: 500, text:"<result><code>error</code><message>patient doesnt exists</message></result>", contentType:"text/xml", encoding:"UTF-8")
          renderError(message(code:'rest.error.query_doesnt_exists', args:[queryUid]), "477", 404)
          return
       }
       
-      //println query
-      
       if (!format || format == "xml")
       {
          render(text: query as XML, contentType:"text/xml", encoding:"UTF-8")
-         /*
-         render(contentType:"text/xml", encoding:"UTF-8") {
-            delegate.query{
-               uid(query.uid)
-               name(query.name)
-               delegate.format(query.format)
-               type(query.type)
-               
-               if (query.type == 'composition')
-               {
-                  for (criteria in query.where)
-                  {
-                     delegate.criteria {
-                        archetypeId(criteria.archetypeId)
-                        path(criteria.path)
-                        delegate.criteria(criteria.toSQL())
-                        //value(criteria.value)
-                     }
-                  }
-               }
-               else
-               {
-                  group(query.group) // Group is only for datavalue
-                  
-                  for (proj in query.select)
-                  {
-                     projection {
-                        archetypeId(proj.archetypeId)
-                        path(proj.path)
-                     }
-                  }
-               }
-               
-               
-               //template_id(query.templateId)
-            }
-         }
-         */
       }
       else if (format == "json")
       {
-         /*
-         def data = [
-            uid: query.uid,
-            name: query.name,
-            format: query.format,
-            type: query.type
-         ]
-         if (query.type == 'composition')
-         {
-            data.criteria = query.where.collect { [archetypeId: it.archetypeId, path: it.path, criteria: it.toSQL()] }
-         }
-         else
-         {
-            data.group = query.group // Group is only for datavalue
-            data.projections = query.select.collect { [archetypeId: it.archetypeId, path: it.path] }
-         }
-         */
-         
          def result = query as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderFormatNotSupportedError()
-      }
    }
 
    
    @SecuredStateless
-   def queryList(String format,String queryName,String descriptionContains,int max, int offset)
+   def queryList(String format, String name, String sort, String order, int max, int offset)
    {
-      //println params 
-      // Paginacion
       if (!max) max = 15
       if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
       
-      def _queries 
-      if (!queryName && !descriptionContains)
-      {
-         _queries = Query.list(max: max, offset: offset, readOnly: true)
+      // login organization
+      def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
+      def shares = QueryShare.findAllByOrganization(_org)
+      
+      def c = Query.createCriteria()
+      def _queries = c.list (max: max, offset: offset, sort: sort, order: order, readOnly: true) {
+        if (name)
+        {
+          like('name', '%'+name+'%')
+        }
+        
+        // return public or shared with the current org
+        if (shares)
+        {
+           or {
+              eq('isPublic', true)
+              'in'('id', shares.query.id)
+           }
+        }
+        else
+        {
+           eq('isPublic', true)
+        }
       }
-      else
-      {
-         if (!descriptionContains)
-         {
-            def criteria = Query.createCriteria()
-            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                          like('name', '%'+queryName.replace('.',' ')+'%')
-                       }
-         }
-         else
-         {
-            def criteria = Query.createCriteria()
-            _queries = criteria.list (max: max, offset: offset, readOnly: true) {
-                          like('name', '%'+descriptionContains+'%')
-                       }
-         }
-      }     
-      
-      // Si format es cualquier otra cosa, tira XML por defecto (no se porque)
-      /*
-      withFormat {
-      
-         xml { render 'xml' }
-         json { render 'json' }
-      }
-      */
       
       def res = new PaginatedResults(listName:'queries', list:_queries, max:max, offset:offset)
       
       withFormat {
-      
          xml {
             render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-         
             def result = res as JSON
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            renderFormatNotSupportedError()
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
@@ -981,7 +981,7 @@ class RestController {
    @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate)
+             String fromDate, String toDate, int max, int offset)
    {
       if (!queryUid)
       {
@@ -990,10 +990,7 @@ class RestController {
       }
       
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      String organizationUid = _org.uid
-      
+      String organizationUid = request.securityStatelessMap.extradata.org_uid
       
       if (ehrUid)
       {
@@ -1018,7 +1015,6 @@ class RestController {
          return
       }
       
-      
       def query = Query.findByUid(queryUid)      
       if (!query)
       {
@@ -1026,9 +1022,27 @@ class RestController {
          return
       }
       
+      // query can be accessed by current org?
+      if (!query.isPublic)
+      {
+         def shares = QueryShare.findAllByQuery(query)
+         def orgCanAccess = (shares.organization.find{ it.uid == organizationUid } != null)
+         if (!orgCanAccess)
+         {
+            renderError(message(code:'query.execute.error.cantAccessQuery', args:[queryUid]), '446', 401)
+            return
+         }
+      }
+      
       // --------------------------------------------------------------
       // FIXME: do query execution and output processing in a service
       // --------------------------------------------------------------
+      
+      if (!max)
+      {
+         max = 20
+         offset = 0
+      }
       
       // parse de dates
       Date qFromDate
@@ -1061,12 +1075,11 @@ class RestController {
          return
       }
       
-      
       // measuring query timing
       def start_time = System.currentTimeMillis()
       // /measuring query timing
       
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
       
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1076,7 +1089,6 @@ class RestController {
       // If not format is specified, take the query format.
       if (!format) format = query.format
          
-      
       // Output as XMl or JSON. For type=composition format is always XML.
       if (query.type == 'composition')
       {
@@ -1105,19 +1117,24 @@ class RestController {
          // compositions que se apuntan por el index
          if (!retrieveData)
          {
+            def paginated_res = new PaginatedResults(listName:'results', max:max, offset:offset)
+            
             // we need a map to return the timing...
             if (res instanceof List)
             {
-               def mapres = [results: res]
-               res = mapres
+               paginated_res.list = res
+            }
+            else
+            {
+               paginated_res.map = res
             }
             
-            res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
+            paginated_res.timing = end_time - start_time
             
             if (format == 'json')
-               render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+               render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
             else
-               render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+               render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
             return
          }
 
@@ -1136,7 +1153,7 @@ class RestController {
           def version
           String buff
           String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-          
+          def vf
           if (!ehrUid) // group by ehrUid
           {
              res.each { _ehrUid, compoIndexes ->
@@ -1153,7 +1170,22 @@ class RestController {
                    
                    // adds the version, not just the composition
                    version = compoIndex.getParent()
-                   buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                   
+                   try
+                   {
+                      vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                      buff = vf.getText()
+                   }
+                   catch (VersionRepoNotAccessibleException e)
+                   {
+                      log.warning e.message
+                      return // continue with next compoIndex
+                   }
+                   catch (FileNotFoundException e)
+                   {
+                      log.warning e.message
+                      return // continue with next compoIndex
+                   }
       
                    
                    buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
@@ -1181,7 +1213,22 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+                
+                try
+                {
+                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                   buff = vf.getText()
+                }
+                catch (VersionRepoNotAccessibleException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
+                catch (FileNotFoundException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
    
                 buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
                 buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1205,33 +1252,33 @@ class RestController {
          else
             render(text: out, contentType:"text/xml", encoding:"UTF-8")
          
-      } // type = composition
+      } // /type = composition
       else
       {
          // type = datavalue
          
+         def paginated_res = new PaginatedResults(listName:'results', max:max, offset:offset)
+         
          // we need a map to return the timing...
-         // dv queries with group none will return a list, not a map
          if (res instanceof List)
          {
-            def mapres = [results: res]
-            res = mapres
+            paginated_res.list = res
+         }
+         else
+         {
+            paginated_res.map = res
          }
          
-         res['timing'] = (end_time - start_time).toString() +' ms' // measuring query timing
+         paginated_res.timing = end_time - start_time
          
          // Format
          if (!format || format == 'xml')
          {
-            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
          }
          else if (format == 'json')
          {
-            render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-         }
-         else
-         {
-            renderFormatNotSupportedError()
+            render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
          }
       }
    } // query
@@ -1262,10 +1309,9 @@ class RestController {
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
       String group = request.JSON.group
-      String organizationUid = request.JSON.organizationUid
       
-      
-      if (qehrId && organizationUid)
+      String organizationUid
+      if (qehrId)
       {
          def ehr = Ehr.findByUid(qehrId)
          if (!ehr)
@@ -1274,11 +1320,12 @@ class RestController {
             return
          }
          
-         if (ehr.organizationUid != organizationUid)
-         {
-            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
-            return
-         }
+         organizationUid = ehr.organizationUid
+      }
+      else
+      {
+         // use the orguid of the org used to login
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       
@@ -1316,7 +1363,6 @@ class RestController {
       def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid)
       
-      println "format: "+ format
       
       // Format
       if (!format || format == 'xml')
@@ -1329,7 +1375,6 @@ class RestController {
       }
       else
       {
-         // since this is not actually an endpoint, is just for query test from the UI, dont uses renderFormatNotSupportedError()
          render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
       }
       return
@@ -1345,8 +1390,6 @@ class RestController {
    // Not stateless secured because is used from the web
    def queryCompositions()
    {
-      println "queryCompositions"
-      
       // all params come in the JSON object from the UI
       // all are strings
       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
@@ -1356,16 +1399,16 @@ class RestController {
       String toDate = request.JSON.toDate
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
-      String organizationUid = request.JSON.organizationUid
        
       /*
        println request.JSON.retrieveData.getClass().getSimpleName()
        println request.JSON.showUI.getClass().getSimpleName()
       */
-      println retrieveData.toString() +" "+ showUI.toString()
-       
-       
-      if (qehrId && organizationUid)
+      //println retrieveData.toString() +" "+ showUI.toString()
+      
+      
+      String organizationUid
+      if (qehrId)
       {
          def ehr = Ehr.findByUid(qehrId)
          if (!ehr)
@@ -1374,11 +1417,12 @@ class RestController {
             return
          }
          
-         if (ehr.organizationUid != organizationUid)
-         {
-            renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[qehrId, organizationUid]), '458', 400)
-            return
-         }
+         organizationUid = ehr.organizationUid
+      }
+      else
+      {
+         // use the orguid of the org used to login
+         organizationUid = session.organization.uid // session.organization exists only from Web Console, not on API
       }
       
       
@@ -1412,9 +1456,13 @@ class RestController {
          renderError(message(code:'rest.error.from_bigger_than_to', args:[fromDate, toDate]), "481", 400)
          return
       }
-       
+      
+      // For testing there is no need to pass pagination params, so we define them here:
+      def max = 20
+      def offset = 0
+      
       def query = Query.newInstance(request.JSON.query)
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset)
       def result = cilist
       
       // If no ehrUid was specified, the results will be for different ehrs
@@ -1423,9 +1471,6 @@ class RestController {
       {
          result = cilist.groupBy { ci -> ci.ehrUid }
       }
-       
-      //println "Resultados (CompositionIndex): " + cilist
-      
       
       // Muestra compositionIndex/list
       if (showUI)
@@ -1468,7 +1513,7 @@ class RestController {
       def version
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-      
+      def vf
       if (!qehrId) // group by ehrUid
       {
          result.each { ehrUid, compoIndexes ->
@@ -1485,8 +1530,22 @@ class RestController {
                 
                 // adds the version, not just the composition
                 version = compoIndex.getParent()
-                buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
    
+                try
+                {
+                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                   buff = vf.getText()
+                }
+                catch (VersionRepoNotAccessibleException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
+                catch (FileNotFoundException e)
+                {
+                   log.warning e.message
+                   return // continue with next compoIndex
+                }
                 
                 buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
                 buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1513,7 +1572,22 @@ class RestController {
              
             // adds the version, not just the composition
             version = compoIndex.getParent()
-            buff = new File(config.version_repo + version.uid.replaceAll('::', '_') +".xml").getText()
+            
+            try
+            {
+               vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+               buff = vf.getText()
+            }
+            catch (VersionRepoNotAccessibleException e)
+            {
+               log.warning e.message
+               return // continue with next compoIndex
+            }
+            catch (FileNotFoundException e)
+            {
+               log.warning e.message
+               return // continue with next compoIndex
+            }
             
             buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
@@ -1571,10 +1645,7 @@ class RestController {
       
       // Check if the org used to login is the org of the requested ehr
       // organization number used on the API login
-      def _orgnum = request.securityStatelessMap.extradata.organization
-      def _org = Organization.findByNumber(_orgnum)
-      
-      if (_ehr.organizationUid != _org.uid)
+      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
       {
          renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "0004", 401)
          return
@@ -1671,27 +1742,17 @@ class RestController {
    @SecuredStateless
    def getComposition(String uid, String format)
    {
-      // uid required
       if (!uid)
       {
-         if (!format || format == 'xml')
-            render(status: 400, text:'<error>uid is required</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 400, text:'{"error": "uid is required"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'ehr.show.uidIsRequired'), '479', 400)
          return
       }
-      
       
       def cindex = CompositionIndex.findByUid(uid)
       
       if (!cindex)
       {
-         if (!format || format == 'xml')
-            render(status: 404, text:'<error>composition not found</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 404, text:'{"error": "composition not found"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '479', 404)
          return
       }
       
@@ -1703,7 +1764,6 @@ class RestController {
          renderError(message(code:'query.execute.error.user_cant_access_composition'), '479', 403)
          return
       }
-      
 
       withFormat {
          json {
@@ -1749,19 +1809,40 @@ class RestController {
       def dFromDate
       def dToDate
       
-      // FIXME: cuando sea servicio no hay ui
       // mandatory parameters not present so it is 400 Bad Request
-      if (!ehrUid && !subjectId && !fromDate && !toDate && !archetypeId && !category)
+      if (!ehrUid && !subjectId)
       {
-         if (!format || format == 'xml')
-            render(status: 400, text:'<error>ehrUid or subjectUid are required</error>', contentType:"text/xml", encoding:"UTF-8")
-         else if (format == 'json')
-            render(status: 400, text:'{"error": "ehrUid or subjectUid are required"}', contentType:"application/json", encoding:"UTF-8")
-            
+         renderError(message(code:'rest.error.findCompositions.subjectIdOrEhrUidRequire'), '403', 400)
          return
       }
       
-      // FIXME: Si el formato esta mal va a tirar una except!
+      def ehr 
+      if (ehrUid)
+      {
+         ehr = Ehr.findByUid(ehrUid)
+      }
+      else
+      {
+         ehr = Ehr.withCriteria {
+            subject {
+               eq('value', subjectId)
+            }
+         }
+      }
+      
+      if (!ehr)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_exists_no_id'), "465", 404)
+         return
+      }
+      
+      if (ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
+      {
+         renderError(message(code:'rest.error.ehr_doesnt_belong_to_organization', args:[ehr.uid, request.securityStatelessMap.extradata.org_uid]), "462", 401)
+         return
+      }
+      
+      // Si el formato esta mal va a tirar una except!
       // https://github.com/ppazos/cabolabs-ehrserver/issues/364
       if (fromDate)
       {
@@ -1783,8 +1864,9 @@ class RestController {
          }
       }
       
+      // we know that ehrUid or sujectId are present, and the ehr belongs to the current org
       def idxs = CompositionIndex.withCriteria {
-         
+      
          if (ehrUid)
             eq('ehrUid', ehrUid)
          
@@ -1811,113 +1893,110 @@ class RestController {
       
       def res = new PaginatedResults(listName:'result', list:idxs, max:max, offset:offset)
       
-      // TODO: ui o xml o json (solo index o contenido), ahora tira solo index
       if (!format || format == 'xml')
          render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      else if (format == 'json')
+      else (format == 'json')
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
-      else
-         render(status: 400, text: '<result>format not supported</result>', contentType:"text/xml", encoding:"UTF-8")
+
    }
    
    
-   @Transactional
    @SecuredStateless
-   def createPerson(String firstName, String lastName, String dob, String sex, String idCode, String idType, 
-                    String role, String organizationUid, boolean createEhr, String format)
+   def organizations(String format)
    {
-      if (!format)
-      {
-         params.format = 'json' // this is to make withFormat works because uses the request params
-         format = 'json'
-      }
-      
-      if (!organizationUid)
-      {
-         renderError('organizationUid required', '5556', 400) // Bad Request
-         return
-      }
-      
-      if (Organization.countByUid(organizationUid) == 0)
-      {
-         renderError("Organization $organizationUid doesn't exists", '1237', 400) // Bad Request
-         return
-      }
-      
-      // FIXME: this should be on a service
-      // Does the request comes from someone who has access to the organization?
       def _username = request.securityStatelessMap.username
       def _user = User.findByUsername(_username)
-      if (!_user.organizations.uid.contains(organizationUid))
-      {
-         renderError("Don't have permissions over the organization $organizationUid", '4764', 403)
-         return
-      }
       
-      
-      // I think this is binded automatically to the person on save
-      // dob to date
-      params.dob = DateParser.tryParse(dob)
-      
-      
-      // same as personcontroller.save
-      def personInstance = new Person(params)
-      
-      if (!personInstance.save(flush: true))
-      {
-         def errors = ""
-         personInstance.errors.allErrors.each { 
-            
-            errors += messageSource.getMessage(it, null) + "\n"
-         }
-         
-         renderError("Invalid data: \n" + errors, '1235', 400) // Bad Request
-         return
-      }
-      
-      if (personInstance.role == "pat" && createEhr)
-      {
-         // from EhrController.createEhr
-         def ehr = new Ehr(
-            subject: new PatientProxy(
-               value: personInstance.uid
-            ),
-            organizationUid: personInstance.organizationUid
-         )
-         
-         if (!ehr.save(flish:true))
-         {
-            renderError('Not able to save EHR', '1236', 500) // Internal Server Error
-            return
-         }
-      }
-      
-
-         
-      def data = [
-         firstName: personInstance.firstName,
-         lastName: personInstance.lastName,
-         dob: personInstance.dob, // Date is marshalled by the JSON marshaller
-         sex: personInstance.sex,
-         idCode: personInstance.idCode,
-         idType: personInstance.idType, 
-         role: personInstance.organizationUid, 
-         organizationUid: personInstance.organizationUid,
-         uid: personInstance.uid
-      ]
       if (!format || format == 'xml')
       {
-         println "XML"
-         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: _user.organizations as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         println "JSON"
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: _user.organizations as JSON, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
          renderError("Format $format not supported", '44325', 400)
       }
+   }
+
+   @SecuredStateless
+   def templates(String format)
+   {
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      def orgs = _user.organizations
+
+      def shares = OperationalTemplateIndexShare.withCriteria {
+         or {
+            'in'('organization', orgs)
+            opt {
+               eq('isPublic', true)
+            }
+         }
+      }
+
+      if (!format || format == 'xml')
+      {
+         render(text: shares.opt as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text: shares.opt as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
+      }
+   }
+   
+   @SecuredStateless
+   def getTemplate(String uid, String format)
+   {
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+      def orgs = _user.organizations
+
+      def shares = OperationalTemplateIndexShare.withCriteria {
+         or { // checks permissions
+            'in'('organization', orgs)
+            opt {
+               eq('isPublic', true)
+            }
+         }
+         opt {
+            eq('uid', uid)
+         }
+      }
+      
+      if (shares.size() == 0)
+      {
+         renderError("OPT not found", '444555', 404)
+         return
+      }
+      
+      
+      def opt = shares[0].opt
+      def src = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt'
+      File opt_file = new File( src )
+      def opt_xml = opt_file.getText()
+      
+       render(text: opt_xml, contentType:"text/xml", encoding:"UTF-8")
+
+      /*
+      if (!format || format == 'xml')
+      {
+         render(text: shares.opt as XML, contentType:"text/xml", encoding:"UTF-8")
+      }
+      else if (format == 'json')
+      {
+         render(text: shares.opt as JSON, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         renderError("Format $format not supported", '44325', 400)
+      }
+      */
    }
 }

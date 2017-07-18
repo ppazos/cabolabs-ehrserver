@@ -5,6 +5,7 @@ import grails.test.spock.IntegrationSpec
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.User
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 
 class RestControllerIntegrationSpec extends IntegrationSpec {
 
@@ -13,7 +14,7 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
    def setup()
    {
       def org = new Organization(name: 'Hospital de Clinicas 2', number: '99999').save(flush:true, failOnError:true)
-      def user = new User(username:"user", password:"pass", email:"e@m.com", organizations:[org]).save(flush:true, failOnError:true)
+      def user = new User(username:"testuser", password:"testpass", email:"e@m.com", organizations:[org]).save(flush:true, failOnError:true)
       /*
       controller.springSecurityService = [
         encodePassword: 'admin',
@@ -30,9 +31,12 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      // deletes the created instances
+      User.findByUsername("testuser").delete()
+      Organization.findByNumber("99999").delete()
    }
 
-   
+   /*
    def createPersonPopulateValidParams(params) {
       assert params != null
 
@@ -119,4 +123,150 @@ class RestControllerIntegrationSpec extends IntegrationSpec {
          controller.response.status == 200
          Ehr.count() == countEHRs + 1
    }
+   
+   void "test patient list structure"()
+   {
+      setup:
+         def hospital = Organization.findByNumber('99999')
+         
+         def persons = [
+            new Person(
+               firstName: 'Pablo',
+               lastName: 'Pazos',
+               dob: new Date(81, 9, 24),
+               sex: 'M',
+               idCode: '4116238-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '11111111-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            ),
+            new Person(
+               firstName: 'Barbara',
+               lastName: 'Cardozo',
+               dob: new Date(87, 2, 19),
+               sex: 'F',
+               idCode: '1234567-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '22222222-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            ),
+            new Person(
+               firstName: 'Carlos',
+               lastName: 'Cardozo',
+               dob: new Date(80, 2, 20),
+               sex: 'M',
+               idCode: '3453455-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '33333333-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            )
+         ]
+         
+         persons.each { p ->
+            
+            if (!p.save())
+            {
+               println p.errors
+            }
+         }
+         
+      when:
+         controller.request.method = "POST" // if GET, returns status 405
+         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number, org_uid: orgUid]] // mock JWT data
+         controller.params.format = 'xml'
+         controller.patientList()
+         
+         println groovy.xml.XmlUtil.serialize( controller.response.text )
+		   //response.reset()
+      
+      then:
+         controller.response.status == 200
+         !controller.response.xml.patients.isEmpty()
+         controller.response.xml.patients.person.size() == 3
+   }
+   
+   void "test ehr list structure"()
+   {
+      setup:
+         def hospital = Organization.findByNumber('99999')
+         
+         def persons = [
+            new Person(
+               firstName: 'Pablo',
+               lastName: 'Pazos',
+               dob: new Date(81, 9, 24),
+               sex: 'M',
+               idCode: '4116238-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '11111111-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            ),
+            new Person(
+               firstName: 'Barbara',
+               lastName: 'Cardozo',
+               dob: new Date(87, 2, 19),
+               sex: 'F',
+               idCode: '1234567-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '22222222-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            ),
+            new Person(
+               firstName: 'Carlos',
+               lastName: 'Cardozo',
+               dob: new Date(80, 2, 20),
+               sex: 'M',
+               idCode: '3453455-0',
+               idType: 'CI',
+               role: 'pat',
+               uid: '33333333-1111-1111-1111-111111111111',
+               organizationUid: hospital.uid
+            )
+         ]
+         
+         persons.each { p ->
+            
+            if (!p.save())
+            {
+               println p.errors
+            }
+         }
+         
+         def ehr
+         persons.eachWithIndex { p, i ->
+        
+            if (p.role == 'pat')
+            {
+               ehr = new Ehr(
+                  subject: new PatientProxy(
+                     value: p.uid
+                  ),
+                  organizationUid: p.organizationUid
+               )
+               
+               if (!ehr.save()) println ehr.errors
+            }
+         }
+         
+      
+      when:
+         controller.request.method = "POST" // if GET, returns status 405
+         controller.request.securityStatelessMap = [username: 'user', extradata: [organization: hospital.number, org_uid: orgUid]] // mock JWT data
+         controller.params.format = 'xml'
+         controller.ehrList()
+         
+         println groovy.xml.XmlUtil.serialize( controller.response.text )
+		   //response.reset()
+      
+      then:
+         controller.response.status == 200
+         !controller.response.xml.ehrs.isEmpty()
+         controller.response.xml.ehrs.ehr.size() == 3
+   }
+   */
 }

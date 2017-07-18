@@ -1,7 +1,30 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.ehrserver.query
 
 import grails.util.Holders
 import com.cabolabs.ehrserver.data.DataValues
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 
 /**
  * WHERE archId/path operand value 
@@ -41,6 +64,8 @@ class DataCriteria {
    int spec // index of the criteria spec selected
    
    String alias // for the query, private
+   
+   static transients = ['indexItem']
    
    static constraints = {
       rmTypeName(inList: DataValues.valuesStringList() )
@@ -121,7 +146,8 @@ class DataCriteria {
          }
          else if (criteriaValueType == 'list')
          {
-            assert operand == 'in_list'
+            //assert operand == 'in_list'
+            assert ['in_list', 'contains_like'].contains(operand)
             criteria[attr] =  [(operand): value]
          }
          else if (criteriaValueType == 'range')
@@ -169,14 +195,26 @@ class DataCriteria {
          }
          else if (criteriaValueType == 'list')
          {
-            assert operand == 'in_list'
+            //assert operand == 'in_list'
+            assert ['in_list', 'contains_like'].contains(operand)
             
-            sql += this.alias +'.'+ attr +' IN ('
-            
-            value.each { singleValue ->
-               sql += singleValue.asSQLValue(operand) +','
+            if (operand == 'contains_like')
+            {
+               sql += '('
+               value.each { singleValue ->
+                  sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
+               }
+               sql = sql[0..-5] + ')' // removes last OR
             }
-            sql = sql[0..-2] + ')' // removes last ,
+            else
+            {
+               sql += this.alias +'.'+ attr +' IN ('
+               
+               value.each { singleValue ->
+                  sql += singleValue.asSQLValue(operand) +','
+               }
+               sql = sql[0..-2] + ')' // removes last ,
+            }
          }
          else if (criteriaValueType == 'range')
          {
@@ -191,5 +229,10 @@ class DataCriteria {
       sql = sql[0..-6] // removes the last AND
       
       return sql
+   }
+   
+   ArchetypeIndexItem getIndexItem()
+   {
+      return ArchetypeIndexItem.findByArchetypeIdAndPathAndRmTypeName(this.archetypeId, this.path, this.rmTypeName)
    }
 }

@@ -1,8 +1,32 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ehr
 
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.Role
+import com.cabolabs.security.Organization
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class EhrTagLib {
    
@@ -91,10 +115,20 @@ class EhrTagLib {
       if(loggedInUser)
       {
          def args = [:]
-         args.from = loggedInUser.organizations
+         
+         // admins will see every org
+         if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
+         {
+            args.from = Organization.list()
+         }
+         else
+         {
+            args.from = loggedInUser.organizations
+         }
+         
          args.optionKey = 'uid'
-         args.optionValue = 'name'
-         args.noSelection = ['':'Select One...']
+         args.optionValue = {it.name +' '+ it.uid} //'name'
+         args.noSelection = ['':'Select One...'] // TODO: i18n
          args.class = attrs.class ?: '' // allows set style from outside
          
          if (attrs.multiple)
@@ -110,6 +144,7 @@ class EhrTagLib {
       }
    }
    
+   // FIXME: the roles I can assign are per organization!
    /**
     * Admins can assign any role.
     * OrgAdmins can assig OrgAdmins and OrgStaff.
@@ -119,32 +154,70 @@ class EhrTagLib {
       def loggedInUser = springSecurityService.currentUser
       if(loggedInUser)
       {
-         def roles = Role.list()
+         def roles = Role.list() // all the roles!
          
          def args = [:]
          args.name = attrs.name
-         args.from = roles
+         args.from = roles.authority
          args.class = attrs.class ?: '' // allows set style from outside
          
-         if (attrs.value) args.value = attrs.value
+         if (attrs.user_values)
+         {
+            // used for the edit, roles are saved in the user, we get them from there
+            args.value = attrs.user_values
+         }
+         else
+         {
+            // values from params, used when the create fails, ex. when no organization is selected, because the roles are not saved to the user when that happens
+            args.value = attrs.value
+         }
+         
          if (attrs.multiple)
          {
             args.multiple = 'true'
             args.size = 5
          }
          
-         if (loggedInUser.authoritiesContains('ROLE_ORG_MANAGER'))
+         // Check the higest role not containes!
+         def hrole = loggedInUser.getHigherAuthority(session.organization)
+         
+         if (hrole.authority != Role.AD)
          {
-            roles.removeAll { it.authority == 'ROLE_ADMIN' } // all roles minus admin, removeAll modifies the collection
-            args.from = roles
-         }
-         else if (!loggedInUser.authoritiesContains('ROLE_ADMIN'))
-         {
-            // non admins can't assign any roles
-            return
+            args.from.removeElement(Role.AD)
+            if (hrole.authority != Role.AM)
+            {
+               args.from.removeElement(Role.AM)
+               
+               // If user is not admin or account mgt, is org man because user cant login on the console.
+            }
          }
          
          out << g.select(args)
+      }
+   }
+   
+   def canEditUser = { attrs, body ->
+      
+      if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
+      {
+         out << body()
+      }
+      else
+      {
+         def userInstance = attrs.userInstance // user to edit
+         def userHigherRole = userInstance.getHigherAuthority(session.organization)
+         
+         def loggedInUser = springSecurityService.currentUser
+         if(loggedInUser)
+         {
+            def role = loggedInUser.getHigherAuthority(session.organization)
+            
+            // if the logged user has a role higher than the highest role of the user, he can edit it.
+            if (role.higherThan(userHigherRole))
+            {
+               out << body()
+            }
+         }
       }
    }
 }

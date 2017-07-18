@@ -108,7 +108,7 @@
             </div>
             <div class="panel-body">
               <g:if test='${flash.message}'>
-                <div class='login_message'>${flash.message}</div><br/>
+                <div class="alert alert-info" role="alert">${flash.message}</div><br/>
               </g:if>
               
               <g:form url="[action:'resetPassword']" method='POST' id="form" class='cssform' autocomplete='off'>

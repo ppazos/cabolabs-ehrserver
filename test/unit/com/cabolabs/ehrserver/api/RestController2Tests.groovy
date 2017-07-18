@@ -1,7 +1,6 @@
 package com.cabolabs.ehrserver.api
 
 import static org.junit.Assert.*
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import grails.test.mixin.*
 import grails.test.mixin.support.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
@@ -28,7 +27,7 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
  */
 @TestMixin(GrailsUnitTestMixin)
 @TestFor(RestController)
-@Mock([ Ehr,Person,Organization,
+@Mock([ Ehr,Organization,
         PatientProxy, DoctorProxy,
         OperationalTemplateIndex, OperationalTemplateIndexItem, ArchetypeIndexItem, Contribution, VersionedComposition, Version, CompositionIndex, AuditDetails,
         DataValueIndex, DvQuantityIndex, DvCountIndex, DvProportionIndex, DvTextIndex, DvCodedTextIndex, DvDateTimeIndex, DvBooleanIndex,
@@ -60,79 +59,13 @@ class RestController2Tests {
       practice.save(failOnError:true, flush:true)
       
       
-	   // Copiado de bootstrap porque no agarra las instancias en testing.
-		def persons = [
-         new Person(
-            firstName: 'Pablo',
-            lastName: 'Pazos',
-            dob: new Date(81, 9, 24),
-            sex: 'M',
-            idCode: '4116238-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: patientUid,
-            organizationUid: hospital.uid
-         ),
-         new Person(
-            firstName: 'Barbara',
-            lastName: 'Cardozo',
-            dob: new Date(87, 2, 19),
-            sex: 'F',
-            idCode: '1234567-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: '22222222-1111-1111-1111-111111111111',
-            organizationUid: hospital.uid
-         ),
-         new Person(
-            firstName: 'Carlos',
-            lastName: 'Cardozo',
-            dob: new Date(80, 2, 20),
-            sex: 'M',
-            idCode: '3453455-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: '33333333-1111-1111-1111-111111111111',
-            organizationUid: hospital.uid
-         )
-         ,
-         new Person(
-            firstName: 'Mario',
-            lastName: 'Gomez',
-            dob: new Date(64, 8, 19),
-            sex: 'M',
-            idCode: '5677565-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: '44444444-1111-1111-1111-111111111111',
-            organizationUid: hospital.uid
-         )
-         ,
-         new Person(
-            firstName: 'Carla',
-            lastName: 'Martinez',
-            dob: new Date(92, 1, 5),
-            sex: 'F',
-            idCode: '84848884-0',
-            idType: 'CI',
-            role: 'pat',
-            uid: '55555555-1111-1111-1111-111111111111',
-            organizationUid: hospital.uid
-         )
-      ]
-      
-      persons.each { p ->
-         
-         if (!p.save())
-         {
-            println p.errors
-         }
-      }
+	   
 	  
 	  
 	  // Crea EHRs para los pacientes de prueba
 	  // Idem EhrController.createEhr
 	  def ehr
+     /* FIXME: create EHRs
 	  persons.eachWithIndex { p, i ->
 	  
 	    if (p.role == 'pat')
@@ -147,6 +80,7 @@ class RestController2Tests {
           if (!ehr.save()) println ehr.errors
 		 }
 	  }
+	  */
      
      
      // Setup queries for testing
@@ -167,26 +101,6 @@ class RestController2Tests {
          it.delete()
       }
    }
-
-	void testPatientList()
-	{
-	    // Personas creados en el setUp
-	    assert Person.count() == 5
-		
-		// Formato XML por defecto
-		controller.patientList()
-		println groovy.xml.XmlUtil.serialize( controller.response.text )
-		assert controller.response.xml.patients.patient.size() == 5
-		response.reset()
-		
-		
-		// Formato incorrecto
-		params.format = 'text'
-		controller.patientList()
-		assert controller.response.xml.code.text() == "error"
-		response.reset()
-	}
-	
 
    void testEhrList()
 	{

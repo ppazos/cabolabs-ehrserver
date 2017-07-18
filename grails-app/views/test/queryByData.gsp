@@ -202,7 +202,7 @@
     <div class="content scaffold-list" role="main">
       <h1>Search Compositions by Data</h1>
       <g:if test="${flash.message}">
-        <div class="message" role="status">${flash.message}</div>
+        <div class="alert alert-info" role="alert">${flash.message}</div>
       </g:if>
       
       <table>

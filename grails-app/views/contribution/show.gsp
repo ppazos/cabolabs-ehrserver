@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'contribution.label', default: 'Contribution')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="contribution.show.title" /></title>
     <style>
     .icon {
       width: 48px;
@@ -41,63 +40,67 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	     <h1>
-	       <g:message code="default.show.label" args="[entityName]" />
-	     </h1>
+	     <h1><g:message code="contribution.show.title" /></h1>
       </div>
     </div>
-    
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
-	      <g:if test="${flash.message}">
-	        <div class="message" role="status">${flash.message}</div>
-	      </g:if>
-	      
-	      <div class="control-group">
-            <label class="control-label"><g:message code="contribution.uid.label" default="Uid" /></label>
-            <div class="controls">
-                <p class="form-control-static"><g:fieldValue bean="${contributionInstance}" field="uid"/></p>
-            </div>
-         </div>
+      
+	     <g:if test="${flash.message}">
+	       <div class="alert alert-info" role="alert">${flash.message}</div>
+	     </g:if>
          
-         <h2><g:message code="contribution.audit.label" default="Audit details" /></h2>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="contribution.attr.uid" /></th>
+              <td><g:fieldValue bean="${contributionInstance}" field="uid"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="contribution.attr.ehr" /></th>
+              <td><g:link controller="ehr" action="show" params="[uid: contributionInstance.ehr.uid]">${contributionInstance.ehr.uid}</g:link></td>
+            </tr>
+          </tbody>
+        </table>
          
-         <div class="control-group">
-            <label class="control-label"><g:message code="contribution.systemId.label" default="System id" /></label>
-            <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.systemId}</p>
-            </div>
-         </div>
-         <div class="control-group">
-            <label class="control-label"><g:message code="contribution.timeCommitted.label" default="Time committed" /></label>
-            <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.timeCommitted}</p>
-            </div>
-         </div>
-         <div class="control-group">
-            <label class="control-label"><g:message code="contribution.committer.label" default="Committer" /></label>
-            <div class="controls">
-                <p class="form-control-static">${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}</p>
-            </div>
-         </div>
-	      
-	      <h2><g:message code="contribution.versions.label" default="Committed versions" /></h2>
-	      
-	      <div class="control-group">
-            <label class="control-label"><g:message code="contribution.versions.label" default="Versions" /></label>
-            <div class="controls">
-                <p class="form-control-static">${contributionInstance.versions.size()}</p>
-            </div>
-         </div>
+        <h2><g:message code="contribution.audit.title" /></h2>
+        
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="autit.attr.systemId" /></th>
+              <td>${contributionInstance?.audit?.systemId}</td>
+            </tr>
+            <tr>
+              <th><g:message code="audit.attr.timeCommitted" /></th>
+              <td>${contributionInstance?.audit?.timeCommitted}</td>
+            </tr>
+            <tr>
+              <th><g:message code="audir.attr.committer" /></th>
+              <td>${contributionInstance?.audit?.committer?.name} ${contributionInstance?.audit?.committer?.value}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+	     <h2><g:message code="contribution.versions.title" /></h2>
+	     
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="contribution.versions.label" /></th>
+              <td>${contributionInstance.versions.size()}</td>
+            </tr>
+          </tbody>
+        </table>
 
-	      <g:if test="${contributionInstance?.versions}">
+	     <g:if test="${contributionInstance?.versions}">
            <div class="table-responsive" id="versions">
              <table class="table table-striped table-bordered table-hover">
                <tr>
-                 <th>uid</th>
-                 <th>start time</th>
-                 <th>type</th>
-                 <th>change type</th>
+			        <th><g:message code="version.attr.uid" /></th>
+			        <th><g:message code="composition.attr.startTime" /></th>
+			        <th><g:message code="composition.attr.archetypeId" /></th>
+			        <th><g:message code="audit.attr.changeType" /></th>
                  <th></th>
                </tr>
                <g:each in="${contributionInstance.versions}" var="version">
@@ -105,7 +108,7 @@
 				   </g:each>
              </table>
            </div>
-         </g:if>
+        </g:if>
       </div>
     </div>
     

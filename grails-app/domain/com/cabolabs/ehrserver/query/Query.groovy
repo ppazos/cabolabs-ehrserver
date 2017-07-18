@@ -1,9 +1,32 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.ehrserver.query
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
+import com.cabolabs.security.User
 import com.cabolabs.util.DateParser
 
 /**
@@ -55,6 +78,11 @@ class Query {
    //  path: sirve para armar series de valores para graficar
    String group = 'none'
    
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/340
+   User author
+   
+   // true => shared with all the organizations
+   boolean isPublic
    
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
@@ -117,15 +145,16 @@ class Query {
     */
    def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
-      this.name   = json['name']
-      this.type   = json['type']
-      this.format = ( json['format'] ) ? json['format'] : 'xml' 
+      this.name       = json['name']
+      this.type       = json['type']
+      this.isPublic   = json['isPublic']
+      this.format     = ( json['format'] ) ? json['format'] : 'xml' 
+      this.templateId = json['template_id']
       
       if (this.type == 'composition')
       {
          this.criteriaLogic = json['criteriaLogic']
-         this.templateId    = json['template_id']
-         
+
          this.where.each {
             it.delete()
          }
@@ -191,6 +220,18 @@ class Query {
                case 'DataCriteriaDV_IDENTIFIER':
                   condition = new DataCriteriaDV_IDENTIFIER(criteria)
                break
+               case 'DataCriteriaDV_MULTIMEDIA':
+                  condition = new DataCriteriaDV_MULTIMEDIA(criteria)
+               break
+               case 'DataCriteriaDV_PARSABLE':
+                  condition = new DataCriteriaDV_PARSABLE(criteria)
+               break
+               case 'DataCriteriaString':
+                  condition = new DataCriteriaString(criteria)
+               break
+               case 'DataCriteriaLOCATABLE_REF':
+                  condition = new DataCriteriaLOCATABLE_REF(criteria)
+               break
             }
 
             this.addToWhere(condition)
@@ -208,7 +249,7 @@ class Query {
          json.select.each { projection ->
             
             this.addToSelect(
-               new DataGet(archetypeId: projection.archetype_id, path: projection.path)
+               new DataGet(archetypeId: projection.archetype_id, path: projection.path, rmTypeName: projection.rmTypeName)
             )
          }
       }
@@ -249,15 +290,15 @@ class Query {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
-   def execute(String ehrUid, Date from, Date to, String group, String organizationUid)
+   def execute(String ehrUid, Date from, Date to, String group, String organizationUid, int max, int offset)
    {
       if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid)
-      return executeComposition(ehrUid, from, to, organizationUid)
+      return executeComposition(ehrUid, from, to, organizationUid, max, offset)
    }
    
    def executeDatavalue(String ehrUid, Date from, Date to, String group, String organizationUid)
    {
-      println "ehrUid: $ehrUid - organizationUid: $organizationUid"
+      //println "ehrUid: $ehrUid - organizationUid: $organizationUid"
       
       // Query data
       def res = DataValueIndex.withCriteria {
@@ -269,13 +310,14 @@ class Query {
                and {
                   eq('archetypeId', dataGet.archetypeId)
                   eq('archetypePath', dataGet.path)
+                  eq('rmTypeName', dataGet.rmTypeName) // gets a specific DV in case alteratives exist for the same arch and path
                }
             }
          }
          
          // WHERE level 1 filters
          owner { // CompositionIndex
-            
+            if (templateId) eq('templateId', templateId)
             if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
             if (from) ge('startTime', from) // greater or equal
@@ -333,18 +375,20 @@ class Query {
       this.select.each { dataGet ->
          
          // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path
+         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
          
+         // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
+         // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
          // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
-         resHeaders[absPath]['type'] = dataidx.rmTypeName
+         resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLEM above
          resHeaders[absPath]['name'] = dataidx.name
          
-         switch (dataidx.rmTypeName)
+         switch (dataGet.rmTypeName)
          {
             case 'DV_QUANTITY':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() //['magnitude', 'units']
@@ -379,8 +423,20 @@ class Query {
             case 'DV_IDENTIFIER':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_IDENTIFIER.attributes()
             break
+            case 'DV_MULTIMEDIA':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_MULTIMEDIA.attributes()
+            break
+            case 'DV_PARSABLE':
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_PARSABLE.attributes()
+            break
+            case 'String':
+               resHeaders[absPath]['attrs'] = DataCriteriaString.attributes()
+            break
+            case 'LOCATABLE_REF':
+               resHeaders[absPath]['attrs'] = DataCriteriaLOCATABLE_REF.attributes()
+            break
             default:
-               throw new Exception("type "+dataidx.rmTypeName+" not supported")
+               throw new Exception("type "+dataGet.rmTypeName+" not supported")
          }
       }
       
@@ -417,10 +473,11 @@ class Query {
    
    private Map queryDataGroupByComposition(res, resHeaders)
    {
-      def dvi
+      def coldvis
       def colValues // lista de valores de una columna
       def uid
       def resGrouped = [:]
+      def elem
       
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
@@ -444,64 +501,86 @@ class Query {
             //println "header: " + path + " " + colData
             //resGrouped[compoId]['colValues']['type'] = idxtype
             
-            colValues = [type: colData['type'], path: _absPath] // pongo la path para debug
+            // values contain 1 element if there is only 1 DV occurrence, or many elements
+            // as occurrences of that node exist.
+            colValues = [type: colData['type'], path: _absPath, values:[]] // pongo la path para debug
             
             // dvi para la columna actual
-            dvi = dvis.find{ (it.archetypeId + it.archetypePath) == _absPath && it.owner.id == compoId}
+            // pueden ser varios si hay multiples ocurrencias del mismo nodo
+            coldvis = dvis.findAll{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
             
-            if (dvi)
-            {
+            coldvis.each { dvi ->
+            
+               elem = [:]
+            
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
                   case 'DV_QUANTITY':
-                     colValues['magnitude'] = dvi.magnitude
-                     colValues['units'] = dvi.units
+                     elem['magnitude'] = dvi.magnitude
+                     elem['units'] = dvi.units
                   break
                   case 'DV_CODED_TEXT':
-                     colValues['value'] = dvi.value
-                     colValues['code'] = dvi.code
+                     elem['value'] = dvi.value
+                     elem['code'] = dvi.code
                   break
                   case 'DV_TEXT':
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case ['DV_DATE_TIME', 'DV_DATE']:
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case 'DV_BOOLEAN':
-                     colValues['value'] = dvi.value
+                     elem['value'] = dvi.value
                   break
                   case 'DV_COUNT':
-                     colValues['magnitude'] = dvi.magnitude
+                     elem['magnitude'] = dvi.magnitude
                   break
                   case 'DV_PROPORTION':
-                     colValues['numerator'] = dvi.numerator
-                     colValues['denominator'] = dvi.denominator
-                     colValues['type'] = dvi.type
-                     colValues['precision'] = dvi.precision
+                     elem['numerator'] = dvi.numerator
+                     elem['denominator'] = dvi.denominator
+                     elem['type'] = dvi.type
+                     elem['precision'] = dvi.precision
                   break
                   case 'DV_ORDINAL':
-                     colValues['value'] = dvi.value
-                     colValues['symbol_value'] = dvi.symbol_value
-                     colValues['symbol_code'] = dvi.symbol_code
-                     colValues['symbol_terminology_id'] = dvi.symbol_terminology_id
+                     elem['value'] = dvi.value
+                     elem['symbol_value'] = dvi.symbol_value
+                     elem['symbol_code'] = dvi.symbol_code
+                     elem['symbol_terminology_id'] = dvi.symbol_terminology_id
                   break
                   case 'DV_DURATION':
-                     colValues['value'] = dvi.value
-                     colValues['magnitude'] = dvi.magnitude
+                     elem['value'] = dvi.value
+                     elem['magnitude'] = dvi.magnitude
                   break
                   case 'DV_IDENTIFIER':
-                     colValues['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
-                     colValues['type'] = dvi.type
-                     colValues['issuer'] = dvi.issuer
-                     colValues['assigner'] = dvi.assigner
+                     elem['id'] = dvi.identifier // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                     elem['type'] = dvi.type
+                     elem['issuer'] = dvi.issuer
+                     elem['assigner'] = dvi.assigner
+                  break
+                  case 'DV_MULTIMEDIA':
+                     elem['mediaType'] = dvi.mediaType
+                     elem['size'] = dvi.size
+                     elem['alternateText'] = dvi.alternateText
+                  break
+                  case 'DV_PARSABLE':
+                     elem['value'] = dvi.value
+                     elem['formalism'] = dvi.formalism
+                  break
+                  case 'String':
+                     elem['value'] = dvi.value
+                  break
+                  case 'LOCATABLE_REF':
+                     elem['locatable_ref_path'] = dvi.locatable_ref_path
                   break
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
                
-               resGrouped[uid]['cols'] << colValues
-            }
+               colValues.values << elem
+            } // each dvi
+            
+            resGrouped[uid]['cols'] << colValues
          }
       }
       
@@ -544,7 +623,7 @@ class Query {
       def resGrouped = [:]
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
-      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath }
+      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>' }
       
 
       // Usa ruta absoluta para agrupar.
@@ -553,16 +632,17 @@ class Query {
       this.select.each { dataGet ->
          
          // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path
+         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
          
-
+         // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
+         // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
          dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
 
          resGrouped[absPath] = [:]
-         resGrouped[absPath]['type'] = dataidx.rmTypeName // type va en cada columna
+         resGrouped[absPath]['type'] = dataGet.rmTypeName // type va en cada columna
          resGrouped[absPath]['name'] = dataidx.name // name va en cada columna, nombre asociado a la path por la que se agrupa
          
          // FIXME: hay tipos de datos que no deben graficarse
@@ -576,7 +656,7 @@ class Query {
             //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
             // Datos de cada path seleccionada dentro de la composition
-            switch (dataidx.rmTypeName)
+            switch (dataGet.rmTypeName)
             {
                case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
@@ -623,14 +703,30 @@ class Query {
                                                    magnitude:   dvi.magnitude]
                break
                case 'DV_IDENTIFIER':
-                  resGrouped[absPath]['serie'] << [id:          dvi.identifier,  // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                  resGrouped[absPath]['serie'] << [id:          dvi.identifier, // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
                                                    type:        dvi.type,
                                                    issuer:      dvi.issuer,
                                                    assigner:    dvi.assigner,
                                                    date:        dvi.owner.startTime]
                break
+               case 'DV_MULTIMEDIA':
+                  resGrouped[absPath]['serie'] << [mediaType:     dvi.mediaType,
+                                                   size:          dvi.size,
+                                                   alternateText: dvi.alternateText,
+                                                   date:          dvi.owner.startTime]
+               break
+               case 'DV_PARSABLE':
+                  resGrouped[absPath]['serie'] << [value:         dvi.value,
+                                                   formalism:     dvi.formalism]
+               break
+               case 'String':
+                  resGrouped[absPath]['serie'] << [value:         dvi.value]
+               break
+               case 'LOCATABLE_REF':
+                  resGrouped[absPath]['serie'] << [locatable_ref_path: dvi.locatable_ref_path]
+               break
                default:
-                  throw new Exception("type "+dataidx.rmTypeName+" not supported")
+                  throw new Exception("type "+dataGet.rmTypeName+" not supported")
             }
             
             // para cada fila quiero fecha y uid de la composition
@@ -641,7 +737,7 @@ class Query {
    }
    
    
-   def executeComposition(String ehrUid, Date from, Date to, String organizationUid)
+   def executeComposition(String ehrUid, Date from, Date to, String organizationUid, int max, int offset)
    {
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
@@ -680,9 +776,8 @@ class Query {
            * llegue una path a un tipo que no corresponde, el error de tipo
            * no sucederia nunca, asi no hay que tirar except aca.
            */
-         def dataidx
+         //def dataidx
          def idxtype
-         
          this.where.eachWithIndex { dataCriteria, i ->
              
             // Aux to build the query FROM
@@ -693,10 +788,14 @@ class Query {
              
             //println "archId "+ dataCriteria.archetypeId
             //println "path "+ dataCriteria.path
-             
-            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
-            idxtype = dataidx?.rmTypeName
-             
+            
+            // PROBLEM: for alternatives, this returns only one alternative DV
+            //dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
+            //idxtype = dataidx?.rmTypeName
+            
+            // FIX to the problem: we have the DV in the DataCriteria
+            idxtype = dataCriteria.rmTypeName
+            
             // ================================================================
             // TODO:
             // Since GRAILS 2.4 it seems that exists can be done in Criteria,
@@ -770,6 +869,22 @@ class Query {
                   fromMap['DvIdentifierIndex'] = 'dvidi'
                   where += " AND dvidi.id = dvi.id "
                break
+               case 'DV_MULTIMEDIA':
+                  fromMap['DvMultimediaIndex'] = 'dvmmd'
+                  where += " AND dvmmd.id = dvi.id "
+               break
+               case 'DV_PARSABLE':
+                  fromMap['DvParsableIndex'] = 'dpab'
+                  where += " AND v.id = dvi.id "
+               break
+               case 'String':
+                  fromMap['StringIndex'] = 'dstg'
+                  where += " AND dstg.id = dvi.id "
+               break
+               case 'LOCATABLE_REF':
+                  fromMap['LocatableRefIndex'] = 'dlor'
+                  where += " AND dlor.id = dvi.id "
+               break
                default:
                   throw new Exception("type $idxtype not supported")
             }
@@ -826,9 +941,14 @@ class Query {
       
       println "HQL QUERY: \n" + q
       
-      def cilist = CompositionIndex.executeQuery( q )
+      // default pagination
+      if (!max)
+      {
+         max = 20
+         offset = 0
+      }
       
-      //println "cilist: "+ cilist
+      def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       
       return cilist
    }

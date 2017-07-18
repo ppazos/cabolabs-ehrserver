@@ -18,11 +18,11 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       
       def org = new Organization(name: 'Test Org', number: '556677').save(failOnError:true, flush: true)
       
-      def user = new User(username: 'user', password: 'user', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
+      def user = new User(username: 'testuser', password: 'testuser', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
       
       def role = new Role(authority: 'ROLE_XYZ').save(failOnError: true, flush: true)
       
-      UserRole.create( user, role, true )
+      UserRole.create( user, role, org, true )
       
       def user_without_roles = new User(username: 'norole', password: 'norole', email: 'norole@domain.com', organizations: [org]).save(failOnError:true, flush: true)
    }
@@ -30,16 +30,28 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      // deletes the created instances
+      def user = User.findByUsername("testuser")
+      def role = Role.findByAuthority('ROLE_XYZ')
+      def org = Organization.findByNumber("556677")
+      
+      UserRole.remove(user, role, org)
+      user.delete(flush: true)
+      role.delete(flush: true)
+      
+      User.findByUsername("norole").delete(flush: true)
+      
+      org.delete(flush: true)
    }
 
    void "test getByUsername existing user"()
    {
       when:
-         def user = userService.getByUsername('user')
+         def user = userService.getByUsername('testuser')
       
       then:
          assert user != null
-         assert user.username == 'user'
+         assert user.username == 'testuser'
    }
    
    void "test getByUsername non existing user"()
@@ -51,24 +63,32 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
          assert user == null
    }
    
-   void "test getUserAuthorities admin user"()
+   void "test getByUsername null username"()
    {
       when:
-         def user = userService.getByUsername('user')
-         def authorities = userService.getUserAuthorities(user)
-         println authorities
+         def user = userService.getByUsername(null)
+      
+      then:
+         assert user == null
+   }
+   
+   void "test getUserAuthorities for existing user with roles"()
+   {
+      when:
+         def user = userService.getByUsername('testuser')
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
       
       then:
          assert authorities != null
          assert authorities.size() == 1
+         assert authorities[0].authority == "ROLE_XYZ"
    }
    
    void "test getUserAuthorities user with no roles"()
    {
       when:
          def user = userService.getByUsername('norole')
-         def authorities = userService.getUserAuthorities(user)
-         println authorities
+         def authorities = userService.getUserAuthorities(user, Organization.findByNumber("556677"))
       
       then:
          assert authorities != null

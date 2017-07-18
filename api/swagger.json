@@ -1,0 +1,1252 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "EHRServer",
+    "description": "Clinical Information Management and Sharing Platform",
+    "version": "0.9.5"
+  },
+  "host": "ehrserver-cabolabs2.rhcloud.com",
+  "schemes": [
+    "https"
+  ],
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "administrative",
+      "description": "Non-clinical related services"
+    },
+    {
+      "name": "users",
+      "description": "Endpoints related to client or user authorization for the REST API"
+    },
+    {
+      "name": "ehrs",
+      "description": "Enpoint related to health record management"
+    },
+    {
+      "name": "queries",
+      "description": "Endpoints related to data queries"
+    }
+  ],
+  "produces": [
+    "application/json",
+    "text/xml"
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "administrative"
+        ],
+        "summary": "Authorize credentials and get auth token",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "organization",
+            "in": "query",
+            "description": "Organization number of an organization associated with the user.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Token de seguridad",
+            "examples": {
+              "application/json": {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsIm..."
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "examples": {
+              "applicaton/json": {
+                "result": {
+                  "type": "AR",
+                  "message": "Authentication failed",
+                  "code": "EHR_SERVER::API::ERRORS::e01.0001"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "administrative"
+        ],
+        "summary": "Crate a new user and associate it with the current organization.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "email"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "user profile",
+            "examples": {
+              "application/json": {
+                "username": "pablo",
+                "email": "pablo@gmail.com",
+                "organizations": [
+                  {
+                    "uid": "d8b5bcb6-f26a-4192-a754-b98f62cd1234",
+                    "name": "CaboLabs",
+                    "number": "123456"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "tags": [
+          "administrative"
+        ],
+        "summary": "Get user profile.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "user profile",
+            "examples": {
+              "application/json": {
+                "username": "pablo",
+                "email": "pablo@gmail.com",
+                "organizations": [
+                  {
+                    "uid": "d8b5bcb6-f26a-4192-a754-b98f62cd1234",
+                    "name": "CaboLabs",
+                    "number": "123456"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ehrs": {
+      "get": {
+        "summary": "Retrieve health records associated with the current organization.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "number or EHRs per page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "pagination offset",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EHR list with pagination data.",
+            "examples": {
+              "application/json": {
+                "ehrs": [
+                  {
+                    "uid": "c35dfe02-4ece-465e-9433-0540c6d95f3f",
+                    "dateCreated": "2017-02-11 18:55:18",
+                    "subjectUid": "11111111",
+                    "systemId": "CABOLABS_EHR_SERVER",
+                    "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cd1234"
+                  }
+                ],
+                "pagination": {
+                  "max": 10,
+                  "offset": 0,
+                  "nextOffset": 10,
+                  "prevOffset": 0
+                },
+                "timing": "0 ms"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new EHR for a subject.",
+        "description": "Store the subjectUid in your system to be able to query the EHRServer by the subjectUid.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "subjectUid",
+            "in": "query",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EHR resource.",
+            "examples": {
+              "application/json": {
+                "uid": "b11f37ca-2483-47e1-93aa-93681342ddb1",
+                "dateCreated": "2017-06-04 19:16:26",
+                "subjectUid": "9f7fe6aa-c4f1-4d86-af8a-c1787e599a9b",
+                "systemId": "CABOLABS_EHR_SERVER",
+                "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cdc4a4"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ehrs/ehrUid/{uid}": {
+      "get": {
+        "summary": "Get an EHR by it's UID.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/text"
+        ],
+        "responses": {
+          "200": {
+            "description": "EHR resource.",
+            "examples": {
+              "application/json": {
+                "uid": "c35dfe02-4ece-465e-9433-0540c6d95f3f",
+                "dateCreated": "2017-02-11 18:55:18",
+                "subjectUid": "11111111",
+                "systemId": "CABOLABS_EHR_SERVER",
+                "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cd1234"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ehrs/subjectUid/{uid}": {
+      "get": {
+        "summary": "Get an EHR by subject UID.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/text"
+        ],
+        "responses": {
+          "200": {
+            "description": "EHR resource.",
+            "examples": {
+              "application/json": {
+                "uid": "c35dfe02-4ece-465e-9433-0540c6d95f3f",
+                "dateCreated": "2017-02-11 18:55:18",
+                "subjectUid": "11111111",
+                "systemId": "CABOLABS_EHR_SERVER",
+                "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cd1234"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ehrs/{uid}/contributions": {
+      "get": {
+        "summary": "Get the EHR contributions.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "description": "UID of the EHR",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/text"
+        ],
+        "responses": {
+          "200": {
+            "description": "EHR contributions.",
+            "examples": {
+              "application/json": {
+                "contributions": [
+                  {
+                    "uid": "42ff9ad9-d7b7-4f92-b69a-03f39b24c4c5",
+                    "organizationUid": "41467ac9-18a0-49d8-bbdd-5954efb13399",
+                    "ehrUid": "afd64629-93a9-49ea-b7f8-540106bba979",
+                    "versions": [
+                      "9345f598-65b1-4738-9054-73a40e2d5774::EMR::1"
+                    ],
+                    "audit": {
+                      "timeCommitted": "2017-06-05 19:52:30",
+                      "committer": {
+                        "namespace": "local",
+                        "type": "PERSON",
+                        "value": null,
+                        "name": "Dr. House"
+                      },
+                      "systemId": "EMR"
+                    }
+                  },
+                  {
+                    "uid": "a51f0df6-0761-420d-a469-8363aed9a8e5",
+                    "organizationUid": "41467ac9-18a0-49d8-bbdd-5954efb13399",
+                    "ehrUid": "afd64629-93a9-49ea-b7f8-540106bba979",
+                    "versions": [
+                      "8c3997ce-c59b-406a-823f-ecf1be4bb436::EMR::1"
+                    ],
+                    "audit": {
+                      "timeCommitted": "2017-06-05 19:52:38",
+                      "committer": {
+                        "namespace": "local",
+                        "type": "PERSON",
+                        "value": null,
+                        "name": "Dr. House"
+                      },
+                      "systemId": "EMR"
+                    }
+                  }
+                ],
+                "pagination": {
+                  "max": 20,
+                  "offset": 0,
+                  "nextOffset": 20,
+                  "prevOffset": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compositions": {
+      "get": {
+        "summary": "Get clinical document indexes from an EHR.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "ehrUid",
+            "in": "query",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "number or EHRs per page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "pagination offset",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 0
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Clinical document indexes from an EHR, with pagination data.",
+            "examples": {
+              "application/json": {
+                "result": [
+                  {
+                    "uid": "93b93687-135d-4189-ad01-1b8e1ac13289",
+                    "category": "event",
+                    "startTime": "2017-02-11 19:57:19",
+                    "subjectId": "11111111",
+                    "ehrUid": "c35dfe02-4ece-465e-9433-0540c6d95f3f",
+                    "templateId": "Simple Encounter",
+                    "archetypeId": "openEHR-EHR-COMPOSITION.encounter.v1",
+                    "lastVersion": true,
+                    "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cdc4a4",
+                    "parent": "fc6da40a-3745-4a1f-9914-4fba03f746d9::EMR::1"
+                  },
+                  {
+                    "uid": "0c6322d2-c5e1-4bb1-8648-eabb21023d5e",
+                    "category": "event",
+                    "startTime": "2017-02-11 20:00:09",
+                    "subjectId": "11111111",
+                    "ehrUid": "c35dfe02-4ece-465e-9433-0540c6d95f3f",
+                    "templateId": "Simple Lab Order",
+                    "archetypeId": "openEHR-EHR-COMPOSITION.request.v1",
+                    "lastVersion": true,
+                    "organizationUid": "d8b5bcb6-f26a-4192-a754-b98f62cdc4a4",
+                    "parent": "6754831a-2f6c-448e-b8de-078a1bf6ba2f::EMR::1"
+                  }
+                ],
+                "pagination": {
+                  "max": 30,
+                  "offset": 0,
+                  "nextOffset": 30,
+                  "prevOffset": 0
+                },
+                "timing": "0 ms"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compositions/{uid}": {
+      "get": {
+        "summary": "Get a composition by it's UID.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "descripcion de parametro format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition resource (example is not a complete composition!)",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "version": {
+                  "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                  "@xmlns": "http://schemas.openehr.org/v1",
+                  "@xsi:type": "ORIGINAL_VERSION",
+                  "contribution": {
+                    "id": {
+                      "@xsi:type": "HIER_OBJECT_ID",
+                      "value": "ad6866e1-fb08-4e9b-a93b-5095a2563775"
+                    },
+                    "namespace": "EHR::COMMON",
+                    "type": "CONTRIBUTION"
+                  },
+                  "commit_audit": {
+                    "system_id": "CABOLABS_EHR",
+                    "committer": {
+                      "@xsi:type": "PARTY_IDENTIFIED",
+                      "name": "Dr. Pablo Pazos"
+                    },
+                    "time_committed": {
+                      "value": "20140901T233114,065-0300"
+                    },
+                    "change_type": {
+                      "value": "creation",
+                      "defining_code": {
+                        "terminology_id": {
+                          "value": "openehr"
+                        },
+                        "code_string": 249
+                      }
+                    }
+                  },
+                  "uid": {
+                    "value": "91cf9ded-e926-4848-aa3f-3257c1d89554::EMR_APP::1"
+                  },
+                  "data": {
+                    "@archetype_node_id": "openEHR-EHR-COMPOSITION.test_all_datatypes.v1",
+                    "@xsi:type": "COMPOSITION",
+                    "name": {
+                      "value": "Test all datatypes"
+                    },
+                    "uid": {
+                      "@xsi:type": "HIER_OBJECT_ID",
+                      "value": "d6fa1aa6-cfc7-4c28-ba51-555ee55b0ae1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ehrs/{ehrUid}/compositions": {
+      "post": {
+        "summary": "Commit multiple compositions into an EHR.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "descripcion de parametro format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "ehrUid",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "versions",
+            "in": "body",
+            "description": "list of versioned compositions that are being committed on an EHR.",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json",
+          "text/xml"
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition resource (example is not a complete composition!)",
+            "examples": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/queries": {
+      "get": {
+        "summary": "Queries shared with the current organization.",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "number or EHRs per page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "pagination offset",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 0
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Query list with pagination data.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Query"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queries/{uid}": {
+      "get": {
+        "summary": "Get a query by it's UID",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "description": "UID of the query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query list with pagination data.",
+            "schema": {
+              "$ref": "#/definitions/Query"
+            }
+          }
+        }
+      }
+    },
+    "/queries/{uid}/execute": {
+      "get": {
+        "summary": "Execute a query and get data from the EHRServer",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "description": "UID of the query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ehrUid",
+            "in": "query",
+            "description": "filter query results by this EHR",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "organizationUid",
+            "in": "query",
+            "description": "UID of the organization associated with the EHRs being queried, mixed data from different organizations is not allowed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "retrieveData",
+            "in": "query",
+            "description": "for composition queries, this set to true returns the full compositions instead on an index",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "description": "overrides the default grouping of a datavalue query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "none",
+              "composition",
+              "path"
+            ],
+            "default": "path"
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "date filter yyyyMMdd",
+            "required": false,
+            "type": "string",
+            "pattern": "/(\\d{4})(\\d{2})(\\d{2})/"
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "date filter yyyyMMdd",
+            "required": false,
+            "type": "string",
+            "pattern": "/(\\d{4})(\\d{2})(\\d{2})/"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Query result strutures, depending on the type of query (composition or databavlue). For datavalue queries, the resulting structure will depend on the grouping strategy selected.",
+            "examples": {
+              "datavalue query group by path": {
+                "openEHR-EHR-OBSERVATION.blood_pressure.v1/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value<DV_QUANTITY>": {
+                  "type": "DV_QUANTITY",
+                  "name": "Sistólica",
+                  "serie": [
+                    {
+                      "magnitude": 106,
+                      "units": "mm[Hg]",
+                      "date": "2016-01-14 07:34:59"
+                    }
+                  ]
+                },
+                "openEHR-EHR-OBSERVATION.blood_pressure.v1/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value<DV_QUANTITY>": {
+                  "type": "DV_QUANTITY",
+                  "name": "Diastólica",
+                  "serie": [
+                    {
+                      "magnitude": 56,
+                      "units": "mm[Hg]",
+                      "date": "2016-01-14 07:34:59"
+                    }
+                  ]
+                },
+                "timing": "10 ms"
+              },
+              "composition query with retrieveData=false": {
+                "results": [
+                  {
+                    "uid": "0f78e043-aa09-4212-9669-fcef0adaf470",
+                    "category": "event",
+                    "startTime": "2016-06-25 07:29:28",
+                    "subjectId": "11111111-1111-1111-1111-111111111111",
+                    "ehrUid": "11111111-1111-1111-1111-111111111111",
+                    "templateId": "Signos",
+                    "archetypeId": "openEHR-EHR-COMPOSITION.signos.v1",
+                    "lastVersion": true,
+                    "organizationUid": "d04809ca-08dc-454a-8390-96a0b125abf1",
+                    "parent": "90120202-e7a6-4032-a935-fe91f6e7fd28::EMR::1"
+                  }
+                ],
+                "timing": "312 ms"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout": {
+      "get": {
+        "summary": "get the latest version of a composition with intent of modifying it.",
+        "tags": [
+          "ehrs"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "ehrUid",
+            "in": "query",
+            "description": "identifier of the EHR containing the composition",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compositionUid",
+            "in": "query",
+            "description": "identifier of the composition being checked out",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition version"
+          }
+        }
+      }
+    },
+    "/organizations": {
+      "get": {
+        "summary": "get the organizations associated with the current user, the same organizations will be retrieved from the user's profile",
+        "tags": [
+          "administrative"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "default": "Bearer _your_token_here_"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "desired output format",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "xml",
+              "json"
+            ],
+            "default": "json"
+          },
+          {
+            "name": "ehrUid",
+            "in": "query",
+            "description": "identifier of the EHR containing the composition",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of organizations.",
+            "examples": {
+              "organizations": [
+                {
+                  "uid": "4f9cfbe4-8cdd-43fc-b0de-5544305fcdd5",
+                  "name": "Hospital de Clinicas"
+                },
+                {
+                  "uid": "4ea72e8c-9707-4e1e-8acc-9e10e61b2037",
+                  "name": "Clinica del Tratamiento del Dolor"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Ehr": {
+      "type": "object",
+      "properties": {
+        "systemId": {
+          "type": "string",
+          "description": "The id of the EHR system on which this EHR was created"
+        },
+        "uid": {
+          "type": "string",
+          "description": "Emula un HIER_OBJECT_ID.root y su valor va a ser un UUID (java.util.UUID.randomUUID() as String) que se asigna en el momento que se crea el EHR"
+        },
+        "dateCreated": {
+          "type": "string",
+          "format": "date",
+          "description": "Emula timeCreated, se setea automaticamente por Grails en el momento de crear el EHR"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Emula EHR.ehr_status......subject"
+        },
+        "organizationUid": {
+          "type": "string",
+          "description": "organizationUid"
+        }
+      }
+    },
+    "Query": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "unique identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "name of the query"
+        },
+        "type": {
+          "type": "string",
+          "description": "type of query",
+          "enum": [
+            "composition",
+            "datavalue"
+          ],
+          "default": "composition"
+        },
+        "format": {
+          "type": "string",
+          "description": "output format for query reulsts"
+        },
+        "group": {
+          "type": "string",
+          "description": "type of grouping for datavalue queries",
+          "enum": [
+            "none",
+            "composition",
+            "path"
+          ],
+          "default": "path"
+        },
+        "projections": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "arthcetype_id": {
+                "type": "string",
+                "description": "identifier of the archetype"
+              },
+              "path": {
+                "type": "string",
+                "description": "valid path inside the archetype"
+              }
+            }
+          },
+          "description": "datavalue projections of the query"
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "arthcetype_id": {
+                "type": "string",
+                "description": "identifier of the archetype"
+              },
+              "path": {
+                "type": "string",
+                "description": "valid path inside the archetype"
+              },
+              "conditions": {
+                "type": "object",
+                "description": "conditions depend on the datavalue, e.g. for DV_QUANITTY the conditions object can be: {\"magnitude\": {\"gt\": [140.0]},\"units\": {\"eq\": \"mm[Hg]\"}}"
+              }
+            }
+          },
+          "description": "composition queries are fildered by criteria"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

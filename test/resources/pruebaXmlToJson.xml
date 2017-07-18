@@ -65,7 +65,7 @@
         <terminology_id>
           <value>openehr</value>
         </terminology_id>
-        <code_string>443</code_string>
+        <code_string>433</code_string>
       </defining_code>
     </category>
     <composer xsi:type="PARTY_IDENTIFIED">

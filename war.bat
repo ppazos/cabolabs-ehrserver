@@ -1,1 +1,1 @@
-grails war target/ehr.war
+grails war target/ROOT.war

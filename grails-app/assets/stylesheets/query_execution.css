@@ -1,5 +1,5 @@
 .table tr td:last-child select, tr td:last-child input {
-  width: 100%;
+  /* width: 100%; */
 }
 .table tr td:first-child {
   width: 140px;

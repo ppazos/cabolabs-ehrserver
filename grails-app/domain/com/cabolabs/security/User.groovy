@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.security
 
 import com.cabolabs.security.Organization
@@ -11,8 +33,8 @@ class User implements Serializable {
    String username
    String password
    String email
-   
-   boolean enabled = true
+   boolean isVirtual = false // virtual users for ApiKey
+   boolean enabled // false until the password is set
    boolean accountExpired
    boolean accountLocked
    boolean passwordExpired
@@ -22,9 +44,8 @@ class User implements Serializable {
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    
-   List organizations = []
-   //static hasMany = [organizations: String] // UIDs of related organizations
-   static hasMany = [organizations: Organization]
+   //List organizations = []
+   //static hasMany = [organizations: Organization]
    
    User(String username, String password)
    {
@@ -40,18 +61,12 @@ class User implements Serializable {
    }
 
    @Override
-   boolean equals(other)
-   {
-      is(other) || (other.instanceOf(User) && other.username == username)
-   }
-
-   @Override
    String toString()
    {
       username
    }
 
-   Set<Role> getAuthorities()
+   Set<Role> getAuthorities(Organization org)
    {
       // Avoids error of finding by a non saved instance.
       if (!this.id) return [] as Set
@@ -60,26 +75,29 @@ class User implements Serializable {
    
    /**
     * returns the highest role assigned to the user.
-    * ROLE_ADMIN > ROLE_ORG_MANAGER > any other role
+    * ROLE_ADMIN > ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER > any other role
     * @return
     */
-   Role getHigherAuthority()
+   Role getHigherAuthority(Organization org)
    {
       // custom logic to avoid many queries for using authoritiesContains
-      def roles = UserRole.findAllByUser(this)*.role
+      def roles = UserRole.findAllByUserAndOrganization(this, org)*.role
       
-      def role = roles.find { it.authority == 'ROLE_ADMIN' }
+      def role = roles.find { it.authority == Role.AD }
       if (role) return role
       
-      role = roles.find { it.authority == 'ROLE_ORG_MANAGER' }
+      role = roles.find { it.authority == Role.AM }
+      if (role) return role
+      
+      role = roles.find { it.authority == Role.OM }
       if (role) return role
       
       return roles[0] // any other role
    }
    
-   boolean authoritiesContains(String role)
+   boolean authoritiesContains(String role, Organization org)
    {
-      return this.authorities.find { it.authority == role } != null
+      return this.getAuthorities(org).find { it.authority == role } != null
    }
 
    def beforeInsert()
@@ -107,10 +125,10 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority']
+   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations']
 
    static constraints = {
-      username blank: false, unique: true
+      username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
       
       // if user is disabled, password can be blank, is used to allow the user to reset the password
       password nullable: true, validator: { val, obj ->
@@ -123,26 +141,38 @@ class User implements Serializable {
       
       resetPasswordToken nullable: true
       
+      /*
       organizations validator: { val, obj ->
          //println "validator "+ val
-         if (val.size() == 0)
+         if (!val || val.size() == 0)
          {
-            //println "validator returns false"
-            
             // We set the error, if this returns false, grails adds another error.
             obj.errors.rejectValue('organizations', 'user.organizations.empty')
-            //return false
-            //return ['user.organizations.empty']
          }
-         
-         //println "validator returns true"
-         //return true
       }
+      */
    }
 
    static mapping = {
       password column: '`password`'
-      organizations lazy: false
+      //organizations lazy: false
+   }
+   
+   def getOrganizations()
+   {
+      UserRole.withNewSession { 
+         UserRole.findAllByUser(this).organization
+      }
+   }
+   
+   static List allForRole(authority)
+   {
+      def urs = UserRole.withCriteria {
+         role {
+            eq('authority', authority)
+         }
+      }
+      return urs.user
    }
    
    def setPasswordToken()

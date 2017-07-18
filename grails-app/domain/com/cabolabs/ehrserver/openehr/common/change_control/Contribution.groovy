@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
@@ -7,7 +29,7 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 /**
  * La contribution queda pendiente/incompleta hasta que no se envien todas las versiones referenciadas.
  * 
- * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  *
  */
 class Contribution {
@@ -40,9 +62,9 @@ class Contribution {
    }
    
    static mapping = {
-      audit column:'contrib_audit' // En algunos dbms audit o audit_id son reservados
-      audit cascade: 'save-update'
-      versions cascade: 'save-update'
+      audit column: 'contrib_audit' // En algunos dbms audit o audit_id son reservados
+      audit cascade: 'all' //'save-update'
+      versions cascade: 'all' //'save-update'
    }
    
    static belongsTo = [Ehr]
@@ -56,20 +78,13 @@ class Contribution {
       this.yearGroup      = Integer.parseInt( new SimpleDateFormat("yyyy").format(d) )
    }
    
-   /* we sre not using this and is causing problems with grails that uses equals internally
-   @Override
-   public boolean equals(Object other)
-   {
-      if (!other || !other.instanceOf(Contribution)) return false
-
-      return this.uid.equals(other.uid)
+   static namedQueries = {
+      byOrgInPeriod { uid, from, to ->
+         eq('organizationUid', uid)
+         audit {
+           ge('timeCommitted', from) // dfrom <= timeCommitted < dto
+           lt('timeCommitted', to)
+         }
+      }
    }
-   
-   @Override
-   public int hashCode()
-   {
-      // http://stackoverflow.com/questions/113511/hash-code-implementation
-      return this.uid.hashCode()
-   }
-   */
 }

@@ -15,49 +15,43 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+        <h1><g:message code="versionedComposition.show.title" /></h1>
       </div>
     </div>
-
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
-       <g:if test="${flash.message}">
-         <div class="message" role="status">${flash.message}</div>
-       </g:if>
-
-        <div class="control-group">
-          <label class="control-label"><g:message code="versionedComposition.uid.label" default="UID" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:fieldValue bean="${versionedCompositionInstance}" field="uid"/></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="versionedComposition.ehrUid.label" default="EHR UID" /></label>
-          <div class="controls">
-            <p class="form-control-static">${versionedCompositionInstance.ehr.uid}</p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="versionedComposition.isPersistent.label" default="Is persistent" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:formatBoolean boolean="${versionedCompositionInstance?.isPersistent}" /></p>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label"><g:message code="versionedComposition.timeCreated.label" default="Time created" /></label>
-          <div class="controls">
-            <p class="form-control-static"><g:formatDate date="${versionedCompositionInstance?.timeCreated}" /></p>
-          </div>
-        </div>
+        <g:if test="${flash.message}">
+          <div class="alert alert-info" role="alert">${flash.message}</div>
+        </g:if>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th><g:message code="versionedComposition.attr.uid" /></th>
+              <td><g:fieldValue bean="${versionedCompositionInstance}" field="uid"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="versionedComposition.attr.ehr" /></th>
+              <td><g:link controller="ehr" action="show" params="[uid: versionedCompositionInstance.ehr.uid]">${versionedCompositionInstance.ehr.uid}</g:link></td>
+            </tr>
+            <tr>
+              <th><g:message code="versionedComposition.attr.isPersistent" /></th>
+              <td><g:formatBoolean boolean="${versionedCompositionInstance?.isPersistent}" /></td>
+            </tr>
+            <tr>
+              <th><g:message code="versionedComposition.attr.timeCreated" /></th>
+              <td><g:formatDate date="${versionedCompositionInstance?.timeCreated}" /></td>
+            </tr>
+          </tbody>
+        </table>
 
         <h2>Versions</h2>
         <div class="table-responsive">
           <table class="table table-striped table-bordered table-hover">
             <tr>
-		        <th>uid</th>
-		        <th>creation date</th>
-		        <th>type</th>
-		        <th>change type</th>
+		        <th><g:message code="version.attr.uid" /></th>
+		        <th><g:message code="composition.attr.startTime" /></th>
+		        <th><g:message code="composition.attr.archetypeId" /></th>
+		        <th><g:message code="audit.attr.changeType" /></th>
 		        <th></th>
 		      </tr>
             <g:each in="${versionedCompositionInstance.allVersions}" var="version">

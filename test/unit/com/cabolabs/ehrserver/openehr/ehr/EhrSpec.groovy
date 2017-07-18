@@ -9,7 +9,6 @@ import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.security.Organization
-import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.openehr.common.change_control.*
@@ -18,7 +17,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.*
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
 @TestMixin(GrailsUnitTestMixin)
-@Mock([Contribution,Version,VersionedComposition,Ehr,Person,Organization,PatientProxy,DoctorProxy,CompositionIndex])
+@Mock([Contribution,Version,VersionedComposition,Ehr,Organization,PatientProxy,DoctorProxy,CompositionIndex])
 class EhrSpec extends Specification {
 
     def setup()
@@ -26,19 +25,9 @@ class EhrSpec extends Specification {
        def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
        hospital.save(failOnError:true, flush:true)
        
-       def patient = new Person(
-          firstName: 'Pablo', lastName: 'Pazos',
-          dob: new Date(81, 9, 24), sex: 'M',
-          idCode: '4116238-0', idType: 'CI',
-          role: 'pat',
-          uid: '1111-1111-1111',
-          organizationUid: hospital.uid
-       )
-       patient.save(failOnError:true, flush:true)
-       
        def ehr = new Ehr(
           subject: new PatientProxy(
-             value: patient.uid
+             value: '1111-1111-1111'
           ),
           organizationUid: patient.organizationUid
        )

@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -15,7 +37,7 @@ def PS = System.getProperty("file.separator")
 
 
 // CORS
-cors.url.pattern = '/rest/*'
+cors.url.pattern = '/api/*'
 cors.headers = ['Access-Control-Allow-Origin': '*']
 cors.enabled = true
 
@@ -92,21 +114,51 @@ environments {
     app {
       //opt_repo = new File(".").getAbsolutePath() + 'opts' + PS // OPT file upload destination
       version_repo = "versions" + PS
+      commit_logs = "commits" + PS
+      opt_repo = "opts" + PS
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
     }
   }
-  production {
+  production { // use on server prod environment, https, root = /
     grails.logging.jul.usebridge = false
-    grails.dbconsole.enabled = true // FIXME: this is for testing in prod
-    grails.serverURL = "https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
+    //grails.dbconsole.enabled = true // this is for testing in prod
+    // System.getenv('OPENSHIFT_APP_DNS') == "ehrserver-cabolabs2.rhcloud.com"
+    grails.serverURL = "https://" + System.getenv('OPENSHIFT_APP_DNS') //"https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
+    grails.app.context = '/' // use domain.com/ instead of domain.com/ehr
     app {
       //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
-      version_repo = "versions" + PS
+      version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
+      commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
+      opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
+    }
+  }
+  local_prod { // use to run locally without https or root context /
+     grails.logging.jul.usebridge = false
+     app {
+      version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
+      commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
+      opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
+    }
+  }
+  local_prod_tomcat { // use for testing prod in local env deploying in tomcat (running on port 8085)
+    grails.logging.jul.usebridge = false
+    grails.serverURL = "http://localhost:8085/ehr-0.8"
+    app {
+      version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
+      commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
+      opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
+      allow_web_user_register = true
     }
   }
   test {
     grails.converters.default.pretty.print = true
     app {
        version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+       commit_logs = "commits" + PS
+       opt_repo = "opts" + PS + "tests" + PS
+       allow_web_user_register = true
     }
   }
 }
@@ -141,10 +193,10 @@ log4j = {
 }
 
 app {
+   list_max = 20 // items per page for all the lists
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
-   opt_repo = "opts" + PS
    
    security {
       min_password_length = 6
@@ -152,7 +204,7 @@ app {
    
    l10n { // localization
       
-      locale = 'en'
+      locale = 'en' // FIXME: this will depend on the organization
       
       // general
       decimal_symbol = ',' // separa numero enteros de la fraccion decimal
@@ -241,6 +293,14 @@ grails {
               "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
               "mail.smtp.socketFactory.fallback":"false"
               ]
+     */
+     /*
+     for testing
+     grails.mail.disabled=true
+     
+     ref http://padcom13.blogspot.com.uy/2011/01/testing-sending-emails-with-grails.html
+     
+     or ref: https://stackoverflow.com/questions/8884186/how-to-integration-test-email-body-in-a-grails-service-that-uses-the-mail-plugin
      */
    }
 }

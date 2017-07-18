@@ -1,4 +1,27 @@
-package com.cabolabs.security;
+
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.cabolabs.security
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -6,6 +29,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.util.Assert
 //import org.springframework.security.authentication.AuthenticationManager
@@ -29,7 +53,6 @@ ref: http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authe
 */
 public class AuthFilter extends AbstractAuthenticationProcessingFilter implements ApplicationEventPublisherAware {
  
-  
   AuthProvider authProvider
   
   // redeclared because is private on superclass
@@ -84,13 +107,24 @@ public class AuthFilter extends AbstractAuthenticationProcessingFilter implement
      
      // If authentication fails, always throws an AuthenticationException.
      
+     // result is UserPassOrgAuthToken, and it's attr principal is GrailsUser
+     // GrailsUser extends User and has an attr id with the id of the user
+     // https://github.com/grails-plugins/grails-spring-security-core/blob/master/src/main/groovy/grails/plugin/springsecurity/userdetails/GrailsUser.groovy
      auth = this.getAuthenticationManager().authenticate(auth) // can throw AuthenticationException if auth fails
      
-     
+     // cant make queries without the transaction because there is no hibernate session
+     User.withTransaction { status ->
+        def user = User.get(auth.principal.id)
+        if (user.getAuthorities(Organization.findByNumber(organization)).contains( new Role('ROLE_USER') ))
+        {
+           //println "valid user but cant login into the web console"
+           throw new InsufficientAuthenticationException("Your role is not allowed to login through the web console.")
+        }
+     }
      
      // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
      SecurityContextHolder.getContext().setAuthentication(auth)
-     rememberMeServices.onLoginSuccess(request, response, auth)
+//     rememberMeServices.onLoginSuccess(request, response, auth)
      
      // TODO: catch auth exception and handle the lines below, then rethrow the except
      // SecurityContextHolder.clearContext();

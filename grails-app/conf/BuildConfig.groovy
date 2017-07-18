@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
@@ -10,19 +32,27 @@ grails.reload.enabled = true
 forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 512]
 grails.project.fork = [
    test: forkConfig, // configure settings for the test-app JVM
-   run: forkConfig, // configure settings for the run-app JVM
+   run: false, // configure settings for the run-app JVM
    war: forkConfig, // configure settings for the run-war JVM
    console: forkConfig // configure settings for the Swing console JVM
 ]
 
 grails {
    tomcat {
-       jvmArgs = ["-Duser.timezone=UTC"]
+       jvmArgs = ["-Duser.timezone=UTC", "-Dserver.port=8090"]
    }
 }
 
 
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+
+// include XSDs and XSLTs in the war
+grails.war.resources = { stagingDir, args ->
+   copy(todir: "${stagingDir}/xsd") {
+       fileset(dir: "xsd", includes: "*.*")
+   }
+}
+
 grails.server.port.http = 8090
 grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
@@ -80,12 +110,13 @@ grails.project.dependency.resolution = {
        */
 	   
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
-         excludes "commons-logging", "xml-apis", "groovy"
+         excludes "commons-logging", "xml-apis", "groovy", "nekohtml"
        }
 
        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
        
-       compile 'xerces:xercesImpl:2.11.0'
+       //compile 'xerces:xercesImpl:2.11.0'
+       compile group: 'de.odysseus.staxon', name: 'staxon', version: '1.2'
        
        compile "mysql:mysql-connector-java:5.1.22"
        

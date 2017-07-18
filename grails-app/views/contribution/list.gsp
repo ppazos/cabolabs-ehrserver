@@ -3,13 +3,12 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'contribution.label', default: 'Contribution')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="contribution.list.title" /></title>
     <asset:javascript src="highcharts/highcharts.js" />
     <script type="text/javascript">
 
       var series = [];
-      var serie = { name: 'contributions', data: [] };
+      var serie = { name: '${message(code:"contribution.list.title")}', data: [] };
     
 	   <%
       println 'var start = Date.UTC('+ (start.year + 1900) +','+ (start.month - 1) +','+ start.date +');'
@@ -38,7 +37,7 @@
               zoomType: 'x'
            },
            title: {
-               text: 'Contributions'
+               text: '${message(code:"contribution.list.title")}'
            },
            subtitle: {
                text: ''
@@ -60,7 +59,7 @@
                min: 0,
                allowDecimals: false, // no decimals on y, just integers
                title: {
-                   text: 'Count'
+                   text: '${message(code:"contribution.list.chartY")}'
                }
            },
            tooltip: {
@@ -91,26 +90,67 @@
         <h1><g:message code="contribution.list.title" /></h1>
       </div>
     </div>
+    <div class="row row-grid">
+      <div class="col-md-12">
+        <div class="btn-toolbar" role="toolbar">
+          <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
+            <span class="fa fa-filter" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
     
-    <div class="row">
+    <div class="row row-grid collapse" id="collapse-filter">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+          
+            <g:form class="form filter" action="list">
+              <input type="hidden" name="sort" value="${params.sort}" />
+              <input type="hidden" name="order" value="${params.order}" />
+              <div class="form-group">
+                <label for="ipt_ehr"><g:message code="contribution.attr.ehr" /></label>
+                <input type="text" class="form-control" name="ehdUid" id="ipt_ehr" placeholder="11111111-1111-1111-1111-111111111111" value="${params?.ehdUid}" />
+              </div>
+              <div class="btn-toolbar" role="toolbar">
+                <button type="submit" name="filter" class="btn btn-primary"><span class="fa fa-share" aria-hidden="true"></span></button>
+                <button type="reset" id="filter-reset" class="btn btn-default"><span class="fa fa-trash " aria-hidden="true"></span></button>
+              </div>
+            </g:form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    if (${params.containsKey('filter')})
+    {
+      $("#collapse-filter").addClass('in');
+      $(".btn.filter").toggleClass( "btn-primary" );
+    }
+    </script>
+    
+    <div class="row row-grid">
       <div class="col-lg-12">
         <div id="contributionsChartContainer"></div>
       </div>
     </div>
     
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
-         <g:if test="${flash.message}">
-	        <div class="message" role="status">${flash.message}</div>
+        <g:if test="${flash.message}">
+	        <div class="alert alert-info" role="alert">${flash.message}</div>
 	      </g:if>
 	      <div class="table-responsive">
            <table class="table table-striped table-bordered table-hover">
 		        <thead>
 		          <tr>
-		            <g:sortableColumn property="uid" title="${message(code: 'contribution.uid.label', default: 'UID')}" />
-		            <th>EHR</th>
-		            <th>Time Committed</th>
-		            <th># Versions</th>
+		            <g:sortableColumn property="uid" title="${message(code:'contribution.attr.uid')}" params="${params}" />
+		            <th><g:message code="contribution.attr.ehr" /></th>
+		            <%-- uses the id because is easier than sorting by timeCommitted and have the same order --%>
+		            <g:sortableColumn property="id" title="${message(code:'contribution.attr.timeCommitted')}" params="${params}" />
+		            <th><g:message code="contribution.list.versionCount" /></th>
 		          </tr>
 		        </thead>
 		        <tbody>
@@ -125,7 +165,7 @@
 		        </tbody>
 		     </table>
 	      </div>
-         <g:paginator total="${total}" />
+         <g:paginator total="${total}" args="${params}" />
       </div>
     </div>
   </body>

@@ -1,22 +1,19 @@
-<%@ page import="com.cabolabs.security.User" %>
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.edit.label" args="[entityName]" /></title>
+    <title><g:message code="user.edit.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
+        <h1><g:message code="user.edit.title" /></h1>
       </div>
     </div>
-
-    <div class="row">
+    <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
-          <div class="message" role="status">${flash.message}</div>
+          <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
         <g:hasErrors bean="${userInstance}">
           <ul class="errors" role="alert">
@@ -31,7 +28,9 @@
             <g:render template="form"/>
           </fieldset>
           <fieldset class="buttons">
-            <g:actionSubmit class="save btn btn-default btn-md" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+            <div class="btn-toolbar" role="toolbar">
+              <g:actionSubmit class="save btn btn-default btn-md" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+            </div>
           </fieldset>
         </g:form>
       </div>

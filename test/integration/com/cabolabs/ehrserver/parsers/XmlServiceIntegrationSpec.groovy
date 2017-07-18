@@ -4,15 +4,24 @@ import grails.test.spock.IntegrationSpec
 import groovy.util.slurpersupport.GPathResult
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.openehr.common.change_control.Commit
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.Organization
 
 import groovy.io.FileType
 import spock.lang.Ignore
 import grails.util.Holders
 
+/**
+ * This mainly tests commits without the controller, just goes directly to the service.
+ * 
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
+ *
+ */
 class XmlServiceIntegrationSpec extends IntegrationSpec {
 
    // it seems integration tests are transactional by default, so if an exception occurs, the session is rolledback at the end of each test case,
@@ -20,56 +29,63 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    //static transactional = false
    
    def xmlService
+   def config = Holders.config
    
    private static String PS = System.getProperty("file.separator")
+   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   
+   private createOrganization()
+   {
+      println "NEW ORGANIZATION XmlService"
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      org.save(failOnError: true)
+   }
+   
+   private createEHR()
+   {
+      def ehr = new Ehr(
+         uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
+         subject: new PatientProxy(
+            value: patientUid
+         ),
+         organizationUid: Organization.findByUid(orgUid).uid
+      )
+    
+      ehr.save(failOnError: true)
+   }
    
    
    def setup()
    {
-      // used by the service, mock the version repo where commits are stored
-      //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
+      println "setup"
+      createOrganization()
+      createEHR()
    }
 
    def cleanup()
    {
-      /*
-       * org.springframework.dao.DataIntegrityViolationException: Hibernate operation: could not execute statement; SQL [n/a]; Cannot delete or update a p
-arent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCE
-S `composition_index` (`id`)); nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or u
-pdate a parent row: a foreign key constraint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`)
-REFERENCES `composition_index` (`id`))
-        at com.cabolabs.ehrserver.parsers.XmlServiceIntegrationSpec.cleanup(XmlServiceIntegrationSpec.groovy:46)
-Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constr
-aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4` FOREIGN KEY (`data_id`) REFERENCES `composition_index` (`id`))
+      println "cleanup"
+      def ehr = Ehr.findByUid(ehrUid)
+      ehr.delete(flush: true) // deletes all the contributions, versions, audit details, doctor proxies in cascade
       
-      // clean database
-      VersionedComposition.list().each { it.delete() }
-      Version.list().each { version ->
-         //version.commitAudit.delete() // AuditDetails
-         version.data.delete() // CompositionIndex
-         version.contribution.removeFromVersions(version)
-         version.delete()
-      }
-      Contribution.list().each { contrib ->
-         //contrib.audit.delete() // AuditDetails
-         contrib.ehr.removeFromContributions(contrib)
-         contrib.delete()
-      }
+      /* all zero!
+      println Contribution.count()
+      println Version.count()
+      println VersionedComposition.count()
+      println CompositionIndex.count()
       */
       
-      /*
-      // empty the temp version store
-      def temp = new File(Holders.config.app.version_repo)
-      println "***** DELETE FROM "+ temp.path
-      temp.eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
-      */
+      def org = Organization.findByUid(orgUid)
+      org.delete(flush: true)
    }
 
    
    void "commit single / valid version"()
    {
-      setup:
-         def ehr = Ehr.get(1)
+      setup: "gets the existing EHR and prepares the commit (simulates the controller commit)"
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -78,8 +94,9 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          def parsedVersions = slurper.parseText(versionsXML)
          
          
-      when:
+      when: "does the commit"
          xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         
          
       then:
          notThrown Exception // this shouldn't throw any exceptions
@@ -87,16 +104,25 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
+         //println "commits "+ Commit.count() // 0, Commit is not used...
+      
       
       cleanup:
-         println "commit single / valid version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
+         println "commit single / valid version DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+
+
    
    void "commit single / invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -118,16 +144,17 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
+   
    
    // for https://github.com/ppazos/cabolabs-ehrserver/issues/366
    void "commit single / invalid version with empty datatype nodes"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_empty_datatypes.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -152,15 +179,16 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
+   
    
    void "multiple / all valid versions"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -179,19 +207,26 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 2
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 2
       
       cleanup:
-         println "multiple / all valid versions DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
+         
+         println "multiple / all valid versions DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
    
    void "multiple / one invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_one_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -212,15 +247,16 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
+   
    
    void "multiple / all invalid version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_invalid.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -241,15 +277,47 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
+   
+   
+   void "multiple / dupliacted compo.uid"()
+   {
+      setup:
+         def ehr = Ehr.findByUid(ehrUid)
+      
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_2_versions_same_compo_uid.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+         
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+         
+      when:
+         // should throw an exception
+         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         
+      then:
+         Exception e = thrown() // TODO: use specific exception type
+         assert xmlService.validationErrors.size() == 0
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+         
+         // no version files should be created in the filesystem
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
+   }
+   
+   
    
    void "commit same version twice"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -273,19 +341,25 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          
          
          // just one version file should be created in the filesystem, the one for the first commit
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 1
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 1
       
       cleanup:
-         println "commit same version twice DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
+         println "commit same version twice DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
    
-   void "commit 2 compos, and new version"()
+   
+   void "commit 2 compo versions for the same document"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          
@@ -311,19 +385,25 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 2
          
          // check that 2 version files were created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 2
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 2
       
       cleanup:
-         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
-         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
+         println "test cleanup"
+         
+         // VersionedCompositions are not deleted in cascade in the global cleanup when ehr.delete
+         VersionedComposition.list()*.delete(flush: true)
+         
+         println "commit 2 compos, and new version DELETE CREATED FILES FROM "+ config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()
+         new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).eachFileMatch(FileType.FILES, ~/.*\.xml/) { it.delete() }
    }
+   
    
    void "commit new version without previous version"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          
@@ -344,10 +424,11 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
+   
    
    /**
     * there is an issue with this test, while the rollback is done correctly on functional testing, here is not detected and if gives 1 contribution.
@@ -357,13 +438,13 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
    void "commit with an existing file with the same version id on the version repo"()
    {
       setup:
-         def ehr = Ehr.get(1)
+         def ehr = Ehr.findByUid(ehrUid)
       
          def slurper = new XmlSlurper(false, false)
          
          // copy file into the version repo
          def source = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml')
-         java.nio.file.Files.copy(source.toPath(), new File(Holders.config.app.version_repo + PS + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
+         java.nio.file.Files.copy(source.toPath(), new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator() + "91cf9ded-e926-4848-aa3f-3257c1d89e37_EMR_APP_1.xml").toPath())
          
          // commit same file via the commit processing
          def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1.xml').text
@@ -382,8 +463,8 @@ aint fails (`ehrservertest`.`version`, CONSTRAINT `FK_qku5pv15ayvcge2p64ko7cvb4`
          assert CompositionIndex.count() == 0
          
          // no version files should be created in the filesystem
-         assert new File(Holders.config.app.version_repo).listFiles()
-                                                         .findAll { it.name ==~ /.*\.xml/ }
-                                                         .size() == 0
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                 .findAll { it.name ==~ /.*\.xml/ }
+                                                 .size() == 0
    }
 }

@@ -1,19 +1,28 @@
 package com.cabolabs.ehrserver.openehr.composition
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+
 import grails.test.spock.IntegrationSpec
+
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.Organization
 import com.cabolabs.util.DateParser
+
 import grails.util.Holders
+
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
+import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
-import com.cabolabs.ehrserver.openehr.demographic.Person
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+
+import groovy.io.FileType
 
 class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
    def compositionService
+   def versionFSRepoService
    
    private static String PS = System.getProperty("file.separator")
    
@@ -53,7 +62,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    <uid>
      <value>13a9f2b9-81fe-432a-bcc8-d225377a13f1::EMR::1</value>
    </uid>
-   <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1" xsi:type="COMPOSITION">
+   <data archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1" xsi:type="COMPOSITION">
      <name>
        <value>Signos vitales</value>
      </name>
@@ -87,7 +96,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          <terminology_id>
            <value>openehr</value>
          </terminology_id>
-         <code_string>443</code_string>
+         <code_string>433</code_string>
        </defining_code>
      </category>
      <composer xsi:type="PARTY_IDENTIFIED">
@@ -484,9 +493,37 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    </lifecycle_state>
  </version>/$
    
- 
+   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   
+   private createOrganization()
+   {
+      println "NEW ORGANIZATION CompositionService"
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      org.save(failOnError: true)
+   }
+   
+   private createEHR()
+   {
+      def ehr = new Ehr(
+         uid: ehrUid, // the ehr id is the same as the patient just to simplify testing
+         subject: new PatientProxy(
+            value: patientUid
+         ),
+         organizationUid: Organization.findByUid(orgUid).uid
+      )
+    
+      ehr.save(failOnError: true)
+   }
+   
+   
    def setup()
    {
+      createOrganization()
+      createEHR()
+   
+      
       /*
       println Ehr.list()
       println Ehr.list().uid
@@ -501,10 +538,14 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       def parsedVersion = parser.parseText(xml)
       
       // 2. get EHR
-      def ehr = Ehr.get(1)
+      def ehr = Ehr.findByUid(ehrUid)
       
       
       // 3. create CompositionIndex for an existing version XML
+      def composer = new DoctorProxy(
+         value: '5323452345-23452334-23452345',
+         name: 'Dr. House'
+      )
 
       def compoIndex = new CompositionIndex(
          uid:         parsedVersion.data.uid.value.text(),
@@ -514,13 +555,14 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId: parsedVersion.data.@archetype_node_id.text(),
-         templateId:  parsedVersion.data.archetype_details.template_id.value.text()
+         templateId:  parsedVersion.data.archetype_details.template_id.value.text(),
+         composer: composer
       )
-      
+      def change_type_code = parsedVersion.commit_audit.change_type.defining_code.code_string.text()
       def commitAudit = new AuditDetails(
          systemId:      parsedVersion.commit_audit.system_id.text(),
          timeCommitted: new Date(),
-         changeType:    parsedVersion.commit_audit.change_type.value.text(),
+         changeType:    ChangeType.fromValue(change_type_code as short),
          committer: new DoctorProxy(
             name: parsedVersion.commit_audit.committer.name.text()
          )
@@ -553,20 +595,26 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       commitAudit.save(failOnError:true)
       contribution.save(failOnError:true)
       version.save(failOnError:true)
+      
+      // save version file
+      def file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
+      file << xml
    }
 
    def cleanup()
    {
+      def ehr = Ehr.findByUid(ehrUid)
+      ehr.delete(flush: true)
+      
+      def org = Organization.findByUid(orgUid)
+      org.delete(flush: true)
    }
 
    void "test composition as XML"()
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def xml = compositionService.compositionAsXml(uid)
          
@@ -574,17 +622,18 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println xml
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as XML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
    
    void "test composition as JSON"()
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def json = compositionService.compositionAsJson(uid)
          
@@ -592,17 +641,18 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println json
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as JSON: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
    
    void "test composition as HTML"()
    {
       setup:
          def uid = 'b5ae930b-edff-468e-8a53-c3dd45b29a1f'
-         // used by the service, mock the version repo
-         def base_repo = Holders.config.app.version_repo
-         Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"versions" + PS
-         
+
       when:
          def html = compositionService.compositionAsHtml(uid)
          
@@ -610,6 +660,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          println html
       
       cleanup:
-         Holders.config.app.version_repo = base_repo // restore the configured repo
+         println "test composition as HTML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
+         new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
+           println it.path
+           it.delete()
+         }
    }
 }

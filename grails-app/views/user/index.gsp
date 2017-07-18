@@ -1,42 +1,83 @@
-<%@ page import="com.cabolabs.security.User" %>
+<%@ page import="com.cabolabs.security.Organization" %>
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="user.list.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
+        <h1><g:message code="user.list.title" /></h1>
+      </div>
+    </div>
+    <div class="row row-grid">
+      <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
+          <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
+            <span class="fa fa-filter" aria-hidden="true"></span>
+          </button>
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus-circle fa-fw" aria-hidden="true"></span> <g:message code="default.new.label" args="[entityName]" />
+              <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+    
+    <div class="row row-grid collapse" id="collapse-filter">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <g:form class="form filter" action="index">
+              <input type="hidden" name="sort" value="${params.sort}" />
+              <input type="hidden" name="order" value="${params.order}" />
+              <div class="form-group">
+                <label for="ipt_un"><g:message code="user.attr.username" /></label>
+                <input type="text" class="form-control" name="username" id="ipt_un" value="${params?.username}" />
+              </div>
+              <sec:ifAnyGranted roles="ROLE_ADMIN">
+              <div class="form-group">
+                <label for="organizationUid"><g:message code="entity.organization" /></label>
+                <g:select name="organizationUid" from="${Organization.list()}"
+				              optionKey="uid" optionValue="name"
+				              noSelection="${['':'Select One...']}"
+                          value="${params?.organizationUid ?: ''}" class="form-control" />
+              </div>
+              </sec:ifAnyGranted>
+              <div class="btn-toolbar" role="toolbar">
+                <button type="submit" name="filter" class="btn btn-primary"><span class="fa fa-share" aria-hidden="true"></span></button>
+                <button type="reset" id="filter-reset" class="btn btn-default"><span class="fa fa-trash " aria-hidden="true"></span></button>
+              </div>
+            </g:form>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row">
+    <script>
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    if (${params.containsKey('filter')})
+    {
+      $("#collapse-filter").addClass('in');
+      $(".btn.filter").toggleClass( "btn-primary" );
+    }
+    </script>
+    
+    <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
-	       <div class="message" role="status">${flash.message}</div>
+	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
         <div class="table-responsive">
           <table class="table table-striped table-bordered table-hover">
 		      <thead>
 	           <tr>
-	             <g:sortableColumn property="username" title="${message(code: 'user.username.label', default: 'Username')}" />
-	             <g:sortableColumn property="accountExpired" title="${message(code: 'user.accountExpired.label', default: 'Account Expired')}" />
-	             <g:sortableColumn property="accountLocked" title="${message(code: 'user.accountLocked.label', default: 'Account Locked')}" />
-	             <g:sortableColumn property="enabled" title="${message(code: 'user.enabled.label', default: 'Enabled')}" />
-	             <g:sortableColumn property="passwordExpired" title="${message(code: 'user.passwordExpired.label', default: 'Password Expired')}" />
+	             <g:sortableColumn property="username" title="${message(code: 'user.attr.username', default: 'Username')}" />
+	             <g:sortableColumn property="accountExpired" title="${message(code: 'user.attr.account_expired', default: 'Account Expired')}" />
+	             <g:sortableColumn property="accountLocked" title="${message(code: 'user.attr.account_locked', default: 'Account Locked')}" />
+	             <g:sortableColumn property="enabled" title="${message(code: 'user.attr.enabled', default: 'Enabled')}" />
+	             <g:sortableColumn property="passwordExpired" title="${message(code: 'user.attr.password_expired', default: 'Password Expired')}" />
 	           </tr>
 		      </thead>
 		      <tbody>
@@ -52,7 +93,7 @@
 	         </tbody>
 	       </table>
 	     </div>
-	     <g:paginator total="${userInstanceCount}" />
+	     <g:paginator total="${userInstanceCount}" args="${params}" />
       </div>
     </div>
   </body>

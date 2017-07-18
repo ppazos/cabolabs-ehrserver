@@ -8,9 +8,8 @@ jdk:
 services:
   - mysql
 
-
 # env:
-#   - GRAILS_VERSION=2.5.3
+#   - GRAILS_VERSION=2.5.5
   
 # before_install:
 #   - rm -rf ~/.gvm
@@ -34,4 +33,5 @@ before_script:
   
 script: ./grailsw refresh-dependencies
      && ./grailsw "test-app -integration -echoOut"
+     && ./grailsw "test-app -unit UserControllerSpec"
 

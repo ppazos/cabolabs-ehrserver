@@ -16,7 +16,7 @@
   </head>
   <body>
     <g:if test="${flash.message}">
-      <div class="message" role="status">${flash.message}</div>
+      <div class="alert alert-info" role="alert">${flash.message}</div>
     </g:if>
     
     <div id="query_test_composition">
@@ -53,7 +53,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':'Select One...']}" class="form-control withsize" />
+              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':g.message(code:'defaut.select.selectOne')]}" class="form-control withsize" />
             </td>
           </tr>
           <tr>
@@ -72,6 +72,7 @@
               <input type="text" name="toDate" class="form-control input-sm" />
             </td>
           </tr>
+          <%--
           <tr>
             <td></td>
             <td>
@@ -84,6 +85,7 @@
               </sec:ifNotGranted>
             </td>
           </tr>
+          --%>
         </table>
       </div>
     </div>
