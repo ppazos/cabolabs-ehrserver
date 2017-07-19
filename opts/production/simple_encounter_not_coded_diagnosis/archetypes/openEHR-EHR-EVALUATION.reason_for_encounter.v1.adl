@@ -1,0 +1,198 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.reason_for_encounter.v1
+
+concept
+	[at0000]	-- Reason for encounter
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+			>
+			accreditation = <"Computer Engineer">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			author = <
+				["name"] = <"Paulo Rogério Rades">
+				["organisation"] = <"ParQ´s Consultoria e Sistemas de Informação em Saúde">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"2007-04-19">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the reason, or reasons, for initiation of any type of healthcare encounter or contact by the individual who is the subject of care.">
+			use = <"Use to record the reason, or reasons, for initiation of any type of healthcare encounter or contact between a healthcare provider and the individual who is the subject of care. The reason may be for clinical, social or administrative purposes.
+
+Reason for Encounter is a common phrase used in clinical medicine, however the term is often used in two common ways - one that refers to an administrative category for provision of healthcare and the other that reflects clinical or social problems that motivate individuals to seek healthcare.
+
+In an effort to clarify the phrases and intent, this archetype contains two data elements:
+- The first, 'Contact type', to document the administrative type of healthcare sought or required - for example the type of consultation, emergency care, pre-operative assessment, routine antenatal visit or elective admission. This data element reflects the administrative category of care provision. Use of the phrase 'Contact type', rather than 'Reason for encounter' or 'Reason for visit' reflects the increasing trend towards alternative methods of healthcare provision that may not result in face-to-face contact between the healthcare provider and patient within a consulting room.
+- The second, 'Presenting problem', to document the clinical reasons for healthcare contact. Chief complaint is regarded as a synonym for 'Presenting problem'. These are intended mainly to capture the patient's perceived issues or symptoms which have triggered them to seek healthcare advice, such as desire to quit smoking, stress, shortness of breath, genetic counselling or abdominal pain. Signs such as impaired conscious state may also be captured here, for example by paramedical staff with an unconscious patient.">
+			keywords = <"presentation", "presenting complaint", "reason for encounter", "reason", "chief complaint", "visit", "reason for visit">
+			misuse = <"Not to be used to record specific details of the patient's story or history of symptoms. Use OBSERVATION.story to capture the narrative and the related nested CLUSTER archetypes for structured content eg CLUSTER.symptom, CLUSTER.event and CLUSTER.issue.
+
+Not to be used to record specific diagnosis details that may be required in addition to a Reason for Encounter. For example, to record a Pre-operative Diagnosis as part of admission for a hospital procedure. Use the EVALUATION.problem_diagnosis archetype for this purpose.">
+			copyright = <"© openEHR Foundation">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			purpose = <"*To record the reason/s for initiation of any type of healthcare contact between a healthcare provider and a patient.(en)
+
+Registra o encontro Medico x Paciente e os relato do(s) motivo(s) da busca pelo atendimento médico fornecidos pelo paciente.">
+			use = <"*To record the reason/s for initiation of any type of healthcare contact between a healthcare provider and a patient, 
+Para registro do(s) motivo(s) para qualquer necessidade de atendimento de saude entre prestador do serviço e o paciente.
+
+Reason for Encounter is a common phrase used in clinical medicine, however the term is often used in two common ways - one that refers to an administrative category for provision of healthcare and the other that reflects the clinical drive to seek healthcare.
+Motivos para o encontro é um termo comum, usado na clinica médica, contudo o termo pode expressar doi caminhos: um que se refere a categoria administrativa para provisão do atendimento e outro que reflete a direção clinica para busca do cuidado ao paciente.
+
+In an effort to clarify the phrases and intent, this archetype contains two data elements:
+- The first, 'Reason for Contact', to document the administrative type of healthcare sought or required - for example the type of consultation, emergency care, pre-operative assessment, routine antenatal visit or elective admission. This data element reflects the administrative category of care provision. Use of the phrase 'Reason for Contact', rather than 'Reason for Encounter' or 'Reason for Visit' reflects the increasing trend towards alternative methods of healthcare provision that may not result in face-to-face contact between the healthcare provider and patient within a consulting room.
+- The second, 'Presenting Problem', to document the clinical reasons for healthcare contact. These are intended mainly to capture the patient's perceived issues or symptoms which have triggered them to seek healthcare advice, such as desire to quit smoking, stress, shortness of breath or abdominal pain. Signs such as impaired conscious state may also be captured here, for example by paramedical staff with an unconscious patient.
+
+Em um esforço para esclarecer as frases e intenção, este arquétipo contém dois elementos de dados:
+- O primeiro \"Motivo do contato ', para documentar o tipo administrativo de saúde procurado ou necessário - por exemplo, o tipo de consulta, atendimento de emergência, a avaliação pré-operatória, consulta pré-natal de rotina ou admissão eletiva. Este elemento de dados reflete a categoria administrativa da prestação de cuidados. O uso da expressão \"razão para o contato ', ao invés de' Razão para Encontro 'ou' motivo da visita\" reflecte a tendência crescente de métodos alternativos de prestação de cuidados de saúde que podem não resultar em contato face-a-face entre o profissional de saúde e paciente dentro de um consultório.
+- O segundo, \"Apresentando Problema ', para documentar as razões clínicas para contato saúde. Estes destinam-se principalmente para capturar problemas ou sintomas que desencadearam os a procurar aconselhamento de saúde, como o desejo de parar de fumar, stress, falta de ar ou dor abdominal percebidas do paciente. Sinais como estado de consciência prejudicada também podem ser capturados aqui, por exemplo, o pessoal paramédico com um paciente inconsciente.
+
+Chief Complaint is another phrase in common usage. In effect it is probably a type of Presenting Problem but has not currently been modelled explicitly. As Presenting Problem has occurrences set to unbounded, multiple Presenting Problems can be recorded.  Feedback will be sought regarding the need for this to be modelled in it's own right.(en)
+
+Queixa principal é outra frase de uso comum. Com efeito, é provavelmente um tipo de problema, mas Apresentando momento não foi modelado de forma explícita. Como Apresentar Problema tem ocorrências definidas como ilimitado, vários problemas de apresentação pode ser gravada. O gabarito será procurado sobre a necessidade de que isso seja modelado em seu próprio direito. ">
+			keywords = <"*presentation(en)", "*presenting complaint(en)", "*reason for encounter(en)", "*reason(en)", "*chief complaint(en)", "*visit(en)", "*reason for visit(en)">
+			misuse = <"*Not to be used to record specific details of the patient's story or history of symptoms. Use OBSERVATION.story to capture the narrative and the related nested CLUSTER archetypes for structured content eg CLUSTER.symptom, CLUSTER.event and CLUSTER.issue.
+Not to be used to record specific diagnosis details that may be required in addition to a Reason for Encounter eg Admission or Pre-operative Diagnosis as part of admission for a hospital procedure. Use the EVALUATION.problem_diagnosis (and related specialisations) for this purpose.(en)
+
+Não deve ser usado para registrar os detalhes específicos da história do paciente ou história de sintomas. Use OBSERVATION.story para capturar a narrativa e os arquétipos CLUSTER aninhados relacionados para conteúdo estruturado por exemplo CLUSTER.symptom, CLUSTER.event e CLUSTER.issue.
+
+Não deve ser utilizado para registrar os detalhes específicos de diagnóstico que podem ser necessárias, além de uma razão para Encounter por exemplo Admissão ou diagnóstico pré-operatório, como parte de um procedimento de admissão para hospital. Use o EVALUATION.problem_diagnosis (e especializações relacionadas) para esta finalidade.">
+			copyright = <"© openEHR Foundation">
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Registrar los motivos de un paciente para iniciar un encuentro o contacto con un proveedor de salud.">
+			use = <"Utilizar para registrar los motivos de un paciente para iniciar un encuentro o contacto con un proveedor de salud. El motivo tener un propósito clínico, social o administrativo.
+
+El arquetipo incluye dos elementos principales:
+
+- Motivo de consulta: para registrar el dato administrativo relacionado al tipo de asistencia médica buscada por el paciente.
+- Problema presentado: para registrar los problemas o síntomas que el paciente percibe, y que lo motivan a buscar asistencia médica. También se pueden registrar datos como el estado de conciencia de un paciente, por ejemplo por personal paramédico atendiendo a un paciente inconsciente.">
+			keywords = <"problema", "síntoma", "razón", "motivo de consulta", "visita", "consulta">
+			misuse = <"No se debe utilizar para registrar detalles específicos sobre la historia de síntomas del paciente. Para eso utilizar el arquetipo OBSERVATION.story.
+
+No debe ser utilizado para registrar diagnósticos. Para eso utilizar el arquetipo EVALUATION.problem_diagnosis.">
+			copyright = <"© openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"published">
+	other_contributors = <"Nadim Anani, Karolinska Institutet, Sweden", "Vebjoern Arntzen, Oslo university hospital, Norway", "Koray Atalag, University of Auckland, New Zealand", "Lars Bitsch-Larsen, Haukeland University hospital, Norway", "Sergio Carmona, Chile", "Beatriz de Faria Leão, Brazil", "Shahla Foozonkhah, Ocean Informatics, Australia", "Sebastian Garde, Ocean Informatics, Germany", "Heather Grain, Llewelyn Grain Informatics, Australia", "Omer Hotomaroglu, Turkey", "Sundaresan Jagannathan, Scottish NHS, United Kingdom", "Lars Karlsen, DIPS ASA, Norway", "Heather Leslie, Ocean Informatics, Australia (Editor)", "Hallvard Lærum, Oslo University Hospital, Norway", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom (Editor)">
+	other_details = <
+		["references"] = <"openEHR Foundation. openEHR wiki: Reason for Encounter or Chief Complaint [Internet]. 2008 Feb 13 [cited 2012 Jun 17];  Available at http://www.openehr.org/wiki/display/healthmod/Reason+for+encounter+or+Chief+complaint.">
+		["MD5-CAM-1.0.1"] = <"C6E34BA9A38D4EEE109F6033C16472CC">
+	>
+
+definition
+	EVALUATION[at0000] matches {	-- Reason for encounter
+		data matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..*} matches {	-- Contact type
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0004] occurrences matches {0..*} matches {	-- Presenting problem
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Reason for encounter">
+					description = <"The reason for initiation of any healthcare encounter or contact by the individual who is the subject of care.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Contact type">
+					description = <"Identification of the type, or administrative category, of healthcare sought or required by the subject of care.">
+					comment = <"Coding of the 'Contact type' with a terminology is desirable, where possible. Examples include: pre-employment medical, routine antenatal visit, women's health check, pre-operative assessment, or annual medical check-up.
+">
+				>
+				["at0004"] = <
+					text = <"Presenting problem">
+					description = <"Identification of the clinical or social problem motivating the subject of care to seeking healthcare.">
+					comment = <"Coding of the 'Presenting problem' with a terminology is desirable, where possible. Clinical or social reasons for seeking healthcare can include health issues, symptoms or physical signs. Examples: health issues - desire to quit smoking, domestic violence; symptoms - abdominal pain, shortness of breath; physical signs - an altered conscious state. 'Chief complaint' may be used as a valid synonym for 'Presenting problem' in templates.
+ ">
+				>
+			>
+		>
+		["pt-br"] = <
+			items = <
+				["at0000"] = <
+					text = <"*Reason for encounter(en)">
+					description = <"*The reason for initiation of any healthcare encounter or contact by the individual who is the subject of care.(en)">
+				>
+				["at0001"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @">
+				>
+				["at0002"] = <
+					text = <"*Contact type(en)">
+					description = <"*Identification of the type, or administrative category, of healthcare sought or required by the subject of care.(en)">
+					comment = <"*Coding of the 'Contact type' with a terminology is desirable, where possible. Examples include: pre-employment medical, routine antenatal visit, women's health check, pre-operative assessment, or annual medical check-up.
+(en)">
+				>
+				["at0004"] = <
+					text = <"*Presenting problem(en)">
+					description = <"*Identification of the clinical or social problem motivating the subject of care to seeking healthcare.(en)">
+					comment = <"*Coding of the 'Presenting problem' with a terminology is desirable, where possible. Clinical or social reasons for seeking healthcare can include health issues, symptoms or physical signs. Examples: health issues - desire to quit smoking, domestic violence; symptoms - abdominal pain, shortness of breath; physical signs - an altered conscious state. 'Chief complaint' may be used as a valid synonym for 'Presenting problem' in templates.
+ (en)">
+				>
+			>
+		>
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Motivo de consulta">
+					description = <"Motivo del paciente por el cual se inició un encuentro clínico o contacto.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Tipo de contacto">
+					description = <"Identificación del tipo o categoría administrativa por la cuál el paciente busca asistencia médica.">
+					comment = <"*Coding of the 'Contact type' with a terminology is desirable, where possible. Examples include: pre-employment medical, routine antenatal visit, women's health check, pre-operative assessment, or annual medical check-up.
+(en)">
+				>
+				["at0004"] = <
+					text = <"Problema presentado">
+					description = <"Problema o síntoma reportado por el paciente, que da inicio a la consulta médica">
+					comment = <"*Coding of the 'Presenting problem' with a terminology is desirable, where possible. Clinical or social reasons for seeking healthcare can include health issues, symptoms or physical signs. Examples: health issues - desire to quit smoking, domestic violence; symptoms - abdominal pain, shortness of breath; physical signs - an altered conscious state. 'Chief complaint' may be used as a valid synonym for 'Presenting problem' in templates.
+ (en)">
+				>
+			>
+		>
+	>

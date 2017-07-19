@@ -1,0 +1,295 @@
+﻿archetype (adl_version=1.4; uid=52fa2b9c-ed55-4821-a300-1150fb382c05)
+	openEHR-EHR-COMPOSITION.encounter.v1
+
+concept
+	[at0000]	-- Encounter
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["ko"] = <
+			language = <[ISO_639-1::ko]>
+			author = <
+				["name"] = <"Seung-Jong Yu">
+				["organisation"] = <"NOUSCO Co.,Ltd.">
+				["email"] = <"seungjong.yu@gmail.com">
+			>
+			accreditation = <"Certified Board of Family Medicine in South Korea">
+		>
+		["es-ar"] = <
+			language = <[ISO_639-1::es-ar]>
+			author = <
+				["name"] = <"Edgardo Vazquez">
+				["organisation"] = <"VinculoMedico">
+			>
+			accreditation = <"Medical Doctor">
+		>
+		["ar-sy"] = <
+			language = <[ISO_639-1::ar-sy]>
+			author = <
+				["name"] = <"Mona Saleh">
+			>
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+			>
+			accreditation = <"Computer Engineer">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			author = <
+				["name"] = <"Vladimir Pizzo">
+				["organisation"] = <"Hospital Sirio Libanes, Brazil">
+				["email"] = <"vladimir.pizzo@hsl.org.br">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Thomas Beale">
+		["organisation"] = <"Ocean Informatics, UK">
+		["email"] = <"thomas.beale@oceaninformatics.com">
+		["date"] = <"2005-10-10">
+	>
+	details = <
+		["ar-sy"] = <
+			language = <[ISO_639-1::ar-sy]>
+			purpose = <"تسجيل المقابلة على هيئة ملاحظة تقدم الحالة">
+			use = <"">
+			keywords = <"التقدم", "ملاحظة", "المقابلة">
+			misuse = <"">
+			copyright = <"© openEHR Foundation">
+		>
+		["es-ar"] = <
+			language = <[ISO_639-1::es-ar]>
+			purpose = <"Registrar los detalles documentales de una única interacción, contacto o evento de cuidado entre un sujeto de cuidados y uno o más proveedores de uno o más servicios de salud. Esta interacción puede ser presencial o remota.">
+			use = <"Utilícese como un contendor de nivel de documento para el registro de una única interacción, contacto o evento de cuidados entre un sujeto de cuidados y uno o mas proveedores de cuidados de la salud.
+El contacto puede ser cara a cara, o por vía telefónicao de cualquier otro medio electrónico. La modalidad puede ser representada, si asi se requiere, por medio del atributo modo de la COMPOSITION.
+El componente principal de Secciones o Contenido se ha mantenido deliberadamente libre de restricciones. Esto permite que se incluya en la plantilla cualquier Sección (SECTION) o Asiento (ENTRY) apropiado al propósito clínico.
+Aún cuando se encuentra libre de restricciones en cuanto al contenido clínico, la especificación del COMPOSITION.Encounter agreva valor significativo al permitir la consulta explícita de todos los encuentros conteidos en una historia clínica.
+El componente de Contexto contiene un slot opcional \"Extensión\"\"que puede ser utilizado en el diseño de una plantilla para:
+-agregar información opcional de contexto, tal como información sobre el episodio, o
+-permitir la armonización o alineamiento con otros formalismos de modelado tales como FHIR o CIMI, como puede ser la representación explícita de participantes que son generalmente manejados por el Modelo de Referencia en un arquetipo openEHR.
+Son ejemplos típicos una visita a consultorio, una observación de enfermería o una consulta de telemedicina.">
+			keywords = <"encuentro", "contacto", "visita", "evento de cuidados", "consulta">
+			misuse = <"No debe ser utilizado para registrar los detalles de la totalidad de un episodio de cuidado
+No debe ser utilizado para almacenar información sumaria persistente de un paciente, tale como una lista de problemas o un resumen de medicamentos.
+No debe ser utilizado para representar el informe de un servicio diagnóstico, tal como un estudio de imágenes o una pruena de laboratorio.
+No debe ser utilizado para representar el recurso FHIR del mismo nombre ya que existe una diapridad de alcance y propósito.">
+			copyright = <"© openEHR Foundation">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the document level details of a single interaction, contact or care event between a subject of care and healthcare provider(s) for the provision of healthcare service(s). This can be either a face-to-face or remote interaction.">
+			use = <"Use as a generic document-level container for recording details of a single interaction, contact or care event between a subject of care and healthcare provider(s). 
+The contact may be face-to-face, via telephone or another electronic medium. Modality can be captured, if required, via the reference model COMPOSITION/mode attribute.
+
+The main Sections/Content component has been deliberately left unconstrained. This will allow it to be populated with any SECTION or ENTRY archetypes appropriate for the clinical purpose within a template. 
+
+Even though unconstrained for clinical content, specification of COMPOSITION.Encounter provides significant value by allowing for explicit querying of all Encounters within a patient record.
+
+The Context component contains an optional 'Extension' SLOT that can be used in template design to:
+- add optional contextual information, such as episode information; or
+- allow for harmonisation or alignment with other model formalisms such as FHIR or CIMI, such as explicit representation of participants that are usually managed by the openEHR Reference Model in an openEHR archetype.
+
+Typical examples are a clinic visit, a nursing observation or a telemedicine consultation.">
+			keywords = <"encounter", "contact", "visit", "care event">
+			misuse = <"Not to be used to record details about an entire episode of care.
+
+Not to be used to carry persistent, summarised patient information, such as a problem list or medication summary.
+
+Not to be used to represent the report of a diagnostic service, such as imaging or laboratory testing.
+
+Not to be used to represent the FHIR resource of the same name - there is a mismatch scope and intent.">
+			copyright = <"© openEHR Foundation">
+		>
+		["ko"] = <
+			language = <[ISO_639-1::ko]>
+			purpose = <"외래기록, 경과기록, 간호기록과 일반적인 노트 등과 같은 환자를 대면한 후 작성하는 기록">
+			use = <"">
+			keywords = <"*경과(ko)", "*노트(ko)", "*외래(ko)">
+			misuse = <"">
+			copyright = <"© openEHR Foundation">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			purpose = <"Registrar os detalhes de uma interação, contato ou episódio de cuidado para a provisão de serviços de saúde entre um sujeito do cuidado e um profissional de saúde. Pode se referir tanto a uma interação presencial quanto à distância.">
+			use = <"Usar como um documento genérico para registrar detalhes de uma interação simples, contato ou episódio de atenção à saúde entre um sujeito do cuidado e profissional(is) de saúde.
+O contato pode ser presencial, via telefone ou outro meio eletrônico. A modalidade pode ser identificada, se necessário, através do modelo de referência COMPOSITION/mode attribute.
+
+O componente main Sections/Content foi deixado deliberadamente sem restrições. Isto permitirá que ele seja populado com qualquer arquétipo SECTION ou ENTRY apropriado para o propósito clínico em um template.
+
+Embora sem restrições para conteúdo clínico, especificação de COMPOSITION, Encounter oferece importante valor por permitir pesquisa de todos os Encontros num prontuário do paciente. 
+
+O componente Contexto contem um SLOT 'Extensão' opcional que pode ser usado no design do template para:
+- adicionar informação contextual opcional, como informação do episódio; ou
+- permitir a harmonização ou alinhamento com outros modelos ou formalismos como FHIR ou CIMI, como uma representação explícita de participantes que normalmente são gerenciados pelo Modelo de Referência openEHR num arquétipo openEHR.
+
+Exemplos típicos são visita a uma clínica, observação de enfermagem ou uma consulta de telemedicina.">
+			keywords = <"encontro", "contato", "visita", "episódio de cuidado">
+			misuse = <"Não deve ser utilizado para registrar detalhes de um episódio de cuidado completo.
+
+Não deve ser utilizado para guardar informações persistentes, resumidas de um paciente, como uma lista de problemas ou resumo de medicamentos.
+
+Não deve ser utilizado para representar o relato de um serviço diagnóstico como exames laboratoriais ou de imagem.
+
+Não deve ser utilizado para representar recurso FHIR do mesmo nome - há uma incompatibilidade de objetivo e intenção.">
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Registrar, a nivel de documento, una única interacción, contacto o evento de cuidado, entre un sujeto de cuidado (paciente) y un proveedor de servicios de salud (profesional médico, de enfermería, etc.). Puede ser una interacción cara a cara o remota.">
+			use = <"Se debe usar como una definición de documento genérico para registrar información de una única interacción o contacto con un proveedor de salud. Esta definición no especifica la estructura interna de secciones y entradas. Dicha especificación debería hacerse mediante especializaciones del arquetipo o mediante plantillas operativas (Operational Templates - OPT).">
+			keywords = <"encuentro", "contacto", "visita", "evento de cuidado">
+			misuse = <"No se debe utilizar para registrar información de un episodio de salud entero.
+
+No debe contener información persistente o resúmenes, como lista de problemas o medicación.
+
+No se debe usar para registrar resultados de laboratorio o imagenología.
+">
+		>
+	>
+	lifecycle_state = <"published">
+	other_contributors = <"Tomas Alme, DIPS, Norway", "Nadim Anani, Karolinska Institutet, Sweden", "Koray Atalag, University of Auckland, New Zealand", "Silje Bakke, Bergen Hospital Trust, Norway", "Steve Bentley, NHS CfH, United Kingdom", "Rong Chen, Cambio Healthcare Systems, Sweden", "Stephen Chu, NeHTA, Australia", "Shahla Foozonkhah, Ocean Informatics, Australia", "Konstantinos Kalliamvakos, Cambio Healthcare Systems, Sweden", "Lars Karlsen, DIPS ASA, Norway", "Heather Leslie, Ocean Informatics, Australia (Editor)", "Luis Marco Ruiz, Norwegian Center for Integrated Care and Telemedicine, Norway", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom (Editor)", "Pablo Pazos, CaboLabs.com Health Informatics, Uruguay">
+	other_details = <
+		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.">
+		["custodian_organisation"] = <"openEHR Foundation">
+		["references"] = <"TC 251, European Committee for Standardization: EN 13940-1:2007 Health informatics - System of concepts to support continuity of care - Part 1: Basic concepts.">
+		["original_namespace"] = <"org.openehr">
+		["original_publisher"] = <"openEHR Foundation">
+		["custodian_namespace"] = <"org.openehr">
+		["MD5-CAM-1.0.1"] = <"4DF6B3DE1A7F7899B4F88A97FED974E7">
+		["build_uid"] = <"34553a25-eced-4323-9c70-4d1077cb5389">
+		["revision"] = <"1.0.0">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Encounter
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0001] matches {	-- Tree
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype CLUSTER[at0002] occurrences matches {0..*} matches {	-- Extension
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["ar-sy"] = <
+			items = <
+				["at0000"] = <
+					text = <"*Encounter(en)">
+					description = <"*Interaction, contact or care event between a subject of care and healthcare provider(s).(en)">
+				>
+				["at0001"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"*Extension(en)">
+					description = <"*Additional information required to capture local context or to align with other reference models/formalisms.(en)">
+					comment = <"*e.g. Local hospital departmental infomation or additional metadata to align with FHIR or CIMI equivalents.(en)">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Encounter">
+					description = <"Interaction, contact or care event between a subject of care and healthcare provider(s).">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Extension">
+					description = <"Additional information required to capture local context or to align with other reference models/formalisms.">
+					comment = <"e.g. Local hospital departmental infomation or additional metadata to align with FHIR or CIMI equivalents.">
+				>
+			>
+		>
+		["es-ar"] = <
+			items = <
+				["at0000"] = <
+					text = <"Encuentro">
+					description = <"Interacción, contacto o evento de cuidados entre un sujeto de cuidados y uno o más proveedores de cuidados de la salud.">
+				>
+				["at0001"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"Extensión">
+					description = <"Información adicional requerida para representar el contexto local o para alineamiento con otros modelos de referencia y formalismos.">
+					comment = <"Ej.: Información local del departamento hospitalario o metadatos adicionales para alineamiento con los equivalentes en FHIR o CIMI.">
+				>
+			>
+		>
+		["ko"] = <
+			items = <
+				["at0000"] = <
+					text = <"*Encounter(en)">
+					description = <"*Interaction, contact or care event between a subject of care and healthcare provider(s).(en)">
+				>
+				["at0001"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"*Extension(en)">
+					description = <"*Additional information required to capture local context or to align with other reference models/formalisms.(en)">
+					comment = <"*e.g. Local hospital departmental infomation or additional metadata to align with FHIR or CIMI equivalents.(en)">
+				>
+			>
+		>
+		["pt-br"] = <
+			items = <
+				["at0000"] = <
+					text = <"Encontro">
+					description = <"Interação, contato ou cuidado entre o sujeito do cuidado e profissional(is) de saúde.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Extensão">
+					description = <"Informações adicionais necessárias para identificar contexto local ou alinhar com outros formalismos/modelos de referência.">
+					comment = <"Por exemplo: informação departamental local de hospital ou metadados adicionais para alinhar com equivalentes FHIR ou CIMI.">
+				>
+			>
+		>
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Encuentro">
+					description = <"Interacción, contacto o evento de cuidado entre un paciente y un proveedor de salud.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Extensión">
+					description = <"Información adicional requerida para capturar el contexto local o alinear con otros modelos de referencia o formalismos.">
+					comment = <"*e.g. Local hospital departmental infomation or additional metadata to align with FHIR or CIMI equivalents.(en)">
+				>
+			>
+		>
+	>
