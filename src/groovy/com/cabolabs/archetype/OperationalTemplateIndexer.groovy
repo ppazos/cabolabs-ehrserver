@@ -51,7 +51,7 @@ class OperationalTemplateIndexer {
    // This is like a schema, but is not including the attrs that are on OPTs.
    def rm_attributes_not_in_opt = [
      'COMPOSITION': [
-       'context': 'EVENT_CONTEXT' // if no other_context is specified the event context is not on the OPT
+       'context': 'EVENT_CONTEXT' // if no other_context is specified the event context is not on the OPT, we need to check if it is or not to avoid double indexing.
      ],
      'EVENT_CONTEXT': [
        'setting': 'DV_CODED_TEXT',
@@ -106,6 +106,8 @@ class OperationalTemplateIndexer {
     */
    def createIndexesForRMAttributes(String type, String archetypeId, String path, GPathResult node, String relPath, GPathResult parent)
    {
+      //println "createIndexesForRMAttributes: "+ type +" "+ path +" "+ relPath +", PARENT "+ parent.name() +", NODE "+ node.name()
+   
       def attrs = rm_attributes_not_in_opt[type]
       
       def name
@@ -123,6 +125,12 @@ class OperationalTemplateIndexer {
       
       attrs.each { _attr, _attr_type ->
       
+         // Some nodes might or not be in the OPT, this checks if they are and
+         // avoids processing, since those will be processed later causing double
+         // indexing. That is the case of COMPOSITION.context that can be in the
+         // OPT if other_context is specified, causing double routes /context/location
+         if (parent.attributes.find{ it.rm_attribute_name.text() == _attr}) return
+      
          // if type is simple, create index, if complex, follow until finding simple
          def isSimple = true
          try
@@ -133,7 +141,7 @@ class OperationalTemplateIndexer {
          {
             isSimple = false
          }
-      
+         
          if (isSimple)
          {
             indexes << new ArchetypeIndexItem(
