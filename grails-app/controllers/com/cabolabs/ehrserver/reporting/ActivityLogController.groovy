@@ -34,7 +34,7 @@ class ActivityLogController {
    
    def index(int max, int offset, String sort, String order)
    {
-      params.max = Math.min(max ?: config.list_max, 100)
+      max = Math.min(max ?: config.list_max, 100)
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'
