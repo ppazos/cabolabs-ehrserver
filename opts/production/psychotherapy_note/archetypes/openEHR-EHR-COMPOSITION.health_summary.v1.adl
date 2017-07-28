@@ -1,0 +1,96 @@
+﻿archetype (adl_version=1.4; uid=aab23408-3f8d-4bc8-b214-34af97e9abbd)
+	openEHR-EHR-COMPOSITION.health_summary.v1
+
+concept
+	[at0000]	-- Health summary
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"2015-10-01">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record a summary of health information about an individual, representing a subset of their health record at a specified point in time.">
+			use = <"Use as a generic containter to record a summary or overview of a patient's health and/or welfare status as a snapshot of their health at a specified point in time. 
+
+The author of a health summary is usually a clinician who is familiar with the all of the relevant aspects of the individual's health that is the content of the summary.
+
+The scope of a health summary can vary in different contexts, ranging from an overview of all key aspects of the individual's health and/or welfare to a summary of information focused on a limited aspect of the individual's health.
+
+The intended readers of the health summary will vary according to the primary purpose and focus of the summary, and may include:
+- any future healthcare providers;
+- clinicians who have no personal knowledge of the individual but are required to provide healthcare, such as emergency treatment or when the individual is travelling;
+- clinicians managing only specific aspects of the individual's health, such as diabetes or pregnancy; and
+- the individual themselves.
+
+The main Sections/Content component has been deliberately left unconstrained. This will allow it to be populated with any SECTION or ENTRY archetypes appropriate for the clinical purpose within a template. 
+
+Even though clinical content is unconstrained, this archetype supports simple querying for all Health summaries that might be contained within a health record.">
+			keywords = <"summary", "synopsis", "overview", "status">
+			misuse = <"Not to be used to record details about a single clinical consultation, procedure, test or assessment etc.">
+			copyright = <"© openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"published">
+	other_contributors = <"Vebjoern Arntzen, Oslo university hospital, Norway", "Silje Ljosland Bakke, National ICT Norway, Norway (openEHR Editor)", "Sistine Barretto-Daniels, Ocean Informatics, Australia", "Lars Bitsch-Larsen, Haukeland University hospital, Norway", "Heather Grain, Llewelyn Grain Informatics, Australia", "Lars Karlsen, DIPS ASA, Norway", "Heather Leslie, Ocean Informatics, Australia (openEHR Editor)", "Yang Lu, University of Melbourne, Australia", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom (openEHR Editor)", "Andrej Orel, Marand d.o.o., Slovenia">
+	other_details = <
+		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.">
+		["custodian_organisation"] = <"openEHR Foundation">
+		["current_contact"] = <"Heather Leslie, Ocean Informatics, heather.leslie@oceaninformatics.com">
+		["original_namespace"] = <"org.openehr">
+		["original_publisher"] = <"openEHR Foundation">
+		["custodian_namespace"] = <"org.openehr">
+		["MD5-CAM-1.0.1"] = <"CA8006DBE4BA91910B594498AB651880">
+		["build_uid"] = <"dc6e362e-eaf7-43e0-aa3f-b7c02503f0dc">
+		["revision"] = <"1.0.0">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Health summary
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0001] matches {	-- Tree
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype CLUSTER[at0002] occurrences matches {0..*} matches {	-- Extension
+								include
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Health summary">
+					description = <"Generic document containing a summary of health information about an individual.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Extension">
+					description = <"Additional information required to capture local content or to align with other reference models/formalisms.">
+					comment = <"For example: local information requirements or additional metadata to align with FHIR or CIMI equivalents.">
+				>
+			>
+		>
+	>
