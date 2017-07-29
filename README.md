@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver)
 
+
 ## Clinical Data Management and Sharing Platform compliant with the [openEHR standard](http://openehr.org).
 
 The EHRServer is a generic clinical data backend system, that helps cutting development time, increase data quality and enable
@@ -18,12 +19,14 @@ and as a micro-service platform with many applications like
 
 [Let me know if you are using the EHRServer!](https://twitter.com/ppazos)
 
+
 ### Resources
 
 * [Latest documentation](https://cabolabs.com/en/projects)
 * [REST API documentation](https://docs.google.com/viewerng/viewer?url=http://cabolabs.com/software_resources/EHRServer_v1.0.pdf)
 * [CloudEHRServer: EHRServer SaaS](https://cloudehrserver.com/)
 * [More guides](https://cloudehrserver.com/learn)
+
 
 ### Main features
 
@@ -37,6 +40,7 @@ and as a micro-service platform with many applications like
 * Supports any structure of clinical document (following the openEHR standard information model)
 * Vendor Neutral Archive
 * Multitenancy
+
 
 ### Based on Open Source Technologies
 
@@ -54,7 +58,9 @@ Want to try EHRServer? Just create an account here and help us testing!
 * [Staging 2](https://ehrserver-cabolabs2.rhcloud.com/)
 
 
+
 ## Install, Configure, Run locally
+
 
 ### Dependencies
 
@@ -63,6 +69,7 @@ Want to try EHRServer? Just create an account here and help us testing!
 3. sdk install grails 2.5.5
 4. set version by default: Y
 5. grails -version
+
 
 ### Database
 
@@ -75,12 +82,14 @@ Want to try EHRServer? Just create an account here and help us testing!
 8. CREATE TABLE ehrserver;
 9. exit
 
+
 ### EHRServer configuration
 
 1. cd ehrserver/grails-app/conf
 2. nano DataSource.groovy
 3. change development password to NEW-ROOT-PASSWORD
 4. save
+
 
 ### EHRServer run (dev environment)
 
@@ -96,5 +105,3 @@ Want to try EHRServer? Just create an account here and help us testing!
 * EHR/EMR/PHR apps should be written separately as clients of the EHRServer, but use the provided data services to access and send data from/to the EHRServer.
 * Data analysis, data aggregation, business intelligence and other data processing related applications should be written separately from the EHRServer, all those systems can get data from the EHRServer using the provided data services.
 
-
- 
