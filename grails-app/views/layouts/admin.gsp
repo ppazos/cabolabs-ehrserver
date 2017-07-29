@@ -53,7 +53,10 @@
        box-shadow: 0 -2px 2px 0px #aaaaaa; /* x_offset y_offset blur spread_distance color */
      }
      .navbar-header img {
-       max-height: 20px;
+       max-height: 30px;
+     }
+     .navbar-brand {
+       padding: 10px 15px;
      }
      ul.navbar-top-links {
        text-align: center;
@@ -62,6 +65,13 @@
        margin: 0;
        padding: 15px 0 15px 15px;
        margin-left: 15px;
+     }
+     a, .pagination>li>a {
+      color: #4185F3;
+     }
+     .pagination>.active>a {
+      background-color: #4185F3;
+      border-color: #4185F3;
      }
      
      /** Adding vertical space between rows when needed **/
@@ -163,7 +173,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+          <a href="https://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a><!-- <asset:image src="cabolabs_logo.png" class="img-responsive" /> -->
         </div>
 
         <!-- TOP MENU -->

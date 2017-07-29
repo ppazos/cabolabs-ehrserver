@@ -34,7 +34,6 @@
 	    padding: 0px;
 	    text-align: center;
 	  }
-	
 	  #login .inner {
 	    width: 340px;
 	    padding-bottom: 6px;
@@ -47,7 +46,6 @@
 	    -khtml-box-shadow: 2px 2px 2px #eee;
 	    box-shadow: 2px 2px 2px #eee;
 	  }
-	
 	  #login .inner .fheader {
 	    padding: 18px 26px 14px 26px;
 	    background-color: #f7f7ff;
@@ -56,7 +54,6 @@
 	    font-size: 18px;
 	    font-weight: bold;
 	  }
-	
 	  #login .inner .cssform p {
 	    clear: left;
 	    margin: 0;
@@ -65,11 +62,9 @@
 	    margin-bottom: 20px;
 	    height: 1%;
 	  }
-	
 	  #login .inner .cssform input[type='text'] {
 	    width: 120px;
 	  }
-	
 	  #login .inner .cssform label {
 	    font-weight: bold;
 	    float: left;
@@ -79,40 +74,40 @@
 	    padding-top: 3px;
 	    padding-right: 10px;
 	  }
-	
 	  #login #remember_me_holder {
 	    padding-left: 120px;
 	  }
-	
 	  #login #submit {
 	    margin-left: 15px;
 	  }
-	
 	  #login #remember_me_holder label {
 	    float: none;
 	    margin-left: 0;
 	    text-align: left;
 	    width: 200px
 	  }
-	
 	  #login .inner .login_message {
 	    padding: 6px 25px 20px 25px;
 	    color: #c33;
 	  }
-	
 	  #login .inner .text_ {
 	    width: 120px;
 	  }
-	
 	  #login .inner .chk {
 	    height: 12px;
 	  }
      
      .navbar-header img {
-       max-height: 20px;
+       max-height: 30px;
+     }
+     .navbar-brand {
+       padding: 10px 15px;
      }
      a.active {
        font-weight: bold;
+     }
+     a {
+      color: #4185F3;
      }
     </style>
   </head>
@@ -126,7 +121,7 @@
 	       <span class="icon-bar"></span>
 	     </button>
 	     <!-- LOGO -->
-	     <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="cabolabs_logo.png" class="img-responsive" /></a>
+	     <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a>
 	     <!-- /LOGO -->
 	   </div>
 	   <!-- /.navbar-header -->
