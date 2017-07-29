@@ -109,17 +109,23 @@
      a {
       color: #4185F3;
      }
+     #app_version {
+       font-size: 0.8em;
+       padding: 10px 5px 5px 5px;
+     }
     </style>
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 	   <div class="navbar-header">
+        <!--
 	     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 	       <span class="sr-only">Toggle navigation</span>
 	       <span class="icon-bar"></span>
 	       <span class="icon-bar"></span>
 	       <span class="icon-bar"></span>
 	     </button>
+        -->
 	     <!-- LOGO -->
 	     <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a>
 	     <!-- /LOGO -->
@@ -197,6 +203,7 @@
               </form>
             </div>
           </div>
+          <div align="center" id="app_version">EHRServer v<g:meta name="app.version"/></div>
         </div>
       </div>
     </div>
