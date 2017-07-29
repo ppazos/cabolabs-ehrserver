@@ -59,8 +59,10 @@ class ActivityLogController {
 
    def show(ActivityLog activityLogInstance)
    {
+      // admins can access all logs
       // filter by current org! because it is accessed by id
-      if (!activityLogInstance || activityLogInstance.organizationUid != session.organization.uid)
+      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
+          (!activityLogInstance || activityLogInstance.organizationUid != session.organization.uid))
       {
          flash.message = message(code:'activityLog.show.cantAccessLog')
          redirect action:'index'
