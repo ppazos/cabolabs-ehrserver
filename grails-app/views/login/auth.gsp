@@ -101,7 +101,7 @@
        max-height: 30px;
      }
      .navbar-brand {
-       padding: 10px 15px;
+       padding: 10px 21px;
      }
      a.active {
        font-weight: bold;
