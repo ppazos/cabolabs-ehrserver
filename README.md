@@ -12,7 +12,7 @@ Can be used as the main [clinical data repository](https://cloudehrserver.com/le
 [shared repository/integrated patient EHR](https://cloudehrserver.com/learn/use_case_shared_health_recods) between many systems, as a 
 [secondary/backup](https://cloudehrserver.com/learn/use_case_backup_and_query_database) repository, as a 
 [wearable/monitoring device backend](https://cloudehrserver.com/learn/use_case_monitoring_and_wearables), as a 
-standardized data source for [datawareousing](https://cloudehrserver.com/learn/use_case_analytics_and_datawarehousing), as a 
+standardized data source for [datawarehousing](https://cloudehrserver.com/learn/use_case_analytics_and_datawarehousing), as a 
 [fast prototyping platform](https://cloudehrserver.com/learn/use_case_fast_prototyping_poc),
 and as a micro-service platform with many applications like 
 [clinical decision support](https://cloudehrserver.com/learn/use_case_clinical_decision_support), clinical dashboards, data visualization, reporting, research, etc.
