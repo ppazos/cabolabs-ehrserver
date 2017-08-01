@@ -261,7 +261,7 @@ class SecurityFilters {
                               result = apiResponsesService.feedback(
                                  messageSource.getMessage('rest.error.token.apiKeyExpired', null, getRequestLocale(request)),
                                  'AR',
-                                 '987654',
+                                 '987656',
                                  params.format)
                            }
                            else
@@ -301,7 +301,7 @@ class SecurityFilters {
                                  message(
                                     messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
                                  )
-                                 code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
+                                 code('EHR_SERVER::API::ERRORS::987657') // sys::service::concept::code
                               }
                            }
                            
