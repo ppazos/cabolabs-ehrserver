@@ -67,26 +67,9 @@ class UserController {
       if (!order) order = 'asc'
       
       def list, count
-      //def c = User.createCriteria()
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         /*
-         list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            eq('isVirtual', false)
-            if (username)
-            {
-               like('username', '%'+username+'%')
-            }
-            if (organizationUid)
-            {
-               organizations {
-                  eq ('uid', organizationUid) // TODO: check if org exists
-               }
-            }
-         }
-         */
-         
          def urs = UserRole.withCriteria {
             user {
                eq('isVirtual', false)
@@ -102,8 +85,7 @@ class UserController {
                }
             }
          }
-         
-         //count = list.totalCount
+
          list = urs.user.unique() // same user can have two roles on the same org
          count = list.size() // cant paginate because the search is on user role
       }
