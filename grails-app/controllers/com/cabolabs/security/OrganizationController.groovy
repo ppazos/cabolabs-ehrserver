@@ -22,7 +22,6 @@
 
 package com.cabolabs.security
 
-
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
@@ -217,6 +216,8 @@ class OrganizationController {
    
          virtualUser.save(failOnError: true)
    
+         UserRole.create(virtualUser, Role.findByAuthority(Role.US), org, true)
+   
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
@@ -238,6 +239,9 @@ class OrganizationController {
       
       // Need to delete the key first because the key has a not null constraint to the user
       def keyUser = key.user
+      
+      UserRole.remove(keyUser, Role.findByAuthority(Role.US), key.organization, true)
+      
       key.delete()
       keyUser.delete()
       
