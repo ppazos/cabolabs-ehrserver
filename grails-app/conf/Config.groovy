@@ -51,7 +51,7 @@ beans {
 
 
 // test stateless security
-grails.plugin.security.stateless.secretKey = '88f0435c-ff45-4b5b-874f-689ad94adcad'
+grails.plugin.security.stateless.secretKey = System.getenv('EHRSERVER_REST_SECRET') //'88f0435c-ff45-4b5b-874f-689ad94adcad'
 grails.plugin.security.stateless.springsecurity.integration = false
 grails.plugin.security.stateless.format = "JWT"
 //grails.plugin.security.stateless.expirationTime = 1440 // 1 day
