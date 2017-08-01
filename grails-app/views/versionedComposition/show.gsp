@@ -3,14 +3,39 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <g:set var="entityName" value="${message(code: 'versionedComposition.label', default: 'VersionedComposition')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title><g:message code="versionedComposition.show.title" /></title>
     <style>
-     .icon {
-       width: 64px;
-       border: none;
-     }
-     </style>
+    .icon {
+      width: 48px;
+      border: none;
+    }
+    </style>
+    <asset:javascript src="jquery.blockUI.js" />
+    <script type="text/javascript">
+    $(document).ready(function() {
+    
+      $('#versions').on('click', '.showCompo', function(e) {
+        
+          e.preventDefault();
+          
+          modal = $('#composition_modal');
+          
+          modal.children()[0].src = this.href;
+          
+          $.blockUI({
+            message: modal,
+            css: {
+              width: '94%',
+              height: '94%',
+              top : '3%',
+              left: '3%',
+              padding: '10px'
+            },
+            onOverlayClick: $.unblockUI
+          });
+      });
+    });
+    </script>
   </head>
   <body>
     <div class="row">
@@ -45,7 +70,7 @@
         </table>
 
         <h2>Versions</h2>
-        <div class="table-responsive">
+        <div class="table-responsive" id="versions">
           <table class="table table-striped table-bordered table-hover">
             <tr>
 		        <th><g:message code="version.attr.uid" /></th>
@@ -62,5 +87,9 @@
         </div>
       </div>
     </div>
+    
+    <%-- Modal para mostrar el contenido de una composition --%>
+    <div id="composition_modal" style="width:100%; height:100%; display:none;"><iframe src="" style="padding:0; margin:0; width:100%; height:100%; border:0;"></iframe></div>
+   
   </body>
 </html>
