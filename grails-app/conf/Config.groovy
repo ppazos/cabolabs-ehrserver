@@ -272,7 +272,7 @@ grails.plugin.springsecurity.apf.filterProcessesUrl = "/j_ehrserver_security_che
 grails.plugin.springsecurity.providerNames = ['authProvider']
 
 grails.plugin.springsecurity.filterChain.chainMap = [
-    '/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-rememberMeAuthenticationFilter,-securityContextPersistenceFilter'
+    '/**': 'JOINED_FILTERS,-rememberMeAuthenticationFilter'
 ]
 
 
