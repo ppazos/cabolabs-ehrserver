@@ -118,7 +118,7 @@ grails.project.dependency.resolution = {
        //compile 'xerces:xercesImpl:2.11.0'
        compile group: 'de.odysseus.staxon', name: 'staxon', version: '1.2'
        
-       compile "mysql:mysql-connector-java:5.1.22"
+       compile "mysql:mysql-connector-java:5.1.43" //"mysql:mysql-connector-java:5.1.22"
        
        //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
        //compile 'org.pac4j:pac4j-core:1.7.1'
