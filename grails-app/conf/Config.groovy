@@ -271,6 +271,10 @@ grails.plugin.springsecurity.successHandler.useReferer = false
 grails.plugin.springsecurity.apf.filterProcessesUrl = "/j_ehrserver_security_check" //"/user/login" // custom login, overrides: plugins/spring-security-core-2.0-RC5/conf/DefaultSecurityConfig.groovy
 grails.plugin.springsecurity.providerNames = ['authProvider']
 
+grails.plugin.springsecurity.filterChain.chainMap = [
+    '/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-rememberMeAuthenticationFilter,-securityContextPersistenceFilter'
+]
+
 
 // Allow logout through GET operation (by default only POSTs are accepted since plugin v2.0)
 grails.plugin.springsecurity.logout.postOnly = false

@@ -172,14 +172,14 @@
                     <label for='org_number'><g:message code="springSecurity.login.org_number.label"/></label>
                     <input type='text' class='form-control' name='j_organisation' id='org_number' required="required" />
                   </div>
-                  <!--
+                  <%--
                   <div class="checkbox">
                     <label>
                       <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if>/>
                       <g:message code="springSecurity.login.remember.me.label"/>
                     </label>
                   </div>
-                  -->
+                  --%>
                   
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.login.button")}'/>
                   
