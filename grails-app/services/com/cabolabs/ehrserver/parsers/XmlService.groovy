@@ -72,12 +72,12 @@ class XmlService {
       // Throw javax.xml.bind.ValidationException if there are a validation error
       //  - errors will be saved into validationErrors
       validateVersions(versions)
-      
+ 
       // Check contribution id
       //  If there is more than 1 version in the commit
       //   - check all version have the same contribution id, error if not
       checkContributions(versions)
-      
+
       checkVersions(versions)
 
       // Parse contribution once, since it is the same for all versions
@@ -95,7 +95,7 @@ class XmlService {
       //    - update the trunk version id on the previous version
       //  Associate the version with the contribution
       def domainVersions = parseVersions(ehr, versions, auditTimeCommitted, contribution)
-      
+
       // just checking :)
       assert contribution.versions != null
       assert contribution.versions.size() > 0
@@ -110,13 +110,11 @@ class XmlService {
       //   - 
       //  TODO: support more types
       manageVersionedCompositions(domainVersions, ehr)
-      
 
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
       storeVersionXMLs(ehr, versions, contribution)
-      
       
       // Save the contribution with all the versions
       //  throws grails.validation.ValidationException that contains the errors
@@ -283,7 +281,12 @@ class XmlService {
                   isPersistent: (version.data.category == 'persistent'))
                
                // If errors, throws grails.validation.ValidationException with the errors
-               versionedComposition.save(flush:true, failOnError:true)
+               //versionedComposition.save(flush:true, failOnError:true)
+               if (!versionedComposition.save())
+               {
+                  println "errors "+ versionedComposition.errors
+                  println versionedComposition.errors.allErrors
+               }
                
             break
             case [ChangeType.AMENDMENT, ChangeType.MODIFICATION]:
@@ -684,10 +687,33 @@ class XmlService {
        *     <rm_version>1.0.2</rm_version>
        *   </archetype_details>
        *   ...
-       */      
+       */
+      
+      /*
+       *  <category>
+            <value>evento</value>
+            <defining_code>
+              <terminology_id>
+                <value>openehr</value>
+              </terminology_id>
+              <code_string>433</code_string>
+            </defining_code>
+          </category>
+       */
+      // Correct assignation of category without depending on the name (locale dependant!)
+      def category
+      def category_code = version.data.category.defining_code.code_string.text()
+      if (category_code == "431") category = 'persistent'
+      else if (category_code == "433") category = 'event'
+      else
+      {
+         println "Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433"
+         throw new RuntimeException("Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433")
+      }
+      
       def compoIndex = new CompositionIndex(
          uid:         compoUid, // UID for compos is assigned by the server
-         category:    version.data.category.value.text(), // event o persistent
+         category:    category, // event o persistent
          startTime:   startTime, // puede ser vacio si category es persistent
          subjectId:   ehr.subject.value,
          ehrUid:      ehr.uid,
@@ -696,6 +722,12 @@ class XmlService {
          templateId:  version.data.archetype_details.template_id.value.text(),
          composer:    composer
       )
+	  
+	  if (!compoIndex.validate())
+	  {
+        println "Errors with compoIndex "+ compoIndex.errors
+        throw new RuntimeException("Errors with compoIndex on parseCompositionIndex "+ compoIndex.errors)
+	  }
       
       return compoIndex
    }

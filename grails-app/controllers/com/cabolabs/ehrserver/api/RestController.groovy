@@ -500,6 +500,9 @@ class RestController {
       }
       catch (Exception e)
       {
+         println e.message
+         log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
+         
          // When two commits of creation for the persistent compo to the same EHR
          // happen, an error is thrown, that is OK, but here fails in the log saying
          // that failed to lazily initialize a collection of role:
@@ -509,10 +512,8 @@ class RestController {
          if (!ehr.isAttached()) {
             ehr.attach()
          }
-
-         commitLoggerService.log(request, null, false, content, session)
          
-         log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
+         commitLoggerService.log(request, null, false, content, session)
          
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
