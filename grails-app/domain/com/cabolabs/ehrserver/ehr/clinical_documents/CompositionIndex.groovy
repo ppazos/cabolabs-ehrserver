@@ -38,7 +38,8 @@ class CompositionIndex {
    
    String category // event o persistent
    
-   Date startTime // de la composition.context (solo para compositions event)
+   Date startTime  // composition.context (solo para compositions event)
+   String location // context.location
    
    String subjectId // references an EHR.subject.uid, simplifies querying
    
@@ -67,6 +68,7 @@ class CompositionIndex {
    static constraints = {
       category(inList:['event','persistent'])
       startTime(nullable:true) // persistent no tienen context.startTime
+      location(nullable:true)
    }
    
    static transients = ['parent']

@@ -601,11 +601,32 @@ class XmlService {
    
    private CompositionIndex parseCompositionIndex(GPathResult version, Ehr ehr)
    {
+      // context data for event compositions
       Date startTime
+      String location
       
-      // =====================================================================
-      // Crea indice para la composition
-      // =====================================================================
+      String category
+      
+      /* <category>
+            <value>evento</value>
+            <defining_code>
+              <terminology_id>
+                <value>openehr</value>
+              </terminology_id>
+              <code_string>433</code_string>
+            </defining_code>
+          </category>
+       */
+      // Correct assignation of category without depending on the name (locale dependant!)
+      def category_code = version.data.category.defining_code.code_string.text()
+      if (category_code == "431") category = 'persistent'
+      else if (category_code == "433") category = 'event'
+      else
+      {
+         println "Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433"
+         throw new RuntimeException("Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433")
+      }
+      
       
       // -----------------------
       // Obligatorios en el XML: lo garantiza xmlService.parseVersions
@@ -619,8 +640,11 @@ class XmlService {
       //    - obligatorio el atributo
       //  - composition.'@xsi:type' = 'COMPOSITION'
       // -----------------------
-      if (version.data.context.start_time.value)
+
+      if (category == 'event')
       {
+         // start time is mandatory for event, that is checked by the XSD on a previous step.
+
          // http://groovy.codehaus.org/groovy-jdk/java/util/Date.html#parse(java.lang.String, java.lang.String)
          // Sobre fraccion: http://en.wikipedia.org/wiki/ISO_8601
          // There is no limit on the number of decimal places for the decimal fraction. However, the number of
@@ -628,8 +652,11 @@ class XmlService {
          //
          // TODO: formato de fecha completa que sea configurable
          //       ademas la fraccion con . o , depende del locale!!!
-         //startTime = Date.parse(config.l10n.datetime_format, version.data.context.start_time.value.text())
          startTime = DateParser.tryParse(version.data.context.start_time.value.text())
+         
+         
+         // location is optional
+         location = version.data.context.location.text() // can be empty
       }
       
       // Check if the committed compo has an uid, if not, the server assigns one
@@ -689,32 +716,12 @@ class XmlService {
        *   ...
        */
       
-      /*
-       *  <category>
-            <value>evento</value>
-            <defining_code>
-              <terminology_id>
-                <value>openehr</value>
-              </terminology_id>
-              <code_string>433</code_string>
-            </defining_code>
-          </category>
-       */
-      // Correct assignation of category without depending on the name (locale dependant!)
-      def category
-      def category_code = version.data.category.defining_code.code_string.text()
-      if (category_code == "431") category = 'persistent'
-      else if (category_code == "433") category = 'event'
-      else
-      {
-         println "Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433"
-         throw new RuntimeException("Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433")
-      }
       
       def compoIndex = new CompositionIndex(
-         uid:         compoUid, // UID for compos is assigned by the server
-         category:    category, // event o persistent
-         startTime:   startTime, // puede ser vacio si category es persistent
+         uid:         compoUid,  // UID for compos is assigned by the server
+         category:    category,  // event / persistent
+         startTime:   startTime, // mandatory for event, null for persistent
+         location:    location,  // optional for event, null for persistent
          subjectId:   ehr.subject.value,
          ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,
