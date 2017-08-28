@@ -402,11 +402,16 @@ class RestController {
          return
       }
       
+      def contribution
       try
       {
          // throws exceptions for any error
-         def contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
-
+         contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
+         if (!contribution.save())
+         {
+            println contribution.errors
+         }
+         
          /* **
           * The time_committed attribute in both the Contribution and Version audits
           * should reflect the time of committal to an EHR server, i.e. the time of
@@ -473,7 +478,13 @@ class RestController {
             }
          }
       }
-      catch (XmlValidationException | CommitWrongChangeTypeException e) // xsd and other validation errors
+      catch (CommitWrongChangeTypeException e)
+      {
+         commitLoggerService.log(request, null, false, content, session)
+         renderError(message(code:'rest.commit.error.wrongChangeType'), 'e02.0009.0', 400, [], e)
+         return
+      }
+      catch (XmlValidationException e) // xsd validation errors
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content, session)
@@ -487,7 +498,7 @@ class RestController {
             }
          }
          
-         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009', 400, detailedErrors, null)
+         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009.1', 400, detailedErrors, null)
          return
       }
       catch (UndeclaredThrowableException e)
@@ -498,23 +509,12 @@ class RestController {
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
          return
       }
-      catch (Exception e)
+      catch (RuntimeException | Exception e)
       {
-         println e.message
+         println "e message " + e.message
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
          
-         // When two commits of creation for the persistent compo to the same EHR
-         // happen, an error is thrown, that is OK, but here fails in the log saying
-         // that failed to lazily initialize a collection of role:
-         // com.cabolabs.ehrserver.openehr.ehr.Ehr.contributions, could not initialize proxy
-         // - no Session, and ehr.isAttached() here returns false I don't know why.
-         // This fixes that by attaching a the EHR to the session.
-         if (!ehr.isAttached()) {
-            ehr.attach()
-         }
-         
          commitLoggerService.log(request, null, false, content, session)
-         
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
       }

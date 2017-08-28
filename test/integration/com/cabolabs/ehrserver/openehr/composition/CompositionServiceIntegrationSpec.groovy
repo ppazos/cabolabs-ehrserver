@@ -540,6 +540,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       // 2. get EHR
       def ehr = Ehr.findByUid(ehrUid)
       
+      assert ehr != null
       
       // 3. create CompositionIndex for an existing version XML
       def composer = new DoctorProxy(
@@ -589,12 +590,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       )
       
       contribution.addToVersions(version)
-      ehr.addToContributions( contribution )
       
       compoIndex.save(failOnError:true)
       commitAudit.save(failOnError:true)
       contribution.save(failOnError:true)
-      version.save(failOnError:true)
       
       // save version file
       def file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
@@ -603,6 +602,8 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      Contribution.list()*.delete(flush: true)
+      
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
       

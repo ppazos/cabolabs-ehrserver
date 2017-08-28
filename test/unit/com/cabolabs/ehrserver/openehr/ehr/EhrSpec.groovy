@@ -107,7 +107,7 @@ class EhrSpec extends Specification {
                 )
              )
           )
-          ehr.addToContributions(c)
+          //ehr.addToContributions(c)
           ehr.save(failOnError: true)
        
        then:
@@ -135,7 +135,7 @@ class EhrSpec extends Specification {
                 )
              )
           )
-          ehr.addToContributions(c)
+          //ehr.addToContributions(c)
           
           c = new Contribution(
              uid: '1234-4567-7777',
@@ -149,7 +149,7 @@ class EhrSpec extends Specification {
                 )
              )
           )
-          ehr.addToContributions(c)
+          //ehr.addToContributions(c)
           
           c = new Contribution(
              uid: '1234-4567-8888',
@@ -163,7 +163,7 @@ class EhrSpec extends Specification {
                 )
              )
           )
-          ehr.addToContributions(c)
+          //ehr.addToContributions(c)
           
           ehr.save(failOnError: true)
        

@@ -59,14 +59,14 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      println "setup"
       createOrganization()
       createEHR()
    }
 
    def cleanup()
    {
-      println "cleanup"
+      Contribution.list()*.delete()
+      
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true) // deletes all the contributions, versions, audit details, doctor proxies in cascade
       
@@ -95,8 +95,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
          
       when: "does the commit"
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-         
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          notThrown Exception // this shouldn't throw any exceptions
@@ -133,7 +133,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -165,7 +166,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -197,7 +199,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions = slurper.parseText(versionsXML)
          
       when:
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          notThrown Exception // this shouldn't throw any exceptions
@@ -236,7 +239,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -266,8 +270,9 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-      
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
+         
       then:
          Exception e = thrown() // TODO: use specific exception type
          assert xmlService.validationErrors.size() == 2
@@ -296,7 +301,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -327,11 +333,12 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // ok first time
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-      
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
+         
          // second should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-      
+         contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
       then:
          Exception e = thrown() // TODO: use specific exception type
          assert Contribution.count() == 1
@@ -374,9 +381,11 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions2 = slurper.parseText(versionsXML2)
          
       when:
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-         xmlService.processCommit(ehr, parsedVersions2, 'CaboLabs EMR', new Date(), 'House, MD.')
-      
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
+         
+         contribution = xmlService.processCommit(ehr, parsedVersions2, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
       then:
          notThrown Exception // this shouldn't throw any exceptions
          assert Contribution.count() == 2
@@ -414,7 +423,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
          
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -453,8 +463,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          
       when:
          // should throw an exception
-         xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
-      
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
       then:
          Exception e = thrown() // TODO: use specific exception type
          assert Contribution.count() == 0

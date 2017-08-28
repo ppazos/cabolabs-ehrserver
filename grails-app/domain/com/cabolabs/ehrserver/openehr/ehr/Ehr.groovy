@@ -58,17 +58,17 @@ class Ehr {
    boolean deleted = false // logical delete
    
    
-   List contributions = []
-   static hasMany = [contributions:Contribution]
+   //List contributions = []
+   //static hasMany = [contributions:Contribution]
    
-   static transients = ['compositions']
+   static transients = ['compositions', 'contributions']
    
    static constraints = {
       directory(nullable: true) // directory is optional
    }
    
    static mapping = {
-      contributions cascade: 'all' //'save-update'
+      //contributions cascade: 'all' //'save-update'
    }
    
    // For testing purposes
@@ -91,8 +91,13 @@ class Ehr {
       VersionedComposition.findAllByEhr(this)
    }
    
+   def getContributions()
+   {
+      Contributions.findAllByEhr(this)
+   }
+   
    String toString()
    {
-      return "EHR of subject"+ this.subject.value +" ("+ this.uid +")"
+      return "EHR ("+ this.uid +") of subject ("+ this.subject.value +")"
    }
 }

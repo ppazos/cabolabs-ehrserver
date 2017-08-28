@@ -67,7 +67,7 @@ class Contribution {
       versions cascade: 'all' //'save-update'
    }
    
-   static belongsTo = [Ehr]
+   //static belongsTo = [Ehr]
    
    
    def beforeInsert()

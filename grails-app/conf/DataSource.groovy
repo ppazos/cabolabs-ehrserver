@@ -41,7 +41,7 @@ environments {
         dataSource {
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
 
-//           logSql = true
+           //logSql = true
            
            // ===========================================================
            // Config for OpenShift ======================================

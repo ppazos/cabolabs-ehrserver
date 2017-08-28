@@ -120,9 +120,8 @@ class XmlService {
       //  throws grails.validation.ValidationException that contains the errors
       //contribution.save(flush:true, failOnError:true) // saved through the ehr
       
-
       // TEST: this might save the contrib and there is no need of saving the contrib later
-      ehr.addToContributions( contribution )
+      //ehr.addToContributions( contribution )
 
       return contribution
    }
@@ -430,12 +429,14 @@ class XmlService {
       def commitAudit, compoIndex, version, existingPersistentCompo
       def dataOut = []
       
-      versionsXML.version.eachWithIndex { parsedVersion, i ->
+      def parsedVersion
+      for (int i = 0; i <versionsXML.version.size(); i++)
+      {
+         parsedVersion = versionsXML.version[i]
       
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
          compoIndex = parseCompositionIndex(parsedVersion, ehr)
-         
 
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
          // - object_id se genera (porque el changeType es creation)
