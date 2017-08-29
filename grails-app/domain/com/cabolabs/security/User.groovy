@@ -44,8 +44,8 @@ class User implements Serializable {
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    
-   //List organizations = []
-   //static hasMany = [organizations: Organization]
+   Date dateCreated
+   Date lastUpdated
    
    User(String username, String password)
    {

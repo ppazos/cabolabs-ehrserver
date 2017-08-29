@@ -28,6 +28,9 @@ class Organization {
    String name
    String number // identifier of the organization to be used for user registration
    String preferredLanguage
+   
+   Date dateCreated
+   Date lastUpdated
 
    static constraints = {
       number nullable: true, unique: true
