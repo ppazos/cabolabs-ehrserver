@@ -150,7 +150,8 @@
 		            <th><g:message code="contribution.attr.ehr" /></th>
 		            <%-- uses the id because is easier than sorting by timeCommitted and have the same order --%>
 		            <g:sortableColumn property="id" title="${message(code:'contribution.attr.timeCommitted')}" params="${params}" />
-		            <th><g:message code="contribution.list.versionCount" /></th>
+		            <th><g:message code="contribution.attr.systemId" /></th>
+                  <th><g:message code="contribution.list.versionCount" /></th>
 		          </tr>
 		        </thead>
 		        <tbody>
@@ -159,6 +160,7 @@
 			            <td><g:link action="show" id="${contributionInstance.id}">${fieldValue(bean: contributionInstance, field: "uid")}</g:link></td>
 			            <td>${contributionInstance.ehr.uid}</td>
 			            <td>${contributionInstance.audit.timeCommitted}</td>
+                     <td>${contributionInstance.audit.systemId}</td>
 			            <td>${contributionInstance.versions.size()}</td>
 			          </tr>
 			        </g:each>
