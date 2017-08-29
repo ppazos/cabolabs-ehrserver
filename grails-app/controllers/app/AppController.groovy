@@ -31,6 +31,9 @@ import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+import com.cabolabs.security.User
+import com.cabolabs.security.UserRole
+
 class AppController {
 
    def springSecurityService
@@ -40,13 +43,14 @@ class AppController {
    def index()
    {
       // Count EHRs
-      def count_ehrs, count_contributions, count_queries
+      def count_ehrs, count_contributions, count_queries, count_users
       def version_repo_sizes = [:] // org => versio repo size
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          count_ehrs = Ehr.count()
          count_contributions = Contribution.count()
          count_queries = Query.count()
+         count_users = User.count()
          
          def orgs = Organization.list()
          
@@ -83,12 +87,25 @@ class AppController {
             }
          }
          
+         def ur = UserRole.createCriteria()
+         def urs = ur.list() {
+            createAlias('user','user')
+            projections {
+               property("user.id", "user.id")
+            }
+            eq('organization', org)
+         }
+         count_users = urs.unique().size()
+         
          version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
       }
       
-      [count_ehrs:count_ehrs, 
-      count_contributions:count_contributions, 
-      count_queries: count_queries,
-      version_repo_sizes: version_repo_sizes]
+      [
+         count_ehrs:count_ehrs, 
+         count_contributions:count_contributions, 
+         count_queries: count_queries,
+         version_repo_sizes: version_repo_sizes,
+         count_users: count_users
+      ]
    }
 }

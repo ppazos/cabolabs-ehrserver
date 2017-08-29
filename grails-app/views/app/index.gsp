@@ -217,6 +217,30 @@
           </g:link>
         </div>
       </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="panel panel-green">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-xs-3">
+                <i class="fa fa-user fa-4x"></i>
+              </div>
+              <div class="col-xs-9 text-right">
+                <div class="huge">${count_users}</div>
+                <div><g:message code="desktop.user" /></div>
+              </div>
+            </div>
+          </div>
+          <g:link controller="user" action="index">
+            <div class="panel-footer">
+              <span class="pull-left"><g:message code="desktop.view_details" /></span>
+              <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+              <div class="clearfix"></div>
+            </div>
+          </g:link>
+        </div>
+      </div>
+      
       <g:each in="${version_repo_sizes}" var="org_repo_size">
         <div class="col-lg-3 col-md-6">
           <div class="panel panel-default">
