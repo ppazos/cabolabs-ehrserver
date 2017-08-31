@@ -139,6 +139,28 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          ]
          spec[0].terminologyId.codes = ['openehr': 'openehr'] // if the terms are defined in the archetype, the terminology is local
       }
+      else if (path == '/context/setting') // TODO: check archetype is for COMPOSITION
+      {
+         // Provide setting codes from openEHR terminology
+         // TODO: this should be provided by configuration and be per organization since the openEHR terminology is open for this.
+         // TODO: i18n
+         spec[0].code.codes = [
+            225: 'home',
+            227: 'emergency care',
+            228: 'primary medical care',
+            229: 'primary nursing care',
+            230: 'primary allied health care',
+            231: 'midwifery care',
+            232: 'secondary medical care',
+            233: 'secondary nursing care',
+            234: 'secondary allied health care',
+            235: 'complementary health care',
+            236: 'dental care',
+            237: 'nursing home care',
+            238: 'other care'
+         ]
+         spec[0].terminologyId.codes = ['openehr': 'openehr'] 
+      }
       else
       {
         // https://github.com/ppazos/cabolabs-ehrserver/issues/154
