@@ -552,6 +552,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          uid:         parsedVersion.data.uid.value.text(),
          category:    parsedVersion.data.category.value.text(),
          startTime:   DateParser.tryParse( parsedVersion.data.context.start_time.text() ),
+         timeCommitted: new Date(),
          subjectId:   ehr.subject.value,
          ehrUid:      ehr.uid,
          organizationUid: ehr.organizationUid,

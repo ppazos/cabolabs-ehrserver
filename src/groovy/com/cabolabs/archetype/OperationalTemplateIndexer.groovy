@@ -438,13 +438,16 @@ class OperationalTemplateIndexer {
          }
       }
       
-      // Nombres de las tags hija directas de definition (atributos del root archetype)
-      // [rm_type_name, occurrences, node_id, attributes, attributes, archetype_id, template_id, term_definitions]
-      // println "definition attributes: "+ this.template.definition.children().collect { it.name() }
-     
-//      this.currentRoot = this.template.definition
-      
       indexObject(this.template.definition, '/', '/', this.template.definition, false)
+      
+      
+      // AII for COMPOSITION
+      this.indexes << new ArchetypeIndexItem(
+         archetypeId: archetypeId,
+         path: '/',
+         rmTypeName: 'COMPOSITION',
+         name: [(getTemplateLanguage(this.template)): archetypeConcept]
+      )
       
       //println this.paths // test
       this.indexes.each { di ->
@@ -615,20 +618,6 @@ class OperationalTemplateIndexer {
       {
          // Helps to get the name for the indexed ELEMENTs
          parent = node
-         
-         /*
-         this.currentRoot.term_definitions.each { term ->
-            
-            // - at0005 [text: E, description: Educational components offered.]
-            println "  - "+ term.@code +" "+ term.items.collect { item -> item.@id.text() +": "+ item.text() }
-            
-            //term.items.each { item ->
-            //   println "    + "+ item.@id
-            //   println "    + "+ item.text()
-            //}
-            //println term.items.collect { item -> item.@id.text() +" "+ item.text() }
-         }
-         */
          
          path += '[archetype_id='+ node.archetype_id.value +']' // slot in the path instead of node_id
          archetypePath = '/' // archetype root found
