@@ -100,7 +100,7 @@ class QueryController {
    {
       [queryInstance: new Query(params),
       dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-      concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // only archetypes translated to the current lang
+      concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }.sort{ it.archetypeId }, // only archetypes translated to the current lang
       templateIndexes: OperationalTemplateIndex.list()]
    }
    
@@ -479,6 +479,12 @@ class QueryController {
         break
         case 'DV_MULTIMEDIA':
          res = DataCriteriaDV_MULTIMEDIA.criteriaSpec(archetypeId, path)
+        break
+        case 'DV_PARSABLE':
+         res = DataCriteriaDV_PARSABLE.criteriaSpec(archetypeId, path)
+        break
+        case 'String':
+         res = DataCriteriaString.criteriaSpec(archetypeId, path)
         break
       }
       
