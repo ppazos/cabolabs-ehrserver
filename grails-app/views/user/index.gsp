@@ -69,30 +69,35 @@
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered table-hover">
-		      <thead>
-	           <tr>
-	             <g:sortableColumn property="username" title="${message(code: 'user.attr.username', default: 'Username')}" />
-	             <g:sortableColumn property="accountExpired" title="${message(code: 'user.attr.account_expired', default: 'Account Expired')}" />
-	             <g:sortableColumn property="accountLocked" title="${message(code: 'user.attr.account_locked', default: 'Account Locked')}" />
-	             <g:sortableColumn property="enabled" title="${message(code: 'user.attr.enabled', default: 'Enabled')}" />
-	             <g:sortableColumn property="passwordExpired" title="${message(code: 'user.attr.password_expired', default: 'Password Expired')}" />
-	           </tr>
-		      </thead>
-		      <tbody>
-		        <g:each in="${userInstanceList}" status="i" var="userInstance">
-		          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-		            <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
-		            <td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
-		            <td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
-		            <td><g:formatBoolean boolean="${userInstance.enabled}" /></td>
-		            <td><g:formatBoolean boolean="${userInstance.passwordExpired}" /></td>
-		          </tr>
-		        </g:each>
-	         </tbody>
-	       </table>
-	     </div>
+        
+        <g:each in="${userInstanceList.groupBy{ it.organization }}" var="orgUserRoles">
+          <h2>${orgUserRoles.key.name}</h2>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <g:sortableColumn property="username" title="${message(code: 'user.attr.username', default: 'Username')}" />
+                  <g:sortableColumn property="accountExpired" title="${message(code: 'user.attr.account_expired', default: 'Account Expired')}" />
+                  <g:sortableColumn property="accountLocked" title="${message(code: 'user.attr.account_locked', default: 'Account Locked')}" />
+                  <g:sortableColumn property="enabled" title="${message(code: 'user.attr.enabled', default: 'Enabled')}" />
+                  <g:sortableColumn property="passwordExpired" title="${message(code: 'user.attr.password_expired', default: 'Password Expired')}" />
+                </tr>
+              </thead>
+              <tbody>                 
+                <g:each in="${orgUserRoles.value}" status="i" var="userRole">
+                  <g:set var="userInstance" value="${userRole.user}" />
+                  <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                    <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
+                    <td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
+                    <td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
+                    <td><g:formatBoolean boolean="${userInstance.enabled}" /></td>
+                    <td><g:formatBoolean boolean="${userInstance.passwordExpired}" /></td>
+                  </tr>
+                </g:each>
+              </tbody>
+            </table>
+	       </div>
+        </g:each>
 	     <g:paginator total="${userInstanceCount}" args="${params}" />
       </div>
     </div>

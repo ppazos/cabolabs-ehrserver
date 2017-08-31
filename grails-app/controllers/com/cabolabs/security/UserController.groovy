@@ -67,10 +67,11 @@ class UserController {
       if (!order) order = 'asc'
       
       def list, count
-
+      def c = UserRole.createCriteria()
+      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         def urs = UserRole.withCriteria {
+         def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
             user {
                eq('isVirtual', false)
                if (username)
@@ -86,17 +87,16 @@ class UserController {
             }
          }
 
-         list = urs.user.unique() // same user can have two roles on the same org
-         count = list.size() // cant paginate because the search is on user role
+         list = urs
+         count = urs.totalCount
       }
       else
       {
          // current user lists only users from the current org
-         
          def loggedInUser = springSecurityService.currentUser
-         
          def org = session.organization // with this in the criteria makes the unit test fail.
-         def urs = UserRole.withCriteria {
+         
+         def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
             eq('organization', org)
             if (username)
             {
@@ -106,8 +106,8 @@ class UserController {
             }
          }
          
-         list = urs.user.unique() // same user can have two roles on the same org
-         count = list.size() // cant paginate because the search is on user role
+         list = urs
+         count = urs.totalCount
       }
       
       render view: 'index', model: [userInstanceList: list, userInstanceCount: count]
