@@ -38,7 +38,7 @@
             </tr>
             <tr>
               <th><g:message code="organization.users.label" default="Users" /></th>
-              <td><g:link controller="user" action="index" params="[organizationUid:organizationInstance.uid]"><g:message code="common.action.display" /></g:link></td>
+              <td><g:link controller="user" action="index" params="[organizationUid:organizationInstance.uid, filter:'']"><g:message code="common.action.display" /></g:link></td>
             </tr>
           </tbody>
         </table>
