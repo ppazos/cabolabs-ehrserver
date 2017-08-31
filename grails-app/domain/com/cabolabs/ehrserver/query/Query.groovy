@@ -320,8 +320,21 @@ class Query {
             if (templateId) eq('templateId', templateId)
             if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
-            if (from) ge('startTime', from) // greater or equal
-            if (to) le('startTime', to) // lower or equal
+            
+            // event can use startTime, persistent uses timeCommitted to filter by date
+            or {
+              and {
+                 eq('category', 'event')
+                 if (from) ge('startTime', from) // greater or equal
+                 if (to) le('startTime', to) // lower or equal
+              }
+              and {
+                eq('category', 'persistent')
+                if (from) ge('timeCommitted', from)
+                if (to) le('timeCommitted', to)
+              }
+            }
+            
             eq('lastVersion', true) // query only latest versions
          }
       }
@@ -490,7 +503,11 @@ class Query {
          
          // Datos de la composition
          // FIXME: deberia haber por lo menos un dvi, sino esto da error
-         resGrouped[uid]['date'] = dvis[0].owner.startTime
+         if (dvis[0].owner.category == 'event')
+            resGrouped[uid]['date'] = dvis[0].owner.startTime
+         else
+            resGrouped[uid]['date'] = dvis[0].owner.timeCommitted
+            
          //resGrouped[compoId]['uid']  = dvis[0].owner.uid
          resGrouped[uid]['cols'] = []
          
@@ -628,6 +645,7 @@ class Query {
 
       // Usa ruta absoluta para agrupar.
       String absPath
+      Date dviDate
       
       this.select.each { dataGet ->
          
@@ -655,75 +673,84 @@ class Query {
             
             //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
+            if (dvi.owner.category == 'event')
+               dviDate = dvi.owner.startTime
+            else
+               dviDate = dvi.owner.timeCommitted
+            
             // Datos de cada path seleccionada dentro de la composition
             switch (dataGet.rmTypeName)
             {
                case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
                                                    units:     dvi.units,
-                                                   date:      dvi.owner.startTime]
+                                                   date:      dviDate]
                break
                case 'DV_CODED_TEXT':
                   resGrouped[absPath]['serie'] << [code:      dvi.code,
                                                    value:     dvi.value,
-                                                   date:      dvi.owner.startTime]
+                                                   date:      dviDate]
                break
                case 'DV_ORDINAL':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
                                                    symbol_value: dvi.symbol_value,
                                                    symbol_code:  dvi.symbol_code,
                                                    symbol_terminology_id: dvi.symbol_terminology_id,
-                                                   date:         dvi.owner.startTime]
+                                                   date:         dviDate]
                break
                case 'DV_TEXT':
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
-                                                   date:      dvi.owner.startTime]
+                                                   date:      dviDate]
                break
                case ['DV_DATE_TIME', 'DV_DATE']:
                   resGrouped[absPath]['serie'] << [value:     dvi.value,
-                                                   date:      dvi.owner.startTime]
+                                                   date:      dviDate]
                break
                case 'DV_BOOLEAN':
-                  resGrouped[absPath]['serie'] << [value:     dvi.value,
-                                                   date:      dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   date:         dviDate]
                break
                case 'DV_COUNT':
-                  resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
-                                                   date:      dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [magnitude:    dvi.magnitude,
+                                                   date:         dviDate]
                break
                case 'DV_PROPORTION':
-                  resGrouped[absPath]['serie'] << [numerator:   dvi.numerator,
-                                                   denominator: dvi.denominator,
-                                                   type:        dvi.type,
-                                                   precision:   dvi.precision,
-                                                   date:        dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [numerator:    dvi.numerator,
+                                                   denominator:  dvi.denominator,
+                                                   type:         dvi.type,
+                                                   precision:    dvi.precision,
+                                                   date:         dviDate]
                break
                case 'DV_DURATION':
-                  resGrouped[absPath]['serie'] << [value:       dvi.value,
-                                                   magnitude:   dvi.magnitude]
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   magnitude:    dvi.magnitude,
+                                                   date:         dviDate]
                break
                case 'DV_IDENTIFIER':
-                  resGrouped[absPath]['serie'] << [id:          dvi.identifier, // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
-                                                   type:        dvi.type,
-                                                   issuer:      dvi.issuer,
-                                                   assigner:    dvi.assigner,
-                                                   date:        dvi.owner.startTime]
+                  resGrouped[absPath]['serie'] << [id:           dvi.identifier, // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
+                                                   type:         dvi.type,
+                                                   issuer:       dvi.issuer,
+                                                   assigner:     dvi.assigner,
+                                                   date:         dviDate]
                break
                case 'DV_MULTIMEDIA':
                   resGrouped[absPath]['serie'] << [mediaType:     dvi.mediaType,
                                                    size:          dvi.size,
                                                    alternateText: dvi.alternateText,
-                                                   date:          dvi.owner.startTime]
+                                                   date:          dviDate]
                break
                case 'DV_PARSABLE':
                   resGrouped[absPath]['serie'] << [value:         dvi.value,
-                                                   formalism:     dvi.formalism]
+                                                   formalism:     dvi.formalism,
+                                                   date:          dviDate]
                break
                case 'String':
-                  resGrouped[absPath]['serie'] << [value:         dvi.value]
+                  resGrouped[absPath]['serie'] << [value:         dvi.value,
+                                                   date:          dviDate]
                break
                case 'LOCATABLE_REF':
-                  resGrouped[absPath]['serie'] << [locatable_ref_path: dvi.locatable_ref_path]
+                  resGrouped[absPath]['serie'] << [locatable_ref_path: dvi.locatable_ref_path,
+                                                   date:          dviDate]
                break
                default:
                   throw new Exception("type "+dataGet.rmTypeName+" not supported")
@@ -751,12 +778,51 @@ class Query {
        
       // Filter by templateId
       if (this.templateId) q += "ci.templateId = '" + this.templateId +"' AND "
-       
-      // Criterio de rango de fechas para ci.startTime
+      
+      
+      // Criterio de rango de fechas para ci.startTime (event), timeCommitted (persistent)
       // Formatea las fechas al formato de la DB
-      if (from) q += "ci.startTime >= '"+ formatterDateDB.format( from ) +"' AND " // higher or equal
-      if (to) q += "ci.startTime <= '"+ formatterDateDB.format( to ) +"' AND " // lower or equal
-       
+      String eventDateCriteria = "ci.category = 'event' AND "
+      boolean hasEventDateCriteria = false
+      if (from)
+      {
+         hasEventDateCriteria = true
+         eventDateCriteria += "ci.startTime >= '"+ formatterDateDB.format( from ) +"'" // higher or equal
+      }
+      if (to)
+      {
+         if (hasEventDateCriteria) eventDateCriteria += " AND "
+         hasEventDateCriteria = true
+         eventDateCriteria += "ci.startTime <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
+      }
+      
+      String persistentDateCriteria = "ci.category = 'persistent' AND "
+      boolean hasPersistentDateCriteria = false
+      if (from)
+      {
+         hasPersistentDateCriteria = true
+         persistentDateCriteria += "ci.timeCommitted >= '"+ formatterDateDB.format( from ) +"'" // higher or equal
+      }
+      if (to)
+      {
+         if (hasPersistentDateCriteria) persistentDateCriteria += " AND "
+         hasPersistentDateCriteria = true
+         persistentDateCriteria += "ci.timeCommitted <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
+      }
+      
+      if (hasEventDateCriteria && hasPersistentDateCriteria)
+      {
+         q += "(("+ eventDateCriteria +") OR ("+ persistentDateCriteria +")) AND "
+      }
+      else if (hasEventDateCriteria)
+      {
+         q += "("+ eventDateCriteria +") AND "
+      }
+      else if (hasPersistentDateCriteria)
+      {
+         q += "("+ persistentDateCriteria +") AND "
+      }
+      
       //
       // ===============================================================
       

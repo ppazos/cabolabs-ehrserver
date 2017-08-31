@@ -34,18 +34,20 @@ import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
  */
 class CompositionIndex {
 
-   String uid // uid de la composition
+   String uid         // uid de la composition
    
-   String category // event o persistent
+   String category    // event o persistent
    
-   Date startTime  // composition.context (solo para compositions event)
-   String location // context.location
+   Date startTime     // composition.context (solo para compositions event)
+   Date endTime
+   Date timeCommitted // copy from AuditDetails.timeCommitted to facilitate queries
+   String location    // context.location (TODO: should be indexed as StringIndex to allow querying criteria)
    
-   String subjectId // references an EHR.subject.uid, simplifies querying
+   String subjectId   // references an EHR.subject.uid, simplifies querying
    
-   String ehrUid // uid del ehr del subjectId
+   String ehrUid      // uid del ehr del subjectId
    
-   String templateId // se usa como "tipo de documento", es un arquetipo de COMPOSITION
+   String templateId  // se usa como "tipo de documento", es un arquetipo de COMPOSITION
    String archetypeId // archetype that defines the "definition" part of the template
    
    boolean dataIndexed = false // true cuando se crean los indices de DataValue para la composition
@@ -68,6 +70,7 @@ class CompositionIndex {
    static constraints = {
       category(inList:['event','persistent'])
       startTime(nullable:true) // persistent no tienen context.startTime
+      endTime(nullable:true)
       location(nullable:true)
    }
    

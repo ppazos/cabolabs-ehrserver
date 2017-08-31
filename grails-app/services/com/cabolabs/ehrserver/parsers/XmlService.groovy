@@ -436,7 +436,7 @@ class XmlService {
       
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
-         compoIndex = parseCompositionIndex(parsedVersion, ehr)
+         compoIndex = parseCompositionIndex(parsedVersion, ehr, auditTimeCommitted)
 
          // El uid se lo pone el servidor: object_id::creating_system_id::version_tree_id
          // - object_id se genera (porque el changeType es creation)
@@ -600,10 +600,10 @@ class XmlService {
       )
    }
    
-   private CompositionIndex parseCompositionIndex(GPathResult version, Ehr ehr)
+   private CompositionIndex parseCompositionIndex(GPathResult version, Ehr ehr, Date auditTimeCommitted)
    {
       // context data for event compositions
-      Date startTime
+      Date startTime, endTime
       String location
       
       String category
@@ -655,6 +655,9 @@ class XmlService {
          //       ademas la fraccion con . o , depende del locale!!!
          startTime = DateParser.tryParse(version.data.context.start_time.value.text())
          
+         // end time is optional in the IM
+         if (version.data.context.end_time)
+            endTime = DateParser.tryParse(version.data.context.end_time.value.text())
          
          // location is optional
          location = version.data.context.location.text() // can be empty
@@ -719,16 +722,18 @@ class XmlService {
       
       
       def compoIndex = new CompositionIndex(
-         uid:         compoUid,  // UID for compos is assigned by the server
-         category:    category,  // event / persistent
-         startTime:   startTime, // mandatory for event, null for persistent
-         location:    location,  // optional for event, null for persistent
-         subjectId:   ehr.subject.value,
-         ehrUid:      ehr.uid,
+         uid:           compoUid,  // UID for compos is assigned by the server
+         category:      category,  // event / persistent
+         startTime:     startTime, // mandatory for event, null for persistent
+         endTime:       endTime,
+         timeCommitted: auditTimeCommitted,
+         location:      location,  // optional for event, null for persistent
+         subjectId:     ehr.subject.value,
+         ehrUid:        ehr.uid,
          organizationUid: ehr.organizationUid,
-         archetypeId: version.data.@archetype_node_id.text(),
-         templateId:  version.data.archetype_details.template_id.value.text(),
-         composer:    composer
+         archetypeId:   version.data.@archetype_node_id.text(),
+         templateId:    version.data.archetype_details.template_id.value.text(),
+         composer:      composer
       )
 	  
 	  if (!compoIndex.validate())
