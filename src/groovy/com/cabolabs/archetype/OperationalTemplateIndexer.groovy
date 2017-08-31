@@ -93,6 +93,13 @@ class OperationalTemplateIndexer {
      ]
    ]
    
+   // Some attributes should not be indexed since are not used for querying
+   def avoid_indexing = [
+     'COMPOSITION': [
+       'category' // category is not needed for querying since the arcehtype id will determine if it is event or persistent
+     ]
+   ]
+   
    /**
     * node and relPath are used to set the name for the AII created, helping on the Query Builder to
     * identify exactly the attribute referenced by the AII. Without that we have just ELEMENT.null_flavour
@@ -668,7 +675,7 @@ class OperationalTemplateIndexer {
       {
          // test
          //this.paths << path
-         //println " > index: "+ path +' '+ node.rm_type_name.text()
+         println " > index: "+ path +' '+ node.rm_type_name.text()
 
          // --------------------------------------------------------
          // Find node name
@@ -762,61 +769,14 @@ class OperationalTemplateIndexer {
       
       // continue processing
       node.attributes.each {
-         //println "attr "+ it.name()
+         println node.rm_type_name.text() +" attr "+ it.rm_attribute_name.text() +" path "+ path +" apath "+ archetypePath
+         
+         if (avoid_indexing[node.rm_type_name.text()]?.contains(it.rm_attribute_name.text())) return
+         
          indexAttribute(it, path, archetypePath, parent, indexingDatavalue) // No pone su nodeID porque es root
       }
       
       //indexingDatavalue = false // reset flag after processing children attrs of datavalue
       // ===========================================================================
-
-      
-      /** OLD SAMPLE CODE...
-      // CObject
-      def co
-      def nodeID
-      def indexPath
-      def text
-      
-      this.archetype.physicalPaths().sort().each { path ->
-     
-         co = this.archetype.node(path)
-       
-         // No procesa el nodo /
-         if (!co.getParent()) return
-       
-      
-         // Indices de nivel 2 solo para ELEMENT.value
-         if (co.rmTypeName == "ELEMENT")
-         {
-            nodeID = co.nodeID
-            
-            if (!nodeID) throw new Exception("No tiene nodeID: ELEMENT indefinido")
-         
-            // node name
-            def locale = Holders.config.app.l10n.locale
-            def term = this.archetype.ontology.termDefinition(locale, nodeID)
-            if (!term)
-            {
-               //println " + ERROR: termino no definido para el nodo "+ nodeID
-            }
-            else
-            {
-               //println " + Node name = "+ term.getText()
-            }
-            
-            // FIXME: JAVA REF IMPL los tipos del RM son DvQuantity en lugar de DV_QUANTITY
-            //println " ~ index "+ co.path() +"/value "+ this.archetype.node( co.path() +"/value" ).rmTypeName
-            
-            indexPath = co.path() +"/value"
-            
-            indexes << new OperationalTemplateIndexItem(archetypeId: this.archetype.archetypeId.value,
-                                     path: indexPath,
-                                     rmTypeName: this.archetype.node( indexPath ).rmTypeName, // type de ELEMENT.value ej. DvQuantity
-                                     name: term.getText())
-            
-            //println ""
-         }
-      } // physical paths
-      */
    }
 }
