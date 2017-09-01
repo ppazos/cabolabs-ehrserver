@@ -116,7 +116,7 @@ environments {
       version_repo = "versions" + PS
       commit_logs = "commits" + PS
       opt_repo = "opts" + PS
-      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER') ?: false
     }
   }
   production { // use on server prod environment, https, root = /
@@ -130,7 +130,7 @@ environments {
       version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
       commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
       opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
-      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER') ?: false
     }
   }
   local_prod { // use to run locally without https or root context /
@@ -139,7 +139,7 @@ environments {
       version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
       commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
       opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
-      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER')
+      allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER') ?: false
     }
   }
   local_prod_tomcat { // use for testing prod in local env deploying in tomcat (running on port 8085)
