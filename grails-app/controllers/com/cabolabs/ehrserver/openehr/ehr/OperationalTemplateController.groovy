@@ -120,6 +120,13 @@ class OperationalTemplateController {
          // check existing by OPT uid or templateId, shared with an org of the current user
          def opt_uid = template.uid.value.text()
          def opt_template_id = template.template_id.value.text()
+         def root_rm_type = template.definition.rm_type_name.text()
+         
+         if (root_rm_type != 'COMPOSITION')
+         {
+            errors << message(code:"opt.upload.error.noComposition", args:[root_rm_type])
+            return [errors: errors]
+         }
          
          def user = springSecurityService.currentUser
          def orgs = user.organizations

@@ -675,7 +675,7 @@ class OperationalTemplateIndexer {
       {
          // test
          //this.paths << path
-         println " > index: "+ path +' '+ node.rm_type_name.text()
+         //println " > index: "+ path +' '+ node.rm_type_name.text()
 
          // --------------------------------------------------------
          // Find node name
@@ -769,7 +769,7 @@ class OperationalTemplateIndexer {
       
       // continue processing
       node.attributes.each {
-         println node.rm_type_name.text() +" attr "+ it.rm_attribute_name.text() +" path "+ path +" apath "+ archetypePath
+         //println node.rm_type_name.text() +" attr "+ it.rm_attribute_name.text() +" path "+ path +" apath "+ archetypePath
          
          if (avoid_indexing[node.rm_type_name.text()]?.contains(it.rm_attribute_name.text())) return
          
