@@ -64,16 +64,36 @@ class QueryController {
       if (!order) order = 'asc'
       
       def list
+      def org = session.organization
+      def shares = QueryShare.findAllByOrganization(org)
+      def c = Query.createCriteria()
+      
+      // Same for admins and other users since private queries should not be accessed even by admins
+      list = c.list (max: max, offset: offset, sort: sort, order: order) {
+         if (name)
+         {
+            like('name', '%'+name+'%')
+         }
+         if (shares)
+         {
+            or {
+               eq('isPublic', true)
+               'in'('id', shares.query.id)
+            }
+         }
+         else
+         {
+            eq('isPublic', true)
+         }
+      }
+      
+      /*   
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          list = Query.list(max: max, offset: offset, sort: sort, order: order)
       }
       else
       {
-         def org = session.organization
-         def shares = QueryShare.findAllByOrganization(org)
-         
-         def c = Query.createCriteria()
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             if (name)
             {
@@ -92,6 +112,7 @@ class QueryController {
             }
          }
       }
+      */
       
       [queryInstanceList: list, queryInstanceTotal: list.totalCount]
    }
