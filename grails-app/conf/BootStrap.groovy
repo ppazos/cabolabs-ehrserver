@@ -34,20 +34,15 @@ import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
-
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager // load opts
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
-
 import com.cabolabs.ehrserver.account.*
-
 import grails.converters.*
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
 import com.cabolabs.ehrserver.ResourceService
-
 import com.cabolabs.ehrserver.notification.*
-
 import grails.util.Environment
 
 class BootStrap {
@@ -61,13 +56,13 @@ class BootStrap {
    def init = { servletContext ->
       
       def working_folder = new File('.')
-      println "working folder: "+ working_folder.absolutePath
+      log.info ("Working folder: "+ working_folder.absolutePath)
       
       
       // file system checks
-      def commits_repo = new File(Holders.config.app.commit_logs)
+      def commits_repo  = new File(Holders.config.app.commit_logs)
       def versions_repo = new File(Holders.config.app.version_repo)
-      def opt_repo = new File(Holders.config.app.opt_repo)
+      def opt_repo      = new File(Holders.config.app.opt_repo)
       
       if (!commits_repo.exists())
       {
@@ -612,7 +607,6 @@ class BootStrap {
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
      }
      
-     //println "Current ENV: "+ Environment.current.toString() +" "+ Environment.TEST.toString() + " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
      
      // Do not create data if testing, tests will create their own data.
      if (Environment.current != Environment.TEST)
@@ -620,12 +614,10 @@ class BootStrap {
         def organizations = []
         if (Organization.count() == 0)
         {
-           println "Creating sample organization"
+           println "Creating default organization"
            
-           // Sample organizations
-           organizations << new Organization(name: 'CaboLabs', number: '123456', uid:'123456') // uid just for testing here!
-           //organizations << new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
-           //organizations << new Organization(name: 'Cirugia Estetica', number: '5555')
+           // Default organization
+           organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
            
            organizations.each {
               it.save(failOnError:true, flush:true)
@@ -645,23 +637,18 @@ class BootStrap {
         
         if (User.count() == 0)
         {
-           println "Creating sample users"
+           println "Creating default users"
            
-           // Create users
            def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
-           //adminUser.organizations = [organizations[0]]
            adminUser.save(failOnError: true,  flush: true)
            
            def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
-           //accManUser.organizations = [organizations[0]]
            accManUser.save(failOnError: true,  flush: true)
            
            def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
-           //orgManUser.organizations = [organizations[0]]
            orgManUser.save(failOnError: true,  flush: true)
            
            def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
-           //user.organizations = [organizations[0]]
            user.save(failOnError: true,  flush: true)
            
 
@@ -672,8 +659,6 @@ class BootStrap {
            UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
         }
         
-        
-        log.debug( 'Current working dir: '+ new File(".").getAbsolutePath() ) // Current working directory
         
         
         // Always regenerate indexes in deploy
