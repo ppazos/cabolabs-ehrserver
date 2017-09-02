@@ -29,14 +29,15 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
  * 
  * Para consultas de datos (queryData)
  * 
- * @author pab
- *
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class DataGet {
    
    String archetypeId
    String path
    String rmTypeName
+   boolean allowAnyArchetypeVersion = false
+
    
    // TODO: poner name para mostrar en la definicion
    //       de la consulta, se saca de ArchetypeIndexItem o del

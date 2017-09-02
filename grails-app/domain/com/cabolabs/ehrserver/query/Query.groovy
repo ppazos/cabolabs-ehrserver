@@ -248,8 +248,15 @@ class Query {
          
          json.select.each { projection ->
             
+            // removes the version for the archetype id and saves it
+            if (projection.allow_any_archetype_version)
+               projection.archetype_id = projection.archetype_id.take(projection.archetype_id.lastIndexOf('.'))
+               
             this.addToSelect(
-               new DataGet(archetypeId: projection.archetype_id, path: projection.path, rmTypeName: projection.rmTypeName)
+               new DataGet(archetypeId: projection.archetype_id, 
+                           path: projection.path, 
+                           rmTypeName: projection.rmTypeName,
+                           allowAnyArchetypeVersion: projection.allow_any_archetype_version)
             )
          }
       }
@@ -308,7 +315,10 @@ class Query {
             this.select.each { dataGet ->
                
                and {
-                  eq('archetypeId', dataGet.archetypeId)
+                  if (dataGet.allowAnyArchetypeVersion)
+                     like('archetypeId', dataGet.archetypeId+'%') // version was removed on save
+                  else
+                     eq('archetypeId', dataGet.archetypeId)
                   eq('archetypePath', dataGet.path)
                   eq('rmTypeName', dataGet.rmTypeName) // gets a specific DV in case alteratives exist for the same arch and path
                }
@@ -384,6 +394,11 @@ class Query {
       
       // Usa ruta absoluta para agrupar.
       String absPath
+      
+      // FIXME: if any archetype version is allowed, results should be grouped by the archid concept,
+      // but maybe inside the data we can add the specific archetype with version.
+      // Also qhen querying ArchetypeIndexItem, like should be used because dataGet.archetypeId won't
+      // have the version **if any version is allowed**.
       
       this.select.each { dataGet ->
          

@@ -31,13 +31,13 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
  * 
  * Para consultas de compositions (queryByData)
  * 
- * @author pab
- *
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class DataCriteria {
 
    String archetypeId
    String path
+   boolean allowAnyArchetypeVersion = false
    
    // value va a depender del tipo del RM en la path
    // value es parametro de la query sino se setea aqui

@@ -162,13 +162,19 @@
           
           return this.id_gen;
         },
-        add_projection: function (archetype_id, path, rm_type_name)
+        add_projection: function (archetype_id, path, rm_type_name, allow_any_archetype_version)
         {
           if (this.type != 'datavalue') return false;
 
           this.id_gen++;
           
-          this.select[this.id_gen - 1] = {pid: this.id_gen, archetype_id: archetype_id, path: path, rmTypeName: rm_type_name};
+          this.select[this.id_gen - 1] = {
+                                          pid: this.id_gen, 
+                                          archetype_id: archetype_id, 
+                                          path: path, 
+                                          rmTypeName: rm_type_name,
+                                          allow_any_archetype_version: allow_any_archetype_version
+                                         };
 
           // when items are removed and then added, there are undefined entries in the array
           // this cleans the undefined items so the server doesnt receive empty values.
@@ -761,11 +767,14 @@ resp.responseJSON.result.message +'</div>'
       // DATA QUERY CREATE/EDIT =========
       // =================================
       
-      var dom_add_selection = function (archetype_id, path, name, rm_type_name) {
+      var dom_add_selection = function (archetype_id, path, name, rm_type_name, allow_any_archetype_version) {
 
         // query object mgt
-        pid = query.add_projection(archetype_id, path, rm_type_name);
+        pid = query.add_projection(archetype_id, path, rm_type_name, allow_any_archetype_version);
         query.log();
+        
+        // shows openEHR-EHR-...* instead of .v1
+        if (allow_any_archetype_version) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
 
         // shows the projection in the UI
         $('#selection').append(
@@ -803,11 +812,11 @@ resp.responseJSON.result.message +'</div>'
           $('select[name=view_archetype_id]').val(),
           $('select[name=view_archetype_path]').val(),
           $('select[name=view_archetype_path] option:selected').data('name'),
-          $('select[name=view_archetype_path] option:selected').data('type')
+          $('select[name=view_archetype_path] option:selected').data('type'),
+          $('input[name=allow_any_archetype_version]')[0].checked
         );
         
-        
-         // Notifica que la condicion fue agregada
+        // Notifica que la condicion fue agregada
         $.growlUI('${g.message(code:"query.create.selection_added")}', '<a href="#selection">${g.message(code:"query.create.verify_selection")}</a>'); 
       };
 
@@ -1693,6 +1702,7 @@ resp.responseJSON.result.message +'</div>'
                                 optionValue="${{it.name['ISO_639-1::'+ session.lang] +' ('+ it.archetypeId +')'}}"
                                 noSelection="${['':g.message(code:'query.create.please_select_concept')]}"
                                 class="form-control withsize" />
+                      <label><input type="checkbox" name="allow_any_archetype_version" /> <g:message code="query.create.allowAnyArchetypeVersion" /></label>
                     </td>
                   </tr>
                   <tr>
