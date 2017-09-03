@@ -254,8 +254,8 @@ class Query {
                
             this.addToSelect(
                new DataGet(archetypeId: projection.archetype_id, 
-                           path: projection.path, 
-                           rmTypeName: projection.rmTypeName,
+                           path:        projection.path, 
+                           rmTypeName:  projection.rmTypeName,
                            allowAnyArchetypeVersion: projection.allow_any_archetype_version)
             )
          }
@@ -395,31 +395,35 @@ class Query {
       // Usa ruta absoluta para agrupar.
       String absPath
       
-      // FIXME: if any archetype version is allowed, results should be grouped by the archid concept,
+      // If any archetype version is allowed, results is be grouped by the archid concept,
       // but maybe inside the data we can add the specific archetype with version.
-      // Also qhen querying ArchetypeIndexItem, like should be used because dataGet.archetypeId won't
-      // have the version **if any version is allowed**.
       
       this.select.each { dataGet ->
-         
-         // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
-         
+
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
          // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
+         if (dataGet.allowAnyArchetypeVersion)
+         {
+            absPath = dataGet.archetypeId +'.*'+ dataGet.path +'<'+dataGet.rmTypeName+'>'
+            dataidx = ArchetypeIndexItem.findByArchetypeIdLikeAndPath(dataGet.archetypeId+'%', dataGet.path)
+         }
+         else
+         {
+            absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
+            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
+         }
          
-         // FIXME: usar archId + path como key
          resHeaders[absPath] = [:]
          resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLEM above
          resHeaders[absPath]['name'] = dataidx.name
          
+         // DataCriteria is used bellow because they have the attribute definitions per datatype.
          switch (dataGet.rmTypeName)
          {
             case 'DV_QUANTITY':
-               resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() //['magnitude', 'units']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() // ['magnitude', 'units']
             break
             case 'DV_CODED_TEXT':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_CODED_TEXT.attributes() // ['value', 'code']
@@ -506,6 +510,7 @@ class Query {
       def uid
       def resGrouped = [:]
       def elem
+      def tmp_arch_id
       
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
@@ -528,6 +533,7 @@ class Query {
          
          // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
          // Cada columna de la fila
+         
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
             
             //println "header: " + path + " " + colData
@@ -539,8 +545,16 @@ class Query {
             
             // dvi para la columna actual
             // pueden ser varios si hay multiples ocurrencias del mismo nodo
-            coldvis = dvis.findAll{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
             
+            tmp_arch_id = _absPath.take(_absPath.indexOf('/'))
+            if (tmp_arch_id.endsWith('.*')) // allowAnyArchetypeVersion?
+            {
+               coldvis = dvis.findAll{ (it.archetypeId.replaceAll(/\.v(\d)*/, '.*') + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
+            }
+            else
+            {
+               coldvis = dvis.findAll{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
+            }
             coldvis.each { dvi ->
             
                elem = [:]
@@ -655,36 +669,50 @@ class Query {
       def resGrouped = [:]
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
-      def cols = res.groupBy { dvi -> dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>' }
+      def cols = res.groupBy { dvi ->
+         dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>'
+      }
       
-
-      // Usa ruta absoluta para agrupar.
-      String absPath
+      String absPath // absolute path used to group
       Date dviDate
+      def tmp_arch_id
+      def elems
       
       this.select.each { dataGet ->
-         
-         // Usa ruta absoluta para agrupar.
-         absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
          
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
          // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          
+         if (dataGet.allowAnyArchetypeVersion)
+         {
+            tmp_arch_id = dataGet.archetypeId +'.*'
+            absPath = dataGet.archetypeId +'.*'+ dataGet.path +'<'+dataGet.rmTypeName+'>'
+            dataidx = ArchetypeIndexItem.findByArchetypeIdLikeAndPath(dataGet.archetypeId+'%', dataGet.path)
+         }
+         else
+         {
+            tmp_arch_id = dataGet.archetypeId
+            absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
+            dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
+         }
 
          resGrouped[absPath] = [:]
          resGrouped[absPath]['type'] = dataGet.rmTypeName // type va en cada columna
          resGrouped[absPath]['name'] = dataidx.name // name va en cada columna, nombre asociado a la path por la que se agrupa
-         
-         // FIXME: hay tipos de datos que no deben graficarse
-         // TODO: entregar solo valores segun el tipo de dato, en lugar de devolver DataValueIndexes
-         //resGrouped[paths[i]]['serie'] = cols[paths[i]]
-         
          resGrouped[absPath]['serie'] = []
          
-         cols[absPath].each { dvi ->
+         // absPath can have any archetype version .* but cols are grouped by
+         // specific versions of arcehtypes, so cols[absPath can be empty].
+         // Need to use matches
+         
+         if (tmp_arch_id.endsWith('.*'))
+            elems = cols.findAll { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.values()
+         else
+            elems = cols[absPath]
+         
+         elems.each { dvi ->
             
             //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
             
@@ -693,18 +721,19 @@ class Query {
             else
                dviDate = dvi.owner.timeCommitted
             
+            
             // Datos de cada path seleccionada dentro de la composition
             switch (dataGet.rmTypeName)
             {
                case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
-                  resGrouped[absPath]['serie'] << [magnitude: dvi.magnitude,
-                                                   units:     dvi.units,
-                                                   date:      dviDate]
+                  resGrouped[absPath]['serie'] << [magnitude:    dvi.magnitude,
+                                                   units:        dvi.units,
+                                                   date:         dviDate]
                break
                case 'DV_CODED_TEXT':
-                  resGrouped[absPath]['serie'] << [code:      dvi.code,
-                                                   value:     dvi.value,
-                                                   date:      dviDate]
+                  resGrouped[absPath]['serie'] << [code:         dvi.code,
+                                                   value:        dvi.value,
+                                                   date:         dviDate]
                break
                case 'DV_ORDINAL':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
@@ -714,12 +743,12 @@ class Query {
                                                    date:         dviDate]
                break
                case 'DV_TEXT':
-                  resGrouped[absPath]['serie'] << [value:     dvi.value,
-                                                   date:      dviDate]
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   date:         dviDate]
                break
                case ['DV_DATE_TIME', 'DV_DATE']:
-                  resGrouped[absPath]['serie'] << [value:     dvi.value,
-                                                   date:      dviDate]
+                  resGrouped[absPath]['serie'] << [value:        dvi.value,
+                                                   date:         dviDate]
                break
                case 'DV_BOOLEAN':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
@@ -895,11 +924,16 @@ class Query {
             def subq = "SELECT dvi.id FROM "
              
             //"  FROM DataValueIndex dvi" + // FROM is set below
-            def where = $/
-                WHERE dvi.owner.id = ci.id AND
+            
+            def where
+            if (dataCriteria.allowAnyArchetypeVersion)
+               where = $/WHERE dvi.owner.id = ci.id AND
+                      dvi.archetypeId LIKE '${dataCriteria.archetypeId}%' AND
+                      dvi.archetypePath = '${dataCriteria.path}'/$
+            else
+               where = $/WHERE dvi.owner.id = ci.id AND
                       dvi.archetypeId = '${dataCriteria.archetypeId}' AND
-                      dvi.archetypePath = '${dataCriteria.path}'
-            /$
+                      dvi.archetypePath = '${dataCriteria.path}'/$
              
             // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
             switch (idxtype)

@@ -140,13 +140,20 @@
         {
            return this.select.length != 0;
         },
-        add_criteria: function (archetype_id, path, rm_type_name, criteria)
+        add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version)
         {
           if (this.type != 'composition') return false;
 
           this.id_gen++;
 
-          var c = {cid: this.id_gen, archetypeId: archetype_id, path: path, rmTypeName: rm_type_name, class: 'DataCriteria'+rm_type_name};
+          var c = {
+                   cid: this.id_gen, 
+                   archetypeId: archetype_id, 
+                   path: path, 
+                   rmTypeName: rm_type_name, 
+                   class: 'DataCriteria'+rm_type_name,
+                   allow_any_archetype_version: allow_any_archetype_version
+                  };
 
           // copy attributes
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
@@ -673,6 +680,7 @@ resp.responseJSON.result.message +'</div>'
         var name = $('select[name=view_archetype_path] option:selected').data('name');
         var type = $('select[name=view_archetype_path] option:selected').data('type');
         var spec = $('input[name=criteria]', fieldset).data('spec');
+        var allow_any_archetype_version = $('input[name=allow_any_archetype_version]')[0].checked;
         
         console.log('spec', spec);
 
@@ -714,9 +722,11 @@ resp.responseJSON.result.message +'</div>'
         
         
         // query object mgt
-        cid = query.add_criteria(archetype_id, path, type, criteria);
+        cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
         query.log();
 
+        // shows openEHR-EHR-...* instead of .v1
+        if (allow_any_archetype_version) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
 
         // shows the criteria in the UI
         $('#criteria').append(
