@@ -511,6 +511,7 @@ class Query {
       def resGrouped = [:]
       def elem
       def tmp_arch_id
+      def _absPathVersion // abstract path with specific arch id version
       
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
@@ -536,12 +537,16 @@ class Query {
          
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
             
-            //println "header: " + path + " " + colData
-            //resGrouped[compoId]['colValues']['type'] = idxtype
-            
             // values contain 1 element if there is only 1 DV occurrence, or many elements
             // as occurrences of that node exist.
-            colValues = [type: colData['type'], path: _absPath, values:[]] // pongo la path para debug
+            
+            // colValues.path should be the one on the OPT that constraints the compo {uid},
+            // and include the archetype id with a specific version, even if the 
+            // query has any vesion allowed. The path portion is the same as the _absPath.
+            // This can't be taken from the data, since results can be empty.
+            
+            _absPathVersion = dvis[0].owner.archetypeId + _absPath[_absPath.indexOf("/")..-1]
+            colValues = [type: colData['type'], path: _absPathVersion, values:[]] // pongo la path para debug
             
             // dvi para la columna actual
             // pueden ser varios si hay multiples ocurrencias del mismo nodo
@@ -707,10 +712,14 @@ class Query {
          // specific versions of arcehtypes, so cols[absPath can be empty].
          // Need to use matches
          
+         println "COLS to group by path "+ cols
+         
          if (tmp_arch_id.endsWith('.*'))
-            elems = cols.findAll { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.values()
+            elems = cols.find { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.value
          else
             elems = cols[absPath]
+            
+         println "ELEMS group by path "+ elems
          
          elems.each { dvi ->
             

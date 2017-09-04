@@ -50,6 +50,9 @@ class DataGet {
    
    ArchetypeIndexItem getIndexItem()
    {
-      return ArchetypeIndexItem.findByArchetypeIdAndPathAndRmTypeName(this.archetypeId, this.path, this.rmTypeName)
+      if (this.allowAnyArchetypeVersion)
+         return ArchetypeIndexItem.findByArchetypeIdLikeAndPathAndRmTypeName(this.archetypeId+'%', this.path, this.rmTypeName)
+      else
+         return ArchetypeIndexItem.findByArchetypeIdAndPathAndRmTypeName(this.archetypeId, this.path, this.rmTypeName)
    }
 }

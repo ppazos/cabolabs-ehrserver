@@ -1321,13 +1321,15 @@ resp.responseJSON.result.message +'</div>'
                   data_criteria.archetypeId +'", "'+
                   data_criteria.path +'", "'+
                   data_criteria.rmTypeName +'", '+
-                  'criteria);'
+                  'criteria,'+
+                  data_criteria.allowAnyArchetypeVersion +');'
                 
                 println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
                 
+                // shows openEHR-EHR-...* instead of .v1
+                //if (data_criteria.allowAnyArchetypeVersion) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
 
                 name = data_criteria.indexItem.name['ISO_639-1::'+ session.lang]
-
                 
                 println """
                   \$('#criteria').append(
@@ -1362,7 +1364,7 @@ resp.responseJSON.result.message +'</div>'
                 name = data_get.indexItem.name['ISO_639-1::'+ session.lang]
 
                 // Updates the UI and the query object
-                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'");'
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'", "'+ data_get.allowAnyArchetypeVersion +'");'
              }
           }
           
