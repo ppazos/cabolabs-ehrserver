@@ -162,6 +162,14 @@ class Query {
          
          def condition
          json.where.each { criteria ->
+         
+            // removes the version for the archetype id and saves it
+            if (criteria.allowAnyArchetypeVersion)
+            {
+               criteria.archetypeId = criteria.archetypeId.replaceAll(/\.v(\d)*/, '')
+            }
+            
+            println "Criteria "+ criteria
             
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
@@ -250,8 +258,10 @@ class Query {
             
             // removes the version for the archetype id and saves it
             if (projection.allow_any_archetype_version)
-               projection.archetype_id = projection.archetype_id.take(projection.archetype_id.lastIndexOf('.'))
-               
+            {
+               projection.archetype_id = projection.archetype_id.replaceAll(/\.v(\d)*/, '') //projection.archetype_id.take(projection.archetype_id.lastIndexOf('.'))
+            }
+            
             this.addToSelect(
                new DataGet(archetypeId: projection.archetype_id, 
                            path:        projection.path, 
@@ -712,14 +722,14 @@ class Query {
          // specific versions of arcehtypes, so cols[absPath can be empty].
          // Need to use matches
          
-         println "COLS to group by path "+ cols
+         //println "COLS to group by path "+ cols
          
          if (tmp_arch_id.endsWith('.*'))
             elems = cols.find { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.value
          else
             elems = cols[absPath]
             
-         println "ELEMS group by path "+ elems
+         //println "ELEMS group by path "+ elems
          
          elems.each { dvi ->
             

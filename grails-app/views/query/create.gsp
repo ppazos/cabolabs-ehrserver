@@ -152,7 +152,7 @@
                    path: path, 
                    rmTypeName: rm_type_name, 
                    class: 'DataCriteria'+rm_type_name,
-                   allow_any_archetype_version: allow_any_archetype_version
+                   allowAnyArchetypeVersion: allow_any_archetype_version
                   };
 
           // copy attributes
@@ -726,7 +726,10 @@ resp.responseJSON.result.message +'</div>'
         query.log();
 
         // shows openEHR-EHR-...* instead of .v1
-        if (allow_any_archetype_version) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
+        if (allow_any_archetype_version)
+        {
+           archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
+        }
 
         // shows the criteria in the UI
         $('#criteria').append(
@@ -784,8 +787,16 @@ resp.responseJSON.result.message +'</div>'
         query.log();
         
         // shows openEHR-EHR-...* instead of .v1
-        if (allow_any_archetype_version) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
-
+        if (allow_any_archetype_version)
+        {
+           if (archetype_id.match(/\.v(\d)*/) != null) // has version? if edit it won't have it
+           {
+              archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")); // removes version
+           }
+           
+           archetype_id += ".*" // generic version just for the UI
+        }
+        
         // shows the projection in the UI
         $('#selection').append(
           '<tr data-id="'+ pid +'">'+
@@ -1327,14 +1338,18 @@ resp.responseJSON.result.message +'</div>'
                 println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
                 
                 // shows openEHR-EHR-...* instead of .v1
-                //if (data_criteria.allowAnyArchetypeVersion) archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
+                def archetype_id = data_criteria.archetypeId
+                if (data_criteria.allowAnyArchetypeVersion)
+                {
+                   archetype_id = archetype_id +".*";
+                }
 
                 name = data_criteria.indexItem.name['ISO_639-1::'+ session.lang]
                 
                 println """
                   \$('#criteria').append(
                      '<tr data-id="'+ cid +'">'+
-                     '<td>${data_criteria.archetypeId}</td>'+
+                     '<td>${archetype_id}</td>'+
                      '<td>${data_criteria.path}</td>'+
                      '<td>${name}</td>'+
                      '<td>${data_criteria.rmTypeName}</td>'+
