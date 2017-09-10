@@ -39,33 +39,33 @@ hibernate {
 environments {
     development {
         dataSource {
-           dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+           dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
 
            //logSql = true
            
            // ===========================================================
            // Config for OpenShift ======================================
            
-           String host = "localhost"
+           String host = "mysql"
            String port = 3306
-           String dbName = "ehrserver"
+           String dbName = "ehserver"
            
-           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC&
            
            username = 'root'
-           password = ''
+           password = 'root'
         }
     }
     test {
         dataSource {
             dbCreate = "update"
-            String host = "localhost"
+            String host = "mysql"
             String port = 3306
             String dbName = "ehrservertest"
-            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+            url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
             
             username = 'root'
-            password = ''
+            password = 'root'
         }
     }
     production {
