@@ -1312,9 +1312,8 @@ class RestController {
       String format = request.JSON.format
       String group = request.JSON.group
       
-      // TODO: bind
-      String composerUid
-      String composerName
+      String composerUid = request.JSON.composerUid
+      String composerName = request.JSON.composerName
       
       String organizationUid
       if (qehrId)

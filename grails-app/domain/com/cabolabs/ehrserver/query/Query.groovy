@@ -345,6 +345,20 @@ class Query {
             if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
             
+            if (composerUid || composerName)
+            {
+               composer {
+                  if (composerUid)
+                  {
+                     eq('value', composerUid)
+                  }
+                  if (composerName)
+                  {
+                     ilike('name', '%'+ composerName +'%')
+                  }
+               }
+            }
+            
             // event can use startTime, persistent uses timeCommitted to filter by date
             or {
               and {
@@ -362,6 +376,8 @@ class Query {
             eq('lastVersion', true) // query only latest versions
          }
       }
+      
+      println res
       
       
       // Group
@@ -850,7 +866,8 @@ class Query {
          }
          if (composerName)
          {
-            q += "doc.name LIKE '%${composerName}%' AND "
+            // case insensitive comparison for name
+            q += "lower(doc.name) LIKE '%${composerName.toLowerCase()}%' AND "
          }
          q += "ci.lastVersion=true AND " // Query only latest versions
       }

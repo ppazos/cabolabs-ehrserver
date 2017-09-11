@@ -478,13 +478,16 @@ resp.responseJSON.result.message +'</div>'
         toDate = $('input[name=toDate]').val();
         format = $('select[name=format]').val(); // xml o json
         group = $('select[name=group]').val();
+        composerUid = $('select[name=composerUid]').val();
+        composerName = $('input[name=composerName]').val();
 
         var data = {
                     query: query, fromDate: fromDate, toDate: toDate,
                     format: format, group: group
                    };
         if (qehrId != null) data.qehrId = qehrId;
-        
+        if (composerUid != null) data.composerUid = composerUid;
+        if (composerName != null) data.composerName = composerName;
         
         // removes previous alert if present
         $('#query_test_common .alert').remove();
@@ -1383,7 +1386,7 @@ resp.responseJSON.result.message +'</div>'
                 name = data_get.indexItem.name['ISO_639-1::'+ session.lang]
 
                 // Updates the UI and the query object
-                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'", "'+ data_get.allowAnyArchetypeVersion +'");'
+                println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'", '+ data_get.allowAnyArchetypeVersion +');'
              }
           }
           
