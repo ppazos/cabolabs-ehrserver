@@ -1,0 +1,20 @@
+version: '2'
+ 
+services:
+  mysql:
+    image: mysql
+    container_name: "ehserver_mysql"
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "ehserver"
+  web:
+    build: .
+    container_name: "ehserver_web"
+    ports:
+      - 8090:8090
+    links:
+      - mysql:ehserver_mysql
+    environment:
+      EHRSERVER_REST_SECRET: '88f0435c-ff45-4b5b-874f-689ad94adcad'
