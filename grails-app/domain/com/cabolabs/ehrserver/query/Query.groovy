@@ -307,13 +307,17 @@ class Query {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
    
-   def execute(String ehrUid, Date from, Date to, String group, String organizationUid, int max, int offset)
+   def execute(String ehrUid, Date from, Date to, 
+               String group, String organizationUid, int max, int offset,
+               String composerUid, String composerName)
    {
-      if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid)
-      return executeComposition(ehrUid, from, to, organizationUid, max, offset)
+      if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid, composerUid, composerName)
+      return executeComposition(ehrUid, from, to, organizationUid, max, offset, composerUid, composerName)
    }
    
-   def executeDatavalue(String ehrUid, Date from, Date to, String group, String organizationUid)
+   def executeDatavalue(String ehrUid, Date from, Date to, 
+                        String group, String organizationUid,
+                        String composerUid, String composerName)
    {
       //println "ehrUid: $ehrUid - organizationUid: $organizationUid"
       
@@ -827,12 +831,34 @@ class Query {
    }
    
    
-   def executeComposition(String ehrUid, Date from, Date to, String organizationUid, int max, int offset)
+   def executeComposition(String ehrUid, Date from, Date to,
+                          String organizationUid, int max, int offset,
+                          String composerUid, String composerName)
    {
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
       // Armado de la query
-      String q = "FROM CompositionIndex ci WHERE ci.lastVersion=true AND " // Query only latest versions
+      String q = "SELECT ci FROM CompositionIndex ci "
+      
+      if (composerUid || composerName)
+      {
+         q += "join ci.composer as doc WHERE "
+         
+         if (composerUid)
+         {
+            q += "doc.value = '${composerUid}' AND "
+         }
+         if (composerName)
+         {
+            q += "doc.name LIKE '%${composerName}%' AND "
+         }
+         q += "ci.lastVersion=true AND " // Query only latest versions
+      }
+      else
+      {
+         q += "WHERE ci.lastVersion=true AND " // Query only latest versions
+      }
+      
       
       // ===============================================================
       // Criteria nivel 1 ehrUid
@@ -1083,6 +1109,8 @@ class Query {
       }
       
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
+      
+      println cilist
       
       return cilist
    }

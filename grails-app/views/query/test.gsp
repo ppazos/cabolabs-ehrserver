@@ -72,6 +72,22 @@
               <input type="text" name="toDate" class="form-control input-sm" />
             </td>
           </tr>
+          <tr>
+		      <td>
+              <g:message code="query.test.composerUid" />
+            </td>
+            <td>
+              <g:select from="${composerUids}" name="composerUid" class="form-control" noSelection="${['':'Select One...']}" />
+            </td>
+          </tr>
+          <tr>
+		      <td>
+              <g:message code="query.test.composerName" />
+            </td>
+            <td>
+              <input type="text" name="composerName" class="form-control" />
+            </td>
+          </tr>
           <%--
           <tr>
             <td></td>

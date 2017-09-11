@@ -365,6 +365,8 @@
         retrieveData = $('select[name=retrieveData]').val();
         showUI = $('select[name=showUI]').val();
         format = $('select[name=composition_format]').val();
+        composerUid = $('select[name=composerUid]').val();
+        composerName = $('input[name=composerName]').val();
 
         if (showUI == 'true') format = 'html';
 
@@ -373,6 +375,8 @@
                     retrieveData: retrieveData, showUI: showUI, format: format
                    };
         if (qehrId != null) data.qehrId = qehrId;
+        if (composerUid != null) data.composerUid = composerUid;
+        if (composerName != null) data.composerName = composerName;
         
         
         // removes previous alert if present

@@ -40,6 +40,8 @@ import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
+import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
+
 class QueryController {
 
    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
@@ -337,6 +339,14 @@ class QueryController {
       {
         params['operand'] = params.list('operand')
         params['value'] = params.list('value')
+      }
+      
+      // TODO: make with criteria to get just the values and unique ones
+      params['composerUids'] = DoctorProxy.createCriteria().list {
+         projections {
+            distinct("value")
+         }
+         isNotNull("value")
       }
       
       return params

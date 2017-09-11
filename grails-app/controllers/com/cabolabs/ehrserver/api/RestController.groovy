@@ -982,7 +982,8 @@ class RestController {
    @SecuredStateless
    def query(String queryUid, String ehrUid, String format, 
              boolean retrieveData, boolean showUI, String group,
-             String fromDate, String toDate, int max, int offset)
+             String fromDate, String toDate, int max, int offset,
+             String composerUid, String composerName)
    {
       if (!queryUid)
       {
@@ -1080,7 +1081,7 @@ class RestController {
       def start_time = System.currentTimeMillis()
       // /measuring query timing
       
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
+      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset, composerUid, composerName) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
       
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1311,6 +1312,10 @@ class RestController {
       String format = request.JSON.format
       String group = request.JSON.group
       
+      // TODO: bind
+      String composerUid
+      String composerName
+      
       String organizationUid
       if (qehrId)
       {
@@ -1362,7 +1367,7 @@ class RestController {
       }
       
       def query = Query.newInstance(request.JSON.query)
-      def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid)
+      def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid, composerUid, composerName)
       
       
       // Format
@@ -1400,7 +1405,10 @@ class RestController {
       String toDate = request.JSON.toDate
       String qarchetypeId = request.JSON.qarchetypeId
       String format = request.JSON.format
-       
+      
+      String composerUid = request.JSON.composerUid
+      String composerName = request.JSON.composerName
+      
       /*
        println request.JSON.retrieveData.getClass().getSimpleName()
        println request.JSON.showUI.getClass().getSimpleName()
@@ -1463,7 +1471,7 @@ class RestController {
       def offset = 0
       
       def query = Query.newInstance(request.JSON.query)
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset, composerUid, composerName)
       def result = cilist
       
       // If no ehrUid was specified, the results will be for different ehrs
