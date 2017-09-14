@@ -44,6 +44,7 @@ import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
 import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.ehrserver.notification.*
 import grails.util.Environment
+import com.cabolabs.ehrserver.conf.ConfigurationItem
 
 class BootStrap {
 
@@ -53,35 +54,19 @@ class BootStrap {
    def grailsApplication
    def resourceService
    
-   def init = { servletContext ->
+   def defaultConfigurationItems()
+   {
+      def conf = [
+         new ConfigurationItem(key:'ehrserver.instance.id', value:'9cbabb12-c4ae-421c-868c-a6898520b983', type:'string', blank:false, description:'EHRServer running instance ID'),
+         new ConfigurationItem(key:'ehrserver.console.lists.max_items', value:'20', type:'number', blank:false, description:'Max number of items on the lists views for the Web Console'),
+         new ConfigurationItem(key:'ehrserver.security.passwords.min_length', value:'6', type:'number', blank:false, description:'Minimum password size used on password reset')
+      ]
       
-      def working_folder = new File('.')
-      log.info ("Working folder: "+ working_folder.absolutePath)
-      
-      
-      // file system checks
-      def commits_repo  = new File(Holders.config.app.commit_logs)
-      def versions_repo = new File(Holders.config.app.version_repo)
-      def opt_repo      = new File(Holders.config.app.opt_repo)
-      
-      if (!commits_repo.exists())
-      {
-         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
-      }
-      if (!versions_repo.exists())
-      {
-         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
-      }
-      if (!opt_repo.exists())
-      {
-         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
-      }
-      // /file system checks
-      
-      
-      // Define server timezone
-      TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-      
+      conf.each { it.save(failOnError: true) }
+   }
+   
+   def extendClasses()
+   {
       // Used by query builder, all return String
       String.metaClass.asSQLValue = { operand ->
         //if (operand == 'contains') return "'%"+ delegate +"%'" // Contains is translated to LIKE, we need the %
@@ -130,10 +115,32 @@ class BootStrap {
          if (!delegate.endsWith(PS)) delegate += PS
          return delegate
       }
-     
-      // --------------------------------------------------------------------
-     
-
+   }
+   
+   def repoChecks()
+   {
+      // file system checks
+      def commits_repo  = new File(Holders.config.app.commit_logs)
+      def versions_repo = new File(Holders.config.app.version_repo)
+      def opt_repo      = new File(Holders.config.app.opt_repo)
+      
+      if (!commits_repo.exists())
+      {
+         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
+      }
+      if (!versions_repo.exists())
+      {
+         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
+      }
+      if (!opt_repo.exists())
+      {
+         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
+      }
+      // /file system checks
+   }
+   
+   def registerMarshallers()
+   {
      JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
         return [templateId:  opt.templateId,
                 concept:     opt.concept,
@@ -531,20 +538,13 @@ class BootStrap {
         
         // TODO: timing
      }
-     
-     
-     //****** SECURITY *******
-     
-     // Register custom auth filter
-     // ref: https://objectpartners.com/2013/07/11/custom-authentication-with-the-grails-spring-security-core-plugin/
-     // See 'authFilter' in grails-app/conf/spring/resources.groovy
-     // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
-     SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
-
-     
-     // Permissions
-     if (RequestMap.count() == 0)
-     {
+   }
+   
+   def registerRequestMap()
+   {
+      // Permissions
+      if (RequestMap.count() == 0)
+      {
         for (String url in [
          '/', // redirects to login, see UrlMappings
          '/error', '/index', '/index.gsp', '/**/favicon.ico', '/shutdown',
@@ -605,38 +605,66 @@ class BootStrap {
         
         new RequestMap(url: '/rest/queryCompositions',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-     }
+      }
+   }
+   
+   def init = { servletContext ->
+      
+      def working_folder = new File('.')
+      log.info ("Working folder: "+ working_folder.absolutePath)
+      
+      //****** SETUP *******
+      
+      // Define server timezone
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+      
+      repoChecks()
+      extendClasses()
+      registerMarshallers()
+      defaultConfigurationItems()
+      // --------------------------------------------------------------------
+     
+      //****** SECURITY *******
+     
+      // Register custom auth filter
+      // ref: https://objectpartners.com/2013/07/11/custom-authentication-with-the-grails-spring-security-core-plugin/
+      // See 'authFilter' in grails-app/conf/spring/resources.groovy
+      // ref: http://grails-plugins.github.io/grails-spring-security-core/guide/filters.html
+      SpringSecurityUtils.clientRegisterFilter('authFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 10)
+
+      registerRequestMap()
+      // --------------------------------------------------------------------
      
      
-     // Do not create data if testing, tests will create their own data.
-     if (Environment.current != Environment.TEST)
-     {
-        def organizations = []
-        if (Organization.count() == 0)
-        {
-           println "Creating default organization"
+      // Do not create data if testing, tests will create their own data.
+      if (Environment.current != Environment.TEST)
+      {
+         def organizations = []
+         if (Organization.count() == 0)
+         {
+            println "Creating default organization"
            
-           // Default organization
-           organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
+            // Default organization
+            organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
            
-           organizations.each {
-              it.save(failOnError:true, flush:true)
-           }
-        }
-        else organizations = Organization.list()
+            organizations.each {
+               it.save(failOnError:true, flush:true)
+            }
+         }
+         else organizations = Organization.list()
         
         
-        if (Role.count() == 0 )
-        {
-           // Create roles
-           def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
-           def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
-           def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
-           def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
-        }
+         if (Role.count() == 0 )
+         {
+            // Create roles
+            def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+            def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
+            def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+            def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
+         }
         
-        if (User.count() == 0)
-        {
+         if (User.count() == 0)
+         {
            println "Creating default users"
            
            def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
@@ -657,45 +685,44 @@ class BootStrap {
            UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
            UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
            UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
-        }
+         }
         
         
         
-        // Always regenerate indexes in deploy
-        if (OperationalTemplateIndex.count() == 0)
-        {
-           println "Indexing Operational Templates"
+         // Always regenerate indexes in deploy
+         if (OperationalTemplateIndex.count() == 0)
+         {
+            println "Indexing Operational Templates"
            
-           def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-           ti.setupBaseOpts()
-           ti.indexAll( Organization.get(1) )
-        }
+            def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+            ti.setupBaseOpts()
+            ti.indexAll( Organization.get(1) )
+         }
         
-        // TODO: because initially there are no shares, the indexAll 
-        //       wont share the OPTs with the org, so we do it manually here.
+         // TODO: because initially there are no shares, the indexAll 
+         //       wont share the OPTs with the org, so we do it manually here.
         
-        // OPT loading
-        def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-        optMan.unloadAll()
-        optMan.loadAll()
-        
-        
-        // Sample EHRs for testing purposes
-        if (Ehr.count() == 0)
-        {
-           println "Creating sample EHRs"
-           def ehr_subject_uids = [
+         // OPT loading
+         def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
+         optMan.unloadAll()
+         optMan.loadAll()
+         
+         // Sample EHRs for testing purposes
+         if (Ehr.count() == 0)
+         {
+            println "Creating sample EHRs"
+            def ehr_subject_uids = [
               '11111111-1111-1111-1111-111111111111',
               '22222222-1111-1111-1111-111111111111',
               '33333333-1111-1111-1111-111111111111',
               '44444444-1111-1111-1111-111111111111',
               '55555555-1111-1111-1111-111111111111'
-           ]
+            ]
            
-           def ehr
-           def c = Organization.count()
+            def ehr
+            def c = Organization.count()
            
-           ehr_subject_uids.eachWithIndex { uid, i ->
+            ehr_subject_uids.eachWithIndex { uid, i ->
               ehr = new Ehr(
                  uid: uid, // the ehr id is the same as the patient just to simplify testing
                  subject: new PatientProxy(
@@ -705,9 +732,9 @@ class BootStrap {
               )
             
               if (!ehr.save()) println ehr.errors
-           }
-        }
-     } // not TEST ENV
+            }
+         }
+      } // not TEST ENV
      
      
       // Create plans
@@ -740,7 +767,6 @@ class BootStrap {
          }
       }
       
-     
      
       // ============================================================
       // migration for latest changes
@@ -809,44 +835,44 @@ class BootStrap {
             println "not aii!!!"
          }
       }
-     */
+      */
      
-     /*
-     // Test notifications
-     def notifs = [
-        new Notification(name:'notif 1', language:'en', text:'Look at me!'),
-        new Notification(name:'notif 2', language:'en', text:'Look at me!', forSection:'ehr'),
-        new Notification(name:'notif 3', language:'en', text:'Look at me!', forOrganization:Organization.get(1).uid),
-        new Notification(name:'notif 4', language:'en', text:'Look at me!', forUser:1),
-        new Notification(name:'notif 5', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid),
-        new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1),
+      /*
+      // Test notifications
+      def notifs = [
+         new Notification(name:'notif 1', language:'en', text:'Look at me!'),
+         new Notification(name:'notif 2', language:'en', text:'Look at me!', forSection:'ehr'),
+         new Notification(name:'notif 3', language:'en', text:'Look at me!', forOrganization:Organization.get(1).uid),
+         new Notification(name:'notif 4', language:'en', text:'Look at me!', forUser:1),
+         new Notification(name:'notif 5', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid),
+         new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1),
         
-        new Notification(name:'notif 7', language:'es', text:'mirame!'),
-        new Notification(name:'notif 8', language:'es', text:'mirame', forSection:'ehr'),
-        new Notification(name:'notif 9', language:'es', text:'mirame!', forOrganization:Organization.get(1).uid),
-        new Notification(name:'notif 10', language:'es', text:'mirame!', forUser:1)
-     ]
-     
-     def statuses = []
-     notifs.each { notif ->
-        if (!notif.forUser)
-        {
-           User.list().each { user ->
-              statuses << new NotificationStatus(user:user, notification:notif)
-           }
-        }
-        else
-        {
-           statuses << new NotificationStatus(user:User.get(notif.forUser), notification:notif)
-        }
+         new Notification(name:'notif 7', language:'es', text:'mirame!'),
+         new Notification(name:'notif 8', language:'es', text:'mirame', forSection:'ehr'),
+         new Notification(name:'notif 9', language:'es', text:'mirame!', forOrganization:Organization.get(1).uid),
+         new Notification(name:'notif 10', language:'es', text:'mirame!', forUser:1)
+      ]
+      
+      def statuses = []
+      notifs.each { notif ->
+         if (!notif.forUser)
+         {
+            User.list().each { user ->
+               statuses << new NotificationStatus(user:user, notification:notif)
+            }
+         }
+         else
+         {
+            statuses << new NotificationStatus(user:User.get(notif.forUser), notification:notif)
+         }
         
-        notif.save(failOnError: true)
-     }
+         notif.save(failOnError: true)
+      }
      
-     statuses.each { status ->
-        status.save(failOnError: true)
-     }
-     */
+      statuses.each { status ->
+         status.save(failOnError: true)
+      }
+      */
       
       /*
       com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex.list().each {
