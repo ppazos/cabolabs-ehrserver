@@ -166,7 +166,7 @@ class UserControllerSpec extends Specification {
         then:"The model is correct"
             model.userInstanceList.size() == 1 // the logged in user is returned
             model.userInstanceCount == 1
-            model.userInstanceList[0].username == "orgman"
+            model.userInstanceList[0].user.username == "orgman"
    }
 
    void "Test the create action returns the correct model"()
