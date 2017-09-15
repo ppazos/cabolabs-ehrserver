@@ -62,6 +62,11 @@ class UserControllerSpec extends Specification {
          sendUserRegisteredOrCreatedEmail: { mail, params -> println "Email sent ${mail}" }
       ]
       
+      // mock configurationService and ConfigurationItem
+      controller.configurationService = [
+         getValue: { key -> if (key == 'ehrserver.console.lists.max_items' ) return 20 }
+      ]
+      
       controller.set_org_for_tests(organization)
       
 /*
