@@ -53,6 +53,7 @@ class BootStrap {
    def mailService
    def grailsApplication
    def resourceService
+   def configurationService
    
    def defaultConfigurationItems()
    {
@@ -63,6 +64,8 @@ class BootStrap {
       ]
       
       conf.each { it.save(failOnError: true) }
+      
+      configurationService.refresh()
    }
    
    def extendClasses()

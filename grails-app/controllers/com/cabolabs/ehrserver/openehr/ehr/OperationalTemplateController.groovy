@@ -35,10 +35,11 @@ class OperationalTemplateController {
    def config = Holders.config.app
    def xmlValidationService
    def springSecurityService
+   def configurationService
    
-   def list(int max, int offset, String sort, String order, String concept)
+   def list(int offset, String sort, String order, String concept)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

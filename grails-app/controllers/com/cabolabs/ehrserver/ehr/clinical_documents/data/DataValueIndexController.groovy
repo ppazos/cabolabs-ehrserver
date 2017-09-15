@@ -26,11 +26,13 @@ import grails.util.Holders
 
 class DataValueIndexController {
 
+   def configurationService
+   
    def config = Holders.config.app
 
-   def index(Integer max)
+   def index()
    {
-      params.max = Math.min(max ?: config.list_max, 100)
+      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
       [datavalues: DataValueIndex.list(params), total: DataValueIndex.count()]
    }
    

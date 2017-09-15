@@ -28,6 +28,8 @@ import grails.util.Holders
 
 class CompositionIndexController {
 
+   def configurationService
+   
    def config = Holders.config.app
    
    def index()
@@ -35,9 +37,9 @@ class CompositionIndexController {
       redirect(action: "list", params: params)
    }
 
-   def list(Integer max)
+   def list()
    {
-      params.max = Math.min(max ?: config.list_max, 100)
+      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
       [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
    }
 

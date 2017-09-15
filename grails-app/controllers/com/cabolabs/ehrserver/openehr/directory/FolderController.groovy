@@ -35,14 +35,15 @@ import grails.util.Holders
 class FolderController {
 
    def springSecurityService
+   def configurationService
    
    static allowedMethods = [save: "POST", update: "PUT"]
    
    def config = Holders.config.app
 
-   def index(Integer max)
+   def index()
    {
-      params.max = Math.min(max ?: config.list_max, 100)
+      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
       
       def list, count
       

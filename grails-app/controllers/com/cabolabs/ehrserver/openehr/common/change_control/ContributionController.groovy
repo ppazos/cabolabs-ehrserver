@@ -35,6 +35,7 @@ import grails.util.Holders
 class ContributionController {
 
    def springSecurityService
+   def configurationService
    
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -45,9 +46,9 @@ class ContributionController {
       redirect(action: "list", params: params)
    }
 
-   def list(int max, int offset, String sort, String order, String ehdUid, String orgUid)
+   def list(int offset, String sort, String order, String ehdUid, String orgUid)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'

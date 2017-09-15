@@ -46,6 +46,8 @@ class UserController {
    def simpleCaptchaService
    def notificationService
    def springSecurityService
+   def configurationService
+   
    //def userService
    def config = Holders.config.app
 
@@ -59,9 +61,9 @@ class UserController {
       // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
    }
    
-   def index(int max, int offset, String sort, String order, String username, String organizationUid)
+   def index(int offset, String sort, String order, String username, String organizationUid)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

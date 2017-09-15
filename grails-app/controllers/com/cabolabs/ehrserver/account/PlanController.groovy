@@ -12,7 +12,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,99 +30,101 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class PlanController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-    
-    def config = Holders.config.app
+   def configurationService
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: config.list_max, 100)
-        respond Plan.list(params), model:[planInstanceCount: Plan.count()]
-    }
+   static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+   
+   def config = Holders.config.app
 
-    def show(Plan planInstance) {
-        respond planInstance
-    }
+   def index() {
+      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
+      respond Plan.list(params), model:[planInstanceCount: Plan.count()]
+   }
 
-    def create() {
-        respond new Plan(params)
-    }
+   def show(Plan planInstance) {
+      respond planInstance
+   }
 
-    @Transactional
-    def save(Plan planInstance) {
-        if (planInstance == null) {
-            notFound()
-            return
-        }
+   def create() {
+      respond new Plan(params)
+   }
 
-        if (planInstance.hasErrors()) {
-            respond planInstance.errors, view:'create'
-            return
-        }
+   @Transactional
+   def save(Plan planInstance) {
+      if (planInstance == null) {
+         notFound()
+         return
+      }
 
-        planInstance.save flush:true
+      if (planInstance.hasErrors()) {
+         respond planInstance.errors, view:'create'
+         return
+      }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'plan.label', default: 'Plan'), planInstance.id])
-                redirect planInstance
-            }
-            '*' { respond planInstance, [status: CREATED] }
-        }
-    }
+      planInstance.save flush:true
 
-    def edit(Plan planInstance) {
-        respond planInstance
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'plan.label', default: 'Plan'), planInstance.id])
+            redirect planInstance
+         }
+         '*' { respond planInstance, [status: CREATED] }
+      }
+   }
 
-    @Transactional
-    def update(Plan planInstance) {
-        if (planInstance == null) {
-            notFound()
-            return
-        }
+   def edit(Plan planInstance) {
+      respond planInstance
+   }
 
-        if (planInstance.hasErrors()) {
-            respond planInstance.errors, view:'edit'
-            return
-        }
+   @Transactional
+   def update(Plan planInstance) {
+      if (planInstance == null) {
+         notFound()
+         return
+      }
 
-        planInstance.save flush:true
+      if (planInstance.hasErrors()) {
+         respond planInstance.errors, view:'edit'
+         return
+      }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Plan.label', default: 'Plan'), planInstance.id])
-                redirect planInstance
-            }
-            '*'{ respond planInstance, [status: OK] }
-        }
-    }
+      planInstance.save flush:true
 
-    @Transactional
-    def delete(Plan planInstance) {
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'Plan.label', default: 'Plan'), planInstance.id])
+            redirect planInstance
+         }
+         '*'{ respond planInstance, [status: OK] }
+      }
+   }
 
-        if (planInstance == null) {
-            notFound()
-            return
-        }
+   @Transactional
+   def delete(Plan planInstance) {
 
-        planInstance.delete flush:true
+      if (planInstance == null) {
+         notFound()
+         return
+      }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Plan.label', default: 'Plan'), planInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
+      planInstance.delete flush:true
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'plan.label', default: 'Plan'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'Plan.label', default: 'Plan'), planInstance.id])
+            redirect action:"index", method:"GET"
+         }
+         '*'{ render status: NO_CONTENT }
+      }
+   }
+
+   protected void notFound() {
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'plan.label', default: 'Plan'), params.id])
+            redirect action: "index", method: "GET"
+         }
+         '*'{ render status: NOT_FOUND }
+      }
+   }
 }

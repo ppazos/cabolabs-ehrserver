@@ -31,11 +31,13 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class NotificationController {
 
    def springSecurityService
+   def configurationService
+   
    def config = Holders.config.app
    
-   def index(int max, int offset, String sort, String order)
+   def index(int offset, String sort, String order)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

@@ -27,6 +27,8 @@ import grails.util.Holders
 
 class PaginatorTagLib {
 
+   def configurationService
+   
    def config = Holders.config.app
    
     /**
@@ -42,7 +44,7 @@ class PaginatorTagLib {
     
       def numberOfPages = (attrs.numberOfPages ?: 5)
       
-      def max = Math.min(params.max?.toInteger() ?: config.list_max, 100)
+      def max = configurationService.getValue('ehrserver.console.lists.max_items')
       def offset = (params.offset?.toInteger() ?: 1)
       def currentPage = offset.intdiv(max) + 1
       

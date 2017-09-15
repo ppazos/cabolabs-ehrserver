@@ -47,6 +47,7 @@ class EhrController {
 
    def springSecurityService
    def compositionService
+   def configurationService
    
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -65,7 +66,7 @@ class EhrController {
     */
    def list(int max, int offset, String sort, String order, String uid, String organizationUid)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

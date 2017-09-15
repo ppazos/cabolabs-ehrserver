@@ -36,11 +36,13 @@ import grails.util.Holders
 class VersionedCompositionController {
 
    def springSecurityService
+   def configurationService
+   
    def config = Holders.config.app
    
-   def index(int max, int offset, String sort, String order, String ehdUid, String orgUid)
+   def index(int offset, String sort, String order, String ehdUid, String orgUid)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

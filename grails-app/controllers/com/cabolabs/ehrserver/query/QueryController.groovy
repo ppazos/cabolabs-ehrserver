@@ -48,6 +48,7 @@ class QueryController {
    
    def springSecurityService
    def resourceService
+   def configurationService
    
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -58,9 +59,9 @@ class QueryController {
       redirect(action: "list", params: params)
    }
 
-   def list(int max, int offset, String sort, String order, String name)
+   def list(int offset, String sort, String order, String name)
    {
-      max = Math.min(max ?: config.list_max, 100)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'

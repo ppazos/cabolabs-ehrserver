@@ -12,7 +12,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,99 +30,101 @@ import grails.util.Holders
 @Transactional(readOnly = true)
 class RoleController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+   def configurationService
+   
+   static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def config = Holders.config.app
-    
-    def index(Integer max) {
-        params.max = Math.min(max ?: config.list_max, 100)
-        respond Role.list(params), model:[roleInstanceCount: Role.count()]
-    }
+   def config = Holders.config.app
+   
+   def index() {
+      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
+      respond Role.list(params), model:[roleInstanceCount: Role.count()]
+   }
 
-    def show(Role roleInstance) {
-        respond roleInstance
-    }
+   def show(Role roleInstance) {
+      respond roleInstance
+   }
 
-    def create() {
-        respond new Role(params)
-    }
+   def create() {
+      respond new Role(params)
+   }
 
-    @Transactional
-    def save(Role roleInstance) {
-        if (roleInstance == null) {
-            notFound()
-            return
-        }
+   @Transactional
+   def save(Role roleInstance) {
+      if (roleInstance == null) {
+         notFound()
+         return
+      }
 
-        if (roleInstance.hasErrors()) {
-            respond roleInstance.errors, view:'create'
-            return
-        }
+      if (roleInstance.hasErrors()) {
+         respond roleInstance.errors, view:'create'
+         return
+      }
 
-        roleInstance.save flush:true
+      roleInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'role.label', default: 'Role'), roleInstance.id])
-                redirect roleInstance
-            }
-            '*' { respond roleInstance, [status: CREATED] }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'role.label', default: 'Role'), roleInstance.id])
+            redirect roleInstance
+         }
+         '*' { respond roleInstance, [status: CREATED] }
+      }
+   }
 
-    def edit(Role roleInstance) {
-        respond roleInstance
-    }
+   def edit(Role roleInstance) {
+      respond roleInstance
+   }
 
-    @Transactional
-    def update(Role roleInstance) {
-        if (roleInstance == null) {
-            notFound()
-            return
-        }
+   @Transactional
+   def update(Role roleInstance) {
+      if (roleInstance == null) {
+         notFound()
+         return
+      }
 
-        if (roleInstance.hasErrors()) {
-            respond roleInstance.errors, view:'edit'
-            return
-        }
+      if (roleInstance.hasErrors()) {
+         respond roleInstance.errors, view:'edit'
+         return
+      }
 
-        roleInstance.save flush:true
+      roleInstance.save flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Role.label', default: 'Role'), roleInstance.id])
-                redirect roleInstance
-            }
-            '*'{ respond roleInstance, [status: OK] }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'Role.label', default: 'Role'), roleInstance.id])
+            redirect roleInstance
+         }
+         '*'{ respond roleInstance, [status: OK] }
+      }
+   }
 
-    @Transactional
-    def delete(Role roleInstance) {
+   @Transactional
+   def delete(Role roleInstance) {
 
-        if (roleInstance == null) {
-            notFound()
-            return
-        }
+      if (roleInstance == null) {
+         notFound()
+         return
+      }
 
-        roleInstance.delete flush:true
+      roleInstance.delete flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Role.label', default: 'Role'), roleInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'Role.label', default: 'Role'), roleInstance.id])
+            redirect action:"index", method:"GET"
+         }
+         '*'{ render status: NO_CONTENT }
+      }
+   }
 
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'role.label', default: 'Role'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
+   protected void notFound() {
+      request.withFormat {
+         form multipartForm {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'role.label', default: 'Role'), params.id])
+            redirect action: "index", method: "GET"
+         }
+         '*'{ render status: NOT_FOUND }
+      }
+   }
 }

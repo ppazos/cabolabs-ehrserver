@@ -63,4 +63,30 @@ class ConfigurationItem {
       type(inList:['string', 'number', 'boolean', 'url', 'uuid', 'oid'])
       description(nullable: false)
    }
+   
+   static transients = ['typedValue']
+   
+   def getTypedValue()
+   {
+      def tv
+      switch (this.type) {
+         case 'string':
+         case 'url':
+         case 'uuid':
+         case 'oid':
+            tv = this.value
+         break
+         case 'number':
+            // TODO: need to consider decimal points depending on the current locale
+            // the way to check the number was parsed OK is to serialize and compare with the original value
+            // https://gist.github.com/ppazos/9dfb8b856ddd14518de0a4111231a095
+            def format = java.text.NumberFormat.getInstance()
+            tv = format.parse(this.value)
+         break
+         case 'boolean':
+            tv = ((this.value == 'true') ? true : false)
+         break
+      }
+      return tv
+   }
 }
