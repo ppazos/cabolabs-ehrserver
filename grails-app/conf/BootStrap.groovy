@@ -624,7 +624,12 @@ class BootStrap {
       repoChecks()
       extendClasses()
       registerMarshallers()
-      defaultConfigurationItems()
+      
+      if (Environment.current != Environment.TEST)
+      {
+         defaultConfigurationItems()
+      }
+      
       // --------------------------------------------------------------------
      
       //****** SECURITY *******

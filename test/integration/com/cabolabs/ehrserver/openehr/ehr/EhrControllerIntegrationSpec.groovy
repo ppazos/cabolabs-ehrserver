@@ -70,6 +70,11 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
             ]
          ]
       ]
+      
+      // mock configurationService and ConfigurationItem
+      controller.configurationService = [
+         getValue: { key -> if (key == 'ehrserver.console.lists.max_items' ) return 20 }
+      ]
    }
 
    def cleanup()
