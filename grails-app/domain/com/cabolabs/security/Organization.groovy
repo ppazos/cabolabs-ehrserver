@@ -53,6 +53,7 @@ class Organization {
       
       while (Organization.countByNumber(_number) == 1) // avoids repeated number
       {
+      println _number
          _number = String.randomNumeric(6)
       }
       

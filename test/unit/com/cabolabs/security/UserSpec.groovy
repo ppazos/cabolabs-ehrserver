@@ -97,6 +97,9 @@ class UserSpec extends Specification {
     void "test highest roles"()
     {
        when:
+          println Organization.countByNumber('123456')
+          def org = new Organization(name: 'h').save(failOnError: true)
+       
           // testing users with just one role
           def uadmin = new User(
              username: 'user1',
@@ -106,7 +109,7 @@ class UserSpec extends Specification {
           )
           uadmin.save(failOnError: true)
           
-          UserRole.create( uadmin, (Role.findByAuthority('ROLE_ADMIN')), true )
+          UserRole.create( uadmin, (Role.findByAuthority('ROLE_ADMIN')), org, true )
           
           
           def uorgman = new User(
@@ -117,7 +120,7 @@ class UserSpec extends Specification {
           )
           uorgman.save(failOnError: true)
           
-          UserRole.create( uorgman, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+          UserRole.create( uorgman, (Role.findByAuthority('ROLE_ORG_MANAGER')), org, true )
 
           
           // users with many roles
@@ -130,7 +133,7 @@ class UserSpec extends Specification {
           uadmin2.save(failOnError: true)
           
           UserRole.create( uadmin2, (Role.findByAuthority('ROLE_ADMIN')), true )
-          UserRole.create( uadmin2, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+          UserRole.create( uadmin2, (Role.findByAuthority('ROLE_ORG_MANAGER')), org, true )
           
           
           def uorgman2 = new User(
@@ -141,7 +144,7 @@ class UserSpec extends Specification {
           )
           uorgman2.save(failOnError: true)
           
-          UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_MANAGER')), true )
+          UserRole.create( uorgman2, (Role.findByAuthority('ROLE_ORG_MANAGER')), org, true )
           
        then:
           uadmin.higherAuthority.authority == 'ROLE_ADMIN'
