@@ -578,7 +578,7 @@ class BootStrap {
         new RequestMap(url: '/query/**',                     configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/archetypeIndexItem/**',        configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
         new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
