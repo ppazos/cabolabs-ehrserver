@@ -186,7 +186,23 @@ class RestController {
          }
       
          // TODO: refresh token
-         render (['token': statelessTokenProvider.generateToken(username, null, [organization: organization_number, org_uid: org.uid])] as JSON)
+         
+         def _token = statelessTokenProvider.generateToken(username, null, [organization: organization_number, org_uid: org.uid])
+         
+         withFormat {
+            json {
+               render (['token': _token] as JSON)
+            }
+            xml {
+               render(contentType:"text/xml", encoding:"UTF-8") {
+                  result {
+                     token(_token)
+                     //type('AA')                         // application reject
+                     //code('EHR_SERVER::API::ERRORS::0066') // sys::service::concept::code
+                  }
+               }
+            }
+         }
       }
       catch (Exception e)
       {
