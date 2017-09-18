@@ -19,41 +19,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.cabolabs.ehrserver.ehr
 
-package com.cabolabs.ehrserver.ehr.clinical_documents
+/**
+ * Generates a structure of folders templates with names that can be used to generate
+ * many structures of concrete folders from the same folder template, to populate an
+ * initial EHR.directory with that folder structure.
+ * 
+ * This class acts as the container of the structure, like a root. The name is to display
+ * on the list of FolderTemplates. The structure is defined by the items.
+ */
+class FolderTemplate {
 
-import org.springframework.dao.DataIntegrityViolationException
-import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import grails.util.Holders
+   String name
+   String description
+   String organizationUid
+   static hasMany = [folders: FolderTemplateItem]
 
-class CompositionIndexController {
-
-   def configurationService
-   
-   def config = Holders.config.app
-   
-   def index()
-   {
-      redirect(action: "list", params: params)
-   }
-
-   def list()
-   {
-      // this is only accessable by admins
-      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
-   }
-
-   def show(Long id)
-   {
-      def compositionIndexInstance = CompositionIndex.get(id)
-      if (!compositionIndexInstance)
-      {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'compositionIndex.label', default: 'CompositionIndex'), id])
-         redirect(action: "list")
-         return
-      }
-
-      [compositionIndexInstance: compositionIndexInstance]
+   static constraints = {
+      name(nullable: false, blank: false)
+      organizationUid(nullable: false)
    }
 }

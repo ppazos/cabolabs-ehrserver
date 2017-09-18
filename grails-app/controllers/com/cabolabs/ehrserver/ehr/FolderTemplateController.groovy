@@ -19,41 +19,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.cabolabs.ehrserver.ehr
 
-package com.cabolabs.ehrserver.ehr.clinical_documents
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.converters.*
 
-import org.springframework.dao.DataIntegrityViolationException
-import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import grails.util.Holders
-
-class CompositionIndexController {
+class FolderTemplateController {
 
    def configurationService
-   
-   def config = Holders.config.app
-   
-   def index()
-   {
-      redirect(action: "list", params: params)
-   }
 
-   def list()
+   def index(int offset, String sort, String order)
    {
-      // this is only accessable by admins
-      params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
-   }
-
-   def show(Long id)
-   {
-      def compositionIndexInstance = CompositionIndex.get(id)
-      if (!compositionIndexInstance)
+      int max = configurationService.getValue('ehrserver.console.lists.max_items')
+      if (!offset) offset = 0
+      if (!sort) sort = 'id'
+      if (!order) order = 'asc'
+      
+      def list
+      def c = FolderTemplate.createCriteria()
+      
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         flash.message = message(code: 'default.not.found.message', args: [message(code: 'compositionIndex.label', default: 'CompositionIndex'), id])
-         redirect(action: "list")
-         return
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+         }
       }
-
-      [compositionIndexInstance: compositionIndexInstance]
+      else
+      {
+         list = c.list (max: max, offset: offset, sort: sort, order: order) {
+            eq('organizationUid', session.organization.uid)
+         }
+      }
+      
+      [list: list, total: list.totalCount]
+   }
+   
+   def show(FolderTemplate folderTemplate)
+   {
+      def tree = folderTemplate as JSON
+      render(view:'show', model:[folderTemplate: folderTemplate, tree: tree])
+   }
+   
+   def create()
+   {
+   }
+   
+   def save()
+   {
+   }
+   
+   def edit()
+   {
+   }
+   
+   def update()
+   {
    }
 }
