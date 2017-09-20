@@ -243,7 +243,10 @@
                     <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
+                    <g:link controller="folderTemplate" action="index" class="${(controllerName=='folderTemplate')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.folderTemplates" /></g:link>
+                    <%--
                     <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
+                    --%>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">

@@ -31,8 +31,8 @@
           <table class="table table-striped table-bordered table-hover">
 		      <thead>
 		        <tr>
-		          <g:sortableColumn property="name" title="${message(code: 'folderTemplate.name.label')}" />
-		          <g:sortableColumn property="description" title="${message(code: 'folderTemplate.description.label')}" />
+		          <g:sortableColumn property="name" title="${message(code: 'folderTemplate.attr.name')}" />
+		          <g:sortableColumn property="description" title="${message(code: 'folderTemplate.attr.description')}" />
 		        </tr>
 		      </thead>
 		      <tbody>

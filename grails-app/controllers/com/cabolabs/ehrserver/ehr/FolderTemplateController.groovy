@@ -66,15 +66,20 @@ class FolderTemplateController {
       render(view:'create', model:[folderTemplate: folderTemplate, foldersTree: tree])
    }
    
+   // AJAX/JSON
    def save()
    {
       request.JSON.folderTemplate.organizationUid = session.organization.uid
       def folderTemplate = FolderTemplate.newInstance(request.JSON.folderTemplate)
       
-      if (!folderTemplate.save(flush:true)) println folderTemplate.errors.allErrors
+      if (!folderTemplate.save(flush:true))
+      {
+         println folderTemplate.errors.allErrors
+         render(text:([status:"error", message:"Invalid data"] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8", status:400)
+      }
 
       // TODO: check errors and generate messages
-      render(text:([status:"OK", message:"Created"] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+      render(text:([status:"ok", message:"Created", ref:g.createLink(action:'show', id:folderTemplate.id)] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
    }
    
    def edit()
