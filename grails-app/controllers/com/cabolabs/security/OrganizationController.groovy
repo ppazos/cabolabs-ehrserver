@@ -29,6 +29,7 @@ import grails.transaction.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import com.cabolabs.ehrserver.account.ApiKey
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 @Transactional(readOnly = true)
 class OrganizationController {
@@ -88,7 +89,7 @@ class OrganizationController {
    // organizationInstance comes from the security filter on params
    def show()
    {
-      [organizationInstance: params.organizationInstance]
+      [organizationInstance: params.organizationInstance, ehr_count: Ehr.countByOrganizationUid(params.organizationInstance.uid)]
    }
 
    def create()
