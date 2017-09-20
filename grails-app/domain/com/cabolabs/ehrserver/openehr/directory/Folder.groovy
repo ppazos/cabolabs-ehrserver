@@ -22,7 +22,7 @@
 
 package com.cabolabs.ehrserver.openehr.directory
 
-import com.cabolabs.ehrserver.openehr.ehr.Ehr;
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 class Folder {
 
@@ -51,7 +51,7 @@ class Folder {
    
    static constraints = {
       parent(nullable: true)
-      name(empty: false)
+      name(nullable: true, blank: false)
       ehr(nullable: true)
    }
    

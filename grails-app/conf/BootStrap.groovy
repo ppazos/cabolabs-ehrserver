@@ -45,6 +45,7 @@ import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.ehrserver.notification.*
 import grails.util.Environment
 import com.cabolabs.ehrserver.conf.ConfigurationItem
+import com.cabolabs.ehrserver.ehr.*
 
 class BootStrap {
 
@@ -144,6 +145,27 @@ class BootStrap {
    
    def registerMarshallers()
    {
+     // This format is used by jstree to display the template in the web console
+     JSON.registerObjectMarshaller(FolderTemplate) { ftpl ->
+     
+        def traverse // needs to be declared before defined to work recursively
+        
+        traverse = { item ->
+           def res = [text: item.name, children: []]
+           item.folders.each {
+              res.children << traverse(it)
+           }
+           return res
+        }
+     
+        def res = []
+        ftpl.folders.each {
+          res << traverse(it)
+        }
+     
+        return res
+     }
+   
      JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
         return [templateId:  opt.templateId,
                 concept:     opt.concept,
@@ -575,6 +597,7 @@ class BootStrap {
         new RequestMap(url: '/versionedComposition/**',      configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/contribution/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/folder/**',                    configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+        new RequestMap(url: '/folderTemplate/**',            configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/query/**',                     configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/operationalTemplateIndexItem/**', configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/archetypeIndexItem/**',        configAttribute: 'ROLE_ADMIN').save()
@@ -608,6 +631,75 @@ class BootStrap {
         
         new RequestMap(url: '/rest/queryCompositions',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
+      }
+   }
+   
+   def defaultOrganizations()
+   {
+      def organizations = []
+      if (Organization.count() == 0)
+      {
+         println "Creating default organization"
+        
+         // Default organization
+         organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
+        
+         organizations.each {
+            it.save(failOnError:true, flush:true)
+         }
+      }
+      else organizations = Organization.list()
+      
+      return organizations
+   }
+   
+   def createRoles()
+   {
+      if (Role.count() == 0 )
+      {
+         // Create roles
+         def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
+         def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
+         def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+         def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
+      }
+   }
+   
+   def generateTemplateIndexes()
+   {
+      // Always regenerate indexes in deploy
+      if (OperationalTemplateIndex.count() == 0)
+      {
+         println "Indexing Operational Templates"
+        
+         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+         ti.setupBaseOpts()
+         ti.indexAll( Organization.get(1) )
+      }
+     
+      // TODO: because initially there are no shares, the indexAll 
+      //       wont share the OPTs with the org, so we do it manually here.
+     
+      // OPT loading
+      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
+      optMan.unloadAll()
+      optMan.loadAll()
+   }
+   
+   def sampleFolderTemplates()
+   {
+      def org = Organization.get(1)
+      def ftpls = [
+         new FolderTemplate(name:'openEHR', description:'Structure suggested on the openEHR specs', organizationUid: org.uid, folders: [
+            new FolderTemplateItem(name:'subject'),
+            new FolderTemplateItem(name:'persistent'),
+            new FolderTemplateItem(name:'event'),
+            new FolderTemplateItem(name:'episode X')
+         ])
+      ]
+      
+      ftpls.each {
+         it.save(failOnError: true)
       }
    }
    
@@ -647,29 +739,12 @@ class BootStrap {
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
       {
-         def organizations = []
-         if (Organization.count() == 0)
-         {
-            println "Creating default organization"
-           
-            // Default organization
-            organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
-           
-            organizations.each {
-               it.save(failOnError:true, flush:true)
-            }
-         }
-         else organizations = Organization.list()
-        
-        
-         if (Role.count() == 0 )
-         {
-            // Create roles
-            def adminRole          = new Role(authority: Role.AD).save(failOnError: true, flush: true)
-            def orgManagerRole     = new Role(authority: Role.OM).save(failOnError: true, flush: true)
-            def accountManagerRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
-            def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
-         }
+         def organizations = defaultOrganizations()
+         
+         // test
+         sampleFolderTemplates()
+         
+         createRoles()
         
          if (User.count() == 0)
          {
@@ -696,24 +771,8 @@ class BootStrap {
          }
         
         
-        
-         // Always regenerate indexes in deploy
-         if (OperationalTemplateIndex.count() == 0)
-         {
-            println "Indexing Operational Templates"
-           
-            def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-            ti.setupBaseOpts()
-            ti.indexAll( Organization.get(1) )
-         }
-        
-         // TODO: because initially there are no shares, the indexAll 
-         //       wont share the OPTs with the org, so we do it manually here.
-        
-         // OPT loading
-         def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-         optMan.unloadAll()
-         optMan.loadAll()
+         generateTemplateIndexes()
+         
          
          // Sample EHRs for testing purposes
          if (Ehr.count() == 0)

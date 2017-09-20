@@ -39,6 +39,7 @@ class CompositionIndexController {
 
    def list()
    {
+      // this is only accessable by admins
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
       [compositionIndexInstanceList: CompositionIndex.list(params), total: CompositionIndex.count()]
    }
