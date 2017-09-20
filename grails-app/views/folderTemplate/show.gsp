@@ -14,7 +14,8 @@
     $(function () {
       $('#jstree_container').jstree({
         'core' : {
-          'data' : ${tree}
+          'multiple' : false,
+          'data' : ${foldersTree}
         }
       });
     });

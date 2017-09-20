@@ -56,15 +56,25 @@ class FolderTemplateController {
    def show(FolderTemplate folderTemplate)
    {
       def tree = folderTemplate as JSON
-      render(view:'show', model:[folderTemplate: folderTemplate, tree: tree])
+      render(view:'show', model:[folderTemplate: folderTemplate, foldersTree: tree])
    }
    
    def create()
    {
+      def folderTemplate = new FolderTemplate()
+      def tree = folderTemplate as JSON
+      render(view:'create', model:[folderTemplate: folderTemplate, foldersTree: tree])
    }
    
    def save()
    {
+      request.JSON.folderTemplate.organizationUid = session.organization.uid
+      def folderTemplate = FolderTemplate.newInstance(request.JSON.folderTemplate)
+      
+      if (!folderTemplate.save(flush:true)) println folderTemplate.errors.allErrors
+
+      // TODO: check errors and generate messages
+      render(text:([status:"OK", message:"Created"] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
    }
    
    def edit()

@@ -34,10 +34,45 @@ class FolderTemplate {
    String name
    String description
    String organizationUid
+   
+   List folders = []
    static hasMany = [folders: FolderTemplateItem]
 
    static constraints = {
       name(nullable: false, blank: false)
       organizationUid(nullable: false)
+   }
+   
+   static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      def ftpl = new FolderTemplate()
+      
+      ftpl.updateInstance(json)
+      
+      return ftpl
+   }
+   
+   def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   {
+      this.name            = json['name']
+      this.description     = json['description']
+      this.organizationUid = json['organizationUid']
+      
+      def traverse_item // needs to be declared before defined to work recursively
+      
+      traverse_item = { json_item ->
+         def item = new FolderTemplateItem(name: json_item['name'])
+         json_item['folders'].each { child ->
+            println child
+            item.folders << traverse_item(child)
+         }
+         return item
+      }
+      
+      this.folders.clear()
+      json['folders'].each {
+         println it
+         this.folders << traverse_item(it)
+      }
    }
 }

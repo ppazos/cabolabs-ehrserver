@@ -148,7 +148,9 @@ class BootStrap {
      // This format is used by jstree to display the template in the web console
      JSON.registerObjectMarshaller(FolderTemplate) { ftpl ->
      
-        def traverse = { item ->
+        def traverse // needs to be declared before defined to work recursively
+        
+        traverse = { item ->
            def res = [text: item.name, children: []]
            item.folders.each {
               res.children << traverse(it)
