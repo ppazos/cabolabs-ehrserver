@@ -57,7 +57,7 @@
                       <g:each in="${roles}" status="i" var="roleOrg">
                         <g:set var="org" value="${roleOrg.key}" />
                         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                          <td>${org.name}</td>
+                          <td><g:link controller="organization" action="show" id="${org.uid}">${org.name}</g:link></td>
                           <g:each in="${Role.list()}" var="role">
                             <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
                               <g:if test="${role.authority != 'ROLE_ADMIN'}">
