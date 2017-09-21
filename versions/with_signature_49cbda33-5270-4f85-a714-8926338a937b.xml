@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?><version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" xsi:type="ORIGINAL_VERSION">
+  <contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>0e69f9b4-41fd-4a06-96ef-b29674328757</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit xsi:type="ATTESTATION">
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>cc193f71-f5fe-438a-87f9-81ecb302eede</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. House</name>
+    </committer>
+    <time_committed>
+      <value>20161010T060001,000-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+    <proof>sdafasgdfaasdgasdfgsdfgsfgsdgdfsgsdfgsdfgsdfgsdf</proof>
+    <reason><value>asdfasdffd</value></reason>
+    <is_pending>false</is_pending>
+  </commit_audit>
+  <uid>
+    <value>25c1e298-66a2-4292-9c0f-48028ff986ef::EMR::1</value>
+  </uid>
+  <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+    <name>
+      <value>Encuentro</value>
+    </name>
+    <uid xsi:type="HIER_OBJECT_ID">
+      <value>19ac5e44-c681-481e-b098-04d7e8fbdba2</value>
+    </uid>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>Encuentro</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>event</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>433</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>cc193f71-f5fe-438a-87f9-81ecb302eede</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. House</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>20161010T060001,000-0300</value>
+      </start_time>
+      <setting>
+        <value>Hospital Montevideo</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>229</code_string>
+        </defining_code>
+      </setting>
+      <other_context archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>@ internal @</value>
+        </name>
+      </other_context>
+    </context>
+    <content archetype_node_id="openEHR-EHR-EVALUATION.reason_for_encounter.v1" xsi:type="EVALUATION">
+      <name>
+        <value>Motivo de consulta</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Tree</value>
+        </name>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>Tipo de contacto</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>bjSMjUxhTBLRMcdiGlWKVxLABhNwvK</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0004" xsi:type="ELEMENT">
+          <name>
+            <value>Problema presentado</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>GSxT EBbnRIGrAqttBRnceZGmYUVOk</value>
+          </value>
+        </items>
+      </data>
+    </content>
+    <content archetype_node_id="openEHR-EHR-SECTION.vital_signs.v1" xsi:type="SECTION">
+      <name>
+        <value>Signos vitales</value>
+      </name>
+      <items archetype_node_id="openEHR-EHR-OBSERVATION.blood_pressure.v1" xsi:type="OBSERVATION">
+        <name>
+          <value>Presión arterial</value>
+        </name>
+        <language>
+          <terminology_id>
+            <value>ISO_639-1</value>
+          </terminology_id>
+          <code_string>es</code_string>
+        </language>
+        <encoding>
+          <terminology_id>
+            <value>Unicode</value>
+          </terminology_id>
+          <code_string>UTF-8</code_string>
+        </encoding>
+        <subject xsi:type="PARTY_SELF"/>
+        <data archetype_node_id="at0001" xsi:type="HISTORY">
+          <name>
+            <value>History</value>
+          </name>
+          <origin xsi:type="DV_DATE_TIME">
+            <value>20161010T060001,000-0300</value>
+          </origin>
+          <events archetype_node_id="at0006" xsi:type="POINT_EVENT">
+            <name>
+              <value>Any event</value>
+            </name>
+            <time xsi:type="DV_DATE_TIME">
+              <value>20161010T060001,000-0300</value>
+            </time>
+            <data archetype_node_id="at0003" xsi:type="ITEM_TREE">
+              <name>
+                <value>Tree</value>
+              </name>
+              <items archetype_node_id="at0004" xsi:type="ELEMENT">
+                <name>
+                  <value>Sistólica</value>
+                </name>
+                <value xsi:type="DV_QUANTITY">
+                  <magnitude>111</magnitude>
+                  <units>mm[Hg]</units>
+                </value>
+              </items>
+              <items archetype_node_id="at0005" xsi:type="ELEMENT">
+                <name>
+                  <value>Diastólica</value>
+                </name>
+                <value xsi:type="DV_QUANTITY">
+                  <magnitude>61</magnitude>
+                  <units>mm[Hg]</units>
+                </value>
+              </items>
+              <items archetype_node_id="at0033" xsi:type="ELEMENT">
+                <name>
+                  <value>Comentario</value>
+                </name>
+                <value xsi:type="DV_TEXT">
+                  <value>Este es un comentario de prueba</value>
+                </value>
+              </items>
+            </data>
+          </events>
+        </data>
+      </items>
+    </content>
+    <content archetype_node_id="openEHR-EHR-OBSERVATION.exam.v1" xsi:type="OBSERVATION">
+      <name>
+        <value>Hallazgos de la examinación física</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <data archetype_node_id="at0001" xsi:type="HISTORY">
+        <name>
+          <value>Event Series</value>
+        </name>
+        <origin xsi:type="DV_DATE_TIME">
+          <value>20161010T060001,000-0300</value>
+        </origin>
+        <events archetype_node_id="at0002" xsi:type="POINT_EVENT">
+          <name>
+            <value>*Any event(en)</value>
+          </name>
+          <time xsi:type="DV_DATE_TIME">
+            <value>20161010T060001,000-0300</value>
+          </time>
+          <data archetype_node_id="at0003" xsi:type="ITEM_TREE">
+            <name>
+              <value>Tree</value>
+            </name>
+            <items archetype_node_id="at0004" xsi:type="ELEMENT">
+              <name>
+                <value>Descripción</value>
+              </name>
+              <value xsi:type="DV_TEXT">
+                <value>WbjflJJloNOTQxTZlXmXZpGTcvRLIL</value>
+              </value>
+            </items>
+            <items archetype_node_id="at0006" xsi:type="ELEMENT">
+              <name>
+                <value>Interpretación</value>
+              </name>
+              <value xsi:type="DV_TEXT">
+                <value>sllhzkZLGvnxThsIqJOwYdndVkgYhK</value>
+              </value>
+            </items>
+            <items archetype_node_id="at0011" xsi:type="ELEMENT">
+              <name>
+                <value>Comentario</value>
+              </name>
+              <value xsi:type="DV_TEXT">
+                <value>nAkMNgiRqBXamIftdrscuRHCGfRwfD</value>
+              </value>
+            </items>
+          </data>
+          <state archetype_node_id="at0009" xsi:type="ITEM_TREE">
+            <name>
+              <value>Tree</value>
+            </name>
+          </state>
+        </events>
+      </data>
+    </content>
+    <content archetype_node_id="openEHR-EHR-EVALUATION.problem_diagnosis.v1" xsi:type="EVALUATION">
+      <name>
+        <value>Problema/diagnóstico</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <protocol archetype_node_id="at0032" xsi:type="ITEM_TREE">
+        <name>
+          <value>Tree</value>
+        </name>
+        <items archetype_node_id="at0070" xsi:type="ELEMENT">
+          <name>
+            <value>Última actualización</value>
+          </name>
+          <value xsi:type="DV_DATE_TIME">
+            <value>20161010T060001,000-0300</value>
+          </value>
+        </items>
+      </protocol>
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Tree</value>
+        </name>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>Nombre del problema/diagnóstico</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>GIqEnW sdqMOkkPoQyfnppVjkiPDar</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0009" xsi:type="ELEMENT">
+          <name>
+            <value>Descripción clínica</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>CvEMgTyttHbivlpQbQiyeHidgYAEJ </value>
+          </value>
+        </items>
+        <items archetype_node_id="at0012" xsi:type="ELEMENT">
+          <name>
+            <value>Ubicación anatómica</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>eKPZUWiuyzevV XlSJortanmhsQsnP</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0003" xsi:type="ELEMENT">
+          <name>
+            <value>Momento de reconocimiento del problema</value>
+          </name>
+          <value xsi:type="DV_DATE_TIME">
+            <value>20161010T060001,000-0300</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0005" xsi:type="ELEMENT">
+          <name>
+            <value>Severidad</value>
+          </name>
+          <value xsi:type="DV_CODED_TEXT">
+            <value>Leve</value>
+            <defining_code>
+              <terminology_id>
+                <value>local</value>
+              </terminology_id>
+              <code_string>at0047</code_string>
+            </defining_code>
+          </value>
+        </items>
+        <items archetype_node_id="at0072" xsi:type="ELEMENT">
+          <name>
+            <value>Progreso</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>tZjNrlnsWXObqbSqXioPZAjpj FMLy</value>
+          </value>
+        </items>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
