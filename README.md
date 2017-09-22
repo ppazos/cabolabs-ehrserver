@@ -66,7 +66,7 @@ Want to try EHRServer? Just create an account here and help us testing!
 
 1. curl -s get.sdkman.io | bash
 2. source "$HOME/.sdkman/bin/sdkman-init.sh"
-3. sdk install grails 2.5.5
+3. sdk install grails 2.5.6
 4. set version by default: Y
 5. grails -version
 
