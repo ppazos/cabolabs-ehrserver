@@ -73,7 +73,14 @@
         display: none;
         background-color: #eeeeee;
       }
-      
+      .criteria_value_container, span.criteria_list_add {
+        margin-bottom: 5px;
+      }
+      .help-block {
+       margin-top: 0;
+       margin-bottom: 5px;
+       font-size: 0.8em;
+      }
     </style>
     <asset:javascript src="jquery.blockUI.js" />
     
@@ -1063,7 +1070,11 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                         case 'list':
-                          criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                          criteria += '<span class="help-block">${message(code:"query.create.criteria.inlist.hint")}</span>';
+                          criteria += '<span class="btn btn-default btn-sm criteria_list_add"><i class="fa fa-plus"></i></span>';
+                          criteria += '<div class="criteria_list_container">';
+                            criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                          criteria += '</div>';
                         break
                         case 'range':
                           criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
@@ -1083,12 +1094,16 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '</select>';
                         break
                         case 'list':
-                          criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
-                          for (k in possible_values)
-                          {
-                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
-                          }
-                          criteria += '</select>';
+                          criteria += '<span class="help-block">${message(code:"query.create.criteria.inlist.hint")}</span>';
+                          criteria += '<span class="btn btn-default btn-sm criteria_list_add"><i class="fa fa-plus"></i></span>';
+                          criteria += '<div class="criteria_list_container">';
+                             criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
+                             for (k in possible_values)
+                             {
+                               criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                             }
+                             criteria += '</select>';
+                          criteria += '</div>';
                         break
                         case 'range':
                           // this case deosnt happen for now...
@@ -1192,6 +1207,8 @@ resp.responseJSON.result.message +'</div>'
         if (!evt) evt = window.event;
         var keyCode = evt.keyCode || evt.which;
         
+        //console.log('keypress', keyCode);
+        
         // Enter pressed on an item from an input value list (inlist criteria condition)
         if (keyCode == '13')
         {
@@ -1199,18 +1216,30 @@ resp.responseJSON.result.message +'</div>'
           $(this).next().focus();
           return false;
         }
+      });
+      $(document).on('keyup', ':input.value.list', function(evt) {
+      
+        if (!evt) evt = window.event;
+        var keyCode = evt.keyCode || evt.which;
+        
+        //console.log('keyup', keyCode);
         
         // Backspace or delete pressed on an item from an input value list (inlist criteria condition)
         if (keyCode == '8' || keyCode == '46')
         {
           // the latest input cant be deleted
           var __parent = $(this).parent();
-          console.log(__parent.children());
+          //console.log(__parent.children());
           if (__parent.children().size() == 1) return;
           
           $(this).remove();
           return false;
         }
+      });
+      // same as tje key press above but with UI buttons
+      $(document).on('click', '.btn.criteria_list_add', function(evt) {
+        input_to_clone = $(this).next().children()[0];
+        $(input_to_clone).after( $(input_to_clone).clone().val('') );
       });
      
       
