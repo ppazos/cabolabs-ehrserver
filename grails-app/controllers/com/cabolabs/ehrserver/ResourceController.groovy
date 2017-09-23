@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -58,8 +57,12 @@ class ResourceController {
       
       // share with selected orgs
       def organization
-      def orgUids = params.list('organizationUid')
+      def orgUids = params.list('organizationUid') - [null, '']
+      
+      println "orgUids "+ orgUids + orgUids.size()
+      
       orgUids.each { organizationUid ->
+      println "loop! " + organizationUid
          organization = Organization.findByUid(organizationUid)
          resourceService.shareQuery(query, organization)
       }

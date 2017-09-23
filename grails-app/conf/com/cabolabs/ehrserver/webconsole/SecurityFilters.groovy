@@ -599,14 +599,10 @@ class SecurityFilters {
             
             if (query.isPublic)
             {
-               println "is public"
-               
-               if (query.author.id != user.id) // the user should be the author
-               {
-                  flash.message = "Only the author of a public query can share it"
-                  chain controller: 'query', action: 'list'
-                  return false
-               }
+               log.error "User tries to access public query to share "+ params +", public queries can't be shared"
+               flash.message = "Public queries can't be shared"
+               chain controller: 'query', action: 'list'
+               return false
             }
             else
             {
@@ -621,7 +617,7 @@ class SecurityFilters {
                {
                   // check if query is shared with the login org
                   def shares = QueryShare.findAllByQuery(query)
-                  def orgCanAccess = (shares.organization.find{ it.uid == organizationUid } != null)
+                  def orgCanAccess = (shares.organization.find{ it.uid == session.organization.uid } != null)
                   if (!orgCanAccess)
                   {
                      flash.message = "The query is not shared with the organization used to login, please login with an organization that the query is shared with"
@@ -648,7 +644,8 @@ class SecurityFilters {
             }
             
             // check that all the org uids submitted are accessible by the user
-            def orgUids = params.list('organizationUid')
+            def orgUids = params.list('organizationUid') - [null, '']
+            
             orgUids.each { organizationUid ->
                if(!orgs.uid.contains(organizationUid))
                {
