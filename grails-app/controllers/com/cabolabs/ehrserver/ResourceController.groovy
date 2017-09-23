@@ -59,10 +59,7 @@ class ResourceController {
       def organization
       def orgUids = params.list('organizationUid') - [null, '']
       
-      println "orgUids "+ orgUids + orgUids.size()
-      
       orgUids.each { organizationUid ->
-      println "loop! " + organizationUid
          organization = Organization.findByUid(organizationUid)
          resourceService.shareQuery(query, organization)
       }
