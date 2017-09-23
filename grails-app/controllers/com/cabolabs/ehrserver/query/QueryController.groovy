@@ -90,33 +90,6 @@ class QueryController {
          }
       }
       
-      /*   
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         list = Query.list(max: max, offset: offset, sort: sort, order: order)
-      }
-      else
-      {
-         list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            if (name)
-            {
-               like('name', '%'+name+'%')
-            }
-            if (shares)
-            {
-               or {
-                  eq('isPublic', true)
-                  'in'('id', shares.query.id)
-               }
-            }
-            else
-            {
-               eq('isPublic', true)
-            }
-         }
-      }
-      */
-      
       [queryInstanceList: list, queryInstanceTotal: list.totalCount]
    }
 
@@ -140,7 +113,7 @@ class QueryController {
    {
       //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
       //println request.JSON.query.getClass()
-
+      request.JSON.query.organizationUid = session.organization.uid
       def query = Query.newInstance(request.JSON.query)
       
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340

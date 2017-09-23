@@ -1,4 +1,4 @@
-<!doctype html>
+<%@ page import="com.cabolabs.security.Organization" %><!doctype html>
 <html>
   <head>
     <meta name="layout" content="admin">
@@ -115,9 +115,12 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
-          <g:if test="${!queryInstance.isPublic || queryInstance.author.id.toString() == sec.loggedInUserInfo(field: 'id').toString()}">
+          <g:if test="${!queryInstance.isPublic || queryInstance.organizationUid == session.organization.uid}">
             <g:link action="edit" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
           </g:if>
+          <g:else>
+            <g:message code="query.show.cantEditQueryHelp" args="[Organization.findByUid(queryInstance.organizationUid).name]" />
+          </g:else>
           
           <g:if test="${!queryInstance.isPublic}">
             <g:link controller="resource" action="shareQuery" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>

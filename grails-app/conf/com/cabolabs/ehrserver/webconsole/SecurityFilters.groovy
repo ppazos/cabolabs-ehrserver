@@ -677,14 +677,13 @@ class SecurityFilters {
             }
          
             def query = Query.findByUid(params.uid)
-            def user = springSecurityService.getCurrentUser()
          
             // only the author can edit a public query
             // this is to avoid chaos :)
             // not the author
-            if (query.isPublic && user.id != query.author.id)
+            if (query.isPublic && query.organizationUid != session.organization.uid)
             {
-               flash.message = "Only the author of the query can edit a public query"
+               flash.message = "A public query can be edited only from the organization in which it was created"
                chain controller: 'query', action: 'show', params: params
                return false
             }
@@ -712,26 +711,12 @@ class SecurityFilters {
             }
             
             // only the author can edit a public query
-            if (query.isPublic && user.id != query.author.id)
+            if (query.isPublic && query.organizationUid != session.organization.uid)
             {
                response.status = 400 // bad request
-               render (text: [message: "Only the author of the query can edit a public query", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
+               render (text: [message: "A public query can be edited only from the organization in which it was created", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
                return false
             }
-            
-            /*
-            // only the author can change a query from private to public.
-            if (query.isPublic != json['isPublic'])
-            {
-               // not the author
-               if (user.id != query.author.id)
-               {
-                  response.status = 400 // bad request
-                  render (text: [message: "Only the author of the query can make it public or private", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
-                  return false
-               }
-            }
-            */
             
             params.json = json
             params.query = query

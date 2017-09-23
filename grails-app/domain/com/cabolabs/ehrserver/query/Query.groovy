@@ -80,6 +80,7 @@ class Query {
    
    // https://github.com/ppazos/cabolabs-ehrserver/issues/340
    User author
+   String organizationUid // current org at the momento of the creation
    
    // true => shared with all the organizations
    boolean isPublic
@@ -150,6 +151,10 @@ class Query {
       this.isPublic   = json['isPublic']
       this.format     = ( json['format'] ) ? json['format'] : 'xml' 
       this.templateId = json['template_id']
+      
+      // only set on create, not udate
+      if (!this.id)
+         this.organizationUid = json['organizationUid']
       
       if (this.type == 'composition')
       {
