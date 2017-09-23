@@ -56,7 +56,9 @@ class ActivityLogController {
          }
       }
       
-      respond list, model:[activityLogInstanceCount: list.totalCount]
+      //respond list, model:[activityLogInstanceCount: list.totalCount]
+      
+      render view:'index', model : [activityLogInstanceList: list.groupBy{it.sessionId}, activityLogInstanceCount: list.totalCount]
    }
 
    def show(ActivityLog activityLogInstance)
