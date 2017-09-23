@@ -1,10 +1,28 @@
 <%@ page import="com.cabolabs.ehrserver.notification.Notification" %><%@ page import="com.cabolabs.security.Organization" %>
 
+<div class="form-group ${hasErrors(bean: notificationInstance, field: 'name', 'error')} required">
+  <label class="control-label" for="name">
+    <g:message code="notification.list.attr.name" />
+    <span class="required-indicator">*</span>
+  </label>
+  <g:textField name="name" required="" value="${notificationInstance?.name}" class="form-control"/>
+</div>
+
+<div class="form-group ${hasErrors(bean: notificationInstance, field: 'kind', 'error')} ">
+  <label class="control-label" for="kind">
+    <g:message code="notification.list.attr.kind" />
+  </label>
+  <select name="kind" class="form-control">
+    <g:each var="c" in="${Notification.constraints.kind.inList}">
+      <option value="${c}">${c}</option>
+    </g:each>
+  </select>
+</div>
+
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'forSection', 'error')} ">
   <label class="control-label" for="forSection">
     <g:message code="notification.list.attr.forSection" />
   </label>
-  <%--<g:textField name="forSection" value="${notificationInstance?.forSection}" class="form-control"/>--%>
   <select name="forSection" class="form-control">
     <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.logicalPropertyName }.logicalPropertyName - ['simpleCaptcha', 'rest', 'dbdoc', 'login', 'logout', 'test', 'stats', 'messaging', 'plan'] }">
       <option value="${c}">${c}</option>
@@ -46,18 +64,26 @@
   <%--<g:textField name="language" required="" value="${notificationInstance?.language}" class="form-control"/>--%>
 </div>
 
-<div class="form-group ${hasErrors(bean: notificationInstance, field: 'name', 'error')} required">
-  <label class="control-label" for="name">
-    <g:message code="notification.list.attr.name" />
-    <span class="required-indicator">*</span>
-  </label>
-  <g:textField name="name" required="" value="${notificationInstance?.name}" class="form-control"/>
-</div>
-
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'text', 'error')} required">
   <label class="control-label" for="text">
     <g:message code="notification.list.attr.text" />
     <span class="required-indicator">*</span>
   </label>
-  <g:textField name="text" required="" value="${notificationInstance?.text}" class="form-control"/>
+  <g:textArea rows="3" name="text" required="" value="${notificationInstance?.text}" class="form-control"/>
 </div>
+
+<script>
+$(function(){
+  $('[name=kind]').on('change', function(e){
+    console.log(this.value);
+    if (this.value == 'email')
+    {
+      $('[name=forSection]').parent().hide();
+    }
+    else
+    {
+      $('[name=forSection]').parent().show();
+    }
+  });
+});
+</script>

@@ -27,6 +27,7 @@ class Notification {
    String name
    String language // language of the text
    String text
+   String kind = 'web'
    
    String forSection // ehrs, contributions, versions, directory, queries, templates, users, roles, organizations, notifications
    String forOrganization
@@ -40,6 +41,7 @@ class Notification {
       forSection nullable: true
       forOrganization nullable: true
       forUser nullable: true
+      kind inList: ['web', 'email']
    }
    
    static newNotifications(String forSection, String forOrganization, Long forUser, String lang)
