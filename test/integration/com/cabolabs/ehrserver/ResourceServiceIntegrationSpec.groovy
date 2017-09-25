@@ -40,7 +40,8 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       def q = new Query(name:'query', type:'datavalue',
                         isPublic:true, format:'json',
                         group:'path', uid: queryUid,
-                        author: user)
+                        author: user,
+                        organizationUid: orgUid)
                         
       q.select = [
          new DataGet(archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1', 
