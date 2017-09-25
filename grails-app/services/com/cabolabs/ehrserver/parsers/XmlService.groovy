@@ -721,6 +721,28 @@ class XmlService {
        */
       
       
+      // ----------------------------------------------------------------------
+      // Canonical transformation of the composition to a string to hash
+      
+      // need to add namespaces to avoid errors while serializing
+      def namespaceMap = ['xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance", 'xmlns': "http://schemas.openehr.org/v1"]
+      def compo = version.data[0]
+      namespaceMap.each { ns, val ->
+         compo."@$ns" = val
+      }
+      
+      def compositionString = groovy.xml.XmlUtil.serialize( compo )
+      
+      // Removes the added namespaces to avoid saving them on store version
+      namespaceMap.each { ns, val ->
+         compo.attributes().remove(ns)
+      }
+
+      def byteSize = compositionString.size()
+      def hash = compositionString.md5()
+      // ----------------------------------------------------------------------
+      
+      
       def compoIndex = new CompositionIndex(
          uid:           compoUid,  // UID for compos is assigned by the server
          category:      category,  // event / persistent
@@ -733,7 +755,9 @@ class XmlService {
          organizationUid: ehr.organizationUid,
          archetypeId:   version.data.@archetype_node_id.text(),
          templateId:    version.data.archetype_details.template_id.value.text(),
-         composer:      composer
+         composer:      composer,
+         byteSize:      byteSize,
+         hash:          hash
       )
 	  
 	  if (!compoIndex.validate())

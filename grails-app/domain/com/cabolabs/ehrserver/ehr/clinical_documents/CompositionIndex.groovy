@@ -26,10 +26,10 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 
 /**
- * Modela una instancei a de indice a nivel de documento (nivel 1).
+ * Modela una instancia de indice a nivel de documento (nivel 1).
  * Permite realizar busquedas de documentos sobre una estructura plana (mas rapido que usar datos estructurados).
  * 
- * @author pab
+ * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  *
  */
 class CompositionIndex {
@@ -57,6 +57,10 @@ class CompositionIndex {
    String organizationUid
    
    DoctorProxy composer
+   
+   // information about the XML composition, as received from the client, to check consitency
+   long byteSize
+   String hash
    
    // TODO: name (de Locatable) para busqueda like %
    

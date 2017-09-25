@@ -94,6 +94,10 @@ class BootStrap {
         return delegate.toString()
       }
      
+      String.metaClass.md5 = {
+         return java.security.MessageDigest.getInstance("MD5").digest(delegate.bytes).encodeHex().toString()
+      }
+      
       // call String.randomNumeric(5)
       String.metaClass.static.randomNumeric = { digits ->
         def alphabet = ['0','1','2','3','4','5','6','7','8','9']
