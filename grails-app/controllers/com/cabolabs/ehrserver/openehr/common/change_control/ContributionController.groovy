@@ -46,45 +46,47 @@ class ContributionController {
       redirect(action: "list", params: params)
    }
 
-   def list(int offset, String sort, String order, String ehdUid, String orgUid)
+   def list(int offset, String sort, String order, String ehdUid, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'
      
-      def list, org
+      def list, org, orgs
       def c = Contribution.createCriteria()
+      def us = User.findByUsername(springSecurityService.authentication.principal.username)
       
-      if (orgUid)
+      if (organizationUid)
       {
-         if (Organization.countByUid(orgUid) == 0)
+         if (Organization.countByUid(organizationUid) == 0)
          {
             flash.message = "contribution.list.feedback.orgNotFoundShowingForCurrentOrg"
-            orgUid = null
+            organizationUid = null
          }
          else
          {
-            // Have access to orgUid?
-            def us = User.findByUsername(springSecurityService.authentication.principal.username)
-            if (!us.organizations.uid.contains(orgUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            // Have access to organizationUid?
+            if (!us.organizations.uid.contains(organizationUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
             {
                flash.message = "contribution.list.feedback.cantAccessOrgShowingForCurrentOrg"
-               orgUid = null
+               organizationUid = null
             }
          }
       }
       
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
+         // for now admins can see contributions for all the orgs
+         
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
            
-            // for admins, if not orgUid, display for all orgs
+            // for admins, if not organizationUid, display for all orgs
             
-            if (orgUid)
+            if (organizationUid)
             {
                ehr {
-                 eq("organizationUid", orgUid)
+                 eq("organizationUid", organizationUid)
                }
             }
             
@@ -95,22 +97,22 @@ class ContributionController {
                }
             }
          }
+
+         orgs = Organization.list() // for the org filter
       }
       else
       {
-         // auth token used to login
-         def auth = springSecurityService.authentication
-         org = Organization.findByNumber(auth.organization)
+         org = session.organization
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            if (!orgUid)
+            if (!organizationUid)
             {
                flash.message = message(code:"contribution.list.feedback.showingForCurrentOrg")
                eq("organizationUid", org.uid)
             }
             else
             {
-               eq("organizationUid", orgUid)
+               eq("organizationUid", organizationUid)
             }
             if (ehdUid)
             {
@@ -119,6 +121,8 @@ class ContributionController {
                }
             }
          }
+         
+         orgs = us.organizations // for the org filter
       }
      
       // =========================================================================
@@ -133,7 +137,11 @@ class ContributionController {
               count('id')
               groupProperty('yearMonthGroup') // count contributions in the same month
           }
-          if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+          if (organizationUid) // for any role if orgUid filter comes, filter by it the data on the chart
+          {
+             eq('organizationUid', organizationUid)
+          }
+          else if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // or filter by current org for non admins
           {
              eq('organizationUid', org.uid)
           }
@@ -146,7 +154,8 @@ class ContributionController {
       // =========================================================================
 
       return [contributionInstanceList: list, total: list.totalCount,
-              data: data, start: oneyearbehind, end: now]
+              data: data, start: oneyearbehind, end: now,
+              organizations: orgs]
    }
 
    def show(Long id)

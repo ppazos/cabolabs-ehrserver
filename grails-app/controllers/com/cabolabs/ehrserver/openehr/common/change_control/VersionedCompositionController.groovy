@@ -40,31 +40,32 @@ class VersionedCompositionController {
    
    def config = Holders.config.app
    
-   def index(int offset, String sort, String order, String ehdUid, String orgUid)
+   def index(int offset, String sort, String order, String ehdUid, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
       
-      def list
+      def list, orgs
       def c = VersionedComposition.createCriteria()
+      def us = User.findByUsername(springSecurityService.authentication.principal.username)
           
-      if (orgUid)
+      if (organizationUid)
       {
-         if (Organization.countByUid(orgUid) == 0)
+         if (Organization.countByUid(organizationUid) == 0)
          {
             flash.message = "versionedComposition.index.feedback.orgNotFoundShowingForCurrentOrg"
-            orgUid = null
+            organizationUid = null
          }
          else
          {
-            // Have access to orgUid?
-            def us = User.findByUsername(springSecurityService.authentication.principal.username)
-            if (!us.organizations.uid.contains(orgUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            // Have access to organizationUid?
+            
+            if (!us.organizations.uid.contains(organizationUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
             {
                flash.message = "versionedComposition.index.feedback.cantAccessOrgShowingForCurrentOrg"
-               orgUid = null
+               organizationUid = null
             }
          }
       }
@@ -73,12 +74,12 @@ class VersionedCompositionController {
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             
-            // for admins, if not orgUid, display for all orgs
+            // for admins, if not organizationUid, display for all orgs
             
-            if (orgUid)
+            if (organizationUid)
             {
                ehr {
-                 eq("organizationUid", orgUid)
+                 eq("organizationUid", organizationUid)
                }
             }
             
@@ -89,23 +90,23 @@ class VersionedCompositionController {
                }
             }
          }
+         
+         orgs = Organization.list() // for the org filter
       }
       else
       {
-         // login info
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         def org = session.organization
          
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             ehr {
-               if (!orgUid)
+               if (!organizationUid)
                {
                   flash.message = message(code:"versionedComposition.index.feedback.showingForCurrentOrg")
                   eq("organizationUid", org.uid)
                }
                else
                {
-                  eq("organizationUid", orgUid)
+                  eq("organizationUid", organizationUid)
                }
                
                if (ehdUid)
@@ -114,9 +115,11 @@ class VersionedCompositionController {
                }
             }
          }
+         
+         orgs = us.organizations // for the org filter
       }
       
-      respond list, model:[versionedCompositionInstanceCount: list.totalCount]
+      respond list, model:[versionedCompositionInstanceCount: list.totalCount, organizations: orgs]
    }
 
    def show(String uid)
