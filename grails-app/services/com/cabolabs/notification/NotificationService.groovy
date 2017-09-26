@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -44,57 +43,78 @@ class NotificationService {
       def user = messageData[0]
       def token = user.passwordToken
       def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
-      def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
-      
+      def url //= g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
       def organizationNumbers = user.organizations*.number
-      String message
+      def title, preview, salute, message, actions, closing, bye
       
       if (userRegistered)
-         message = g.message(code:'notificationService.sendUserRegisteredOrCreatedEmail.registeredMessage', args:[user.username, organizationNumbers[0], url])
+      {
+         title   = g.message(code:'notificationService.userRegistered.title')
+         preview = g.message(code:'notificationService.userRegistered.preview')
+         salute  = g.message(code:'notificationService.userRegistered.salute', args:[user.username])
+         message = g.message(code:'notificationService.userRegistered.message', args:[user.username, organizationNumbers[0]])
+         
+         url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+         actions = g.message(code:'notificationService.userRegistered.actions', args:[url])
+         
+         closing = g.message(code:'notificationService.userRegistered.closing')
+         bye     = g.message(code:'notificationService.userRegistered.bye')
+      }
       else
-         message = g.message(code:'notificationService.sendUserRegisteredOrCreatedEmail.createdMessage', args:[user.username, organizationNumbers.toString(), url])
-
-      /*
-      message = message.replaceFirst ( /\{0\}/ , user.username)
+      {
+         title   = g.message(code:'notificationService.userCreated.title')
+         preview = g.message(code:'notificationService.userCreated.preview')
+         salute  = g.message(code:'notificationService.userCreated.salute', args:[user.username])
+         message = g.message(code:'notificationService.userCreated.message', args:[user.username, organizationNumbers.toString()])
+         
+         url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+         actions = g.message(code:'notificationService.userCreated.actions', args:[url])
+         
+         closing = g.message(code:'notificationService.userCreated.closing')
+         bye     = g.message(code:'notificationService.userCreated.bye')
+      }
       
-      if (organizationNumbers.size() == 1)
-         message = message.replaceFirst ( /\{1\}/ , organizationNumbers[0].toString())
-      else
-         message = message.replaceFirst ( /\{1\}/ , organizationNumbers.toString())
-      */
-      
-      this.sendMail(recipient, g.message(code:'notificationService.sendUserRegisteredOrCreatedEmail.subject'), message)
+      this.sendMail(recipient, title, preview, salute, message, actions, closing, bye)
    }
    
    def sendForgotPasswordEmail(String recipient, List messageData)
    {
       def user = messageData[0]
-      
-      //println "sendForgotPasswordEmail"
-      
       def token = user.passwordToken
       def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
-      def url = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+      def url
+      def title, preview, salute, message, actions, closing, bye
       
-      def organizationNumbers = user.organizations*.number
-      String message
+      title   = g.message(code:'notificationService.forgot.title')
+      preview = g.message(code:'notificationService.forgot.preview')
+      salute  = g.message(code:'notificationService.forgot.salute')
+      message = g.message(code:'notificationService.forgot.message', args:[user.email])
       
-      message = "<p>We received a password reset request for your email {0}</p>"+
-                "<p>If you didn't requested it, just ignore this email. If this was you, please go here: "+ url +"</p>"
- 
-      message = message.replaceFirst ( /\{0\}/ , user.email)
+      url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+      actions = g.message(code:'notificationService.forgot.actions', args:[url])
       
-      this.sendMail(recipient, 'Your password reset for CaboLabs EHRServer!', message)
+      closing = g.message(code:'notificationService.forgot.closing')
+      bye     = g.message(code:'notificationService.forgot.bye')
+      
+      this.sendMail(recipient, title, preview, salute, message, actions, closing, bye)
    }
    
-   def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!', String message)
+   def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!',
+                String preview,
+                String salute,
+                String message,
+                String actions,
+                String closing,
+                String bye)
    {
       mailService.sendMail {
-         from grailsApplication.config.grails.mail.default.from //.username //"pablo.pazos@cabolabs.com"
+         from grailsApplication.config.grails.mail.default.from
          to recipient
          subject title
-         //body 'How are you?'
-         html view: "/notification/email", model: [message: message]
+         //html view: "/notification/email", model: [message: message]
+         html view: "/messaging/email",
+                 model: [title: title, preview: preview, salute: salute,
+                         message: message, actions: actions, closing: closing, bye: bye]
       }
    }
 }

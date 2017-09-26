@@ -184,9 +184,6 @@
              &commat;
              <g:link controller="organization" action="show" id="${session.organization.number}" style="padding: 0; display: inline;">${session.organization.name}</g:link>
            </li>
-           <li>
-             <a href="#" data-toggle="modal" data-target="#feedback_modal"><i class="fa fa-envelope fa-fw"></i></a>
-           </li>
            <li class="dropdown">
              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -202,7 +199,10 @@
                <li class="divider"></li>
                -->
                <li>
-                 <g:link controller="logout"><i class="fa fa-sign-out fa-fw"></i> <g:message code="layout.action.logout" /></g:link>
+                 <a href="#" data-toggle="modal" data-target="#feedback_modal"><i class="fa fa-envelope"> <g:message code="layout.action.feedback" /></i></a>
+               </li>
+               <li>
+                 <g:link controller="logout"><i class="fa fa-sign-out"></i> <g:message code="layout.action.logout" /></g:link>
                </li>
              </ul>
              <!-- /.dropdown-user -->
@@ -319,6 +319,7 @@
         e.preventDefault(); // prevent native submit
         $(this).ajaxSubmit({
           url: $('#feedback_form')[0].action, // without this is not taking the action as url
+          type: 'post',
           success: function(data, status, response) {
             //console.log(data, response);
             alrt = '<div class="alert alert-info alert-dismissible global" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+ data.message +'</div>';
@@ -347,7 +348,7 @@
 
             <div class="form-group">
               <label>Your feedback</label>
-              <textarea class="form-control" rows="3" name="message" required="required"></textarea>
+              <textarea class="form-control" rows="3" name="text" required="required"></textarea>
             </div>
             <div class="form-group">
               <label>About</label>
