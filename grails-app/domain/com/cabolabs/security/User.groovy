@@ -43,6 +43,7 @@ class User implements Serializable {
    // The user will be disabled, and the system sends an email to the new user with a
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
+   Date resetPasswordTokenSet // for expiration
    
    Date dateCreated
    Date lastUpdated
@@ -117,7 +118,7 @@ class User implements Serializable {
          encodePassword()
       }
       
-      if (this.password && this.enabled) this.resetPasswordToken = null
+      //if (this.password && this.enabled) this.resetPasswordToken = null
    }
 
    protected void encodePassword()
@@ -140,6 +141,7 @@ class User implements Serializable {
       email blank: false, email: true, unique: true
       
       resetPasswordToken nullable: true
+      resetPasswordTokenSet nullable: true
       
       /*
       organizations validator: { val, obj ->
@@ -178,10 +180,17 @@ class User implements Serializable {
    def setPasswordToken()
    {
       this.resetPasswordToken = java.util.UUID.randomUUID() as String
+      this.resetPasswordTokenSet = new Date()
    }
    
    def getPasswordToken()
    {
       return this.resetPasswordToken
+   }
+   
+   def emptyPasswordToken()
+   {
+      this.resetPasswordToken = null
+      this.resetPasswordTokenSet = null
    }
 }

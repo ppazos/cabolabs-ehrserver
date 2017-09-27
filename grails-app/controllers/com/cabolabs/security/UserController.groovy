@@ -662,7 +662,7 @@ class UserController {
       def user = User.findByResetPasswordToken(token)
       if (!user)
       {
-         flash.message = "Password reset was already done, if you don't remember your password, click on 'Forgot password?'"
+         flash.message = "Password reset was already done or has expired. Try 'Forgot password?' again"
          redirect controller:'login', action:'auth'
          return
       }
@@ -714,7 +714,7 @@ class UserController {
          
          // generates a password reset token, used in the email notification
          user.setPasswordToken()
-         user.enabled = false // if enabled, password token is cleaned beforeInsert
+         //user.enabled = false // if enabled, password token is cleaned beforeInsert
          user.save(flush:true)
          
          

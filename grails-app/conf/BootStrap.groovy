@@ -61,7 +61,8 @@ class BootStrap {
       def conf = [
          new ConfigurationItem(key:'ehrserver.instance.id', value:'9cbabb12-c4ae-421c-868c-a6898520b983', type:'string', blank:false, description:'EHRServer running instance ID'),
          new ConfigurationItem(key:'ehrserver.console.lists.max_items', value:'20', type:'number', blank:false, description:'Max number of items on the lists views for the Web Console'),
-         new ConfigurationItem(key:'ehrserver.security.passwords.min_length', value:'6', type:'number', blank:false, description:'Minimum password size used on password reset')
+         new ConfigurationItem(key:'ehrserver.security.passwords.min_length', value:'6', type:'number', blank:false, description:'Minimum password size used on password reset'),
+         new ConfigurationItem(key:'ehrserver.security.password_token.expiration', value:'1440', type:'number', blank:false, description:'Number of minutes after the password reset token expires')
       ]
       
       conf.each { it.save(failOnError: true) }
