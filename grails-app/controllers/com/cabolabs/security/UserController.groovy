@@ -132,10 +132,10 @@ class UserController {
       {
          withFormat {
             xml {
-               render(status: 404, contentType: "text/xml", text: apiResponsesService.feedback_xml("User doesn\'t exists", 'AR', 53445), encoding:"UTF-8")
+               render(status: 404, contentType: "text/xml", text: apiResponsesService.feedback_xml(message(code:"user.profile.doesntExists"), 'AR', 53445), encoding:"UTF-8")
             }
             json {
-               render(status: 404, contentType: "application/json", text: apiResponsesService.feedback_json("User doesn\'t exists", 'AR', 53445), encoding:"UTF-8")
+               render(status: 404, contentType: "application/json", text: apiResponsesService.feedback_json(message(code:"user.profile.doesntExists"), 'AR', 53445), encoding:"UTF-8")
             }
          }
          return
@@ -165,10 +165,10 @@ class UserController {
       {
          withFormat {
             xml {
-               render(status: 401, contentType: "text/xml", text: apiResponsesService.feedback_xml("Unauthorized to access user info", 'AR', 53445), encoding:"UTF-8")
+               render(status: 401, contentType: "text/xml", text: apiResponsesService.feedback_xml(message(code:"user.profile.unauthorized"), 'AR', 53445), encoding:"UTF-8")
             }
             json {
-               render(status: 401, contentType: "application/json", text: apiResponsesService.feedback_json("Unauthorized to access user info", 'AR', 53445), encoding:"UTF-8")
+               render(status: 401, contentType: "application/json", text: apiResponsesService.feedback_json(message(code:"user.profile.unauthorized"), 'AR', 53445), encoding:"UTF-8")
             }
          }
          return
@@ -654,7 +654,7 @@ class UserController {
       
       if (!token)
       {
-         flash.message = "Token no present and needed for reseting password, try reseting again"
+         flash.message = message(code:"user.resetPassword.noToken")
          redirect controller:'login', action:'auth'
          return
       }
@@ -662,7 +662,7 @@ class UserController {
       def user = User.findByResetPasswordToken(token)
       if (!user)
       {
-         flash.message = "Password reset was already done or has expired. Try 'Forgot password?' again"
+         flash.message = message(code:"user.resetPassword.alreadyResetOrExpired")
          redirect controller:'login', action:'auth'
          return
       }
@@ -691,6 +691,7 @@ class UserController {
          
          user.password = newPassword
          user.enabled = true
+         user.emptyPasswordToken()
          user.save(flush:true)
 
          flash.message = "Password was reset!"

@@ -429,7 +429,7 @@ class UserControllerSpec extends Specification {
       
       then:
         controller.response.redirectedUrl == '/login/auth'
-        controller.flash.message == "Password reset was already done, if you don't remember your password, click on 'Forgot password?'"
+        controller.flash.message == "Password reset was already done or has expired. Try 'Forgot password?' again"
    }
    
    void "test reset password with valid token, post to reset, no new password"()
@@ -438,7 +438,7 @@ class UserControllerSpec extends Specification {
         def user = generateValidUser()
         //def user = User.findByUsername('testuser')
         user.setPasswordToken()
-        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        //user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)
         
       when:
@@ -458,7 +458,7 @@ class UserControllerSpec extends Specification {
       setup:
         def user = generateValidUser()
         user.setPasswordToken()
-        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        //user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)
         
       when:
@@ -484,7 +484,7 @@ class UserControllerSpec extends Specification {
       setup:
         def user = generateValidUser()
         user.setPasswordToken()
-        user.enabled = false // if enabled, password token is cleaned beforeInsert
+        //user.enabled = false // if enabled, password token is cleaned beforeInsert
         user.save(flush:true)
         
       when:
