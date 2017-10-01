@@ -113,6 +113,11 @@
        font-size: 0.8em;
        padding: 10px 5px 5px 5px;
      }
+     .help-block {
+      display: none;
+      margin: 0;
+      padding: 10px 0;
+     }
     </style>
   </head>
   <body>
@@ -140,9 +145,11 @@
         <li>
           <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
         </li>
+        <!--
         <li>
           <g:link action="auth" params="[lang:'pt']" class="${(locale.language == 'pt')?'active':''}">PT</g:link>
         </li>
+        -->
       </ul>
 	 </nav>
   
@@ -170,7 +177,13 @@
                   </div>
                   <div class="form-group">
                     <label for='org_number'><g:message code="springSecurity.login.org_number.label"/></label>
-                    <input type='text' class='form-control' name='j_organisation' id='org_number' required="required" />
+                    <div class="input-group">
+                      <input type='text' class='form-control' name='j_organisation' id='org_number' required="required" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" id="help-organization-btn" type="button"><i class="fa fa-question"></i></button>
+                      </span>
+                    </div>
+                    <div id="help-organization" class="help-block"><g:message code="login.organization.help" /></div>
                   </div>
                   <%--
                   <div class="checkbox">
@@ -210,6 +223,10 @@
     <script type='text/javascript'>
     (function() {
       document.forms['loginForm'].elements['j_username'].focus();
+      
+      $('#help-organization-btn').on('click', function (e) {
+        $('#help-organization').fadeToggle('slow');
+      });
     })();
     </script>
   </body>
