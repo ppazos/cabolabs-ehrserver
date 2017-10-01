@@ -414,6 +414,7 @@ class UserControllerSpec extends Specification {
    void "test reset password with no token"()
    {
       when:
+        controller.request.method = "GET"
         controller.resetPassword()
       
       then:
