@@ -419,7 +419,7 @@ class UserControllerSpec extends Specification {
       
       then:
         controller.response.redirectedUrl == '/login/auth'
-        controller.flash.message == 'Token no present and needed for reseting password, try reseting again'
+        controller.flash.message == 'user.resetPassword.noToken'
    }
    
    void "test reset password with invalid token"()
@@ -430,7 +430,7 @@ class UserControllerSpec extends Specification {
       
       then:
         controller.response.redirectedUrl == '/login/auth'
-        controller.flash.message == "Password reset was already done or has expired. Try 'Forgot password?' again"
+        controller.flash.message == "user.resetPassword.alreadyResetOrExpired"
    }
    
    void "test reset password with valid token, post to reset, no new password"()
@@ -451,7 +451,7 @@ class UserControllerSpec extends Specification {
         //println res // null
         //println controller
         //println controller.modelAndView // null, can't check the returned view
-        controller.flash.message == "Please enter your new password and confirm it"
+        controller.flash.message == "user.resetPassword.passwordConfirmationNeeded"
    }
    
    void "test reset password with valid token, post to reset, new password, without confirm"()
@@ -471,7 +471,7 @@ class UserControllerSpec extends Specification {
       
       then:
         // TODO: check the value of the new password stored
-        controller.flash.message == "Please enter your new password and confirm it"
+        controller.flash.message == "user.resetPassword.passwordConfirmationNeeded"
         /*
         user.enabled == true
         user.resetPasswordToken == null
@@ -501,6 +501,6 @@ class UserControllerSpec extends Specification {
         user.enabled == true
         user.resetPasswordToken == null
         controller.response.redirectedUrl == '/login/auth'
-        controller.flash.message == "Password was reset!"
+        controller.flash.message == "user.resetPassword.passwordResetOK"
    }
 }

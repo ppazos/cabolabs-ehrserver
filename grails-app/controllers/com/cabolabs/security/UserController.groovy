@@ -671,20 +671,20 @@ class UserController {
       {
          if (!newPassword || !confirmNewPassword)
          {
-            flash.message = "Please enter your new password and confirm it"
+            flash.message = message(code:"user.resetPassword.passwordConfirmationNeeded")
             return
          }
          
          def min_length = Holders.config.app.security.min_password_length
          if (newPassword.size() < min_length)
          {
-            flash.message = "The password length should be at least $min_length"
+            flash.message = message(code:"user.resetPassword.passNotLongEnough", args:[min_length])
             return
          }
          
          if (newPassword != confirmNewPassword)
          {
-            flash.message = "The password confirm is not equal to the password, please try again"
+            flash.message = message(code:"user.resetPassword.confirmDoesntMatch")
             return
          }
          
@@ -694,7 +694,7 @@ class UserController {
          user.emptyPasswordToken()
          user.save(flush:true)
 
-         flash.message = "Password was reset!"
+         flash.message = message(code:"user.resetPassword.passwordResetOK")
          redirect controller:'login', action:'auth'
          return
       }
@@ -708,16 +708,14 @@ class UserController {
          
          if (!user)
          {
-            flash.message = "Can't find a user for that email"
+            flash.message = message(code:"user.forgotPassword.emailDoesntExists")
             return
          }
          
          
          // generates a password reset token, used in the email notification
          user.setPasswordToken()
-         //user.enabled = false // if enabled, password token is cleaned beforeInsert
          user.save(flush:true)
-         
          
          try
          {
@@ -727,12 +725,12 @@ class UserController {
          {
             log.error e.message
             
-            flash.message = "There was a problem sending the email notification, please try again."
+            flash.message = message(code:"user.forgotPassword.errorSendingEmail")
             return
          }
          
          
-         flash.message = "Password reset email was sent, please check the instructions on that email"
+         flash.message = message(code:"user.forgotPassword.passResetSend")
          redirect controller:'login', action:'auth'
          return
       }
@@ -749,7 +747,7 @@ class UserController {
       
       if (!user)
       {
-         flash.message = "Can't find a user for that email"
+         flash.message = message(code:"user.forgotPassword.emailDoesntExists")
          redirect(action:'show', id:params.id)
          return
       }
@@ -769,13 +767,13 @@ class UserController {
       {
          log.error e.message
          
-         flash.message = "There was a problem sending the email notification, please try again."
+         flash.message = message(code:"user.forgotPassword.errorSendingEmail")
          redirect(action:'show', id:params.id)
          return
       }
       
       
-      flash.message = "Password reset email was sent, please check the instructions on that email"
+      flash.message = message(code:"user.forgotPassword.passResetSend")
       redirect(action:'show', id:params.id)
       return
    }
