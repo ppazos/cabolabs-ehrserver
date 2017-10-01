@@ -520,6 +520,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
+   println "setup -----------------------"
       createOrganization()
       createEHR()
    
@@ -530,24 +531,52 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       println Ehr.list().subject.value
       */
       
-      // 1. Load test Version
-      //def path = 'test'+PS+'resources'+PS+'versions'+PS+'13a9f2b9-81fe-432a-bcc8-d225377a13f1_EMR_1.xml'
-      //def xml = new File(path).text
-      
-      def parser = new XmlSlurper()
-      def parsedVersion = parser.parseText(xml)
-      
-      // 2. get EHR
+      // get EHR
       def ehr = Ehr.findByUid(ehrUid)
       
       assert ehr != null
       
-      // 3. create CompositionIndex for an existing version XML
+      
+      // create CompositionIndex for an existing version XML
       def composer = new DoctorProxy(
          value: '5323452345-23452334-23452345',
          name: 'Dr. House'
       )
+      
 
+      // Load test Version
+      //def path = 'test'+PS+'resources'+PS+'versions'+PS+'13a9f2b9-81fe-432a-bcc8-d225377a13f1_EMR_1.xml'
+      //def xml = new File(path).text
+      
+      def parser = new XmlSlurper(false, false)
+      def parsedVersion = parser.parseText(xml)
+      
+      //println parsedVersion.data.getClass() // class groovy.util.slurpersupport.NodeChildren
+      //println parsedVersion.data[0].getClass() // class groovy.util.slurpersupport.NodeChild
+      
+      // ----------------------------------------------------------------------
+      // Canonical transformation of the composition to a string to hash
+      // FIXME: refactor, code from XmlService.parseCompositionIndex
+      
+      // need to add namespaces to avoid errors while serializing
+      def namespaceMap = [ 'xmlns': 'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
+      def compo = parsedVersion.data[0]
+      
+      namespaceMap.each { ns, val ->
+      
+         compo."@$ns" = val
+      }
+      
+      def compositionString = groovy.xml.XmlUtil.serialize( compo )
+      
+      // Removes the added namespaces to avoid saving them on store version
+      namespaceMap.each { ns, val ->
+         compo.attributes().remove(ns)
+      }
+      
+      def byteSize = compositionString.size()
+      def hash = compositionString.md5()
+      
       def compoIndex = new CompositionIndex(
          uid:         parsedVersion.data.uid.value.text(),
          category:    parsedVersion.data.category.value.text(),
@@ -558,7 +587,9 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          organizationUid: ehr.organizationUid,
          archetypeId: parsedVersion.data.@archetype_node_id.text(),
          templateId:  parsedVersion.data.archetype_details.template_id.value.text(),
-         composer: composer
+         composer: composer,
+         byteSize:      byteSize,
+         hash:          hash
       )
       def change_type_code = parsedVersion.commit_audit.change_type.defining_code.code_string.text()
       def commitAudit = new AuditDetails(

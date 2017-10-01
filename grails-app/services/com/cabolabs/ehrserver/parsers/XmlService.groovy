@@ -725,7 +725,7 @@ class XmlService {
       // Canonical transformation of the composition to a string to hash
       
       // need to add namespaces to avoid errors while serializing
-      def namespaceMap = ['xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance", 'xmlns': "http://schemas.openehr.org/v1"]
+      def namespaceMap = [ 'xmlns': 'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
       def compo = version.data[0]
       namespaceMap.each { ns, val ->
          compo."@$ns" = val
