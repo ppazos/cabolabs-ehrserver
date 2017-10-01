@@ -199,7 +199,7 @@
                <li class="divider"></li>
                -->
                <li>
-                 <a href="#" data-toggle="modal" data-target="#feedback_modal"><i class="fa fa-envelope"> <g:message code="layout.action.feedback" /></i></a>
+                 <a href="#" data-toggle="modal" data-target="#feedback_modal"><i class="fa fa-envelope"></i> <g:message code="layout.action.feedback" /></a>
                </li>
                <li>
                  <g:link controller="logout"><i class="fa fa-sign-out"></i> <g:message code="layout.action.logout" /></g:link>
@@ -367,6 +367,14 @@
                   <input name="about" value="Improvement" type="radio" /> Improvement
                 </label>
               </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Check our community support groups</label>
+              <br/>
+              <i class="fa fa-facebook-square"></i> <a href="https://www.facebook.com/groups/ehrserver/" target="_blank">https://www.facebook.com/groups/ehrserver/</a>
+              <br/>
+              <i class="fa fa-linkedin-square"></i> <a href="https://www.linkedin.com/groups/12070397" target="_blank">https://www.linkedin.com/groups/12070397/</a>
             </div>
 
           </div>
