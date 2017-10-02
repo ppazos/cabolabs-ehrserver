@@ -347,30 +347,30 @@
           <div class="modal-body">
 
             <div class="form-group">
-              <label>Your feedback</label>
+              <label><g:message code="ehrserver.messaging.feedbackform.message" /></label>
               <textarea class="form-control" rows="3" name="text" required="required"></textarea>
             </div>
             <div class="form-group">
-              <label>About</label>
+              <label><g:message code="ehrserver.messaging.feedbackform.about" /></label>
               <div class="radio">
                 <label>
-                  <input name="about" value="Question" checked="" type="radio" /> Question
+                  <input name="about" value="Question" checked="" type="radio" /> <g:message code="ehrserver.messaging.feedbackform.question" />
                 </label>
               </div>
               <div class="radio">
                 <label>
-                  <input name="about" value="Issue" type="radio" /> Issue
+                  <input name="about" value="Issue" type="radio" /> <g:message code="ehrserver.messaging.feedbackform.issue" />
                 </label>
               </div>
               <div class="radio">
                 <label>
-                  <input name="about" value="Improvement" type="radio" /> Improvement
+                  <input name="about" value="Improvement" type="radio" /> <g:message code="ehrserver.messaging.feedbackform.improvement" />
                 </label>
               </div>
             </div>
             
             <div class="form-group">
-              <label>Check our community support groups</label>
+              <label><g:message code="ehrserver.messaging.feedbackform.community" /></label>
               <br/>
               <i class="fa fa-facebook-square"></i> <a href="https://www.facebook.com/groups/ehrserver/" target="_blank">https://www.facebook.com/groups/ehrserver/</a>
               <br/>
@@ -379,8 +379,8 @@
 
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="ehrserver.messaging.feedbackform.close" /></button>
+            <button type="submit" class="btn btn-primary"><g:message code="ehrserver.messaging.feedbackform.send" /></button>
           </div>
         </div>
         </g:form>
