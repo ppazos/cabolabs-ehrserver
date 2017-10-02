@@ -590,7 +590,9 @@ class BootStrap {
          '/mgt/**' // management api
         ])
         {
-            new RequestMap(url: url, configAttribute: 'permitAll').save()
+           // permitAll is an expression, not a role, he correspondent role is IS_AUTHENTICATED_ANONYMOUSLY, see table 2:
+           // https://github.com/grails-plugins/grails-spring-security-core/blob/master/plugin/src/docs/requestMappings/expressions.adoc
+           new RequestMap(url: url, configAttribute: 'IS_AUTHENTICATED_ANONYMOUSLY').save()
         }
        
         // sections        
@@ -610,6 +612,7 @@ class BootStrap {
         new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         
         new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/requestMap/**',                configAttribute: 'ROLE_ADMIN').save()
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()

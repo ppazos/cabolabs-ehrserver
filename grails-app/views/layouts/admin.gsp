@@ -228,8 +228,11 @@
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                  <li class="menu_vertical_separator">
+                  <li>
                     <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
+                  </li>
+                  <li class="menu_vertical_separator">
+                    <g:link controller="requestMap" action="index" class="${(controllerName=='requestMap')?'active':''}"><i class="fa fa-shield"></i> <g:message code="desktop.accesscontrol" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
