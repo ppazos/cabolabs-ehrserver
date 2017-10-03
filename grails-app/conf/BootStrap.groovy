@@ -65,7 +65,15 @@ class BootStrap {
          new ConfigurationItem(key:'ehrserver.security.password_token.expiration', value:'1440', type:'number', blank:false, description:'Number of minutes after the password reset token expires')
       ]
       
-      conf.each { it.save(failOnError: true) }
+      conf.each {
+         if (ConfigurationItem.countByKey(it.key) == 0)
+         {
+            if (!it.save(flush: true))
+            {
+               log.warn(it.errors.toString()) 
+            }
+         }
+      }
       
       configurationService.refresh()
    }
