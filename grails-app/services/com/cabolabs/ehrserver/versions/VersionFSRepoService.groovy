@@ -113,7 +113,7 @@ class VersionFSRepoService {
       // if we add the size to the version on the DB we don't need to process the file system
       def v, size = 0
       orgversions.each { fileUid ->
-         v = new File(config.version_repo.withTrailSeparator() + fileUid +'.xml')
+         v = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + fileUid +'.xml')
          
          if (filter.call(v))
          {
