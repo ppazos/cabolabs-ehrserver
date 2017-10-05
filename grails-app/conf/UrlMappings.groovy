@@ -61,16 +61,29 @@ class UrlMappings {
          controller: 'rest',
          action: 'login'
       )
+      "/api/v1/organizations"(
+         method: 'GET',
+         controller: 'rest',
+         action: 'organizations'
+      )
       "/api/v1/users/$username"(
+         method: 'GET',
          controller: 'user',
          action: 'profile'
       )
+      "/api/v1/users"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'userRegister'
+      )
+      
       "/api/v1/ehrs"(
          controller: 'rest',
          action: 'ehrList'
       )
       // /ehrs/ehrUid/xxx -- one EHR based on ehrUid partition
-      "/api/v1/ehrs/ehrUid/$uid"(
+      "/api/v1/ehrs/$uid"(
+         method: 'GET',
          controller: 'rest',
          action: 'ehrGet'
       )
@@ -140,15 +153,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'checkout'
       )
-      "/api/v1/organizations"(
-         controller: 'rest',
-         action: 'organizations'
-      )
-      "/api/v1/users"(
-         method: 'POST',
-         controller: 'rest',
-         action: 'userRegister'
-      )
+      
       "/api/v1/templates"(
          controller: 'rest',
          action: 'templates'
