@@ -1919,9 +1919,8 @@ class RestController {
       
       if (!format || format == 'xml')
          render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      else (format == 'json')
+      else if (format == 'json')
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
-
    }
    
    
