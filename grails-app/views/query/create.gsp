@@ -95,15 +95,20 @@
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
     
+    
+    
     <script type="text/javascript">
+      // globals
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
+      var get_concepts_url = '${createLink(controller:"query", action:"getConcepts")}';
+      
       <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>
     </script>
     <asset:javascript src="query_test_and_execution.js" />
     <!-- /query test -->
     
     <script type="text/javascript">
-
+      
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
@@ -943,7 +948,7 @@ resp.responseJSON.result.message +'</div>'
 
             // spec is an array of criteria spec
             // render criteria spec
-            for (i in spec)
+            for (i=0; i<spec.length; i++)
             {
               aspec = spec[i];
               
@@ -952,6 +957,8 @@ resp.responseJSON.result.message +'</div>'
               
               // 1 column for the radio button that selects the criteria
               criteria += '<div class="form-group"><div class="col-sm-1">';
+              
+              console.log(i, aspec);
               
               // All fields of the same criteria will have the same id in the data-criteria attribute
               if (i == 0)
@@ -1749,6 +1756,20 @@ resp.responseJSON.result.message +'</div>'
                   </tr>
                   <tr>
                     <td>
+                      <g:message code="query.create.concept_filters" /><br/>
+                    </td>
+                    <td class="form-inline"><div class="form-group">
+                      <select id="concept_filter_templateid" class="form-control">
+                        <option value=""><g:message code="query.create.concept_filter.any_template" /></option>
+                      </select>
+                      <select id="concept_filter_archetypeid" class="form-control">
+                        <option value=""><g:message code="query.create.concept_filter.any_archetype" /></option>
+                      </select>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
                       <g:message code="query.create.concept" /><br/>
                       <span class="info">
                         <asset:image src="skin/information.png" />
@@ -1758,13 +1779,7 @@ resp.responseJSON.result.message +'</div>'
                       </span>
                     </td>
                     <td>
-                      <%-- This select is used just to create the condition or projection, is not saved in the query directly --%>
-                      <g:select name="view_archetype_id" size="10"
-                                from="${concepts}"
-                                optionKey="archetypeId"
-                                optionValue="${{it.name['ISO_639-1::'+ session.lang] +' ('+ it.archetypeId +')'}}"
-                                noSelection="${['':g.message(code:'query.create.please_select_concept')]}"
-                                class="form-control withsize" />
+                      <select id="view_archetype_id" name="view_archetype_id" size="10" class="form-control withsize"></select>
                       <label><input type="checkbox" name="allow_any_archetype_version" /> <g:message code="query.create.allowAnyArchetypeVersion" /></label>
                     </td>
                   </tr>
@@ -2023,5 +2038,7 @@ resp.responseJSON.result.message +'</div>'
         </g:form>
       </div>
     </div>
+    
+    <asset:javascript src="query_create.js" />
   </body>
 </html>

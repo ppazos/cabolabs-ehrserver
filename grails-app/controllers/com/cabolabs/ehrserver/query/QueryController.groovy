@@ -92,12 +92,21 @@ class QueryController {
       
       [queryInstanceList: list, queryInstanceTotal: list.totalCount]
    }
+   
+   /**
+    * AJAX action to populate the concept selector and concept filters. Returns JSON list of AIIs.
+    */
+   def getConcepts()
+   {
+      // only archetypes translated to the current lang, has a reference to many parent OPTs that is used to filter on the GUI.
+      def concepts = ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }.sort{ it.archetypeId }
+      render(text:(concepts as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+   }
 
    def create()
    {
       [queryInstance: new Query(params),
       dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-      concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }.sort{ it.archetypeId }, // only archetypes translated to the current lang
       templateIndexes: OperationalTemplateIndex.list()]
    }
    
@@ -149,7 +158,6 @@ class QueryController {
         model: [
           queryInstance: queryInstance,
           dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-          concepts: ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // only archetypes translated to the current lang
           templateIndexes: OperationalTemplateIndex.list(),
           mode: 'edit'
         ]

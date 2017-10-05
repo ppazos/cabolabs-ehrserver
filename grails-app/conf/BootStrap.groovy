@@ -178,6 +178,16 @@ class BootStrap {
      
         return res
      }
+     
+     JSON.registerObjectMarshaller(ArchetypeIndexItem) { aii ->
+        return [archetypeId:    aii.archetypeId,
+                path:           aii.path,
+                rmTypeName:     aii.rmTypeName,
+                name:           aii.name, // Map
+                terminologyRef: aii.terminologyRef,
+                parentOpts:     aii.parentOpts // List
+               ]
+     }
    
      JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
         return [templateId:  opt.templateId,
