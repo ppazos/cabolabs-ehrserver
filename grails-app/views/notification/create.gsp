@@ -24,7 +24,7 @@
 	        </ul>
 	      </g:hasErrors>
 	      
-	      <g:form url="[resource:notificationInstance, action:'save']" >
+	      <g:form url="[resource:notificationInstance, action:'save']" id="frm_notification">
 	        <fieldset class="form">
 	          <g:render template="form"/>
 	        </fieldset>

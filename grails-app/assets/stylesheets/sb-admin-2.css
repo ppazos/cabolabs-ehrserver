@@ -334,7 +334,7 @@ div.btn-toolbar {
   text-align: right;
 }
 
-.error > input, .error > select, .error > textarea {
+.error > input, .error > select, .error > textarea, .error > .mce-tinymce {
   border: 1px solid #d9534f;
   background-color: #f2dede;
 }

@@ -6,7 +6,6 @@
     <title><g:message code="default.edit.label" /></title>
   </head>
   <body>
-    
     <div class="nav" role="navigation">
       <ul>
         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
@@ -26,7 +25,7 @@
         </g:eachError>
       </ul>
       </g:hasErrors>
-      <g:form url="[resource:notificationInstance, action:'update']" method="PUT" >
+      <g:form url="[resource:notificationInstance, action:'update']" method="PUT" id="frm_notification">
         <g:hiddenField name="version" value="${notificationInstance?.version}" />
         <fieldset class="form">
           <g:render template="form"/>

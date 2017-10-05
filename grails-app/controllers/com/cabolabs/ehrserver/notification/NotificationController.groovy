@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -20,13 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.cabolabs.ehrserver.notification
 
 import grails.converters.*
 import grails.util.Holders
 import com.cabolabs.security.*
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.validation.ValidationException
 
 class NotificationController {
 
@@ -68,41 +67,17 @@ class NotificationController {
    
    def save(Notification notificationInstance)
    {
-/* now done in the notification job
-      def statuses = []
-      if (!notificationInstance.forUser)
+      try
       {
-         def users
-         if (notificationInstance.forOrganization)
-         {
-            def c = User.createCriteria()
-            users = c.list {
-               eq('isVirtual', false)
-               organizations {
-                  eq ('uid', notificationInstance.forOrganization)
-               }
-            }
-         }
-         else
-         {
-            users = User.list()
-         }
-         
-         users.each { user ->
-            statuses << new NotificationStatus(user:user, notification:notificationInstance)
-         }
+         notificationInstance.save(failOnError: true) // TODO: validation and return to notification create
       }
-      else
+      catch (ValidationException e)
       {
-         statuses << new NotificationStatus(user:User.get(notificationInstance.forUser), notification:notificationInstance)
+         notificationInstance.errors = e.errors
+         render view: "create", model: [notificationInstance:notificationInstance]
+         return
       }
-*/
-      notificationInstance.save(failOnError: true) // TODO: validation and return to notification create
-/*
-      statuses.each { status ->
-         status.save(failOnError: true)
-      }
-*/
+
       redirect action: 'show', id: notificationInstance.id
    }
    

@@ -1,16 +1,18 @@
 
 .global_alert_container {
-   z-index: 2001;
-   position: fixed;
-   top: 10px;
-   left: 15px; /* when sidebar is not displayed */
-   right: 15px;
+ z-index: 2001;
+ position: fixed;
+ top: 10px;
+ left: 15px; /* when sidebar is not displayed */
+ right: 15px;
+}
+
+.global_alert_container  * {
+ border: 0; /* H1 has border on the main style, if there is a H1 in the notificaiton it has border, this removes it */
 }
 
 @media(min-width:768px) { /* only when the sidebar is displayed */
-	.global_alert_container {
-
-		left: 195px; /* sidebar is 180px width on non-responsive, this avoids to display the alert over the sidebar and adds 15px margin */
-
-	}
+ .global_alert_container {
+	left: 195px; /* sidebar is 180px width on non-responsive, this avoids to display the alert over the sidebar and adds 15px margin */
+ }
 }

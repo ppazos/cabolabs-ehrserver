@@ -24,6 +24,7 @@
     <g:message code="notification.list.attr.forSection" />
   </label>
   <select name="forSection" class="form-control">
+    <option value=""><g:message code="defaut.select.selectOne" /></option>
     <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.logicalPropertyName }.logicalPropertyName - ['simpleCaptcha', 'rest', 'dbdoc', 'login', 'logout', 'test', 'stats', 'messaging', 'plan'] }">
       <option value="${c}">${c}</option>
     </g:each>
@@ -49,10 +50,9 @@
   <label class="control-label" for="forUser">
     <g:message code="notification.list.attr.forUser" />
   </label>
-  <%--<g:field name="forUser" type="number" value="${notificationInstance.forUser}" class="form-control"/>--%>
   <g:select name="forUser" from="${users}"
-              optionKey="id" optionValue="username" class="form-control"
-              noSelection="${['': message(code:'defaut.select.selectOne')]}" />
+            optionKey="id" optionValue="username" class="form-control"
+            noSelection="${['': message(code:'defaut.select.selectOne')]}" />
 </div>
 
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'language', 'error')} required">
@@ -61,7 +61,6 @@
     <span class="required-indicator">*</span>
   </label>
   <g:select from="${['es','en', 'pt']}" name="language" class="form-control" required="" />
-  <%--<g:textField name="language" required="" value="${notificationInstance?.language}" class="form-control"/>--%>
 </div>
 
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'text', 'error')} required">
@@ -69,11 +68,32 @@
     <g:message code="notification.list.attr.text" />
     <span class="required-indicator">*</span>
   </label>
-  <g:textArea rows="3" name="text" required="" value="${notificationInstance?.text}" class="form-control"/>
+  <g:textArea rows="3" name="text" id="text" value="${notificationInstance?.text}" class="form-control"/>
 </div>
 
+<asset:javascript src="tinymce/tinymce.min.js"/>
 <script>
 $(function(){
+
+  tinymce.init({
+    selector:'#text',
+    height: 300,
+    resize: false,
+    menubar: false,
+    branding: false,
+    //border: 0
+  }).then(function(editors){
+    //$('.mce-tinymce').css('border','0');
+  });
+  
+  $('#frm_notification').submit(function(e) {
+    console.log('submit');
+    // makes tinyMCE to save the content to the textarea for submit
+    // without this, the first submit has empty text
+    //tinyMCE.get("editor").save();
+  });
+  
+  
   $('[name=kind]').on('change', function(e){
     console.log(this.value);
     if (this.value == 'email')
