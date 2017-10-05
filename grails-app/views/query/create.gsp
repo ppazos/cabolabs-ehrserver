@@ -101,6 +101,7 @@
       // globals
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
       var get_concepts_url = '${createLink(controller:"query", action:"getConcepts")}';
+      var current_criteria_spec; // set by getCriteriaSpec
       
       <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>
     </script>
@@ -940,7 +941,10 @@ resp.responseJSON.result.message +'</div>'
           dataType: 'json',
           success: function(spec, textStatus) {
 
-            //console.log(spec);
+            console.log('spec', spec, spec.length);
+            
+            // set global for reference from other functions
+            current_criteria_spec = spec;
 
             $('#composition_criteria_builder').empty();
             
@@ -948,9 +952,9 @@ resp.responseJSON.result.message +'</div>'
 
             // spec is an array of criteria spec
             // render criteria spec
-            for (i=0; i<spec.length; i++)
+            for (s = 0; s < spec.length; s++)
             {
-              aspec = spec[i];
+              aspec = spec[s];
               
               global_criteria_id++;
               
@@ -958,13 +962,13 @@ resp.responseJSON.result.message +'</div>'
               // 1 column for the radio button that selects the criteria
               criteria += '<div class="form-group"><div class="col-sm-1">';
               
-              console.log(i, aspec);
+              console.log(s, aspec);
               
               // All fields of the same criteria will have the same id in the data-criteria attribute
-              if (i == 0)
-                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" checked="checked" />';
+              if (s == 0)
+                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ s +'" checked="checked" />';
               else
-                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ i +'" />';
+                criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ s +'" />';
               
               // 11 columns for the criteria
               criteria += '</div><div class="col-sm-11">';
@@ -976,7 +980,7 @@ resp.responseJSON.result.message +'</div>'
                 criteria += '<div class="col-sm-2">'+ attr + '<input type="hidden" name="attribute" value="'+ attr +'" /></div>';
                 
                 conditions = aspec[attr]; // spec[0][code][eq] == value
-                criteria += '<div class="col-sm-5"><select class="operand form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
+                criteria += '<div class="col-sm-5"><select class="operand '+ attr +' form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
                 
                 
                 // =======================================================================================================
@@ -1006,6 +1010,12 @@ resp.responseJSON.result.message +'</div>'
                 
                 for (cond in conditions)
                 {
+                  // starts with underscore is for internal use, avoid processing,
+                  // used to pass list of codes to fill the condition value criteria
+                  if (cond.startsWith('_'))
+                  {
+                     continue;
+                  }
                   criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
                 criteria += '</select></div>';
@@ -1055,7 +1065,17 @@ resp.responseJSON.result.message +'</div>'
                 for (cond in conditions)
                 {
                   //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
-                  criteria += '<span class="criteria_value">';
+                  
+                  
+                  // starts with underscore is for internal use, avoid processing,
+                  // used to pass list of codes to fill the condition value criteria
+                  if (cond.startsWith('_'))
+                  {
+                     continue;
+                  }
+                  
+                  
+                  criteria += '<span class="criteria_value" data-criteria="'+ global_criteria_id +'">';
                   
                   if (cond == 'eq_one')
                   {
@@ -1065,6 +1085,10 @@ resp.responseJSON.result.message +'</div>'
                       criteria += '<option value="'+ conditions[cond][v] +'">'+ conditions[cond][v] +'</option>'; // TODO: get texts for values
                     }
                     criteria += '</select>';
+                  }
+                  else if (cond == 'in_snomed_exp')
+                  {
+                    criteria += '<textarea name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" style="margin:0"></textarea>';
                   }
                   else
                   {
@@ -1192,7 +1216,33 @@ resp.responseJSON.result.message +'</div>'
       // attachs onchange for operand selects created by the 'get_criteria_specs' function.
       $(document).on('change', 'select.operand', function(evt) {
          
-        console.log('operand change', this.selectedIndex, $(this).data('criteria'));
+        //console.log('operand change', this.selectedIndex, $(this).data('criteria'));
+        
+        console.log(this.options[this.selectedIndex].value); // eq, in_list, in_snomed_exp, ...
+        console.log(current_criteria_spec);
+        
+        if (this.options[this.selectedIndex].value == 'in_snomed_exp')
+        {
+           /*
+              1. set terminologyId operand on the same criteria id (data-criteria) to 'eq'
+              2. save current criteria value select
+              3. dynamically create criteria value select for terminologyID with values current_criteria_spec[spec#][terminologyId]._snomed
+           */
+           
+           
+           // 1. setear el 'eq' en este select
+           console.log( $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId') );
+           
+           // copiar el select o esconderlo, el que corresponda con el 'eq'
+           // this selects all the selects with codes for each operand of the terminologyId (eq, contains), I want to set the eq select!
+           console.log( $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value') );
+           
+           // TOOD: crear el select con las versiones de snomed
+           // valores: current_criteria_spec[0].terminologyId._snomed
+           // el 0 sale de data-spec attr del selected radio button con el mismo data-criteria
+        }
+        
+        
         
         var criteria_value_container = $(this).parent().next();
         
@@ -1204,7 +1254,7 @@ resp.responseJSON.result.message +'</div>'
         var value_container = $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline')
         $(':input', value_container).addClass('selected'); // add selected to all the inputs, textareas and selects, this is to add the correct values to the criteria
         
-        console.log( $('#query_form').serialize() );
+        //console.log( $('#query_form').serialize() );
       });
       
       
