@@ -114,7 +114,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
             // Spanish Edition 20160430 + SNS 20160430
             // Spanish Edition 20161031
             // Spanish Edition 20161031 + SNS 20161031
-            in_snomed_exp: 'value'
+            in_snomed_exp: 'snomed_exp'
           ],
           terminologyId: [
             eq: 'value',
@@ -127,13 +127,13 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
       ]
       
       // TODO: if it starts with underscore, do not process on the ui
-      spec[0].terminologyId._snomed = ['International Edition 20170131': 'International Edition 20170131',
-                                      'International Edition 20160131': 'International Edition 20160131',
-                                      'International Edition 20160731': 'International Edition 20160731',
-                                      'Spanish Edition 20160430': 'panish Edition 20160430',
-                                      'Spanish Edition 20160430 + SNS 20160430': 'Spanish Edition 20160430 + SNS 20160430',
-                                      'Spanish Edition 20161031': 'Spanish Edition 20161031',
-                                      'Spanish Edition 20161031 + SNS 20161031': 'Spanish Edition 20161031 + SNS 20161031'] 
+      spec[0].terminologyId._snomed = ['SNOMED-CT(International Edition 20170131)'         : 'SNOMED-CT(International Edition 20170131)',
+                                       'SNOMED-CT(International Edition 20160131)'         : 'SNOMED-CT(International Edition 20160131)',
+                                       'SNOMED-CT(International Edition 20160731)'         : 'SNOMED-CT(International Edition 20160731)',
+                                       'SNOMED-CT(Spanish Edition 20160430)'               : 'SNOMED-CT(Spanish Edition 20160430)',
+                                       'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)': 'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)',
+                                       'SNOMED-CT(Spanish Edition 20161031)'               : 'SNOMED-CT(Spanish Edition 20161031)',
+                                       'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)': 'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)'] 
       
       if (codes.size() > 0)
       {

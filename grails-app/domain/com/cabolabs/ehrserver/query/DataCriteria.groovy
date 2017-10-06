@@ -35,9 +35,13 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
  */
 class DataCriteria {
 
+   def querySnomedService
+   
+
    String archetypeId
    String path
    boolean allowAnyArchetypeVersion = false
+   
    
    // value va a depender del tipo del RM en la path
    // value es parametro de la query sino se setea aqui
@@ -155,6 +159,11 @@ class DataCriteria {
             assert operand == 'between'
             criteria[attr] =  [(operand): value]
          }
+         else if (criteriaValueType == 'snomed_exp')
+         {
+            assert operand == 'in_snomed_exp'
+            criteria[attr] =  [(operand): value]
+         }
       }
       
       return criteria
@@ -221,6 +230,24 @@ class DataCriteria {
             assert operand == 'between'
             
             sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
+         }
+         else if (criteriaValueType == 'snomed_exp')
+         {
+            assert 'in_snomed_exp' == operand
+            
+            // for coded text this is List codeValue, value[0] is the expression
+            //println value
+            
+            // TODO: the result of the expression should be already cached locally
+            // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
+            def conceptids = querySnomedService.getCodesFromExpression(value[0])
+            
+            sql += this.alias +'.'+ attr +' IN ('
+            
+            conceptids.each { singleValue ->
+               sql += singleValue.asSQLValue(operand) +','
+            }
+            sql = sql[0..-2] + ')' // removes last ,
          }
          
          sql += ' AND '

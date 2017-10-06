@@ -1218,28 +1218,72 @@ resp.responseJSON.result.message +'</div>'
          
         //console.log('operand change', this.selectedIndex, $(this).data('criteria'));
         
-        console.log(this.options[this.selectedIndex].value); // eq, in_list, in_snomed_exp, ...
+        
+        // Specific code to support in_snomed_exp as criteria operand
+        //console.log(this.options[this.selectedIndex].value); // eq, in_list, in_snomed_exp, ...
         console.log(current_criteria_spec);
         
         if (this.options[this.selectedIndex].value == 'in_snomed_exp')
         {
            /*
               1. set terminologyId operand on the same criteria id (data-criteria) to 'eq'
-              2. save current criteria value select
+              2. save/hide current criteria value select
               3. dynamically create criteria value select for terminologyID with values current_criteria_spec[spec#][terminologyId]._snomed
            */
            
            
            // 1. setear el 'eq' en este select
-           console.log( $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId') );
+           //console.log( $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId') );
+           
+           // 2.
+           $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId').val('eq');
+           
+           // for each operand, there is a criteria_value, I want the index of the operand eq to select the correspondent criteria_value select
+           criteria_value_index = $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId')[0].selectedIndex;
            
            // copiar el select o esconderlo, el que corresponda con el 'eq'
            // this selects all the selects with codes for each operand of the terminologyId (eq, contains), I want to set the eq select!
-           console.log( $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value') );
+           //console.log( $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index] );
+           
+           //$('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index].style.border = '1px solid red';
+           
            
            // TOOD: crear el select con las versiones de snomed
            // valores: current_criteria_spec[0].terminologyId._snomed
            // el 0 sale de data-spec attr del selected radio button con el mismo data-criteria
+           
+           // selected criteria
+           selected_criteria_spec_index = $('input[name=criteria]:checked', '#query_form').data('spec');
+           
+           console.log( current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed );
+           
+           possible_values = current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed;
+           
+           // select to set with the terminolgy ids from snomed
+           select_for_terminology_operand_eq = $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index];
+           select_for_terminology_operand_eq.innerHTML = ''; // remove current options
+           
+           for (k in possible_values)
+           {
+             option = document.createElement("option");
+             option.value = k;
+             option.text = possible_values[k];
+             select_for_terminology_operand_eq.add(option);
+           }
+        }
+        else
+        {
+           // reset the criteria_value select with the initial values because in_snomed_exp is not selected.
+           
+           // Easiest way is to call again getCriteriaSpec for the current path.
+           // The problem is every time the operand is changed, it does the request and render again,
+           // sinece we already have the spec, the request is no needed, just the render, but the 
+           // render is tied to the request in get_criteria_specs, we need to separate those processes
+           // like we have on query_create.js for supporting concept filters: request and render are
+           // two different methods, and the render is called from the request as a callback, but 
+           // the render can be called and reused from anywhere passing the model to render.
+           var datatype = $('select[name=view_archetype_path]').find(':selected').data('type');
+           get_criteria_specs(datatype);
         }
         
         
