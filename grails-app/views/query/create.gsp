@@ -1075,7 +1075,7 @@ resp.responseJSON.result.message +'</div>'
                   }
                   
                   
-                  criteria += '<span class="criteria_value" data-criteria="'+ global_criteria_id +'">';
+                  criteria += '<span class="criteria_value '+ attr +'" data-criteria="'+ global_criteria_id +'">';
                   
                   if (cond == 'eq_one')
                   {
@@ -1213,10 +1213,17 @@ resp.responseJSON.result.message +'</div>'
       
       
       
+      // Saves previous values of operand selects, needed to update the criteria area
+      // after using in_snomed_exp operand.
+      $(document).on('focus', 'select.operand', function(evt) {
+        $(this).data('previous', this.value);
+      });
+      
       // attachs onchange for operand selects created by the 'get_criteria_specs' function.
       $(document).on('change', 'select.operand', function(evt) {
          
         //console.log('operand change', this.selectedIndex, $(this).data('criteria'));
+        console.log('prev', $(this).data('previous'));
         
         
         // Specific code to support in_snomed_exp as criteria operand
@@ -1230,7 +1237,6 @@ resp.responseJSON.result.message +'</div>'
               2. save/hide current criteria value select
               3. dynamically create criteria value select for terminologyID with values current_criteria_spec[spec#][terminologyId]._snomed
            */
-           
            
            // 1. setear el 'eq' en este select
            //console.log( $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId') );
@@ -1247,28 +1253,36 @@ resp.responseJSON.result.message +'</div>'
            
            //$('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index].style.border = '1px solid red';
            
-           
-           // TOOD: crear el select con las versiones de snomed
-           // valores: current_criteria_spec[0].terminologyId._snomed
-           // el 0 sale de data-spec attr del selected radio button con el mismo data-criteria
-           
            // selected criteria
            selected_criteria_spec_index = $('input[name=criteria]:checked', '#query_form').data('spec');
            
-           console.log( current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed );
+           //console.log( current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed );
            
            possible_values = current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed;
            
-           // select to set with the terminolgy ids from snomed
-           select_for_terminology_operand_eq = $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index];
-           select_for_terminology_operand_eq.innerHTML = ''; // remove current options
+           // select to set with the terminolgy ids from snomed (can be undefined if the terminology doesnt have a list of values)
+           //select_for_terminology_operand_eq = $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index];
+           //select_for_terminology_operand_eq.innerHTML = ''; 
            
+           select_container = $('[data-criteria="'+ $(this).data('criteria') +'"].criteria_value.terminologyId')[criteria_value_index];
+           
+           // remove current options / criteria value
+           while (select_container.hasChildNodes()) {
+             select_container.removeChild(select_container.lastChild);
+           }
+           
+           //select_container.removeChild(select_for_terminology_operand_eq);  // remove current select
+           select_for_terminology_snomed = document.createElement("select");   // new select
+           select_for_terminology_snomed.className = "form-control input-sm";
+           select_container.appendChild(select_for_terminology_snomed);        // add select to container
+           
+           // add options to select for snomed versions
            for (k in possible_values)
            {
              option = document.createElement("option");
              option.value = k;
              option.text = possible_values[k];
-             select_for_terminology_operand_eq.add(option);
+             select_for_terminology_snomed.add(option);
            }
         }
         else
@@ -1282,8 +1296,13 @@ resp.responseJSON.result.message +'</div>'
            // like we have on query_create.js for supporting concept filters: request and render are
            // two different methods, and the render is called from the request as a callback, but 
            // the render can be called and reused from anywhere passing the model to render.
-           var datatype = $('select[name=view_archetype_path]').find(':selected').data('type');
-           get_criteria_specs(datatype);
+           
+           // only updated if in_snomed_exp was used
+           if ($(this).data('previous') == 'in_snomed_exp')
+           {
+              var datatype = $('select[name=view_archetype_path]').find(':selected').data('type');
+              get_criteria_specs(datatype);
+           }
         }
         
         
@@ -1299,6 +1318,10 @@ resp.responseJSON.result.message +'</div>'
         $(':input', value_container).addClass('selected'); // add selected to all the inputs, textareas and selects, this is to add the correct values to the criteria
         
         //console.log( $('#query_form').serialize() );
+        
+        
+        // update previous value, needed to support gui update after using in_snomed_exp
+        $(this).data('previous', this.value);
       });
       
       
