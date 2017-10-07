@@ -22,7 +22,7 @@ class QuerySnomedService {
          headers.Accept = 'application/json'
        
          response.success = { resp, json ->
-            //println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+            println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
             //println resp.statusLine.statusCode // 200
             //println json.getClass() // class net.sf.json.JSONArray
            

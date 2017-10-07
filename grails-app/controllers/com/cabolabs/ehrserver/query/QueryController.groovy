@@ -128,7 +128,7 @@ class QueryController {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
       def user = springSecurityService.getCurrentUser()
       query.author = user
-      
+      query.cacheHQLWhere()
       
       // TODO: errors in json to be displayed
       if (!query.save(flush:true)) println query.errors.allErrors
@@ -172,7 +172,7 @@ class QueryController {
       def json = params.json
       def query = params.query
       query.updateInstance(json)
-      
+      query.cacheHQLWhere()
       
       // TODO: error as json
       if (!query.save(flush:true)) println query.errors.allErrors

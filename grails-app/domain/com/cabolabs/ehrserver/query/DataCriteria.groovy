@@ -240,14 +240,33 @@ class DataCriteria {
             
             // TODO: the result of the expression should be already cached locally
             // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
-            def conceptids = querySnomedService.getCodesFromExpression(value[0])
+            def conceptids = []
             
-            sql += this.alias +'.'+ attr +' IN ('
-            
-            conceptids.each { singleValue ->
-               sql += singleValue.asSQLValue(operand) +','
+            try
+            {
+               conceptids = querySnomedService.getCodesFromExpression(value[0])
             }
-            sql = sql[0..-2] + ')' // removes last ,
+            catch (e)
+            {
+               println e.message
+               println e
+            }
+            
+            //println conceptids
+            // be prepared for communication errors to avoid generating invalid HQL
+            if (conceptids.size() > 0)
+            {
+               sql += this.alias +'.'+ attr +' IN ('
+               
+               conceptids.each { singleValue ->
+                  sql += singleValue.asSQLValue(operand) +','
+               }
+               sql = sql[0..-2] + ')' // removes last ,
+            }
+            else
+            {
+               sql += ' 1=1 ' // just a placeholder to have a valid query
+            }
          }
          
          sql += ' AND '

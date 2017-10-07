@@ -85,6 +85,9 @@ class Query {
    // true => shared with all the organizations
    boolean isPublic
    
+   // partial HQL query cached for this composition Query
+   String cachedHQLWhere
+   
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
@@ -174,7 +177,7 @@ class Query {
                criteria.archetypeId = criteria.archetypeId.replaceAll(/\.v(\d)*/, '')
             }
             
-            println "Criteria "+ criteria
+            //println "Criteria "+ criteria
             
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
@@ -296,6 +299,8 @@ class Query {
       type(inList:['composition','datavalue'])
       
       templateId(nullable:true)
+      
+      cachedHQLWhere(nullable:true, size:1..8192)
    }
    
    static mapping = {
@@ -304,12 +309,22 @@ class Query {
       where cascade: "all-delete-orphan" // cascade delete
    }
    
-   def beforeInsert() {
+   def cacheHQLWhere()
+   {
+      this.cachedHQLWhere = generateHQLWhere()
+   }
+   
+   def beforeInsert()
+   {
+   println "before insert.."
       if (this.type == 'datavalue') this.criteriaLogic = null
+      //if (this.type == 'composition') this.cachedHQLWhere = generateHQLWhere()
    }
 
-   def beforeUpdate() {
+   def beforeUpdate()
+   {
       if (this.type == 'datavalue') this.criteriaLogic = null
+      //if (this.type == 'composition') this.cachedHQLWhere = generateHQLWhere()
    }
    
    def execute(String ehrUid, Date from, Date to, 
@@ -945,15 +960,14 @@ class Query {
       }
       else
       {
+         if (this.cachedHQLWhere)
+            q += this.cachedHQLWhere
+         else
+            q += generateHQLWhere()
+         
+         /*
          q += '(' // exists blocks should be isolated to avoid bad AND/OR association
          
-         /**
-           * FIXME: issue #6
-           * si en el create se verifican las condiciones para que a aqui no
-           * llegue una path a un tipo que no corresponde, el error de tipo
-           * no sucederia nunca, asi no hay que tirar except aca.
-           */
-         //def dataidx
          def idxtype
          this.where.eachWithIndex { dataCriteria, i ->
              
@@ -1119,6 +1133,7 @@ class Query {
          }
          
          q += ')' // exists blocks should be isolated to avoid bad AND/OR association
+         */
       }
       
       println "HQL QUERY: \n" + q
@@ -1126,7 +1141,7 @@ class Query {
       // default pagination
       if (!max)
       {
-         max = 20
+         max = 20 // FIXME get from config
          offset = 0
       }
       
@@ -1137,6 +1152,173 @@ class Query {
       return cilist
    }
    
+   def generateHQLWhere()
+   {
+      def _where = new StringBuilder()
+      
+      _where.append('(') // exists blocks should be isolated to avoid bad AND/OR association
+         
+      def idxtype, fromMap, _subq, _subq_criteria
+      this.where.eachWithIndex { dataCriteria, i ->
+          
+         // Aux to build the query FROM
+         fromMap = ['DataValueIndex': 'dvi']
+          
+         // Lookup del tipo de objeto en la path para saber los nombres de los atributos
+         // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
+         
+         // FIX to the problem: we have the DV in the DataCriteria
+         idxtype = dataCriteria.rmTypeName
+         
+         // ================================================================
+         // TODO:
+         // Since GRAILS 2.4 it seems that exists can be done in Criteria,
+         // should use that instead of HQL.
+         // https://jira.grails.org/browse/GRAILS-9223
+         // ================================================================
+          
+          
+         // Subqueries sobre los DataValueIndex de los CompositionIndex
+         _where.append(" EXISTS (")
+         
+         _subq_criteria = new StringBuilder()
+         
+         /*
+            WHERE dvi.owner.id = ci.id
+               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+               AND dvi.path = /content/data[at0001]/origin
+               AND dvi.value>20080101
+         */
+         if (dataCriteria.allowAnyArchetypeVersion)
+         {
+            _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
+                          .append("dvi.archetypeId LIKE '")
+                          .append(dataCriteria.archetypeId)
+                          .append("' AND ")
+                          .append("dvi.archetypePath = '")
+                          .append(dataCriteria.path)
+                          .append("'")
+         }
+         else
+         {
+            _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
+                          .append("dvi.archetypeId = '")
+                          .append(dataCriteria.archetypeId)
+                          .append("' AND ")
+                          .append("dvi.archetypePath = '")
+                          .append(dataCriteria.path)
+                          .append("'")
+         }
+          
+         // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
+         switch (idxtype)
+         {
+            // ADL Parser bug: uses Java class names instead of RM Type Names...
+            // FIXME: we are not working with ADL any more, the java types can be removed...
+            case 'DV_DATE_TIME':
+               fromMap['DvDateTimeIndex'] = 'ddti'
+               _subq_criteria.append(" AND ddti.id = dvi.id ")
+            break
+            case 'DV_DATE':
+               fromMap['DvDateIndex'] = 'dcdte'
+               _subq_criteria.append(" AND dcdte.id = dvi.id ")
+            break
+            case 'DV_QUANTITY':
+               fromMap['DvQuantityIndex'] = 'dqi'
+               _subq_criteria.append(" AND dqi.id = dvi.id ")
+            break
+            case 'DV_CODED_TEXT':
+               fromMap['DvCodedTextIndex'] = 'dcti'
+               _subq_criteria.append(" AND dcti.id = dvi.id ")
+            break
+            case 'DV_TEXT':
+               fromMap['DvTextIndex'] = 'dti'
+               _subq_criteria.append(" AND dti.id = dvi.id ")
+            break
+            case 'DV_ORDINAL':
+               fromMap['DvOrdinalIndex'] = 'dvol'
+               _subq_criteria.append(" AND dvol.id = dvi.id ")
+            break
+            case 'DV_BOOLEAN':
+               fromMap['DvBooleanIndex'] = 'dbi'
+               _subq_criteria.append(" AND dbi.id = dvi.id ")
+            break
+            case 'DV_COUNT':
+               fromMap['DvCountIndex'] = 'dci'
+               _subq_criteria.append(" AND dci.id = dvi.id ")
+            break
+            case 'DV_PROPORTION':
+               fromMap['DvProportionIndex'] = 'dpi'
+               _subq_criteria.append(" AND dpi.id = dvi.id ")
+            break
+            case 'DV_DURATION':
+               fromMap['DvDurationIndex'] = 'dduri'
+               _subq_criteria.append(" AND dduri.id = dvi.id ")
+            break
+            case 'DV_IDENTIFIER':
+               fromMap['DvIdentifierIndex'] = 'dvidi'
+               _subq_criteria.append(" AND dvidi.id = dvi.id ")
+            break
+            case 'DV_MULTIMEDIA':
+               fromMap['DvMultimediaIndex'] = 'dvmmd'
+               _subq_criteria.append(" AND dvmmd.id = dvi.id ")
+            break
+            case 'DV_PARSABLE':
+               fromMap['DvParsableIndex'] = 'dpab'
+               _subq_criteria.append(" AND v.id = dvi.id ")
+            break
+            case 'String':
+               fromMap['StringIndex'] = 'dstg'
+               _subq_criteria.append(" AND dstg.id = dvi.id ")
+            break
+            case 'LOCATABLE_REF':
+               fromMap['LocatableRefIndex'] = 'dlor'
+               _subq_criteria.append(" AND dlor.id = dvi.id ")
+            break
+            default:
+               throw new Exception("type $idxtype not supported")
+         }
+         
+         _subq_criteria.append(" AND ")
+                       .append(dataCriteria.toSQL()) // important part: complex criteria to SQL, depends on the datatype
+         
+         // dvi.owner.id = ci.id
+         // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
+         // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
+         // se cumpla uno de los criterios que vienen en params)
+         
+         /*
+         FROM ArchetypeIndexItem dvi, ...
+         WHERE dvi.owner.id = ci.id AND
+               dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1 AND
+               dvi.path = /content/data[at0001]/origin AND
+               dvi.value>20080101
+         */
+         _subq = new StringBuilder()
+         _subq.append("SELECT dvi.id FROM ")
+         
+         fromMap.each { index, alias ->
+             
+            _subq.append(index).append(' ').append(alias).append(' , ')
+         }
+         
+         //_subq = _subq.substring(0, _subq.size()-2)
+         _subq.setLength(_subq.length() - 2)
+         _subq.append(_subq_criteria)
+         
+         
+         _where.append(_subq)
+         _where.append(")") // closes exists (...
+         
+
+         // Agrega ANDs para los EXISTs, menos el ultimo
+         if (i+1 < this.where.size()) _where.append(' ').append(criteriaLogic).append(' ') // AND or OR
+      }
+      
+      _where.append(')') // exists blocks should be isolated to avoid bad AND/OR association
+      
+      return _where.toString()
+   }
    
    def getXML()
    {
