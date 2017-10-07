@@ -56,6 +56,7 @@ class BootStrap {
    def resourceService
    def configurationService
    
+   
    def defaultConfigurationItems()
    {
       def conf = [
@@ -730,7 +731,7 @@ class BootStrap {
    }
    
    def init = { servletContext ->
-      
+   
       def working_folder = new File('.')
       log.info ("Working folder: "+ working_folder.absolutePath)
       

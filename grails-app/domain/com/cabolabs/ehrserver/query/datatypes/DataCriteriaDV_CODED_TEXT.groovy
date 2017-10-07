@@ -102,8 +102,19 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
       def spec = [
         [
           code: [
-            eq: 'value',   // operand eq can be applied to attribute code and the reference value is a single value
-            in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
+            eq: 'value',     // operand eq can be applied to attribute code and the reference value is a single value
+            in_list: 'list', // operand in_list can be applied to attribute code and the reference value is a list of values
+            
+            // TODO: there is a dependence between code and terminologyId constraints, if in_snomed_exp is selected,
+            //       I want codes to terminologyId to be set to this list, or I can send it always and avoid processing it on the ui.
+            // International Edition 20170131
+            // International Edition 20160131
+            // International Edition 20160731
+            // Spanish Edition 20160430
+            // Spanish Edition 20160430 + SNS 20160430
+            // Spanish Edition 20161031
+            // Spanish Edition 20161031 + SNS 20161031
+            in_snomed_exp: 'snomed_exp'
           ],
           terminologyId: [
             eq: 'value',
@@ -114,6 +125,18 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           value: [contains: 'value']
         ]
       ]
+      
+      // if it starts with underscore, do not process on the ui
+      /* currently we dont need the versions on the query builder since versions are used to get the name/rubric, and queries use just the conceptid
+      spec[0].terminologyId._snomed = ['SNOMED-CT(International Edition 20170131)'         : 'SNOMED-CT(International Edition 20170131)',
+                                       'SNOMED-CT(International Edition 20160131)'         : 'SNOMED-CT(International Edition 20160131)',
+                                       'SNOMED-CT(International Edition 20160731)'         : 'SNOMED-CT(International Edition 20160731)',
+                                       'SNOMED-CT(Spanish Edition 20160430)'               : 'SNOMED-CT(Spanish Edition 20160430)',
+                                       'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)': 'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)',
+                                       'SNOMED-CT(Spanish Edition 20161031)'               : 'SNOMED-CT(Spanish Edition 20161031)',
+                                       'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)': 'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)'] 
+      */
+      spec[0].terminologyId._snomed = ['SNOMED-CT': 'SNOMED-CT'] // this needs to be set to the terminology when in_snomed_exp operator is selected.
       
       if (codes.size() > 0)
       {
