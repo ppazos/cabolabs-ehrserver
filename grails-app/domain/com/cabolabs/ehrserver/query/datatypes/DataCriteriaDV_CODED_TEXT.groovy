@@ -126,7 +126,8 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
         ]
       ]
       
-      // TODO: if it starts with underscore, do not process on the ui
+      // if it starts with underscore, do not process on the ui
+      /* currently we dont need the versions on the query builder since versions are used to get the name/rubric, and queries use just the conceptid
       spec[0].terminologyId._snomed = ['SNOMED-CT(International Edition 20170131)'         : 'SNOMED-CT(International Edition 20170131)',
                                        'SNOMED-CT(International Edition 20160131)'         : 'SNOMED-CT(International Edition 20160131)',
                                        'SNOMED-CT(International Edition 20160731)'         : 'SNOMED-CT(International Edition 20160731)',
@@ -134,6 +135,8 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                                        'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)': 'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)',
                                        'SNOMED-CT(Spanish Edition 20161031)'               : 'SNOMED-CT(Spanish Edition 20161031)',
                                        'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)': 'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)'] 
+      */
+      spec[0].terminologyId._snomed = ['SNOMED-CT': 'SNOMED-CT'] // this needs to be set to the terminology when in_snomed_exp operator is selected.
       
       if (codes.size() > 0)
       {

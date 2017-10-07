@@ -1273,7 +1273,7 @@ resp.responseJSON.result.message +'</div>'
            
            //select_container.removeChild(select_for_terminology_operand_eq);  // remove current select
            select_for_terminology_snomed = document.createElement("select");   // new select
-           select_for_terminology_snomed.className = "form-control input-sm";
+           select_for_terminology_snomed.className = "value terminologyId form-control input-sm selected";
            select_container.appendChild(select_for_terminology_snomed);        // add select to container
            
            // add options to select for snomed versions
