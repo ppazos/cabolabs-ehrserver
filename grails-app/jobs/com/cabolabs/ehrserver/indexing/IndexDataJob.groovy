@@ -35,7 +35,7 @@ class IndexDataJob {
    def concurrent = false
    
    static triggers = {
-      simple repeatInterval: 30000l // execute job once in 30 seconds
+      simple repeatInterval: 120000l, startDelay: 240000l // execute job once in 120 seconds
    }
    
    def dataIndexerService

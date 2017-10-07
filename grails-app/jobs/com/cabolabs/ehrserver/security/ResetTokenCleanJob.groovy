@@ -30,7 +30,7 @@ class ResetTokenCleanJob {
    def concurrent = false
 
    static triggers = {
-      simple repeatInterval: 43200000 // execute job once each 12h
+      simple repeatInterval: 43200000l, startDelay: 240000l // execute job once each 12h
    }
 
    def execute()
