@@ -78,6 +78,11 @@ $(function(){
   tinymce.init({
     selector:'#text',
     height: 300,
+    plugins: "lists link autolink image codesample media",
+    toolbar: "undo redo | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | image media | codesample",
+    //toolbar: "codesample",
+    //menubar: "",
+    //toolbar: "numlist bullist",
     resize: false,
     menubar: false,
     branding: false,
