@@ -3,6 +3,7 @@ package com.cabolabs.ehrserver.query
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import grails.converters.*
 
 @Transactional(readOnly = true)
 class EhrQueryController {
@@ -19,16 +20,21 @@ class EhrQueryController {
    def test1(long id)
    {
       def eq = EhrQuery.get(id)
-      eq.execute(Ehr.get(1).uid, session.organization.uid)
-      render "test1"
+      def res = eq.checkEhr(Ehr.get(1).uid)
+      render ([res] as JSON)
    }
-   
+   def test11(long id)
+   {
+      def eq = EhrQuery.get(id)
+      def res = eq.checkEhr(Ehr.get(2).uid) // same as 1 for ehr 2
+      render ( [res] as JSON)
+   }
    
    def test2(long id)
    {
       def eq = EhrQuery.get(id)
-      eq.execute(null, session.organization.uid)
-      render "test2"
+      def ehrUids = eq.getEhrUids(session.organization.uid)
+      render ehrUids as JSON
    }
 
    

@@ -27,9 +27,9 @@
          <g:form action="save">
            <fieldset class="form">
              <g:render template="form"/>
-           </fieldset>
-           <fieldset class="buttons">
-             <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+             <div class="btn-toolbar" role="toolbar">
+               <g:submitButton name="create" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+             </div>
            </fieldset>
          </g:form>
       </div>

@@ -893,6 +893,7 @@ class Query {
       
       // ===============================================================
       // Criteria nivel 1 ehrUid
+      // RestController verifies the ehr is in the org
       if (ehrUid) filters.append("ci.ehrUid = '").append(ehrUid).append("' AND ")
       if (organizationUid) filters.append("ci.organizationUid = '").append(organizationUid).append("' AND ")
        
@@ -1108,7 +1109,7 @@ class Query {
       
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       
-      println cilist
+      println "executeComposition results "+ cilist
       
       return cilist
    }

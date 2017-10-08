@@ -30,9 +30,9 @@
         <g:hiddenField name="version" value="${ehrQueryInstance?.version}" />
         <fieldset class="form">
           <g:render template="form"/>
-        </fieldset>
-        <fieldset class="buttons">
-          <g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+          <div class="btn-toolbar" role="toolbar">
+            <g:actionSubmit class="save btn btn-success btn-md" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+          </div>
         </fieldset>
       </g:form>
     </div>

@@ -253,8 +253,11 @@
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li class="menu_vertical_separator">
+                  <li>
                     <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+                  </li>
+                  <li class="menu_vertical_separator">
+                    <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
