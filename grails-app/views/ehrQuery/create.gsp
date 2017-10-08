@@ -1,13 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
-    <title><g:message code="ehr.create.title" /></title>
+    <title><g:message code="ehrquery.create.title" /></title>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="ehr.create.title" /></h1>
+        <h1><g:message code="ehrquery.create.title" /></h1>
       </div>
     </div>
     <div class="row row-grid">
@@ -24,14 +24,14 @@
 	        </ul>
 	      </g:hasErrors>
 	      
-	      <g:form action="save">
-	        <fieldset class="form">
-	          <g:render template="form"/>
-	          <div class="btn-toolbar" role="toolbar">
-	            <g:submitButton name="create" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label', default: 'Create')}" />
-             </div>
-	        </fieldset>
-	      </g:form>
+         <g:form action="save">
+           <fieldset class="form">
+             <g:render template="form"/>
+           </fieldset>
+           <fieldset class="buttons">
+             <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
+           </fieldset>
+         </g:form>
       </div>
     </div>
   </body>
