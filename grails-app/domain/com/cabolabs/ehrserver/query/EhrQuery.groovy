@@ -13,6 +13,7 @@ package com.cabolabs.ehrserver.query
  */
 class EhrQuery {
 
+   String uid = java.util.UUID.randomUUID() as String
    String name
    String description
    
@@ -40,8 +41,8 @@ class EhrQuery {
          matching_compo_index_counts << query.executeComposition(ehrUid, null, null, null, 1, 0, null, null, true)
       }
       
-      println matching_compo_index_counts // [[1], [0]]
-      println matching_compo_index_counts.flatten() // [1, 0]
+      //println matching_compo_index_counts // [[1], [0]]
+      //println matching_compo_index_counts.flatten() // [1, 0]
       
       // the count should be > 0 on all results to return true
       return matching_compo_index_counts.flatten().every { it > 0 }
