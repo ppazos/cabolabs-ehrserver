@@ -16,9 +16,9 @@
 	        <div class="alert alert-info" role="alert">${flash.message}</div>
 	      </g:if>
 	      
-	      <g:hasErrors bean="${ehr}">
+	      <g:hasErrors bean="${ehrQueryInstance}">
 	        <ul class="errors" role="alert">
-	          <g:eachError bean="${ehr}" var="error">
+	          <g:eachError bean="${ehrQueryInstance}" var="error">
 	            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
 	          </g:eachError>
 	        </ul>

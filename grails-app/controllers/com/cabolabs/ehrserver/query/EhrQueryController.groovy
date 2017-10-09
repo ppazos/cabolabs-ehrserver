@@ -38,16 +38,19 @@ class EhrQueryController {
    }
 
    
-   def show(EhrQuery ehrQueryInstance) {
+   def show(EhrQuery ehrQueryInstance)
+   {
       respond ehrQueryInstance
    }
 
-   def create() {
+   def create()
+   {
       respond new EhrQuery(params)
    }
 
    @Transactional
-   def save(EhrQuery ehrQueryInstance) {
+   def save(EhrQuery ehrQueryInstance)
+   {
       if (ehrQueryInstance == null) {
          notFound()
          return
@@ -69,12 +72,15 @@ class EhrQueryController {
       }
    }
 
-   def edit(EhrQuery ehrQueryInstance) {
+   def edit(EhrQuery ehrQueryInstance)
+   {
       respond ehrQueryInstance
    }
 
    @Transactional
-   def update(EhrQuery ehrQueryInstance) {
+   def update(EhrQuery ehrQueryInstance)
+   {
+      println params
       if (ehrQueryInstance == null) {
          notFound()
          return
@@ -85,6 +91,8 @@ class EhrQueryController {
          return
       }
 
+      ehrQueryInstance.queries.clear()
+      ehrQueryInstance.queries = Query.getAll(params.queries)
       ehrQueryInstance.save flush:true
 
       request.withFormat {
@@ -97,8 +105,8 @@ class EhrQueryController {
    }
 
    @Transactional
-   def delete(EhrQuery ehrQueryInstance) {
-
+   def delete(EhrQuery ehrQueryInstance)
+   {
       if (ehrQueryInstance == null) {
          notFound()
          return

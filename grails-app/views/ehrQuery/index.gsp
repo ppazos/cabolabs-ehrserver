@@ -40,7 +40,7 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${ehrQueryInstanceList}" status="i" var="ehrQueryInstance">
+              <g:each in="${list}" status="i" var="ehrQueryInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td><g:link action="show" id="${ehrQueryInstance.id}">${fieldValue(bean: ehrQueryInstance, field: "description")}</g:link></td>
                   <td>${fieldValue(bean: ehrQueryInstance, field: "name")}</td>

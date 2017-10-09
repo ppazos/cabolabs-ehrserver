@@ -33,14 +33,21 @@
               <th><g:message code="ehrquery.attr.queries" /></th>
               <td>
                 <g:each in="${ehrQueryInstance.queries}" var="q">
-                  <span class="property-value" aria-labelledby="queries-label">
-                    <g:link controller="query" action="show" params="[uid: q.uid]">${q?.encodeAsHTML()}</g:link>
-                  </span>
+                  <div class="property-value" aria-labelledby="queries-label">
+                    <g:link controller="query" action="show" params="[uid: q.uid]">${q.name} (${q.uid})</g:link>
+                  </div>
                 </g:each>
               </td>
             </tr>
           </tbody>
         </table>
+        
+        <div class="btn-toolbar" role="toolbar">
+          <fieldset class="buttons">
+            <g:link action="edit" id="${ehrQueryInstance.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+          </fieldset>
+        </div>
+        
       </div>
     </div>
   </body>

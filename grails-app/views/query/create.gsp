@@ -1089,6 +1089,7 @@ resp.responseJSON.result.message +'</div>'
                   else if (cond == 'in_snomed_exp')
                   {
                     criteria += '<textarea name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" style="margin:0"></textarea>';
+                    criteria += '<span class="btn btn-default btn-sm validate_snomed_expression">${message(code:"query.create.criteria.in_snomed_exp.validate")}</span>';
                   }
                   else
                   {
@@ -1211,6 +1212,46 @@ resp.responseJSON.result.message +'</div>'
         fields.attr('readonly', true);
       };
       
+      
+      // Validation of snomed expressions used iin criteria values
+      $(document).on('click', '.validate_snomed_expression', function(evt) {
+      
+        //console.log( $(this).prev(), $(this).prev()[0].value );
+        
+        expression_container = $(this).prev();
+        expression_value = expression_container[0].value;
+        
+        $.ajax({
+          url: '${createLink(controller:"query", action:"validateSnomedExpression")}',
+          data: {
+             snomedExpr: expression_value
+          },
+          dataType: 'json',
+          success: function(res, textStatus) {
+
+            //console.log('res', res);
+            if (res.is_valid)
+            {
+               //expression_container.parent().addClass('has-success');
+               expression_container.addClass('alert-success');
+               setTimeout(function(){
+                 expression_container.removeClass('alert-success');
+               }, 2500);
+            }
+            else
+            {
+               expression_container.addClass('alert-danger');
+               setTimeout(function(){
+                 expression_container.removeClass('alert-danger');
+               }, 2500);
+            }
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            
+            console.log(xhr, textStatus, errorThrown);
+          }
+        });
+      });
       
       
       // Saves previous values of operand selects, needed to update the criteria area
