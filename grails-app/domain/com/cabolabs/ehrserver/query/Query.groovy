@@ -316,15 +316,12 @@ class Query {
    
    def beforeInsert()
    {
-   println "before insert.."
       if (this.type == 'datavalue') this.criteriaLogic = null
-      //if (this.type == 'composition') this.cachedHQLWhere = generateHQLWhere()
    }
 
    def beforeUpdate()
    {
       if (this.type == 'datavalue') this.criteriaLogic = null
-      //if (this.type == 'composition') this.cachedHQLWhere = generateHQLWhere()
    }
    
    def execute(String ehrUid, Date from, Date to, 
@@ -867,15 +864,111 @@ class Query {
    }
    
    
-   def executeComposition(String ehrUid, Date from, Date to,
-                          String organizationUid, int max, int offset,
-                          String composerUid, String composerName)
+   def getCompositionQueryFilters (String ehrUid, Date from, Date to,
+                                   String organizationUid,
+                                   String composerUid, String composerName)
    {
+      def filters = new StringBuilder()
+      
+      if (composerUid || composerName)
+      {
+         filters.append("join ci.composer as doc WHERE ")
+         
+         if (composerUid)
+         {
+            filters.append("doc.value = '${composerUid}' AND ")
+         }
+         if (composerName)
+         {
+            // case insensitive comparison for name
+            filters.append("lower(doc.name) LIKE '%").append(composerName.toLowerCase()).append("%' AND ")
+         }
+         filters.append("ci.lastVersion=true AND ") // Query only latest versions
+      }
+      else
+      {
+         filters.append("WHERE ci.lastVersion=true AND ") // Query only latest versions
+      }
+      
+      
+      // ===============================================================
+      // Criteria nivel 1 ehrUid
+      // RestController verifies the ehr is in the org
+      if (ehrUid) filters.append("ci.ehrUid = '").append(ehrUid).append("' AND ")
+      if (organizationUid) filters.append("ci.organizationUid = '").append(organizationUid).append("' AND ")
+       
+      // Filter by templateId
+      if (this.templateId) filters.append("ci.templateId = '").append(this.templateId).append("' AND ")
+      
+      
+      // Criterio de rango de fechas para ci.startTime (event), timeCommitted (persistent)
+      // Formatea las fechas al formato de la DB
+      
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
       
-      // Armado de la query
-      String q = "SELECT ci FROM CompositionIndex ci "
+      String eventDateCriteria = "ci.category = 'event' AND "
+      boolean hasEventDateCriteria = false
+      if (from)
+      {
+         hasEventDateCriteria = true
+         eventDateCriteria += "ci.startTime >= '"+ formatterDateDB.format( from ) +"'" // higher or equal
+      }
+      if (to)
+      {
+         if (hasEventDateCriteria) eventDateCriteria += " AND "
+         hasEventDateCriteria = true
+         eventDateCriteria += "ci.startTime <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
+      }
       
+      String persistentDateCriteria = "ci.category = 'persistent' AND "
+      boolean hasPersistentDateCriteria = false
+      if (from)
+      {
+         hasPersistentDateCriteria = true
+         persistentDateCriteria += "ci.timeCommitted >= '"+ formatterDateDB.format( from ) +"'" // higher or equal
+      }
+      if (to)
+      {
+         if (hasPersistentDateCriteria) persistentDateCriteria += " AND "
+         hasPersistentDateCriteria = true
+         persistentDateCriteria += "ci.timeCommitted <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
+      }
+      
+      if (hasEventDateCriteria && hasPersistentDateCriteria)
+      {
+         filters.append("((").append(eventDateCriteria).append(") OR (").append(persistentDateCriteria).append(")) AND ")
+      }
+      else if (hasEventDateCriteria)
+      {
+         filters.append("(").append(eventDateCriteria).append(") AND ")
+      }
+      else if (hasPersistentDateCriteria)
+      {
+         filters.append("(").append(persistentDateCriteria).append(") AND ")
+      }
+      
+      return filters.toString()
+   }
+   
+   def executeComposition(String ehrUid, Date from, Date to,
+                          String organizationUid, int max, int offset,
+                          String composerUid, String composerName, docount = false, grouByEhr = false)
+   {
+      // Armado de la query
+      String q
+      
+      if (docount)
+         q = "SELECT COUNT(ci.id) FROM CompositionIndex ci "
+      else if (grouByEhr)
+         q = "SELECT ehr.uid, COUNT(ci.id) FROM Ehr ehr, CompositionIndex ci " // count will return 0 or 1 because max is limited to 1
+      else
+         q = "SELECT ci FROM CompositionIndex ci "
+      
+      
+      q += getCompositionQueryFilters(ehrUid, from, to, organizationUid, composerUid, composerName)
+      
+      
+      /*
       if (composerUid || composerName)
       {
          q += "join ci.composer as doc WHERE "
@@ -948,7 +1041,7 @@ class Query {
       {
          q += "("+ persistentDateCriteria +") AND "
       }
-      
+      */
       //
       // ===============================================================
       
@@ -966,143 +1059,8 @@ class Query {
             q += generateHQLWhere()
          
          /*
-         q += '(' // exists blocks should be isolated to avoid bad AND/OR association
-         
-         def idxtype
-         this.where.eachWithIndex { dataCriteria, i ->
-             
-            // Aux to build the query FROM
-            def fromMap = ['DataValueIndex': 'dvi']
-             
-            // Lookup del tipo de objeto en la path para saber los nombres de los atributos
-            // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-             
-            //println "archId "+ dataCriteria.archetypeId
-            //println "path "+ dataCriteria.path
-            
-            // PROBLEM: for alternatives, this returns only one alternative DV
-            //dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataCriteria.archetypeId, dataCriteria.path)
-            //idxtype = dataidx?.rmTypeName
-            
-            // FIX to the problem: we have the DV in the DataCriteria
-            idxtype = dataCriteria.rmTypeName
-            
-            // ================================================================
-            // TODO:
-            // Since GRAILS 2.4 it seems that exists can be done in Criteria,
-            // should use that instead of HQL.
-            // https://jira.grails.org/browse/GRAILS-9223
-            // ================================================================
-             
-             
-            // Subqueries sobre los DataValueIndex de los CompositionIndex
-            q += " EXISTS ("
-             
-             // dvi.owner.id = ci.id
-             // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
-             // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
-             // se cumpla uno de los criterios que vienen en params)
-            def subq = "SELECT dvi.id FROM "
-             
-            //"  FROM DataValueIndex dvi" + // FROM is set below
-            
-            def where
-            if (dataCriteria.allowAnyArchetypeVersion)
-               where = $/WHERE dvi.owner.id = ci.id AND
-                      dvi.archetypeId LIKE '${dataCriteria.archetypeId}%' AND
-                      dvi.archetypePath = '${dataCriteria.path}'/$
-            else
-               where = $/WHERE dvi.owner.id = ci.id AND
-                      dvi.archetypeId = '${dataCriteria.archetypeId}' AND
-                      dvi.archetypePath = '${dataCriteria.path}'/$
-             
-            // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
-            switch (idxtype)
-            {
-               // ADL Parser bug: uses Java class names instead of RM Type Names...
-               // FIXME: we are not working with ADL any more, the java types can be removed...
-               case 'DV_DATE_TIME':
-                   fromMap['DvDateTimeIndex'] = 'ddti'
-                   where += " AND ddti.id = dvi.id "
-               break
-               case 'DV_DATE':
-                  fromMap['DvDateIndex'] = 'dcdte'
-                  where += " AND dcdte.id = dvi.id "
-               break
-               case 'DV_QUANTITY':
-                   fromMap['DvQuantityIndex'] = 'dqi'
-                   where += " AND dqi.id = dvi.id "
-               break
-               case 'DV_CODED_TEXT':
-                   fromMap['DvCodedTextIndex'] = 'dcti'
-                   where += " AND dcti.id = dvi.id "
-               break
-               case 'DV_TEXT':
-                   fromMap['DvTextIndex'] = 'dti'
-                   where += " AND dti.id = dvi.id "
-               break
-               case 'DV_ORDINAL':
-                   fromMap['DvOrdinalIndex'] = 'dvol'
-                   where += " AND dvol.id = dvi.id "
-               break
-               case 'DV_BOOLEAN':
-                   fromMap['DvBooleanIndex'] = 'dbi'
-                   where += " AND dbi.id = dvi.id "
-               break
-               case 'DV_COUNT':
-                   fromMap['DvCountIndex'] = 'dci'
-                   where += " AND dci.id = dvi.id "
-               break
-               case 'DV_PROPORTION':
-                   fromMap['DvProportionIndex'] = 'dpi'
-                   where += " AND dpi.id = dvi.id "
-               break
-               case 'DV_DURATION':
-                  fromMap['DvDurationIndex'] = 'dduri'
-                  where += " AND dduri.id = dvi.id "
-               break
-               case 'DV_IDENTIFIER':
-                  fromMap['DvIdentifierIndex'] = 'dvidi'
-                  where += " AND dvidi.id = dvi.id "
-               break
-               case 'DV_MULTIMEDIA':
-                  fromMap['DvMultimediaIndex'] = 'dvmmd'
-                  where += " AND dvmmd.id = dvi.id "
-               break
-               case 'DV_PARSABLE':
-                  fromMap['DvParsableIndex'] = 'dpab'
-                  where += " AND v.id = dvi.id "
-               break
-               case 'String':
-                  fromMap['StringIndex'] = 'dstg'
-                  where += " AND dstg.id = dvi.id "
-               break
-               case 'LOCATABLE_REF':
-                  fromMap['LocatableRefIndex'] = 'dlor'
-                  where += " AND dlor.id = dvi.id "
-               break
-               default:
-                  throw new Exception("type $idxtype not supported")
-            }
-            
-            where += " AND " + dataCriteria.toSQL() // important part: complex criteria to SQL, depends on the datatype
-            
-            fromMap.each { index, alias ->
-                
-               subq += index +' '+ alias +' , '
-            }
-            subq = subq.substring(0, subq.size()-2)
-            subq += where
-            
-            q += subq
-            q += ")" // closes exists (...
-            
-            
-            // TEST
-            // TEST
             //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
             //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
-            
             
             //       EXISTS (
             //         SELECT dvi.id
@@ -1126,17 +1084,10 @@ class Query {
             //               AND dvi.path = /content/data[at0001]/origin
             //               AND dvi.value>20080101
             //       )
-            
-            
-            // Agrega ANDs para los EXISTs, menos el ultimo
-            if (i+1 < this.where.size()) q += ' '+ criteriaLogic +' ' // AND or OR
-         }
-         
-         q += ')' // exists blocks should be isolated to avoid bad AND/OR association
+
          */
       }
-      
-      println "HQL QUERY: \n" + q
+
       
       // default pagination
       if (!max)
@@ -1145,9 +1096,20 @@ class Query {
          offset = 0
       }
       
+      // Just want to check if there is any result that complies with the criteria
+      if (grouByEhr)
+      {
+         q += ' AND ehr.uid = ci.ehrUid'
+         q += ' GROUP BY ehr.uid'
+      }
+      
+      
+      println "HQL QUERY: \n" + q
+      
+      
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       
-      println cilist
+      println "executeComposition results "+ cilist
       
       return cilist
    }

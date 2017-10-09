@@ -26,10 +26,7 @@ import grails.converters.*
 
 import java.text.SimpleDateFormat
 
-import com.cabolabs.ehrserver.query.Query
-import com.cabolabs.ehrserver.query.QueryShare
-import com.cabolabs.ehrserver.query.DataGet
-import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
@@ -2005,21 +2002,44 @@ class RestController {
       File opt_file = new File( src )
       def opt_xml = opt_file.getText()
       
-       render(text: opt_xml, contentType:"text/xml", encoding:"UTF-8")
-
-      /*
+      render(text: opt_xml, contentType:"text/xml", encoding:"UTF-8")
+   }
+   
+   @SecuredStateless
+   def getEhrQueries(String format)
+   {
+      // TODO: queries should be associated to an org
+      def queries = EhrQuery.list()
+      def data = []
+      queries.each { 
+         data << [uid: it.uid, name: it.name, description: it.description]
+      }
+      
       if (!format || format == 'xml')
       {
-         render(text: shares.opt as XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         render(text: shares.opt as JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
       }
-      else
-      {
-         renderError("Format $format not supported", '44325', 400)
-      }
-      */
    }
+   
+   @SecuredStateless
+   def ehrChecker(String ehrQueryUid, String ehrUid, String format)
+   {
+      def eq = EhrQuery.findByUid(ehrQueryUid)
+      def res = eq.checkEhr(ehrUid)
+      render ( [res] as JSON)
+   }
+   
+   @SecuredStateless
+   def getMatchingEhrs(String ehrQueryUid, String format)
+   {
+      def eq = EhrQuery.findByUid(ehrQueryUid)
+      def orgUid = request.securityStatelessMap.extradata.org_uid
+      def ehrUids = eq.getEhrUids(orgUid)
+      render (ehrUids as JSON)
+   }
+   
 }

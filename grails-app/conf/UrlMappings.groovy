@@ -163,6 +163,22 @@ class UrlMappings {
          action: 'getTemplate'
       )
       
+      "/api/v1/getEhrQueries"(
+         method: 'GET',
+         controller: 'rest',
+         action: 'getEhrQueries'
+      )
+      "/api/v1/ehrChecker"(
+         method: 'GET',
+         controller: 'rest',
+         action: 'ehrChecker'
+      )
+      "/api/v1/getMatchingEhrs"(
+         method: 'GET',
+         controller: 'rest',
+         action: 'getMatchingEhrs'
+      )
+      
       // management API
       "/mgt/v1/stats/$username"(
          controller: 'stats',

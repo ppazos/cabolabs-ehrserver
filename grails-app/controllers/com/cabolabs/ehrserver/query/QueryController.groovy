@@ -49,6 +49,7 @@ class QueryController {
    def springSecurityService
    def resourceService
    def configurationService
+   def querySnomedService
    
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -93,15 +94,6 @@ class QueryController {
       [queryInstanceList: list, queryInstanceTotal: list.totalCount]
    }
    
-   /**
-    * AJAX action to populate the concept selector and concept filters. Returns JSON list of AIIs.
-    */
-   def getConcepts()
-   {
-      // only archetypes translated to the current lang, has a reference to many parent OPTs that is used to filter on the GUI.
-      def concepts = ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }.sort{ it.archetypeId }
-      render(text:(concepts as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-   }
 
    def create()
    {
@@ -504,6 +496,29 @@ class QueryController {
       render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
    }
    
+   /**
+    * AJAX call to populate the concept selector and concept filters. Returns JSON list of AIIs.
+    */
+   def getConcepts()
+   {
+      // only archetypes translated to the current lang, has a reference to many parent OPTs that is used to filter on the GUI.
+      def concepts = ArchetypeIndexItem.findAllByPath('/').findAll{ it.name['ISO_639-1::'+ session.lang] }.sort{ it.archetypeId }
+      render(text:(concepts as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+   }
+   
+   /**
+    * AJAX call from query builder to validate snomed expressions used as criteria values.
+    */
+   def validateSnomedExpression(String snomedExpr)
+   {
+      def valid = querySnomedService.validateExpression(snomedExpr)
+      
+      render(text:([is_valid: valid, snomed_expression: snomedExpr] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+   }
+   
+   /**
+    * Shows the query on it's JSON or XML form.
+    */
    def export(String uid)
    {
       if (!uid)
