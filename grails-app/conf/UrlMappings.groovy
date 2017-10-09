@@ -163,6 +163,7 @@ class UrlMappings {
          action: 'getTemplate'
       )
       
+      // TODO: fancy restful urls
       "/api/v1/getEhrQueries"(
          method: 'GET',
          controller: 'rest',
