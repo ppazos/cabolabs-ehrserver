@@ -73,7 +73,7 @@
               <g:sortableColumn property="language" title="${message(code: 'template.language.label', default: 'language')}" />
               <g:sortableColumn property="uid" title="${message(code: 'template.uid.label', default: 'uid')}" />
               <g:sortableColumn property="archetypeId" title="${message(code: 'template.archetypeId.label', default: 'root archetype')}" />
-                <g:sortableColumn property="isPublic" title="${message(code: 'template.isPublic.label', default: 'is public')}" />
+              <g:sortableColumn property="isPublic" title="${message(code: 'template.isPublic.label', default: 'is public')}" />
               <th></th>
             </tr>
           </thead>
@@ -81,11 +81,11 @@
             <g:set var="sameLangTemplates" value="${opts.findAll{ it.lang == session.lang }}" />
             <g:set var="otherLangTemplates" value="${opts.findAll{ it.lang != session.lang }}" />
             
-            <tr><td colspan="7"><h3>Templates accessible with your current language</h3></td></tr>
+            <tr><td colspan="7"><h3><g:message code="template.list.accessible_in_current_lang" /></h3></td></tr>
            <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
              <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                 <td>
-                  <g:link action="show" params="[uid:templateInstance.uid]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                  <g:link action="show" params="[uid:templateInstance.uid]" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
                 </td>
                 <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
                 <td>${fieldValue(bean: templateInstance, field: "language")}</td>
@@ -93,19 +93,17 @@
                 <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
                   <td>${templateInstance.isPublic.toString()}</td>
                 <td>
-                  <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
+                  <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
                   <br/>
-                  <g:link action="archetypeItems" params="[uid: templateInstance.uid]">Archetype Indexes</g:link>
+                  <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
                 </td>
              </tr>
            </g:each>
            
            <tr>
              <td colspan="7">
-               <h3>Templates not accessible with your current language</h3>
-               <p>These templates won't be shown on the Query Builder. You should load templates with the same
-               language as your that you will use, change your language from the login screen, or share the
-               templates with organizations that other languages are used.</p>
+               <h3><g:message code="template.list.not_accessible_in_current_lang" /></h3>
+               <p><g:message code="template.list.not_accessible_in_current_lang.description" /></p>
              </td>
            </tr>
            <g:each in="${otherLangTemplates}" status="i" var="templateInstance">
@@ -119,9 +117,9 @@
                   <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
                   <td>${templateInstance.isPublic.toString()}</td>
                   <td>
-                    <g:link action="items" params="[uid: templateInstance.uid]">Template Indexes</g:link>
+                    <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
                     <br/>
-                    <g:link action="archetypeItems" params="[uid: templateInstance.uid]">Archetype Indexes</g:link>
+                    <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
                   </td>
                 </tr>
               </g:each>
