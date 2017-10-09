@@ -43,4 +43,34 @@ class QuerySnomedService {
       
       return res
    }
+   
+   
+   def validateExpression(String snomedExpr)
+   {
+      def valid = true
+      
+      def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
+      
+      http.request( POST ) {
+         uri.path = '/SnomedQuery/ws/JSONQuery'
+         uri.query = [cache: 'true']
+         send URLENC, [query: snomedExpr]
+         headers.Accept = 'application/json'
+       
+         response.success = { resp, json ->
+            println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+         }
+         
+         response.failure = { resp ->
+            println 'request failed'
+            println resp
+            println resp.statusLine
+            println resp.status
+            
+            valid = false
+         }
+      }
+      
+      return valid
+   }
 }
