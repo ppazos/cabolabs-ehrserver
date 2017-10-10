@@ -4,35 +4,57 @@
   <head>
     <meta name="layout" content="admin">
     <title><g:message code="versionedComposition.show.title" /></title>
+    <!-- highlight xml and json -->
+    <asset:stylesheet src="highlightjs/xcode.css" />
+    <asset:javascript src="highlight.pack.js" />
+    <!-- xmlToString -->
+    <asset:javascript src="xml_utils.js" />
     <style>
     .icon {
       width: 48px;
       border: none;
     }
     </style>
-    <asset:javascript src="jquery.blockUI.js" />
     <script type="text/javascript">
     $(document).ready(function() {
     
-      $('#versions').on('click', '.showCompo', function(e) {
+      $('.showCompo').on('click', function(e) {
         
-          e.preventDefault();
+        e.preventDefault();
           
-          modal = $('#composition_modal');
+        iframe = $('iframe', '#html_modal');
+        iframe[0].src = this.href;
           
-          modal.children()[0].src = this.href;
-          
-          $.blockUI({
-            message: modal,
-            css: {
-              width: '94%',
-              height: '94%',
-              top : '3%',
-              left: '3%',
-              padding: '10px'
-            },
-            onOverlayClick: $.unblockUI
-          });
+        $('#html_modal').modal();
+      });
+      
+      $('#html_modal').on('hidden.bs.modal', function (event) {
+        iframe = $('iframe', '#html_modal');
+        iframe[0].src = '';
+      });
+      
+      $('.compoXml').on('click', function(e) {
+        
+        e.preventDefault();
+        
+        $.ajax({
+          url: this.href,
+          dataType: 'xml',
+          success: function(xml, textStatus)
+          {
+            console.log('xml', xml);
+            $('#xml').addClass('xml');
+            $('#xml').text(formatXml( xmlToString(xml) ));
+            $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+            
+            $('#xml_modal').modal();
+          }
+        });
+        
+      });
+      
+      $('#xml_modal').on('hidden.bs.modal', function (event) {
+        $('#xml').text('');
       });
     });
     </script>
@@ -88,8 +110,37 @@
       </div>
     </div>
     
-    <%-- Modal para mostrar el contenido de una composition --%>
-    <div id="composition_modal" style="width:100%; height:100%; display:none;"><iframe src="" style="padding:0; margin:0; width:100%; height:100%; border:0;"></iframe></div>
+    <div class="modal fade" id="xml_modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+         <!--
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+         </div>
+         -->
+         <div class="modal-body">
+           <pre><code id="xml"></code></pre>
+         </div>
+         <!--
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary">Send message</button>
+         </div>
+         -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <iframe src="" style="padding:0; margin:0; width:100%; height:540px; border:0;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
    
   </body>
 </html>

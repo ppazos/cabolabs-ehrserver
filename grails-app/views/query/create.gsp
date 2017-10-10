@@ -82,7 +82,6 @@
        font-size: 0.8em;
       }
     </style>
-    <asset:javascript src="jquery.blockUI.js" />
     
     <!-- query test -->
     <asset:stylesheet src="query_execution.css" />

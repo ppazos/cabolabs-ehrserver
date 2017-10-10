@@ -13,7 +13,6 @@
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
      
     <g:javascript library="jquery" plugin="jquery" />
-    <asset:javascript src="jquery.blockUI.js" />
      
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">

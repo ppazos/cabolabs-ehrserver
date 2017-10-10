@@ -38,8 +38,13 @@
     }
     </style>
     
+    <!-- highlight xml and json -->
+    <asset:stylesheet src="highlightjs/xcode.css" />
+    <asset:javascript src="highlight.pack.js" />
+    <!-- xmlToString -->
+    <asset:javascript src="xml_utils.js" />
+    
     <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css "/>
-    <asset:javascript src="jquery.blockUI.js" />
     <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <asset:javascript src="highcharts/highcharts.js" />
     
@@ -83,30 +88,6 @@
       });
       /* ===================================================================================== */
       
-      // Muestra modal con el contenido de la composition tal cual fue devuelto por el servidor EHR
-      // Esta es la forma de on() para que funcione como live() si nuevos links .showCompo se
-      // agregan de forma dinamica al DOM, sino no funciona el bind del click.
-      // la DIV #ehrContributiosn es fija y los A .showCompo varian usando AJAX.
-      $('#ehrContributions').on('click', '.showCompo', function(e) {
-        
-          e.preventDefault();
-          
-          modal = $('#composition_modal');
-          
-          modal.children()[0].src = this.href;
-          
-          $.blockUI({
-            message: modal,
-            css: {
-               width: '94%',
-               height: '94%',
-               top : '3%',
-               left: '3%',
-               padding: '10px'
-            },
-            onOverlayClick: $.unblockUI
-          });
-      });
     });
     
     var highlight_filtered_data = function()
