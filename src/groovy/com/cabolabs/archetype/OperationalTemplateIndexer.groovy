@@ -55,7 +55,9 @@ class OperationalTemplateIndexer {
      ],
      'EVENT_CONTEXT': [
        'setting': 'DV_CODED_TEXT',
-       'location': 'String'
+       'location': 'String',
+       'start_time': 'DV_DATE_TIME',
+       'end_time': 'DV_DATE_TIME'
      ],
      'ACTION': [
        'time': 'DV_DATE_TIME',
