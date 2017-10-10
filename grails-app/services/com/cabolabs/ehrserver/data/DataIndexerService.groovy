@@ -292,6 +292,8 @@ class DataIndexerService {
          'location': 'String',
          //'health_care_facility': 'PARTY_IDENTIFIED', // TODO, might be indexed with the compo
          'setting': 'DV_CODED_TEXT',
+         'start_time': 'DV_DATE_TIME',
+         'end_time': 'DV_DATE_TIME',
          'other_context': '_ask_node_' // ITEM_STRUCTURE
       ]
       
