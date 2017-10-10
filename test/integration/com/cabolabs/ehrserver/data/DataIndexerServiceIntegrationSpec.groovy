@@ -158,8 +158,20 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          
          // indexing was ok
-         assert DataValueIndex.count() == 4
+         /*
+         indexes:
+         - context.start_time
+         - context.setting
+         - history.origin
+         - event.time
+         - count.magnitude
+         */
+         assert DataValueIndex.count() == 5
+         
+         assert DvDateTimeIndex.count() == 3
          assert DvCountIndex.count() == 1
+         assert DvCodedTextIndex.count() == 1
+         
          assert DvCountIndex.first().magnitude == 3
          
          // compo.category is no longer being indexed because of the change
