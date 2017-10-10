@@ -72,6 +72,11 @@ class DataCriteriaDV_PARSABLE extends DataCriteria {
       return ['value', 'formalism']
    }
    
+   static List functions()
+   {
+      return []
+   }
+   
    String toString()
    {
       return this.getClass().getSimpleName() +": "+ this.valueOperand +" "+ this.valueValue +" "+ this.formalismOperand +" "+ this.formalismValue.toString()

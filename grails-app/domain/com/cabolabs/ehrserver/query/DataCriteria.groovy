@@ -172,104 +172,119 @@ class DataCriteria {
    String toSQL()
    {
       def specs = criteriaSpec(this.archetypeId, this.path)
-      def spec = specs[this.spec] // spec used Map
-      def attributes = spec.keySet()
+      def criteria_spec = specs[this.spec] // spec used Map
+      def attributes_or_functions = criteria_spec.keySet()
       def sql = ""
       def operand
       def operandField
       def valueField
       def criteriaValueType // value, list, range ...
-      def value
+      def value, attr
       
-      attributes.each { attr ->
-         operandField = attr+'Operand'
-         operand = this."$operandField"
-         valueField = attr+'Value'
-         value = this."$valueField" // can be a list
-         
-         criteriaValueType = spec[attr][operand]
-         
-         //println this.getClass().getSimpleName()
-         
-         
-         // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
-         if (criteriaValueType == 'value')
+      attributes_or_functions.each { attr_or_function ->
+      
+         if (this.functions().contains(attr_or_function))
          {
-            if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
-               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
-            else
-            {
-               sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
-            }
-         }
-         else if (criteriaValueType == 'list')
-         {
-            //assert operand == 'in_list'
-            assert ['in_list', 'contains_like'].contains(operand)
+            // is function
+            println "function " + attr_or_function
+            println this.evaluateFunction(attr_or_function)
             
-            if (operand == 'contains_like')
+            sql += this.evaluateFunction(attr_or_function) + '     ' // extra spaces to avoid cutting the criteria value
+            
+         }
+         else
+         {
+            attr = attr_or_function
+      
+            operandField = attr+'Operand'
+            operand = this."$operandField"
+            valueField = attr+'Value'
+            value = this."$valueField" // can be a list
+            
+            criteriaValueType = criteria_spec[attr][operand]
+            
+            //println this.getClass().getSimpleName()
+            
+            
+            // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
+            if (criteriaValueType == 'value')
             {
-               sql += '('
-               value.each { singleValue ->
-                  sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
+               if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
+                  sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
+               else
+               {
+                  sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
                }
-               sql = sql[0..-5] + ')' // removes last OR
             }
-            else
+            else if (criteriaValueType == 'list')
             {
-               sql += this.alias +'.'+ attr +' IN ('
+               //assert operand == 'in_list'
+               assert ['in_list', 'contains_like'].contains(operand)
                
-               value.each { singleValue ->
-                  sql += singleValue.asSQLValue(operand) +','
+               if (operand == 'contains_like')
+               {
+                  sql += '('
+                  value.each { singleValue ->
+                     sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
+                  }
+                  sql = sql[0..-5] + ')' // removes last OR
                }
-               sql = sql[0..-2] + ')' // removes last ,
+               else
+               {
+                  sql += this.alias +'.'+ attr +' IN ('
+                  
+                  value.each { singleValue ->
+                     sql += singleValue.asSQLValue(operand) +','
+                  }
+                  sql = sql[0..-2] + ')' // removes last ,
+               }
             }
-         }
-         else if (criteriaValueType == 'range')
-         {
-            assert operand == 'between'
-            
-            sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
-         }
-         else if (criteriaValueType == 'snomed_exp')
-         {
-            assert 'in_snomed_exp' == operand
-            
-            // for coded text this is List codeValue, value[0] is the expression
-            //println value
-            
-            // TODO: the result of the expression should be already cached locally
-            // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
-            def conceptids = []
-            
-            try
+            else if (criteriaValueType == 'range')
             {
-               conceptids = querySnomedService.getCodesFromExpression(value[0])
-            }
-            catch (e)
-            {
-               println e.message
-               println e
-            }
-            
-            //println conceptids
-            // be prepared for communication errors to avoid generating invalid HQL
-            if (conceptids.size() > 0)
-            {
-               sql += this.alias +'.'+ attr +' IN ('
+               assert operand == 'between'
                
-               conceptids.each { singleValue ->
-                  sql += singleValue.asSQLValue(operand) +','
-               }
-               sql = sql[0..-2] + ')' // removes last ,
+               sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
             }
-            else
+            else if (criteriaValueType == 'snomed_exp')
             {
-               sql += ' 1=1 ' // just a placeholder to have a valid query
+               assert 'in_snomed_exp' == operand
+               
+               // for coded text this is List codeValue, value[0] is the expression
+               //println value
+               
+               // TODO: the result of the expression should be already cached locally
+               // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
+               def conceptids = []
+               
+               try
+               {
+                  conceptids = querySnomedService.getCodesFromExpression(value[0])
+               }
+               catch (e)
+               {
+                  println e.message
+                  println e
+               }
+               
+               //println conceptids
+               // be prepared for communication errors to avoid generating invalid HQL
+               if (conceptids.size() > 0)
+               {
+                  sql += this.alias +'.'+ attr +' IN ('
+                  
+                  conceptids.each { singleValue ->
+                     sql += singleValue.asSQLValue(operand) +','
+                  }
+                  sql = sql[0..-2] + ')' // removes last ,
+               }
+               else
+               {
+                  sql += ' 1=1 ' // just a placeholder to have a valid query
+               }
             }
-         }
          
-         sql += ' AND '
+            sql += ' AND '
+         }
       }
       
       sql = sql[0..-6] // removes the last AND

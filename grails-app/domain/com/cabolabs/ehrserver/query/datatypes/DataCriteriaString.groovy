@@ -54,4 +54,9 @@ class DataCriteriaString extends DataCriteria {
    {
       return ['value']
    }
+   
+   static List functions()
+   {
+      return []
+   }
 }

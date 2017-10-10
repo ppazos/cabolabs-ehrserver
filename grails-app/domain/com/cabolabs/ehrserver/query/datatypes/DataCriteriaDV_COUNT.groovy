@@ -72,4 +72,9 @@ class DataCriteriaDV_COUNT extends DataCriteria {
     {
        return ['magnitude']
     }
+   
+   static List functions()
+   {
+      return []
+   }
 }

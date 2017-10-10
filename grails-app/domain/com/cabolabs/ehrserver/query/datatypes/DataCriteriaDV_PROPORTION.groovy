@@ -92,4 +92,9 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
     {
        return ['numerator', 'denominator', 'type']
     }
+   
+   static List functions()
+   {
+      return []
+   }
 }

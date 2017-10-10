@@ -101,4 +101,9 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
     {
        return ['value', 'symbol_value', 'symbol_code', 'symbol_terminology_id']
     }
+   
+   static List functions()
+   {
+      return []
+   }
 }

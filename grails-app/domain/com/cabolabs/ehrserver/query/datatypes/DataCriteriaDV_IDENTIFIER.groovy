@@ -99,4 +99,9 @@ class DataCriteriaDV_IDENTIFIER extends DataCriteria {
     {
        return ['identifier', 'type', 'issuer', 'assigner']
     }
+   
+   static List functions()
+   {
+      return []
+   }
 }

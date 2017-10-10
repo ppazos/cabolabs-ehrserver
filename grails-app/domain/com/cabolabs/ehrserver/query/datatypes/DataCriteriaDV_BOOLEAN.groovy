@@ -63,4 +63,9 @@ class DataCriteriaDV_BOOLEAN extends DataCriteria {
     {
        return ['value']
     }
+   
+   static List functions()
+   {
+      return []
+   }
 }

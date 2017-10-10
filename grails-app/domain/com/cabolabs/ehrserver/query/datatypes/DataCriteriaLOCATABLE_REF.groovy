@@ -56,4 +56,9 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
    {
       return ['value']
    }
+   
+   static List functions()
+   {
+      return []
+   }
 }

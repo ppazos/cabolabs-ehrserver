@@ -69,4 +69,9 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
    {
       return ['alternateText', 'mediaType', 'size']
    }
+   
+   static List functions()
+   {
+      return []
+   }
 }

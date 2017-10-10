@@ -104,6 +104,11 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
       return ['magnitude', 'units']
    }
    
+   static List functions()
+   {
+      return []
+   }
+   
    String toString()
    {
       return this.getClass().getSimpleName() +": "+ this.magnitudeOperand +" "+ this.magnitudeValue.toString() +" "+ this.unitsOperand +" "+ this.unitsValue

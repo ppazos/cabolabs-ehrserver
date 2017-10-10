@@ -206,6 +206,11 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
       return ['value', 'code', 'terminologyId']
    }
    
+   static List functions()
+   {
+      return []
+   }
+   
    String toString()
    {
       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValue.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue

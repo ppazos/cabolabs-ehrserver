@@ -72,4 +72,9 @@ class DataCriteriaDV_TEXT extends DataCriteria {
    {
       return ['value']
    }
+   
+   static List functions()
+   {
+      return []
+   }
 }
