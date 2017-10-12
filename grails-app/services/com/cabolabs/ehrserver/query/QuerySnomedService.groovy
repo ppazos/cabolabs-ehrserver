@@ -33,11 +33,12 @@ class QuerySnomedService {
             }
          }
          
-         response.failure = { resp ->
+         response.failure = { resp, reader ->
             println 'request failed'
             println resp
             println resp.statusLine
             println resp.status
+            println reader.text
          }
       }
       
@@ -52,20 +53,22 @@ class QuerySnomedService {
       def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
       
       http.request( POST ) {
-         uri.path = '/SnomedQuery/ws/JSONQuery'
+         uri.path = '/SnomedQuery/ws/validate'
          uri.query = [cache: 'true']
          send URLENC, [query: snomedExpr]
          headers.Accept = 'application/json'
        
          response.success = { resp, json ->
             println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+            valid = json[0] // [true] / [false]
          }
          
-         response.failure = { resp ->
+         response.failure = { resp, reader ->
             println 'request failed'
             println resp
             println resp.statusLine
             println resp.status
+            println reader.text
             
             valid = false
          }
