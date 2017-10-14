@@ -234,26 +234,12 @@ class RestController {
       // Format comes from current request
       withFormat {
          xml {
-            if (ex && Environment.current == Environment.DEVELOPMENT)
-            {
-               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
-            }
-            else
-            {
-               result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
-            }
-            
+            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
+
             render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-            if (ex && Environment.current == Environment.DEVELOPMENT)
-            {
-               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors, ex)
-            }
-            else
-            {
-               result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors)
-            }
+            result = apiResponsesService.feedback_json(msg, type, errorCode, detailedErrors, ex)
             
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
@@ -264,7 +250,7 @@ class RestController {
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
          '*' {
-            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors)
+            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
             render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
       }
@@ -494,7 +480,7 @@ class RestController {
       catch (CommitWrongChangeTypeException e)
       {
          commitLoggerService.log(request, null, false, content, session)
-         renderError(message(code:'rest.commit.error.wrongChangeType'), 'e02.0009.0', 400, [], e)
+         renderError(message(code:'rest.commit.error.wrongChangeType', args:[e.message]), 'e02.0009.0', 400, [], e)
          return
       }
       catch (XmlValidationException e) // xsd validation errors
