@@ -200,6 +200,7 @@
                <li>
                  <a href="#" data-toggle="modal" data-target="#feedback_modal"><i class="fa fa-envelope"></i> <g:message code="layout.action.feedback" /></a>
                </li>
+               <li class="divider"></li>
                <li>
                  <g:link controller="logout"><i class="fa fa-sign-out"></i> <g:message code="layout.action.logout" /></g:link>
                </li>
