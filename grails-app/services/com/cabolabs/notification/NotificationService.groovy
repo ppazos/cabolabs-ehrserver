@@ -23,6 +23,7 @@
 package com.cabolabs.notification
 
 import grails.transaction.Transactional
+import com.cabolabs.security.*
 
 @Transactional
 class NotificationService {
@@ -62,10 +63,28 @@ class NotificationService {
       }
       else
       {
+         // Need to tell the user on which orgs they can login to the web console and on which
+         // ones only login via the API (highest role is User)
+         def role
+         def login_on_web_console = [:]
+         user.organizations.each { org ->
+         
+            role = user.getHigherAuthority(org)
+            login_on_web_console[org.number] = (role.authority != Role.US)
+         }
+         
+         def access_table = '<table width="100%" border="1"><tr><th>'+ g.message(code:'notificationService.userCreated.organizationNumber') +'</th><th>'+ g.message(code:'notificationService.userCreated.webConsoleAccess') +'</th></tr>'
+         login_on_web_console.each { orgnum, login_web ->
+            access_table += "<tr><td>$orgnum</td><td>$login_web</td></tr>"
+         }
+         access_table += '</table>'
+      
          title   = g.message(code:'notificationService.userCreated.title')
          preview = g.message(code:'notificationService.userCreated.preview')
          salute  = g.message(code:'notificationService.userCreated.salute', args:[user.username])
-         message = g.message(code:'notificationService.userCreated.message', args:[user.username, organizationNumbers.toString()])
+         message = g.message(code:'notificationService.userCreated.message', args:[user.username, organizationNumbers.toString(), access_table])
+         message = message.replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"') // the table in the args is converted to XML entities. the email needs the tags.
+         //message += access_table
          
          url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
          actions = g.message(code:'notificationService.userCreated.actions', args:[url])
