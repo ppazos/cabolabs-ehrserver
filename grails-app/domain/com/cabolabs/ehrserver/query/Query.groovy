@@ -311,7 +311,9 @@ class Query {
    
    def cacheHQLWhere()
    {
-      this.cachedHQLWhere = generateHQLWhere()
+      // if a criteria contains a function, the where cant be cached and should be evaluated always.
+      if (!compoQueryContainsFunction())
+         this.cachedHQLWhere = generateHQLWhere()
    }
    
    def beforeInsert()
@@ -394,7 +396,7 @@ class Query {
          }
       }
       
-      println res
+      //println res
       
       
       // Group
@@ -1109,7 +1111,7 @@ class Query {
       
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       
-      println "executeComposition results "+ cilist
+      //println "executeComposition results "+ cilist
       
       return cilist
    }
@@ -1280,6 +1282,23 @@ class Query {
       _where.append(')') // exists blocks should be isolated to avoid bad AND/OR association
       
       return _where.toString()
+   }
+   
+   
+   /**
+    * checks if the query contains a function on the criteria,
+    * making the where not cacheable.
+    */
+   private boolean compoQueryContainsFunction()
+   {
+      if (this.type != 'composition') return false
+      
+      for (criteria in this.where)
+      {
+         if (criteria.containsFunction()) return true
+      }
+      
+      return false
    }
    
    def getXML()

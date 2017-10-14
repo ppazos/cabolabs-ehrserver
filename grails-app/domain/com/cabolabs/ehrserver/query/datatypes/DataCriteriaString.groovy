@@ -59,4 +59,9 @@ class DataCriteriaString extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

@@ -97,4 +97,9 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

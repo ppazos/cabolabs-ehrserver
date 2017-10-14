@@ -104,4 +104,9 @@ class DataCriteriaDV_IDENTIFIER extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

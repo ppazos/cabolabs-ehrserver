@@ -106,4 +106,9 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

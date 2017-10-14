@@ -109,6 +109,11 @@ class DataCriteriaDV_DATE extends DataCriteria {
       return ['age_in_years', 'age_in_months']
    }
    
+   boolean containsFunction()
+   {
+      return age_in_yearsOperand != null || age_in_monthsOperand != null
+   }
+   
    // copied from DataCriteriaDV_DATE_TIME
    String evaluateFunction(String function)
    {

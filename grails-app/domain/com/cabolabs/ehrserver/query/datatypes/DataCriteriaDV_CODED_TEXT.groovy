@@ -215,4 +215,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
    {
       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValue.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

@@ -61,4 +61,9 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

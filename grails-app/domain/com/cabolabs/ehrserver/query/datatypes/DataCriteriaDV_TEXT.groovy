@@ -77,4 +77,9 @@ class DataCriteriaDV_TEXT extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }

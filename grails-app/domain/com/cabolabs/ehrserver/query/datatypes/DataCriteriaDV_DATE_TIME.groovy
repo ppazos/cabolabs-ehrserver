@@ -111,6 +111,11 @@ class DataCriteriaDV_DATE_TIME extends DataCriteria {
       return ['age_in_years', 'age_in_months']
    }
    
+   boolean containsFunction()
+   {
+      return age_in_yearsOperand != null || age_in_monthsOperand != null
+   }
+   
    String evaluateFunction(String function)
    {
       def time_attr, value, operand

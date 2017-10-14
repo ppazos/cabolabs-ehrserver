@@ -77,4 +77,9 @@ class DataCriteriaDV_DURATION extends DataCriteria {
    {
       return []
    }
+   
+   boolean containsFunction()
+   {
+      return false
+   }
 }
