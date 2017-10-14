@@ -2,13 +2,15 @@ package com.cabolabs.notification
 
 import grails.test.spock.IntegrationSpec
 import spock.lang.Shared
+import com.cabolabs.security.*
 
 class NotificationServiceIntegrationSpec extends IntegrationSpec {
 
    def notificationService
    
    @Shared
-   def dummyUser = [username:'user', passwordToken:'123', email:'a@b.com', organizations:[[number:'555']]]
+   def dummyUser = [username:'user', passwordToken:'123', email:'a@b.com', organizations:[[number:'555']],
+   getHigherAuthority: { org -> [authority: Role.US] }]
    
    def setup()
    {
