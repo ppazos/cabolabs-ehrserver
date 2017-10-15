@@ -483,7 +483,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
      </content>
    </data>
    <lifecycle_state>
-     <value>completed</value>
+     <value>complete</value>
      <defining_code>
        <terminology_id>
          <value>openehr</value>
@@ -602,7 +602,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       )
       def version = new Version(
          uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
-         lifecycleState: parsedVersion.lifecycle_state.value.text(),
+         lifecycleState: parsedVersion.lifecycle_state.defining_code.code_string.text(),
          commitAudit: commitAudit,
          data: compoIndex
       )

@@ -62,7 +62,7 @@ class ContributionSpec extends Specification {
           def versions = [
              new Version(
                 uid: '1234-1234::EMR1::1',
-                lifecycleState: 'completed',
+                lifecycleState: '532',
                 commitAudit: new AuditDetails(
                    systemId: 'EMR1',
                    timeCommitted: new Date(),
@@ -84,7 +84,7 @@ class ContributionSpec extends Specification {
              ),
              new Version(
                 uid: '1234-1235::EMR1::1',
-                lifecycleState: 'completed',
+                lifecycleState: '532',
                 commitAudit: new AuditDetails(
                    systemId: 'EMR1',
                    timeCommitted: new Date(),
@@ -106,7 +106,7 @@ class ContributionSpec extends Specification {
              ),
              new Version(
                 uid: '1234-1236::EMR1::1',
-                lifecycleState: 'completed',
+                lifecycleState: '532',
                 commitAudit: new AuditDetails(
                    systemId:     'EMR1',
                    timeCommitted: new Date(),

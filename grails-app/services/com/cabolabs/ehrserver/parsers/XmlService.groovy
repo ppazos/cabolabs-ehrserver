@@ -410,7 +410,7 @@ class XmlService {
         
         <!-- DV_CODED_TEXT -->
         <lifecycle_state>
-          <value>completed</value>
+          <value>complete</value>
           <defining_code>
             <terminology_id>
               <value>openehr</value>
@@ -445,7 +445,7 @@ class XmlService {
          //
          version = new Version(
             uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
-            lifecycleState: parsedVersion.lifecycle_state.value.text(),
+            lifecycleState: parsedVersion.lifecycle_state.defining_code.code_string.text(),
             commitAudit: commitAudit,
             data: compoIndex
          )

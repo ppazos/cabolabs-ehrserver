@@ -165,7 +165,7 @@
    
    <!-- DV_CODED_TEXT -->
    <lifecycle_state>
-     <value>completed</value>
+     <value>complete</value>
      <defining_code>
        <terminology_id>
          <value>openehr</value>

@@ -140,7 +140,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
     </content>
   </data>
   <lifecycle_state>
-    <value>completed</value>
+    <value>complete</value>
     <defining_code>
       <terminology_id>
         <value>openehr</value>
@@ -261,7 +261,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
     </content>
   </data>
   <lifecycle_state>
-    <value>completed</value>
+    <value>complete</value>
     <defining_code>
       <terminology_id>
         <value>openehr</value>

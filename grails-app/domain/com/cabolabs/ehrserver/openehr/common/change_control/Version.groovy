@@ -51,7 +51,7 @@ class Version {
    //
    String uid
    
-   // Emula ORIGINAL_VERSION.lifecycle_state
+   // Emula ORIGINAL_VERSION.lifecycle_state.code_string
    String lifecycleState
    
    AuditDetails commitAudit
@@ -114,6 +114,7 @@ class Version {
    
    static constraints = {
       contribution(nullable:false) // La version debe estar dentro de una contribution
+      lifecycleState(inList:['532', '553', '523']) // complete, incomplete, deleted
    }
    
    static namedQueries = {
