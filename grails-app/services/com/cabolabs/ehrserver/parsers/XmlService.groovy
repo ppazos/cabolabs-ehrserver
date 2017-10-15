@@ -312,8 +312,28 @@ class XmlService {
                
                // No crea el VersionedComposition porque ya deberia estar
                
-               assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
+               //assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
                
+            break
+            case ChangeType.DELETED:
+            
+               // check if version.lifecycleState is "523" (deleted)
+               
+               if (version.lifecycleState != '523')
+               {
+                  throw new CommitWrongChangeTypeException("Change type is deleted but the version lifecycle state is ${version.lifecycleState} and 523 (deleted is expected)")
+               }
+               
+               // should be processed as a new version
+               
+               versionedComposition = VersionedComposition.findByUid(version.objectId)
+
+               // VersionedObject should exist for change type modification or amendment
+               if (!versionedComposition)
+               {
+                  throw new CommitWrongChangeTypeException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
+               }
+            
             break
             default:
                throw new CommitNotSupportedChangeTypeException("Change type ${version.commitAudit.changeType} not supported yet")
@@ -470,8 +490,9 @@ class XmlService {
             }
             
             // Persistent compo versioning process
-            // It is modification and exists a persistent compo for the archid and ehruid
-            if (version.commitAudit.changeType == ChangeType.MODIFICATION && existingPersistentCompo)
+            // If is modification/amendment and exists a persistent compo for the archid and ehruid
+            if ([ChangeType.MODIFICATION, ChangeType.AMENDMENT].contains(version.commitAudit.changeType) &&
+                existingPersistentCompo)
             {
                // check if the version has the right objectid, if should exist the VersionedCompo for that object id
                def versionedComposition = VersionedComposition.findByUid(version.objectId)
