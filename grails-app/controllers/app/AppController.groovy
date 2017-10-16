@@ -108,4 +108,9 @@ class AppController {
          count_users: count_users
       ]
    }
+   
+   def get_started()
+   {
+      []
+   }
 }

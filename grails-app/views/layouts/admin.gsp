@@ -183,7 +183,7 @@
              &commat;
              <g:link controller="organization" action="show" id="${session.organization.number}" style="padding: 0; display: inline;">${session.organization.name}</g:link>
            </li>
-           <li class="dropdown">
+           <li class="dropdown" id="top-user-menu">
              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
              </a>
@@ -236,7 +236,7 @@
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
+                  <li id="menu-ehrs">
                     <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
                   </li>
                   <li>
@@ -253,7 +253,7 @@
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
+                  <li id="menu-queries">
                     <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
@@ -261,7 +261,7 @@
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
+                  <li id="menu-templates">
                     <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
