@@ -44,6 +44,9 @@ class DataValueIndex {
    
    static mapping = {
       tablePerHierarchy false // tabla por subclase
+      archetypeId index: 'arch_id_path_idx,arch_id_idx'
+      // Grails is not creating an index on this because it is > 255 the max index size in MySQL, in Postgres it is 2713
+      archetypePath index: 'arch_id_path_idx,arch_path_idx'
    }
    
    static constraints = {

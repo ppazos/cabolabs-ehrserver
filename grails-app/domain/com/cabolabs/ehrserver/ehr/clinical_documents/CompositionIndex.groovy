@@ -78,5 +78,13 @@ class CompositionIndex {
       location(nullable:true)
    }
    
+   static mapping = {
+     startTime index: 'start_time_idx'
+     timeCommitted index: 'time_committed_idx'
+     organizationUid index: 'org_uid_idx'
+     lastVersion index: 'last_version_idx'
+     ehrUid index: 'ehr_uid_idx'
+   }
+   
    static transients = ['parent']
 }
