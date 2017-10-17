@@ -214,68 +214,71 @@
           <div class="navbar-default sidebar" role="navigation">
             <div class="sidebar-nav navbar-collapse">
               <ul class="nav" id="side-menu">
+                <li>
+                  <g:link controller="app" action="get_started" class="${(controllerName=='app' && actionName=='get_started')?'active':''}"><i class="fa fa-fw fa-info"></i> <g:message code="desktop.guide" /></g:link>
+                </li>
                 <li class="menu_vertical_separator">
-                  <g:link controller="app" action="index" class="${(controllerName=='app')?'active':''}"><i class="fa fa-dashboard"></i> Dashboard</g:link>
+                  <g:link controller="app" action="index" class="${(controllerName=='app' && actionName=='index')?'active':''}"><i class="fa fa-fw fa-dashboard"></i> <g:message code="desktop.dashboard" /></g:link>
                 </li>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
-                    <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
+                  <li id="menu-organizations">
+                    <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-fw fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li>
-                    <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-user"></i> <g:message code="desktop.user" /></g:link>
+                    <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-fw fa-user"></i> <g:message code="desktop.user" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <li>
-                    <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-check-square"></i> <g:message code="desktop.role" /></g:link>
+                    <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-fw fa-check-square"></i> <g:message code="desktop.role" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
-                    <g:link controller="requestMap" action="index" class="${(controllerName=='requestMap')?'active':''}"><i class="fa fa-shield"></i> <g:message code="desktop.accesscontrol" /></g:link>
+                    <g:link controller="requestMap" action="index" class="${(controllerName=='requestMap')?'active':''}"><i class="fa fa-fw fa-shield"></i> <g:message code="desktop.accesscontrol" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li id="menu-ehrs">
-                    <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
+                    <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-fw fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
+                  </li>
+                  <li id="menu-contributions">
+                    <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-fw fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
                   </li>
                   <li>
-                    <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
-                  </li>
-                  <li>
-                    <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="glyphicon glyphicon-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
+                    <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="fa fa-fw fa-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
-                    <g:link controller="folderTemplate" action="index" class="${(controllerName=='folderTemplate')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.folderTemplates" /></g:link>
+                    <g:link controller="folderTemplate" action="index" class="${(controllerName=='folderTemplate')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.folderTemplates" /></g:link>
                     <%--
-                    <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
+                    <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
                     --%>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li id="menu-queries">
-                    <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.queries" /></g:link>
+                    <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.queries" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
-                    <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="glyphicon glyphicon-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
+                    <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li id="menu-templates">
-                    <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
+                    <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-fw fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <li class="menu_vertical_separator">
-                    <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-database "></i> <g:message code="desktop.data" /></g:link>
+                    <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-fw fa-database "></i> <g:message code="desktop.data" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li>
-                    <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-bell"></i> <g:message code="desktop.notification" /></g:link>
+                    <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-fw fa-bell"></i> <g:message code="desktop.notification" /></g:link>
                   </li>
                   <li class="menu_vertical_separator">
-                    <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
+                    <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-fw fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
                   </li>
                 </sec:ifAnyGranted>
               </ul>

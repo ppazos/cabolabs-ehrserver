@@ -1,9 +1,9 @@
 .tour-highlight{
   background: transparent;
-  -moz-box-shadow: 0px 0px 7px 0px rgba(0, 241, 255, 0.701961);
-  -webkit-box-shadow: 0px 0px 7px 0px rgba(0, 241, 255, 0.701961);
-  -o-box-shadow: 0px 0px 7px 0px rgba(0, 241, 255, 0.701961);
-  box-shadow: 0px 0px 7px 0px rgba(0, 241, 255, 0.701961);
+  -moz-box-shadow: 0px 0px 5px 0px rgba(65, 133, 243, 0.8);
+  -webkit-box-shadow: 0px 0px 5px 0px rgba(65, 133, 243, 0.8);
+  -o-box-shadow: 0px 0px 5px 0px rgba(65, 133, 243, 0.8);
+  box-shadow: 0px 0px 5px 0px rgba(65, 133, 243, 0.8);
   border-radius: 2px;
 }
 
