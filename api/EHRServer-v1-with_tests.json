@@ -1,0 +1,1472 @@
+{
+	"_type": "export",
+	"__export_format": 3,
+	"__export_date": "2017-10-18T05:13:39.185Z",
+	"__export_source": "insomnia.desktop.app:v5.8.4",
+	"resources": [
+		{
+			"_id": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"parentId": null,
+			"modified": 1507161428512,
+			"created": 1507161428512,
+			"name": "EHRServer v1.1",
+			"description": "",
+			"certificates": [],
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_2b00d88b635f478ca69c5e4b2a670055",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507161975923,
+			"created": 1507161660394,
+			"name": "Base Environment",
+			"data": {
+				"_base_url": "http://localhost:8090/ehr",
+				"base_url": "http://192.168.1.105:8090/ehr",
+				"___base_url": "https://ehrserver-cabolabs2.rhcloud.com",
+				"__base_url": "https://cabolabs-ehrserver.rhcloud.com",
+				"web_url": "http://localhost:8090/ehr"
+			},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_f0b001302a2e44f6babbf3f4c06156db",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1508303030810,
+			"created": 1507162425584,
+			"name": "Default Jar",
+			"cookies": [
+				{
+					"creation": "2017-10-05T00:13:48.481Z",
+					"key": "JSESSIONID",
+					"value": "0BB8754697327171137DC1CAC7E0D36E",
+					"path": "/ehr/",
+					"httpOnly": true,
+					"hostOnly": true,
+					"domain": "192.168.1.105",
+					"lastAccessed": "2017-10-18T05:03:50.809Z",
+					"id": "485098235596787"
+				}
+			],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "fld_e958dc7f71504634a33905b06250db63",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507164711916,
+			"created": 1507162160860,
+			"name": "authentication",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290169,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_75d556040d4c4b0bac6a4e67e34b228e",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507164715015,
+			"created": 1507162386289,
+			"name": "users",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290144,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_73b59151407b433e87f4c75c7762e63c",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507164717135,
+			"created": 1507164290019,
+			"name": "ehrs",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290131.5,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_716c3eb7ad474d43b76f819a6977db5f",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507166378388,
+			"created": 1507164696657,
+			"name": "contributions",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290121.3438,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_6b8c1b11a9204468ae7182f218008b61",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507165368890,
+			"created": 1507165364774,
+			"name": "organizations",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290156.5,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_92389f2be7f54d6d9456cb92d7f0d377",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507166258533,
+			"created": 1507165764885,
+			"name": "templates",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290125.25,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_1863d6abca404719a85fb88e01313762",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507166365812,
+			"created": 1507166348439,
+			"name": "compositions",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290122.125,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_a10de4443432492d9dfbb4d60065c7fc",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507166375268,
+			"created": 1507166354423,
+			"name": "queries",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507164290120.5625,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1507339631631,
+			"created": 1507339631631,
+			"name": "tests snomed expressions",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1507339631631,
+			"_type": "request_group"
+		},
+		{
+			"_id": "fld_1eb108e943d04faca85e743421412f0d",
+			"parentId": "wrk_11d2f92b9b7745aeb86d1cf0798a6961",
+			"modified": 1508166721050,
+			"created": 1508166721050,
+			"name": "Issue testing",
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1508166721050,
+			"_type": "request_group"
+		},
+		{
+			"_id": "env_ab2a95360a9c49da8962a7da84c1a451",
+			"parentId": "env_2b00d88b635f478ca69c5e4b2a670055",
+			"modified": 1507162134667,
+			"created": 1507161948158,
+			"name": "EHRServer localhost",
+			"data": {
+				"base_url": "http://localhost:8090/ehr"
+			},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "env_fd13a13dd8d247949502da06a07b2436",
+			"parentId": "env_2b00d88b635f478ca69c5e4b2a670055",
+			"modified": 1507162007350,
+			"created": 1507161982530,
+			"name": "EHRServer Staging-1",
+			"data": {
+				"base_url": "https://cabolabs-ehrserver.rhcloud.com"
+			},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "env_8688712c92834f6885e85adbb659b71d",
+			"parentId": "env_2b00d88b635f478ca69c5e4b2a670055",
+			"modified": 1507162075445,
+			"created": 1507162035825,
+			"name": "EHRServer Staging-2",
+			"data": {
+				"base_url": "https://ehrserver-cabolabs2.rhcloud.com"
+			},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "env_57820cf89b3547ed9b49b7445ecfc89b",
+			"parentId": "env_2b00d88b635f478ca69c5e4b2a670055",
+			"modified": 1507162113914,
+			"created": 1507162095780,
+			"name": "EHRServer LAN",
+			"data": {
+				"base_url": "http://192.168.1.105:8090/ehr"
+			},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "req_f10af8cc21d848a2b902075a015d1d2f",
+			"parentId": "fld_e958dc7f71504634a33905b06250db63",
+			"modified": 1507162244564,
+			"created": 1507162182972,
+			"url": "{{base_url}}/api/v1/login",
+			"name": "login JSON",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/x-www-form-urlencoded",
+				"params": [
+					{
+						"name": "username",
+						"value": "orgman",
+						"id": "pair_65123949bc164f42ba7aea19cf3dbfa3",
+						"disabled": false
+					},
+					{
+						"name": "password",
+						"value": "orgman",
+						"id": "pair_118708ea144c4156a947eb3ee2b20eb6",
+						"disabled": false
+					},
+					{
+						"name": "organization",
+						"value": "123456",
+						"id": "pair_8010dad76d6042c9a6bed2376d41527e",
+						"disabled": false
+					},
+					{
+						"name": "format",
+						"value": "json",
+						"id": "pair_9dc134f0517943e8af6d74a5b049e310",
+						"disabled": false
+					}
+				]
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"id": "pair_d82e9e9c40b74f8eb5fc1f3f3b81260a"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162182972,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_8b9f18c195fd45c6a2e0bbeafe78aba0",
+			"parentId": "fld_e958dc7f71504634a33905b06250db63",
+			"modified": 1507162334567,
+			"created": 1507162322868,
+			"url": "{{base_url}}/api/v1/login",
+			"name": "login XML",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/x-www-form-urlencoded",
+				"params": [
+					{
+						"name": "username",
+						"value": "orgman",
+						"id": "pair_65123949bc164f42ba7aea19cf3dbfa3",
+						"disabled": false
+					},
+					{
+						"name": "password",
+						"value": "orgman",
+						"id": "pair_118708ea144c4156a947eb3ee2b20eb6",
+						"disabled": false
+					},
+					{
+						"name": "organization",
+						"value": "123456",
+						"id": "pair_8010dad76d6042c9a6bed2376d41527e",
+						"disabled": false
+					},
+					{
+						"name": "format",
+						"value": "xml",
+						"id": "pair_9dc134f0517943e8af6d74a5b049e310",
+						"disabled": false
+					}
+				]
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"id": "pair_d82e9e9c40b74f8eb5fc1f3f3b81260a"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507101018546,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_ce2e5c78bd2842e3b803c22b0222de28",
+			"parentId": "fld_75d556040d4c4b0bac6a4e67e34b228e",
+			"modified": 1507183292910,
+			"created": 1507162475467,
+			"url": "{{base_url}}/api/v1/users/orgman",
+			"name": "users/$username",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162475467,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_ad949808b5574912aac75b910fbbf0cc",
+			"parentId": "fld_75d556040d4c4b0bac6a4e67e34b228e",
+			"modified": 1507182524377,
+			"created": 1507162614615,
+			"url": "{{base_url}}/api/v1/users",
+			"name": "users",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/x-www-form-urlencoded",
+				"params": [
+					{
+						"name": "username",
+						"value": "new.user",
+						"id": "pair_cd399eff6f55472e8b8613578e1aaa07",
+						"disabled": false
+					},
+					{
+						"name": "email",
+						"value": "test@cabolabs.com",
+						"id": "pair_21a28d0ea96a4634b2c2e09ccbbd9356",
+						"disabled": false
+					},
+					{
+						"name": "format",
+						"value": "json",
+						"id": "pair_b4590acf8dab4dca839e984cb083d364",
+						"disabled": false
+					}
+				]
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"id": "pair_6a3ffd296d614670942561a1ffcb9fd7"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162329219.5,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_811fd5cedc454c269d9f3de79fe6df51",
+			"parentId": "fld_73b59151407b433e87f4c75c7762e63c",
+			"modified": 1507182540573,
+			"created": 1507164323212,
+			"url": "{{base_url}}/api/v1/ehrs",
+			"name": "ehrs",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				},
+				{
+					"name": "max",
+					"value": "10",
+					"id": "pair_b1fb7093c6964df886e555225c9e01fe"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162402343.25,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_74a83b6294e9415b97aa0846dea16845",
+			"parentId": "fld_73b59151407b433e87f4c75c7762e63c",
+			"modified": 1507184311193,
+			"created": 1507164384186,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}",
+			"name": "ehrs/$uid",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162365781.375,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_cda5ad6f53fc4148815b7fdf8531a198",
+			"parentId": "fld_73b59151407b433e87f4c75c7762e63c",
+			"modified": 1507184018128,
+			"created": 1507164427427,
+			"url": "{{base_url}}/api/v1/ehrs/subjectUid/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].subjectUid' %}",
+			"name": "ehrs/subjectUid/$uid",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162347500.4375,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_6cfff74b0b904f8784d3b58a2e19457b",
+			"parentId": "fld_73b59151407b433e87f4c75c7762e63c",
+			"modified": 1507182705148,
+			"created": 1507164478313,
+			"url": "{{base_url}}/api/v1/ehrs",
+			"name": "ehrs",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/x-www-form-urlencoded",
+				"params": [
+					{
+						"name": "format",
+						"value": "json",
+						"id": "pair_c3365ea9425847e88cf4cd64902a8ddf",
+						"disabled": false
+					},
+					{
+						"name": "subjectUid",
+						"value": "1234345635443564356430",
+						"id": "pair_94cc35e90ab448a6b802fab81b518c0e",
+						"disabled": false
+					}
+				]
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162347450.4375,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_bf4b33dd69de4cef962dff0055f14296",
+			"parentId": "fld_716c3eb7ad474d43b76f819a6977db5f",
+			"modified": 1507184191218,
+			"created": 1507164737567,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/contributions",
+			"name": "ehrs/$uid/contributions",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				},
+				{
+					"name": "max",
+					"value": "10",
+					"id": "pair_9770c1061fed47a2b8696a740d617540"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162347475.4375,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_be1808b433ac44d78b684e0156b6a95b",
+			"parentId": "fld_6b8c1b11a9204468ae7182f218008b61",
+			"modified": 1507168752179,
+			"created": 1507165376157,
+			"url": "{{base_url}}/api/v1/organizations",
+			"name": "organizations",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162438905.125,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_3632c995305f4a5faea4803fb776b1bc",
+			"parentId": "fld_92389f2be7f54d6d9456cb92d7f0d377",
+			"modified": 1507182724327,
+			"created": 1507166097318,
+			"url": "{{base_url}}/api/v1/templates",
+			"name": "templates",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162420624.1875,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_f95a7ef6a5ab41f3ba2311425cb01314",
+			"parentId": "fld_92389f2be7f54d6d9456cb92d7f0d377",
+			"modified": 1507184073558,
+			"created": 1507166145325,
+			"url": "{{base_url}}/api/v1/templates/{% response 'body', 'req_3632c995305f4a5faea4803fb776b1bc', '$[0].uid' %}",
+			"name": "templates/$uid",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162411483.7188,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_9376fdaf14584bc69abba8c11ca147f3",
+			"parentId": "fld_1863d6abca404719a85fb88e01313762",
+			"modified": 1508079062309,
+			"created": 1507166409969,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "ehrs/$uid/compositions",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <name>Dr. Pablo Pazos</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'iso-8601', '' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>{% uuid 'v4' %}::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.test_all_datatypes.v1\">\n    <name>\n      <value>Test all datatypes</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>Test all datatypes_en</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>event</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <name>Dr. Pablo Pazos</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'iso-8601', '' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital Montevideo</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content xsi:type=\"OBSERVATION\" archetype_node_id=\"openEHR-EHR-OBSERVATION.test_all_datatypes.v1\">\n      <name>\n        <value>Blood Pressure</value>\n      </name>\n      <language>\n         <terminology_id>\n           <value>ISO_639-1</value>\n         </terminology_id>\n         <code_string>es</code_string>\n       </language>\n       <encoding>\n         <terminology_id>\n           <value>UNICODE</value>\n         </terminology_id>\n         <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_IDENTIFIED\">\n        <external_ref>\n          <id xsi:type=\"HIER_OBJECT_ID\">\n            <value>11111111-1111-1111-1111-111111111111</value>\n          </id>\n          <namespace>DEMOGRAPHIC</namespace>\n          <type>PERSON</type>\n        </external_ref>\n      </subject>\n      <data xsi:type=\"HISTORY\" archetype_node_id=\"at0001\">\n        <name>\n          <value>history</value>\n        </name>\n        <origin>\n          <value>{% now 'iso-8601', 'YYYYMMDD' %}</value>\n        </origin>\n        <events xsi:type=\"POINT_EVENT\" archetype_node_id=\"at0002\">\n          <name>\n            <value>any event</value>\n          </name>\n          <time><value>{% now 'iso-8601', 'YYYYMMDD' %}</value></time>\n          <data xsi:type=\"ITEM_TREE\" archetype_node_id=\"at0003\">\n            <name>\n              <value>Arbol</value>\n            </name>\n            <items xsi:type=\"ELEMENT\" archetype_node_id=\"at0011\">\n              <name>\n                <value>Count</value>\n              </name>\n              <value xsi:type=\"DV_COUNT\">\n                <magnitude>3</magnitude>\n              </value>\n            </items>\n          </data>\n        </events>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162338334.9688,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_5aeeff272547468a9bc8ed7ca5751b4a",
+			"parentId": "fld_1863d6abca404719a85fb88e01313762",
+			"modified": 1507184136535,
+			"created": 1507167688925,
+			"url": "{{base_url}}/api/v1/compositions",
+			"name": "compositions",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				},
+				{
+					"name": "ehrUid",
+					"value": "11111111-1111-1111-1111-111111111111",
+					"id": "pair_82322536a8ae4f619df7451e4f8d1b8e"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162338284.9688,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_54855128e3fa49bab9b4bd624e0c0d50",
+			"parentId": "fld_1863d6abca404719a85fb88e01313762",
+			"modified": 1507184168244,
+			"created": 1507167785501,
+			"url": "{{base_url}}/api/v1/compositions/{% response 'body', 'req_5aeeff272547468a9bc8ed7ca5751b4a', '$.result[0].uid' %}",
+			"name": "compositions/$uid",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162333752.2344,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_f9b8105da77344938797663733856332",
+			"parentId": "fld_a10de4443432492d9dfbb4d60065c7fc",
+			"modified": 1507183137056,
+			"created": 1507183085483,
+			"url": "{{base_url}}/api/v1/queries",
+			"name": "queries",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				},
+				{
+					"name": "max",
+					"value": "10",
+					"id": "pair_9c626b4375e242beb6d8e6933648d589"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162336018.6016,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_220ce281a25e49af8a97491f5b06be3a",
+			"parentId": "fld_a10de4443432492d9dfbb4d60065c7fc",
+			"modified": 1507183914780,
+			"created": 1507183591432,
+			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_f9b8105da77344938797663733856332', '$.queries[0].uid' %}",
+			"name": "queries/$uid",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				},
+				{
+					"name": "max",
+					"value": "10",
+					"id": "pair_9c626b4375e242beb6d8e6933648d589"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162334885.418,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_e1ba04867e204f96a56900b52593e20b",
+			"parentId": "fld_a10de4443432492d9dfbb4d60065c7fc",
+			"modified": 1508303295008,
+			"created": 1507183630698,
+			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_f9b8105da77344938797663733856332', '$.queries[0].uid' %}/execute",
+			"name": "queries/$uid/execute",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_987d54b328f6482da8dd1b607307aa78"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162334318.8262,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_3052575681e3477b89eafa5ec7357cdd",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079056770,
+			"created": 1507339645334,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit diagnostico diabetes ehr 1 (-03:00)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>{% uuid 'v4' %}::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n    <name>\n      <value>Encuentro</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>encuentro_diagnostico_codificado.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital A</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Problema/diagnóstico</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <protocol archetype_node_id=\"at0032\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Tree</value>\n        </name>\n        <items archetype_node_id=\"at0070\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Última actualización</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n      </protocol>\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>structure</value>\n        </name>\n        <items archetype_node_id=\"at0002.1\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Nombre del problema/diagnóstico</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>diabetes inducida por esteroides (trastorno)</value>\n            <defining_code>\n              <terminology_id>\n                <value>SNOMED-CT</value>\n              </terminology_id>\n              <code_string>190447002</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0009\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Descripción clínica</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre asociado al problema</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Momento de reconocimiento del problema</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Severidad</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Leve</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0047</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0072\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Progreso</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre del progreso del problema</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507251960900,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_d1f23d609b7e4ee7a8b649a37bd46ff5",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079032692,
+			"created": 1507342509202,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit diagnostico diabetes ehr 1 (-0300)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'custom', 'YYYYMMDDTHHmmss,SSSZZ' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>{% uuid 'v4' %}::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n    <name>\n      <value>Encuentro</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>encuentro_diagnostico_codificado.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'custom', 'YYYYMMDDTHHmmss,SSSZZ' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital A</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Problema/diagnóstico</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <protocol archetype_node_id=\"at0032\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Tree</value>\n        </name>\n        <items archetype_node_id=\"at0070\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Última actualización</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYYMMDDTHHmmss,SSSZZ' %}</value>\n          </value>\n        </items>\n      </protocol>\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>structure</value>\n        </name>\n        <items archetype_node_id=\"at0002.1\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Nombre del problema/diagnóstico</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>diabetes inducida por esteroides (trastorno)</value>\n            <defining_code>\n              <terminology_id>\n                <value>SNOMED-CT</value>\n              </terminology_id>\n              <code_string>190447002</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0009\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Descripción clínica</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre asociado al problema</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Momento de reconocimiento del problema</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYYMMDDTHHmmss,SSSZZ' %}</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Severidad</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Moderada</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0048</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0072\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Progreso</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre del progreso del problema</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507208355159.125,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_0fe1c40611554b3a934d5fd53627fd5c",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079052911,
+			"created": 1507345176078,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[1].uid' %}/compositions",
+			"name": "commit diagnostico diabetes ehr 2 (UTC)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'iso-8601', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>{% uuid 'v4' %}::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n    <name>\n      <value>Encuentro</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>encuentro_diagnostico_codificado.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'iso-8601', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital A</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Problema/diagnóstico</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <protocol archetype_node_id=\"at0032\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Tree</value>\n        </name>\n        <items archetype_node_id=\"at0070\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Última actualización</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'iso-8601', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n      </protocol>\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>structure</value>\n        </name>\n        <items archetype_node_id=\"at0002.1\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Nombre del problema/diagnóstico</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>diabetes inducida por esteroides (trastorno)</value>\n            <defining_code>\n              <terminology_id>\n                <value>SNOMED-CT</value>\n              </terminology_id>\n              <code_string>190447002</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0009\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Descripción clínica</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre asociado al problema</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Momento de reconocimiento del problema</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'iso-8601', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Severidad</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Leve</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0047</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0072\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Progreso</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre del progreso del problema</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507230158029.5625,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_2d00f37f440e457f8f51ac96ad49cd3d",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079045326,
+			"created": 1507517105212,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit basic demographic ehr 1",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'iso-8601', '' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>{% uuid 'v4' %}::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.basic_demographic.v1\">\n    <name>\n      <value>Basic demographic</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>datos_demograficos.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>persistente</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>431</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <content archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.basic_demographic.v1\" xsi:type=\"ADMIN_ENTRY\">\n      <name>\n        <value>Basic demographic</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Arbol</value>\n        </name>\n        <items archetype_node_id=\"at0002\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Género</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Masculino</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0003</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0006\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Fecha de nacimiento</value>\n          </name>\n          <value xsi:type=\"DV_DATE\">\n            <value>19811024</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507208355109.125,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_2c7313e97d244c27b5c159265e99b811",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1507589157382,
+			"created": 1507587160091,
+			"url": "{{base_url}}/api/v1/getEhrQueries",
+			"name": "getEhrQueries",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_65601a68f7904e4c9df6254f7c00e1db"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "",
+					"value": "",
+					"id": "pair_1e021894ce8c4950aa13627cb0107d87"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507186552263.6875,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_70758401d3e046f38358b76624a4cf86",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1507589301894,
+			"created": 1507587202232,
+			"url": "{{base_url}}/api/v1/ehrChecker",
+			"name": "ehrChecker",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "ehrQueryUid",
+					"value": "{% response 'body', 'req_2c7313e97d244c27b5c159265e99b811', '$[0].uid' %}",
+					"id": "pair_ad8ac530e4804790bca4b7d71f0e4dd0"
+				},
+				{
+					"name": "ehrUid",
+					"value": "{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}",
+					"id": "pair_987a9d56806e4f11aee557928dd0da8c"
+				},
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_368b6ac966474d798f2aa91173846ab0"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507175650840.9688,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_22f838c5584d48bfaaecc91d9800b4b5",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1507589337613,
+			"created": 1507587213128,
+			"url": "{{base_url}}/api/v1/getMatchingEhrs",
+			"name": "getMatchingEhrs",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "ehrQueryUid",
+					"value": "{% response 'body', 'req_2c7313e97d244c27b5c159265e99b811', '$[0].uid' %}",
+					"id": "pair_5bfe3c66dc77473d98f6d77539f23cd4"
+				},
+				{
+					"name": "format",
+					"value": "json",
+					"id": "pair_2c9d1092e70f44d48c57a74cf93249b0"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507170200129.6094,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_f3d43643bd4f4852976669097b92713d",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079040774,
+			"created": 1507825819978,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit basic demographic ehr 1 (error??)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n<contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>19c6df46-1bb5-46c9-bf46-aa9999690961</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </committer>\n    <time_committed>\n      <value>20171012T140251,088-0300</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>c46a4e88-8c45-42b3-8135-d89b89999a5c8::CABOLABS-LOADEHR::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.basic_demographic.v1\">\n    <name>\n      <value>Basic demographic</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>datos_demograficos.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>persistente</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>431</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </composer>\n    <content archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.basic_demographic.v1\" xsi:type=\"ADMIN_ENTRY\">\n      <name>\n        <value>Basic demographic</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Arbol</value>\n        </name>\n        <items archetype_node_id=\"at0002\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>GΘnero</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Masculino</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>M</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0006\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Fecha de nacimiento</value>\n          </name>\n          <value xsi:type=\"DV_DATE\">\n            <value>19810826</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507197453686.4062,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_47d24950aa2f4677bbd61b629ad95713",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079036898,
+			"created": 1507828247152,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[3].uid' %}/compositions",
+			"name": "commit basic demographic ehr 1 (test2)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n<contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>19c6df46-1bb5-46c9-bf46-aa0198690961</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </committer>\n    <time_committed>\n      <value>20171012T140251,088-0300</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>c46a4e88-8c45-42b3-8135-d89b8668a5c8::CABOLABS-LOADEHR::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.basic_demographic.v1\">\n    <name>\n      <value>Basic demographic</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>datos_demograficos.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>persistente</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>431</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </composer>\n    <content archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.basic_demographic.v1\" xsi:type=\"ADMIN_ENTRY\">\n      <name>\n        <value>Basic demographic</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Arbol</value>\n        </name>\n        <items archetype_node_id=\"at0002\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>GΘnero</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Masculino</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>M</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0006\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Fecha de nacimiento</value>\n          </name>\n          <value xsi:type=\"DV_DATE\">\n            <value>19810826</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507192002975.0469,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_1e7e374d14604671ad67066c7dfdabad",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1507946365074,
+			"created": 1507946329983,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[3].uid' %}/compositions",
+			"name": "commit test error",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<version xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"ORIGINAL_VERSION\">\n<contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>19c6df46-1bb5-46c9-bf46-aa0198690961</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </committer>\n    <time_committed>\n      <value>20171012T140251,088-0300</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>c46a4e88-8c45-42b3-8135-d89b8668a5c8::CABOLABS-LOADEHR::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.basic_demographic.v1\">\n    <name>\n      <value>Basic demographic</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>datos_demograficos.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>persistente</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>431</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>22c38c6e-63a0-4c63-b723-07d911b5abf5</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Merci Savell</name>\n    </composer>\n    <content archetype_node_id=\"openEHR-EHR-ADMIN_ENTRY.basic_demographic.v1\" xsi:type=\"ADMIN_ENTRY\">\n      <name>\n        <value>Basic demographic</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Arbol</value>\n        </name>\n        <items archetype_node_id=\"at0002\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>GΘnero</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Masculino</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>M</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0006\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Fecha de nacimiento</value>\n          </name>\n          <value xsi:type=\"DV_DATE\">\n            <value>19810826</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>completed</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507189277619.3672,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_664895e70c944963ba812825f81e7582",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079693168,
+			"created": 1508079549251,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit ehr 1 (-03:00) (delete)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n    </time_committed>\n    <change_type>\n      <value>deleted</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>523</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>13213213213213213213212313321::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n    <name>\n      <value>Encuentro</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>encuentro_diagnostico_codificado.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital A</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Problema/diagnóstico</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <protocol archetype_node_id=\"at0032\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Tree</value>\n        </name>\n        <items archetype_node_id=\"at0070\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Última actualización</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n      </protocol>\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>structure</value>\n        </name>\n        <items archetype_node_id=\"at0002.1\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Nombre del problema/diagnóstico</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>diabetes inducida por esteroides (trastorno)</value>\n            <defining_code>\n              <terminology_id>\n                <value>SNOMED-CT</value>\n              </terminology_id>\n              <code_string>190447002</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0009\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Descripción clínica</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre asociado al problema</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Momento de reconocimiento del problema</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Severidad</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Leve</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0047</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0072\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Progreso</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre del progreso del problema</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>deleted</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>523</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507241059464.7812,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_4e41c0cb99b44167a4a0a10b46627fb2",
+			"parentId": "fld_a454a7a6b5c64f408b482ce0e1459d35",
+			"modified": 1508079626984,
+			"created": 1508079617099,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "commit ehr 1 (-03:00) (create)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>{% uuid 'v4' %}</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </committer>\n    <time_committed>\n      <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>13213213213213213213212313321::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.encounter.v1\">\n    <name>\n      <value>Encuentro</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>encuentro_diagnostico_codificado.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>224a49b6-8c1c-4a4d-90ae-a0cb33f1aaed</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. Yamamoto</name>\n    </composer>\n    <context>\n      <start_time>\n        <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n      </start_time>\n      <setting>\n        <value>Hospital A</value>\n        <defining_code>\n          <terminology_id>\n            <value>openehr</value>\n          </terminology_id>\n          <code_string>229</code_string>\n        </defining_code>\n      </setting>\n    </context>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Problema/diagnóstico</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <protocol archetype_node_id=\"at0032\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Tree</value>\n        </name>\n        <items archetype_node_id=\"at0070\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Última actualización</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n      </protocol>\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>structure</value>\n        </name>\n        <items archetype_node_id=\"at0002.1\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Nombre del problema/diagnóstico</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>diabetes inducida por esteroides (trastorno)</value>\n            <defining_code>\n              <terminology_id>\n                <value>SNOMED-CT</value>\n              </terminology_id>\n              <code_string>190447002</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0009\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Descripción clínica</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre asociado al problema</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Momento de reconocimiento del problema</value>\n          </name>\n          <value xsi:type=\"DV_DATE_TIME\">\n            <value>{% now 'custom', 'YYYY-MM-DDThh:mm:ss.SSSZ' %}</value>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Severidad</value>\n          </name>\n          <value xsi:type=\"DV_CODED_TEXT\">\n            <value>Leve</value>\n            <defining_code>\n              <terminology_id>\n                <value>local</value>\n              </terminology_id>\n              <code_string>at0047</code_string>\n            </defining_code>\n          </value>\n        </items>\n        <items archetype_node_id=\"at0072\" xsi:type=\"ELEMENT\">\n          <name>\n            <value>Progreso</value>\n          </name>\n          <value xsi:type=\"DV_TEXT\">\n            <value>texto libre del progreso del problema</value>\n          </value>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507246510182.3906,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_0553a8c086a648b2b14c424f3d488d7b",
+			"parentId": "fld_1eb108e943d04faca85e743421412f0d",
+			"modified": 1508166890254,
+			"created": 1508166726336,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[1].uid' %}/compositions",
+			"name": "commit for #645",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/xml",
+				"text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<versions xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n<version xsi:type=\"ORIGINAL_VERSION\">\n  <contribution>\n    <id xsi:type=\"HIER_OBJECT_ID\">\n      <value>f00c00d3-f30b-4a60-a995-bf86527367a6</value>\n    </id>\n    <namespace>EHR::COMMON</namespace>\n    <type>CONTRIBUTION</type>\n  </contribution>\n  <commit_audit>\n    <system_id>CABOLABS_EHR</system_id>\n    <committer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>d18c2d5a-e724-4a8d-ad35-37f2cdf7ea2b</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. House</name>\n    </committer>\n    <time_committed>\n      <value>20171016T115824,739-0300</value>\n    </time_committed>\n    <change_type>\n      <value>creation</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>249</code_string>\n      </defining_code>\n    </change_type>\n  </commit_audit>\n  <uid>\n    <value>74144cf4-35c4-480b-a044-5ef1cbad0262::EMR_APP::1</value>\n  </uid>\n  <data xsi:type=\"COMPOSITION\" archetype_node_id=\"openEHR-EHR-COMPOSITION.test_multiple_cluster_occurrences.v1\">\n    <name>\n      <value>Test multiple cluster occurrences</value>\n    </name>\n    <archetype_details>\n      <archetype_id>\n        <value>openEHR-EHR-COMPOSITION.test_multiple_cluster_occurrences.v1</value>\n      </archetype_id>\n      <template_id>\n        <value>test_multiple_cluster_occurrences.es.v1</value>\n      </template_id>\n      <rm_version>1.0.2</rm_version>\n    </archetype_details>\n    <language>\n      <terminology_id>\n        <value>ISO_639-1</value>\n      </terminology_id>\n      <code_string>es</code_string>\n    </language>\n    <territory>\n      <terminology_id>\n        <value>ISO_3166-1</value>\n      </terminology_id>\n      <code_string>UY</code_string>\n    </territory>\n    <category>\n      <value>evento</value>\n      <defining_code>\n        <terminology_id>\n          <value>openehr</value>\n        </terminology_id>\n        <code_string>433</code_string>\n      </defining_code>\n    </category>\n    <composer xsi:type=\"PARTY_IDENTIFIED\">\n      <external_ref>\n        <id xsi:type=\"HIER_OBJECT_ID\">\n          <value>8921ab45-d325-41d3-8c8a-a7acf7197545</value>\n        </id>\n        <namespace>DEMOGRAPHIC</namespace>\n        <type>PERSON</type>\n      </external_ref>\n      <name>Dr. House</name>\n    </composer>\n    <content archetype_node_id=\"openEHR-EHR-EVALUATION.test_mutiple_cluster_occurrences.v1\" xsi:type=\"EVALUATION\">\n      <name>\n        <value>Test mutiple cluster occurrences</value>\n      </name>\n      <language>\n        <terminology_id>\n          <value>ISO_639-1</value>\n        </terminology_id>\n        <code_string>es</code_string>\n      </language>\n      <encoding>\n        <terminology_id>\n          <value>Unicode</value>\n        </terminology_id>\n        <code_string>UTF-8</code_string>\n      </encoding>\n      <subject xsi:type=\"PARTY_SELF\" />\n      <data archetype_node_id=\"at0001\" xsi:type=\"ITEM_TREE\">\n        <name>\n          <value>Arbol</value>\n        </name>\n        <items archetype_node_id=\"at0002\" xsi:type=\"CLUSTER\">\n          <name>\n            <value>Un cluster</value>\n          </name>\n          <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Count</value>\n            </name>\n            <value xsi:type=\"DV_COUNT\">\n              <magnitude>1</magnitude>\n            </value>\n          </items>\n          <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Text</value>\n            </name>\n            <value xsi:type=\"DV_TEXT\">\n              <value>texto 1</value>\n            </value>\n          </items>\n        </items>\n        <items archetype_node_id=\"at0002\" xsi:type=\"CLUSTER\">\n          <name>\n            <value>Un cluster</value>\n          </name>\n          <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Count</value>\n            </name>\n            <value xsi:type=\"DV_COUNT\">\n              <magnitude>2</magnitude>\n            </value>\n          </items>\n          <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Text</value>\n            </name>\n            <value xsi:type=\"DV_TEXT\">\n              <value>texto 2</value>\n            </value>\n          </items>\n        </items>\n        <items archetype_node_id=\"at0002\" xsi:type=\"CLUSTER\">\n          <name>\n            <value>Un cluster</value>\n          </name>\n          <items archetype_node_id=\"at0005\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Count</value>\n            </name>\n            <value xsi:type=\"DV_COUNT\">\n              <magnitude>3</magnitude>\n            </value>\n          </items>\n          <items archetype_node_id=\"at0003\" xsi:type=\"ELEMENT\">\n            <name>\n              <value>Text</value>\n            </name>\n            <value xsi:type=\"DV_TEXT\">\n              <value>texto 3</value>\n            </value>\n          </items>\n        </items>\n      </data>\n    </content>\n  </data>\n  <lifecycle_state>\n    <value>complete</value>\n    <defining_code>\n      <terminology_id>\n        <value>openehr</value>\n      </terminology_id>\n      <code_string>532</code_string>\n    </defining_code>\n  </lifecycle_state>\n</version>\n</versions>"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/xml",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507753176340.5,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		}
+	]
+}
