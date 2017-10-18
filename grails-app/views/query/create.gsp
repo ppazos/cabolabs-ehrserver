@@ -30,16 +30,6 @@
       td {
         font-size: 0.9em;
       }
-      /* Notificaciones: http://www.malsup.com/jquery/block/#demos */
-      div.growlUI {
-        /*background: url(check48.png) no-repeat 10px 10px; */
-      }
-      div.growlUI h1, div.growlUI h2 {
-        color: white;
-        padding: 5px 10px;
-        text-align: left;
-        border: 0px;
-      }
       .info .content {
         display: none;
         text-align: left;
@@ -87,6 +77,8 @@
     <asset:stylesheet src="query_execution.css" />
     <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
     <asset:stylesheet src="highlightjs/xcode.css" />
+    <asset:stylesheet src="animate.css" />
+    <asset:stylesheet src="pnotify.custom.min.css" />
     
     <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <asset:javascript src="jquery.form.js" /><!-- ajax form -->
@@ -94,7 +86,7 @@
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
     
-    
+    <asset:javascript src="pnotify.custom.min.js" />
     
     <script type="text/javascript">
       // globals
@@ -476,7 +468,7 @@ resp.responseJSON.result.message +'</div>'
 
       var test_query_datavalue = function () {
 
-        console.log('test datavalue query');
+        //console.log('test datavalue query');
 
         // query management
         query.set_name($('input[name=name]').val());
@@ -555,7 +547,7 @@ resp.responseJSON.result.message +'</div>'
             }
             else // Si devuelve el XML
             {
-              console.log('form_datavalue success XML');
+              //console.log('form_datavalue success XML');
             
               // highlight
               code.addClass('xml');
@@ -602,7 +594,7 @@ resp.responseJSON.result.message +'</div>'
        */
       var ajax_submit_test_or_save = function (action) {
 
-         console.log('ajax_submit', action);
+         //console.log('ajax_submit', action);
 
          if (action == 'save')
          {
@@ -614,7 +606,7 @@ resp.responseJSON.result.message +'</div>'
          }
          else if (action == 'test')
          {
-            console.log('ehrUid', $('select[name=qehrId]').val());
+            //console.log('ehrUid', $('select[name=qehrId]').val());
             
             // Validacion
             /*
@@ -654,7 +646,7 @@ resp.responseJSON.result.message +'</div>'
         //console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
         
         // Path is not selected
-        console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
+        //console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
         if ( $('select[name=view_archetype_path]').val() == null )
         {
           alert('${g.message(code:"query.create.selectDatapoint")}');
@@ -701,7 +693,7 @@ resp.responseJSON.result.message +'</div>'
         var spec = $('input[name=criteria]', fieldset).data('spec');
         var allow_any_archetype_version = $('input[name=allow_any_archetype_version]')[0].checked;
         
-        console.log('spec', spec);
+        //console.log('spec', spec);
 
         var attribute, operand, value, values;
         var criteria_str = '';
@@ -742,7 +734,7 @@ resp.responseJSON.result.message +'</div>'
         
         // query object mgt
         cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
-        query.log();
+        //query.log();
 
         // shows openEHR-EHR-...* instead of .v1
         if (allow_any_archetype_version)
@@ -783,11 +775,13 @@ resp.responseJSON.result.message +'</div>'
         
         if (ok)
         {
-          // Notifica que la condicion fue agregada
-          $.growlUI(
-            '${g.message(code:"query.create.condition_added")}',
-            '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>'
-          );
+          new PNotify({
+            title: '${g.message(code:"query.create.condition_added")}',
+            text : '<a href="#criteria">${g.message(code:"query.create.verify_condition")}</a>',
+            type : 'info',
+            styling: 'bootstrap3',
+            history: false
+          });
         }
       };
 
@@ -803,7 +797,7 @@ resp.responseJSON.result.message +'</div>'
 
         // query object mgt
         pid = query.add_projection(archetype_id, path, rm_type_name, allow_any_archetype_version);
-        query.log();
+        //query.log();
         
         // shows openEHR-EHR-...* instead of .v1
         if (allow_any_archetype_version)
@@ -856,8 +850,13 @@ resp.responseJSON.result.message +'</div>'
           $('input[name=allow_any_archetype_version]')[0].checked
         );
         
-        // Notifica que la condicion fue agregada
-        $.growlUI('${g.message(code:"query.create.selection_added")}', '<a href="#selection">${g.message(code:"query.create.verify_selection")}</a>'); 
+        new PNotify({
+          title: '${g.message(code:"query.create.selection_added")}',
+          text : '<a href="#selection">${g.message(code:"query.create.verify_selection")}</a>',
+          type : 'info',
+          styling: 'bootstrap3',
+          history: false
+        });
       };
 
       // =================================
@@ -940,7 +939,7 @@ resp.responseJSON.result.message +'</div>'
           dataType: 'json',
           success: function(spec, textStatus) {
 
-            console.log('spec', spec, spec.length);
+            //console.log('spec', spec, spec.length);
             
             // set global for reference from other functions
             current_criteria_spec = spec;
@@ -961,7 +960,7 @@ resp.responseJSON.result.message +'</div>'
               // 1 column for the radio button that selects the criteria
               criteria += '<div class="form-group"><div class="col-sm-1">';
               
-              console.log(s, aspec);
+              //console.log(s, aspec);
               
               // All fields of the same criteria will have the same id in the data-criteria attribute
               if (s == 0)
@@ -1263,12 +1262,12 @@ resp.responseJSON.result.message +'</div>'
       $(document).on('change', 'select.operand', function(evt) {
          
         //console.log('operand change', this.selectedIndex, $(this).data('criteria'));
-        console.log('prev', $(this).data('previous'));
+        //console.log('prev', $(this).data('previous'));
         
         
         // Specific code to support in_snomed_exp as criteria operand
         //console.log(this.options[this.selectedIndex].value); // eq, in_list, in_snomed_exp, ...
-        console.log(current_criteria_spec);
+        //console.log(current_criteria_spec);
         
         if (this.options[this.selectedIndex].value == 'in_snomed_exp')
         {
@@ -1623,7 +1622,7 @@ resp.responseJSON.result.message +'</div>'
             e.preventDefault();
             
             // parent=DIV, parent.parent = TD y parent.parent.parent = TR a eliminar
-           //console.log(this); // a href=#
+            //console.log(this); // a href=#
             //console.log($(this).parent().parent().parent());
             //
             row = $(this).parent().parent().parent();
@@ -1665,7 +1664,7 @@ resp.responseJSON.result.message +'</div>'
       
       
         $('.info img').click(function(e) {
-          console.log($('.content', $(this).parent()));
+          //console.log($('.content', $(this).parent()));
           $('.content', $(this).parent()).toggle('slow');
         });
 
