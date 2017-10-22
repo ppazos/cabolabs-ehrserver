@@ -1463,9 +1463,11 @@ resp.responseJSON.result.message +'</div>'
           
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
+          println '$("select[name=queryGroup]").val("'+ queryInstance.queryGroup?.uid +'");'
+          
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
-          println 'query.set_query_group("'+ queryInstance.queryGroup +'");'
+          println 'query.set_query_group("'+ queryInstance.queryGroup?.uid +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
           
           if (queryInstance.isPublic)

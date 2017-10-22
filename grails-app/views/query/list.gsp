@@ -67,29 +67,37 @@
 	      <g:if test="${flash.message}">
 	        <div class="alert alert-info" role="alert"><g:message code="${flash.message}" args="${flash.args}" /></div>
 	      </g:if>
-	      
-         <div class="table-responsive">
-           <table class="table table-striped table-bordered table-hover">
-		        <thead>
-		          <tr>
-		            <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
-		            <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
-		            <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
-		            <g:sortableColumn property="type" title="${message(code: 'query.show.type.attr', default: 'Type')}" />
-		          </tr>
-		        </thead>
-		        <tbody>
-			        <g:each in="${queryInstanceList}" status="i" var="queryInstance">
-			          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-			            <td><g:link action="show" params="[uid: queryInstance.uid]">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
-			            <td>${fieldValue(bean: queryInstance, field: "group")}</td>
-			            <td>${fieldValue(bean: queryInstance, field: "format")}</td>
-			            <td>${fieldValue(bean: queryInstance, field: "type")}</td>
-			          </tr>
-			        </g:each>
-		        </tbody>
-		      </table>
-		   </div>
+	      <g:each in="${queryInstanceList}" var="groupQueries">
+           <g:if test="${groupQueries.key == null}">
+             <h2><g:message code="query.list.noGroup" /></h2>
+           </g:if>
+           <g:else>
+            <h2>${groupQueries.key.name}</h2>
+           </g:else>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover">
+                 <thead>
+                   <tr>
+                     <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
+                     <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
+                     <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
+                     <g:sortableColumn property="type" title="${message(code: 'query.show.type.attr', default: 'Type')}" />
+                   </tr>
+                 </thead>
+                 <tbody>
+                    <g:each in="${groupQueries.value}" status="i" var="queryInstance">
+                      <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                        <td><g:link action="show" params="[uid: queryInstance.uid]">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
+                        <td>${fieldValue(bean: queryInstance, field: "group")}</td>
+                        <td>${fieldValue(bean: queryInstance, field: "format")}</td>
+                        <td>${fieldValue(bean: queryInstance, field: "type")}</td>
+                      </tr>
+                    </g:each>
+                 </tbody>
+               </table>
+            </div>
+           
+         </g:each>
 	      <g:paginator total="${queryInstanceTotal}" args="${params}" />
       </div>
     </div>

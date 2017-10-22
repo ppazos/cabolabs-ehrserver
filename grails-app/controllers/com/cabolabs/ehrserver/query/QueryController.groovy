@@ -91,7 +91,7 @@ class QueryController {
          }
       }
       
-      [queryInstanceList: list, queryInstanceTotal: list.totalCount]
+      [queryInstanceList: list.groupBy{it.queryGroup}, queryInstanceTotal: list.totalCount]
    }
    
 

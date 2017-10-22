@@ -82,7 +82,7 @@ class Query {
    
    // https://github.com/ppazos/cabolabs-ehrserver/issues/340
    User author
-   String organizationUid // current org at the momento of the creation
+   String organizationUid // current org at the moment of the creation
    
    // true => shared with all the organizations
    boolean isPublic
@@ -160,18 +160,19 @@ class Query {
       if (json['queryGroup'])
       {
          def qgroup = QueryGroup.findByUid(json['queryGroup'])
+         def orgUid = (this.organizationUid ?: json['organizationUid']) // if it's edit update, the json.orgUid is null
          if (!qgroup)
          {
             //throw new Exception("Query group doesn't exists")
-            user.errors.rejectValue(
+            this.errors.rejectValue(
               'queryGroup',
               'query.queryGroup.doesntExists')
          }
-         else if (qgroup.organizationUid != json['organizationUid'])
+         else if (qgroup.organizationUid != orgUid)
          {
             //throw new Exception("Query group doesn't belongs to the current organization")
             
-            user.errors.rejectValue(
+            this.errors.rejectValue(
               'queryGroup',
               'query.queryGroup.notInCurrentOrg')
          }
