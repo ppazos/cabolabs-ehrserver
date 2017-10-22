@@ -39,7 +39,8 @@ class DvParsableIndex extends DataValueIndex {
          "text/rtf",
          "text/plain",
          "text/html",
-         "iso8601" // this is to parse time expressions for activity.timing, we don't know if this is date, datetime, duration or period.
+         "iso8601", // this is to parse time expressions for activity.timing, we don't know if this is date, datetime, duration or period.
+         "hl7_gts"
       ]
       value(maxSize: 2147483647) //2GB, Groovy Integer.MAX_VALUE: http://docs.groovy-lang.org/next/html/documentation/core-syntax.html#_numbers
    }
