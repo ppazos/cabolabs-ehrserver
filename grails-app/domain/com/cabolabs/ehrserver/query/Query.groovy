@@ -62,6 +62,8 @@ class Query {
    // Filter by templateId (this is the document type)
    String templateId
    
+   QueryGroup queryGroup
+   
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
@@ -154,6 +156,30 @@ class Query {
       this.isPublic   = json['isPublic']
       this.format     = ( json['format'] ) ? json['format'] : 'xml' 
       this.templateId = json['template_id']
+      
+      if (json['queryGroup'])
+      {
+         def qgroup = QueryGroup.findByUid(json['queryGroup'])
+         if (!qgroup)
+         {
+            //throw new Exception("Query group doesn't exists")
+            user.errors.rejectValue(
+              'queryGroup',
+              'query.queryGroup.doesntExists')
+         }
+         else if (qgroup.organizationUid != json['organizationUid'])
+         {
+            //throw new Exception("Query group doesn't belongs to the current organization")
+            
+            user.errors.rejectValue(
+              'queryGroup',
+              'query.queryGroup.notInCurrentOrg')
+         }
+         else
+         {
+            this.queryGroup = qgroup
+         }
+      }
       
       // only set on create, not udate
       if (!this.id)
@@ -301,6 +327,9 @@ class Query {
       templateId(nullable:true)
       
       cachedHQLWhere(nullable:true, size:1..8192)
+      
+      
+      queryGroup nullable: true
    }
    
    static mapping = {

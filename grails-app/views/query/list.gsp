@@ -15,13 +15,18 @@
       <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
           <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
-            <span class="fa fa-filter" aria-hidden="true"></span>
+            <span class="fa fa-filter fa-fw" aria-hidden="true"></span>
           </button>
+          
+          <g:link action="groups" title="groups">
+            <button type="button" class="btn btn-default btn-md">
+              <span class="fa fa-sitemap fa-fw" aria-hidden="true"></span>
+            </button></g:link>
+          
           <g:link action="create">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus" aria-hidden="true"></span>
-            </button>
-          </g:link>
+              <span class="fa fa-plus fa-fw" aria-hidden="true"></span>
+            </button></g:link>
         </div>
       </div>
     </div>

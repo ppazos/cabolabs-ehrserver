@@ -112,6 +112,7 @@
         criteriaLogic: undefined,
         where: [], // DataCriteria
         select: [], // DataGet
+        queryGroup: undefined,
         group: 'none',
         reset:        function () {
            this.id = undefined;
@@ -132,6 +133,7 @@
         set_name:     function (name) { this.name = name; },
         get_name:     function () { return this.name; },
         set_format:   function (format) { this.format = format; },
+        set_query_group: function (query_group) { this.queryGroup = query_group; },
         set_group:    function (group) { this.group = group; },
         set_template_id: function (template_id) {
           if (template_id != null) this.template_id = template_id;
@@ -275,6 +277,8 @@
            alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}');
            return;
         }
+        
+        query.set_query_group($('select[name=queryGroup]').val());
 
         if (!query.has_criteria() && !query.has_projections())
         {
@@ -359,6 +363,7 @@
         
         // query management
         query.set_name($('input[name=name]').val());
+        query.set_query_group($('select[name=queryGroup]').val());
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
         query.set_format( $('select[name=composition_format]').val() );
         query.set_template_id( $('select[name=templateId]').val() );
@@ -472,6 +477,7 @@ resp.responseJSON.result.message +'</div>'
 
         // query management
         query.set_name($('input[name=name]').val());
+        query.set_query_group($('select[name=queryGroup]').val());
         query.set_format($('select[name=format]').val());
         query.set_group($('select[name=group]').val()); // for datavalue query
 
@@ -1459,6 +1465,7 @@ resp.responseJSON.result.message +'</div>'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
+          println 'query.set_query_group("'+ queryInstance.queryGroup +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
           
           if (queryInstance.isPublic)
@@ -1857,9 +1864,7 @@ resp.responseJSON.result.message +'</div>'
             <table class="table table-striped table-bordered table-hover">
               <tr>
                 <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'name', 'error')} required">
-                  <label for="name">
-                    <g:message code="query.show.name.attr" default="Name" /> *
-                  </label>
+                  <label for="name"><g:message code="query.show.name.attr" default="Name" /> *</label>
                 </td>
                 <td>
                   <g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />
@@ -1867,9 +1872,7 @@ resp.responseJSON.result.message +'</div>'
               </tr>
               <tr>
                 <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
-                  <label for="type">
-                    <g:message code="query.show.type.attr" default="Type" />
-                  </label>
+                  <label for="type"><g:message code="query.show.type.attr" default="Type" /></label>
                   <span class="info">
                     <asset:image src="skin/information.png" />
                     <span class="content">
@@ -1884,7 +1887,16 @@ resp.responseJSON.result.message +'</div>'
                   <g:select name="type" from="${queryInstance.constraints.type.inList}" value="${queryInstance?.type}" valueMessagePrefix="query.type" noSelection="['': '']" class="form-control input-sm" />
                 </td>
               </tr>
-              
+              <tr>
+                <td class="fieldcontain ${hasErrors(bean: queryInstance, field: 'type', 'error')}">
+                  <label for="type"><g:message code="query.show.queryGroup.attr" default="Query Group" /></label>
+                </td>
+                <td>
+                  <g:select name="queryGroup" from="${queryGroups}" value="${queryInstance?.queryGroup}"
+                            optionKey="uid" optionValue="name"
+                            noSelection="['': '']" class="form-control input-sm" />
+                </td>
+              </tr>
               <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <tr>
                   <td>

@@ -97,9 +97,12 @@ class QueryController {
 
    def create()
    {
-      [queryInstance: new Query(params),
-      dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-      templateIndexes: OperationalTemplateIndex.list()]
+      [
+       queryInstance: new Query(params),
+       dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+       templateIndexes: OperationalTemplateIndex.list(),
+       queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
+      ]
    }
    
    /**
@@ -116,14 +119,36 @@ class QueryController {
       //println request.JSON.query.getClass()
       request.JSON.query.organizationUid = session.organization.uid
       def query = Query.newInstance(request.JSON.query)
+
       
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
       def user = springSecurityService.getCurrentUser()
       query.author = user
       query.cacheHQLWhere()
       
+      if (query.hasErrors())
+      {
+         flash.message = e.message
+      
+         render (
+           view: 'create',
+           model: [
+             queryInstance: query,
+             dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+             templateIndexes: OperationalTemplateIndex.list(),
+             queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
+             mode: 'edit'
+           ]
+         )
+         
+         return
+      }
+      
       // TODO: errors in json to be displayed
-      if (!query.save(flush:true)) println query.errors.allErrors
+      if (!query.save(flush:true))
+      {
+         println query.errors.allErrors
+      }
       
       // private queries should be shared with the current org
       if (!query.isPublic)
@@ -151,6 +176,7 @@ class QueryController {
           queryInstance: queryInstance,
           dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
           templateIndexes: OperationalTemplateIndex.list(),
+          queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
         ]
       )
@@ -543,5 +569,30 @@ class QueryController {
             return "format not supported"
          }
       }
+   }
+   
+   // query group list
+   def groups()
+   {
+      def groups = QueryGroup.findAllByOrganizationUid(session.organization.uid)
+      
+      render view: '/queryGroup/index', model: [groups: groups]
+   }
+   
+   // query group create
+   def createGroup()
+   {
+      if (!params.doit)
+      {
+         render view: '/queryGroup/create'
+         return
+      }
+      
+      def qg = new QueryGroup(params)
+      qg.organizationUid = session.organization.uid
+      
+      if (!qg.save()) println qg.errors
+      
+      redirect (action: "groups")
    }
 }
