@@ -225,7 +225,7 @@ class DataIndexerService {
       Map attributes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      println "paths "+ paths
+      //println "paths "+ paths
       
       // this continues the recursion, the code is generic can be reused
       def child_type
@@ -246,7 +246,7 @@ class DataIndexerService {
             }
             
             def method = 'process_'+ child_type +'_index'
-            println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
+            //println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
             this."$method"(child_attr_node, templateId, paths.templatePath, paths.rootArchetype, paths.archetypePath, owner, indexes)
          }
       }
@@ -1005,7 +1005,7 @@ class DataIndexerService {
       // 0 = pk_ration: num and denom may be any value so are float
       int type = ( (node.type.text()) ? (new Integer(node.type.text())) : 0 )
       
-      println "DvPropotion parse type: "+ type
+      //println "DvPropotion parse type: "+ type
       
       // Parsing numerator and denominator considering the type
       // Some checks are done here instead as constraints of DvProportionIndex,
@@ -1045,7 +1045,7 @@ class DataIndexerService {
           throw new Exception("DV_PROPORTION type '$type' not valid")
       }
       
-      println "DvPropotion parse: "+ numerator +"/"+ denominator
+      //println "DvPropotion parse: "+ numerator +"/"+ denominator
       
       indexes << new DvProportionIndex(
         templateId:    templateId,
