@@ -654,11 +654,21 @@
                <xs:extension base="DV_ENCAPSULATED">
                     <xs:sequence>
                          <xs:element name="value" type="NotEmptyString"/>
+                         <!-- <xs:element name="value" type="AllowAny"/> -->
                          <xs:element name="formalism" type="NotEmptyString"/>
                     </xs:sequence>
                </xs:extension>
           </xs:complexContent>
      </xs:complexType>
+     <!-- fix to allow XML representations for DV_PARSABLE.value
+       https://openehr.atlassian.net/browse/SPECPR-242?jql=ORDER%20BY%20created%20DESC
+     <xs:complexType name="AllowAny" mixed="true">
+           <xs:sequence>
+             <xs:any minOccurs="0"/>
+           </xs:sequence>
+     </xs:complexType>
+     -->
+
    <xs:complexType name="DV_URI">
           <xs:complexContent>
                <xs:extension base="DATA_VALUE">
