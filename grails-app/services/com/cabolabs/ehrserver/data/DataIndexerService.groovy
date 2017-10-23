@@ -130,7 +130,7 @@ class DataIndexerService {
          }
          else
          {
-            log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
+            //log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
          }
          
          // check if the AII exists, if not, the indexed value wont be able to be queried
@@ -156,8 +156,12 @@ class DataIndexerService {
     
       if (!compoIndex.save())
       {
-         log.info "Error al guardar compoIndex: "+ compoIndex.errors.toString()
+         log.error "Error al guardar compoIndex: "+ compoIndex.errors.toString()
          throw new DataIndexException('CompiIndex failed to save omn indexing', compoIndex.errors)
+      }
+      else
+      {
+         log.info "Composition ${compoIndex.uid} indexed"
       }
    }
    
