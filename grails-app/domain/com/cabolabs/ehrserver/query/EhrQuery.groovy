@@ -1,5 +1,7 @@
 package com.cabolabs.ehrserver.query
 
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
+
 /**
  * This type of query allows:
  *
@@ -51,14 +53,16 @@ class EhrQuery {
    /**
     * Get max EHR uids that complies with the criteria of the EhrQuery.
     */
-   def getEhrUids(String organizationUid, int max = 20, int offset = 0)
+   def getEhrUids(String organizationUid)
    {
       // Result is a set of matching EHR uids
       println "ehr query"
       def ehr_cis = []
       this.queries.each { query ->
          
-         ehr_cis << query.executeComposition(null, null, null, organizationUid, max, offset, null, null, false, true)
+         // the query should be executed against all EHRs
+         // TODO: queries can be executed in parallel then joined to get the final result
+         ehr_cis << query.executeComposition(null, null, null, organizationUid, Ehr.count(), 0, null, null, false, true)
          // the query should be:
          // SELECT ehr.uid, COUNT(ci.id)
          // FROM Ehr ehr, CompositionIndex ci
