@@ -321,11 +321,7 @@ class QueryController {
       }
       else
       {
-        // auth token used to login
-        def auth = springSecurityService.authentication
-        def org = Organization.findByNumber(auth.organization)
-        
-        params['ehrs'] = Ehr.findAllByOrganizationUid(org.uid)
+        params['ehrs'] = Ehr.findAllByOrganizationUid(session.organization.uid)
       }
       
       // ==================================================================
