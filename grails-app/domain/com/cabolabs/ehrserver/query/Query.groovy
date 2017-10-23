@@ -161,6 +161,7 @@ class Query {
       {
          def qgroup = QueryGroup.findByUid(json['queryGroup'])
          def orgUid = (this.organizationUid ?: json['organizationUid']) // if it's edit update, the json.orgUid is null
+
          if (!qgroup)
          {
             //throw new Exception("Query group doesn't exists")

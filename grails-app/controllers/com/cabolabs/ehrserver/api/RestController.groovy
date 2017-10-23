@@ -1364,6 +1364,7 @@ class RestController {
          return
       }
       
+      request.JSON.query.organizationUid = organizationUid
       def query = Query.newInstance(request.JSON.query)
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid, composerUid, composerName)
       
@@ -1468,6 +1469,7 @@ class RestController {
       def max = 20
       def offset = 0
       
+      request.JSON.query.organizationUid = organizationUid
       def query = Query.newInstance(request.JSON.query)
       def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset, composerUid, composerName)
       def result = cilist
