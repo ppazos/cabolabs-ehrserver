@@ -35,7 +35,7 @@ class IndexDataJob {
    def concurrent = false
    
    static triggers = {
-      simple repeatInterval: 60000l, startDelay: 240000l // execute job once in 60 seconds
+      simple repeatInterval: 5000l, startDelay: 240000l // execute job once in 60 seconds
    }
    
    def dataIndexerService
@@ -45,7 +45,7 @@ class IndexDataJob {
       // TODO: if indexing takes more than repeatInterval,
       //       the process will try to index the same version twice.
       //       we should lock the compo indexes.
-      def compoIdxs = CompositionIndex.findAllByDataIndexed(false)
+      def compoIdxs = CompositionIndex.findAllByDataIndexed(false, [max: 100, offset: 0])
       
       compoIdxs.each { compoIndex ->
          // transactional service
