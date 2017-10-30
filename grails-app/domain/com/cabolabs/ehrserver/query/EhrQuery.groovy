@@ -56,23 +56,39 @@ class EhrQuery {
    def getEhrUids(String organizationUid)
    {
       // Result is a set of matching EHR uids
-      println "ehr query"
-      def ehr_cis = []
+      def ehr_cis = Collections.synchronizedList([])
+      List<Thread> threads = []
+      
       this.queries.each { query ->
          
-         // the query should be executed against all EHRs
-         // TODO: queries can be executed in parallel then joined to get the final result
-         ehr_cis << query.executeComposition(null, null, null, organizationUid, Ehr.count(), 0, null, null, false, true)
-         // the query should be:
-         // SELECT ehr.uid, COUNT(ci.id)
-         // FROM Ehr ehr, CompositionIndex ci
-         // WHERE ... <<< filters and subqueries
-         // GROUP BY ehr.uid
+         threads << Thread.start {
          
-         // ehruid, count ci.id
-         // [[11111111-1111-1111-1111-111111111111, 4], [22222222-1111-1111-1111-111111111111, 3]]
-         //println ehr_cis
+            def res
+         
+            // the query should be executed against all EHRs
+            // TODO: queries can be executed in parallel then joined to get the final result
+            Query.withTransaction { // adds hibernate session to current thread
+               res = query.executeComposition(null, null, null, organizationUid, Ehr.count(), 0, null, null, false, true)
+            }
+            
+            synchronized (ehr_cis) { // writes to the result list are done in parallel and should be synchronized (lock access at the same time)
+               ehr_cis << res
+            }
+            
+            // the query should be:
+            // SELECT ehr.uid, COUNT(ci.id)
+            // FROM Ehr ehr, CompositionIndex ci
+            // WHERE ... <<< filters and subqueries
+            // GROUP BY ehr.uid
+            
+            // ehruid, count ci.id
+            // [[11111111-1111-1111-1111-111111111111, 4], [22222222-1111-1111-1111-111111111111, 3]]
+            //println ehr_cis
+         }
       }
+      
+      // wait for all queries to finish
+      threads*.join()
       
       def ehrUids = []
 
