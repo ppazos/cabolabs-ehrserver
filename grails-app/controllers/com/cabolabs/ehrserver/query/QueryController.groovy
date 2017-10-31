@@ -591,4 +591,28 @@ class QueryController {
       
       redirect (action: "groups")
    }
+   
+   def showGroup(String uid)
+   {
+      def qg = QueryGroup.findByUid(uid)
+      
+      render view: '/queryGroup/show', model: [queryGroupInstance: qg]
+   }
+   
+   def editGroup(String uid)
+   {
+      def qg = QueryGroup.findByUid(uid)
+      
+      if (!params.doit)
+      {
+         render view: '/queryGroup/edit', model: [queryGroupInstance: qg]
+         return
+      }
+      
+      qg.name = params.name // the only field that can change is the name
+      
+      if (!qg.save()) println qg.errors
+      
+      redirect (action: "showGroup", params: [uid: uid])
+   }
 }
