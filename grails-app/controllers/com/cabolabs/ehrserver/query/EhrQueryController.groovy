@@ -16,7 +16,7 @@ class EhrQueryController {
       [list: EhrQuery.list(params), total: EhrQuery.count()]
    }
    
-   
+   /*
    def test1(long id)
    {
       def eq = EhrQuery.get(id)
@@ -36,7 +36,7 @@ class EhrQueryController {
       def ehrUids = eq.getEhrUids(session.organization.uid)
       render ehrUids as JSON
    }
-
+   */
    
    def show(EhrQuery ehrQueryInstance)
    {
