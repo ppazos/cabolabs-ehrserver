@@ -30,16 +30,16 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <g:sortableColumn property="templateId" title="${message(code: 'queryGroup.attr.uid')}" />
-                <g:sortableColumn property="concept" title="${message(code: 'queryGroup.attr.name')}" />
-                <g:sortableColumn property="language" title="${message(code: 'queryGroup.attr.organizationUid')}" />
+                <g:sortableColumn property="uid" title="${message(code: 'queryGroup.attr.uid')}" />
+                <g:sortableColumn property="name" title="${message(code: 'queryGroup.attr.name')}" />
+                <g:sortableColumn property="organizationUid" title="${message(code: 'queryGroup.attr.organizationUid')}" />
               </tr>
             </thead>
             <tbody>
               <g:each in="${groups}" status="i" var="queryGroupInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td>
-                    <g:link action="show" params="[uid:queryGroupInstance.uid]" id="${queryGroupInstance.id}">${fieldValue(bean: queryGroupInstance, field: "uid")}</g:link>
+                    <g:link action="showGroup" params="[uid:queryGroupInstance.uid]">${fieldValue(bean: queryGroupInstance, field: "uid")}</g:link>
                   </td>
                   <td>${fieldValue(bean: queryGroupInstance, field: "name")}</td>
                   <td>${fieldValue(bean: queryGroupInstance, field: "organizationUid")}</td>
