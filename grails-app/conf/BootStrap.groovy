@@ -716,18 +716,22 @@ class BootStrap {
    
    def sampleFolderTemplates()
    {
-      def org = Organization.get(1)
-      def ftpls = [
-         new FolderTemplate(name:'openEHR', description:'Structure suggested on the openEHR specs', organizationUid: org.uid, folders: [
-            new FolderTemplateItem(name:'subject'),
-            new FolderTemplateItem(name:'persistent'),
-            new FolderTemplateItem(name:'event'),
-            new FolderTemplateItem(name:'episode X')
-         ])
-      ]
-      
-      ftpls.each {
-         it.save(failOnError: true)
+      if (FolderTemplate.count() == 0)
+      {
+         println "Creating sample folder templates"
+         def org = Organization.get(1)
+         def ftpls = [
+            new FolderTemplate(name:'openEHR', description:'Structure suggested on the openEHR specs', organizationUid: org.uid, folders: [
+               new FolderTemplateItem(name:'subject'),
+               new FolderTemplateItem(name:'persistent'),
+               new FolderTemplateItem(name:'event'),
+               new FolderTemplateItem(name:'episode X')
+            ])
+         ]
+         
+         ftpls.each {
+            it.save(failOnError: true)
+         }
       }
    }
    
