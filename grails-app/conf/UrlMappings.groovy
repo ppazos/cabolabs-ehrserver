@@ -124,6 +124,13 @@ class UrlMappings {
          action: 'getComposition'
       )
       
+      // execute given query (not stored)
+      "/api/v1/query/composition/execute"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'executedNotStoredCompositionQuery'
+      )
+      
       "/api/v1/queries"(
          controller: 'rest',
          action: 'queryList'

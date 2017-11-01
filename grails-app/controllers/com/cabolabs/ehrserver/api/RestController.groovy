@@ -91,6 +91,7 @@ class RestController {
    def commitLoggerService
    def notificationService
    def apiResponsesService
+   def queryService
 
    // Para acceder a las opciones de localizacion 
    def config = Holders.config.app
@@ -1385,6 +1386,26 @@ class RestController {
       return
    }
    
+   
+   @SecuredStateless
+   def executedNotStoredCompositionQuery()
+   {
+      // TODO: check malformed query
+      def result = queryService.executedNotStoredCompositionQuery(request.JSON, request.securityStatelessMap.extradata.org_uid)
+      
+      if (result.error)
+      {
+         renderError(result.error.message, result.error.code, result.error.status)
+         return
+      }
+      
+      if (request.JSON.format == 'json')
+         render(text:(result.result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+      else
+         render(text:(result.result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+      
+      return
+   }
    
    /**
     * Previo QueryController.testQueryByData
