@@ -153,8 +153,8 @@ class Query {
    {
       this.name       = json['name']
       this.type       = json['type']
-      this.isPublic   = json['isPublic']
-      this.format     = ( json['format'] ) ? json['format'] : 'xml' 
+      this.isPublic   = json['isPublic'] ?: false
+      this.format     = json['format'] ?: 'xml' 
       this.templateId = json['template_id']
       
       if (json['queryGroup'])
