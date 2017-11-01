@@ -1390,6 +1390,12 @@ class RestController {
    @SecuredStateless
    def executedNotStoredCompositionQuery()
    {
+      if (!request.JSON)
+      {
+         renderError(message(code:'rest.error.query_not_provided'), "4800", 400)
+         return
+      }
+   
       // TODO: check malformed query
       def result = queryService.executedNotStoredCompositionQuery(request.JSON, request.securityStatelessMap.extradata.org_uid)
       
@@ -1399,11 +1405,57 @@ class RestController {
          return
       }
       
-      if (request.JSON.format == 'json')
-         render(text:(result.result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-      else
-         render(text:(result.result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
       
+      String qehrId        = request.JSON.qehrId
+      String format        = request.JSON.format
+      // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
+      boolean retrieveData = request.JSON.retrieveData ? request.JSON.retrieveData.toBoolean() : false
+      boolean showUI       = request.JSON.showUI ? request.JSON.showUI.toBoolean() : false
+      
+      
+      // group results by ehr uid
+      if (!qehrId)
+      {
+         result = result.result.groupBy { ci -> ci.ehrUid }
+      }
+      else
+      {
+         result = result.result
+      }
+      
+      if (showUI)
+      {
+          // FIXME: hay que ver el tema del paginado
+          render(template:'/compositionIndex/listTable',
+                 model:[
+                    compositionIndexInstanceList:  result,
+                    //compositionIndexInstanceTotal: cilist.size(),
+                    groupedByEhr: (!qehrId)
+                 ],
+                 contentType: "text/html")
+          return
+      }
+      
+      
+      // Do not retrieve data
+      if (!retrieveData)
+      {
+         if (format == 'json')
+            render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         else
+            render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         return
+      }
+      
+      
+      // Retrieve data
+      String data = queryService.retrieveDataFroCompositionQueryResult(result, qehrId, request.securityStatelessMap.extradata.org_uid)
+      
+      if (format == 'json')
+         render(text: jsonService.xmlToJson(data), contentType:"application/json", encoding:"UTF-8")
+      else
+         render(text: data, contentType:"text/xml", encoding:"UTF-8")
+         
       return
    }
    
