@@ -172,6 +172,9 @@ class DataCriteria {
    String toSQL()
    {
       def specs = criteriaSpec(this.archetypeId, this.path)
+      
+      // TODO: we need to think another way of referencing the spec that is not by the index,
+      // this difficults executing not stored queries, since the spec number should be set.
       def criteria_spec = specs[this.spec] // spec used Map
       def attributes_or_functions = criteria_spec.keySet()
       def sql = ""
@@ -286,6 +289,8 @@ class DataCriteria {
             sql += ' AND '
          }
       }
+      
+      println sql
       
       sql = sql[0..-6] // removes the last AND
       
