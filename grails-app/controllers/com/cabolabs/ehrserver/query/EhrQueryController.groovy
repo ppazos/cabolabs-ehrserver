@@ -122,6 +122,17 @@ class EhrQueryController {
          '*'{ render status: NO_CONTENT }
       }
    }
+   
+   def execute(EhrQuery ehrQueryInstance)
+   {
+      if (ehrQueryInstance == null) {
+         notFound()
+         return
+      }
+      
+      def ehrUids = ehrQueryInstance.getEhrUids(session.organization.uid)
+      render (ehrUids as JSON)
+   }
 
    protected void notFound() {
       request.withFormat {

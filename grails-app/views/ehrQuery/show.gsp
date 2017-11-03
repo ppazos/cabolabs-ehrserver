@@ -44,11 +44,51 @@
         
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
-            <g:link action="edit" id="${ehrQueryInstance.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+            <g:link url="[action: 'execute', id: ehrQueryInstance.id]" elementId="execute"><button type="button" class="btn btn-default btn-md"><span class="fa fa-cog" aria-hidden="true"></span> <g:message code="default.button.execute.label" default="Execute" /></button></g:link>
+            <g:link action="edit" id="${ehrQueryInstance.id}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
           </fieldset>
         </div>
         
       </div>
     </div>
+    
+    <script>
+    $('#execute').on('click', function(e) {
+    
+      console.log(this.href);
+      e.preventDefault();
+      
+      icon = $('span', this);
+      icon.addClass('fa-spin');
+      
+      ehr_show_url = '${createLink(controller:"ehr", action:"show")}';
+    
+      $.ajax({
+        method: 'GET',
+        url: this.href,
+        dataType: 'json'
+      })
+      .done(function( res ) {
+           
+        //console.log(res);
+        
+        $('#results').remove(); // previous results
+        $('#page-wrapper').append('<div id="results"><table class="table"><tr><th>#</th><th>EHR UID</th></tr></table></div>');
+        
+        res.forEach(function(uid, index){
+        
+          $('table', '#results').append('<tr><td>'+ index +'</td><td><a href="'+ ehr_show_url +'?uid='+ uid +'">'+ uid +'</a></td></tr>');
+        });
+        
+        icon.removeClass('fa-spin');
+      })
+      .fail(function(resp,status,status_msg) {
+        
+        console.log(resp);
+        
+        icon.removeClass('fa-spin');
+      });
+    });
+    </script>
   </body>
 </html>
