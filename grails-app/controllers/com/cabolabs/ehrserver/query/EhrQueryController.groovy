@@ -130,7 +130,7 @@ class EhrQueryController {
          return
       }
       
-      def ehrUids = ehrQueryInstance.getEhrUids(session.organization.uid)
+      def ehrUids = ehrQueryInstance.getEhrUids2(session.organization.uid)
       render (ehrUids as JSON)
    }
 

@@ -1,6 +1,7 @@
 package com.cabolabs.ehrserver.query
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import static grails.async.Promises.*
 
 /**
  * This type of query allows:
@@ -108,6 +109,44 @@ class EhrQuery {
          }
       }
       
+      return ehrUids
+   }
+   
+   def getEhrUids2(String organizationUid)
+   {
+      // http://docs.grails.org/2.5.6/guide/async.html
+      def tasks = []
+      
+      this.queries.each { query ->
+         
+         tasks << task {
+            def res
+            println "task "+ query.name
+            Query.withTransaction {
+               res = query.executeComposition(null, null, null, organizationUid, Ehr.count(), 0, null, null, false, true)
+            }
+            return res
+         }
+      }
+
+      def ehrUids = []
+      
+      def ehr_cis = waitAll(tasks)
+      
+      println "results "+ ehr_cis*.size()
+   
+      // first result
+      ehrUids = ehr_cis[0]*.getAt(0)
+
+      // if more than one query was executed, do the result intersection of the ehrUids and returns that.
+      if (ehr_cis.size()>1)
+      {
+         for (int i = 1; i<ehr_cis.size(); i++)
+         {
+            ehrUids = ehrUids.intersect( ehr_cis[i]*.getAt(0) )
+         }
+      }
+
       return ehrUids
    }
 }
