@@ -50,7 +50,7 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
       sizeOperand nullable: true
    }
    
-   static List criteriaSpec(String archetypeId, String path)
+   static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
       // FIXME: the OPT can have more constrained mediaTypes, need to get them from there also.
       def mediaTypes = DvMultimediaIndex.constraints.mediaType.inList

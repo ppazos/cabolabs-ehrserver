@@ -40,7 +40,7 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
    static constraints = {
    }
    
-   static List criteriaSpec(String archetypeId, String path)
+   static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
       return [
         [

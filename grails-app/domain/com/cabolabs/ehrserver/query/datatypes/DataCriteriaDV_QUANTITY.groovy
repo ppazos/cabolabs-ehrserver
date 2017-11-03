@@ -53,23 +53,8 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     * by conditions over DV_QUANTITY.
     * @return
     */
-   static List criteriaSpec(String archetypeId, String path)
+   static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
-      //println archetypeId +" "+ path
-      def optMan = OptManager.getInstance()
-      def units = [:]
-      def u
-      
-/* can be many for the one archetypeId
-      println "-------------"
-      println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
-      println "-------------"
-*/
-      
-      optMan.getNode(archetypeId, path)?.xmlNode.list.each {
-        u = it.units.text() 
-        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
-      }
       
       /*
       arch.getNode(path).xmlNode.list.each {
@@ -93,6 +78,22 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
           ]
         ]
       ]
+      
+      //println archetypeId +" "+ path
+      def optMan = OptManager.getInstance()
+      def units = [:]
+      def u
+      
+/* can be many for the one archetypeId
+      println "-------------"
+      println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
+      println "-------------"
+*/
+      
+      optMan.getNode(archetypeId, path)?.xmlNode.list.each {
+        u = it.units.text() 
+        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+      }
       
       if (units.size() > 0) spec[0].units.units = units
       

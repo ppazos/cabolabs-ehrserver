@@ -4,6 +4,8 @@
   <head>
     <meta name="layout" content="admin">
     <title><g:message code="ehrquery.show.title" /></title>
+    <asset:stylesheet src="pnotify.custom.min.css" />
+    <asset:javascript src="pnotify.custom.min.js" />
   </head>
   <body>
     <div class="row">
@@ -62,6 +64,14 @@
       icon.addClass('fa-spin');
       
       ehr_show_url = '${createLink(controller:"ehr", action:"show")}';
+      
+      new PNotify({
+         title: '${g.message(code:"ehrquery.show.executing")}',
+         text : '${g.message(code:"ehrquery.show.executing_text")}',
+         type : 'info',
+         styling: 'bootstrap3',
+         history: false
+      });
     
       $.ajax({
         method: 'GET',
@@ -72,12 +82,22 @@
            
         //console.log(res);
         
+        
+        new PNotify({
+         title: '${g.message(code:"ehrquery.show.executing_done")}',
+         text : res.length +' ${g.message(code:"ehrquery.show.executing_result")}',
+         type : 'info',
+         styling: 'bootstrap3',
+         history: false
+        });
+        
+        
         $('#results').remove(); // previous results
         $('#page-wrapper').append('<div id="results"><table class="table"><tr><th>#</th><th>EHR UID</th></tr></table></div>');
         
         res.forEach(function(uid, index){
         
-          $('table', '#results').append('<tr><td>'+ index +'</td><td><a href="'+ ehr_show_url +'?uid='+ uid +'">'+ uid +'</a></td></tr>');
+          $('table', '#results').append('<tr><td>'+ (index+1) +'</td><td><a href="'+ ehr_show_url +'?uid='+ uid +'">'+ uid +'</a></td></tr>');
         });
         
         icon.removeClass('fa-spin');

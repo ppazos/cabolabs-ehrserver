@@ -107,7 +107,7 @@ class DataCriteria {
    {
       def criteria = [:] // attr -> [ operand : values ]
       
-      def specs = criteriaSpec(this.archetypeId, this.path)
+      def specs = criteriaSpec(this.archetypeId, this.path, false)
       def spec = specs[this.spec] // spec used Map
       def attributes = spec.keySet()
       def operand
@@ -171,7 +171,8 @@ class DataCriteria {
    
    String toSQL()
    {
-      def specs = criteriaSpec(this.archetypeId, this.path)
+      // booleano false no devuelve listas de valores porque aca no las uso ej para coded text
+      def specs = criteriaSpec(this.archetypeId, this.path, false)
       
       // TODO: we need to think another way of referencing the spec that is not by the index,
       // this difficults executing not stored queries, since the spec number should be set.
@@ -189,8 +190,8 @@ class DataCriteria {
          if (this.functions().contains(attr_or_function))
          {
             // is function
-            println "function " + attr_or_function
-            println this.evaluateFunction(attr_or_function)
+            //println "function " + attr_or_function
+            //println this.evaluateFunction(attr_or_function)
             
             sql += this.evaluateFunction(attr_or_function) + '     ' // extra spaces to avoid cutting the criteria value
             
@@ -290,7 +291,7 @@ class DataCriteria {
          }
       }
       
-      println sql
+      //println sql
       
       sql = sql[0..-6] // removes the last AND
       
