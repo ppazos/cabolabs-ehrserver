@@ -111,6 +111,13 @@
       .panel-default>.panel-heading {
         min-height: 8em; /* make all repo status boxes of the same height even if the org name occupies two rows */
       }
+      
+      .separator {
+        margin: 0px;
+      }
+      .panel {
+        margin-bottom: 15px;
+      }
     </style>
     <!--[if lt IE 8]>
       <style type="text/css">
@@ -217,7 +224,6 @@
           </g:link>
         </div>
       </div>
-      
       <div class="col-lg-3 col-md-6">
         <div class="panel panel-green">
           <div class="panel-heading">
@@ -240,6 +246,11 @@
           </g:link>
         </div>
       </div>
+    </div>
+    
+    <hr class="separator" />
+    
+    <div class="row content">
       
       <g:each in="${version_repo_sizes}" var="org_repo_size">
         <div class="col-lg-3 col-md-6">
