@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2011-2017 CaboLabs Health Informatics
  *
@@ -72,18 +71,34 @@ class RoleController {
       }
    }
 
-   def edit(Role roleInstance) {
+   def edit(Role roleInstance)
+   {
+      // can't edit core roles
+      if (Role.coreRoles().contains(roleInstance.authority))
+      {
+         redirect action: 'index'
+         return
+      }
       respond roleInstance
    }
 
    @Transactional
-   def update(Role roleInstance) {
+   def update(Role roleInstance)
+   {
       if (roleInstance == null) {
          notFound()
          return
       }
+      
+      // can't edit core roles
+      if (Role.coreRoles().contains(roleInstance.authority))
+      {
+         redirect action: 'index'
+         return
+      }
 
-      if (roleInstance.hasErrors()) {
+      if (roleInstance.hasErrors())
+      {
          respond roleInstance.errors, view:'edit'
          return
       }

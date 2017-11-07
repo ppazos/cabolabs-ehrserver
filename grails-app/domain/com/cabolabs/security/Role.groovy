@@ -76,4 +76,9 @@ class Role implements Serializable {
       
       return true // all the other roles have the same power
    }
+   
+   static List coreRoles()
+   {
+      [AD, AM, OM, US]
+   }
 }
