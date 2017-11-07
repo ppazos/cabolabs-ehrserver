@@ -7,6 +7,7 @@ in: version
 <tr>
   <td>${version.uid}</td>
   <td>${cindex.startTime}</td>
+  <td>${cindex.templateId}</td>
   <td>${cindex.archetypeId}</td>
   <td>${version.commitAudit.changeType}</td>
   <td align="center">

@@ -9,6 +9,7 @@
       <tr>
         <th><g:message code="version.attr.uid" /></th>
         <th><g:message code="composition.attr.startTime" /></th>
+        <th><g:message code="composition.attr.templateId" /></th>
         <th><g:message code="composition.attr.archetypeId" /></th>
         <th><g:message code="audit.attr.changeType" /></th>
         <th></th>
