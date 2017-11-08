@@ -133,8 +133,9 @@ class EhrQuery {
       
       def ehr_cis = waitAll(tasks)
       
-      println "results "+ ehr_cis*.size()
+      println "results "+ ehr_cis +" "+ ehr_cis*.size()
    
+      // this executes a logical AND between all results
       // first result
       ehrUids = ehr_cis[0]*.getAt(0)
 

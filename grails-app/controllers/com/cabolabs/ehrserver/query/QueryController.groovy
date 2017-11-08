@@ -615,4 +615,12 @@ class QueryController {
       
       redirect (action: "showGroup", params: [uid: uid])
    }
+   
+   def executeCountGroup(String uid)
+   {
+      def qg = QueryGroup.findByUid(uid)
+      
+      def res = qg.executeCount(session.organization.uid)
+      render (res as JSON)
+   }
 }
