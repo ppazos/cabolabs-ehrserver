@@ -116,14 +116,14 @@ class EhrQuery {
    {
       // http://docs.grails.org/2.5.6/guide/async.html
       def tasks = []
-      
+      int max = Ehr.countByOrganizationUid(organizationUid)
       this.queries.each { query ->
          
          tasks << task {
             def res
             println "task "+ query.name
             Query.withTransaction {
-               res = query.executeComposition(null, null, null, organizationUid, Ehr.count(), 0, null, null, false, true)
+               res = query.executeComposition(null, null, null, organizationUid, max, 0, null, null, false, true)
             }
             return res
          }
@@ -133,7 +133,7 @@ class EhrQuery {
       
       def ehr_cis = waitAll(tasks)
       
-      println "results "+ ehr_cis +" "+ ehr_cis*.size()
+      //println "results "+ ehr_cis +" "+ ehr_cis*.size()
    
       // this executes a logical AND between all results
       // first result
