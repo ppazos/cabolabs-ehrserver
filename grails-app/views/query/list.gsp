@@ -82,36 +82,37 @@
             <h2>${groupQueries.key.name}</h2>
           </g:else>
           <div>
-             <div class="table-responsive">
-               <table class="table table-striped table-bordered table-hover">
-                 <thead>
-                   <tr>
-                     <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
-                     <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
-                     <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
-                     <g:sortableColumn property="type" title="${message(code: 'query.show.type.attr', default: 'Type')}" />
-                     <th class="count-results"></th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                   <g:each in="${groupQueries.value}" status="i" var="queryInstance">
-                     <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                       <td><g:link action="show" params="[uid: queryInstance.uid]">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
-                       <td>${fieldValue(bean: queryInstance, field: "group")}</td>
-                       <td>${fieldValue(bean: queryInstance, field: "format")}</td>
-                       <td>${fieldValue(bean: queryInstance, field: "type")}</td>
-                       <td id="${queryInstance.uid}" class="count-results"></td>
-                     </tr>
-                   </g:each>
-                 </tbody>
-               </table>
-             </div>
-
-             <div class="btn-toolbar" role="toolbar">
-               <fieldset class="buttons">
-                 <g:link url="[action: 'executeCountGroup', params: [uid: groupQueries.key.uid]]" class="execute_count"><button type="button" class="btn btn-default btn-md"><span class="fa fa-cog" aria-hidden="true"></span> <g:message code="default.button.execute_count.label" /></button></g:link>
-               </fieldset>
-             </div>
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
+                    <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
+                    <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
+                    <g:sortableColumn property="type" title="${message(code: 'query.show.type.attr', default: 'Type')}" />
+                    <th class="count-results"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <g:each in="${groupQueries.value}" status="i" var="queryInstance">
+                    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                      <td><g:link action="show" params="[uid: queryInstance.uid]">${fieldValue(bean: queryInstance, field: "name")}</g:link></td>
+                      <td>${fieldValue(bean: queryInstance, field: "group")}</td>
+                      <td>${fieldValue(bean: queryInstance, field: "format")}</td>
+                      <td>${fieldValue(bean: queryInstance, field: "type")}</td>
+                      <td id="${queryInstance.uid}" class="count-results"></td>
+                    </tr>
+                  </g:each>
+                </tbody>
+              </table>
+            </div>
+            <g:if test="${groupQueries.key != null}">
+              <div class="btn-toolbar" role="toolbar">
+                <fieldset class="buttons">
+                  <g:link url="[action: 'executeCountGroup', params: [uid: groupQueries.key.uid]]" class="execute_count"><button type="button" class="btn btn-default btn-md"><span class="fa fa-cog" aria-hidden="true"></span> <g:message code="default.button.execute_count.label" /></button></g:link>
+                </fieldset>
+              </div>
+            </g:if>
           </div>
           <hr/>
         </g:each>
