@@ -8,6 +8,8 @@
      display: none;
     }
     </style>
+    <asset:stylesheet src="pnotify.custom.min.css" />
+    <asset:javascript src="pnotify.custom.min.js" />
   </head>
   <body>
     <div class="row">
@@ -126,6 +128,14 @@
      
       icon = $('span', this);
       icon.addClass('fa-spin');
+
+      new PNotify({
+         title: '${g.message(code:"query.list.executing_count")}',
+         text : '${g.message(code:"query.list.executing_count_text")}',
+         type : 'info',
+         styling: 'bootstrap3',
+         history: false
+      });
       
       $.ajax({
         method: 'GET',
@@ -135,6 +145,14 @@
       .done(function( res ) {
      
         //console.log(res); // [queryUid: #ehrs, queryUid: #ehrs, ...]
+        
+        new PNotify({
+         title: '${g.message(code:"query.list.executing_count_done")}',
+         text : '${g.message(code:"query.list.executing_count_result")}',
+         type : 'info',
+         styling: 'bootstrap3',
+         history: false
+        });
         
         for (queryUid in res)
         {
