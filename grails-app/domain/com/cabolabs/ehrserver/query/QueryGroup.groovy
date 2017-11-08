@@ -26,7 +26,7 @@ class QueryGroup {
          
          tasks << task {
             def res = [:]
-            println "task "+ query.name +' '+ max
+            println "task "+ query.name
             Query.withTransaction {
                res[(query.uid)] = query.executeComposition(null, null, null, organizationUid, max, 0, null, null, false, true)
             }
