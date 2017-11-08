@@ -57,5 +57,6 @@ class Folder {
    
    static mapping = {
       items cascade: 'all-delete-orphan'
+      organizationUid index: 'org_uid_idx'
    }
 }

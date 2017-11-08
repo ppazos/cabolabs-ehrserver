@@ -11,6 +11,9 @@ class QueryGroup {
 
    static constraints = {
    }
+   static mapping = {
+     organizationUid index: 'org_uid_idx'
+   }
    
    /*
     * Returns the number of EHRs that match with each single query.

@@ -69,6 +69,7 @@ class Ehr {
    
    static mapping = {
       //contributions cascade: 'all' //'save-update'
+      organizationUid index: 'org_uid_idx'
    }
    
    // For testing purposes

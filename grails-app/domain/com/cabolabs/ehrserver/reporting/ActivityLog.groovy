@@ -52,4 +52,8 @@ class ActivityLog {
       requestURI nullable: true
       matchedURI nullable: true
    }
+   
+   static mapping = {
+     organizationUid index: 'org_uid_idx'
+   }
 }

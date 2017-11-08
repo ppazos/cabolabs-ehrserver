@@ -338,6 +338,7 @@ class Query {
       group column: 'dg_group' // group es palabra reservada de algun dbms
       select cascade: "all-delete-orphan" // cascade delete
       where cascade: "all-delete-orphan" // cascade delete
+      organizationUid index: 'org_uid_idx'
    }
    
    def cacheHQLWhere()

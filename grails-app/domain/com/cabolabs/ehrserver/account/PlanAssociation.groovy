@@ -39,5 +39,6 @@ class PlanAssociation {
    static mapping = {
      from column: "pa_from" // avoid using reserved word FROM
      to column: "pa_to" // avoid using reserved word TO in MySQL
+     organizationUid index: 'org_uid_idx'
    }
 }

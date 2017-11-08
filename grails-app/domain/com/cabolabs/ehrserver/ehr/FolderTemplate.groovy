@@ -42,6 +42,9 @@ class FolderTemplate {
       name(nullable: false, blank: false)
       organizationUid(nullable: false)
    }
+   static mapping = {
+     organizationUid index: 'org_uid_idx'
+   }
    
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {

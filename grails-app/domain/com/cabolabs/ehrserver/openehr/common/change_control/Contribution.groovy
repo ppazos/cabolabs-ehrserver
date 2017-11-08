@@ -65,6 +65,7 @@ class Contribution {
       audit column: 'contrib_audit' // En algunos dbms audit o audit_id son reservados
       audit cascade: 'all' //'save-update'
       versions cascade: 'all' //'save-update'
+      organizationUid index: 'org_uid_idx'
    }
    
    //static belongsTo = [Ehr]
