@@ -249,7 +249,7 @@
         this.conditions = [];
         this.spec = spec;
 
-        this.add_condition = function (attr, operand, values) {
+        this.add_condition = function (attr, operand, values, negation) {
           
           if (values.length > 1)
             this.conditions[attr+'Value'] = values;
@@ -257,6 +257,8 @@
             this.conditions[attr+'Value'] = values[0];
           
           this.conditions[attr+'Operand'] = operand;
+          
+          this.conditions['negation'] = negation;
         };
       };
 
@@ -701,7 +703,7 @@ resp.responseJSON.result.message +'</div>'
         
         //console.log('spec', spec);
 
-        var attribute, operand, value, values;
+        var attribute, operand, value, values, negation;
         var criteria_str = '';
         
         // criteria js object
@@ -712,8 +714,11 @@ resp.responseJSON.result.message +'</div>'
           values = [];
           attribute = $('input[name=attribute]', e).val()
           operand = $('select[name=operand]', e).val();
+          negation = $('input[name=negation]', e).prop( "checked" );
           
           // FIXME: are we using the hidden fields?
+          if (negation) criteria_str += 'NOT '
+          
           criteria_str += attribute +' ';
           criteria_str += operand +' ';
 
@@ -732,7 +737,7 @@ resp.responseJSON.result.message +'</div>'
           criteria_str += ' AND ';
           
           // query object mgt
-          criteria.add_condition(attribute, operand, values);
+          criteria.add_condition(attribute, operand, values, negation);
         });
         
         criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
@@ -984,7 +989,13 @@ resp.responseJSON.result.message +'</div>'
                 criteria += '<div class="col-sm-2">'+ attr + '<input type="hidden" name="attribute" value="'+ attr +'" /></div>';
                 
                 conditions = aspec[attr]; // spec[0][code][eq] == value
-                criteria += '<div class="col-sm-5"><select class="operand '+ attr +' form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
+                
+                criteria += '<div class="col-sm-1">'
+                criteria += '${message(code:"query.create.criteria.not")} <input type="checkbox" name="negation" />'
+                criteria += '</div>'
+                
+                criteria += '<div class="col-sm-4">'
+                criteria += '<select class="operand '+ attr +' form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
                 
                 
                 // =======================================================================================================
@@ -1502,6 +1513,7 @@ resp.responseJSON.result.message +'</div>'
                    attrOperandField = attr + 'Operand'
                    operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
+                   negation = data_criteria.negation
                    
                    // TODO
                    // date?.format(Holders.config.app.l10n.db_datetime_format)
@@ -1514,14 +1526,16 @@ resp.responseJSON.result.message +'</div>'
                          println 'criteria.add_condition("'+
                             attr +'", "'+
                             operand +'", '+
-                            ( value.collect{ it.format(grailsApplication.config.app.l10n.ext_datetime_utcformat_nof) } as JSON ) +');'
+                            ( value.collect{ it.format(grailsApplication.config.app.l10n.ext_datetime_utcformat_nof) } as JSON ) +', '+
+                            negation +');'
                       }
                       else
                       {
                          println 'criteria.add_condition("'+
                             attr +'", "'+
                             operand +'", '+
-                            ( value.collect{ it.toString() } as JSON ) +');' // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                            ( value.collect{ it.toString() } as JSON ) +', '+ // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
+                            negation +');'
                       }
                    }
                    else // value is an array of 1 element
@@ -1530,7 +1544,8 @@ resp.responseJSON.result.message +'</div>'
                       println 'criteria.add_condition("'+
                          attr +'", "'+
                          operand +'", [ "'+
-                         value +'" ]);'
+                         value +'", '+
+                         negation +'" ]);'
                    }
                    
                 } // each attr

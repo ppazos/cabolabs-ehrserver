@@ -193,13 +193,11 @@ class DataCriteria {
             //println "function " + attr_or_function
             //println this.evaluateFunction(attr_or_function)
             
-            sql += this.evaluateFunction(attr_or_function) + '     ' // extra spaces to avoid cutting the criteria value
-            
+            sql += this.evaluateFunction(attr_or_function) + '     ' // extra spaces are to avoid cutting the criteria value
          }
          else
          {
             attr = attr_or_function
-      
             operandField = attr+'Operand'
             operand = this."$operandField"
             valueField = attr+'Value'
@@ -207,27 +205,23 @@ class DataCriteria {
             
             criteriaValueType = criteria_spec[attr][operand]
             
-            //println this.getClass().getSimpleName()
-            
-            
             // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
             if (criteriaValueType == 'value')
             {
                if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
-                  sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
+                  sql += (this.negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
                else
-               {
-                  sql += this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
-               }
+                  sql += (this.negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
             }
             else if (criteriaValueType == 'list')
             {
-               //assert operand == 'in_list'
                assert ['in_list', 'contains_like'].contains(operand)
                
                if (operand == 'contains_like')
                {
+                  sql += (this.negation ? 'NOT ' : '')
                   sql += '('
+                  
                   value.each { singleValue ->
                      sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
                   }
@@ -235,7 +229,7 @@ class DataCriteria {
                }
                else
                {
-                  sql += this.alias +'.'+ attr +' IN ('
+                  sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' IN ('
                   
                   value.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','
@@ -247,7 +241,7 @@ class DataCriteria {
             {
                assert operand == 'between'
                
-               sql += this.alias +'.'+ attr +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
+               sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
             }
             else if (criteriaValueType == 'snomed_exp')
             {
@@ -274,7 +268,7 @@ class DataCriteria {
                // be prepared for communication errors to avoid generating invalid HQL
                if (conceptids.size() > 0)
                {
-                  sql += this.alias +'.'+ attr +' IN ('
+                  sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' IN ('
                   
                   conceptids.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','
@@ -283,15 +277,13 @@ class DataCriteria {
                }
                else
                {
-                  sql += ' 1=1 ' // just a placeholder to have a valid query
+                  sql += ' 1=1 ' // just a placeholder to have a valid query, TODO: this should be an empty list
                }
             }
          
             sql += ' AND '
          }
       }
-      
-      //println sql
       
       sql = sql[0..-6] // removes the last AND
       

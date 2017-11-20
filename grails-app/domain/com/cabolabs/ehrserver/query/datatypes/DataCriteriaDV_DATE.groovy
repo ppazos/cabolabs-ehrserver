@@ -152,7 +152,7 @@ class DataCriteriaDV_DATE extends DataCriteria {
             criteria_value = now - value[0]."$time_attr"
          }
          
-         return criteria_value.asSQLValue(operand) +' '+ sqlOperand(operand) +' '+ this.alias +'.value '
+         return (this.negation ? 'NOT ' : '') + criteria_value.asSQLValue(operand) +' '+ sqlOperand(operand) +' '+ this.alias +'.value '
       }
       else if (criteriaValueType == 'range')
       {
@@ -165,7 +165,7 @@ class DataCriteriaDV_DATE extends DataCriteria {
             criteria_value_high = now - value[1]."$time_attr" // high is really the lower value since value[1] is greater but is -
          }
          
-         return this.alias +'.value BETWEEN '+ criteria_value_high.asSQLValue(operand) +' AND '+ criteria_value_low.asSQLValue(operand)
+         return this.alias +'.value '+ (this.negation ? 'NOT ' : '') + 'BETWEEN '+ criteria_value_high.asSQLValue(operand) +' AND '+ criteria_value_low.asSQLValue(operand)
       }
    }
 }
