@@ -1,0 +1,2 @@
+call h:\putty\pscp -i "C:\Documents and Settings\pab\.ssh\default.ppk" "C:\Documents and Settings\pab\My Documents\GitHub\cabolabs-ehrserver\opts\*.opt" 57aec6e27628e115b7000163@ehrserver-cabolabs2.rhcloud.com:jbossews/opts
+call h:\putty\pscp -i "C:\Documents and Settings\pab\.ssh\default.ppk" "C:\Documents and Settings\pab\My Documents\GitHub\cabolabs-ehrserver\xsd\*.*" 57aec6e27628e115b7000163@ehrserver-cabolabs2.rhcloud.com:jbossews/xsd
