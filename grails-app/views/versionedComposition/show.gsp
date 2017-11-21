@@ -95,12 +95,13 @@
         <div class="table-responsive" id="versions">
           <table class="table table-striped table-bordered table-hover">
             <tr>
-		        <th><g:message code="version.attr.uid" /></th>
-		        <th><g:message code="composition.attr.startTime" /></th>
-		        <th><g:message code="composition.attr.archetypeId" /></th>
-		        <th><g:message code="audit.attr.changeType" /></th>
-		        <th></th>
-		      </tr>
+              <th><g:message code="version.attr.uid" /></th>
+              <th><g:message code="composition.attr.startTime" /></th>
+              <th><g:message code="composition.attr.templateId" /></th>
+              <th><g:message code="composition.attr.archetypeId" /></th>
+              <th><g:message code="audit.attr.changeType" /></th>
+              <th></th>
+            </tr>
             <g:each in="${versionedCompositionInstance.allVersions}" var="version">
               <%-- ${version.uid}<br/> --%><!-- TODO: version row template + diff -->
               <g:render template="../version/versionRow" model="[version:version]"/>

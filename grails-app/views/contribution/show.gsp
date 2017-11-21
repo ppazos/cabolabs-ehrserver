@@ -62,15 +62,15 @@
   <body>
     <div class="row">
       <div class="col-lg-12">
-	     <h1><g:message code="contribution.show.title" /></h1>
+       <h1><g:message code="contribution.show.title" /></h1>
       </div>
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
       
-	     <g:if test="${flash.message}">
-	       <div class="alert alert-info" role="alert">${flash.message}</div>
-	     </g:if>
+       <g:if test="${flash.message}">
+         <div class="alert alert-info" role="alert">${flash.message}</div>
+       </g:if>
          
         <table class="table">
           <tbody>
@@ -104,8 +104,8 @@
           </tbody>
         </table>
         
-	     <h2><g:message code="contribution.versions.title" /></h2>
-	     
+       <h2><g:message code="contribution.versions.title" /></h2>
+       
         <table class="table">
           <tbody>
             <tr>
@@ -115,19 +115,20 @@
           </tbody>
         </table>
 
-	     <g:if test="${contributionInstance?.versions}">
+       <g:if test="${contributionInstance?.versions}">
            <div class="table-responsive" id="versions">
              <table class="table table-striped table-bordered table-hover">
                <tr>
-			        <th><g:message code="version.attr.uid" /></th>
-			        <th><g:message code="composition.attr.startTime" /></th>
-			        <th><g:message code="composition.attr.archetypeId" /></th>
-			        <th><g:message code="audit.attr.changeType" /></th>
+                 <th><g:message code="version.attr.uid" /></th>
+                 <th><g:message code="composition.attr.startTime" /></th>
+                 <th><g:message code="composition.attr.templateId" /></th>
+                 <th><g:message code="composition.attr.archetypeId" /></th>
+                 <th><g:message code="audit.attr.changeType" /></th>
                  <th></th>
                </tr>
                <g:each in="${contributionInstance.versions}" var="version">
-				     <g:render template="../version/versionRow" model="[version:version]"/>
-				   </g:each>
+                 <g:render template="../version/versionRow" model="[version:version]"/>
+               </g:each>
              </table>
            </div>
         </g:if>
