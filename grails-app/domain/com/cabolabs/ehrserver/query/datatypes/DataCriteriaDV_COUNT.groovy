@@ -31,6 +31,8 @@ class DataCriteriaDV_COUNT extends DataCriteria {
    // Comparison operands
    String magnitudeOperand
    
+   boolean magnitudeNegation = false
+   
    DataCriteriaDV_COUNT()
    {
       rmTypeName = 'DV_COUNT'

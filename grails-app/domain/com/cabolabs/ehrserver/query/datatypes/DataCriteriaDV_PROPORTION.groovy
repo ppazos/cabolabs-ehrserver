@@ -36,6 +36,9 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
     String denominatorOperand
     String typeOperand
 
+    boolean numeratorNegation = false
+    boolean denominatorNegation = false
+    boolean typeNegation = false
    
     DataCriteriaDV_PROPORTION()
     {

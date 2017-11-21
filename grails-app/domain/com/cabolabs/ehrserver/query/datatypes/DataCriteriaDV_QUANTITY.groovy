@@ -34,6 +34,9 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
    String magnitudeOperand
    String unitsOperand
    
+   boolean magnitudeNegation = false
+   boolean unitsNegation = false
+   
    DataCriteriaDV_QUANTITY()
    {
       rmTypeName = 'DV_QUANTITY'

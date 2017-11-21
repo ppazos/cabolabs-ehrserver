@@ -39,6 +39,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
    String terminologyIdOperand
    String valueOperand
    
+   boolean codeNegation = false
+   boolean terminologyIdNegation = false
+   boolean valueNegation = false
+   
    DataCriteriaDV_CODED_TEXT()
    {
       rmTypeName = 'DV_CODED_TEXT'

@@ -34,6 +34,8 @@ class DataCriteriaDV_DURATION extends DataCriteria {
    // Comparison operands
    String magnitudeOperand
 
+   boolean magnitudeNegation = false
+   
    
    DataCriteriaDV_DURATION()
    {

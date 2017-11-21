@@ -32,6 +32,10 @@ class DataCriteriaDV_PARSABLE extends DataCriteria {
    List formalismValue
    String formalismOperand
    
+   boolean valueNegation = false
+   boolean formalismNegation = false
+   
+   
    DataCriteriaDV_PARSABLE()
    {
       rmTypeName = 'DV_PARSABLE'

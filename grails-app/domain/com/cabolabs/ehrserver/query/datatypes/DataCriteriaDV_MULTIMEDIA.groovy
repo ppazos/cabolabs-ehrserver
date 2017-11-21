@@ -35,6 +35,10 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
    String alternateTextOperand
    String sizeOperand
    
+   boolean mediaTypeNegation = false
+   boolean alternateTextNegation = false
+   boolean sizeNegation = false
+
    DataCriteriaDV_MULTIMEDIA()
    {
       rmTypeName = 'DV_MULTIMEDIA'

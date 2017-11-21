@@ -31,6 +31,8 @@ class DataCriteriaDV_TEXT extends DataCriteria {
 
    // Comparison operands
    String valueOperand
+   
+   boolean valueNegation = false
 
    static hasMany = [valueValue: String]
    

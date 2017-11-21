@@ -37,6 +37,10 @@ class DataCriteriaDV_DATE extends DataCriteria {
    List age_in_monthsValue
    String age_in_monthsOperand
    
+   boolean valueNegation = false
+   boolean age_in_yearsNegation = false
+   boolean age_in_monthsNegation = false
+   
    DataCriteriaDV_DATE()
    {
       rmTypeName = 'DV_DATE'
@@ -117,13 +121,14 @@ class DataCriteriaDV_DATE extends DataCriteria {
    // copied from DataCriteriaDV_DATE_TIME
    String evaluateFunction(String function)
    {
-      def time_attr, value, operand
+      def time_attr, value, operand, negation
       if (function == 'age_in_years')
       {
          time_attr = 'years'
          
          value = age_in_yearsValue
          operand = age_in_yearsOperand
+         negation = age_in_yearsNegation
       }
       else if (function == 'age_in_months')
       {
@@ -131,6 +136,7 @@ class DataCriteriaDV_DATE extends DataCriteria {
          
          value = age_in_monthsValue
          operand = age_in_monthsOperand
+         negation = age_in_monthsNegation
       }
       else
       {
@@ -152,7 +158,7 @@ class DataCriteriaDV_DATE extends DataCriteria {
             criteria_value = now - value[0]."$time_attr"
          }
          
-         return (this.negation ? 'NOT ' : '') + criteria_value.asSQLValue(operand) +' '+ sqlOperand(operand) +' '+ this.alias +'.value '
+         return (negation ? 'NOT ' : '') + criteria_value.asSQLValue(operand) +' '+ sqlOperand(operand) +' '+ this.alias +'.value '
       }
       else if (criteriaValueType == 'range')
       {
@@ -165,7 +171,7 @@ class DataCriteriaDV_DATE extends DataCriteria {
             criteria_value_high = now - value[1]."$time_attr" // high is really the lower value since value[1] is greater but is -
          }
          
-         return this.alias +'.value '+ (this.negation ? 'NOT ' : '') + 'BETWEEN '+ criteria_value_high.asSQLValue(operand) +' AND '+ criteria_value_low.asSQLValue(operand)
+         return this.alias +'.value '+ (negation ? 'NOT ' : '') + 'BETWEEN '+ criteria_value_high.asSQLValue(operand) +' AND '+ criteria_value_low.asSQLValue(operand)
       }
    }
 }

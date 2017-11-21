@@ -28,7 +28,8 @@ class DataCriteriaString extends DataCriteria {
 
    String valueValue
    String valueOperand
-
+   boolean valueNegation = false
+   
    DataCriteriaString()
    {
       rmTypeName = 'String'

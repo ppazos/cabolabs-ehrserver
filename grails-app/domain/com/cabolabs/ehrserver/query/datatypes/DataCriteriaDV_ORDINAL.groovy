@@ -38,6 +38,11 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
     String symbol_codeOperand
     String symbol_terminology_idOperand
     
+    boolean valueNegation = false
+    boolean symbol_valueNegation = false
+    boolean symbol_codeNegation = false
+    boolean symbol_terminology_idNegation = false
+    
     DataCriteriaDV_ORDINAL()
     {
        rmTypeName = 'DV_ORDINAL'

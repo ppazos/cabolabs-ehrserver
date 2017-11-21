@@ -258,7 +258,7 @@
           
           this.conditions[attr+'Operand'] = operand;
           
-          this.conditions['negation'] = negation;
+          this.conditions[attr+'Negation'] = negation;
         };
       };
 

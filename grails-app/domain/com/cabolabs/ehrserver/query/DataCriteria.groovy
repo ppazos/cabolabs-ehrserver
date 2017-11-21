@@ -55,9 +55,6 @@ class DataCriteria {
     *   values = [code::terminology, code::terminology, ...] se puede usar para saber si un dato esta dentro de una lista.
     */
    
-   // TODO: add negation to UI 
-   boolean negation = false // Negation = true agrega un NOT al inicio de la condicion.
-   
    String rmTypeName
    
    // TODO: poner name para mostrar en la definicion
@@ -182,8 +179,9 @@ class DataCriteria {
       def operand
       def operandField
       def valueField
+      def negationField
       def criteriaValueType // value, list, range ...
-      def value, attr
+      def value, attr, negation
       
       attributes_or_functions.each { attr_or_function ->
       
@@ -202,6 +200,8 @@ class DataCriteria {
             operand = this."$operandField"
             valueField = attr+'Value'
             value = this."$valueField" // can be a list
+            negationField = attr+'Negation'
+            negation = this."$negationField"
             
             criteriaValueType = criteria_spec[attr][operand]
             
@@ -209,9 +209,9 @@ class DataCriteria {
             if (criteriaValueType == 'value')
             {
                if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
-                  sql += (this.negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
+                  sql += (negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value[0].asSQLValue(operand)
                else
-                  sql += (this.negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
+                  sql += (negation ? 'NOT ' : '') + this.alias +'.'+ attr +' '+ sqlOperand(operand) +' '+ value.asSQLValue(operand)
             }
             else if (criteriaValueType == 'list')
             {
@@ -219,7 +219,7 @@ class DataCriteria {
                
                if (operand == 'contains_like')
                {
-                  sql += (this.negation ? 'NOT ' : '')
+                  sql += (negation ? 'NOT ' : '')
                   sql += '('
                   
                   value.each { singleValue ->
@@ -229,7 +229,7 @@ class DataCriteria {
                }
                else
                {
-                  sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' IN ('
+                  sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' IN ('
                   
                   value.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','
@@ -241,7 +241,7 @@ class DataCriteria {
             {
                assert operand == 'between'
                
-               sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
+               sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
             }
             else if (criteriaValueType == 'snomed_exp')
             {
@@ -268,7 +268,7 @@ class DataCriteria {
                // be prepared for communication errors to avoid generating invalid HQL
                if (conceptids.size() > 0)
                {
-                  sql += this.alias +'.'+ attr + (this.negation ? ' NOT' : '') +' IN ('
+                  sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' IN ('
                   
                   conceptids.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','

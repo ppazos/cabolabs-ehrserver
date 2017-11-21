@@ -28,6 +28,7 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
 
    String locatable_ref_pathValue // path to the instruction inside a version, from compo root
    String locatable_ref_pathOperand
+   boolean locatable_ref_pathNegation = false
    
    // For LOCATABLE_REF the querying will be customized because LREF.value depends on instances, so is a param, not part of the query definition.
 
