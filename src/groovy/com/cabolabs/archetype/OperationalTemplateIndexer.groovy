@@ -217,7 +217,7 @@ class OperationalTemplateIndexer {
     * 
     * @return
     */
-   def setupBaseOpts()
+   def setupBaseOpts(Organization org)
    {
       def opts_path = config.opt_repo
       def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
@@ -227,13 +227,22 @@ class OperationalTemplateIndexer {
       if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
       if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
       
+      def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
+      
+      // repo namespace exists for org?
+      if (!opt_repo_org.exists())
+      {
+         // create it
+         opt_repo_org.mkdir()
+      }
+      
       // Only copy the base opts if the opt repo is empty, to avoid copying again every time the app starts.
-      if (new File(opts_path).listFiles().count { it.name ==~ /.*\.opt/ } == 0)
+      if (opt_repo_org.listFiles().count { it.name ==~ /.*\.opt/ } == 0)
       {
          def dest
          base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
             
-            dest = new File(opts_path + System.getProperty("file.separator") + String.uuid() + '.opt')
+            dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
             java.nio.file.Files.copy(file.toPath(), dest.toPath())
          }
       }

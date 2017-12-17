@@ -65,8 +65,9 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
         println "Indexing Operational Templates"
         
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-        ti.setupBaseOpts()
-        ti.indexAll( Organization.findByUid(orgUid) )
+        def org = Organization.findByUid(orgUid)
+        ti.setupBaseOpts( org )
+        ti.indexAll( org )
       }
      
       // OPT loading

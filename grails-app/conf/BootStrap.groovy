@@ -701,8 +701,9 @@ class BootStrap {
          println "Indexing Operational Templates"
         
          def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         ti.setupBaseOpts()
-         ti.indexAll( Organization.get(1) )
+         def org = Organization.get(1)
+         ti.setupBaseOpts( org )
+         ti.indexAll( org )
       }
      
       // TODO: because initially there are no shares, the indexAll 
