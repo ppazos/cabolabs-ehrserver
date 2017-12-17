@@ -30,6 +30,7 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
+import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.converters.*
@@ -404,13 +405,20 @@ class SecurityFilters {
                      setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
                   }
                   session.organization = org // to show the org name in the ui
+                  
+                  // Load OPTS if not loaded for the current org
+                  def optMan = OptManager.getInstance()
+                  optMan.loadAll(org.uid)
                }
             }
             
          }
          after = { Map model ->
+            // this is AFTER: login authfail null when the login failed.
+            //println "AFTER: ${controllerName} ${actionName} ${model}"
          }
          afterView = { Exception e ->
+            //println "AFTER VIEW: ${controllerName} ${actionName}"
          }
       }
       
