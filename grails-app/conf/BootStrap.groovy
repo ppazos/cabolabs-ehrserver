@@ -715,6 +715,8 @@ class BootStrap {
       // This should be done in the login, after we know the org of the current user
       //optMan.unloadAll()
       //optMan.loadAll()
+      
+      // TODO: Load only for the default organization from base OPTs
    }
    
    def sampleFolderTemplates()
