@@ -24,6 +24,7 @@ package com.cabolabs.ehrserver.query.datatypes
 
 import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.openehr.opt.manager.OptManager
+import org.springframework.web.context.request.RequestContextHolder
 
 class DataCriteriaDV_QUANTITY extends DataCriteria {
 
@@ -92,8 +93,11 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
       println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
       println "-------------"
 */
+      def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
+         
+      println "namespace ${namespace}"
       
-      optMan.getNode(archetypeId, path)?.xmlNode.list.each {
+      optMan.getNode(archetypeId, path, namespace)?.xmlNode.list.each {
         u = it.units.text() 
         units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
       }

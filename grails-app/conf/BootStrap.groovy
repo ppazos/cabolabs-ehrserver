@@ -709,9 +709,12 @@ class BootStrap {
       //       wont share the OPTs with the org, so we do it manually here.
      
       // OPT loading
+      // This is done to set the OPT repo internally, further uses will not pass the repo path.
       def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-      optMan.unloadAll()
-      optMan.loadAll()
+      
+      // This should be done in the login, after we know the org of the current user
+      //optMan.unloadAll()
+      //optMan.loadAll()
    }
    
    def sampleFolderTemplates()

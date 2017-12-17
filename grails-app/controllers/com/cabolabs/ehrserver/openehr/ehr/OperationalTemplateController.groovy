@@ -61,10 +61,10 @@ class OperationalTemplateController {
       
       // load opt in manager cache
       def optMan = OptManager.getInstance()
-      optMan.unloadAll()
-      optMan.loadAll()
+      optMan.unloadAll(session.organization.uid)
+      optMan.loadAll(session.organization.uid)
       
-      println "loaded opts: " + optMan.getLoadedOpts()
+      println "loaded opts: " + optMan.getLoadedOpts(session.organization.uid)
       
       redirect(action: "list")
    }
@@ -211,8 +211,8 @@ class OperationalTemplateController {
          // load opt in manager cache
          // TODO: just load the newly created ones
          def optMan = OptManager.getInstance()
-         optMan.unloadAll()
-         optMan.loadAll()
+         optMan.unloadAll(session.organization.uid)
+         optMan.loadAll(session.organization.uid)
          
          redirect action:'show', params:[uid:opt.uid]
       }
