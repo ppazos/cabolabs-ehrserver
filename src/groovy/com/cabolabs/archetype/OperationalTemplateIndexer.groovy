@@ -290,11 +290,14 @@ class OperationalTemplateIndexer {
    def indexAll(Organization org)
    {
       def path = config.opt_repo
-      def repo = new File( path )
       
-      if (!repo.exists()) throw new Exception("No existe "+ path)
-      if (!repo.canRead()) throw new Exception("No se puede leer "+ path)
-      if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path)
+      def repo = new File(path.withTrailSeparator() + org.uid)
+      
+      //def repo = new File( path )
+      
+      if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
+      if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
+      if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
       
       // The first indexAll should also share because there are no OPT, there are no shares
       def shareWithOrg = false // we create the shares here
