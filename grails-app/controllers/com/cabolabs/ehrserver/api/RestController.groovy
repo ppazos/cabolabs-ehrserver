@@ -2059,7 +2059,7 @@ class RestController {
       
       
       def opt = shares[0].opt
-      def src = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt'
+      def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
       File opt_file = new File( src )
       def opt_xml = opt_file.getText()
       
