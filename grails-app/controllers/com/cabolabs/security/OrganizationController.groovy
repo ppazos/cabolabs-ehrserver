@@ -105,16 +105,20 @@ class OrganizationController {
          notFound()
          return
       }
-      log.info "antes de has errors"
+      
       if (organizationInstance.hasErrors())
       {
-         log.info "has errors"
          render view:'create', model:[organizationInstance:organizationInstance]
          return
       }
 
-      log.info "luego de has errors"
       organizationInstance.save flush:true
+      
+      
+      // create namespace repo for org OPTs
+      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + organizationInstance.uid)
+      opt_repo_org.mkdir()
+      
       
       def user = springSecurityService.loadCurrentUser()
       
