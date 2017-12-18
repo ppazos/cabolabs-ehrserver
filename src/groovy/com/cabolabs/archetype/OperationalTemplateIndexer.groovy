@@ -195,7 +195,8 @@ class OperationalTemplateIndexer {
          language: getTemplateLanguage(template),
          uid: uid,
          archetypeId: archetypeId,
-         archetypeConcept: archetypeConcept
+         archetypeConcept: archetypeConcept,
+         organizationUid: org.uid
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
       
@@ -442,7 +443,8 @@ class OperationalTemplateIndexer {
             language: language,
             uid: uid,
             archetypeId: archetypeId,
-            archetypeConcept: archetypeConcept
+            archetypeConcept: archetypeConcept,
+            organizationUid: org.uid
          )
          
          if (file_uid) this.templateIndex.fileUid = file_uid

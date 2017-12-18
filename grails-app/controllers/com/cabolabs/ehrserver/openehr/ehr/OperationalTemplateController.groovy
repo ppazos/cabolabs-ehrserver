@@ -101,7 +101,6 @@ class OperationalTemplateController {
          def isr = new InputStreamReader(bomInputStream)
          def br = new BufferedReader(isr)
          def xml = br.text // getText from Groovy
-         //def xml = new String( f.getBytes() )
          
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))
@@ -110,13 +109,10 @@ class OperationalTemplateController {
            return [errors: errors]
          }
          
-         // Will index the opt nodes, and help deleting existing ones when updating
-         def indexer = new OperationalTemplateIndexer()
          
          // Parse to get the template id
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
-         
          
          // check existing by OPT uid or templateId, shared with an org of the current user
          def opt_uid = template.uid.value.text()
@@ -148,6 +144,10 @@ class OperationalTemplateController {
          // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
          // 3. there are many shares => can't overwrite, should remove the shares first
          
+         // Will index the opt nodes, and help deleting existing ones when updating
+         def indexer = new OperationalTemplateIndexer()
+         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+         
          if (shares.size() == 1)
          {
             //println "shares size is 1"
@@ -161,7 +161,7 @@ class OperationalTemplateController {
             if (overwrite) // OPT exists and the user wants to overwrite
             {
                def existing_opt = shares[0].opt
-               def existing_file = new File(config.opt_repo.withTrailSeparator() + existing_opt.fileUid + '.opt')
+               def existing_file = new File(opt_repo_org_path + existing_opt.fileUid + '.opt')
                existing_file.delete()
                
                // delete all the indexes of the opt
@@ -187,7 +187,7 @@ class OperationalTemplateController {
          def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
          
          // Prepare file
-         def destination = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt' //f.getOriginalFilename()
+         def destination = opt_repo_org_path + opt.fileUid + '.opt'
          File fileDest = new File( destination )
          fileDest << xml
          
@@ -209,7 +209,7 @@ class OperationalTemplateController {
 
          
          // load opt in manager cache
-         // TODO: just load the newly created ones
+         // TODO: just load the newly created/updated one
          def optMan = OptManager.getInstance()
          optMan.unloadAll(session.organization.uid)
          optMan.loadAll(session.organization.uid)
@@ -228,7 +228,7 @@ class OperationalTemplateController {
          return
       }
       
-      def opt_file = new File(config.opt_repo.withTrailSeparator() + opt.fileUid +".opt")
+      def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
       
       [opt_xml: opt_file.getText(), opt: opt]
    }

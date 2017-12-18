@@ -31,6 +31,8 @@ class OperationalTemplateIndex {
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
    
+   String organizationUid  // OPT multitenancy
+   
    String fileUid = java.util.UUID.randomUUID() as String
    
    // true => shared with all the organizations
