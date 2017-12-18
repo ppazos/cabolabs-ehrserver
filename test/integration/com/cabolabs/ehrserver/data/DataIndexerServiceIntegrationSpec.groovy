@@ -57,6 +57,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       createOrganization()
       createEHR()
       
+      def org = Organization.findByUid(orgUid)
       
       // Load test OPTs
       // Always regenerate indexes in deploy
@@ -65,7 +66,6 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
         println "Indexing Operational Templates"
         
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-        def org = Organization.findByUid(orgUid)
         ti.setupBaseOpts( org )
         ti.indexAll( org )
       }
