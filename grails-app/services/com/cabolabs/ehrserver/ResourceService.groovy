@@ -82,6 +82,7 @@ class ResourceService {
     * @param organization
     * @return
     */
+    /*
    def shareOpt(OperationalTemplateIndex opt, Organization organization)
    {
       if (OperationalTemplateIndexShare.countByOptAndOrganization(opt, organization) == 0)
@@ -90,12 +91,14 @@ class ResourceService {
          share.save(failOnError: true)
       }
    }
+   */
    
    /**
     * Clean all the shares of an opt.
     * @param opt
     * @return
     */
+    /*
    def cleanSharesOpt(OperationalTemplateIndex opt)
    {
       def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
@@ -103,13 +106,14 @@ class ResourceService {
          share?.delete(failOnError: true)
       }
    }
-   
+   */
    /**
     * Cleans all the shares of an opt, except for one organization.
     * @param opt
     * @param organization
     * @return
     */
+    /*
    def cleanSharesOptBut(OperationalTemplateIndex opt, Organization organization)
    {
       def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
@@ -118,4 +122,5 @@ class ResourceService {
             share?.delete(failOnError: true)
       }
    }
+   */
 }

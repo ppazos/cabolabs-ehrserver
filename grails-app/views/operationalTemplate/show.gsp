@@ -46,6 +46,7 @@
           </tbody>
         </table>
         
+        <%--
         <g:if test="${!opt.isPublic}">
           <div class="btn-toolbar" role="toolbar">
             <fieldset class="buttons">
@@ -53,6 +54,7 @@
             </fieldset>
           </div>
         </g:if>
+        --%>
       </div>
     </div>
 

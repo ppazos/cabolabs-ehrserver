@@ -728,6 +728,7 @@ class SecurityFilters {
          }
       }
       
+/*
       opt_share(controller:'resource', action:'saveSharesOpt') {
          before = {
             
@@ -820,7 +821,7 @@ class SecurityFilters {
             return true
          }
       } // opt_share
-
+*/
 
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {

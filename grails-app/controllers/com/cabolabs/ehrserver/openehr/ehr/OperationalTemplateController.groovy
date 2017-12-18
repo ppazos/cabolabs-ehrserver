@@ -28,7 +28,6 @@ import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 
 class OperationalTemplateController {
 
@@ -125,21 +124,23 @@ class OperationalTemplateController {
             return [errors: errors]
          }
          
-         def user = springSecurityService.currentUser
-         def orgs = user.organizations
-         def c = OperationalTemplateIndexShare.createCriteria()
-         def shares = c.list {
+         // similar to OperationalTemplateIndexer.templateAlreadyExistsForOrg
+         
+         def c = OperationalTemplateIndex.createCriteria()
+         def opts = c.list {
             // exists an OPT with uid or template id?
-            opt {
-               or {
-                  eq('uid', opt_uid)
-                  eq('templateId', opt_template_id)
-               }
+            or {
+               eq('uid', opt_uid)
+               eq('templateId', opt_template_id)
             }
-            // only for the current user orgs
-            'in'('organization', orgs)
+            eq('organizationUid', session.organization.uid)
          }
          
+         if (opts.size() > 0)
+         {
+            // TODO: start the new versioning process for OPTs
+         }
+
          // 1. there is one share, with the session org => overwrite if specified
          // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
          // 3. there are many shares => can't overwrite, should remove the shares first
@@ -147,6 +148,10 @@ class OperationalTemplateController {
          // Will index the opt nodes, and help deleting existing ones when updating
          def indexer = new OperationalTemplateIndexer()
          def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+         
+         
+/* TODO: check uniqueness should be done in the org's OPT repo, not using shares,
+         and we need to do internal versioning instead of just overwrite.
          
          if (shares.size() == 1)
          {
@@ -183,6 +188,7 @@ class OperationalTemplateController {
          {
             //println "shares size is 0"
          }
+*/
          
          def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
          

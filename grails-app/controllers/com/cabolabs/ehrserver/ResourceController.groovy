@@ -68,6 +68,7 @@ class ResourceController {
       redirect action:'shareQuery', params:[uid:query.uid]
    }
    
+   /*
    def shareOpt(String uid)
    {
       def opt = OperationalTemplateIndex.findByUid(uid)
@@ -100,4 +101,5 @@ class ResourceController {
       flash.message = "Template shares were updated correctly"
       redirect action:'shareOpt', params:[uid:opt.uid]
    }
+   */
 }

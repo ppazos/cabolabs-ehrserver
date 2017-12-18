@@ -136,6 +136,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          assert shares2.size() == 0
    }
    
+   /*
    void "shareOpt"()
    {
       when:
@@ -163,4 +164,5 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          assert shares1.size() == 1
          assert shares2.size() == 0
    }
+   */
 }

@@ -11,8 +11,6 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.util.Holders
 import groovy.io.FileType
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
-
 
 import com.cabolabs.security.Organization
 import java.util.logging.Logger
@@ -141,9 +139,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          println "compoIndex.templateId "+ compoIndex.templateId
          
-         // OperationalTemplateIndexer should generated the shares on bootstrap from indexAll
-         //println "shares "+ OperationalTemplateIndexShare.list()
-         
+
          dataIndexerService.generateIndexes( compoIndex )
          assert CompositionIndex.countByDataIndexed(true) == 1 // the compo is marked as indexed
           

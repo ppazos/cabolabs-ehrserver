@@ -52,20 +52,8 @@ class OperationalTemplateIndex {
    
    static namedQueries = {
       forOrg { org ->
-         
-         def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
-         
-         if (shares)
-         {
-            or {
-               eq('isPublic', true)
-               'in'('id', shares.opt.id)
-            }
-         }
-         else
-         {
-            eq('isPublic', true)
-         }
+
+         eq('organizationUid', org.uid)
       }
       
       likeConcept { concept ->

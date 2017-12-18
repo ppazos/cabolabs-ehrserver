@@ -200,11 +200,12 @@ class OperationalTemplateIndexer {
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
       
-      
+      /*
       // Create share
       // FIXME: use resourceService to do the share, but we need to refactor this class to a service...
       def share = new OperationalTemplateIndexShare(opt: templateIndex, organization: org)
       share.save(failOnError:true, flush:true)
+      */
 
       return templateIndex
    }
@@ -307,20 +308,21 @@ class OperationalTemplateIndexer {
       //println "shareWithOrg "+ shareWithOrg
       
       // remove indexes associated with the org, the create new ones
-      def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
-      def opt, archNodes, other_shares
-      def shares_to_delete = []
+      //def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
+      //def shares_to_delete = []
       //def share_with_orgs = [org] // share/reshare OPTs with these orgs
       
-      def reshares = [:] // templateId > [org]
+      //def reshares = [:] // templateId > [org]
 
+      def opts = OperationalTemplateIndex.forOrg(org).list()
+      
       // the first time OPTs are indexed, it wont access this loop because there are no shares,
       // so the OPT will be shared with the default org.
-      shares.each { share ->
+      opts.each { opt ->
       
+         /*
          opt = share.opt
-         
-         //share.opt = null
+
          other_shares = OperationalTemplateIndexShare.findAllByOpt(opt) // includes current share
          
          other_shares.each { reshare ->
@@ -331,6 +333,7 @@ class OperationalTemplateIndexer {
          //share_with_orgs = other_shares.organization
          
          other_shares*.delete(flush:true)
+         */
          
          deleteOptReferences(opt)
          
@@ -347,15 +350,6 @@ class OperationalTemplateIndexer {
          {
             UUID uuid = UUID.fromString( file.name - '.opt' )
             opt = index(file, org, shareWithOrg)
-            
-            /*
-            share_with_orgs.each { share_with_org ->
-            
-               share = new OperationalTemplateIndexShare(opt: opt, organization: share_with_org)
-               share.save(failOnError:true, flush:true)
-            }
-            */
-            
          }
          catch (IllegalArgumentException exception)
          {
@@ -365,6 +359,7 @@ class OperationalTemplateIndexer {
       
       // initial state, for bootstrap
       // just share the base OPTs wit hthe sample orgs
+      /*
       if (!shares)
       {
          def opts = OperationalTemplateIndex.list()
@@ -382,6 +377,7 @@ class OperationalTemplateIndexer {
             share.save(failOnError:true, flush:true)
          }
       }
+      */
    }
    
    private boolean templateAlreadyExistsForOrg(GPathResult template, Organization org)
@@ -391,16 +387,15 @@ class OperationalTemplateIndexer {
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
       
-      def c = OperationalTemplateIndexShare.createCriteria()
-      def shares = c.list {
+      // FIXME: this will change with the internal versioning and identification.
+      def c = OperationalTemplateIndex.createCriteria()
+      def opts = c.list {
          // exists an OPT with uid or template id?
-         opt {
-            or {
-               eq('uid', opt_uid)
-               eq('templateId', opt_template_id)
-            }
+         or {
+            eq('uid', opt_uid)
+            eq('templateId', opt_template_id)
          }
-         eq('organization', org)
+         eq('organizationUid', org.uid)
       }
       
       // 1. there is one share, with the session org => overwrite if specified
@@ -452,6 +447,7 @@ class OperationalTemplateIndexer {
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
          
+         /*
          if (shareWithOrg)
          {
             // Create share
@@ -459,6 +455,7 @@ class OperationalTemplateIndexer {
             def share = new OperationalTemplateIndexShare(opt: this.templateIndex, organization: org)
             share.save(failOnError:true, flush:true)
          }
+         */
       }
       
       indexObject(this.template.definition, '/', '/', this.template.definition, false)
