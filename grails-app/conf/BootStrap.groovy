@@ -695,29 +695,25 @@ class BootStrap {
    
    def generateTemplateIndexes()
    {
+      // for the default organization
+      def org = Organization.get(1)
+      
       // Always regenerate indexes in deploy
       if (OperationalTemplateIndex.count() == 0)
       {
          println "Indexing Operational Templates"
         
          def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         def org = Organization.get(1)
+         
          ti.setupBaseOpts( org )
-         ti.indexAll( org )
+         ti.indexAll( org ) // also shares with all existing orgs if there are no shares
       }
-     
-      // TODO: because initially there are no shares, the indexAll 
-      //       wont share the OPTs with the org, so we do it manually here.
-     
+
       // OPT loading
       // This is done to set the OPT repo internally, further uses will not pass the repo path.
       def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
       
-      // This should be done in the login, after we know the org of the current user
-      //optMan.unloadAll()
-      //optMan.loadAll()
-      
-      // TODO: Load only for the default organization from base OPTs
+      // OPTs are loaded into the manager in the login, after we know the org of the current user
    }
    
    def sampleFolderTemplates()
