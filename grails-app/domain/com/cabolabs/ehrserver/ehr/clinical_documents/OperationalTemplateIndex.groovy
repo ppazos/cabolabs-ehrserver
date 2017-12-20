@@ -34,6 +34,11 @@ class OperationalTemplateIndex {
    
    String organizationUid  // OPT multitenancy
    
+   // internal versioning #776
+   String setId = java.util.UUID.randomUUID() as String
+   int versionNumber = 1
+   boolean lastVersion = true // to simplify queries
+   
    String fileUid = java.util.UUID.randomUUID() as String
    
    // true => shared with all the organizations
@@ -42,7 +47,7 @@ class OperationalTemplateIndex {
    Date dateCreated
    Date lastUpdated
    
-   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem, 
+   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
    
    static transients = ['lang']
@@ -61,6 +66,13 @@ class OperationalTemplateIndex {
          if (concept)
          {
             like('concept', '%'+concept+'%')
+         }
+      }
+      
+      matchInternalUidOrTemplateId { externalUid, templateId ->
+         or {
+            eq('externalUid', externalUid)
+            eq('templateId', templateId)
          }
       }
    }
