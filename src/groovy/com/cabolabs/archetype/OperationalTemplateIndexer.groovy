@@ -193,7 +193,7 @@ class OperationalTemplateIndexer {
          templateId: templateId,
          concept: concept,
          language: getTemplateLanguage(template),
-         uid: uid,
+         external_uid: uid,
          archetypeId: archetypeId,
          archetypeConcept: archetypeConcept,
          organizationUid: org.uid
@@ -436,7 +436,7 @@ class OperationalTemplateIndexer {
             templateId: templateId,
             concept: concept,
             language: language,
-            uid: uid,
+            external_uid: uid,
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
             organizationUid: org.uid

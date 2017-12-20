@@ -63,7 +63,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          templateId: 'simple_encounter_en.v1', 
          concept: 'simple_encounter_en.v1',
          language: 'ISO_639-1::en',
-         uid: optUid,
+         external_uid: optUid,
          archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1',
          archetypeConcept: 'encounter',
          isPublic: false,

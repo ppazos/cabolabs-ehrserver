@@ -27,7 +27,8 @@ class OperationalTemplateIndex {
    String templateId
    String concept          // Concept name of the OPT
    String language         // en formato ISO_639-1::en
-   String uid
+   String uid = java.util.UUID.randomUUID() as String
+   Strint external_uid     // from the OPT file
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
    
