@@ -130,7 +130,7 @@ class OperationalTemplateController {
          def opts = c.list {
             // exists an OPT with uid or template id?
             or {
-               eq('uid', opt_uid)
+               eq('externalUid', opt_uid)
                eq('templateId', opt_template_id)
             }
             eq('organizationUid', session.organization.uid)

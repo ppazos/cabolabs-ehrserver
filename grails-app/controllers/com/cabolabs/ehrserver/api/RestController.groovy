@@ -2021,7 +2021,7 @@ class RestController {
    }
    
    @SecuredStateless
-   def getTemplate(String uid, String format)
+   def getTemplate(String uid, String externalUid, String format)
    {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, request.securityStatelessMap.extradata.org_uid)
       

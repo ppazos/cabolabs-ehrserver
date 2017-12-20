@@ -63,7 +63,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          templateId: 'simple_encounter_en.v1', 
          concept: 'simple_encounter_en.v1',
          language: 'ISO_639-1::en',
-         external_uid: optUid,
+         externalUid: optUid,
          archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1',
          archetypeConcept: 'encounter',
          isPublic: false,
@@ -104,7 +104,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       org.delete()
 
       
-      def opt = OperationalTemplateIndex.findByUid(optUid)
+      def opt = OperationalTemplateIndex.findByExternalUid(optUid)
       opt.delete()
    }
 

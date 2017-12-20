@@ -193,7 +193,7 @@ class OperationalTemplateIndexer {
          templateId: templateId,
          concept: concept,
          language: getTemplateLanguage(template),
-         external_uid: uid,
+         externalUid: uid,
          archetypeId: archetypeId,
          archetypeConcept: archetypeConcept,
          organizationUid: org.uid
@@ -295,8 +295,6 @@ class OperationalTemplateIndexer {
       
       def repo = new File(path.withTrailSeparator() + org.uid)
       
-      //def repo = new File( path )
-      
       if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
       if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
       if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
@@ -342,7 +340,7 @@ class OperationalTemplateIndexer {
       }
 
       // TODO: the new template should be shared with the same orgs...
-      def share
+      def opt
       repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
          
          // Load only if the name is an UUID, it is the OperationalTemplateIndex.fileUid
@@ -392,7 +390,7 @@ class OperationalTemplateIndexer {
       def opts = c.list {
          // exists an OPT with uid or template id?
          or {
-            eq('uid', opt_uid)
+            eq('externalUid', opt_uid)
             eq('templateId', opt_template_id)
          }
          eq('organizationUid', org.uid)
@@ -402,7 +400,7 @@ class OperationalTemplateIndexer {
       // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
       // 3. there are many shares => can't overwrite, should remove the shares first
       
-      if (shares.size() != 0)
+      if (opts.size() != 0)
       {
          return true
       }
@@ -436,7 +434,7 @@ class OperationalTemplateIndexer {
             templateId: templateId,
             concept: concept,
             language: language,
-            external_uid: uid,
+            externalUid: uid,
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
             organizationUid: org.uid
