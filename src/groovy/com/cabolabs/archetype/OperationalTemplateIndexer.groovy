@@ -385,17 +385,10 @@ class OperationalTemplateIndexer {
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
       
-      // FIXME: this will change with the internal versioning and identification.
-      def c = OperationalTemplateIndex.createCriteria()
-      def opts = c.list {
-         // exists an OPT with uid or template id?
-         or {
-            eq('externalUid', opt_uid)
-            eq('templateId', opt_template_id)
-         }
-         eq('organizationUid', org.uid)
-      }
-      
+      def opts = OperationalTemplateIndex.forOrg(org)
+                                         .matchInternalUidOrTemplateId(opt_uid, opt_template_id)
+                                         .list()
+                                            
       // 1. there is one share, with the session org => overwrite if specified
       // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
       // 3. there are many shares => can't overwrite, should remove the shares first
