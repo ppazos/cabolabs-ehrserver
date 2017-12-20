@@ -28,6 +28,7 @@ import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
+import grails.converters.*
 
 class OperationalTemplateController {
 
@@ -72,13 +73,19 @@ class OperationalTemplateController {
    /**
     * TODO: refactor to service, this should be transactional.
     * @param overwrite
+    * @param versionOfTemplateUid UID of the template the user wants to add a version to.
     * @return
     */
-   def upload(boolean overwrite)
+   def upload(boolean overwrite, String versionOfTemplateUid)
    {
+      println params
+   
       if (params.doit)
       {
          def errors = []
+         def res
+         
+         // PROCESS FILE
          
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html
          def f = request.getFile('opt')
@@ -87,7 +94,10 @@ class OperationalTemplateController {
          if(f.empty)
          {
             errors << message(code:"opt.upload.error.noOPT")
-            return [errors: errors]
+            
+            res = [status:'error', message:'XML validation errors', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
          }
 
          // Avoid BOM on OPT files (the Template Designer exports OPTs with BOM and that breaks the XML parser)
@@ -104,10 +114,16 @@ class OperationalTemplateController {
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))
          {
-           errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-           return [errors: errors]
+            errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+           
+            res = [status:'error', message:'XML validation errors', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
          }
          
+         // /PROCESS FILE
+         
+         // ROOT VALIDATION
          
          // Parse to get the template id
          def slurper = new XmlSlurper(false, false)
@@ -121,26 +137,41 @@ class OperationalTemplateController {
          if (root_rm_type != 'COMPOSITION')
          {
             errors << message(code:"opt.upload.error.noComposition", args:[root_rm_type])
-            return [errors: errors]
+            
+            res = [status:'error', message:'Incorrect root type', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
          }
          
-         // similar to OperationalTemplateIndexer.templateAlreadyExistsForOrg
+         // /ROOT VALIDATION
          
-         def c = OperationalTemplateIndex.createCriteria()
-         def opts = c.list {
-            // exists an OPT with uid or template id?
-            or {
-               eq('externalUid', opt_uid)
-               eq('templateId', opt_template_id)
-            }
-            eq('organizationUid', session.organization.uid)
-         }
+         // OPT VERSIONING
          
+         // Check uniqueness of the OPT inside the org
+         def opts = OperationalTemplateIndex.forOrg(session.organization)
+                                            .matchInternalUidOrTemplateId(opt_uid, opt_template_id)
+                                            .list()
          if (opts.size() > 0)
          {
-            // TODO: start the new versioning process for OPTs
+            if (!versionOfTemplateUid)
+            {
+               // start the new versioning process for OPTs
+               
+               res = [status:'resolve_duplicate', message:'Found some templates that might be the same or older versions of the one you try to upload', opts: opts]
+               render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+               return
+            }
+            else
+            {
+               // TODO: create new version
+               // TODO: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
+               // TODO: if everything is OK, create the new version with the same setId and +1 versionNumber, put lastVersion in false to the previous version.
+               // TODO: all uses of OPTs should get the latest version of the OPT using the lastVersion flag
+            }
          }
 
+         
+         
          // 1. there is one share, with the session org => overwrite if specified
          // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
          // 3. there are many shares => can't overwrite, should remove the shares first
@@ -190,7 +221,8 @@ class OperationalTemplateController {
          }
 */
          
-         def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
+         // saves OperationalTemplateIndex to the DB
+         def opt = indexer.createOptIndex(template, session.organization)
          
          // Prepare file
          def destination = opt_repo_org_path + opt.fileUid + '.opt'
@@ -220,7 +252,10 @@ class OperationalTemplateController {
          optMan.unloadAll(session.organization.uid)
          optMan.loadAll(session.organization.uid)
          
-         redirect action:'show', params:[uid:opt.uid]
+         res = [status:'ok', message:'OPT added to the organization', opt: opt]
+         
+         //redirect action:'show', params:[uid:opt.uid]
+         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
    }
    
