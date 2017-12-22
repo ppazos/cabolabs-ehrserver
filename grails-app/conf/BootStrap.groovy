@@ -195,9 +195,12 @@ class BootStrap {
                 concept:     opt.concept,
                 language:    opt.language,
                 uid:         opt.uid,
+                externalUid: opt.externalUid,
                 archetypeId: opt.archetypeId,
                 archetypeConcept: opt.archetypeConcept,
-                isPublic:    opt.isPublic]
+                isPublic:    opt.isPublic,
+                setID:       opt.setId,
+                versionNumber: opt.versionNumber]
      }
      
      XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
@@ -206,9 +209,12 @@ class BootStrap {
           concept(opt.concept)
           language(opt.language)
           uid(opt.uid)
+          externalUid(opt.externalUid)
           archetypeId(opt.archetypeId)
           archetypeConcept(opt.archetypeConcept)
           isPublic(opt.isPublic)
+          setId(opt.setId)
+          versionNumber(opt.versionNumber)
         }
      }
      

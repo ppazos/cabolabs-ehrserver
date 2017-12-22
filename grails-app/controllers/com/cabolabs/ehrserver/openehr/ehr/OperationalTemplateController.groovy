@@ -45,7 +45,10 @@ class OperationalTemplateController {
       if (!order) order = 'asc'
       
       def org = session.organization
-      def list = OperationalTemplateIndex.forOrg(org).likeConcept(concept).list (max: max, offset: offset, sort: sort, order: order)
+      def list = OperationalTemplateIndex
+                 .forOrg(org).likeConcept(concept)
+                 .lastVersions
+                 .list(max: max, offset: offset, sort: sort, order: order)
       
       [opts: list, total: list.totalCount]
    }
@@ -147,26 +150,43 @@ class OperationalTemplateController {
          
          // OPT VERSIONING
          
+         def setId, versionNumber
+         
          // Check uniqueness of the OPT inside the org
-         def opts = OperationalTemplateIndex.forOrg(session.organization)
+         def alternatives = OperationalTemplateIndex.forOrg(session.organization)
                                             .matchInternalUidOrTemplateId(opt_uid, opt_template_id)
+                                            .lastVersions
                                             .list()
-         if (opts.size() > 0)
+         if (alternatives.size() > 0)
          {
             if (!versionOfTemplateUid)
             {
                // start the new versioning process for OPTs
                
-               res = [status:'resolve_duplicate', message:'Found some templates that might be the same or older versions of the one you try to upload', opts: opts]
+               res = [status:'resolve_duplicate', message:'Found some templates that might be the same or older versions of the one you try to upload. Choose one of the alternatives to upload a new version of that OPT or if it is a new OPT, change the the UID of the OPT you want to update.', alternatives: alternatives]
                render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
                return
             }
             else
             {
-               // TODO: create new version
+               def old_version = alternatives.find{ it.uid == versionOfTemplateUid }
+               
+               if (!old_version)
+               {
+               // TODO invalid uid
+               }
+               
+               old_version.lastVersion = false
+               old_version.save()
+               
+               setId = old_version.setId
+               versionNumber = old_version.versionNumber + 1
+               
+               // create new version
                // TODO: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
-               // TODO: if everything is OK, create the new version with the same setId and +1 versionNumber, put lastVersion in false to the previous version.
+               // DONE: if everything is OK, create the new version with the same setId and +1 versionNumber, put lastVersion in false to the previous version.
                // TODO: all uses of OPTs should get the latest version of the OPT using the lastVersion flag
+               // TODO: move the older version OPT to another folder so OPTManager can load only the latest versions
             }
          }
 
@@ -240,6 +260,13 @@ class OperationalTemplateController {
          flash.message = g.message(code:"opt.upload.success")
          
          opt.isPublic = (params.isPublic != null)
+         
+         // versioning if needed
+         if (setId)
+         {
+            opt.setId = setId
+            opt.versionNumber = versionNumber
+         }
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          indexer.templateIndex = opt // avoids creating another opt index internally and use the one created here
@@ -261,7 +288,7 @@ class OperationalTemplateController {
    
    def show(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = 'Template not found'
@@ -276,7 +303,7 @@ class OperationalTemplateController {
    
    def items(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       
       if (!opt)
       {
@@ -296,7 +323,7 @@ class OperationalTemplateController {
    
    def archetypeItems(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       
       if (!opt)
       {

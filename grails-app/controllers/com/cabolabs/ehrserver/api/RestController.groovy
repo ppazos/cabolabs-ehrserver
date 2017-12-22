@@ -2004,7 +2004,7 @@ class RestController {
    @SecuredStateless
    def templates(String format)
    {
-      def opts = OperationalTemplateIndex.findAllByOrganizationUid(request.securityStatelessMap.extradata.org_uid)
+      def opts = OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(request.securityStatelessMap.extradata.org_uid, true)
 
       if (!format || format == 'xml')
       {

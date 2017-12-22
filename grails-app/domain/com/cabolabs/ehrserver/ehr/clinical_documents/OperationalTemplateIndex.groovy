@@ -69,6 +69,11 @@ class OperationalTemplateIndex {
          }
       }
       
+      lastVersions {
+      
+         eq('lastVersion', true)
+      }
+      
       matchInternalUidOrTemplateId { externalUid, templateId ->
          or {
             eq('externalUid', externalUid)

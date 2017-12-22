@@ -302,9 +302,6 @@ class OperationalTemplateIndexer {
       // The first indexAll should also share because there are no OPT, there are no shares
       def shareWithOrg = false // we create the shares here
       
-      //println "opt count "+ OperationalTemplateIndex.count()
-      //println "shareWithOrg "+ shareWithOrg
-      
       // remove indexes associated with the org, the create new ones
       //def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
       //def shares_to_delete = []
