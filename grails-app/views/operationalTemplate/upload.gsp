@@ -34,6 +34,7 @@
           
           <input type="hidden" name="doit" value="now" />
           
+          <%--
           <div class="form-group">
             <label class="control-label"><g:message code="opt.upload.label.overwrite" /></label>
             <fieldset class="form-control">
@@ -41,7 +42,7 @@
               <label><input type="radio" name="overwrite" value="true" /><g:message code="default.yes" /></label>
             </fieldset>
           </div>
-
+          
           <sec:ifAnyGranted roles="ROLE_ADMIN">
             <div class="form-group">
               <label class="control-label"><g:message code="opt.upload.label.isPublic" />
@@ -49,6 +50,7 @@
               </label>
             </div>
           </sec:ifAnyGranted>
+          --%>
           
           <div class="form-group">
             <label class="control-label"><g:message code="opt.upload.label.opt" /></label>

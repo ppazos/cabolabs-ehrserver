@@ -100,7 +100,7 @@ class QueryController {
       [
        queryInstance: new Query(params),
        dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(session.organization.uid, true),
+       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
    }
@@ -135,7 +135,7 @@ class QueryController {
            model: [
              queryInstance: query,
              dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-             templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(session.organization.uid, true),
+             templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
              queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
              mode: 'edit'
            ]
@@ -175,7 +175,7 @@ class QueryController {
         model: [
           queryInstance: queryInstance,
           dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(session.organization.uid, true),
+          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
           queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
         ]

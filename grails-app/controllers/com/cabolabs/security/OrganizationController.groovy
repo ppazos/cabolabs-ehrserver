@@ -119,6 +119,10 @@ class OrganizationController {
       def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + organizationInstance.uid)
       opt_repo_org.mkdir()
       
+      // create older OPT version repo for the org (needed for versioning)
+      def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
+      old_versions_opt_repo_org.mkdir()
+      
       
       def user = springSecurityService.loadCurrentUser()
       

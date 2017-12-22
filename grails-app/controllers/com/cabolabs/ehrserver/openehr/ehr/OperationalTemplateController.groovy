@@ -148,13 +148,17 @@ class OperationalTemplateController {
          
          // /ROOT VALIDATION
          
+         
+         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+         
+         
          // OPT VERSIONING
          
          def setId, versionNumber
          
          // Check uniqueness of the OPT inside the org
          def alternatives = OperationalTemplateIndex.forOrg(session.organization)
-                                            .matchInternalUidOrTemplateId(opt_uid, opt_template_id)
+                                            .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
                                             .lastVersions
                                             .list()
          if (alternatives.size() > 0)
@@ -173,20 +177,41 @@ class OperationalTemplateController {
                
                if (!old_version)
                {
-               // TODO invalid uid
+                  // invalid uid
+                  res = [status:'resolve_duplicate', message:'OPT UID not found, please select one OPT from the list.', alternatives: alternatives]
+                  render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+                  return
                }
                
+               // the user selected an OPT different than the one that has the same internal UID?
+               def same_uid_opts = alternatives.findAll{ it.externalUid == opt_uid }
+
+               if (same_uid_opts.size() > 1 || same_uid_opts[0].id != old_version.id)
+               {
+                  // Select same_uid_opts[0] as version or change the uploaded OPT UID
+                  res = [status:'resolve_duplicate', message:'There is another OPT '+ same_uid_opts[0].concept +' that has the same UID as the one you uploaded. Select that OPT to version or change the UID of the OPT you uploaded.', alternatives: alternatives]
+                  render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+                  return
+               }
+               
+               // old version update
                old_version.lastVersion = false
                old_version.save()
                
+               // data for new version
                setId = old_version.setId
                versionNumber = old_version.versionNumber + 1
                
+               // move old version outside the OPT repo
+               def old_version_file = new File( opt_repo_org_path + old_version.fileUid + '.opt' )
+               def old_versions_folder = 
+               old_version_file.renameTo( new File( opt_repo_org_path + 'older_versions'.withTrailSeparator() + old_version_file.name ) )
+               
                // create new version
-               // TODO: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
+               // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
                // DONE: if everything is OK, create the new version with the same setId and +1 versionNumber, put lastVersion in false to the previous version.
-               // TODO: all uses of OPTs should get the latest version of the OPT using the lastVersion flag
-               // TODO: move the older version OPT to another folder so OPTManager can load only the latest versions
+               // DONE: all uses of OPTs should get the latest version of the OPT using the lastVersion flag
+               // DONE: move the older version OPT to another folder so OPTManager can load only the latest versions
             }
          }
 
@@ -198,48 +223,6 @@ class OperationalTemplateController {
          
          // Will index the opt nodes, and help deleting existing ones when updating
          def indexer = new OperationalTemplateIndexer()
-         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
-         
-         
-/* TODO: check uniqueness should be done in the org's OPT repo, not using shares,
-         and we need to do internal versioning instead of just overwrite.
-         
-         if (shares.size() == 1)
-         {
-            //println "shares size is 1"
-            if (shares[0].organization.id != session.organization.id)
-            {
-               errors << message(code:"opt.upload.error.alreadyExistsNotInOrg", args:[shares[0].organization.name, session.organization.name]) //"There exists an OPT with the same uid or templateId shared with another of your organizations (${shares[0].organization.name}), login with that organization to overwrite or share the OPT from that org iwth the current organization (${session.organization.name})"
-               return [errors: errors]
-            }
-            
-            // Can overwrite if it was specified
-            if (overwrite) // OPT exists and the user wants to overwrite
-            {
-               def existing_opt = shares[0].opt
-               def existing_file = new File(opt_repo_org_path + existing_opt.fileUid + '.opt')
-               existing_file.delete()
-               
-               // delete all the indexes of the opt
-               indexer.deleteOptReferences(existing_opt)
-            }
-            else
-            {
-               errors << message(code:"opt.upload.error.alreadyExists")
-               return [errors: errors]
-            }
-         }
-         else if (shares.size() > 1)
-         {
-            //println "shares size is > 1"
-            errors << message(code:"opt.upload.error.alreadyExistsInManyOrgs", args:[session.organization.name])
-            return [errors: errors]
-         }
-         else
-         {
-            //println "shares size is 0"
-         }
-*/
          
          // saves OperationalTemplateIndex to the DB
          def opt = indexer.createOptIndex(template, session.organization)
@@ -281,7 +264,6 @@ class OperationalTemplateController {
          
          res = [status:'ok', message:'OPT added to the organization', opt: opt]
          
-         //redirect action:'show', params:[uid:opt.uid]
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
    }

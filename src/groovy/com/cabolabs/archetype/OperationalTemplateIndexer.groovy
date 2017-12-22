@@ -232,6 +232,7 @@ class OperationalTemplateIndexer {
       def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
       
       // repo namespace exists for org?
+      // the org opt repois created when the org is created
       if (!opt_repo_org.exists())
       {
          // create it
@@ -383,7 +384,7 @@ class OperationalTemplateIndexer {
       def opt_template_id = template.template_id.value.text()
       
       def opts = OperationalTemplateIndex.forOrg(org)
-                                         .matchInternalUidOrTemplateId(opt_uid, opt_template_id)
+                                         .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
                                          .list()
                                             
       // 1. there is one share, with the session org => overwrite if specified
