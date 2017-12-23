@@ -132,7 +132,7 @@ class OperationalTemplateController {
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
-         // check existing by OPT uid or templateId, shared with an org of the current user
+         // check existing by OPT uid or templateId
          def opt_uid = template.uid.value.text()
          def opt_template_id = template.template_id.value.text()
          def root_rm_type = template.definition.rm_type_name.text()
@@ -215,11 +215,6 @@ class OperationalTemplateController {
             }
          }
 
-         
-         
-         // 1. there is one share, with the session org => overwrite if specified
-         // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
-         // 3. there are many shares => can't overwrite, should remove the shares first
          
          // Will index the opt nodes, and help deleting existing ones when updating
          def indexer = new OperationalTemplateIndexer()

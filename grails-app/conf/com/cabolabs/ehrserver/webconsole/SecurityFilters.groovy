@@ -32,7 +32,6 @@ import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.converters.*
 import javax.servlet.http.Cookie
 import org.springframework.beans.propertyeditors.LocaleEditor
@@ -727,93 +726,6 @@ class SecurityFilters {
             params.query = query
          }
       }
-      
-/*
-      opt_share(controller:'resource', action:'saveSharesOpt') {
-         before = {
-            
-            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
-            {
-               flash.message = "You need and higher role to edit the shares"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            
-            // Admins can share wiht any org
-            def canShareWithAnyOrg = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
-            
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def user = User.findByUsername(un)
-            def orgs = user.organizations
-            
-            if (!params.uid)
-            {
-               flash.message = "Template UID is required"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-
-            def opt = OperationalTemplateIndex.findByUid(params.uid)
-            
-            if (!opt)
-            {
-               flash.message = "Template not found"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            
-            
-            // for admins this is no needed, admin can be logged in with any org and share with any org
-            if (!canShareWithAnyOrg)
-            {
-               // check if query is shared with the login org
-               def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-               def found = false
-               shares.organization.each { share_org ->
-                  if (share_org.number == auth.organization)
-                  {
-                     found = true
-                     return true // break
-                  }
-               }
-               if (!found)
-               {
-                  flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
-                  chain controller: 'operationalTemplate', action: 'list'
-                  return false
-               }
-            }
-            
-            
-            // admins can do anything without being in the org
-            if (!canShareWithAnyOrg)
-            {
-               // check that all the org uids submitted are accessible by the user
-               def orgUids = params.list('organizationUid')
-               def orgNotInUserOrgs = false
-               orgUids.each { organizationUid ->
-                  if(!orgs.uid.contains(organizationUid))
-                  {
-                     orgNotInUserOrgs = true
-                     flash.message = "You don't have access to the specified organization ${organizationUid}"
-                     return true // break from each
-                  }
-               }
-               
-               if (orgNotInUserOrgs)
-               {
-                  chain controller: 'operationalTemplate', action: 'list'
-                  return false
-               }
-            }
-
-            // pass the opt as param to avoid making the query again in the controller
-            params.opt = opt // it can be set on request also
-            return true
-         }
-      } // opt_share
-*/
 
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {

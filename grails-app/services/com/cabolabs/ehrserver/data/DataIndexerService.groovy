@@ -67,7 +67,7 @@ class DataIndexerService {
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
 
-      // This filters by org on the OptShare
+
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {

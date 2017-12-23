@@ -22,8 +22,6 @@
 
 package com.cabolabs.ehrserver
 
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.security.Organization
@@ -75,52 +73,4 @@ class ResourceService {
             share?.delete(failOnError: true)
       }
    }
-   
-   /**
-    * Creates a share of the opt with the organization.
-    * @param opt
-    * @param organization
-    * @return
-    */
-    /*
-   def shareOpt(OperationalTemplateIndex opt, Organization organization)
-   {
-      if (OperationalTemplateIndexShare.countByOptAndOrganization(opt, organization) == 0)
-      {
-         def share = new OperationalTemplateIndexShare(opt: opt, organization: organization)
-         share.save(failOnError: true)
-      }
-   }
-   */
-   
-   /**
-    * Clean all the shares of an opt.
-    * @param opt
-    * @return
-    */
-    /*
-   def cleanSharesOpt(OperationalTemplateIndex opt)
-   {
-      def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-      shares.each { share ->
-         share?.delete(failOnError: true)
-      }
-   }
-   */
-   /**
-    * Cleans all the shares of an opt, except for one organization.
-    * @param opt
-    * @param organization
-    * @return
-    */
-    /*
-   def cleanSharesOptBut(OperationalTemplateIndex opt, Organization organization)
-   {
-      def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-      shares.each { share ->
-         if (share.organization.id != organization.id)
-            share?.delete(failOnError: true)
-      }
-   }
-   */
 }

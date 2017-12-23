@@ -134,34 +134,4 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          assert shares1.size() == 1
          assert shares2.size() == 0
    }
-   
-   /*
-   void "shareOpt"()
-   {
-      when:
-         def opt = OperationalTemplateIndex.findByUid(optUid)
-         def org = Organization.findByUid(orgUid)
-         resourceService.shareOpt(opt, org)
-         def shares = OperationalTemplateIndexShare.list()
-      then:
-         assert shares.size() == 1
-         assert shares[0].opt.uid == optUid
-         assert shares[0].organization.uid == orgUid
-   }
-   
-   void "cleanSharesOpt"()
-   {
-      when:
-         def opt = OperationalTemplateIndex.findByUid(optUid)
-         def org = Organization.findByUid(orgUid)
-         resourceService.shareOpt(opt, org)
-         def shares1 = OperationalTemplateIndexShare.list()
-         
-         resourceService.cleanSharesOpt(opt)
-         def shares2 = OperationalTemplateIndexShare.list()
-      then:
-         assert shares1.size() == 1
-         assert shares2.size() == 0
-   }
-   */
 }
