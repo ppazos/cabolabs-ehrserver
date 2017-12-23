@@ -42,14 +42,6 @@
               <label><input type="radio" name="overwrite" value="true" /><g:message code="default.yes" /></label>
             </fieldset>
           </div>
-          
-          <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <div class="form-group">
-              <label class="control-label"><g:message code="opt.upload.label.isPublic" />
-                <g:checkBox name="isPublic" value="${false}" class="form-control" />
-              </label>
-            </div>
-          </sec:ifAnyGranted>
           --%>
           
           <div class="form-group">

@@ -80,12 +80,6 @@ class ResourceController {
    {
       OperationalTemplateIndex opt = params.opt
       
-      if (opt.isPublic)
-      {
-         flash.message = "Can't change the shares of a public template"
-         redirect action:'shareOpt', params:[uid:opt.uid]
-         return
-      }
       
       // delete all shares but the one that belongs to the current org
       resourceService.cleanSharesOptBut(opt, session.organization)

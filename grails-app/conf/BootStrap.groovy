@@ -198,7 +198,7 @@ class BootStrap {
                 externalUid: opt.externalUid,
                 archetypeId: opt.archetypeId,
                 archetypeConcept: opt.archetypeConcept,
-                isPublic:    opt.isPublic,
+                organizationUid:  opt.organizationUid,
                 setID:       opt.setId,
                 versionNumber: opt.versionNumber]
      }
@@ -212,7 +212,7 @@ class BootStrap {
           externalUid(opt.externalUid)
           archetypeId(opt.archetypeId)
           archetypeConcept(opt.archetypeConcept)
-          isPublic(opt.isPublic)
+          organizationUid(opt.organizationUid)
           setId(opt.setId)
           versionNumber(opt.versionNumber)
         }

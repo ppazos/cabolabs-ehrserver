@@ -128,7 +128,6 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          assert opt != null
          
-         opt.isPublic = true
          opt.save(failOnError: true)
 
       when: "generate data indexes for the committed composition"

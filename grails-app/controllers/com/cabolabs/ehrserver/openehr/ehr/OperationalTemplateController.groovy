@@ -242,8 +242,6 @@ class OperationalTemplateController {
          
          flash.message = g.message(code:"opt.upload.success")
          
-         opt.isPublic = (params.isPublic != null)
-         
          // versioning if needed
          if (setId)
          {

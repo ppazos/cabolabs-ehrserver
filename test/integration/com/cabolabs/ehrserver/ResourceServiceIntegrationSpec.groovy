@@ -66,7 +66,6 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          externalUid: optUid,
          archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1',
          archetypeConcept: 'encounter',
-         isPublic: false,
          organizationUid: orgUid
       )
       

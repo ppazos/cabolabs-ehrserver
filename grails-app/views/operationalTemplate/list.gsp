@@ -75,7 +75,7 @@
                 <g:sortableColumn property="language" title="${message(code: 'template.language.label', default: 'language')}" />
                 <g:sortableColumn property="uid" title="${message(code: 'template.uid.label', default: 'uid')}" />
                 <g:sortableColumn property="archetypeId" title="${message(code: 'template.archetypeId.label', default: 'root archetype')}" />
-                <g:sortableColumn property="isPublic" title="${message(code: 'template.isPublic.label', default: 'is public')}" />
+                <g:sortableColumn property="versionNumber" title="${message(code: 'template.versionNumber.label', default: 'version')}" />
                 <th></th>
               </tr>
             </thead>
@@ -92,7 +92,7 @@
                   <td>${fieldValue(bean: templateInstance, field: "language")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
-                  <td>${templateInstance.isPublic.toString()}</td>
+                  <td>${templateInstance.versionNumber}</td>
                   <td>
                     <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
                     <br/>
@@ -115,7 +115,7 @@
                   <td>${fieldValue(bean: templateInstance, field: "language")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
-                  <td>${templateInstance.isPublic.toString()}</td>
+                  <td>${templateInstance.versionNumber}</td>
                   <td>
                     <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
                     <br/>

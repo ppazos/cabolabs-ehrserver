@@ -41,9 +41,6 @@ class OperationalTemplateIndex {
    
    String fileUid = java.util.UUID.randomUUID() as String
    
-   // true => shared with all the organizations
-   boolean isPublic
-   
    Date dateCreated
    Date lastUpdated
    

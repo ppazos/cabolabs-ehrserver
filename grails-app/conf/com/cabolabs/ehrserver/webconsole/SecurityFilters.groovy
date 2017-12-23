@@ -763,33 +763,25 @@ class SecurityFilters {
                return false
             }
             
-            if (opt.isPublic)
+            
+            // for admins this is no needed, admin can be logged in with any org and share with any org
+            if (!canShareWithAnyOrg)
             {
-               flash.message = "Can't share a public template, make it private first"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            else
-            {
-               // for admins this is no needed, admin can be logged in with any org and share with any org
-               if (!canShareWithAnyOrg)
-               {
-                  // check if query is shared with the login org
-                  def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-                  def found = false
-                  shares.organization.each { share_org ->
-                     if (share_org.number == auth.organization)
-                     {
-                        found = true
-                        return true // break
-                     }
-                  }
-                  if (!found)
+               // check if query is shared with the login org
+               def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
+               def found = false
+               shares.organization.each { share_org ->
+                  if (share_org.number == auth.organization)
                   {
-                     flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
-                     chain controller: 'operationalTemplate', action: 'list'
-                     return false
+                     found = true
+                     return true // break
                   }
+               }
+               if (!found)
+               {
+                  flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
+                  chain controller: 'operationalTemplate', action: 'list'
+                  return false
                }
             }
             
