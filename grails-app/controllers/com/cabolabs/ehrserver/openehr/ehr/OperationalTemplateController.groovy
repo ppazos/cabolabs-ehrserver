@@ -246,7 +246,7 @@ class OperationalTemplateController {
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          indexer.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         indexer.index(template, null, session.organization, true)
+         indexer.index(template, null, session.organization)
 
          
          // load opt in manager cache
