@@ -27,19 +27,24 @@ class OperationalTemplateIndex {
    String templateId
    String concept          // Concept name of the OPT
    String language         // en formato ISO_639-1::en
-   String uid
+   String uid = java.util.UUID.randomUUID() as String
+   String externalUid     // from the OPT file
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
    
-   String fileUid = java.util.UUID.randomUUID() as String
+   String organizationUid  // OPT multitenancy
    
-   // true => shared with all the organizations
-   boolean isPublic
+   // internal versioning #776
+   String setId = java.util.UUID.randomUUID() as String
+   int versionNumber = 1
+   boolean lastVersion = true // to simplify queries
+   
+   String fileUid = java.util.UUID.randomUUID() as String
    
    Date dateCreated
    Date lastUpdated
    
-   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem, 
+   static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
    
    static transients = ['lang']
@@ -50,26 +55,26 @@ class OperationalTemplateIndex {
    
    static namedQueries = {
       forOrg { org ->
-         
-         def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
-         
-         if (shares)
-         {
-            or {
-               eq('isPublic', true)
-               'in'('id', shares.opt.id)
-            }
-         }
-         else
-         {
-            eq('isPublic', true)
-         }
+
+         eq('organizationUid', org.uid)
       }
       
       likeConcept { concept ->
          if (concept)
          {
             like('concept', '%'+concept+'%')
+         }
+      }
+      
+      lastVersions {
+      
+         eq('lastVersion', true)
+      }
+      
+      matchExternalUidOrTemplateId { externalUid, templateId ->
+         or {
+            eq('externalUid', externalUid)
+            eq('templateId', templateId)
          }
       }
    }

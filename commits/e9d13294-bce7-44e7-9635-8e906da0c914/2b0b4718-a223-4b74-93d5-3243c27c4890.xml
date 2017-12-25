@@ -1,0 +1,187 @@
+<versions xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<version xsi:type="ORIGINAL_VERSION">
+<contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>7bccd7ef-83f0-4575-88ce-bca09e3e65ab</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>ebc82683-70be-47ca-b0af-a95cb91d0494</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Car Pittam</name>
+    </committer>
+    <time_committed>
+      <value>20171020T023007,024-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>ff8c38f9-0418-46a0-94de-0e60df40337d::CABOLABS-LOADEHR::1</value>
+  </uid>
+  <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1">
+    <name>
+      <value>Encuentro</value>
+    </name>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.encounter.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>encuentro_diagnostico_codificado.es.v1</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>evento</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>433</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>ebc82683-70be-47ca-b0af-a95cb91d0494</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Car Pittam</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>20100320T070900,000-0300</value>
+      </start_time>
+      <setting>
+        <value>Atencion medica primaria</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>228</code_string>
+        </defining_code>
+      </setting>
+    </context>
+    <content archetype_node_id="openEHR-EHR-EVALUATION.problem_diagnosis-problem_diagnosis_coded.v1" xsi:type="EVALUATION">
+      <name>
+        <value>Problema/diagnóstico</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF" />
+      <protocol archetype_node_id="at0032" xsi:type="ITEM_TREE">
+        <name>
+          <value>Tree</value>
+        </name>
+        <items archetype_node_id="at0070" xsi:type="ELEMENT">
+          <name>
+            <value>Última actualización</value>
+          </name>
+          <value xsi:type="DV_DATE_TIME">
+            <value>20100320T070900,000-0300</value>
+          </value>
+        </items><!-- SLOT NOT PROCESSED -->
+      </protocol>
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>structure</value>
+        </name>
+        <items archetype_node_id="at0002.1" xsi:type="ELEMENT">
+          <name>
+            <value>Nombre del problema/diagnóstico</value>
+          </name>
+          <value xsi:type="DV_CODED_TEXT">
+            <value>alergia a polvos (trastorno)</value>
+            <defining_code>
+              <terminology_id>
+                <value>SNOMED-CT</value>
+              </terminology_id>
+              <code_string>294167008</code_string>
+            </defining_code>
+          </value>
+        </items>
+        <items archetype_node_id="at0009" xsi:type="ELEMENT">
+          <name>
+            <value>Descripción clínica</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>Glucómetro la mayoría de los casos de diferentes tipos son evitables fluctuaciones ventriculares este régimen actual de la semana. Parece ser paciente dentista ayurveda prescrito amoxicilina en el caso de que la mayoría de los casos se puedan prevenir.</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0003" xsi:type="ELEMENT">
+          <name>
+            <value>Momento de reconocimiento del problema</value>
+          </name>
+          <value xsi:type="DV_DATE_TIME">
+            <value>20100320T070900,000-0300</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0005" xsi:type="ELEMENT">
+          <name>
+            <value>Severidad</value>
+          </name>
+          <value xsi:type="DV_CODED_TEXT">
+            <value>Severo</value>
+            <defining_code>
+              <terminology_id>
+                <value>local</value>
+              </terminology_id>
+              <code_string>at0049</code_string>
+            </defining_code>
+          </value>
+        </items>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
+</versions>

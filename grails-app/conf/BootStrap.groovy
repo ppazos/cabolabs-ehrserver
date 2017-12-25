@@ -195,9 +195,12 @@ class BootStrap {
                 concept:     opt.concept,
                 language:    opt.language,
                 uid:         opt.uid,
+                externalUid: opt.externalUid,
                 archetypeId: opt.archetypeId,
                 archetypeConcept: opt.archetypeConcept,
-                isPublic:    opt.isPublic]
+                organizationUid:  opt.organizationUid,
+                setID:       opt.setId,
+                versionNumber: opt.versionNumber]
      }
      
      XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
@@ -206,9 +209,12 @@ class BootStrap {
           concept(opt.concept)
           language(opt.language)
           uid(opt.uid)
+          externalUid(opt.externalUid)
           archetypeId(opt.archetypeId)
           archetypeConcept(opt.archetypeConcept)
-          isPublic(opt.isPublic)
+          organizationUid(opt.organizationUid)
+          setId(opt.setId)
+          versionNumber(opt.versionNumber)
         }
      }
      
@@ -695,23 +701,25 @@ class BootStrap {
    
    def generateTemplateIndexes()
    {
+      // for the default organization
+      def org = Organization.get(1)
+      
       // Always regenerate indexes in deploy
       if (OperationalTemplateIndex.count() == 0)
       {
          println "Indexing Operational Templates"
         
          def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         ti.setupBaseOpts()
-         ti.indexAll( Organization.get(1) )
+         
+         ti.setupBaseOpts( org )
+         ti.indexAll( org ) // also shares with all existing orgs if there are no shares
       }
-     
-      // TODO: because initially there are no shares, the indexAll 
-      //       wont share the OPTs with the org, so we do it manually here.
-     
+
       // OPT loading
+      // This is done to set the OPT repo internally, further uses will not pass the repo path.
       def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-      optMan.unloadAll()
-      optMan.loadAll()
+      
+      // OPTs are loaded into the manager in the login, after we know the org of the current user
    }
    
    def sampleFolderTemplates()

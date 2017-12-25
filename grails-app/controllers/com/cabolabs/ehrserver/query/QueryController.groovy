@@ -60,12 +60,13 @@ class QueryController {
       redirect(action: "list", params: params)
    }
 
-   def list(int offset, String sort, String order, String name)
+   def list(int offset, String sort, String order, String name, boolean isDeleted)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
+      if (isDeleted == null) isDeleted = false
       
       def list
       def org = session.organization
@@ -89,6 +90,8 @@ class QueryController {
          {
             eq('isPublic', true)
          }
+         
+         eq('isDeleted', isDeleted)
       }
       
       [queryInstanceList: list.groupBy{it.queryGroup}, queryInstanceTotal: list.totalCount]
@@ -100,7 +103,7 @@ class QueryController {
       [
        queryInstance: new Query(params),
        dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-       templateIndexes: OperationalTemplateIndex.list(),
+       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
    }
@@ -135,7 +138,7 @@ class QueryController {
            model: [
              queryInstance: query,
              dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-             templateIndexes: OperationalTemplateIndex.list(),
+             templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
              queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
              mode: 'edit'
            ]
@@ -175,7 +178,7 @@ class QueryController {
         model: [
           queryInstance: queryInstance,
           dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-          templateIndexes: OperationalTemplateIndex.list(),
+          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
           queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
         ]
@@ -417,7 +420,9 @@ class QueryController {
 
       try
       {
-         queryInstance.delete(flush: true)
+         //queryInstance.delete(flush: true)
+         queryInstance.isDeleted = true
+         queryInstance.save(flush: true)
          flash.message = message(code: 'default.deleted.message', args: [message(code: 'query.label', default: 'Query'), uid])
          redirect(action: "list")
       }

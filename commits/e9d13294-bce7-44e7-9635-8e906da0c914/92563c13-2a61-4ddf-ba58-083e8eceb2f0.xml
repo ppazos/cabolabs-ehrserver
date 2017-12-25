@@ -1,0 +1,138 @@
+<versions xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<version xsi:type="ORIGINAL_VERSION">
+<contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>ba1b2cbd-37e4-4caa-add7-5775a9c6a492</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>20eb5520-0266-4c5d-9ce7-7b2b0e26c0b1</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Kennedy Boissieux</name>
+    </committer>
+    <time_committed>
+      <value>20171102T002656,743-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>3acc15d4-1298-415b-bdd5-ad856ea28ecf::CABOLABS-LOADEHR::1</value>
+  </uid>
+  <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.basic_demographic.v1">
+    <name>
+      <value>Basic demographic</value>
+    </name>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>datos_demograficos.es.v1</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>persistente</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>431</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>20eb5520-0266-4c5d-9ce7-7b2b0e26c0b1</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Kennedy Boissieux</name>
+    </composer>
+    <content archetype_node_id="openEHR-EHR-ADMIN_ENTRY.basic_demographic.v1" xsi:type="ADMIN_ENTRY">
+      <name>
+        <value>Basic demographic</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF" />
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Arbol</value>
+        </name>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>Género</value>
+          </name>
+          <value xsi:type="DV_CODED_TEXT">
+            <value>Femenino</value>
+            <defining_code>
+              <terminology_id>
+                <value>local</value>
+              </terminology_id>
+              <code_string>at0004</code_string>
+            </defining_code>
+          </value>
+        </items>
+        <items archetype_node_id="at0006" xsi:type="ELEMENT">
+          <name>
+            <value>Fecha de nacimiento</value>
+          </name>
+          <value xsi:type="DV_DATE">
+            <value>19430302</value>
+          </value>
+        </items>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
+</versions>

@@ -39,7 +39,7 @@ hibernate {
 environments {
     development {
         dataSource {
-           dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+           dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
 
            //logSql = true
            

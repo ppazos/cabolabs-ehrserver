@@ -45,14 +45,7 @@
             </tr>
           </tbody>
         </table>
-        
-        <g:if test="${!opt.isPublic}">
-          <div class="btn-toolbar" role="toolbar">
-            <fieldset class="buttons">
-              <g:link controller="resource" action="shareOpt" params="[uid:opt?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="opt.show.action.share" /></button></g:link>
-            </fieldset>
-          </div>
-        </g:if>
+
       </div>
     </div>
 

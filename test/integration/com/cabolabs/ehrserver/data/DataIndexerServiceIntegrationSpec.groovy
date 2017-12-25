@@ -11,8 +11,6 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.util.Holders
 import groovy.io.FileType
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
-
 
 import com.cabolabs.security.Organization
 import java.util.logging.Logger
@@ -57,6 +55,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       createOrganization()
       createEHR()
       
+      def org = Organization.findByUid(orgUid)
       
       // Load test OPTs
       // Always regenerate indexes in deploy
@@ -65,14 +64,14 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
         println "Indexing Operational Templates"
         
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-        ti.setupBaseOpts()
-        ti.indexAll( Organization.findByUid(orgUid) )
+        ti.setupBaseOpts( org )
+        ti.indexAll( org )
       }
      
       // OPT loading
       def optMan = com.cabolabs.openehr.opt.manager.OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-      optMan.unloadAll()
-      optMan.loadAll()
+      optMan.unloadAll(orgUid)
+      optMan.loadAll(orgUid)
       // /Load test OPTs
    }
 
@@ -129,7 +128,6 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          assert opt != null
          
-         opt.isPublic = true
          opt.save(failOnError: true)
 
       when: "generate data indexes for the committed composition"
@@ -140,9 +138,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          
          println "compoIndex.templateId "+ compoIndex.templateId
          
-         // OperationalTemplateIndexer should generated the shares on bootstrap from indexAll
-         //println "shares "+ OperationalTemplateIndexShare.list()
-         
+
          dataIndexerService.generateIndexes( compoIndex )
          assert CompositionIndex.countByDataIndexed(true) == 1 // the compo is marked as indexed
           

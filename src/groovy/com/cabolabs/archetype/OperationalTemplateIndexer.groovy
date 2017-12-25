@@ -25,7 +25,6 @@ package com.cabolabs.archetype
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexItem
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.util.Holders
 
 import groovy.util.slurpersupport.*
@@ -177,7 +176,7 @@ class OperationalTemplateIndexer {
    
    /**
     * @param template parsed Opt to be indexed
-    * @param org organization to share the Opt with
+    * @param org organization to associated the Opt with
     * @return
     */
    def createOptIndex(GPathResult template, Organization org)
@@ -193,17 +192,12 @@ class OperationalTemplateIndexer {
          templateId: templateId,
          concept: concept,
          language: getTemplateLanguage(template),
-         uid: uid,
+         externalUid: uid,
          archetypeId: archetypeId,
-         archetypeConcept: archetypeConcept
+         archetypeConcept: archetypeConcept,
+         organizationUid: org.uid
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
-      
-      
-      // Create share
-      // FIXME: use resourceService to do the share, but we need to refactor this class to a service...
-      def share = new OperationalTemplateIndexShare(opt: templateIndex, organization: org)
-      share.save(failOnError:true, flush:true)
 
       return templateIndex
    }
@@ -217,7 +211,7 @@ class OperationalTemplateIndexer {
     * 
     * @return
     */
-   def setupBaseOpts()
+   def setupBaseOpts(Organization org)
    {
       def opts_path = config.opt_repo
       def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
@@ -227,13 +221,23 @@ class OperationalTemplateIndexer {
       if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
       if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
       
+      def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
+      
+      // repo namespace exists for org?
+      // the org opt repois created when the org is created
+      if (!opt_repo_org.exists())
+      {
+         // create it
+         opt_repo_org.mkdir()
+      }
+      
       // Only copy the base opts if the opt repo is empty, to avoid copying again every time the app starts.
-      if (new File(opts_path).listFiles().count { it.name ==~ /.*\.opt/ } == 0)
+      if (opt_repo_org.listFiles().count { it.name ==~ /.*\.opt/ } == 0)
       {
          def dest
          base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
             
-            dest = new File(opts_path + System.getProperty("file.separator") + String.uuid() + '.opt')
+            dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
             java.nio.file.Files.copy(file.toPath(), dest.toPath())
          }
       }
@@ -281,120 +285,47 @@ class OperationalTemplateIndexer {
    def indexAll(Organization org)
    {
       def path = config.opt_repo
-      def repo = new File( path )
       
-      if (!repo.exists()) throw new Exception("No existe "+ path)
-      if (!repo.canRead()) throw new Exception("No se puede leer "+ path)
-      if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path)
+      def repo = new File(path.withTrailSeparator() + org.uid)
       
-      // The first indexAll should also share because there are no OPT, there are no shares
-      def shareWithOrg = false // we create the shares here
+      if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
+      if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
+      if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
       
-      //println "opt count "+ OperationalTemplateIndex.count()
-      //println "shareWithOrg "+ shareWithOrg
+      def opts = OperationalTemplateIndex.forOrg(org).list()
       
-      // remove indexes associated with the org, the create new ones
-      def shares = OperationalTemplateIndexShare.findAllByOrganization(org)
-      def opt, archNodes, other_shares
-      def shares_to_delete = []
-      //def share_with_orgs = [org] // share/reshare OPTs with these orgs
-      
-      def reshares = [:] // templateId > [org]
+      opts.each { opt ->
 
-      // the first time OPTs are indexed, it wont access this loop because there are no shares,
-      // so the OPT will be shared with the default org.
-      shares.each { share ->
-      
-         opt = share.opt
-         
-         //share.opt = null
-         other_shares = OperationalTemplateIndexShare.findAllByOpt(opt) // includes current share
-         
-         other_shares.each { reshare ->
-            if (reshares[reshare.opt.templateId] == null) reshares[reshare.opt.templateId] = []
-            reshares[reshare.opt.templateId] << reshare.organization
-         }
-         
-         //share_with_orgs = other_shares.organization
-         
-         other_shares*.delete(flush:true)
-         
          deleteOptReferences(opt)
-         
-         //share.delete(flush:true)
-         //println "opt count "+ OperationalTemplateIndex.count()
       }
 
       // TODO: the new template should be shared with the same orgs...
-      def share
+      def opt
       repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
          
          // Load only if the name is an UUID, it is the OperationalTemplateIndex.fileUid
          try
          {
             UUID uuid = UUID.fromString( file.name - '.opt' )
-            opt = index(file, org, shareWithOrg)
-            
-            /*
-            share_with_orgs.each { share_with_org ->
-            
-               share = new OperationalTemplateIndexShare(opt: opt, organization: share_with_org)
-               share.save(failOnError:true, flush:true)
-            }
-            */
-            
+            opt = index(file, org)
          }
          catch (IllegalArgumentException exception)
          {
              println "File ${file.name} not indexed, the file name should be an UUID. Please put your initial OPT in the base_opts folder."
          }
       }
-      
-      // initial state, for bootstrap
-      // just share the base OPTs wit hthe sample orgs
-      if (!shares)
-      {
-         def opts = OperationalTemplateIndex.list()
-         def orgs = Organization.list()
-         opts.each { _opt ->
-            if (reshares[_opt.templateId] == null) reshares[_opt.templateId] = []
-            reshares[_opt.templateId] = orgs
-         }
-      }
-      
-      reshares.each { templateId, organizations ->
-         opt = OperationalTemplateIndex.findByTemplateId(templateId)
-         organizations.each { _org ->
-            share = new OperationalTemplateIndexShare(opt: opt, organization: _org)
-            share.save(failOnError:true, flush:true)
-         }
-      }
    }
    
    private boolean templateAlreadyExistsForOrg(GPathResult template, Organization org)
    {
-      // from OperationalTemplateController.upload
-      // check existing by OPT uid or templateId, shared with an org of the current user
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
       
-      def c = OperationalTemplateIndexShare.createCriteria()
-      def shares = c.list {
-         // exists an OPT with uid or template id?
-         opt {
-            or {
-               eq('uid', opt_uid)
-               eq('templateId', opt_template_id)
-            }
-         }
-         eq('organization', org)
-      }
-      
-      // 1. there is one share, with the session org => overwrite if specified
-      // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
-      // 3. there are many shares => can't overwrite, should remove the shares first
-      
-      if (shares.size() != 0)
+      def opts = OperationalTemplateIndex.forOrg(org)
+                                         .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
+                                         .list()
+                                         
+      if (opts.size() != 0)
       {
          return true
       }
@@ -407,7 +338,7 @@ class OperationalTemplateIndexer {
       template.language.terminology_id.value.text() +"::"+ template.language.code_string.text()
    }
    
-   def index(GPathResult template, String file_uid, Organization org, boolean shareWithOrg)
+   def index(GPathResult template, String file_uid, Organization org)
    {
       // TODO: refactor, this is 99% createOptIndex()
       this.template = template
@@ -428,23 +359,16 @@ class OperationalTemplateIndexer {
             templateId: templateId,
             concept: concept,
             language: language,
-            uid: uid,
+            externalUid: uid,
             archetypeId: archetypeId,
-            archetypeConcept: archetypeConcept
+            archetypeConcept: archetypeConcept,
+            organizationUid: org.uid
          )
          
          if (file_uid) this.templateIndex.fileUid = file_uid
          
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
-         
-         if (shareWithOrg)
-         {
-            // Create share
-            // FIXME: use resourceService to do the share, but we need to refactor this class to a service...
-            def share = new OperationalTemplateIndexShare(opt: this.templateIndex, organization: org)
-            share.save(failOnError:true, flush:true)
-         }
       }
       
       indexObject(this.template.definition, '/', '/', this.template.definition, false)
@@ -502,7 +426,7 @@ class OperationalTemplateIndexer {
       this.indexes = []
    }
    
-   def index(File templateFile, Organization org, boolean shareWithOrg)
+   def index(File templateFile, Organization org)
    {
       if (!templateFile.exists())  throw new Exception("No existe "+ templateFile.getAbsolutePath())
       if (!templateFile.canRead())  throw new Exception("No se puede leer "+ templateFile.getAbsolutePath())
@@ -515,7 +439,7 @@ class OperationalTemplateIndexer {
       // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
       if (!templateAlreadyExistsForOrg(template, org))
       {
-         index(template, file_uid, org, shareWithOrg)
+         index(template, file_uid, org)
       }
       else
       {

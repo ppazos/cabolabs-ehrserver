@@ -28,7 +28,7 @@ import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
+import grails.converters.*
 
 class OperationalTemplateController {
 
@@ -45,7 +45,10 @@ class OperationalTemplateController {
       if (!order) order = 'asc'
       
       def org = session.organization
-      def list = OperationalTemplateIndex.forOrg(org).likeConcept(concept).list (max: max, offset: offset, sort: sort, order: order)
+      def list = OperationalTemplateIndex
+                 .forOrg(org).likeConcept(concept)
+                 .lastVersions
+                 .list(max: max, offset: offset, sort: sort, order: order)
       
       [opts: list, total: list.totalCount]
    }
@@ -61,10 +64,10 @@ class OperationalTemplateController {
       
       // load opt in manager cache
       def optMan = OptManager.getInstance()
-      optMan.unloadAll()
-      optMan.loadAll()
+      optMan.unloadAll(session.organization.uid)
+      optMan.loadAll(session.organization.uid)
       
-      println "loaded opts: " + optMan.getLoadedOpts()
+      println "loaded opts: " + optMan.getLoadedOpts(session.organization.uid)
       
       redirect(action: "list")
    }
@@ -73,13 +76,19 @@ class OperationalTemplateController {
    /**
     * TODO: refactor to service, this should be transactional.
     * @param overwrite
+    * @param versionOfTemplateUid UID of the template the user wants to add a version to.
     * @return
     */
-   def upload(boolean overwrite)
+   def upload(boolean overwrite, String versionOfTemplateUid)
    {
+      println params
+   
       if (params.doit)
       {
          def errors = []
+         def res
+         
+         // PROCESS FILE
          
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html
          def f = request.getFile('opt')
@@ -88,7 +97,10 @@ class OperationalTemplateController {
          if(f.empty)
          {
             errors << message(code:"opt.upload.error.noOPT")
-            return [errors: errors]
+            
+            res = [status:'error', message:'XML validation errors', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
          }
 
          // Avoid BOM on OPT files (the Template Designer exports OPTs with BOM and that breaks the XML parser)
@@ -101,24 +113,26 @@ class OperationalTemplateController {
          def isr = new InputStreamReader(bomInputStream)
          def br = new BufferedReader(isr)
          def xml = br.text // getText from Groovy
-         //def xml = new String( f.getBytes() )
          
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))
          {
-           errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-           return [errors: errors]
+            errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+           
+            res = [status:'error', message:'XML validation errors', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
          }
          
-         // Will index the opt nodes, and help deleting existing ones when updating
-         def indexer = new OperationalTemplateIndexer()
+         // /PROCESS FILE
+         
+         // ROOT VALIDATION
          
          // Parse to get the template id
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
          
-         
-         // check existing by OPT uid or templateId, shared with an org of the current user
+         // check existing by OPT uid or templateId
          def opt_uid = template.uid.value.text()
          def opt_template_id = template.template_id.value.text()
          def root_rm_type = template.definition.rm_type_name.text()
@@ -126,68 +140,90 @@ class OperationalTemplateController {
          if (root_rm_type != 'COMPOSITION')
          {
             errors << message(code:"opt.upload.error.noComposition", args:[root_rm_type])
-            return [errors: errors]
-         }
-         
-         def user = springSecurityService.currentUser
-         def orgs = user.organizations
-         def c = OperationalTemplateIndexShare.createCriteria()
-         def shares = c.list {
-            // exists an OPT with uid or template id?
-            opt {
-               or {
-                  eq('uid', opt_uid)
-                  eq('templateId', opt_template_id)
-               }
-            }
-            // only for the current user orgs
-            'in'('organization', orgs)
-         }
-         
-         // 1. there is one share, with the session org => overwrite if specified
-         // 2. there is one share, with another org of the current user => can't overwrite, should upload the OPT and overwrite while logged with that org
-         // 3. there are many shares => can't overwrite, should remove the shares first
-         
-         if (shares.size() == 1)
-         {
-            //println "shares size is 1"
-            if (shares[0].organization.id != session.organization.id)
-            {
-               errors << message(code:"opt.upload.error.alreadyExistsNotInOrg", args:[shares[0].organization.name, session.organization.name]) //"There exists an OPT with the same uid or templateId shared with another of your organizations (${shares[0].organization.name}), login with that organization to overwrite or share the OPT from that org iwth the current organization (${session.organization.name})"
-               return [errors: errors]
-            }
             
-            // Can overwrite if it was specified
-            if (overwrite) // OPT exists and the user wants to overwrite
+            res = [status:'error', message:'Incorrect root type', errors: errors]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
+         }
+         
+         // /ROOT VALIDATION
+         
+         
+         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+         
+         
+         // OPT VERSIONING
+         
+         def setId, versionNumber
+         
+         // Check uniqueness of the OPT inside the org
+         def alternatives = OperationalTemplateIndex.forOrg(session.organization)
+                                            .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
+                                            .lastVersions
+                                            .list()
+         if (alternatives.size() > 0)
+         {
+            if (!versionOfTemplateUid)
             {
-               def existing_opt = shares[0].opt
-               def existing_file = new File(config.opt_repo.withTrailSeparator() + existing_opt.fileUid + '.opt')
-               existing_file.delete()
+               // start the new versioning process for OPTs
                
-               // delete all the indexes of the opt
-               indexer.deleteOptReferences(existing_opt)
+               res = [status:'resolve_duplicate', message:'Found some templates that might be the same or older versions of the one you try to upload. Choose one of the alternatives to upload a new version of that OPT or if it is a new OPT, change the the UID of the OPT you want to update.', alternatives: alternatives]
+               render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+               return
             }
             else
             {
-               errors << message(code:"opt.upload.error.alreadyExists")
-               return [errors: errors]
+               def old_version = alternatives.find{ it.uid == versionOfTemplateUid }
+               
+               if (!old_version)
+               {
+                  // invalid uid
+                  res = [status:'resolve_duplicate', message:'OPT UID not found, please select one OPT from the list.', alternatives: alternatives]
+                  render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+                  return
+               }
+               
+               // the user selected an OPT different than the one that has the same internal UID?
+               def same_uid_opts = alternatives.findAll{ it.externalUid == opt_uid }
+
+               if (same_uid_opts.size() > 1 || same_uid_opts[0].id != old_version.id)
+               {
+                  // Select same_uid_opts[0] as version or change the uploaded OPT UID
+                  res = [status:'resolve_duplicate', message:'There is another OPT '+ same_uid_opts[0].concept +' that has the same UID as the one you uploaded. Select that OPT to version or change the UID of the OPT you uploaded.', alternatives: alternatives]
+                  render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+                  return
+               }
+               
+               // old version update
+               old_version.lastVersion = false
+               old_version.save()
+               
+               // data for new version
+               setId = old_version.setId
+               versionNumber = old_version.versionNumber + 1
+               
+               // move old version outside the OPT repo
+               def old_version_file = new File( opt_repo_org_path + old_version.fileUid + '.opt' )
+               def old_versions_folder = 
+               old_version_file.renameTo( new File( opt_repo_org_path + 'older_versions'.withTrailSeparator() + old_version_file.name ) )
+               
+               // create new version
+               // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
+               // DONE: if everything is OK, create the new version with the same setId and +1 versionNumber, put lastVersion in false to the previous version.
+               // DONE: all uses of OPTs should get the latest version of the OPT using the lastVersion flag
+               // DONE: move the older version OPT to another folder so OPTManager can load only the latest versions
             }
          }
-         else if (shares.size() > 1)
-         {
-            //println "shares size is > 1"
-            errors << message(code:"opt.upload.error.alreadyExistsInManyOrgs", args:[session.organization.name])
-            return [errors: errors]
-         }
-         else
-         {
-            //println "shares size is 0"
-         }
+
          
-         def opt = indexer.createOptIndex(template, session.organization) // saves OperationalTemplateIndex
+         // Will index the opt nodes, and help deleting existing ones when updating
+         def indexer = new OperationalTemplateIndexer()
+         
+         // saves OperationalTemplateIndex to the DB
+         def opt = indexer.createOptIndex(template, session.organization)
          
          // Prepare file
-         def destination = config.opt_repo.withTrailSeparator() + opt.fileUid + '.opt' //f.getOriginalFilename()
+         def destination = opt_repo_org_path + opt.fileUid + '.opt'
          File fileDest = new File( destination )
          fileDest << xml
          
@@ -201,26 +237,33 @@ class OperationalTemplateController {
          
          flash.message = g.message(code:"opt.upload.success")
          
-         opt.isPublic = (params.isPublic != null)
+         // versioning if needed
+         if (setId)
+         {
+            opt.setId = setId
+            opt.versionNumber = versionNumber
+         }
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          indexer.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         indexer.index(template, null, session.organization, true)
+         indexer.index(template, null, session.organization)
 
          
          // load opt in manager cache
-         // TODO: just load the newly created ones
+         // TODO: just load the newly created/updated one
          def optMan = OptManager.getInstance()
-         optMan.unloadAll()
-         optMan.loadAll()
+         optMan.unloadAll(session.organization.uid)
+         optMan.loadAll(session.organization.uid)
          
-         redirect action:'show', params:[uid:opt.uid]
+         res = [status:'ok', message:'OPT added to the organization', opt: opt]
+         
+         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
    }
    
    def show(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = 'Template not found'
@@ -228,14 +271,14 @@ class OperationalTemplateController {
          return
       }
       
-      def opt_file = new File(config.opt_repo.withTrailSeparator() + opt.fileUid +".opt")
+      def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
       
       [opt_xml: opt_file.getText(), opt: opt]
    }
    
    def items(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       
       if (!opt)
       {
@@ -255,7 +298,7 @@ class OperationalTemplateController {
    
    def archetypeItems(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUid(uid)
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       
       if (!opt)
       {

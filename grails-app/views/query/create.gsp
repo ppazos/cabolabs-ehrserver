@@ -2053,8 +2053,13 @@ resp.responseJSON.result.message +'</div>'
                     </span>
                   </td>
                   <td>
-                    <g:select name="templateId" size="5"
-                              from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
+                    <%-- TODO: optionKey should be the UID --%>
+                    <g:select name="templateId"
+                              size="5" 
+                              from="${templateIndexes}"
+                              optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
+                              optionKey="templateId" 
+                              class="form-control withsize"/>
                   </td>
                 </tr>
                 <tr>
@@ -2160,8 +2165,13 @@ resp.responseJSON.result.message +'</div>'
                     </span>
                   </td>
                   <td>
-                    <g:select name="dv_templateId" size="5"
-                              from="${OperationalTemplateIndex.withCriteria{ projections{ property("templateId") } } }" class="form-control withsize" />
+                    <%-- TODO: optionKey should be the UID --%>
+                    <g:select name="dv_templateId"
+                              size="5" 
+                              from="${templateIndexes}"
+                              optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
+                              optionKey="templateId" 
+                              class="form-control withsize"/>
                   </td>
                 </tr>
                 <tr>

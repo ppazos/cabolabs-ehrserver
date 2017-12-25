@@ -210,7 +210,7 @@
                 <i class="glyphicon glyphicon-file gi-4x"></i>
               </div>
               <div class="col-xs-9 text-right">
-                <div class="huge">${OperationalTemplateIndex.count()}</div>
+                <div class="huge">${OperationalTemplateIndex.countByOrganizationUid(session.organization.uid)}</div>
                 <div><g:message code="desktop.templates" /></div>
               </div>
             </div>

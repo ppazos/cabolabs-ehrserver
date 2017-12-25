@@ -37,7 +37,7 @@ import java.io.FileNotFoundException
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
-import com.cabolabs.openehr.opt.manager.OptManager
+//import com.cabolabs.openehr.opt.manager.OptManager
 
 import com.cabolabs.security.User
 import com.cabolabs.ehrserver.notification.Notification
@@ -51,7 +51,7 @@ class DataIndexerService {
    
    def generateIndexes(CompositionIndex compoIndex)
    {
-      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
+      //def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
       
       // created indexes will be loaded here
       def indexes = []
@@ -67,7 +67,7 @@ class DataIndexerService {
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
 
-      // This filters by org on the OptShare
+
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
       {

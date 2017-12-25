@@ -63,10 +63,10 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          templateId: 'simple_encounter_en.v1', 
          concept: 'simple_encounter_en.v1',
          language: 'ISO_639-1::en',
-         uid: optUid,
+         externalUid: optUid,
          archetypeId: 'openEHR-EHR-COMPOSITION.encounter.v1',
          archetypeConcept: 'encounter',
-         isPublic: false
+         organizationUid: orgUid
       )
       
       opt.save(failOnError: true)
@@ -103,7 +103,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       org.delete()
 
       
-      def opt = OperationalTemplateIndex.findByUid(optUid)
+      def opt = OperationalTemplateIndex.findByExternalUid(optUid)
       opt.delete()
    }
 
@@ -130,34 +130,6 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
          
          resourceService.cleanSharesQuery(query)
          def shares2 = QueryShare.list()
-      then:
-         assert shares1.size() == 1
-         assert shares2.size() == 0
-   }
-   
-   void "shareOpt"()
-   {
-      when:
-         def opt = OperationalTemplateIndex.findByUid(optUid)
-         def org = Organization.findByUid(orgUid)
-         resourceService.shareOpt(opt, org)
-         def shares = OperationalTemplateIndexShare.list()
-      then:
-         assert shares.size() == 1
-         assert shares[0].opt.uid == optUid
-         assert shares[0].organization.uid == orgUid
-   }
-   
-   void "cleanSharesOpt"()
-   {
-      when:
-         def opt = OperationalTemplateIndex.findByUid(optUid)
-         def org = Organization.findByUid(orgUid)
-         resourceService.shareOpt(opt, org)
-         def shares1 = OperationalTemplateIndexShare.list()
-         
-         resourceService.cleanSharesOpt(opt)
-         def shares2 = OperationalTemplateIndexShare.list()
       then:
          assert shares1.size() == 1
          assert shares2.size() == 0

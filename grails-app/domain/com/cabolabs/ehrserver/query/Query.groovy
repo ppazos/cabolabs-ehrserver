@@ -86,6 +86,7 @@ class Query {
    
    // true => shared with all the organizations
    boolean isPublic
+   boolean isDeleted = false
    
    // partial HQL query cached for this composition Query
    String cachedHQLWhere

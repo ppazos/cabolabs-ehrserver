@@ -1,0 +1,241 @@
+<versions xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<version xsi:type="ORIGINAL_VERSION">
+<contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>a7bdaf50-1595-4887-b3b7-8838f94f1a57</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>4f098bd7-588e-43a1-9430-61a3b6c61b06</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Tommie Corday</name>
+    </committer>
+    <time_committed>
+      <value>20171102T154735,717-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>7be5f482-89ab-4815-bfcd-07256770980c::CABOLABS-LOADEHR::1</value>
+  </uid>
+  <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.obstetric_history.v1">
+    <name>
+      <value>Historial obstétrico</value>
+    </name>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.obstetric_history.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>historial_obstetrico.es.v1</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>persistente</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>431</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>4f098bd7-588e-43a1-9430-61a3b6c61b06</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Tommie Corday</name>
+    </composer>
+    <content archetype_node_id="openEHR-EHR-EVALUATION.obstetric_summary.v0" xsi:type="EVALUATION">
+      <name>
+        <value>Antecedentes obstétricos</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF" />
+      <protocol archetype_node_id="at0008" xsi:type="ITEM_TREE">
+        <name>
+          <value>Arbol</value>
+        </name>
+        <items archetype_node_id="at0009" xsi:type="ELEMENT">
+          <name>
+            <value>Fecha de actualización</value>
+          </name>
+          <value xsi:type="DV_DATE_TIME">
+            <value>20171021T195711,000-0300</value>
+          </value>
+        </items>
+      </protocol>
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Arbol</value>
+        </name>
+        <items archetype_node_id="at0014" xsi:type="ELEMENT">
+          <name>
+            <value>¿Ha estado embarazada?</value>
+          </name>
+          <value xsi:type="DV_BOOLEAN">
+            <value>true</value>
+          </value>
+        </items>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>Gravidez</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>3</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0003" xsi:type="ELEMENT">
+          <name>
+            <value>Paridad</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>2</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0015" xsi:type="ELEMENT">
+          <name>
+            <value>Nacimientos a término</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>2</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0016" xsi:type="ELEMENT">
+          <name>
+            <value>Nacimientos pretermino</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0017" xsi:type="ELEMENT">
+          <name>
+            <value>Abortos</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0004" xsi:type="ELEMENT">
+          <name>
+            <value>Abortos involuntarios</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0005" xsi:type="ELEMENT">
+          <name>
+            <value>Embarazos interrumpidos</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0011" xsi:type="ELEMENT">
+          <name>
+            <value>Embarazos ectópicos</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0012" xsi:type="ELEMENT">
+          <name>
+            <value>Nacidos muertos</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0006" xsi:type="ELEMENT">
+          <name>
+            <value>Nacidos vivos</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>2</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0010" xsi:type="ELEMENT">
+          <name>
+            <value>Cesárea</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0018" xsi:type="ELEMENT">
+          <name>
+            <value>Nacimientos Múltiples (M)</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>0</magnitude>
+          </value>
+        </items>
+        <items archetype_node_id="at0007" xsi:type="ELEMENT">
+          <name>
+            <value>Nacidos viviendo</value>
+          </name>
+          <value xsi:type="DV_COUNT">
+            <magnitude>2</magnitude>
+          </value>
+        </items>
+      </data>
+    </content><!-- SLOT NOT PROCESSED -->
+  </data>
+  <lifecycle_state>
+    <value>complete</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
+</versions>

@@ -30,8 +30,8 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
+import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexShare
 import grails.converters.*
 import javax.servlet.http.Cookie
 import org.springframework.beans.propertyeditors.LocaleEditor
@@ -404,13 +404,20 @@ class SecurityFilters {
                      setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
                   }
                   session.organization = org // to show the org name in the ui
+                  
+                  // Load OPTS if not loaded for the current org
+                  def optMan = OptManager.getInstance()
+                  optMan.loadAll(org.uid)
                }
             }
             
          }
          after = { Map model ->
+            // this is AFTER: login authfail null when the login failed.
+            //println "AFTER: ${controllerName} ${actionName} ${model}"
          }
          afterView = { Exception e ->
+            //println "AFTER VIEW: ${controllerName} ${actionName}"
          }
       }
       
@@ -719,100 +726,6 @@ class SecurityFilters {
             params.query = query
          }
       }
-      
-      opt_share(controller:'resource', action:'saveSharesOpt') {
-         before = {
-            
-            if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
-            {
-               flash.message = "You need and higher role to edit the shares"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            
-            // Admins can share wiht any org
-            def canShareWithAnyOrg = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
-            
-            def auth = springSecurityService.authentication
-            def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
-            def user = User.findByUsername(un)
-            def orgs = user.organizations
-            
-            if (!params.uid)
-            {
-               flash.message = "Template UID is required"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-
-            def opt = OperationalTemplateIndex.findByUid(params.uid)
-            
-            if (!opt)
-            {
-               flash.message = "Template not found"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            
-            if (opt.isPublic)
-            {
-               flash.message = "Can't share a public template, make it private first"
-               chain controller: 'operationalTemplate', action: 'list'
-               return false
-            }
-            else
-            {
-               // for admins this is no needed, admin can be logged in with any org and share with any org
-               if (!canShareWithAnyOrg)
-               {
-                  // check if query is shared with the login org
-                  def shares = OperationalTemplateIndexShare.findAllByOpt(opt)
-                  def found = false
-                  shares.organization.each { share_org ->
-                     if (share_org.number == auth.organization)
-                     {
-                        found = true
-                        return true // break
-                     }
-                  }
-                  if (!found)
-                  {
-                     flash.message = "The opt is not shared with the organization used to login, please login with an organization that the tempalte is shared with"
-                     chain controller: 'operationalTemplate', action: 'list'
-                     return false
-                  }
-               }
-            }
-            
-            
-            // admins can do anything without being in the org
-            if (!canShareWithAnyOrg)
-            {
-               // check that all the org uids submitted are accessible by the user
-               def orgUids = params.list('organizationUid')
-               def orgNotInUserOrgs = false
-               orgUids.each { organizationUid ->
-                  if(!orgs.uid.contains(organizationUid))
-                  {
-                     orgNotInUserOrgs = true
-                     flash.message = "You don't have access to the specified organization ${organizationUid}"
-                     return true // break from each
-                  }
-               }
-               
-               if (orgNotInUserOrgs)
-               {
-                  chain controller: 'operationalTemplate', action: 'list'
-                  return false
-               }
-            }
-
-            // pass the opt as param to avoid making the query again in the controller
-            params.opt = opt // it can be set on request also
-            return true
-         }
-      } // opt_share
-
 
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {
