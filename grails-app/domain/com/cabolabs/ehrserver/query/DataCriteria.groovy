@@ -201,7 +201,9 @@ class DataCriteria {
             valueField = attr+'Value'
             value = this."$valueField" // can be a list
             negationField = attr+'Negation'
-            negation = this."$negationField"
+            
+            if (this.hasProperty(negationField))
+               negation = this."$negationField"
             
             criteriaValueType = criteria_spec[attr][operand]
             
