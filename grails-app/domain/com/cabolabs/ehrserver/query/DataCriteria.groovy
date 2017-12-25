@@ -202,6 +202,7 @@ class DataCriteria {
             value = this."$valueField" // can be a list
             negationField = attr+'Negation'
             
+            // not all DataCriteria have negation (boolean, identifier don't have negation fields)
             if (this.hasProperty(negationField))
                negation = this."$negationField"
             
