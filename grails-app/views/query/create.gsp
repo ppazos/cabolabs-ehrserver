@@ -1016,7 +1016,13 @@ resp.responseJSON.result.message +'</div>'
                     possible_values = conditions['mediaTypes'];
                     delete conditions['mediaTypes'];
                   break;
+                  case 'DV_BOOLEAN':
+                    possible_values = conditions['values'];
+                    delete conditions['values'];
+                  break;
                 }
+                
+                console.log(datatype, possible_values, conditions);
                 
                 //console.log('possible values', datatype, attr, possible_values);
                 //console.log('conditions', conditions);

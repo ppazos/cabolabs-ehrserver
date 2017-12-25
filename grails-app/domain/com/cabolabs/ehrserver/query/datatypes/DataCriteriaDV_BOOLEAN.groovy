@@ -51,7 +51,8 @@ class DataCriteriaDV_BOOLEAN extends DataCriteria {
       return [
          [
             value: [
-               eq:  'value'
+               eq:  'value',
+               values: [true:true, false:false]
             ]
          ]
       ]
