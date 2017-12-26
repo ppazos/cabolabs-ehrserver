@@ -938,6 +938,7 @@ resp.responseJSON.result.message +'</div>'
        */
       // For composition criteria builder
       var global_criteria_id = 0; // used to link data for the same criteria
+      var avoid_negation_for_types = ['DV_BOOLEAN', 'DV_IDENTIFIER'];
       var get_criteria_specs = function (datatype) {
 
         $.ajax({
@@ -990,9 +991,12 @@ resp.responseJSON.result.message +'</div>'
                 
                 conditions = aspec[attr]; // spec[0][code][eq] == value
                 
-                criteria += '<div class="col-sm-1">'
-                criteria += '${message(code:"query.create.criteria.not")} <input type="checkbox" name="negation" />'
-                criteria += '</div>'
+                if (avoid_negation_for_types.indexOf(datatype) < 0)
+                {
+                  criteria += '<div class="col-sm-1">'
+                  criteria += '${message(code:"query.create.criteria.not")} <input type="checkbox" name="negation" />'
+                  criteria += '</div>'
+                }
                 
                 criteria += '<div class="col-sm-4">'
                 criteria += '<select class="operand '+ attr +' form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
