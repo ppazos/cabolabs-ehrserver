@@ -92,6 +92,7 @@
       // globals
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
       var get_concepts_url = '${createLink(controller:"query", action:"getConcepts")}';
+      var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getArchetypesInTemplate")}';
       var current_criteria_spec; // set by getCriteriaSpec
       
       <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>
@@ -1946,20 +1947,23 @@ resp.responseJSON.result.message +'</div>'
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover">
                   <tr>
-                    <th><g:message code="query.create.attribute" /></th>
-                    <th><g:message code="query.create.value" /></th>
+                    <td><g:message code="query.create.templates" /></td>
+                    <td>
+                      <select id="view_template_id" class="form-control" size="10">
+                        <option value=""><g:message code="query.create.templates.select_template" /></option>
+                      </select>
+                    </td>
                   </tr>
                   <tr>
                     <td>
                       <g:message code="query.create.concept_filters" /><br/>
                     </td>
-                    <td class="form-inline"><div class="form-group">
-                      <select id="concept_filter_templateid" class="form-control">
-                        <option value=""><g:message code="query.create.concept_filter.any_template" /></option>
-                      </select>
-                      <select id="concept_filter_archetypeid" class="form-control">
-                        <option value=""><g:message code="query.create.concept_filter.any_archetype" /></option>
-                      </select>
+                    <td class="form-inline">
+                      <div class="form-group">
+                        
+                        <select id="concept_filter_archetypeid" class="form-control">
+                          <option value=""><g:message code="query.create.concept_filter.any_archetype" /></option>
+                        </select>
                       </div>
                     </td>
                   </tr>
@@ -2057,7 +2061,7 @@ resp.responseJSON.result.message +'</div>'
                     </span>
                   </td>
                   <td>
-                    <%-- TODO: optionKey should be the UID --%>
+                    <%-- If two OPTs generated from the same template are uploaded, here we can have the samte templateId twice --%>
                     <g:select name="templateId"
                               size="5" 
                               from="${templateIndexes}"
@@ -2169,7 +2173,7 @@ resp.responseJSON.result.message +'</div>'
                     </span>
                   </td>
                   <td>
-                    <%-- TODO: optionKey should be the UID --%>
+                    <%-- If two OPTs generated from the same template are uploaded, here we can have the samte templateId twice --%>
                     <g:select name="dv_templateId"
                               size="5" 
                               from="${templateIndexes}"

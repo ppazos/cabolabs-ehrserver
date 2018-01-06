@@ -100,9 +100,13 @@ class QueryController {
 
    def create()
    {
+      /*
+      templateIndexes: used for the filter by document type
+      dataIndexes is not being used
+      */
       [
        queryInstance: new Query(params),
-       dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+       //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
        templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
@@ -137,7 +141,7 @@ class QueryController {
            view: 'create',
            model: [
              queryInstance: query,
-             dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+             //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
              templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
              queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
              mode: 'edit'
@@ -177,7 +181,7 @@ class QueryController {
         view: 'create',
         model: [
           queryInstance: queryInstance,
-          dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
+          //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
           templateIndexes: OperationalTemplateIndex.findAllByOrganizationUid(session.organization.uid), // queries can be created for any version of the OPT
           queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
@@ -434,6 +438,20 @@ class QueryController {
    }
    
    
+   def getArchetypesInTemplate(String template_id)
+   {
+      def list = ArchetypeIndexItem.withCriteria {
+      
+         parentOpts {
+            eq('templateId', template_id)
+         }
+      
+         eq('path', '/')
+      }
+      
+      render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+   }
+   
    /**
     * Devuelve una lista de ArchetypeIndexItem.
     *
@@ -571,6 +589,8 @@ class QueryController {
          }
       }
    }
+   
+   // TOOD: move to query group controller
    
    // query group list
    def groups()
