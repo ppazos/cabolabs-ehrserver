@@ -443,10 +443,15 @@ class QueryController {
       def list = ArchetypeIndexItem.withCriteria {
       
          parentOpts {
-            eq('templateId', template_id)
+            and {
+               eq('templateId', template_id)
+               eq('organizationUid', session.organization.uid)
+            }
          }
       
          eq('path', '/')
+         
+         order("archetypeId", "asc")
       }
       
       render(text:(list as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
@@ -455,19 +460,12 @@ class QueryController {
    /**
     * Devuelve una lista de ArchetypeIndexItem.
     *
-    * Accion AJAX/JSON, se usa desde queryByData GUI.
-    *
     * se usa en query create cuando el usuario selecciona el arquetipo
     * esta accion le devuelve los indices definidos para ese arquetipo
     * con: path, nombre, tipo rm, ...
-    *
-    * @param archetypeId
-    * @return
     */
-   def getArchetypePaths(String archetypeId, boolean datatypesOnly)
+   def getArchetypePaths(String template_id, String archetypeId, boolean datatypesOnly)
    {
-      // TODO: checkear params
-
       def datatypes = DataValues.valuesStringList()
       
       def list = ArchetypeIndexItem.withCriteria {
@@ -476,6 +474,13 @@ class QueryController {
          if (datatypesOnly)
          {
            'in'('rmTypeName', datatypes)
+         }
+         
+         parentOpts {
+            and {
+               eq('templateId', template_id)
+               eq('organizationUid', session.organization.uid)
+            }
          }
          
          order("path", "asc")

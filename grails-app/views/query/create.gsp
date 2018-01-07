@@ -879,32 +879,13 @@ resp.responseJSON.result.message +'</div>'
       // COMMON QUERY CREATE/EDIT ========
       // =================================
       
-      var get_and_render_archetype_paths = function (archetype_id) {
+      var get_and_render_archetype_paths = function (template_id, archetype_id) {
 
         $.ajax({
           url: '${createLink(controller:"query", action:"getArchetypePaths")}',
-          data: {archetypeId: archetype_id, datatypesOnly: true},
+          data: {template_id: template_id, archetypeId: archetype_id, datatypesOnly: true},
           dataType: 'json',
           success: function(data, textStatus) {
-          
-            /*
-            didx
-             {
-               "class": "com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem",
-               "id": 38,
-               "archetypeId": "openEHR-EHR-INSTRUCTION.medication_order.v1",
-               "name": {
-                  "ISO_639-1::en": "Order.action_archetype_id"
-               },
-               "parentOpts": [{
-                  "class": "com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex",
-                  "id": 2
-               }],
-               "path": "/activities[at0001]/action_archetype_id",
-               "rmTypeName": "String",
-               "terminologyRef": null
-            }
-            */
 
             // Saca las options que haya
             $('select[name=view_archetype_path]').empty();
@@ -1509,7 +1490,7 @@ resp.responseJSON.result.message +'</div>'
              
              // similar code to dom_add_criteria_2 in JS
              
-             def attrs, attrValueField, attrOperandField, value, operand, name
+             def attrs, attrValueField, attrOperandField, attrNegationField, value, operand, name
              println 'var criteria;'
              
              queryInstance.where.each { data_criteria ->
@@ -1522,9 +1503,13 @@ resp.responseJSON.result.message +'</div>'
                 
                    attrValueField = attr + 'Value' 
                    attrOperandField = attr + 'Operand'
+                   attrNegationField = attr + 'Negation'
                    operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
-                   negation = data_criteria.negation
+                   
+                   // DV_BOOLEAN doesn't have negation, just checking
+                   if (data_criteria.hasProperty(attrNegationField))
+                      negation = data_criteria."$attrNegationField"
                    
                    // TODO
                    // date?.format(Holders.config.app.l10n.db_datetime_format)
@@ -1758,7 +1743,8 @@ resp.responseJSON.result.message +'</div>'
           $('#composition_criteria_builder').empty();
         
           var archetype_id = $(this).val(); // arquetipo seleccionado
-          get_and_render_archetype_paths(archetype_id);
+          var template_id  = $('#view_template_id').val();
+          get_and_render_archetype_paths(template_id, archetype_id);
           
         }); // click en select view_archetype_id
         
@@ -1952,19 +1938,6 @@ resp.responseJSON.result.message +'</div>'
                       <select id="view_template_id" class="form-control" size="10">
                         <option value=""><g:message code="query.create.templates.select_template" /></option>
                       </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <g:message code="query.create.concept_filters" /><br/>
-                    </td>
-                    <td class="form-inline">
-                      <div class="form-group">
-                        
-                        <select id="concept_filter_archetypeid" class="form-control">
-                          <option value=""><g:message code="query.create.concept_filter.any_archetype" /></option>
-                        </select>
-                      </div>
                     </td>
                   </tr>
                   <tr>
