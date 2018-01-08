@@ -655,8 +655,6 @@ class OperationalTemplateIndexer {
               <children xsi:type="C_COMPLEX_OBJECT">
                 <rm_type_name>DV_BOOLEAN</rm_type_name>
           */
-         //def valueNode = node.attributes.find { it.rm_attribute_name.text() == "value" }
-         //def type = valueNode.children[0].rm_type_name.text() // DV_BOOLEAN
          
          def type = node.rm_type_name.text() // DV_BOOLEAN
          def archIndexIndex = new ArchetypeIndexItem(
@@ -683,6 +681,35 @@ class OperationalTemplateIndexer {
          
          indexes << archIndexIndex
          indexes << optIndexItem
+         
+         // https://github.com/ppazos/cabolabs-ehrserver/issues/748
+         // if type is text, create also coded text index if it is not present as an alternative for the same path
+         // to support runtime defined inheritance instead of design time inheritance where the coded text is
+         // defined in the archetype or template explicitly
+         if (type == 'DV_TEXT')
+         {
+            // check if there is no sibling node with alternative type coded text
+            def alternative_types = node.parent().children().rm_type_name*.toString()
+            if (!alternative_types.contains('DV_CODED_TEXT'))
+            {
+               archIndexIndex = new ArchetypeIndexItem(
+                 archetypeId: parent.archetype_id.value.text(),
+                 path: archetypePath,
+                 rmTypeName: 'DV_CODED_TEXT',
+                 name: [(getTemplateLanguage(this.template)): description]
+               )
+               
+               optIndexItem = new OperationalTemplateIndexItem(
+                  templateId: this.template.template_id.text(),
+                  path: path,
+                  rmTypeName: 'DV_CODED_TEXT',
+                  name: description
+               )
+               
+               indexes << archIndexIndex
+               indexes << optIndexItem
+            }
+         }
       }
       
       
