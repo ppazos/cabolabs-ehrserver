@@ -615,17 +615,6 @@ resp.responseJSON.result.message +'</div>'
          }
          else if (action == 'test')
          {
-            //console.log('ehrUid', $('select[name=qehrId]').val());
-            
-            // Validacion
-            /*
-            if ($('select[name=qehrId]').val()==null)
-            {
-              alert('Please select an EHR');
-              return false;
-            }
-            */
-
             if ($('select[name=type]').val()=='composition')
             {
                test_query_composition();
@@ -1730,6 +1719,15 @@ resp.responseJSON.result.message +'</div>'
             // this needs to be here because it is needed to add_criteria and add_projection
             query.set_type(this.value);
           }
+          
+          // https://github.com/ppazos/cabolabs-ehrserver/issues/728
+          // reset results if a previous test was executed
+          $('#results').empty();
+          $('#chartContainer').empty();
+          var code = $('#code');
+          code.removeClass('xml json');
+          code.empty();
+          code.hide();
         });
         
         
