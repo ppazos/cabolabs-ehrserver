@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.security.Organization" %><!doctype html>
+<%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem" %><!doctype html>
 <html>
   <head>
     <meta name="layout" content="admin">
@@ -65,6 +65,7 @@
               <tr>
                 <th>archetypeId</th>
                 <th>path</th>
+                <th>name</th>
               </tr>
                <g:each in="${queryInstance.select}" var="s">
                  <!--
@@ -73,6 +74,7 @@
                 <tr>
                   <td>${s.archetypeId}</td>
                   <td>${s.path}</td>
+                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(s.archetypeId, s.path).name['ISO_639-1::'+ session.lang]}</td>
                 </tr>
               </g:each>
             </table>
@@ -85,6 +87,7 @@
               <tr>
                 <th>archetypeId</th>
                 <th>path</th>
+                <th>name</th>
                 <th>conditions</th>
               </tr>
               <g:each in="${queryInstance.where}" var="w">
@@ -92,6 +95,7 @@
                 <tr>
                   <td>${w.archetypeId}</td>
                   <td>${w.path}</td>
+                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(w.archetypeId, w.path).name['ISO_639-1::'+ session.lang]}</td>
                   <td>${w.toSQL()}</td>
                 </tr>
               </g:each>
