@@ -1540,8 +1540,8 @@ resp.responseJSON.result.message +'</div>'
                       println 'criteria.add_condition("'+
                          attr +'", "'+
                          operand +'", [ "'+
-                         value +'", '+
-                         negation +'" ]);'
+                         value +'"], '+
+                         negation +');'
                    }
                    
                 } // each attr
@@ -1853,7 +1853,12 @@ resp.responseJSON.result.message +'</div>'
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="query.create.title" /></h1>
+        <g:if test="${['create', 'save'].contains(actionName)}">
+          <h1><g:message code="query.create.title" /></h1>
+        </g:if>
+        <g:else>
+          <h1><g:message code="query.edit.title" /></h1>
+        </g:else>
       </div>
     </div>
     <div class="row row-grid">
