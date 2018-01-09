@@ -1959,7 +1959,7 @@ resp.responseJSON.result.message +'</div>'
                     <td><g:message code="query.create.datapoint" /></td>
                     <td>
                       <%-- Se setean las options al elegir un arquetipo --%>
-                      <select name="view_archetype_path" size="10" class="form-control withsize">
+                      <select name="view_archetype_path" id="view_archetype_path" size="10" class="form-control withsize">
                         <option><g:message code="query.create.please_select_concept" /></option>
                       </select>
                       <div>

@@ -83,6 +83,13 @@ templateid_select.onchange = function (ev) {
   
     console.log(aiis);
     
+    // empty paths if previous archetype was selected
+    var path_select = document.getElementById('view_archetype_path');
+    var default_option = path_select.children[0];
+    path_select.innerHTML = '';
+    path_select.add(default_option);
+    
+    
     // remder archetypes
     var select = document.getElementById('view_archetype_id'); // view_archetype_id
     
@@ -113,7 +120,6 @@ templateid_select.onchange = function (ev) {
         archetypes.push(aii.archetypeId);
       }
     });
-    
   });
 };
 
