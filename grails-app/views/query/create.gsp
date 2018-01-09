@@ -1960,7 +1960,7 @@ resp.responseJSON.result.message +'</div>'
                     <td>
                       <%-- Se setean las options al elegir un arquetipo --%>
                       <select name="view_archetype_path" id="view_archetype_path" size="10" class="form-control withsize">
-                        <option><g:message code="query.create.please_select_concept" /></option>
+                        <option><g:message code="query.create.please_select_datapoint" /></option>
                       </select>
                       <div>
                         <label><input type="checkbox" name="display_null_flavour" /> <g:message code="query.create.label.displayNullFlavours" /></label>
