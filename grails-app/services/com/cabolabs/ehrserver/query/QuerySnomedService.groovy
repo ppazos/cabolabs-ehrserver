@@ -20,6 +20,7 @@ class QuerySnomedService {
          uri.query = [cache: 'true']
          send URLENC, [query: snomedExpr]
          headers.Accept = 'application/json'
+         headers.Authorization = 'Bearer 22222222-2222-2222-2222-222222222222' // FIXME: get from config
        
          response.success = { resp, json ->
             println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
@@ -57,6 +58,7 @@ class QuerySnomedService {
          uri.query = [cache: 'true']
          send URLENC, [query: snomedExpr]
          headers.Accept = 'application/json'
+         headers.Authorization = 'Bearer 22222222-2222-2222-2222-222222222222' // FIXME: get from config
        
          response.success = { resp, json ->
             println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
