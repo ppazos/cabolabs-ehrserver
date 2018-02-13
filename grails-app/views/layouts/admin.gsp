@@ -172,7 +172,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="https://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a><!-- <asset:image src="cabolabs_logo.png" class="img-responsive" /> -->
+          <a href="https://www.cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a><!-- <asset:image src="cabolabs_logo.png" class="img-responsive" /> -->
         </div>
 
         <!-- TOP MENU -->
@@ -306,8 +306,8 @@
             <h4 class="modal-title" id="license_modal_label">License Notice</h4>
           </div>
           <div class="modal-body">
-            <p>Copyright 2011-2017 <a href="https://cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
-            <p>The EHRServer was designed and developed by Pablo Pazos Gutierrez &lt;pablo.pazos@cabolabs.com&gt; at CaboLabs Health Informatics (<a href="http://cabolabs.com" target="_blank">www.cabolabs.com</a>).</p>
+            <p>Copyright 2011-2017 <a href="https://www.cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
+            <p>The EHRServer was designed and developed by Pablo Pazos Gutierrez &lt;pablo.pazos@cabolabs.com&gt; at CaboLabs Health Informatics (<a href="https://www.cabolabs.com" target="_blank">www.cabolabs.com</a>).</p>
             <p>You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.</p>
             <p>Any modifications to the provided source code can be stated below this notice.
             <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.

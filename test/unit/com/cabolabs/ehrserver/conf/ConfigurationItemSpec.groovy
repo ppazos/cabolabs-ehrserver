@@ -37,7 +37,7 @@ class ConfigurationItemSpec extends Specification {
    void "test validation OK URL"()
    {
       when:
-         def conf = new ConfigurationItem(key:'a.b.c', value:'https://cabolabs.com', type:'url', blank:false, description:'my config item')
+         def conf = new ConfigurationItem(key:'a.b.c', value:'https://www.cabolabs.com', type:'url', blank:false, description:'my config item')
       then:
          conf.validate()
    }

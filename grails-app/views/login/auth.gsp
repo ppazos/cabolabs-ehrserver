@@ -131,11 +131,8 @@
 	       <span class="icon-bar"></span>
 	     </button>
         -->
-	     <!-- LOGO -->
-	     <a href="http://cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a>
-	     <!-- /LOGO -->
+	     <a href="https://www.cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a>
 	   </div>
-	   <!-- /.navbar-header -->
 	
 	   <g:set var="locale" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}" />
       <ul class="nav navbar-top-links navbar-right">

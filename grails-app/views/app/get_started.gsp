@@ -107,7 +107,7 @@
       <div class="col-lg-12">
         <h2>3. <g:message code="app.get_started.forum" /></h2>
         <p><g:message code="app.get_started.forum.text" /></p>
-        <a href="http://cabolabs.com/forum/categories/ehrserver" target="_blank"><g:message code="app.get_started.forum.link" /></a>
+        <a href="https://www.cabolabs.com/forum/categories/ehrserver" target="_blank"><g:message code="app.get_started.forum.link" /></a>
         <br/><br/>
       </div>
       <div class="col-lg-12">
