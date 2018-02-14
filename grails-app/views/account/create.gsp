@@ -24,7 +24,7 @@
           </ul>
         </g:hasErrors>
        
-        <g:form url="[resource:account, action:'save']" >
+        <g:form url="[resource:account, action:'save']" method="POST">
           <fieldset class="form">
             <g:render template="form"/>
             <div class="btn-toolbar" role="toolbar">

@@ -25,8 +25,11 @@ package com.cabolabs.ehrserver.account
 import grails.transaction.Transactional
 import com.cabolabs.security.*
 
+
 @Transactional(readOnly = true)
 class AccountController {
+
+   def notificationService
 
    // Only admins can see the list of all the Accounts, each AccountManager 
    // will see just his Account, other Roles won't have access to the Account.
@@ -61,8 +64,11 @@ class AccountController {
    {
    }
    
+   /**
+    * Creates the account manager user, the account, the organization, and the user role.
+    */
    @Transactional
-   def save(Account account)
+   def save(Account account, String username, String email, String organization)
    {
       if (!account)
       {
@@ -71,15 +77,60 @@ class AccountController {
          return
       }
       
-      if (!account.save(flush:true))
+      
+      // 1. Account setup: create account manager user
+      def accman = new User(username: username, email: email)
+      account.contact = accman
+      
+      if (!accman.save(flush: true))
+      {
+         flash.message = message(code:'account.contact.save.error')
+         render (view: 'create', model: [account: account])
+         return
+      }
+      
+      
+      // 2. Account setup: create account
+      if (!account.validate())
       {
          flash.message = message(code:'account.save.error')
          render (view: 'create', model: [account: account])
          return
       }
+      
+      
+      // 3. Account setup: create organization
+      def org = new Organization(name: organization)
+      account.addToOrganizations(org)
+      
+      if (!org.validate())
+      {
+         println org.errors
+         flash.message = message(code:'account.organization.validate.error')
+         render (view: 'create', model: [account: account, organization: org])
+         return
+      }
+      
+      account.save(failOnError: true) // saves the org
+      
+      
+      // 4. Account setup: get ACCMAN role
+      def accmanRole = Role.findByAuthority(Role.AM)
+      
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+      
+      
+      // send password reset email to the account manager
+      // TODO: schedule emails
+      // token to create the URL for the email is in the userInstance
+      notificationService.sendUserRegisteredOrCreatedEmail( accman.email, [accman] )
+      
 
+      
       flash.message = message(code:'account.save.ok', args:[account.id])
-      redirect action:'index'
+      redirect action:'show', id: account.id
    }
    
    def edit(Account account)

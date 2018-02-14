@@ -593,9 +593,9 @@ class UserController {
                
                
                // associate the basic plan to the new org
-               // TODO: for cloud we need a plan selector but initially accounts will be created by an admin not by user register
+               // TODO: for cloud we need a plan selector but initially accounts will be
+               // created by an admin not by user register
                def p1 = Plan.get(1)
-               //p1.associate( o )
                p1.associate(account)
             }
             catch (ValidationException e)
