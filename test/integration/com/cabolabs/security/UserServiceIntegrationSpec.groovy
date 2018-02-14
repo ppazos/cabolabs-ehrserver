@@ -1,12 +1,14 @@
 package com.cabolabs.security
 
 import grails.test.spock.IntegrationSpec
+import com.cabolabs.ehrserver.account.*
 
 class UserServiceIntegrationSpec extends IntegrationSpec {
 
    def userService
    
-   private static String PS = System.getProperty("file.separator")
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
+   private static String PS  = System.getProperty("file.separator")
    
    /**
     * Be careful: integrations tests run the bootstrap!
@@ -14,9 +16,27 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      //println Role.count() // 5
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
       
-      def org = new Organization(name: 'Test Org', number: '556677').save(failOnError:true, flush: true)
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+   
       
       def user = new User(username: 'testuser', password: 'testuser', email: 'user@domain.com', organizations: [org]).save(failOnError:true, flush: true)
       
@@ -31,6 +51,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
    def cleanup()
    {
       // deletes the created instances
+      /*
       def user = User.findByUsername("testuser")
       def role = Role.findByAuthority('ROLE_XYZ')
       def org = Organization.findByNumber("556677")
@@ -42,6 +63,13 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
       User.findByUsername("norole").delete(flush: true)
       
       org.delete(flush: true)
+      */
+      
+      Account.list()*.delete() // should delete the orgs
+      
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
    }
 
    void "test getByUsername existing user"()

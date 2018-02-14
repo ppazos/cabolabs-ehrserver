@@ -4,16 +4,17 @@ import grails.test.spock.IntegrationSpec
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.security.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
+import com.cabolabs.ehrserver.account.*
 
 class ResourceServiceIntegrationSpec extends IntegrationSpec {
 
    def resourceService
 
-   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String ehrUid     = '11111111-1111-1111-1111-111111111123'
    private String patientUid = '11111111-1111-1111-1111-111111111145'
-   private String orgUid = '11111111-1111-1111-1111-111111111178'
-   private String optUid = '47f1ce25-2050-479f-a6a6-3f4700428b1a'
-   private String queryUid = '191138e0-24e8-46d5-8789-ca2fde09a321'
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
+   private String optUid     = '47f1ce25-2050-479f-a6a6-3f4700428b1a'
+   private String queryUid   = '191138e0-24e8-46d5-8789-ca2fde09a321'
    
    private createAdmin()
    {
@@ -25,12 +26,6 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       def adminRole = new Role(authority: Role.AD).save(failOnError: true, flush: true)
       
       UserRole.create( user, adminRole, Organization.findByUid(orgUid), true )
-   }
-   
-   private createOrganization()
-   {
-      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
-      org.save(failOnError: true)
    }
    
    private createQuery()
@@ -74,7 +69,28 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
 
    def setup()
    {
-      createOrganization()
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+      
+      
       createAdmin()
       
       createQuery()
@@ -92,7 +108,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       
       query.delete()
       
-      
+      /*
       def user = User.findByUsername("testadmin")
       def role = Role.findByAuthority(Role.AD)
       def org = Organization.findByUid(orgUid)
@@ -101,6 +117,12 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
       user.delete(flush: true)
       
       org.delete()
+      */
+      Account.list()*.delete() // should delete the orgs
+
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
 
       
       def opt = OperationalTemplateIndex.findByExternalUid(optUid)

@@ -10,7 +10,8 @@ import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
+import com.cabolabs.ehrserver.account.*
 
 import groovy.io.FileType
 import spock.lang.Ignore
@@ -31,17 +32,10 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    def xmlService
    def config = Holders.config
    
-   private static String PS = System.getProperty("file.separator")
-   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private static String PS  = System.getProperty("file.separator")
+   private String ehrUid     = '11111111-1111-1111-1111-111111111123'
    private String patientUid = '11111111-1111-1111-1111-111111111145'
-   private String orgUid = '11111111-1111-1111-1111-111111111178'
-   
-   private createOrganization()
-   {
-      println "NEW ORGANIZATION XmlService"
-      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
-      org.save(failOnError: true)
-   }
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
    
    private createEHR()
    {
@@ -56,10 +50,30 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       ehr.save(failOnError: true)
    }
    
-   
    def setup()
    {
-      createOrganization()
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+   
+
       createEHR()
    }
 
@@ -77,8 +91,11 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       println CompositionIndex.count()
       */
       
-      def org = Organization.findByUid(orgUid)
-      org.delete(flush: true)
+      Account.list()*.delete() // should delete the orgs
+
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
    }
 
    

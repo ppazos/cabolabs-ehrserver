@@ -4,36 +4,31 @@ import grails.test.spock.IntegrationSpec
 
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.security.*
+import com.cabolabs.ehrserver.account.*
 
 class EhrControllerIntegrationSpec extends IntegrationSpec {
 
    EhrController controller = new EhrController()
    
-   private static String PS = System.getProperty("file.separator")
-   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private static String PS  = System.getProperty("file.separator")
+   private String ehrUid     = '11111111-1111-1111-1111-111111111123'
    private String patientUid = '11111111-1111-1111-1111-111111111145'
-   private String orgUid = '11111111-1111-1111-1111-111111111178'
-   
-   private createOrganization()
-   {
-      println "NEW ORGANIZATION EhrController"
-      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
-      org.save(failOnError: true)
-   }
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
    
    private createAdmin()
    {
       println "createAdmin"
       def user = new User(
-         username: 'testadmin', password: 'testadmin',
-         email: 'testadmin@domain.com',
-         organizations: [Organization.findByUid(orgUid)]).save(failOnError:true, flush: true)
+         username: 'testadmin',
+         password: 'testadmin',
+         email: 'testadmin@domain.com'
+      ).save(failOnError:true, flush: true)
       
       def adminRole = new Role(authority: Role.AD).save(failOnError: true, flush: true)
       
       UserRole.create( user, adminRole, Organization.findByUid(orgUid), true )
    }
-   
+
    private createEHR()
    {
       println "createEHR"
@@ -50,10 +45,32 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      println "setup"
-      createOrganization()
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+   
+      
+      
       createEHR()
       createAdmin()
+      
       
       // message in controllers return always the code, useful for testing
       controller.metaClass.message = {args -> 
@@ -79,19 +96,24 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
-      println "cleanup"
-
+   /*
       def user = User.findByUsername("testadmin")
       def role = Role.findByAuthority(Role.AD)
       def org = Organization.findByUid(orgUid)
       
       UserRole.remove(user, role, org)
       user.delete(flush: true)
-      
+      */
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
       
-      org.delete(flush: true)
+ //     org.delete(flush: true)
+ 
+      Account.list()*.delete() // should delete the orgs
+      
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
    }
 
    /*

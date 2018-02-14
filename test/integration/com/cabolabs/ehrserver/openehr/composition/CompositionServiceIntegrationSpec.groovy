@@ -5,7 +5,8 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import grails.test.spock.IntegrationSpec
 
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
+import com.cabolabs.ehrserver.account.*
 import com.cabolabs.util.DateParser
 
 import grails.util.Holders
@@ -493,16 +494,11 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    </lifecycle_state>
  </version>/$
    
-   private String ehrUid = '11111111-1111-1111-1111-111111111123'
-   private String patientUid = '11111111-1111-1111-1111-111111111145'
-   private String orgUid = '11111111-1111-1111-1111-111111111178'
    
-   private createOrganization()
-   {
-      println "NEW ORGANIZATION CompositionService"
-      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
-      org.save(failOnError: true)
-   }
+   private String ehrUid     = '11111111-1111-1111-1111-111111111123'
+   private String patientUid = '11111111-1111-1111-1111-111111111145'
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
+   
    
    private createEHR()
    {
@@ -520,16 +516,32 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-   println "setup -----------------------"
-      createOrganization()
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+      
+      
+      
       createEHR()
    
-      
-      /*
-      println Ehr.list()
-      println Ehr.list().uid
-      println Ehr.list().subject.value
-      */
+
       
       // get EHR
       def ehr = Ehr.findByUid(ehrUid)
@@ -639,8 +651,14 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
       
-      def org = Organization.findByUid(orgUid)
-      org.delete(flush: true)
+      //def org = Organization.findByUid(orgUid)
+      //org.delete(flush: true)
+      
+      Account.list()*.delete() // should delete the orgs
+      
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
    }
 
    void "test composition as XML"()

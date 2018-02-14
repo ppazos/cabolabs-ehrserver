@@ -12,7 +12,8 @@ import grails.util.Holders
 import groovy.io.FileType
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 
-import com.cabolabs.security.Organization
+import com.cabolabs.security.*
+import com.cabolabs.ehrserver.account.*
 import java.util.logging.Logger
 
 class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
@@ -24,9 +25,9 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    
    def log = Logger.getLogger('com.cabolabs.ehrserver.data.DataIndexerServiceIntegrationSpec')
    
-   private String ehrUid = '11111111-1111-1111-1111-111111111123'
+   private String ehrUid     = '11111111-1111-1111-1111-111111111123'
    private String patientUid = '11111111-1111-1111-1111-111111111145'
-   private String orgUid = '11111111-1111-1111-1111-111111111178'
+   private String orgUid     = '11111111-1111-1111-1111-111111111178'
    
    private createOrganization()
    {
@@ -50,13 +51,31 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
    
    def setup()
    {
-      // used by the service, mock the version repo where commits are stored
-      //Holders.config.app.version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
-      createOrganization()
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
+      account.addToOrganizations(org)
+      account.save(failOnError: true) // saves the org
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, org, true )
+      
+      
       createEHR()
       
-      def org = Organization.findByUid(orgUid)
-      
+
       // Load test OPTs
       // Always regenerate indexes in deploy
       if (OperationalTemplateIndex.count() == 0)
@@ -80,8 +99,12 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(failOnError: true)
       
-      def org = Organization.findByUid(orgUid)
-      org.delete()
+      
+      Account.list()*.delete() // should delete the orgs
+
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
 
       
       // empty the temp version store, TODO: make the cleanup per test case
