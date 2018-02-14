@@ -69,4 +69,10 @@ class Organization {
 	boolean equals(other) {
 		is(other) || (other instanceof Organization && other.id == this.id)
 	}
+   
+   // this is needed so the map with key org used in UserController.update to assign roles works OK.
+   @Override
+   public int hashCode() {
+      this.id.intValue()
+   }
 }

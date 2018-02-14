@@ -27,6 +27,8 @@ import com.cabolabs.ehrserver.account.*
 @Mock([User, Role, UserRole, Organization])
 class UserControllerSpec extends Specification {
 
+   static String organization_number = '123456'
+
    // this is executed before all the tests, allows metaprogramming.
    def setupSpec()
    {
@@ -45,7 +47,7 @@ class UserControllerSpec extends Specification {
       def account = new Account(contact: accman)
 
       // 3. Account setup: create organization
-      def organization = new Organization(uid: orgUid, name: 'Hospital de Clinicas', number: '123456')
+      def organization = new Organization(name: 'Hospital de Clinicas', number: organization_number)
       account.addToOrganizations(organization)
       account.save(failOnError: true) // saves the organization
       
@@ -56,21 +58,23 @@ class UserControllerSpec extends Specification {
       UserRole.create( accman, accmanRole, organization, true )
       
    
+   
       // mock logged in user
       // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
-      //def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
-      //organization.save(failOnError:true, flush: true)
 
       def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com")
       loggedInUser.save(failOnError:true, flush: true)
       
-      def role = new Role(authority: Role.OM)
-      role.save(failOnError:true, flush: true)
+      def orgmanRole = new Role(authority: Role.OM)
+      orgmanRole.save(failOnError:true, flush: true)
       
-      def userrole = new Role(authority: Role.US)
-      userrole.save(failOnError:true, flush: true)
+      UserRole.create( loggedInUser, orgmanRole, organization, true )
       
-      UserRole.create( loggedInUser, role, organization, true )
+      
+      def userRole = new Role(authority: Role.US)
+      userRole.save(failOnError:true, flush: true)
+      
+      
       
       controller.springSecurityService = [
         encodePassword: 'orgman',
@@ -78,7 +82,7 @@ class UserControllerSpec extends Specification {
         loggedIn: true,
         principal: loggedInUser,
         currentUser: loggedInUser,
-        authentication: [username:'orgman', organization:'123456']
+        authentication: [username:'orgman', organization:organization_number]
       ]
       
       controller.notificationService = [
@@ -111,7 +115,7 @@ class UserControllerSpec extends Specification {
 
       // without this actions that check permissions fail
       SpringSecurityUtils.metaClass.static.ifAllGranted = { String _role ->
-         return controller.springSecurityService.principal.authoritiesContains(_role, Organization.findByNumber("1234"))
+         return controller.springSecurityService.principal.authoritiesContains(_role, organization)
       }
    }
    
@@ -157,7 +161,7 @@ class UserControllerSpec extends Specification {
       def user = new User(params)
       
       // should have an organization
-      def org = Organization.findByNumber("1234")
+      def org = Organization.findByNumber(organization_number)
       
       // sould have an id
       user.save(flush: true)
@@ -174,11 +178,9 @@ class UserControllerSpec extends Specification {
    def populateValidParams(params)
    {
         assert params != null
-        // TODO: Populate valid properties like...
         params["username"] = 'testuser' // should not be admin, that user is created to be the logged in user.
         params["password"] = 'testuser'
         params["email"] = 'testuser@m.com'
-        //params["organizationUid"] = '1234'
    }
 
    void "Test metaprogramming"()
@@ -196,9 +198,10 @@ class UserControllerSpec extends Specification {
             controller.index()
 
         then:"The model is correct"
-            model.userInstanceList.size() == 1 // the logged in user is returned
-            model.userInstanceCount == 1
-            model.userInstanceList[0].user.username == "orgman"
+            model.userInstanceList.size() == 2 // users created on the setup are returned
+            model.userInstanceCount == 2
+            model.userInstanceList[0].user.username == "testaccman"
+            model.userInstanceList[1].user.username == "orgman"
    }
 
    void "Test the create action returns the correct model"()
@@ -240,7 +243,7 @@ class UserControllerSpec extends Specification {
             view == '/user/create'
             model.userInstance.username == user.username
             controller.flash.message == 'user.update.oneRoleShouldBeSelected'
-            User.count() == 1
+            User.count() == 2 // users created from setup
 
             
       when:"The save action is executed with a valid instance"
@@ -250,7 +253,7 @@ class UserControllerSpec extends Specification {
             user = new User(params)
             
             // params needed for save
-            controller.params[ Organization.findByNumber('1234').uid ] = ['ROLE_USER']
+            controller.params[ Organization.findByNumber(organization_number).uid ] = ['ROLE_USER']
 
             controller.save(user)
 
@@ -258,7 +261,7 @@ class UserControllerSpec extends Specification {
             controller.flash.message == 'default.created.message'
             response.redirectedUrl == "/user/show/$user.id"
             model.userInstance.username == user.username
-            User.count() == 2
+            User.count() == 3
    }
 
    
@@ -341,7 +344,7 @@ class UserControllerSpec extends Specification {
             user = generateValidUser()
             
             // params needed for update
-            controller.params[Organization.findByNumber('1234').uid] = [] // no roles
+            controller.params[Organization.findByNumber(organization_number).uid] = [] // no roles
             
             controller.update(user)
 
@@ -358,7 +361,7 @@ class UserControllerSpec extends Specification {
             //user = generateValidUser()
             
             // params needed for update
-            controller.params[Organization.findByNumber('1234').uid] = ['ROLE_USER']
+            controller.params[Organization.findByNumber(organization_number).uid] = ['ROLE_USER']
 
             controller.update(user)
       
@@ -370,6 +373,7 @@ class UserControllerSpec extends Specification {
    void "Test avoid removing higher role from self"()
    {
       setup:
+         /*
          def accmanuser = new User(username:"accman", password:"accman", email:"accman@m.com")
          accmanuser.save(failOnError:true, flush: true)
             
@@ -379,15 +383,18 @@ class UserControllerSpec extends Specification {
          def org = Organization.get(1)
             
          UserRole.create( accmanuser, accman, org, true )
+         */
+         def accmanuser = UserRole.findByRole( Role.findByAuthority(Role.AM) ).user
+         def org = accmanuser.organizations[0]
 
          // logged user
          controller.springSecurityService = [
-            encodePassword: 'accman',
+            encodePassword: 'testaccman',
             reauthenticate: { String u -> true},
             loggedIn: true,
             principal: accmanuser,
             currentUser: accmanuser,
-            authentication: [username:'accman', organization:'1234']
+            authentication: [username:'testaccman', organization:organization_number]
          ]
             
       when: 
@@ -407,9 +414,9 @@ class UserControllerSpec extends Specification {
             
       cleanup:
          println "clean"
-         UserRole.remove(accmanuser, accman, org)
-         accmanuser.delete(flush: true)
-         accman.delete(flush: true)
+         //UserRole.remove(accmanuser, accman, org)
+         //accmanuser.delete(flush: true)
+         //accman.delete(flush: true)
    }
 
    
@@ -427,17 +434,17 @@ class UserControllerSpec extends Specification {
             
       when:"A domain instance is created"
             response.reset()
-            def user = generateValidUser()
+            def user = generateValidUser() // creates and saves user
 
       then:"It exists"
-            User.count() == 2 // counts also the logged in user
+            User.count() == 3 // counts new user and the 2 created on the setup
 
             
       when:"The domain instance is passed to the delete action"
             controller.delete(user)
 
       then:"The instance is deleted"
-            User.count() == 1 // leaves the logged in user
+            User.count() == 2 // leaves the users created in the setup
             response.redirectedUrl == '/user/index'
             flash.message != null
    }
