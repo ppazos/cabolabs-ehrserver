@@ -38,20 +38,9 @@ class Organization {
       number nullable: true, unique: true
       preferredLanguage nullable: true
    }
-   //static transients = ['account']
+
    static belongsTo = [account: Account]
-   /*
-   Account getAccount()
-   {
-      def account = Account.withCriteria{
-        organizations {
-          eq('id', this.id)
-        }
-      }
-      
-      return account
-   }
-*/
+
 
    def beforeInsert()
    {
