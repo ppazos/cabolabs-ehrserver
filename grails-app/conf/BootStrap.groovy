@@ -638,6 +638,7 @@ class BootStrap {
         
         new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/requestMap/**',                configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/**',                  configAttribute: 'ROLE_ADMIN').save()
         
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -874,41 +875,44 @@ class BootStrap {
               if (!ehr.save()) println ehr.errors
             }
          }
+         
+         
+         // Create plans
+         def p1
+         if (Plan.count() == 0)
+         {
+            // Create plans
+            p1 = new Plan(
+              name: "Free Educational",
+              maxTransactions: 50,
+              maxDocuments: 100,
+              repositorySize: 1024*15*120, // allows 120 documents of 15KB
+              totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
+              period: Plan.periods.MONTHLY
+            )
+           
+            p1.save(failOnError: true)
+         }
+         else
+         {
+            p1 = Plan.get(1)
+         }
+        
+        
+         // Associate free plans by default
+         def accounts = Account.list()
+         accounts.each { acct ->
+            if (!PlanAssociation.findByAccount(acct))
+            {
+               p1.associate(acct)
+            }
+         }
+         
+         println 'User.allForAccount '+ User.allForAccount(accounts[0])
+         println 'user.account '+ User.get(1).account
+         
       } // not TEST ENV
      
-     
-      // Create plans
-      def p1
-      if (Plan.count() == 0)
-      {
-         // Create plans
-         p1 = new Plan(
-           name: "Free Educational",
-           maxTransactions: 50,
-           maxDocuments: 100,
-           repositorySize: 1024*15*120, // allows 120 documents of 15KB
-           totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
-           period: Plan.periods.MONTHLY
-         )
-        
-         p1.save(failOnError: true)
-      }
-      else
-      {
-         p1 = Plan.get(1)
-      }
-     
-      // Associate free plans by default
-      def accounts = Account.list()
-      accounts.each { acct ->
-         if (!PlanAssociation.findByAccount(acct))
-         {
-            p1.associate(acct)
-         }
-      }
-      
-      println 'User.allForAccount '+ User.allForAccount(accounts[0])
-      println 'user.account '+ User.get(1).account
      
       // ============================================================
       // migration for latest changes

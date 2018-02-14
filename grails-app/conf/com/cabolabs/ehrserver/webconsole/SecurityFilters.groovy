@@ -421,6 +421,49 @@ class SecurityFilters {
          }
       }
       
+      // account management is only for admins
+      // index is included because admins can see all the accounts
+      // each account manager will see just his account (next filter) // THIS MIGHT NOT BE NEEDED since Accounts don't have much data to show
+      // other users will not have access to the account info
+      account_management_access(controller:'account', action:'index|create|save|edit|update|delete|show') {
+         before = {
+            
+            if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            {
+               flash.message = "You don't have access to account management!"
+               
+               // back action uses chain to show the flash, with redirect that does not work.
+               if (request.getHeader('referer'))
+                  chain url: request.getHeader('referer')
+               else
+                  chain controller: 'app', action: 'index' 
+               return false
+            }
+            
+            return true
+         }
+      }
+      /*
+      account_show_access(controller:'account', action:'show') {
+         before = {
+            
+            if (!SpringSecurityUtils.ifAllGranted("ROLE_ACCOUNT_MANAGER"))
+            {
+               flash.message = "You don't have access to account management!"
+               
+               // back action uses chain to show the flash, with redirect that does not work.
+               if (request.getHeader('referer'))
+                  chain url: request.getHeader('referer')
+               else
+                  chain controller: 'app', action: 'index' 
+               return false
+            }
+            
+            return true
+         }
+      }
+      */
+      
       
       rest_check_format(controller:'rest', action:'*') {
          before = {
