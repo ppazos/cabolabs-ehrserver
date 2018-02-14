@@ -21,6 +21,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import spock.lang.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.SpringSecurityService
+import com.cabolabs.ehrserver.account.*
 
 @TestFor(UserController)
 @Mock([User, Role, UserRole, Organization])
@@ -33,10 +34,32 @@ class UserControllerSpec extends Specification {
    
    def setup()
    {
+      // 1. Account setup: create account manager user
+      def accman = new User(
+         username: 'testaccman',
+         password: 'testaccman',
+         email: 'testaccman@domain.com',
+      ).save(failOnError:true, flush: true)
+      
+      // 2. Account setup: create account
+      def account = new Account(contact: accman)
+
+      // 3. Account setup: create organization
+      def organization = new Organization(uid: orgUid, name: 'Hospital de Clinicas', number: '123456')
+      account.addToOrganizations(organization)
+      account.save(failOnError: true) // saves the organization
+      
+      // 4. Account setup: create ACCMAN role
+      def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
+      
+      // 5. Account setup: create user role association
+      UserRole.create( accman, accmanRole, organization, true )
+      
+   
       // mock logged in user
       // http://stackoverflow.com/questions/11925705/mock-grails-spring-security-logged-in-user
-      def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
-      organization.save(failOnError:true, flush: true)
+      //def organization = new Organization(name: 'Hospital de Clinicas', number: '1234')
+      //organization.save(failOnError:true, flush: true)
 
       def loggedInUser = new User(username:"orgman", password:"orgman", email:"e@m.com")
       loggedInUser.save(failOnError:true, flush: true)
@@ -55,7 +78,7 @@ class UserControllerSpec extends Specification {
         loggedIn: true,
         principal: loggedInUser,
         currentUser: loggedInUser,
-        authentication: [username:'orgman', organization:'1234']
+        authentication: [username:'orgman', organization:'123456']
       ]
       
       controller.notificationService = [
@@ -94,9 +117,11 @@ class UserControllerSpec extends Specification {
    
    def cleanup()
    {
+      /*
       def user = User.findByUsername("orgman")
       def role = Role.findByAuthority(Role.OM)
       def userrole = Role.findByAuthority(Role.US)
+      
       def org = Organization.findByNumber("1234")
       
       UserRole.remove(user, role, org)
@@ -105,6 +130,13 @@ class UserControllerSpec extends Specification {
       userrole.delete(flush: true)
       
       org.delete(flush: true)
+      */
+      
+      Account.list()*.delete() // should delete the orgs
+      
+      UserRole.list()*.delete()
+      User.list()*.delete()
+      Role.list()*.delete()
       
       controller.springSecurityService = []
    }
