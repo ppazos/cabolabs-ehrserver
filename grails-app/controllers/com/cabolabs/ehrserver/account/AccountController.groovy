@@ -79,7 +79,8 @@ class AccountController {
       
       
       // 1. Account setup: create account manager user
-      def accman = new User(username: username, email: email)
+      def accman = new User(username: username, email: email, enabled: false)
+      accman.setPasswordToken()
       account.contact = accman
       
       if (!accman.save(flush: true))
