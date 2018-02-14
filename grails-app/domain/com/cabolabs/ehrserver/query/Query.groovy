@@ -999,7 +999,6 @@ class Query {
       else
          q = "SELECT ci FROM CompositionIndex ci "
       
-      
       q += getCompositionQueryFilters(ehrUid, from, to, organizationUid, composerUid, composerName)
       
       

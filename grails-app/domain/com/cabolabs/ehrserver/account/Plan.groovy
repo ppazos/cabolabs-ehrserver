@@ -64,35 +64,38 @@ class Plan {
      period( inList: periods.values() as List)
    }
    
-   def associate(Organization org)
+   /**
+    * Creates the PlanAssociation between Plan and Account.
+    */
+   def associate(Account account)
    {
       // TODO: check the org doesn't have an active plan
       def from = DateUtils.toFirstDateOfMonth(new Date()) // plans go from the first day of a month
-      def pa = new PlanAssociation(organizationUid: org.uid, from: from, to: from+365, plan:this)
+      def pa = new PlanAssociation(account: account, from: from, to: from+365, plan:this)
       pa.save(failOnError: true)
    }
    
    /**
     * Gets the active plan for the organization.
     */
-   static PlanAssociation active(Organization org)
+   static PlanAssociation active(Account account)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
         def now = new Date()
         le('from', now) // from <= now < to
         gt('to', now)
-        eq('organizationUid', org.uid)
+        eq('account', account)
       }
       
       return pa // can be null
    }
    
-   static PlanAssociation activeOn(Organization org, Date on)
+   static PlanAssociation activeOn(Account account, Date on)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
         le('from', on) // from <= on < to
         gt('to', on)
-        eq('organizationUid', org.uid)
+        eq('account', account)
       }
       
       return pa // can be null

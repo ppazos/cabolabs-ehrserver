@@ -22,7 +22,7 @@
 
 package com.cabolabs.security
 
-import com.cabolabs.security.Organization
+import com.cabolabs.ehrserver.account.Account
 
 class User implements Serializable {
 
@@ -126,7 +126,7 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations']
+   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account']
 
    static constraints = {
       username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
@@ -175,6 +175,22 @@ class User implements Serializable {
          }
       }
       return urs.user
+   }
+   
+   static List allForAccount(Account account)
+   {
+      def urs = UserRole.withCriteria{
+        'in'('organization', account.organizations)
+      }
+      
+      urs.user
+   }
+   
+   Account getAccount()
+   {
+      // Just need one UserRole because all URs will be on the same Account
+      def org = UserRole.findByUser(this).organization
+      org.account
    }
    
    def setPasswordToken()

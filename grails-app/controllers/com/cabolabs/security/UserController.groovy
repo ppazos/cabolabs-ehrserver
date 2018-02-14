@@ -37,6 +37,7 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.api.ApiResponsesService
 
+
 @Transactional(readOnly = false)
 class UserController {
 
@@ -585,9 +586,17 @@ class UserController {
                // the user is creating the organization, it should be manager also, because is the first, is account manager
                UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
                
+
+               // Create account
+               def account = new Account(contact: contact, organizations: [o])
+               account.save(failOnError:true, flush:true)
+               
+               
                // associate the basic plan to the new org
+               // TODO: for cloud we need a plan selector but initially accounts will be created by an admin not by user register
                def p1 = Plan.get(1)
-               p1.associate( o )
+               //p1.associate( o )
+               p1.associate(account)
             }
             catch (ValidationException e)
             {

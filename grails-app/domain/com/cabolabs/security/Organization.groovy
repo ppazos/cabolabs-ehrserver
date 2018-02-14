@@ -22,6 +22,8 @@
 
 package com.cabolabs.security
 
+import com.cabolabs.ehrserver.account.Account
+
 class Organization {
 
    String uid = java.util.UUID.randomUUID() as String
@@ -36,7 +38,21 @@ class Organization {
       number nullable: true, unique: true
       preferredLanguage nullable: true
    }
-   
+   //static transients = ['account']
+   static belongsTo = [account: Account]
+   /*
+   Account getAccount()
+   {
+      def account = Account.withCriteria{
+        organizations {
+          eq('id', this.id)
+        }
+      }
+      
+      return account
+   }
+*/
+
    def beforeInsert()
    {
       if (!this.number) assignNumber()

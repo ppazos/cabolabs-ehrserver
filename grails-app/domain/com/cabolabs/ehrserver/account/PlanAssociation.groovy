@@ -27,7 +27,8 @@ package com.cabolabs.ehrserver.account
  */
 class PlanAssociation {
 
-   String organizationUid
+   //String organizationUid
+   Account account
    Date from
    Date to
    Plan plan

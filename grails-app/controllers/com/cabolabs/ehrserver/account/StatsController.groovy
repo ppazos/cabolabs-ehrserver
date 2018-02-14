@@ -122,9 +122,9 @@ class StatsController {
       
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
       
-      // Active plan for the orgazination
+      // Active plan for the orgazination account
       def org = Organization.findByUid(uid)
-      def plan_association = Plan.activeOn(org, dfrom) // can be null!
+      def plan_association = Plan.activeOn(org.account, dfrom) // can be null!
       
       [transactions: Contribution.byOrgInPeriod(uid, dfrom, dto).count(),
        documents: Version.byOrgInPeriod(uid, dfrom, dto).count(),

@@ -668,6 +668,15 @@ class BootStrap {
       }
    }
    
+   def defaultAccount(User contact, List organizations)
+   {
+      def account = new Account(contact: contact)
+      organizations.each { org ->
+         account.addToOrganizations(org)
+      }
+      account.save(failOnError:true, flush:true)
+   }
+   
    def defaultOrganizations()
    {
       def organizations = []
@@ -678,9 +687,11 @@ class BootStrap {
          // Default organization
          organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
         
+         /* the account will save the orgs
          organizations.each {
             it.save(failOnError:true, flush:true)
          }
+         */
       }
       else organizations = Organization.list()
       
@@ -779,38 +790,60 @@ class BootStrap {
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
       {
+         // doesnt save the orgs!
          def organizations = defaultOrganizations()
          
-         // test
-         sampleFolderTemplates()
-         
+
          createRoles()
         
+        
+         def accManUser // used below to create the Account
+         def adminUser, orgManUser, user
          if (User.count() == 0)
          {
            println "Creating default users"
            
-           def adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
+           adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
            adminUser.save(failOnError: true,  flush: true)
            
-           def accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
+           accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
            accManUser.save(failOnError: true,  flush: true)
            
-           def orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
+           orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
            orgManUser.save(failOnError: true,  flush: true)
            
-           def user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
+           user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
            user.save(failOnError: true,  flush: true)
-           
-
-           // Associate roles
-           UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), organizations[0], true )
-           UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
-           UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
-           UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
          }
+         else
+         {
+            accManUser = User.allForRole(Role.AM).get(0)
+            assert accManUser != null
+         }
+         
+         
+         // saves the organizations!
+         def account = defaultAccount(accManUser, organizations)
         
         
+         
+         // Assign Roles for Users under Org 0, needs the org to be saved
+         if (UserRole.count() == 0)
+         {
+            // Associate roles
+            UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), organizations[0], true )
+            UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
+            UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
+            UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
+         }
+         
+        
+        
+                  
+         // test, needs orgs to be saved
+         sampleFolderTemplates()
+         
+         
          generateTemplateIndexes()
          
          
@@ -866,14 +899,16 @@ class BootStrap {
       }
      
       // Associate free plans by default
-      def orgs = Organization.list()
-      orgs.each { org ->
-         if (!PlanAssociation.findByOrganizationUid(org.uid))
+      def accounts = Account.list()
+      accounts.each { acct ->
+         if (!PlanAssociation.findByAccount(acct))
          {
-            p1.associate( org )
+            p1.associate(acct)
          }
       }
       
+      println 'User.allForAccount '+ User.allForAccount(accounts[0])
+      println 'user.account '+ User.get(1).account
      
       // ============================================================
       // migration for latest changes
