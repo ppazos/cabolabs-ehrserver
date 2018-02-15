@@ -63,9 +63,9 @@
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
               <tr>
-                <th>archetypeId</th>
-                <th>path</th>
-                <th>name</th>
+                <th><g:message code="query.show.archetype_id.attr" /></th>
+                <th><g:message code="query.show.path.attr" /></th>
+                <th><g:message code="query.show.name.attr" /></th>
               </tr>
                <g:each in="${queryInstance.select}" var="s">
                  <!--
@@ -85,10 +85,10 @@
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
               <tr>
-                <th>archetypeId</th>
-                <th>path</th>
-                <th>name</th>
-                <th>conditions</th>
+                <th><g:message code="query.show.archetype_id.attr" /></th>
+                <th><g:message code="query.show.path.attr" /></th>
+                <th><g:message code="query.show.name.attr" /></th>
+                <th><g:message code="query.show.criteria.attr" /></th>
               </tr>
               <g:each in="${queryInstance.where}" var="w">
                 <!-- <span class="property-value" aria-labelledby="where-label"><g:link controller="dataCriteria" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></span> -->
@@ -130,12 +130,10 @@
             <g:link controller="resource" action="shareQuery" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-share fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>
           </g:if>
           
-          
           <g:form method="DELETE" action="delete" style="display:inline">
             <input type="hidden" name="uid" value="${queryInstance.uid}" />
             <button class="btn btn-default btn-md" name="delete" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><span class="fa fa-trash-o fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.delete" /></button>
           </g:form>
-          
         </div>
       </div>
     </div>
