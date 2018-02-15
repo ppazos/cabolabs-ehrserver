@@ -23,10 +23,9 @@
 
 package com.cabolabs.security
 
-import java.util.Collection;
-
 import com.cabolabs.security.UserPassOrgAuthToken
 import com.cabolabs.security.User
+import com.cabolabs.ehrserver.account.Account
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -107,8 +106,16 @@ class AuthProvider implements AuthenticationProvider
        // Status checks
        if (!user.enabled)
        {
-          log.info("Account disabled")
-          throw new DisabledException("Account disabled")
+          log.info("User account disabled")
+          throw new DisabledException("User account disabled")
+       }
+       
+       Account.withNewSession {
+          if (!user.account.enabled)
+          {
+             log.info("Company account disabled")
+             throw new DisabledException("Company account disabled")
+          }
        }
        
        if (user.accountExpired)
@@ -140,7 +147,7 @@ class AuthProvider implements AuthenticationProvider
        
        // Check organization
        Organization org
-       Organization.withNewSession { 
+       Organization.withNewSession {
           org = Organization.findByNumber(organization_number)
        }
        

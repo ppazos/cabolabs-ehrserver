@@ -671,7 +671,7 @@ class BootStrap {
    
    def defaultAccount(User contact, List organizations)
    {
-      def account = new Account(contact: contact)
+      def account = new Account(contact: contact, enabled: true)
       organizations.each { org ->
          account.addToOrganizations(org)
       }
@@ -825,7 +825,7 @@ class BootStrap {
          
          // saves the organizations!
          def account = defaultAccount(accManUser, organizations)
-        
+         
         
          
          // Assign Roles for Users under Org 0, needs the org to be saved
