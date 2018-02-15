@@ -487,6 +487,7 @@ class UserController {
       def orguids, org, roles, highestRole
       def _rolesICanAssign = rolesICanAssign()
       
+
       // Removes current roles, for the roles and orgs the current user can assign, if those roles were removed.
       userRoles.each { userRole ->
 
@@ -505,6 +506,15 @@ class UserController {
                return // avoids executing the rest of the each, current userRole is not removed
             }
          }
+         
+         /*
+         println "_rolesICanAssign "+ _rolesICanAssign
+         println "userRole.organization "+ userRole.organization
+         println "_rolesICanAssign[userRole.organization] "+ _rolesICanAssign[userRole.organization]
+         println "_rolesICanAssign.keySet() "+ _rolesICanAssign.keySet()
+         println "_rolesICanAssign.keySet().contains(userRole.organization) "+ _rolesICanAssign.keySet().contains(userRole.organization)
+         println "isEqualOrg "+ (userRole.organization == _rolesICanAssign.keySet().toArray()[0])
+         */
          
          // this condition checks 1. that I can assign roles on that org,
          // 2. I can assign that specific role on that org
