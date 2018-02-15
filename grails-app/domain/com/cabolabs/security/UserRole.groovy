@@ -63,6 +63,7 @@ class UserRole implements Serializable {
 		builder.toHashCode()
 	}
 
+   // FIXME: this can return a List becuase the same user can have the same role in two orgs
 	static UserRole get(long userId, long roleId) {
 		criteriaFor(userId, roleId).get()
 	}
