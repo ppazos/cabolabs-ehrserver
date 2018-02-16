@@ -61,17 +61,22 @@ class Plan {
 
    
    static constraints = {
-     period( inList: periods.values() as List)
+      period( inList: periods.values() as List)
    }
    
    /**
     * Creates the PlanAssociation between Plan and Account.
+    * The caller should check there is no active plan for the account on the same period.
     */
-   def associate(Account account)
+   def associate(Account account, Date from, int duration_in_days = 365)
    {
-      // TODO: check the org doesn't have an active plan
-      def from = DateUtils.toFirstDateOfMonth(new Date()) // plans go from the first day of a month
-      def pa = new PlanAssociation(account: account, from: from, to: from+365, plan:this)
+      if (!from)
+      {
+         // plan starts from the first day of current month
+         from = DateUtils.toFirstDateOfMonth(new Date())
+      }
+      
+      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan:this)
       pa.save(failOnError: true)
    }
    

@@ -904,7 +904,7 @@ class BootStrap {
          accounts.each { acct ->
             if (!PlanAssociation.findByAccount(acct))
             {
-               p1.associate(acct)
+               p1.associate(acct, new Date())
             }
          }
          

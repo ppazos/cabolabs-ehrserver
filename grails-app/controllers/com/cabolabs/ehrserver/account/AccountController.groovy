@@ -24,6 +24,7 @@ package com.cabolabs.ehrserver.account
 
 import grails.transaction.Transactional
 import com.cabolabs.security.*
+import com.cabolabs.util.DateParser
 
 
 @Transactional(readOnly = true)
@@ -72,7 +73,7 @@ class AccountController {
    {
       if (!account)
       {
-         flash.message = message(code:'account.save.error')
+         flash.message = message(code:'account.save.empty.error')
          render (view: 'create')
          return
       }
@@ -136,6 +137,13 @@ class AccountController {
    
    def edit(Account account)
    {
+      if (!account)
+      {
+         flash.message = message(code:'account.edit.empty.error')
+         render (view: 'index')
+         return
+      }
+      
       [account: account]
    }
    
@@ -148,53 +156,70 @@ class AccountController {
    {
       if (!account)
       {
-         flash.message = message(code:'account.update.error')
+         flash.message = message(code:'account.update.empty.error')
          render (view: 'edit')
          return
       }
       
       if (!account.save(flush:true))
       {
-      println account.errors
          flash.message = message(code:'account.update.error')
          render (view: 'edit', model: [account: account])
          return
       }
       
       
-      // get current account plan, can be null if none
-      // exists or if the expiry date already passed
-      
       // TODO: allow changing plan in the middle, need to prorrate by hand for now.
       
-      def plan_association = Plan.active(account)
-      if (plan_association)
+
+      // Want to associate a new plan
+      if (plan_id)
       {
-         flash.message = message(code:'account.update.alreadyHasActivePlan')
-         render (view: 'edit', model: [account: account])
-         return
-      }
+         // get current account plan, can be null if none
+         // exists or if the expiry date already passed
+         def plan_association = Plan.active(account)
+         if (plan_association)
+         {
+            flash.message = message(code:'account.update.alreadyHasActivePlan', args:[plan_association.to.toString()])
+            render (view: 'edit', model: [account: account])
+            return
+         }
       
-      // TODO: from date is first day of month and duration is 365,
-      // needs to be customized based on the plan data.
-      def plan = Plan.get(plan_id)
-      if (!plan)
-      {
-         flash.message = message(code:'account.update.planNotFound')
-         render (view: 'edit', model: [account: account])
-         return
-      }
-      
-      try
-      {
-         plan.associate(account)
-      }
-      catch (Exception e)
-      {
-         log.error( e.message )
-         flash.message = message(code:'account.update.errorAssigningPlan')
-         render (view: 'edit', model: [account: account])
-         return
+         def plan = Plan.get(plan_id)
+         if (!plan)
+         {
+            flash.message = message(code:'account.update.planNotFound')
+            render (view: 'edit', model: [account: account])
+            return
+         }
+         
+         def from_date = new Date() // if no date was set, today is the start date
+         if (plan_date_start)
+         {
+            try
+            {
+               from_date = DateParser.tryParse(plan_date_start)
+            }
+            catch (Exception e)
+            {
+               log.error( e.message )
+               flash.message = message(code:'account.update.invalidPlanDateStart')
+               render (view: 'edit', model: [account: account])
+               return
+            }
+         }
+         
+         try
+         {
+            plan.associate(account, from_date)
+         }
+         catch (Exception e)
+         {
+            log.error( e.message )
+            flash.message = message(code:'account.update.errorAssigningPlan')
+            render (view: 'edit', model: [account: account])
+            return
+         }
       }
 
       flash.message = message(code:'account.update.ok', args:[account.id])

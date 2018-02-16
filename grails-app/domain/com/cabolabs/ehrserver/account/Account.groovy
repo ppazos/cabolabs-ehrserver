@@ -13,4 +13,11 @@ class Account {
 
    static constraints = {
    }
+   
+   static transients = ['activePlan']
+   
+   PlanAssociation getActivePlan()
+   {
+      Plan.active(this)
+   }
 }
