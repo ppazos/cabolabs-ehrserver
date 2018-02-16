@@ -30,6 +30,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import com.cabolabs.ehrserver.account.ApiKey
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.ehrserver.account.Account
 
 @Transactional(readOnly = true)
 class OrganizationController {
@@ -94,11 +95,19 @@ class OrganizationController {
 
    def create()
    {
-      respond new Organization(params)
+      //respond new Organization(params)
+      
+      def accounts = []
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         accounts = Account.list()
+      }
+      
+      [organizationInstance: new Organization(params), accounts: accounts]
    }
 
    @Transactional
-   def save(Organization organizationInstance)
+   def save(Organization organizationInstance, Long account_id)
    {
       if (organizationInstance == null)
       {
@@ -106,13 +115,48 @@ class OrganizationController {
          return
       }
       
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/847
+      def user = springSecurityService.loadCurrentUser()
+      def account
+      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      {
+         account = Account.get(account_id)
+      }
+      else
+      {
+         account = user.account
+      }
+      
+      if (!account)
+      {
+         def accounts = []
+         if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+         {
+            accounts = Account.list()
+         }
+      
+         flash.message = message(code: 'organization.save.noAccount')
+         render view:'create', model:[organizationInstance: organizationInstance, accounts: accounts]
+         return
+      }
+      
+      account.addToOrganizations(organizationInstance)
+      organizationInstance.validate()
+      
       if (organizationInstance.hasErrors())
       {
-         render view:'create', model:[organizationInstance:organizationInstance]
+         def accounts = []
+         if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+         {
+            accounts = Account.list()
+         }
+      
+         flash.message = message(code: 'organization.save.organizationHasErrors')
+         render view:'create', model:[organizationInstance: organizationInstance, accounts: accounts]
          return
       }
 
-      organizationInstance.save flush:true
+      account.save flush:true // saves the org
       
       
       // create namespace repo for org OPTs
@@ -124,8 +168,6 @@ class OrganizationController {
       old_versions_opt_repo_org.mkdir()
       
       
-      def user = springSecurityService.loadCurrentUser()
-      
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
@@ -133,7 +175,7 @@ class OrganizationController {
          {
             // Assign org to logged user
             UserRole.create( user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true )
-            user.save(flush:true)
+            //user.save(flush:true)
          }
       }
       else
@@ -141,7 +183,7 @@ class OrganizationController {
          // Assign org to logged user
          // uses the higher role on the current org to assign on the new org
          UserRole.create( user, user.getHigherAuthority(session.organization), organizationInstance, true )
-         user.save(flush:true)
+         //user.save(flush:true)
       }
       
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
