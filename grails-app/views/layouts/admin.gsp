@@ -26,6 +26,7 @@
      
      
     <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
+    <asset:javascript src="moment.min.js" />
     <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
     <asset:javascript src="bootstrap-datetimepicker.min.js" />
      
@@ -220,6 +221,11 @@
                 <li class="menu_vertical_separator">
                   <g:link controller="app" action="index" class="${(controllerName=='app' && actionName=='index')?'active':''}"><i class="fa fa-fw fa-dashboard"></i> <g:message code="desktop.dashboard" /></g:link>
                 </li>
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li id="menu-accounts">
+                    <g:link controller="account" action="index" class="${(controllerName=='account')?'active':''}"><i class="fa fa-fw fa-id-card"></i> <g:message code="desktop.accounts" /></g:link>
+                  </li>
+                </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li id="menu-organizations">
                     <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-fw fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>

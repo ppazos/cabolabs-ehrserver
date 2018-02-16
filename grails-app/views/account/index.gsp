@@ -37,8 +37,8 @@
           <table class="table table-striped table-bordered table-hover">
             <thead>
              <tr>
-               <th><g:message code="account.contact.label" default="Contact" /></th>
-               <g:sortableColumn property="enabled" title="${message(code: 'account.enabled.label', default: 'Enabled')}" />
+               <th><g:message code="account.attr.contact" default="Contact" /></th>
+               <g:sortableColumn property="enabled" title="${message(code: 'account.attr.enabled', default: 'Enabled')}" />
              </tr>
             </thead>
             <tbody>

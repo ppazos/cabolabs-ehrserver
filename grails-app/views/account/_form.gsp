@@ -2,14 +2,14 @@
 
 <div class="form-group ${hasErrors(bean: account, field: 'enabled', 'error')} ">
   <label class="control-label" for="enabled">
-    <g:message code="account.enabled.label" default="Enabled" />
+    <g:message code="account.attr.enabled" default="Enabled" />
   </label>
   <g:checkBox name="enabled" value="${account?.enabled}" />
 </div>
 
 <g:if test="${actionName=='create'||actionName=='save'}">
 
-   <h2><g:message code="account.create.contact_user.title" /></h2>
+   <h2><g:message code="account.attr.contact" /></h2>
 
    <div class="form-group ${hasErrors(bean: account?.contact, field: 'username', 'error')} required">
      <label for="username"><g:message code="user.username.label" default="Username" /><span class="required-indicator">*</span></label>
@@ -34,4 +34,22 @@
     <label for="plan_id"><g:message code="organization.edit.plan" default="Plan" /></label>
     <g:select from="${Plan.list()}" name="plan_id" optionKey="id" optionValue="name" class="form-control"></g:select>
   </div>
+  
+  <div class="form-group">
+    <label for="plan_id"><g:message code="account.edit.plan.from" default="From date" /></label>
+    <g:textField name="from" required="true" value="${params.from}" class="form-control"/>
+  </div>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var _from = $('[name=from]');
+        
+      _from.datetimepicker({
+        format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
+        //weekStart: 1,
+        //minuteStep: 15,
+        viewMode: 'years'
+      });
+    });
+  </script>
 </g:if>

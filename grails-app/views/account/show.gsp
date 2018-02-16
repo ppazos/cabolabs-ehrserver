@@ -20,25 +20,27 @@
         <table class="table">
           <tbody>
             <tr>
-              <th><g:message code="account.contact.label" default="Contact" /></th>
+              <th><g:message code="account.attr.contact" default="Contact" /></th>
               <td><g:link controller="user" action="show" id="${account?.contact?.id}">${account?.contact?.encodeAsHTML()}</g:link></td>
             </tr>
             <tr>
-              <th><g:message code="account.enabled.label" default="Enabled" /></th>
+              <th><g:message code="account.attr.enabled" default="Enabled" /></th>
               <td><g:formatBoolean boolean="${account?.enabled}" /></td>
             </tr>
         </table>
         
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
-            <g:link class="edit" action="edit" resource="${account}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+            <g:link class="edit" action="edit" resource="${account}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+            <%-- TODO handle delete Account
             <g:link action="delete" onclick="return confirm('${message(code:'default.button.delete.confirm.message')}');" params="[id: account.id]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-trash-o fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" /></button></g:link>
+            --%>
           </fieldset>
         </div>
       </div>
     </div>
       
-        <%--
+        <%-- TODO: show organizations
         <g:if test="${account?.organizations}">
         <ol>
         <li class="fieldcontain">

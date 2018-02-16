@@ -29,7 +29,7 @@
           <fieldset class="form">
             <g:render template="form"/>
             <div class="btn-toolbar" role="toolbar">
-              <g:submitButton name="update" class="save" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+              <g:submitButton name="update" class="save btn btn-default btn-md" value="${message(code: 'default.button.update.label', default: 'Update')}" />
             </div>
           </fieldset>
         </g:form>
