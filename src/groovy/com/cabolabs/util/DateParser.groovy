@@ -33,12 +33,13 @@ class DateParser {
 
    static def config = Holders.config.app
    
-   public DateParser() {
-      // TODO Auto-generated constructor stub
-   }
-   
    static Date tryParse(String dateString)
    {
+      if (!dateString)
+      {
+         throw new IllegalArgumentException('dateString is null')
+      }
+      
       //println "tryParse "+ dateString
       def supported_formats = [
          
