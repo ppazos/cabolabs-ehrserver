@@ -80,7 +80,7 @@ class Plan {
     */
    static PlanAssociation active(Account account)
    {
-      return activeOn(new Date())
+      return activeOn(account, new Date())
    }
    
    static PlanAssociation activeOn(Account account, Date on)
