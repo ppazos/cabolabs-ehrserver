@@ -30,24 +30,55 @@
 </g:if>
 
 <g:if test="${actionName=='edit' || actionName=='update'}">
+
+  <h2><g:message code="account.edit.organizations" default="Organizations" /></h2>
+  <g:if test="${account.organizations.size()>0}">
+    <ul>
+      <g:each in="${account.organizations}" var="org">
+        <li>${org.name}</li>
+      </g:each>
+    </ul>
+  </g:if>
+  <g:else>
+    <g:message code="account.edit.noOrganizations" />
+  </g:else>
+
+  <h2><g:message code="account.edit.current_plan" default="Current plan" /></h2>
+
   <div class="form-group">
-    <label for="plan_id"><g:message code="organization.edit.plan" default="Plan" /></label>
-    <g:select from="${Plan.list()}" name="plan_id" optionKey="id" optionValue="name" class="form-control"></g:select>
+    <label for="plan_id"><g:message code="account.edit.current_plan" default="Current plan" /></label>
+    <br/>
+    <g:set var="plan_association" value="${account.activePlan}" />
+    <g:if test="${plan_association}">
+      ${plan_association.plan.name}
+    </g:if>
+    <g:else>
+      <g:message code="account.edit.noActivePlan" />
+    </g:else>
+  </div>
+
+  
+  <h2><g:message code="account.edit.new_plan" default="New plan" /></h2>
+  
+  <div class="form-group">
+    <label for="plan_id"><g:message code="account.edit.assign_plan" default="Assign plan" /></label>
+    <g:select from="${Plan.list()}" name="plan_id"
+              optionKey="id" optionValue="name"
+				  noSelection="${['':'']}"
+              class="form-control"></g:select>
   </div>
   
   <div class="form-group">
-    <label for="plan_id"><g:message code="account.edit.plan.from" default="From date" /></label>
-    <g:textField name="from" required="true" value="${params.from}" class="form-control"/>
+    <label for="plan_id"><g:message code="account.edit.plan.plan_date_start" default="From date" /></label>
+    <g:textField name="plan_date_start" value="${params.plan_date_start}" class="form-control"/>
   </div>
   
   <script type="text/javascript">
     $(document).ready(function() {
-      var _from = $('[name=from]');
+      var _from = $('[name=plan_date_start]');
         
       _from.datetimepicker({
         format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
-        //weekStart: 1,
-        //minuteStep: 15,
         viewMode: 'years'
       });
     });
