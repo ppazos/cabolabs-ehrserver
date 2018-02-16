@@ -1179,14 +1179,10 @@ resp.responseJSON.result.message +'</div>'
         // datetime
         var fields = $('.input_datetime', criteria_container)
         
+        // http://momentjs.com/docs/#/displaying/format/
         fields.datetimepicker({
-          format: "yyyy-mm-ddThh:ii:ssZ",
-          todayHighlight: 1,
-          weekStart: 1,
-          todayHighlight: true,
-          minuteStep: 15,
-          pickerPosition: 'bottom-left',
-          autoclose: true
+          format: "YYYY-MM-DDThh:mm:ssZ",
+          ignoreReadonly: true
         });
         
         fields.attr('readonly', true);
@@ -1195,14 +1191,9 @@ resp.responseJSON.result.message +'</div>'
         fields = $('.input_date', criteria_container)
         
         fields.datetimepicker({
-          format: "yyyy-mm-dd",
-          todayHighlight: 1,
-          weekStart: 1,
-          todayHighlight: true,
-          startView: 'month', /* starts showing the days of the month */
-          minView: 'month',   /* ends showing the days of the month, that's the date picker, below this starts hte time picker */
-          pickerPosition: 'bottom-left',
-          autoclose: true
+          format: "YYYY-MM-DD",
+          ignoreReadonly: true,
+          viewMode: 'months'
         });
         
         fields.attr('readonly', true);
