@@ -80,14 +80,7 @@ class Plan {
     */
    static PlanAssociation active(Account account)
    {
-      def pa = PlanAssociation.withCriteria(uniqueResult: true) {
-        def now = new Date()
-        le('from', now) // from <= now < to
-        gt('to', now)
-        eq('account', account)
-      }
-      
-      return pa // can be null
+      return activeOn(new Date())
    }
    
    static PlanAssociation activeOn(Account account, Date on)

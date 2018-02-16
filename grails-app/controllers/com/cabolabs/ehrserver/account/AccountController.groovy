@@ -139,8 +139,12 @@ class AccountController {
       [account: account]
    }
    
+   /**
+    * If plan_id is not null, the admin wants to set a plan to the account that
+    * will be activated on plan_date_start (yyyy-mm-dd).
+    */
    @Transactional
-   def update(Account account)
+   def update(Account account, Long plan_id, String plan_date_start)
    {
       if (!account)
       {
@@ -151,7 +155,44 @@ class AccountController {
       
       if (!account.save(flush:true))
       {
+      println account.errors
          flash.message = message(code:'account.update.error')
+         render (view: 'edit', model: [account: account])
+         return
+      }
+      
+      
+      // get current account plan, can be null if none
+      // exists or if the expiry date already passed
+      
+      // TODO: allow changing plan in the middle, need to prorrate by hand for now.
+      
+      def plan_association = Plan.active(account)
+      if (plan_association)
+      {
+         flash.message = message(code:'account.update.alreadyHasActivePlan')
+         render (view: 'edit', model: [account: account])
+         return
+      }
+      
+      // TODO: from date is first day of month and duration is 365,
+      // needs to be customized based on the plan data.
+      def plan = Plan.get(plan_id)
+      if (!plan)
+      {
+         flash.message = message(code:'account.update.planNotFound')
+         render (view: 'edit', model: [account: account])
+         return
+      }
+      
+      try
+      {
+         plan.associate(account)
+      }
+      catch (Exception e)
+      {
+         log.error( e.message )
+         flash.message = message(code:'account.update.errorAssigningPlan')
          render (view: 'edit', model: [account: account])
          return
       }

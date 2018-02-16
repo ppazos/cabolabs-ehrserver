@@ -24,8 +24,8 @@
           </ul>
         </g:hasErrors>
        
-        <g:form url="[resource:accountInstance, action:'update']" method="PUT" >
-          <g:hiddenField name="version" value="${accountInstance?.version}" />
+        <g:form url="[resource:account, action:'update']" method="PUT" >
+          <g:hiddenField name="version" value="${account?.version}" />
           <fieldset class="form">
             <g:render template="form"/>
             <div class="btn-toolbar" role="toolbar">
