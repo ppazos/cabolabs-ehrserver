@@ -15,10 +15,12 @@
     </label>
     <g:checkBox name="assign" value="${true}" class="checkbox" checked="false" />
   </div>
+  <g:if test="${actionName == 'create' || actionName == 'save'}">
   <div class="form-group">
     <label for="accounts">
       <g:message code="organization.accounts.label" default="Accounts" />
     </label>
     <g:select from="${accounts}" name="account_id" optionKey="id" optionValue="contact" class="form-control"></g:select>
   </div>
+  </g:if>
 </sec:ifAnyGranted>
