@@ -146,6 +146,12 @@ class RestController {
             throw new DisabledException("Account disabled")
          }
          
+         if (!user.account.enabled)
+         {
+            log.info("Company account disabled")
+            throw new DisabledException("Company account disabled")
+         }
+         
          if (user.accountExpired)
          {
             throw new AccountExpiredException("Account expired")
