@@ -677,7 +677,7 @@ class XmlService {
          startTime = DateParser.tryParse(version.data.context.start_time.value.text())
          
          // end time is optional in the IM
-         if (version.data.context.end_time)
+         if (!version.data.context.end_time.isEmpty())
             endTime = DateParser.tryParse(version.data.context.end_time.value.text())
          
          // location is optional
