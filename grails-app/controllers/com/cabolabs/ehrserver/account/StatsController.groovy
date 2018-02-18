@@ -120,10 +120,17 @@ class StatsController {
       println dfrom
       println dto
       
+      // FIXME: should be current total size, not size in period, and 
+      // should be for the account that is the sum of all repos of all the account organizations
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
       
       // Active plan for the orgazination account
       def org = Organization.findByUid(uid)
+      
+      
+      // FIXME
+      // if on current month, dfrom can be < now and we need to plan
+      // active on now not on dfrom.
       def plan_association = Plan.activeOn(org.account, dfrom) // can be null!
       
       [transactions: Contribution.byOrgInPeriod(uid, dfrom, dto).count(),

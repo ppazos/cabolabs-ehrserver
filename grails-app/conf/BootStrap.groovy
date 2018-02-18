@@ -883,12 +883,11 @@ class BootStrap {
          {
             // Create plans
             p1 = new Plan(
-              name: "Free Educational",
-              maxTransactions: 50,
-              maxDocuments: 100,
-              repositorySize: 1024*15*120, // allows 120 documents of 15KB
-              totalRepositorySize: 1024*15*120*12, // monthly size * 12 months
-              period: Plan.periods.MONTHLY
+              name:                      "Research / Training",
+              max_organizations:         1,
+              max_opts_per_organization: 5,
+              repo_total_size:           2.5*1024*1024, // 2.5 GB in KB
+              period:                    Plan.periods.MONTHLY
             )
            
             p1.save(failOnError: true)

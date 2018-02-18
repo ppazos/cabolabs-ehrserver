@@ -108,7 +108,7 @@
              <i class="fa fa-exchange fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${transactions} / ${plan.maxTransactions}</div>
+             <div class="big">${transactions}</div>
              <div><g:message code="stats.transactions" /></div>
            </div>
          </div>
@@ -130,7 +130,7 @@
              <i class="fa fa-file-o fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${documents} / ${plan.maxDocuments}</div>
+             <div class="big">${documents}</div>
              <div><g:message code="stats.documents" /></div>
            </div>
          </div>
@@ -152,7 +152,7 @@
              <i class="fa fa-database fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${(size / 1024).setScale(1,0)} / ${(plan.repositorySize / 1024).setScale(1,0)} KB</div>
+             <div class="big">${(size / (1024*1024)).setScale(1,0)} / ${(plan.repo_total_size / 1024).setScale(1,0)} MB</div>
              <div><g:message code="stats.size" /></div>
            </div>
          </div>

@@ -38,28 +38,33 @@ class Plan {
      YEARLY: 5
    ]
 
+
    String name
-   
-   // Limits for the plan in the period
-   int maxTransactions
-   int maxDocuments
-   int repositorySize // in bytes
-   int totalRepositorySize // in bytes, independent of the period, for the whole plan association duration
    int period
    
+   // in bytes, for all the orgs in the account
+   // This is the initial size of the repo when the plan is selected,
+   // later customers can choose to add space to their account, that will
+   // generate new custom plans or modelling add-ons that can be attached
+   // to a plan for a specific account (will be attached to the plan assoc).
+   // With add-ons extra services can be modeled and be used to know current
+   // limits (with a 5Gb add-on the total repo size will be de basic plan
+   // repo total size + 5GB of the add-on), and also help to calculate billing.
+   int repo_total_size
    
-   // Limits for the plan, globally
+   int max_opts_per_organization
+   int max_organizations
    
-   /* not always maxUsersTotal = maxUsersPerOrganization * maxOrganizations,
-    * for some plans, we might have a constraint for the total users and not
-    * for the users per org (=null) */
-   int maxUsersTotal = 1 // adding all the users from all the organizations should not pass this boundary
-   int maxUsersPerOrganization = 1
-   int maxOrganizations = 1
    
-   int maxEhrs = 50
+   /**
+    * other limits we might want to use in the future
+    * - max_users_per_organization
+    * - max_ehrs_per_organization
+    * - max_compositions_per_organization
+    * - 
+    * - 
+    */
 
-   
    static constraints = {
       period( inList: periods.values() as List)
    }
@@ -76,7 +81,9 @@ class Plan {
          from = DateUtils.toFirstDateOfMonth(new Date())
       }
       
-      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan:this)
+      // TODO: to assing plans in the future I need to check the period overlapping here and assign
+      // state INACTIVE for the future one y there is currently an active one
+      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this, state: PlanAssociation.states.ACTIVE)
       pa.save(failOnError: true)
    }
    

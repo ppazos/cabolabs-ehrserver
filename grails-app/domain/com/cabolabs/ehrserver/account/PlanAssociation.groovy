@@ -27,14 +27,23 @@ package com.cabolabs.ehrserver.account
  */
 class PlanAssociation {
 
+   static Map states = [
+     INACTIVE: 1,
+     ACTIVE: 2,
+     SUSPENDED: 3,
+     CLOSED: 4
+   ]
+   
    //String organizationUid
    Account account
    Date from
    Date to
    Plan plan
-
+   int state = states.INACTIVE
+   
    static constraints = {
       to ( nullable: true )
+      state( inList: states.values() as List)
    }
    
    static mapping = {
