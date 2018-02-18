@@ -108,6 +108,7 @@ class StatsController {
       // If not date range is set, set the rante to the current month
       // Range will be checked like: from <= timeCommitted < to
       // so "to" should be next months 1st day on time 0
+      
       if (!to)
       {
          from = firstDayOfCurrentMonth()
@@ -120,6 +121,15 @@ class StatsController {
       println dfrom
       println dto
       
+
+      // if on current month, dfrom can be < now and we need to plan
+      // active on now not on dfrom.
+      def current_month = Calendar.getInstance().get(Calendar.MONTH)
+      def now = new Date()
+      def active_now = (current_month == dfrom.month)
+      def active_plan_in = (active_now ? now : dfrom)
+      
+
       // FIXME: should be current total size, not size in period, and 
       // should be for the account that is the sum of all repos of all the account organizations
       def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
@@ -128,10 +138,7 @@ class StatsController {
       def org = Organization.findByUid(uid)
       
       
-      // FIXME
-      // if on current month, dfrom can be < now and we need to plan
-      // active on now not on dfrom.
-      def plan_association = Plan.activeOn(org.account, dfrom) // can be null!
+      def plan_association = Plan.activeOn(org.account, active_plan_in) // can be null!
       
       [transactions: Contribution.byOrgInPeriod(uid, dfrom, dto).count(),
        documents: Version.byOrgInPeriod(uid, dfrom, dto).count(),
@@ -139,5 +146,35 @@ class StatsController {
        plan: plan_association?.plan,
        plan_association: plan_association,
        from: from, to: to]
+   }
+   
+   // results are in KB
+   def accountRepoUsage(Account account)
+   {
+      // If there is no current plan, the max repo size is set to the sum of the size of all repos
+      def plan_association = Plan.active(account) // can be null!
+      def max_repo_size = 0.0
+      
+      def plan_repo_total_size = false
+      if (plan_association)
+      {
+         max_repo_size = plan_association.plan.repo_total_size
+         plan_repo_total_size = true
+      }
+      
+      def stats = [:] // org name => repo size
+      def size
+      
+      account.organizations.each { org ->
+      
+         size = (versionFSRepoService.getRepoSizeInBytes(org.uid) / 1024).setScale(1,0)
+         
+         // size is set in KB
+         stats[org.name] = size
+         
+         if (!plan_repo_total_size) max_repo_size += stats[org.name]
+      }
+      
+      render(text: [max_repo_size: max_repo_size, usage: stats] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 }

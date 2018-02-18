@@ -4,6 +4,10 @@
   <head>
     <meta name="layout" content="admin">
     <title><g:message code="account.show.title" /></title>
+    <style>
+      th:first-child { width: 30% ;}
+      .help-block{ font-size: 0.8em; }
+    </style>
   </head>
   <body>
     <div class="row">
@@ -27,6 +31,15 @@
               <th><g:message code="account.attr.enabled" default="Enabled" /></th>
               <td><g:formatBoolean boolean="${account?.enabled}" /></td>
             </tr>
+            <tr>
+              <th>
+                <g:message code="account.stats.repo_usage" default="Repository usage" />
+                <span class="help-block"><g:message code="account.stats.lowUsageOrganizationsAreNotShown" /></span>
+              </th>
+              <td>
+                <div id="account_stats"></div>
+              </td>
+            </tr>
         </table>
         
         <div class="btn-toolbar" role="toolbar">
@@ -39,6 +52,45 @@
         </div>
       </div>
     </div>
+    
+    <script type="text/javascript">
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
+    function precisionRound(number, precision) {
+      var factor = Math.pow(10, precision);
+      return Math.round(number * factor) / factor;
+    }
+
+    $(document).ready(function() {
+      $.ajax({
+        url: '${createLink(controller:"stats", action:"accountRepoUsage", id:account.id)}',
+        method: 'GET',
+        dataType: 'json'
+      })
+      .done( function(json) {
+        console.log('stats', json);
+        
+        var classes = ['success', 'info', 'warning', 'danger'];
+        var bar = $('<div class="progress"></div>');
+        var org_count = Object.keys(json.usage).length;
+        var i = 0;
+        for (org_name in json.usage)
+        {
+          percent = precisionRound( json.usage[org_name] * 100 / json.max_repo_size, 1);
+          
+          // do not display if usage is too low to show
+          if (percent >= 5)
+          {
+            org_bar = '<div class="progress-bar progress-bar-'+ classes[i%org_count] +'" style="width: '+ percent +'%">'+ org_name +'</div>';
+            bar.append( org_bar );
+          }
+
+          i++;
+        }
+        
+        $('#account_stats').append(bar);
+      });
+    });
+    </script>
       
         <%-- TODO: show organizations
         <g:if test="${account?.organizations}">

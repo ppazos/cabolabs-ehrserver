@@ -886,7 +886,7 @@ class BootStrap {
               name:                      "Research / Training",
               max_organizations:         1,
               max_opts_per_organization: 5,
-              repo_total_size:           2.5*1024*1024, // 2.5 GB in KB
+              repo_total_size:           1024, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
               period:                    Plan.periods.MONTHLY
             )
            
