@@ -95,8 +95,6 @@ class OrganizationController {
 
    def create()
    {
-      //respond new Organization(params)
-      
       def accounts = []
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -175,7 +173,6 @@ class OrganizationController {
          {
             // Assign org to logged user
             UserRole.create( user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true )
-            //user.save(flush:true)
          }
       }
       else
@@ -183,7 +180,6 @@ class OrganizationController {
          // Assign org to logged user
          // uses the higher role on the current org to assign on the new org
          UserRole.create( user, user.getHigherAuthority(session.organization), organizationInstance, true )
-         //user.save(flush:true)
       }
       
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
