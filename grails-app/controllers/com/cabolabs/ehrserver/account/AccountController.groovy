@@ -19,18 +19,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.cabolabs.ehrserver.account
 
 import grails.transaction.Transactional
 import com.cabolabs.security.*
 import com.cabolabs.util.DateParser
-
+import grails.util.Holders
 
 @Transactional(readOnly = true)
 class AccountController {
 
    def notificationService
+   def config = Holders.config.app
 
    // Only admins can see the list of all the Accounts, each AccountManager 
    // will see just his Account, other Roles won't have access to the Account.
@@ -114,6 +114,18 @@ class AccountController {
       }
       
       account.save(failOnError: true) // saves the org
+      
+      
+      // 3.5. Create org's repo folders
+      // same as organization controller save, TODO: refactor
+      
+      // create namespace repo for org OPTs
+      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + org.uid)
+      opt_repo_org.mkdir()
+      
+      // create older OPT version repo for the org (needed for versioning)
+      def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
+      old_versions_opt_repo_org.mkdir()
       
       
       // 4. Account setup: get ACCMAN role
