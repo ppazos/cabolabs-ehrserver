@@ -37,6 +37,7 @@ import javax.servlet.http.Cookie
 import org.springframework.beans.propertyeditors.LocaleEditor
 import org.springframework.web.servlet.support.RequestContextUtils
 import grails.util.Holders
+import com.cabolabs.ehrserver.account.Account
 
 class SecurityFilters {
    
@@ -770,6 +771,40 @@ class SecurityFilters {
          }
       }
 
+      stats_repo_usage_permissions(controller:'stats', action:'accountRepoUsage') {
+         before = {
+         
+            if (!params.id)
+            {
+               render(text: [error: 'id is required'] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
+               return false
+            }
+            
+            def account = Account.get(params.id)
+            
+            if (!account)
+            {
+               render(text: [error: 'account not found'] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
+               return false
+            }
+         
+            // admins access stats for all the accounts
+            // other users access only stats from their accounts
+            if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
+            {
+               return true
+            }
+            else
+            {
+               def user = springSecurityService.getCurrentUser() // not admin
+               if (account.id == user.account.id) return true
+            }
+            
+            render(text: [error: "you don't have access to this account"] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
+            return false
+         }
+      }
+      
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {
             
