@@ -54,7 +54,7 @@ class Plan {
 
    int max_opts_per_organization
    int max_organizations
-   int max_api_tokens
+   int max_api_tokens_per_organization
 
    /**
     * other limits we might want to use in the future

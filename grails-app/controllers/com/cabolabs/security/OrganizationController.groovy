@@ -273,19 +273,36 @@ class OrganizationController {
          return
       }
 
+      def org = Organization.findByUid(uid)
+      if (!org)
+      {
+         flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), uid])
+         redirect action: 'index'
+         return
+      }
+
+      // Checks api key creation plan limits
+      def user = springSecurityService.loadCurrentUser()
+      def account = user.account
+      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      if (plan_assoc)
+      {
+         def plan_max_tokens = plan_assoc.plan.max_api_tokens_per_organization
+         def apikey_count = ApiKey.countByOrganization(org)
+
+         if (apikey_count == plan_max_tokens)
+         {
+            flash.message = message(code:"organization.create.cantCreateNewApiKey.maxTokensLimit")
+            redirect action:'show', params:[uid: uid]
+            return
+         }
+      }
+
       if (params.doit)
       {
          if (!systemId)
          {
             flash.message = message(code: 'default.error.systemIsRequired')
-            return
-         }
-
-         def org = Organization.findByUid(uid)
-         if (!org)
-         {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), uid])
-            redirect action: 'index'
             return
          }
 
