@@ -41,7 +41,7 @@ class Plan {
 
    String name
    int period
-   
+
    // in bytes, for all the orgs in the account
    // This is the initial size of the repo when the plan is selected,
    // later customers can choose to add space to their account, that will
@@ -51,24 +51,24 @@ class Plan {
    // limits (with a 5Gb add-on the total repo size will be de basic plan
    // repo total size + 5GB of the add-on), and also help to calculate billing.
    int repo_total_size
-   
+
    int max_opts_per_organization
    int max_organizations
-   
-   
+   int max_api_tokens
+
    /**
     * other limits we might want to use in the future
     * - max_users_per_organization
     * - max_ehrs_per_organization
     * - max_compositions_per_organization
-    * - 
-    * - 
+    * -
+    * -
     */
 
    static constraints = {
       period( inList: periods.values() as List)
    }
-   
+
    /**
     * Creates the PlanAssociation between Plan and Account.
     * The caller should check there is no active plan for the account on the same period.
@@ -80,13 +80,13 @@ class Plan {
          // plan starts from the first day of current month
          from = DateUtils.toFirstDateOfMonth(new Date())
       }
-      
+
       // TODO: to assing plans in the future I need to check the period overlapping here and assign
       // state INACTIVE for the future one y there is currently an active one
       def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this, state: PlanAssociation.states.ACTIVE)
       pa.save(failOnError: true)
    }
-   
+
    /**
     * Gets the active plan for the organization.
     */
@@ -94,7 +94,7 @@ class Plan {
    {
       return activeOn(account, new Date())
    }
-   
+
    static PlanAssociation activeOn(Account account, Date on)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
@@ -102,7 +102,7 @@ class Plan {
         gt('to', on)
         eq('account', account)
       }
-      
+
       return pa // can be null
    }
 }

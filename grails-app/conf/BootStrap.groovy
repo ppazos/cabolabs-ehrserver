@@ -50,13 +50,13 @@ import com.cabolabs.ehrserver.ehr.*
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
-   
+
    def mailService
    def grailsApplication
    def resourceService
    def configurationService
-   
-   
+
+
    def defaultConfigurationItems()
    {
       def conf = [
@@ -65,20 +65,20 @@ class BootStrap {
          new ConfigurationItem(key:'ehrserver.security.passwords.min_length', value:'6', type:'number', blank:false, description:'Minimum password size used on password reset'),
          new ConfigurationItem(key:'ehrserver.security.password_token.expiration', value:'1440', type:'number', blank:false, description:'Number of minutes after the password reset token expires')
       ]
-      
+
       conf.each {
          if (ConfigurationItem.countByKey(it.key) == 0)
          {
             if (!it.save(flush: true))
             {
-               log.warn(it.errors.toString()) 
+               log.warn(it.errors.toString())
             }
          }
       }
-      
+
       configurationService.refresh()
    }
-   
+
    def extendClasses()
    {
       // Used by query builder, all return String
@@ -98,16 +98,16 @@ class BootStrap {
       }
       Date.metaClass.asSQLValue = { operand ->
         def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_datetime_format )
-        return "'"+ formatterDateDB.format( delegate ) +"'" 
+        return "'"+ formatterDateDB.format( delegate ) +"'"
       }
       Boolean.metaClass.asSQLValue = { operand ->
         return delegate.toString()
       }
-     
+
       String.metaClass.md5 = {
          return java.security.MessageDigest.getInstance("MD5").digest(delegate.bytes).encodeHex().toString()
       }
-      
+
       // call String.randomNumeric(5)
       String.metaClass.static.randomNumeric = { digits ->
         def alphabet = ['0','1','2','3','4','5','6','7','8','9']
@@ -115,7 +115,7 @@ class BootStrap {
           (1..digits).collect { alphabet[ nextInt( alphabet.size() ) ] }.join()
         }
       }
-      
+
       String.metaClass.static.random = { n ->
         def alphabet = 'a'..'z'
         new Random().with {
@@ -126,7 +126,7 @@ class BootStrap {
       String.metaClass.static.uuid = { ->
          java.util.UUID.randomUUID() as String
       }
-      
+
       // adds trailing path separator to a file path if it doesnt have it
       String.metaClass.withTrailSeparator = {
          def PS = System.getProperty("file.separator")
@@ -134,14 +134,14 @@ class BootStrap {
          return delegate
       }
    }
-   
+
    def repoChecks()
    {
       // file system checks
       def commits_repo  = new File(Holders.config.app.commit_logs)
       def versions_repo = new File(Holders.config.app.version_repo)
       def opt_repo      = new File(Holders.config.app.opt_repo)
-      
+
       if (!commits_repo.exists())
       {
          throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
@@ -156,14 +156,14 @@ class BootStrap {
       }
       // /file system checks
    }
-   
+
    def registerMarshallers()
    {
      // This format is used by jstree to display the template in the web console
      JSON.registerObjectMarshaller(FolderTemplate) { ftpl ->
-     
+
         def traverse // needs to be declared before defined to work recursively
-        
+
         traverse = { item ->
            def res = [text: item.name, children: []]
            item.folders.each {
@@ -171,15 +171,15 @@ class BootStrap {
            }
            return res
         }
-     
+
         def res = []
         ftpl.folders.each {
           res << traverse(it)
         }
-     
+
         return res
      }
-     
+
      JSON.registerObjectMarshaller(ArchetypeIndexItem) { aii ->
         return [archetypeId:    aii.archetypeId,
                 path:           aii.path,
@@ -189,7 +189,7 @@ class BootStrap {
                 parentOpts:     aii.parentOpts // List
                ]
      }
-   
+
      JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
         return [templateId:  opt.templateId,
                 concept:     opt.concept,
@@ -202,7 +202,7 @@ class BootStrap {
                 setID:       opt.setId,
                 versionNumber: opt.versionNumber]
      }
-     
+
      XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
         xml.build {
           templateId(opt.templateId)
@@ -217,7 +217,7 @@ class BootStrap {
           versionNumber(opt.versionNumber)
         }
      }
-     
+
 
 
      // Marshallers
@@ -225,13 +225,13 @@ class BootStrap {
         //println "JSON DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
-     
+
      // These for XML dont seem to work...
      XML.registerObjectMarshaller(Date) {
         //println "XML DATE MARSHAL"
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
-     
+
      JSON.registerObjectMarshaller(CompositionIndex) { composition ->
         return [uid: composition.uid,
                 category: composition.category,
@@ -245,7 +245,7 @@ class BootStrap {
                 parent: composition.getParent().uid
                ]
      }
-     
+
      XML.registerObjectMarshaller(CompositionIndex) { composition, xml ->
         xml.build {
           uid(composition.uid)
@@ -260,8 +260,8 @@ class BootStrap {
           parent(composition.getParent().uid)
         }
      }
-     
-     
+
+
      JSON.registerObjectMarshaller(DoctorProxy) { doctor ->
         return [namespace: doctor.namespace,
                 type: doctor.type,
@@ -269,7 +269,7 @@ class BootStrap {
                 name: doctor.name
                ]
      }
-     
+
      JSON.registerObjectMarshaller(AuditDetails) { audit ->
         def a = [timeCommitted: audit.timeCommitted,
                  committer: audit.committer, // DoctorProxy
@@ -279,7 +279,7 @@ class BootStrap {
         if (audit.changeType) a << [changeType: audit.changeType]
         return a
      }
-     
+
      JSON.registerObjectMarshaller(Contribution) { contribution ->
         return [uid: contribution.uid,
                 organizationUid: contribution.organizationUid,
@@ -288,7 +288,7 @@ class BootStrap {
                 audit: contribution.audit // AuditDetails
                ]
      }
-     
+
      XML.registerObjectMarshaller(DoctorProxy) { doctor, xml ->
         xml.build {
           namespace(doctor.namespace)
@@ -297,7 +297,7 @@ class BootStrap {
           name(doctor.name)
         }
      }
-     
+
      XML.registerObjectMarshaller(AuditDetails) { audit, xml ->
         xml.build {
           timeCommitted(audit.timeCommitted)
@@ -306,7 +306,7 @@ class BootStrap {
           if (audit.changeType) changeType(audit.changeType)
         }
      }
-     
+
      XML.registerObjectMarshaller(Contribution) { contribution, xml ->
         xml.build {
           uid(contribution.uid)
@@ -327,7 +327,7 @@ class BootStrap {
           */
           audit(contribution.audit) // AuditDetails
         }
-        
+
         // works!
         // https://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
         // http://docs.grails.org/2.5.3/api/grails/converters/XML.html
@@ -344,15 +344,15 @@ class BootStrap {
         }
         xml.end()
      }
-     
-     
+
+
      JSON.registerObjectMarshaller(Organization) { o ->
         return [uid: o.uid,
                 name: o.name,
                 number: o.number
                ]
      }
-     
+
      XML.registerObjectMarshaller(Organization) { o, xml ->
         xml.build {
           uid(o.uid)
@@ -360,27 +360,27 @@ class BootStrap {
           number(o.number)
         }
      }
-     
+
      JSON.registerObjectMarshaller(User) { u ->
         return [username: u.username,
                 email: u.email,
                 organizations: u.organizations
                ]
      }
-     
+
      XML.registerObjectMarshaller(User) { u, xml ->
         xml.build {
           username(u.username)
           email(u.email)
           xml.startNode 'organizations'
-          
+
              xml.convertAnother u.organizations
-   
+
           xml.end()
         }
      }
-     
-     
+
+
      JSON.registerObjectMarshaller(Query) { q ->
         def j = [uid: q.uid,
                  name: q.name,
@@ -388,7 +388,7 @@ class BootStrap {
                  type: q.type,
                  author: q.author
                 ]
-        
+
         if (q.type == 'composition')
         {
            j << [criteriaLogic: q.criteriaLogic]
@@ -400,10 +400,10 @@ class BootStrap {
            j << [group:         q.group] // Group is only for datavalue
            j << [projections:   q.select.collect { [archetypeId: it.archetypeId, path: it.path, rmTypeName: it.rmTypeName] }]
         }
-        
+
         return j
      }
-     
+
      XML.registerObjectMarshaller(Query) { q, xml ->
         xml.build {
           uid(q.uid)
@@ -412,7 +412,7 @@ class BootStrap {
           type(q.type)
           author(q.author)
         }
-        
+
         if (q.type == 'composition')
         {
            xml.startNode 'criteriaLogic'
@@ -421,14 +421,14 @@ class BootStrap {
            xml.startNode 'templateId'
               xml.chars (q.templateId ?: '') // fails if null!
            xml.end()
-           
+
            def criteriaMap
            def _value
            //q.where.each { criteria -> // with this the criteria clases are marshalled twice, it seems the each is returning the criteria instead of just processing the xml format creation.
            for (criteria in q.where) // works ok, so we need to avoid .each
            {
               criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
-              
+
               xml.startNode 'criteria'
                  xml.startNode 'archetypeId'
                     xml.chars criteria.archetypeId
@@ -437,21 +437,21 @@ class BootStrap {
                     xml.chars criteria.path
                  xml.end()
                  xml.startNode 'conditions'
- 
+
                     criteriaMap.each { attr, cond ->
-                    
+
                        _value = cond.find{true}.value // can be a list, string, boolean, ...
-                       
+
                        xml.startNode "$attr"
                           xml.startNode 'operand'
                              xml.chars cond.find{true}.key
                           xml.end()
-                          
+
                           if (_value instanceof List)
                           {
                              xml.startNode 'list'
                                 _value.each { val ->
-                                   
+
                                    if (val instanceof Date)
                                    {
                                       // FIXME: should use the XML date marshaller
@@ -485,7 +485,7 @@ class BootStrap {
            xml.startNode 'group'
               xml.chars q.group
            xml.end()
-           
+
            q.select.each { proj ->
               xml.startNode 'projection'
                 xml.startNode 'archetypeId'
@@ -498,7 +498,7 @@ class BootStrap {
            }
         }
      }
-     
+
 
      JSON.registerObjectMarshaller(Ehr) { ehr ->
         return [uid: ehr.uid,
@@ -508,7 +508,7 @@ class BootStrap {
                 organizationUid: ehr.organizationUid
                ]
      }
-     
+
      XML.registerObjectMarshaller(Ehr) { ehr, xml ->
         xml.build {
           uid(ehr.uid)
@@ -518,7 +518,7 @@ class BootStrap {
           organizationUid(ehr.organizationUid)
         }
      }
-     
+
      /*
      XML.registerObjectMarshaller(new NameAwareMarshaller() {
         @Override
@@ -532,42 +532,42 @@ class BootStrap {
         }
      })
      */
-     
+
      JSON.registerObjectMarshaller(PaginatedResults) { pres ->
-        
+
         pres.update() // updates and checks pagination values
-        
+
         def res = [:]
-        
+
         if (pres.list)
            res["${pres.listName}"] = (pres.list ?: []) // prevents null on the json
         else
            res["${pres.listName}"] = (pres.map ?: [:])
-        
+
         res.pagination = [
            'max': pres.max,
            'offset': pres.offset,
            nextOffset: pres.nextOffset, // TODO: verificar que si la cantidad actual es menor que max, el nextoffset debe ser igual al offset
            prevOffset: pres.prevOffset
         ]
-        
+
         if (pres.timing != null) res.timing = pres.timing.toString() + ' ms'
-           
+
         return res
      }
-     
+
      XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
-        
+
         pres.update() // updates and checks pagination values
-        
+
         // Our list marshaller to customize the name
         xml.startNode pres.listName
-           
+
            if (pres.list)
               xml.convertAnother (pres.list ?: []) // this works, generates "ehr" nodes
            else
               xml.convertAnother (pres.map ?: [:])
-           
+
            /* doesnt generate the patient root, trying with ^
            pres.list.each { item ->
               xml.convertAnother item // marshaller fot the item type should be declared
@@ -575,7 +575,7 @@ class BootStrap {
            */
 
         xml.end()
-        
+
         xml.startNode 'pagination'
            xml.startNode 'max'
            xml.chars pres.max.toString() // integer fails for .chars
@@ -590,11 +590,11 @@ class BootStrap {
            xml.chars pres.prevOffset.toString()
            xml.end()
         xml.end()
-        
+
         // TODO: timing
      }
    }
-   
+
    def registerRequestMap()
    {
       // Permissions
@@ -619,12 +619,12 @@ class BootStrap {
            // https://github.com/grails-plugins/grails-spring-security-core/blob/master/plugin/src/docs/requestMappings/expressions.adoc
            new RequestMap(url: url, configAttribute: 'IS_AUTHENTICATED_ANONYMOUSLY').save()
         }
-       
-        // sections        
+
+        // sections
         new RequestMap(url: '/notification/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         new RequestMap(url: '/app/**',                       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-       
+
         new RequestMap(url: '/ehr/**',                       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/versionedComposition/**',      configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/contribution/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -635,11 +635,11 @@ class BootStrap {
         new RequestMap(url: '/archetypeIndexItem/**',        configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/compositionIndex/**',          configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/operationalTemplate/**',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/requestMap/**',                configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/**',                  configAttribute: 'ROLE_ADMIN').save()
-        
+
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/user/show/**',                 configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -649,26 +649,26 @@ class BootStrap {
         new RequestMap(url: '/user/save',                    configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/user/delete',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/user/resetPasswordRequest/**', configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         new RequestMap(url: '/role/**',                      configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/organization/**',              configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         new RequestMap(url: '/messaging/**',                 configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         // share/unshare queries and opts between orgs
         new RequestMap(url: '/resource/**',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
-        
+
         new RequestMap(url: '/stats/**',                     configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/logs/**',                      configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/ehrQuery/**',                  configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
 
         new RequestMap(url: '/j_spring_security_switch_user', configAttribute: 'ROLE_SWITCH_USER,isFullyAuthenticated()').save()
-        
+
         new RequestMap(url: '/rest/queryCompositions',       configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
         new RequestMap(url: '/rest/queryData',               configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
       }
    }
-   
+
    def defaultAccount(User contact, List organizations)
    {
       def account = new Account(contact: contact, enabled: true)
@@ -677,17 +677,17 @@ class BootStrap {
       }
       account.save(failOnError:true, flush:true)
    }
-   
+
    def defaultOrganizations()
    {
       def organizations = []
       if (Organization.count() == 0)
       {
          println "Creating default organization"
-        
+
          // Default organization
          organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
-        
+
          /* the account will save the orgs
          organizations.each {
             it.save(failOnError:true, flush:true)
@@ -695,10 +695,10 @@ class BootStrap {
          */
       }
       else organizations = Organization.list()
-      
+
       return organizations
    }
-   
+
    def createRoles()
    {
       if (Role.count() == 0 )
@@ -710,19 +710,19 @@ class BootStrap {
          def userRole           = new Role(authority: Role.US).save(failOnError: true, flush: true)
       }
    }
-   
+
    def generateTemplateIndexes()
    {
       // for the default organization
       def org = Organization.get(1)
-      
+
       // Always regenerate indexes in deploy
       if (OperationalTemplateIndex.count() == 0)
       {
          println "Indexing Operational Templates"
-        
+
          def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         
+
          ti.setupBaseOpts( org )
          ti.indexAll( org ) // also shares with all existing orgs if there are no shares
       }
@@ -730,10 +730,10 @@ class BootStrap {
       // OPT loading
       // This is done to set the OPT repo internally, further uses will not pass the repo path.
       def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-      
+
       // OPTs are loaded into the manager in the login, after we know the org of the current user
    }
-   
+
    def sampleFolderTemplates()
    {
       if (FolderTemplate.count() == 0)
@@ -748,36 +748,36 @@ class BootStrap {
                new FolderTemplateItem(name:'episode X')
             ])
          ]
-         
+
          ftpls.each {
             it.save(failOnError: true)
          }
       }
    }
-   
+
    def init = { servletContext ->
-   
+
       def working_folder = new File('.')
       log.info ("Working folder: "+ working_folder.absolutePath)
-      
+
       //****** SETUP *******
-      
+
       // Define server timezone
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-      
+
       repoChecks()
       extendClasses()
       registerMarshallers()
-      
+
       if (Environment.current != Environment.TEST)
       {
          defaultConfigurationItems()
       }
-      
+
       // --------------------------------------------------------------------
-     
+
       //****** SECURITY *******
-     
+
       // Register custom auth filter
       // ref: https://objectpartners.com/2013/07/11/custom-authentication-with-the-grails-spring-security-core-plugin/
       // See 'authFilter' in grails-app/conf/spring/resources.groovy
@@ -786,33 +786,33 @@ class BootStrap {
 
       registerRequestMap()
       // --------------------------------------------------------------------
-     
-     
+
+
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
       {
          // doesnt save the orgs!
          def organizations = defaultOrganizations()
-         
+
 
          createRoles()
-        
-        
+
+
          def accManUser // used below to create the Account
          def adminUser, orgManUser, user
          if (User.count() == 0)
          {
            println "Creating default users"
-           
+
            adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
            adminUser.save(failOnError: true,  flush: true)
-           
+
            accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
            accManUser.save(failOnError: true,  flush: true)
-           
+
            orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
            orgManUser.save(failOnError: true,  flush: true)
-           
+
            user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
            user.save(failOnError: true,  flush: true)
          }
@@ -821,13 +821,13 @@ class BootStrap {
             accManUser = User.allForRole(Role.AM).get(0)
             assert accManUser != null
          }
-         
-         
+
+
          // saves the organizations!
          def account = defaultAccount(accManUser, organizations)
-         
-        
-         
+
+
+
          // Assign Roles for Users under Org 0, needs the org to be saved
          if (UserRole.count() == 0)
          {
@@ -837,17 +837,17 @@ class BootStrap {
             UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
             UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
          }
-         
-        
-        
-                  
+
+
+
+
          // test, needs orgs to be saved
          sampleFolderTemplates()
-         
-         
+
+
          generateTemplateIndexes()
-         
-         
+
+
          // Sample EHRs for testing purposes
          if (Ehr.count() == 0)
          {
@@ -859,10 +859,10 @@ class BootStrap {
               '44444444-1111-1111-1111-111111111111',
               '55555555-1111-1111-1111-111111111111'
             ]
-           
+
             def ehr
             def c = Organization.count()
-           
+
             ehr_subject_uids.eachWithIndex { uid, i ->
               ehr = new Ehr(
                  uid: uid, // the ehr id is the same as the patient just to simplify testing
@@ -871,33 +871,34 @@ class BootStrap {
                  ),
                  organizationUid: Organization.get(i % c + 1).uid
               )
-            
+
               if (!ehr.save()) println ehr.errors
             }
          }
-         
-         
+
+
          // Create plans
          def p1
          if (Plan.count() == 0)
          {
             // Create plans
             p1 = new Plan(
-              name:                      "Research / Training",
+              name:                      "Testing",
               max_organizations:         1,
               max_opts_per_organization: 5,
+              max_api_tokens:            3,
               repo_total_size:           1024, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
               period:                    Plan.periods.MONTHLY
             )
-           
+
             p1.save(failOnError: true)
          }
          else
          {
             p1 = Plan.get(1)
          }
-        
-        
+
+
          // Associate free plans by default
          def accounts = Account.list()
          accounts.each { acct ->
@@ -906,13 +907,13 @@ class BootStrap {
                p1.associate(acct, new Date())
             }
          }
-         
+
          println 'User.allForAccount '+ User.allForAccount(accounts[0])
          println 'user.account '+ User.get(1).account
-         
+
       } // not TEST ENV
-     
-     
+
+
       // ============================================================
       // migration for latest changes
       /*
@@ -939,8 +940,8 @@ class BootStrap {
             }
          }
       }
-      
-      
+
+
       def commitsss = Commit.list()
       commitsss.each {
          if (!it.fileUid)
@@ -981,7 +982,7 @@ class BootStrap {
          }
       }
       */
-     
+
       /*
       // Test notifications
       def notifs = [
@@ -991,13 +992,13 @@ class BootStrap {
          new Notification(name:'notif 4', language:'en', text:'Look at me!', forUser:1),
          new Notification(name:'notif 5', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid),
          new Notification(name:'notif 6', language:'en', text:'Look at me!', forSection:'query', forOrganization:Organization.get(1).uid, forUser:1),
-        
+
          new Notification(name:'notif 7', language:'es', text:'mirame!'),
          new Notification(name:'notif 8', language:'es', text:'mirame', forSection:'ehr'),
          new Notification(name:'notif 9', language:'es', text:'mirame!', forOrganization:Organization.get(1).uid),
          new Notification(name:'notif 10', language:'es', text:'mirame!', forUser:1)
       ]
-      
+
       def statuses = []
       notifs.each { notif ->
          if (!notif.forUser)
@@ -1010,15 +1011,15 @@ class BootStrap {
          {
             statuses << new NotificationStatus(user:User.get(notif.forUser), notification:notif)
          }
-        
+
          notif.save(failOnError: true)
       }
-     
+
       statuses.each { status ->
          status.save(failOnError: true)
       }
       */
-      
+
       /*
       com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex.list().each {
          it.delete()
@@ -1028,7 +1029,7 @@ class BootStrap {
          it.save()
       }
       */
-      
+
       /*
       QueryShare.list().each {
          it.delete()
@@ -1044,7 +1045,7 @@ class BootStrap {
       }
       */
    }
-   
+
    def destroy = {
    }
 }
