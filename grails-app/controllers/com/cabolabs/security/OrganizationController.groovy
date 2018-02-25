@@ -28,9 +28,8 @@ import grails.transaction.Transactional
 //http://grails-plugins.github.io/grails-spring-security-core/guide/single.html#springSecurityUtils
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
-import com.cabolabs.ehrserver.account.ApiKey
+import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.ehrserver.account.Account
 
 @Transactional(readOnly = true)
 class OrganizationController {
@@ -38,21 +37,21 @@ class OrganizationController {
    def springSecurityService
    def statelessTokenProvider
    def configurationService
-   
+
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
    def config = Holders.config.app
-   
+
    def index(int offset, String sort, String order, String name, String number)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       def list
       def c = Organization.createCriteria()
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
@@ -70,7 +69,7 @@ class OrganizationController {
       {
          def user = springSecurityService.loadCurrentUser()
          def orgs = user.organizations
-         
+
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             'in'('uid', orgs.uid)
             if (name)
@@ -83,7 +82,7 @@ class OrganizationController {
             }
          }
       }
-      
+
       [organizationInstanceList: list, total: list.totalCount]
    }
 
@@ -100,7 +99,27 @@ class OrganizationController {
       {
          accounts = Account.list()
       }
-      
+      else
+      {
+         // This limit is checked for non-admins because with admins we don't know which account will be selected, so the max orgs is not available
+         // Checks organization creation plan limits
+         def user = springSecurityService.loadCurrentUser()
+         def account = user.account
+         def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+         if (plan_assoc)
+         {
+            def plan_max_orgs = plan_assoc.plan.max_organizations
+            def account_org_count = Organization.countByAccount(account) // faster than user.account.organizations.size() that requires more queries
+
+            if (account_org_count == plan_max_orgs)
+            {
+               flash.message = message(code:"organization.create.cantCreateNewOrg.maxOrgsLimit")
+               redirect action:'index'
+               return
+            }
+         }
+      }
+
       [organizationInstance: new Organization(params), accounts: accounts]
    }
 
@@ -112,7 +131,7 @@ class OrganizationController {
          notFound()
          return
       }
-      
+
       // https://github.com/ppazos/cabolabs-ehrserver/issues/847
       def user = springSecurityService.loadCurrentUser()
       def account
@@ -124,7 +143,7 @@ class OrganizationController {
       {
          account = user.account
       }
-      
+
       if (!account)
       {
          def accounts = []
@@ -132,15 +151,30 @@ class OrganizationController {
          {
             accounts = Account.list()
          }
-      
+
          flash.message = message(code: 'organization.save.noAccount')
          render view:'create', model:[organizationInstance: organizationInstance, accounts: accounts]
          return
       }
-      
+
+      // Checks organization creation plan limits
+      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      if (plan_assoc)
+      {
+         def plan_max_orgs = plan_assoc.plan.max_organizations
+         def account_org_count = Organization.countByAccount(account) // faster than user.account.organizations.size() that requires more queries
+
+         if (account_org_count == plan_max_orgs)
+         {
+            flash.message = message(code:"organization.create.cantCreateNewOrg.maxOrgsLimit")
+            redirect action:'index'
+            return
+         }
+      }
+
       account.addToOrganizations(organizationInstance)
       organizationInstance.validate()
-      
+
       if (organizationInstance.hasErrors())
       {
          def accounts = []
@@ -148,24 +182,24 @@ class OrganizationController {
          {
             accounts = Account.list()
          }
-      
+
          flash.message = message(code: 'organization.save.organizationHasErrors')
          render view:'create', model:[organizationInstance: organizationInstance, accounts: accounts]
          return
       }
 
       account.save flush:true // saves the org
-      
-      
+
+
       // create namespace repo for org OPTs
       def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + organizationInstance.uid)
       opt_repo_org.mkdir()
-      
+
       // create older OPT version repo for the org (needed for versioning)
       def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
       old_versions_opt_repo_org.mkdir()
-      
-      
+
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
@@ -181,7 +215,7 @@ class OrganizationController {
          // uses the higher role on the current org to assign on the new org
          UserRole.create( user, user.getHigherAuthority(session.organization), organizationInstance, true )
       }
-      
+
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
       redirect action:'show', params:[uid:organizationInstance.uid]
    }
@@ -197,7 +231,7 @@ class OrganizationController {
       def organizationInstance = Organization.findByUid(uid)
       organizationInstance.properties = params
       organizationInstance.validate()
-      
+
       if (organizationInstance.hasErrors())
       {
          respond organizationInstance.errors, view:'edit'
@@ -246,7 +280,7 @@ class OrganizationController {
             flash.message = message(code: 'default.error.systemIsRequired')
             return
          }
-         
+
          def org = Organization.findByUid(uid)
          if (!org)
          {
@@ -254,25 +288,25 @@ class OrganizationController {
             redirect action: 'index'
             return
          }
-   
+
          def virtualUser = new User(username: 'apikey'+String.random(50),
                                     password: String.uuid(),
                                     email: String.random(50) + '@apikey.com',
                                     isVirtual: true,
                                     enabled: true,
                                     organizations: [org])
-   
+
          virtualUser.save(failOnError: true)
-   
+
          UserRole.create(virtualUser, Role.findByAuthority(Role.US), org, true)
-   
+
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
                               token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number, org_uid: org.uid]))
-   
+
          key.save(failOnError: true)
-   
+
          redirect action:'show', params:[uid:org.uid]
       }
    }
@@ -284,18 +318,18 @@ class OrganizationController {
       {
          println "null"
       }
-      
+
       // Need to delete the key first because the key has a not null constraint to the user
       def keyUser = key.user
-      
+
       UserRole.remove(keyUser, Role.findByAuthority(Role.US), key.organization, true)
-      
+
       key.delete()
       keyUser.delete()
-      
+
       redirect action: 'show', params: [uid: key.organization.uid]
    }
-   
+
    protected void notFound()
    {
       request.withFormat {

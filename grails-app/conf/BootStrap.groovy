@@ -884,8 +884,8 @@ class BootStrap {
             // Create plans
             p1 = new Plan(
               name:                      "Testing",
-              max_organizations:         1,
-              max_opts_per_organization: 5,
+              max_organizations:         3,
+              max_opts_per_organization: 3,
               max_api_tokens:            3,
               repo_total_size:           1024, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
               period:                    Plan.periods.MONTHLY
