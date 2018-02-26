@@ -7,17 +7,28 @@ class Account {
    boolean enabled = false
 
    User contact
-   
+
    List organizations = []
    static hasMany = [organizations: Organization]
 
+   // this values are calculated from time to time and cached here for quick access
+   // to avoid querying the file system each time the size is needed, so these
+   // might be out of sync between calculations, that's OK.
+   long current_version_repo_size = 0
+   long current_opt_repo_size = 0
+
    static constraints = {
    }
-   
-   static transients = ['activePlan']
-   
+
+   static transients = ['activePlan', 'totalRepoSize']
+
    PlanAssociation getActivePlan()
    {
       Plan.active(this)
+   }
+
+   long getTotalRepoSize()
+   {
+      current_version_repo_size + current_opt_repo_size
    }
 }

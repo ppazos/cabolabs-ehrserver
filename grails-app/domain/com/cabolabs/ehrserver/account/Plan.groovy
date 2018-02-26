@@ -50,7 +50,7 @@ class Plan {
    // With add-ons extra services can be modeled and be used to know current
    // limits (with a 5Gb add-on the total repo size will be de basic plan
    // repo total size + 5GB of the add-on), and also help to calculate billing.
-   int repo_total_size
+   int repo_total_size_in_kb
 
    int max_opts_per_organization
    int max_organizations

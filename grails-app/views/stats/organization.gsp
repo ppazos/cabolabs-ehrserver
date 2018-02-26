@@ -7,12 +7,12 @@
   console.log('from', new Date(${from}).toUTCString());
   console.log('to', new Date(${to}).toUTCString());
 </script>
- 
+
 <style>
    .gi-3x{font-size: 3em;}
    .gi-4x{font-size: 4em;}
    .gi-5x{font-size: 5em;}
-   
+
    #awrapper{
      height:100%;
      width:100%;
@@ -42,10 +42,10 @@
      -webkit-border-radius: 8px;
      -moz-border-radius: 8px;
      border-radius: 8px;
-     
+
      width: 540px;
    }
-   
+
 
    /* Test mostrar icon */
    #index_menu a {
@@ -53,26 +53,26 @@
      padding-right: 4px;
      padding-top: 4px;
      padding-bottom: 4px;
-     
+
      margin: 0.8em;
-     
+
      /*height: 48px; no funciona */
      line-height: 1.6em; /* deja el texto en el medio vertical del icono de fondo */
      font-size: 1.6em;
-     
+
      display: inline-block;
      text-decoration: none;
    }
-   
+
    .access:hover {
      background-color: #ddddff;
    }
-   
+
    #panel {
      overflow: visible;
      display: inline-block;
    }
-   
+
    div.content > div {
      margin-top: 15px;
    }
@@ -152,7 +152,7 @@
              <i class="fa fa-database fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${(size / (1024*1024)).setScale(1,0)} / ${(plan.repo_total_size / 1024).setScale(1,0)} MB</div>
+             <div class="big">${(size / (1024*1024)).setScale(1,0)} / ${(plan.repo_total_size_in_kb / 1024).setScale(1,0)} MB</div>
              <div><g:message code="stats.size" /></div>
            </div>
          </div>

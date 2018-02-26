@@ -27,6 +27,7 @@ import java.io.FileNotFoundException
 import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+import com.cabolabs.ehrserver.account.Account
 
 /**
  * Operations related to the file system based version repo.
@@ -34,9 +35,9 @@ import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
  *
  */
 class VersionFSRepoService {
-   
+
    def config = Holders.config.app
-   
+
    /*
     * Operations for the whole version repo.
     */
@@ -44,16 +45,10 @@ class VersionFSRepoService {
    {
       return new File(config.version_repo).canWrite()
    }
-   
+
    def repoExists()
    {
       return new File(config.version_repo).exists()
-   }
-   
-   def getRepoSizeInBytes()
-   {
-      def r = new File(config.version_repo.withTrailSeparator())
-      return r.directorySize()
    }
 
    /*
@@ -63,19 +58,14 @@ class VersionFSRepoService {
    {
       return new File(config.version_repo.withTrailSeparator() + orguid).canWrite()
    }
-   
+
    def repoExistsOrg(String orguid)
    {
       return new File(config.version_repo.withTrailSeparator() + orguid).exists()
    }
-   
-   def getRepoSizeInBytesOrg(String orguid)
-   {
-      def r = new File(config.version_repo.withTrailSeparator() + orguid)
-      return r.directorySize()
-   }
-   
-   
+
+
+
    /**
     * The following closures are for reusing the code to calculate the
     * size of an org repo.
@@ -87,12 +77,12 @@ class VersionFSRepoService {
    def filter_null = {
       return true
    }
-   
+
    def getRepoSizeInBytes(String orguid)
    {
       return getRepoSizeInBytesFiltered(orguid, filter_null)
    }
-   
+
    def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
    {
       return getRepoSizeInBytesFiltered(orguid, filter_file_last_modified_between.curry(from.time).curry(to.time))
@@ -109,26 +99,54 @@ class VersionFSRepoService {
             eq('organizationUid', orguid)
          }
       }
-      
+
       // if we add the size to the version on the DB we don't need to process the file system
       def v, size = 0
       orgversions.each { fileUid ->
          v = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + fileUid +'.xml')
-         
+
          if (filter.call(v))
          {
             size += v.length()
          }
       }
-      
+
       return size
    }
-   
+
+
+   def getRepoSizeInBytes()
+   {
+      def r = new File(config.version_repo.withTrailSeparator())
+      return r.directorySize()
+   }
+
+   /**
+    * same as getRepoSizeInBytes but faster.
+    */
+   def getRepoSizeInBytesOrg(String orguid)
+   {
+      def r = new File(config.version_repo.withTrailSeparator() + orguid)
+      return r.directorySize()
+   }
+
+   /**
+    * Sum of the version repos for all the orgs in the account.
+    */
+   def getRepoSizeInBytesAccount(Account account)
+   {
+      def total_size = 0
+      account.organizations.each { org ->
+         total_size += getRepoSizeInBytesOrg(org.uid)
+      }
+      return total_size
+   }
+
    /**
     * Gets a version file that should be on the repo.
     * @param version_uid
     * @return
-    * 
+    *
     * Note: the exception is declared to avoid groovy wrap it in an UndeclaredThrowableException
     * ref http://stackoverflow.com/questions/19987720/exception-thrown-from-service-not-being-caught-in-controller
     */
@@ -138,12 +156,12 @@ class VersionFSRepoService {
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
-      
+
       if (!repoExistsOrg(orguid))
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo.withTrailSeparator() + orguid}")
       }
-      
+
       def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
       if (!f.exists())
       {
@@ -151,7 +169,7 @@ class VersionFSRepoService {
       }
       return f
    }
-   
+
    /**
     * Gets a version file that shouldn't be on the repo.
     * @param version_uid
@@ -163,7 +181,7 @@ class VersionFSRepoService {
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
-      
+
       // TODO: The orguid folder is created just the first time,
       // it might be better to create it whe nthe organization is created.
       if (!repoExistsOrg(orguid))
@@ -171,7 +189,7 @@ class VersionFSRepoService {
          // Creates the orguid subfolder
          new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
       }
-      
+
       def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
       if (f.exists())
       {

@@ -186,10 +186,12 @@ log4j = {
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
     info 'org.codehaus.groovy.grails.web.servlet'        // controllers
     info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
-    
+
     // EHRServer logs
     info 'com.cabolabs.security.AuthProvider'
     info 'com.cabolabs.archetype.OperationalTemplateIndexer'
+
+    info 'grails.app.jobs'
 }
 
 app {
@@ -197,21 +199,21 @@ app {
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
-   
+
    security {
       min_password_length = 6
    }
-   
+
    l10n { // localization
-      
+
       locale = 'en' // FIXME: this will depend on the organization
-      
+
       // general
       decimal_symbol = ',' // separa numero enteros de la fraccion decimal
       decimal_digits = 2   // digitos luego de decimal_symbol
       digit_grouping = '.' // agrupador de a3 digitos para escribir numeros grandes ej. 1.000
       display_leading_zeros = true // ej. si es false, 0,7 se escribe ,7
-      
+
       // formatos de fechas
       // ==================
       //  - ref: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
@@ -222,14 +224,14 @@ app {
       // m minutis
       // S milisegundos
       // Z zona horaria (RFC 822)
-      
+
       // formatos para procesamiento de fechas
       // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
-      datetime_format = "yyyyMMdd'T'HHmmss,SSSX" 
+      datetime_format = "yyyyMMdd'T'HHmmss,SSSX"
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
-      
-      
+
+
       // Extended formats supported by openEHR --------------------------------------------------------------
       //2015-12-02T17:41:56.809Z
       ext_datetime_format = "yyyy-MM-dd'T'HH:mm:ss,SSSX" // contains timezone e.g. -0300
@@ -239,19 +241,19 @@ app {
       ext_datetime_utcformat = "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
       ext_datetime_utcformat_point = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
       // ----------------------------------------------------------------------------------------------------
-      
-      
+
+
       // Dates without seconds fraction
       datetime_format_nof = "yyyyMMdd'T'HHmmssX"
       ext_datetime_format_nof = "yyyy-MM-dd'T'HH:mm:ssX"
       ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-      
-      
+
+
       // formatos para mostrar las fechas al usuario
-      display_datetime_format = "yyyy/MM/dd HH:mm:ss (X)" 
+      display_datetime_format = "yyyy/MM/dd HH:mm:ss (X)"
       display_date_format = "yyyy/MM/dd"
       display_time_format = "HH:mm:ss"
-      
+
       db_datetime_format = "yyyy-MM-dd HH:mm:ss" // mysql no soporta fragment o timezone, otros dbms si
       db_date_format = "yyyy-MM-dd"
       db_time_format = "HH:mm:ss"
@@ -301,9 +303,9 @@ grails {
      /*
      for testing
      grails.mail.disabled=true
-     
+
      ref http://padcom13.blogspot.com.uy/2011/01/testing-sending-emails-with-grails.html
-     
+
      or ref: https://stackoverflow.com/questions/8884186/how-to-integration-test-email-body-in-a-grails-service-that-uses-the-mail-plugin
      */
    }
