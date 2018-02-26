@@ -11,6 +11,7 @@ class Account {
    List organizations = []
    static hasMany = [organizations: Organization]
 
+   // values in bytes
    // this values are calculated from time to time and cached here for quick access
    // to avoid querying the file system each time the size is needed, so these
    // might be out of sync between calculations, that's OK.
@@ -20,15 +21,15 @@ class Account {
    static constraints = {
    }
 
-   static transients = ['activePlan', 'totalRepoSize']
+   static transients = ['activePlan', 'totalRepoSizeInKb']
 
    PlanAssociation getActivePlan()
    {
       Plan.active(this)
    }
 
-   long getTotalRepoSize()
+   long getTotalRepoSizeInKb()
    {
-      current_version_repo_size + current_opt_repo_size
+      (current_version_repo_size + current_opt_repo_size) / 1024
    }
 }

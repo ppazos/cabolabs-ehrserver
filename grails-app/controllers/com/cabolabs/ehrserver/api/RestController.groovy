@@ -316,7 +316,7 @@ class RestController {
       def plan_assoc = Plan.active(account) // can be null on dev envs, size check is not done on that case.
       if (plan_assoc)
       {
-         if (plan_assoc.plan.repo_total_size <= account.totalRepoSize)
+         if (plan_assoc.plan.repo_total_size_in_kb <= account.totalRepoSizeInKb)
          {
            commitLoggerService.log(request, null, false, null, session)
            renderError(message(code:'rest.commit.error.cant_commit.insufficient_storage'), '4507', 507) // 507 Insufficient Storage
