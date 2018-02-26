@@ -89,7 +89,16 @@ class OrganizationController {
    // organizationInstance comes from the security filter on params
    def show()
    {
-      [organizationInstance: params.organizationInstance, ehr_count: Ehr.countByOrganizationUid(params.organizationInstance.uid)]
+      def plan_max_tokens
+      def user = springSecurityService.loadCurrentUser()
+      def account = user.account
+      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      if (plan_assoc)
+      {
+         plan_max_tokens = plan_assoc.plan.max_api_tokens_per_organization
+      }
+
+      [organizationInstance: params.organizationInstance, ehr_count: Ehr.countByOrganizationUid(params.organizationInstance.uid), plan_max_tokens: plan_max_tokens]
    }
 
    def create()

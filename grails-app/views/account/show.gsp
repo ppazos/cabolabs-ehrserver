@@ -20,7 +20,7 @@
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-    
+
         <table class="table">
           <tbody>
             <tr>
@@ -40,8 +40,23 @@
                 <div id="account_stats"></div>
               </td>
             </tr>
+            <tr>
+              <th>
+                <g:message code="account.stats.organizations" default="Organizations" />
+                <g:if test="${plan_max_orgs}">
+                  ${account.organizations.size()} / ${plan_max_orgs}
+                </g:if>
+              </th>
+              <td>
+                <ul>
+                  <g:each in="${account.organizations}" var="org">
+                    <li>${org.name}</li>
+                  </g:each>
+                </ul>
+              </td>
+            </tr>
         </table>
-        
+
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
             <g:link class="edit" action="edit" resource="${account}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
@@ -52,7 +67,7 @@
         </div>
       </div>
     </div>
-    
+
     <script type="text/javascript">
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
     function precisionRound(number, precision) {
@@ -68,7 +83,7 @@
       })
       .done( function(json) {
         console.log('stats', json);
-        
+
         var classes = ['success', 'info', 'warning', 'danger'];
         var bar = $('<div class="progress"></div>');
         var org_count = Object.keys(json.usage).length;
@@ -76,7 +91,7 @@
         for (org_name in json.usage)
         {
           percent = precisionRound( json.usage[org_name] * 100 / json.max_repo_size, 1);
-          
+
           // do not display if usage is too low to show
           if (percent >= 5)
           {
@@ -86,22 +101,22 @@
 
           i++;
         }
-        
+
         $('#account_stats').append(bar);
       });
     });
     </script>
-      
+
         <%-- TODO: show organizations
         <g:if test="${account?.organizations}">
         <ol>
         <li class="fieldcontain">
           <span id="organizations-label" class="property-label"><g:message code="account.organizations.label" default="Organizations" /></span>
-          
+
             <g:each in="${account.organizations}" var="o">
             <span class="property-value" aria-labelledby="organizations-label"><g:link controller="organization" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></span>
             </g:each>
-          
+
         </li>
         </ol>
         </g:if>

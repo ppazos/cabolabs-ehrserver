@@ -13,11 +13,11 @@
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-      
+
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -42,7 +42,7 @@
             </tr>
           </tbody>
         </table>
-        
+
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
             <g:link action="edit" id="${organizationInstance.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
@@ -50,7 +50,7 @@
         </div>
 	   </div>
     </div>
-    
+
     <div class="row">
       <div class="col-lg-12">
         <h2><g:message code="organization.show.stats" /></h2>
@@ -113,38 +113,38 @@
                d.setUTCHours(0,0,0,0);
                return d;
             };
-            
+
             console.log('now', new Date(ref_date).toUTCString());
-            
-            
+
+
             console.log(first_day_prev_month_of(ref_date).toUTCString());
             console.log(first_day_current_month_of(ref_date).toUTCString());
             console.log(first_day_next_month_of(ref_date).toUTCString());
             console.log(first_day_next_next_month_of(ref_date).toUTCString());
 
             $(function() {
-              
+
               $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
-              
+
               $('button.prev').on( "click", function() {
                 var prev_from = first_day_prev_month_of(ref_date);
                 var prev_to = first_day_current_month_of(ref_date);
-                
+
                 console.log(ref_date, prev_from, prev_to);
-                
+
                 var data = {'uid': '${params.uid}', 'from': prev_from.getTime(), 'to': prev_to.getTime()};
 
                 $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
                   $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
                 });
               });
-              
+
               $('button.next').on( "click", function() {
                 var next_from = first_day_next_month_of(ref_date);
                 var next_to = first_day_next_next_month_of(ref_date);
-                
+
                 console.log(ref_date, next_from, next_to);
-                
+
                 var data = {'uid': '${params.uid}', 'from': next_from.getTime(), 'to': next_to.getTime()};
 
                 $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
@@ -158,7 +158,12 @@
 
     <div class="row row-grid">
       <div class="col-lg-12">
-        <h2><g:message code="organization.show.apikeys" /></h2>
+        <h2>
+          <g:message code="organization.show.apikeys" />
+          <g:if test="${plan_max_tokens}">
+            ${ApiKey.countByOrganization(organizationInstance)} / ${plan_max_tokens}
+          </g:if>
+        </h2>
         <p><g:message code="organization.show.apikeysDescription" /></p>
       </div>
     </div>

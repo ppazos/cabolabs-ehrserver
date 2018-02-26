@@ -32,7 +32,7 @@ class AccountController {
    def notificationService
    def config = Holders.config.app
 
-   // Only admins can see the list of all the Accounts, each AccountManager 
+   // Only admins can see the list of all the Accounts, each AccountManager
    // will see just his Account, other Roles won't have access to the Account.
    // Permissions are checked in the SecurityFilter.
    def index()
@@ -40,7 +40,7 @@ class AccountController {
       def accounts = Account.list()
       [accounts: accounts]
    }
-   
+
    def show(Long id)
    {
       if (!id)
@@ -49,7 +49,7 @@ class AccountController {
          redirect(url:request.getHeader('referer'))
          return
       }
-      
+
       def account = Account.get(id)
       if (!account)
       {
@@ -57,14 +57,21 @@ class AccountController {
          redirect(url:request.getHeader('referer'))
          return
       }
-      
-      [account: account]
+
+      def plan_max_orgs
+      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      if (plan_assoc)
+      {
+         plan_max_orgs = plan_assoc.plan.max_organizations
+      }
+
+      [account: account, plan_max_orgs: plan_max_orgs]
    }
-   
+
    def create()
    {
    }
-   
+
    /**
     * Creates the account manager user, the account, the organization, and the user role.
     */
@@ -77,21 +84,21 @@ class AccountController {
          render (view: 'create')
          return
       }
-      
-      
+
+
       // 1. Account setup: create account manager user
       def accman = new User(username: username, email: email, enabled: false)
       accman.setPasswordToken()
       account.contact = accman
-      
+
       if (!accman.save(flush: true))
       {
          flash.message = message(code:'account.contact.save.error')
          render (view: 'create', model: [account: account])
          return
       }
-      
-      
+
+
       // 2. Account setup: create account
       if (!account.validate())
       {
@@ -99,12 +106,12 @@ class AccountController {
          render (view: 'create', model: [account: account])
          return
       }
-      
-      
+
+
       // 3. Account setup: create organization
       def org = new Organization(name: organization)
       account.addToOrganizations(org)
-      
+
       if (!org.validate())
       {
          println org.errors
@@ -112,41 +119,41 @@ class AccountController {
          render (view: 'create', model: [account: account, organization: org])
          return
       }
-      
+
       account.save(failOnError: true) // saves the org
-      
-      
+
+
       // 3.5. Create org's repo folders
       // same as organization controller save, TODO: refactor
-      
+
       // create namespace repo for org OPTs
       def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + org.uid)
       opt_repo_org.mkdir()
-      
+
       // create older OPT version repo for the org (needed for versioning)
       def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
       old_versions_opt_repo_org.mkdir()
-      
-      
+
+
       // 4. Account setup: get ACCMAN role
       def accmanRole = Role.findByAuthority(Role.AM)
-      
-      
+
+
       // 5. Account setup: create user role association
       UserRole.create( accman, accmanRole, org, true )
-      
-      
+
+
       // send password reset email to the account manager
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserRegisteredOrCreatedEmail( accman.email, [accman] )
-      
 
-      
+
+
       flash.message = message(code:'account.save.ok', args:[account.id])
       redirect action:'show', id: account.id
    }
-   
+
    def edit(Account account)
    {
       if (!account)
@@ -155,10 +162,10 @@ class AccountController {
          render (view: 'index')
          return
       }
-      
+
       [account: account]
    }
-   
+
    /**
     * If plan_id is not null, the admin wants to set a plan to the account that
     * will be activated on plan_date_start (yyyy-mm-dd).
@@ -172,17 +179,17 @@ class AccountController {
          render (view: 'edit')
          return
       }
-      
+
       if (!account.save(flush:true))
       {
          flash.message = message(code:'account.update.error')
          render (view: 'edit', model: [account: account])
          return
       }
-      
-      
+
+
       // TODO: allow changing plan in the middle, need to prorrate by hand for now.
-      
+
 
       // Want to associate a new plan
       if (plan_id)
@@ -196,7 +203,7 @@ class AccountController {
             render (view: 'edit', model: [account: account])
             return
          }
-      
+
          def plan = Plan.get(plan_id)
          if (!plan)
          {
@@ -204,7 +211,7 @@ class AccountController {
             render (view: 'edit', model: [account: account])
             return
          }
-         
+
          def from_date = new Date() // if no date was set, today is the start date
          if (plan_date_start)
          {
@@ -220,7 +227,7 @@ class AccountController {
                return
             }
          }
-         
+
          try
          {
             plan.associate(account, from_date)
@@ -237,7 +244,7 @@ class AccountController {
       flash.message = message(code:'account.update.ok', args:[account.id])
       redirect action:'show', id: account.id
    }
-   
+
    // TODO: delete, we need to define rules
-   
+
 }
