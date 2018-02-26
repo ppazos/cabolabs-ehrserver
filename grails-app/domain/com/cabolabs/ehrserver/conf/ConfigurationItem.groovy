@@ -1,5 +1,8 @@
 package com.cabolabs.ehrserver.conf
 
+import com.cabolabs.ehrserver.account.Account
+import com.cabolabs.security.Organization
+
 class ConfigurationItem {
 
    String key
@@ -7,7 +10,12 @@ class ConfigurationItem {
    String type
    boolean blank = false
    String description
-   
+
+   // if this item is for a specific account or organization, account or organization will be set
+   // if this is an app config item, both will be null
+   Account account
+   Organization organization
+
    /* MySQL reserved words */
    static mapping = {
       key column: "config_key"
@@ -16,6 +24,8 @@ class ConfigurationItem {
    }
 
    static constraints = {
+      account nullable: true
+      organization nullable: true
       key (unique: true, nullable: false, blank: false)
       value validator: { val, obj, errors ->
          if (!obj.blank && !val) errors.rejectValue('value', 'emptyValueNotAllowedBlankIsFalse')
@@ -59,13 +69,13 @@ class ConfigurationItem {
                }
             break
          }
-      }      
+      }
       type(inList:['string', 'number', 'boolean', 'url', 'uuid', 'oid'])
       description(nullable: false)
    }
-   
+
    static transients = ['typedValue']
-   
+
    def getTypedValue()
    {
       def tv

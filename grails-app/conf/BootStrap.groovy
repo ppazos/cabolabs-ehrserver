@@ -59,6 +59,16 @@ class BootStrap {
 
    def defaultConfigurationItems()
    {
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/834
+      // TODO: these should be created for each new organization
+      def mandatory_org_items = [
+         ['ehrserver.services.snquery.apikey', 'string', true], // key, type, blank
+         ['ehrserver.services.snquery.apikey_isvalid', 'boolean', true]
+      ]
+
+      // TODO
+      def mandatory_account_items = []
+
       def conf = [
          new ConfigurationItem(key:'ehrserver.instance.id', value:'9cbabb12-c4ae-421c-868c-a6898520b983', type:'string', blank:false, description:'EHRServer running instance ID'),
          new ConfigurationItem(key:'ehrserver.console.lists.max_items', value:'20', type:'number', blank:false, description:'Max number of items on the lists views for the Web Console'),
