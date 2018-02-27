@@ -17,7 +17,7 @@
     $(function(){
       STEPS = [
         {
-          content: '<p>To manage EHRs for different hospitals and clinics, create an organization for each of those. When an EHR is created, it is associated with an organization.</p>',
+          content: '<p>${message(code:"app.get_started.tour.organizations")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#menu-organizations'),
@@ -25,7 +25,7 @@
           at: 'center right'
         },
         {
-          content: '<p>Create EHRs to commit clinical documents, and then execute some queries. Also, EHRs can be created from the REST API.</p>',
+          content: '<p>${message(code:"app.get_started.tour.ehrs")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#menu-ehrs'),
@@ -33,7 +33,7 @@
           at: 'center right'
         },
         {
-          content: '<p>Upload your openEHR Operational Templates (OPT) to be able to commit and query clinical documents defined by those OPTs.</p>',
+          content: '<p>${message(code:"app.get_started.tour.templates")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#menu-templates'),
@@ -41,7 +41,7 @@
           at: 'center right'
         },
         {
-          content: '<p>Each commit of clinical documents to an EHR will generate a contribution log.</p>',
+          content: '<p>${message(code:"app.get_started.tour.contributions")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#menu-contributions'),
@@ -49,7 +49,7 @@
           at: 'center right'
         },
         {
-          content: '<p>Queries are created from the Web Console, and can be executer from the REST API. No need of programming or writing SQL!</p>',
+          content: '<p>${message(code:"app.get_started.tour.queries")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#menu-queries'),
@@ -57,7 +57,7 @@
           at: 'center right'
         },
         {
-          content: '<p>From here you can send feedback, ask a question or send an improvement idea, and logout from the Web Console</p>',
+          content: '<p>${message(code:"app.get_started.tour.top_menu")}</p>',
           highlightTarget: true,
           nextButton: true,
           target: $('#top-user-menu'),
@@ -65,7 +65,10 @@
           at: 'bottom left'
         }
       ];
-      
+
+      Tourist.Tip.Base.prototype.nextButtonTemplate = Tourist.Tip.Base.prototype.nextButtonTemplate.replace('Next step →', '${message(code:"app.get_started.tour.next").decodeHTML()}');
+      Tourist.Tip.Base.prototype.finalButtonTemplate = Tourist.Tip.Base.prototype.finalButtonTemplate.replace('Finish up', '${message(code:"app.get_started.tour.finish").decodeHTML()}');
+
       TOUR = new Tourist.Tour({
        stepOptions: {},
        steps: STEPS,
@@ -78,8 +81,9 @@
          }
        }
       });
-      
+
       $('#tour-btn').on('click', function(){
+
         TOUR.start();
       });
     });
