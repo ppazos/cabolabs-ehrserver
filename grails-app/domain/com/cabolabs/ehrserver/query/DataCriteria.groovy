@@ -27,22 +27,22 @@ import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 
 /**
- * WHERE archId/path operand value 
- * 
+ * WHERE archId/path operand value
+ *
  * Para consultas de compositions (queryByData)
- * 
+ *
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class DataCriteria {
 
    def querySnomedService
-   
+
 
    String archetypeId
    String path
    boolean allowAnyArchetypeVersion = false
-   
-   
+
+
    // value va a depender del tipo del RM en la path
    // value es parametro de la query sino se setea aqui
    // se setea aqui cuando se hace la consulta como una regla (ej. para ver valores fuera de rango)
@@ -50,28 +50,28 @@ class DataCriteria {
    /**
     * DV_PROPORTION:
     *   values = [value1, value2] se puede usar para operador between sobre magnitude
-    * 
+    *
     * DV_CODED_TEXT:
     *   values = [code::terminology, code::terminology, ...] se puede usar para saber si un dato esta dentro de una lista.
     */
-   
+
    String rmTypeName
-   
+
    // TODO: poner name para mostrar en la definicion
    //       de la consulta, se saca de ArchetypeIndexItem o del
    //       arquetipo archetypeId para la path (que
    //       tiene el nodeId)
-   
+
    int spec // index of the criteria spec selected
-   
+
    String alias // for the query, private
-   
+
    static transients = ['indexItem']
-   
+
    static constraints = {
       rmTypeName(inList: DataValues.valuesStringList() )
    }
-   
+
    static Map operandMap = [
      'eq': '=',
      'lt': '<',
@@ -83,27 +83,27 @@ class DataCriteria {
      'contains': 'LIKE', // TODO: for MySQL is LIKE, for postgres is ILIKE (for MySQL we might need to use ucase(fieldName) like 'ucase(value)%')
      'between': 'BETWEEN'
    ]
-   
+
    def sqlOperand(String operandString)
    {
       return operandMap[operandString]
    }
-   
+
    static belongsTo = [Query]
-   
-   
+
+
    String toString()
    {
       return "(archetypeId: "+ this.archetypeId +", path: "+ this.path +", rmTypeName: "+ this.rmTypeName +", class: "+ this.getClass().getSimpleName() +")"
    }
-   
+
    /*
     * Used to show the query as JSON and XML on the UI.
     */
    Map getCriteriaMap()
    {
       def criteria = [:] // attr -> [ operand : values ]
-      
+
       def specs = criteriaSpec(this.archetypeId, this.path, false)
       def spec = specs[this.spec] // spec used Map
       def attributes = spec.keySet()
@@ -112,15 +112,15 @@ class DataCriteria {
       def valueField
       def criteriaValueType // value, list, range ...
       def value
-      
+
       attributes.each { attr ->
          operandField = attr+'Operand'
          operand = this."$operandField"
          valueField = attr+'Value'
          value = this."$valueField" // can be a list
-         
+
          criteriaValueType = spec[attr][operand]
-         
+
          // Date values as Strings formatted in UTC
          // value can be list, is teh type of the attribute in the criteria class
          if (value instanceof List)
@@ -137,8 +137,8 @@ class DataCriteria {
                value = value.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
             }
          }
-      
-         
+
+
          // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
          // That can be done in a pre filter, and we can put the dates to utc string also there
          if (criteriaValueType == 'value')
@@ -162,15 +162,15 @@ class DataCriteria {
             criteria[attr] =  [(operand): value]
          }
       }
-      
+
       return criteria
    }
-   
+
    String toSQL()
    {
       // booleano false no devuelve listas de valores porque aca no las uso ej para coded text
       def specs = criteriaSpec(this.archetypeId, this.path, false)
-      
+
       // TODO: we need to think another way of referencing the spec that is not by the index,
       // this difficults executing not stored queries, since the spec number should be set.
       def criteria_spec = specs[this.spec] // spec used Map
@@ -182,15 +182,15 @@ class DataCriteria {
       def negationField
       def criteriaValueType // value, list, range ...
       def value, attr, negation
-      
+
       attributes_or_functions.each { attr_or_function ->
-      
+
          if (this.functions().contains(attr_or_function))
          {
             // is function
             //println "function " + attr_or_function
             //println this.evaluateFunction(attr_or_function)
-            
+
             sql += this.evaluateFunction(attr_or_function) + '     ' // extra spaces are to avoid cutting the criteria value
          }
          else
@@ -201,13 +201,13 @@ class DataCriteria {
             valueField = attr+'Value'
             value = this."$valueField" // can be a list
             negationField = attr+'Negation'
-            
+
             // not all DataCriteria have negation (boolean, identifier don't have negation fields)
             if (this.hasProperty(negationField))
                negation = this."$negationField"
-            
+
             criteriaValueType = criteria_spec[attr][operand]
-            
+
             // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
             if (criteriaValueType == 'value')
             {
@@ -219,12 +219,12 @@ class DataCriteria {
             else if (criteriaValueType == 'list')
             {
                assert ['in_list', 'contains_like'].contains(operand)
-               
+
                if (operand == 'contains_like')
                {
                   sql += (negation ? 'NOT ' : '')
                   sql += '('
-                  
+
                   value.each { singleValue ->
                      sql += this.alias +'.'+ attr +' LIKE '+ singleValue.asSQLValue(operand) +" OR "
                   }
@@ -233,7 +233,7 @@ class DataCriteria {
                else
                {
                   sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' IN ('
-                  
+
                   value.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','
                   }
@@ -243,20 +243,20 @@ class DataCriteria {
             else if (criteriaValueType == 'range')
             {
                assert operand == 'between'
-               
+
                sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' BETWEEN '+ value[0].asSQLValue(operand) +' AND '+ value[1].asSQLValue(operand)
             }
             else if (criteriaValueType == 'snomed_exp')
             {
                assert 'in_snomed_exp' == operand
-               
+
                // for coded text this is List codeValue, value[0] is the expression
                //println value
-               
+
                // TODO: the result of the expression should be already cached locally
                // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
                def conceptids = []
-               
+
                try
                {
                   conceptids = querySnomedService.getCodesFromExpression(value[0])
@@ -265,14 +265,19 @@ class DataCriteria {
                {
                   println e.message
                   println e
+                  // FIXME: if there is an error resolving the snomed expression,
+                  //        the whole getSQL should fail and the error should reach
+                  //        the upper level to show a friendly message to the user,
+                  //        like server not available or max requests reached.
+                  //        On a server down situation 'e' will be java.net.UnknownHostException
                }
-               
+
                //println conceptids
                // be prepared for communication errors to avoid generating invalid HQL
                if (conceptids.size() > 0)
                {
                   sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' IN ('
-                  
+
                   conceptids.each { singleValue ->
                      sql += singleValue.asSQLValue(operand) +','
                   }
@@ -283,16 +288,16 @@ class DataCriteria {
                   sql += ' 1=1 ' // just a placeholder to have a valid query, TODO: this should be an empty list
                }
             }
-         
+
             sql += ' AND '
          }
       }
-      
+
       sql = sql[0..-6] // removes the last AND
-      
+
       return sql
    }
-   
+
    ArchetypeIndexItem getIndexItem()
    {
       if (this.allowAnyArchetypeVersion)
