@@ -681,11 +681,14 @@ class BootStrap {
 
    def defaultAccount(User contact, List organizations)
    {
-      def account = new Account(contact: contact, enabled: true)
-      organizations.each { org ->
-         account.addToOrganizations(org)
+      if (Account.count() == 0)
+      {
+         def account = new Account(contact: contact, enabled: true)
+         organizations.each { org ->
+            account.addToOrganizations(org)
+         }
+         account.save(failOnError:true, flush:true)
       }
-      account.save(failOnError:true, flush:true)
    }
 
    def defaultOrganizations()
@@ -799,9 +802,7 @@ class BootStrap {
 
 
 // miration creating accounts for existing orgs in prod
-
-
-
+/*
 // cabo account
 def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
 def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
@@ -817,7 +818,7 @@ def gr_contact = User.findByUsername('sachingupta')
 def gr_account = new Account(contact: gr_contact, enabled: true)
 gr_account.addToOrganizations(gr_org)
 gr_account.save(failOnError:true, flush:true)
-
+*/
 
 
 
@@ -857,7 +858,7 @@ gr_account.save(failOnError:true, flush:true)
 
 
          // saves the organizations!
-//         def account = defaultAccount(accManUser, organizations)
+         def account = defaultAccount(accManUser, organizations)
 
 
 
