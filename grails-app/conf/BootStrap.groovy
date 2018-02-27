@@ -798,6 +798,29 @@ class BootStrap {
       // --------------------------------------------------------------------
 
 
+// miration creating accounts for existing orgs in prod
+
+
+
+// cabo account
+def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
+def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
+def cabo_contact = User.findByUsername('accman')
+def cabo_account = new Account(contact: cabo_contact, enabled: true)
+cabo_account.addToOrganizations(ehrserver_org)
+cabo_account.addToOrganizations(cabotests_org)
+cabo_account.save(failOnError:true, flush:true)
+
+// gr account
+def gr_org = Organization.findByUid('893c47bf-de29-4d5f-a6e1-698bc022315e')
+def gr_contact = User.findByUsername('sachingupta')
+def gr_account = new Account(contact: gr_contact, enabled: true)
+gr_account.addToOrganizations(gr_org)
+gr_account.save(failOnError:true, flush:true)
+
+
+
+
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
       {
@@ -888,39 +911,65 @@ class BootStrap {
 
 
          // Create plans
-         def p1
+         def test_plan
          if (Plan.count() == 0)
          {
-            // Create plans
-            p1 = new Plan(
-              name:                      "Testing",
-              max_organizations:         3,
-              max_opts_per_organization: 3,
-              max_api_tokens_per_organization: 3,
-              repo_total_size_in_kb:     900, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
-              period:                    Plan.periods.MONTHLY
-            )
+            println "Creating default plans"
 
-            p1.save(failOnError: true)
+            // Create plans
+            def plans = [
+               new Plan(
+                 name:                            "Basic",
+                 max_organizations:               1,
+                 max_opts_per_organization:       5,
+                 max_api_tokens_per_organization: 5,
+                 repo_total_size_in_kb:           2.5*1024*1024, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
+                 period:                          Plan.periods.MONTHLY
+               ),
+               new Plan(
+                 name:                            "Standard",
+                 max_organizations:               3,
+                 max_opts_per_organization:       10,
+                 max_api_tokens_per_organization: 20,
+                 repo_total_size_in_kb:           7.5*1024*1024,
+                 period:                          Plan.periods.MONTHLY
+               ),
+               new Plan(
+                 name:                           "Enterprise",
+                 max_organizations:               10,
+                 max_opts_per_organization:       25,
+                 max_api_tokens_per_organization: 999,
+                 repo_total_size_in_kb:           15*1024*1024,
+                 period:                          Plan.periods.MONTHLY
+               ),
+               new Plan(
+                 name:                            "Testing",
+                 max_organizations:               3,
+                 max_opts_per_organization:       3,
+                 max_api_tokens_per_organization: 3,
+                 repo_total_size_in_kb:           900, // low for testing! (1MB in KB)
+                 period:                          Plan.periods.MONTHLY
+               )
+            ]
+
+            plans*.save(failOnError: true)
+
+            test_plan = plans[3]
          }
          else
          {
-            p1 = Plan.get(1)
+            test_plan = Plan.findByName('Testing')
          }
 
 
-         // Associate free plans by default
+         // Associate test_plan by default
          def accounts = Account.list()
          accounts.each { acct ->
             if (!PlanAssociation.findByAccount(acct))
             {
-               p1.associate(acct, new Date())
+               test_plan.associate(acct, new Date())
             }
          }
-
-         println 'User.allForAccount '+ User.allForAccount(accounts[0])
-         println 'user.account '+ User.get(1).account
-
       } // not TEST ENV
 
 
