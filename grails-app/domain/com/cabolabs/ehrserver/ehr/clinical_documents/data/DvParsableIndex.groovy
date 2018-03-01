@@ -32,8 +32,9 @@ class DvParsableIndex extends DataValueIndex {
    static mapping = {
      value column: "parsable_index_value"
    }
-   
+
    static constraints = {
+      /* moved the constraints to the XSD to reject XMLs on the commit.
       formalism inList:[
          "text/xml",
          "text/rtf",
@@ -42,6 +43,7 @@ class DvParsableIndex extends DataValueIndex {
          "iso8601", // this is to parse time expressions for activity.timing, we don't know if this is date, datetime, duration or period.
          "hl7_gts"
       ]
+      */
       value(maxSize: 2147483647) //2GB, Groovy Integer.MAX_VALUE: http://docs.groovy-lang.org/next/html/documentation/core-syntax.html#_numbers
    }
 }

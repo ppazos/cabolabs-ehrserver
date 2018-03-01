@@ -195,7 +195,7 @@
                          <xs:element name="narrative" type="DV_TEXT"/>
                          <xs:element name="expiry_time" type="DV_DATE_TIME" minOccurs="0"/>
                          <xs:element name="wf_definition" type="DV_PARSABLE" minOccurs="0"/>
-                         <xs:element name="activities" type="ACTIVITY" minOccurs="0" maxOccurs="unbounded"/>         
+                         <xs:element name="activities" type="ACTIVITY" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                </xs:extension>
           </xs:complexContent>
@@ -218,7 +218,7 @@
                     <xs:sequence>
                          <xs:element name="description" type="ITEM_STRUCTURE"/>
                          <xs:element name="timing" type="DV_PARSABLE"/>
-                         <xs:element name="action_archetype_id" type="xs:string"/>               
+                         <xs:element name="action_archetype_id" type="xs:string"/>
                     </xs:sequence>
                </xs:extension>
           </xs:complexContent>
@@ -653,9 +653,26 @@
           <xs:complexContent>
                <xs:extension base="DV_ENCAPSULATED">
                     <xs:sequence>
-                         <xs:element name="value" type="NotEmptyString"/>
                          <!-- <xs:element name="value" type="AllowAny"/> -->
-                         <xs:element name="formalism" type="NotEmptyString"/>
+                         <xs:element name="value" type="NotEmptyString"/>
+
+                         <!-- <xs:element name="formalism" type="NotEmptyString"/>-->
+                         <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/869 -->
+                        <xs:element name="formalism">
+                          <xs:simpleType>
+                            <xs:restriction base="NotEmptyString">
+                              <!-- content formalism, only for parsable data (non-binary) -->
+                              <xs:enumeration value="text/xml"/>
+                              <xs:enumeration value="text/rtf"/>
+                              <xs:enumeration value="text/plain"/>
+                              <xs:enumeration value="text/html"/>
+                              <xs:enumeration value="application/json"/>
+                              <!-- date formalisms for ACTIVITY.timing.formalism -->
+                              <xs:enumeration value="ISO8601"/>
+                              <xs:enumeration value="HL7_GTS"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:element>
                     </xs:sequence>
                </xs:extension>
           </xs:complexContent>
@@ -909,28 +926,28 @@
           </xs:complexContent>
      </xs:complexType>
    <xs:complexType name="IntervalOfDuration">
-          <xs:complexContent>
-               <xs:extension base="Interval">
-                    <xs:sequence>
-                         <xs:element name="lower" type="Iso8601Duration" minOccurs="0"/>
-                         <xs:element name="upper" type="Iso8601Duration" minOccurs="0"/>
-                    </xs:sequence>
-               </xs:extension>
-          </xs:complexContent>
-     </xs:complexType>
-     <xs:simpleType name="NotEmptyString">
-       <xs:restriction base="xs:string">
-         <xs:minLength value="1" />
-       </xs:restriction>
-     </xs:simpleType>
-     <xs:simpleType name="NotEmptyToken">
-       <xs:restriction base="xs:token">
-         <xs:minLength value="1" />
-       </xs:restriction>
-     </xs:simpleType>
-     <xs:simpleType name="NotEmptyUri">
-       <xs:restriction base="xs:anyURI">
-         <xs:minLength value="1" />
-       </xs:restriction>
-     </xs:simpleType>
+      <xs:complexContent>
+         <xs:extension base="Interval">
+            <xs:sequence>
+               <xs:element name="lower" type="Iso8601Duration" minOccurs="0"/>
+               <xs:element name="upper" type="Iso8601Duration" minOccurs="0"/>
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="NotEmptyString">
+     <xs:restriction base="xs:string">
+       <xs:minLength value="1" />
+     </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NotEmptyToken">
+     <xs:restriction base="xs:token">
+       <xs:minLength value="1" />
+     </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NotEmptyUri">
+     <xs:restriction base="xs:anyURI">
+       <xs:minLength value="1" />
+     </xs:restriction>
+  </xs:simpleType>
 </xsd:schema>
