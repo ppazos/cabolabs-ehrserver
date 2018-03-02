@@ -164,7 +164,41 @@ class BootStrap {
       {
          throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
       }
-      // /file system checks
+
+      Organization.list().each { org ->
+
+         // version repos per existing org
+         if (!versionFSRepoService.repoExistsOrg(org))
+         {
+            throw new Exception("Version repo doesn't for organization "+ org.uid)
+         }
+         if (!versionFSRepoService.canWriteRepoOrg(org))
+         {
+            throw new Exception("Can't write version repo for organization "+ org.uid +" check permissions")
+         }
+
+         // commit log repos per existing org
+         if (!commitLoggerService.repoExistsOrg(org))
+         {
+            throw new Exception("Commit log repo doesn't for organization "+ org.uid)
+         }
+         if (!commitLoggerService.canWriteRepoOrg(org))
+         {
+            throw new Exception("Can't write commit log repo for organization "+ org.uid +" check permissions")
+         }
+
+         // opt repos per existing org
+         // TODO: create service to access file system repo like version and commit log
+         def org_opt_repo = new File(Holders.config.app.opt_repo.withTrailSeparator() + org.uid)
+         if (!org_opt_repo.exists())
+         {
+            throw new Exception("OPT repo doesn't for organization "+ org.uid)
+         }
+         if (!org_opt_repo.canWrite())
+         {
+            throw new Exception("Can't write OPT repo for organization "+ org.uid +" check permissions")
+         }
+      }
    }
 
    def registerMarshallers()
