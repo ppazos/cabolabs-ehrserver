@@ -815,8 +815,8 @@ class BootStrap {
       // Define server timezone
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
-      repoChecks()
       extendClasses()
+      repoChecks()
       registerMarshallers()
 
       if (Environment.current != Environment.TEST)
