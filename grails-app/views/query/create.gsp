@@ -15,7 +15,7 @@
       tr td:last-child select, tr td:last-child input[type=text] {
         width: 100%;
       }
-      
+
       table#query_setup tr td:first-child {
         width: 140px;
       }
@@ -50,14 +50,14 @@
       .criteria_value:first-child {
         display: inline;
       }
-      
+
       /* Smaller selects with size > 1 because input-sm is not supported for that case */
       select.withsize {
         padding: 5px 10px;
         font-size: 12px;
         border-radius: 3px;
       }
-      
+
       /* null flavour paths hidden by default */
       option.null_flavour {
         display: none;
@@ -72,36 +72,36 @@
        font-size: 0.8em;
       }
     </style>
-    
+
     <!-- query test -->
     <asset:stylesheet src="query_execution.css" />
     <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
     <asset:stylesheet src="highlightjs/xcode.css" />
     <asset:stylesheet src="animate.css" />
     <asset:stylesheet src="pnotify.custom.min.css" />
-    
+
     <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <asset:javascript src="jquery.form.js" /><!-- ajax form -->
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <asset:javascript src="highcharts/highcharts.js" />
     <asset:javascript src="highlight.pack.js" /><!-- highlight xml and json -->
-    
+
     <asset:javascript src="pnotify.custom.min.js" />
-    
+
     <script type="text/javascript">
       // globals
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
       var get_concepts_url = '${createLink(controller:"query", action:"getConcepts")}';
       var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getArchetypesInTemplate")}';
       var current_criteria_spec; // set by getCriteriaSpec
-      
+
       <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>
     </script>
     <asset:javascript src="query_test_and_execution.js" />
     <!-- /query test -->
-    
+
     <script type="text/javascript">
-      
+
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
@@ -154,10 +154,10 @@
           this.id_gen++;
 
           var c = {
-                   cid: this.id_gen, 
-                   archetypeId: archetype_id, 
-                   path: path, 
-                   rmTypeName: rm_type_name, 
+                   cid: this.id_gen,
+                   archetypeId: archetype_id,
+                   path: path,
+                   rmTypeName: rm_type_name,
                    class: 'DataCriteria'+rm_type_name,
                    allowAnyArchetypeVersion: allow_any_archetype_version
                   };
@@ -166,14 +166,14 @@
           for (a in criteria.conditions) c[a] = criteria.conditions[a];
 
           c['spec'] = criteria.spec;
-          
+
           //this.where.push( c );
           this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
 
           // when items are removed and then added, there are undefined entries in the array
           // this cleans the undefined items so the server doesnt receive empty values.
-          this.where = this.where.filter(function(n){ return n != undefined }); 
-          
+          this.where = this.where.filter(function(n){ return n != undefined });
+
           return this.id_gen;
         },
         add_projection: function (archetype_id, path, rm_type_name, allow_any_archetype_version)
@@ -181,19 +181,19 @@
           if (this.type != 'datavalue') return false;
 
           this.id_gen++;
-          
+
           this.select[this.id_gen - 1] = {
-                                          pid: this.id_gen, 
-                                          archetype_id: archetype_id, 
-                                          path: path, 
+                                          pid: this.id_gen,
+                                          archetype_id: archetype_id,
+                                          path: path,
                                           rmTypeName: rm_type_name,
                                           allow_any_archetype_version: allow_any_archetype_version
                                          };
 
           // when items are removed and then added, there are undefined entries in the array
           // this cleans the undefined items so the server doesnt receive empty values.
-          this.select = this.select.filter(function(n){ return n != undefined }); 
-          
+          this.select = this.select.filter(function(n){ return n != undefined });
+
           return this.id_gen;
         },
         remove_criteria: function (id)
@@ -223,7 +223,7 @@
                  break;
               }
            }
-           
+
            this.select.splice(pos, 1); // removes 1 item in from the position
         },
         log: function () { console.log(this); }
@@ -237,42 +237,42 @@
         for (var i = 0; i < arr.length; i++)
         {
           if (empty_values.includes( arr[i] ))
-          {         
+          {
             arr.splice(i, 1);
             i--;
           }
         }
         return arr;
       };
-      
+
       function Criteria(spec) {
 
         this.conditions = [];
         this.spec = spec;
 
         this.add_condition = function (attr, operand, values, negation) {
-          
+
           if (values.length > 1)
             this.conditions[attr+'Value'] = values;
           else
             this.conditions[attr+'Value'] = values[0];
-          
+
           this.conditions[attr+'Operand'] = operand;
-          
+
           this.conditions[attr+'Negation'] = negation;
         };
       };
 
-      
+
       // ==============================================================================================
       // SAVE OR UPDATE
       // TODO: put these methods in the query object
       // ==============================================================================================
-    
+
       var save_or_update_query = function(action) {
 
         if (action != 'save' && action != 'update') throw "Action is not save or update";
-      
+
         query.set_name($('input[name=name]').val());
 
         if (!query.get_name())
@@ -280,7 +280,7 @@
            alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}');
            return;
         }
-        
+
         query.set_query_group($('select[name=queryGroup]').val());
 
         if (!query.has_criteria() && !query.has_projections())
@@ -298,7 +298,7 @@
 
         if ( $('input[name=isPublic]').is(':checked') ) query.set_public();
         else query.set_private();
-        
+
         query.set_criteria_logic($('select[name=criteriaLogic]').val());
 
         if (query.get_type() == 'datavalue')
@@ -312,7 +312,7 @@
            query.set_format( $('select[name=composition_format]').val() );
            query.set_template_id( $('select[name=templateId]').val() );
         }
-        
+
         // We need these functions because the URLs are created on the server.
         var s_o_u = {
            save_query: function() {
@@ -348,12 +348,12 @@
              });
            }
         };
-        
+
         // save_query() or update_query()
         s_o_u[action+'_query']();
       };
-      
-      
+
+
       // ==============================================================================================
       // TEST COMPOSITION and DATAVALUE
       // ==============================================================================================
@@ -363,7 +363,7 @@
         //console.log('test composition query');
         //console.log('query_form', $('#query_form'));
 
-        
+
         // query management
         query.set_name($('input[name=name]').val());
         query.set_query_group($('select[name=queryGroup]').val());
@@ -389,12 +389,12 @@
         if (qehrId != null) data.qehrId = qehrId;
         if (composerUid != null) data.composerUid = composerUid;
         if (composerName != null) data.composerName = composerName;
-        
-        
+
+
         // removes previous alert if present
         $('#query_test_common .alert').remove();
-        
-        
+
+
         $.ajax({
           method: 'POST',
           url: '${createLink(controller:'rest', action:'queryCompositions')}?format='+format, // format param in url to make the withFormat work in the controller
@@ -403,9 +403,9 @@
           data: JSON.stringify( data ) // JSON.parse(  avoid puting functions, just data
         })
         .done(function( res ) {
-           
+
            //console.log("queryCompositions result", res);
-           
+
            var code = $('#code');
            // reset code class or highlight
            code.removeClass('xml json');
@@ -414,7 +414,7 @@
            if ($('select[name=showUI]').val()=='true')
            {
              //console.log('UI');
-              
+
              $('#results').html( res );
              $('#results').show('slow');
            }
@@ -428,7 +428,7 @@
                code.each(function(i, e) { hljs.highlightBlock(e); });
              }
              else
-             { 
+             {
                // highlight
                code.addClass('xml');
                code.text(formatXml( xmlToString(res) ));
@@ -437,19 +437,19 @@
 
              code.show('slow');
            }
-           
+
            // Muestra el boton que permite ver los datos crudos
            // devueltos por el servidor
            $('#show_data').show();
         })
         .fail(function(resp,status,status_msg) {
-           
+
            //console.log(resp);
            //console.log(resp.responseXML); // XML object!
            //console.log(resp.responseXML.getElementsByTagName("result")[0]);
            //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0]);
            //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue);
-           
+
            //console.log(status);
            //console.log(status_msg);
 
@@ -485,7 +485,7 @@ resp.responseJSON.result.message +'</div>'
         query.set_group($('select[name=group]').val()); // for datavalue query
 
         query.set_template_id( $('select[name=dv_templateId]').val() );
-        
+
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
@@ -501,11 +501,11 @@ resp.responseJSON.result.message +'</div>'
         if (qehrId != null) data.qehrId = qehrId;
         if (composerUid != null) data.composerUid = composerUid;
         if (composerName != null) data.composerName = composerName;
-        
+
         // removes previous alert if present
         $('#query_test_common .alert').remove();
-        
-        
+
+
         $.ajax({
            method: 'POST',
            url: '${createLink(controller:"rest", action:"queryData")}?format='+format, // format param in url to make the withFormat work in the controller
@@ -514,14 +514,14 @@ resp.responseJSON.result.message +'</div>'
            data: JSON.stringify( data )
          })
          .done(function( res ) {
-         
+
             // Vacia donde se va a mostrar la tabla o el chart
             $('#chartContainer').empty();
-            
+
             //console.log('form_datavalue success 2');
 
             var code = $('#code');
-            
+
             // reset code class or highlight
             code.removeClass('xml json');
 
@@ -529,13 +529,13 @@ resp.responseJSON.result.message +'</div>'
             if (format == 'json')
             {
               //console.log('form_datavalue success json');
-              
+
               // highlight
               code.addClass('json');
               code.text(JSON.stringify(res, undefined, 2));
               code.each(function(i, e) { hljs.highlightBlock(e); });
-              
-              if (qehrId != null) 
+
+              if (qehrId != null)
               {
                 // =================================================================
                 // Si agrupa por composition (muestra tabla)
@@ -557,7 +557,7 @@ resp.responseJSON.result.message +'</div>'
             else // Si devuelve el XML
             {
               //console.log('form_datavalue success XML');
-            
+
               // highlight
               code.addClass('xml');
               code.text(formatXml( xmlToString(res) ));
@@ -565,17 +565,17 @@ resp.responseJSON.result.message +'</div>'
             }
 
             code.show('slow');
-            
+
             // Muestra el boton que permite ver los datos crudos
             // devueltos por el servidor
             $('#show_data').show();
-            
-            
+
+
             // Hace scroll animado para mostrar el resultado
             $('html,body').animate({scrollTop:code.offset().top+400}, 500);
          })
          .fail(function(resp,status,status_msg) {
-         
+
            if (format == 'xml')
            {
              // show error in XML response
@@ -587,7 +587,7 @@ resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message
            else
            {
               console.log('json', resp);
-              
+
               $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseJSON.result.message +'</div>'
@@ -596,8 +596,8 @@ resp.responseJSON.result.message +'</div>'
          });
 
       }; // test_query_datavalue
-    
-      
+
+
       /*
        * Called from the save/update buttons
        */
@@ -624,7 +624,7 @@ resp.responseJSON.result.message +'</div>'
                test_query_datavalue();
             }
          } // test query
-         
+
       }; // ajax_submit
 
       // ==================================================================
@@ -642,7 +642,7 @@ resp.responseJSON.result.message +'</div>'
       var dom_add_criteria_2 = function (fieldset) {
 
         //console.log('dom_add_criteria_2', $('input.value.selected', fieldset), $('input.value.selected', fieldset).length);
-        
+
         // Path is not selected
         //console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
         if ( $('select[name=view_archetype_path]').val() == null )
@@ -650,17 +650,17 @@ resp.responseJSON.result.message +'</div>'
           alert('${g.message(code:"query.create.selectDatapoint")}');
           return false;
         }
-        
+
         // =======================================================================================
         // Criteria is complete? https://github.com/ppazos/cabolabs-ehrserver/issues/141
         //
         // for each value in the criteria
-        
-        
+
+
         // inputs or selects with values
         var criteria_fields = $(':input.value.selected', fieldset);
         var complete = true;
-        
+
         if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
         {
           alert('${g.message(code:"query.create.selectCriteria")}');
@@ -690,25 +690,25 @@ resp.responseJSON.result.message +'</div>'
         var type = $('select[name=view_archetype_path] option:selected').data('type');
         var spec = $('input[name=criteria]', fieldset).data('spec');
         var allow_any_archetype_version = $('input[name=allow_any_archetype_version]')[0].checked;
-        
+
         //console.log('spec', spec);
 
         var attribute, operand, value, values, negation;
         var criteria_str = '';
-        
+
         // criteria js object
         var criteria = new Criteria(spec);
-        
+
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
           values = [];
           attribute = $('input[name=attribute]', e).val()
           operand = $('select[name=operand]', e).val();
           negation = $('input[name=negation]', e).prop( "checked" );
-          
+
           // FIXME: are we using the hidden fields?
           if (negation) criteria_str += 'NOT '
-          
+
           criteria_str += attribute +' ';
           criteria_str += operand +' ';
 
@@ -717,7 +717,7 @@ resp.responseJSON.result.message +'</div>'
           $.each( $(':input.selected.value.'+attribute, e), function (j, v) {
 
             value = $(v).val();
-             
+
             // values are not empty or null, already checked
             values.push(value);
             criteria_str += value + ', ';
@@ -725,14 +725,14 @@ resp.responseJSON.result.message +'</div>'
 
           criteria_str = criteria_str.substring(0, criteria_str.length-2); // remove last ', '
           criteria_str += ' AND ';
-          
+
           // query object mgt
           criteria.add_condition(attribute, operand, values, negation);
         });
-        
+
         criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
-        
-        
+
+
         // query object mgt
         cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
         //query.log();
@@ -761,9 +761,9 @@ resp.responseJSON.result.message +'</div>'
              '</div>'+
            '</td></tr>'
         );
-        
+
         return true;
-        
+
       }; // dom_add_criteria_2
 
 
@@ -773,7 +773,7 @@ resp.responseJSON.result.message +'</div>'
         ok = dom_add_criteria_2(
           $('input[name=criteria]:checked', '#query_form').closest('.form-group') // container of the selected criteria
         );
-        
+
         if (ok)
         {
           new PNotify({
@@ -789,17 +789,17 @@ resp.responseJSON.result.message +'</div>'
       // =================================
       // /COMPO QUERY CREATE/EDIT ========
       // =================================
-      
+
       // =================================
       // DATA QUERY CREATE/EDIT =========
       // =================================
-      
+
       var dom_add_selection = function (archetype_id, path, name, rm_type_name, allow_any_archetype_version) {
 
         // query object mgt
         pid = query.add_projection(archetype_id, path, rm_type_name, allow_any_archetype_version);
         //query.log();
-        
+
         // shows openEHR-EHR-...* instead of .v1
         if (allow_any_archetype_version)
         {
@@ -807,10 +807,10 @@ resp.responseJSON.result.message +'</div>'
            {
               archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")); // removes version
            }
-           
+
            archetype_id += ".*" // generic version just for the UI
         }
-        
+
         // shows the projection in the UI
         $('#selection').append(
           '<tr data-id="'+ pid +'">'+
@@ -827,11 +827,11 @@ resp.responseJSON.result.message +'</div>'
           '</td></tr>'
         );
       };
-      
+
       var query_datavalue_add_selection = function () {
 
         // TODO: verificar que todo tiene valor seleccionado
-         
+
         if ( $('select[name=view_archetype_id]').val() == null )
         {
           alert('${g.message(code:"query.create.please_select_concept")}');
@@ -850,7 +850,7 @@ resp.responseJSON.result.message +'</div>'
           $('select[name=view_archetype_path] option:selected').data('type'),
           $('input[name=allow_any_archetype_version]')[0].checked
         );
-        
+
         new PNotify({
           title: '${g.message(code:"query.create.selection_added")}',
           text : '<a href="#selection">${g.message(code:"query.create.verify_selection")}</a>',
@@ -863,11 +863,11 @@ resp.responseJSON.result.message +'</div>'
       // =================================
       // /DATA QUERY CREATE/EDIT =========
       // =================================
-      
+
       // =================================
       // COMMON QUERY CREATE/EDIT ========
       // =================================
-      
+
       var get_and_render_archetype_paths = function (template_id, archetype_id) {
 
         $.ajax({
@@ -878,10 +878,10 @@ resp.responseJSON.result.message +'</div>'
 
             // Saca las options que haya
             $('select[name=view_archetype_path]').empty();
-            
+
             // Agrega las options con las paths del arquetipo seleccionado
             $('select[name=view_archetype_path]').append('<option value="">${g.message(code:"query.create.please_select_datapoint")}</option>');
-            
+
             // Adds options to the select
             $(data).each(function(i, didx) {
 
@@ -890,14 +890,14 @@ resp.responseJSON.result.message +'</div>'
               {
                 $('select[name=view_archetype_path]').append(
                   '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'"'+
-                  (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+ 
+                  (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+
                   didx.name['ISO_639-1::${session.lang}'] +' ('+ didx.rmTypeName + ')</option>'
                 );
               }
             });
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
-            
+
             console.log(textStatus, errorThrown);
           }
         });
@@ -923,12 +923,12 @@ resp.responseJSON.result.message +'</div>'
           success: function(spec, textStatus) {
 
             //console.log('spec', spec, spec.length);
-            
+
             // set global for reference from other functions
             current_criteria_spec = spec;
 
             $('#composition_criteria_builder').empty();
-            
+
             var criteria = '';
 
             // spec is an array of criteria spec
@@ -936,43 +936,43 @@ resp.responseJSON.result.message +'</div>'
             for (s = 0; s < spec.length; s++)
             {
               aspec = spec[s];
-              
+
               global_criteria_id++;
-              
-              
+
+
               // 1 column for the radio button that selects the criteria
               criteria += '<div class="form-group"><div class="col-sm-1">';
-              
+
               //console.log(s, aspec);
-              
+
               // All fields of the same criteria will have the same id in the data-criteria attribute
               if (s == 0)
                 criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ s +'" checked="checked" />';
               else
                 criteria += '<input type="radio" name="criteria" data-criteria="'+ global_criteria_id +'" data-spec="'+ s +'" />';
-              
+
               // 11 columns for the criteria
               criteria += '</div><div class="col-sm-11">';
-              
-              
+
+
               for (attr in aspec)
               {
                 criteria += '<div class="criteria_attribute row">';
                 criteria += '<div class="col-sm-2">'+ attr + '<input type="hidden" name="attribute" value="'+ attr +'" /></div>';
-                
+
                 conditions = aspec[attr]; // spec[0][code][eq] == value
-                
+
                 if (avoid_negation_for_types.indexOf(datatype) < 0)
                 {
                   criteria += '<div class="col-sm-1">'
                   criteria += '${message(code:"query.create.criteria.not")} <input type="checkbox" name="negation" />'
                   criteria += '</div>'
                 }
-                
+
                 criteria += '<div class="col-sm-4">'
                 criteria += '<select class="operand '+ attr +' form-control input-sm" data-criteria="'+ global_criteria_id +'" name="operand">';
-                
-                
+
+
                 // =======================================================================================================
                 // If this has possible values from the template or another source like MM.mediaTypes is a constraint.
                 // After getting the values, the attribute is removed to avoid processing it as a condition.
@@ -996,14 +996,14 @@ resp.responseJSON.result.message +'</div>'
                     delete conditions['values'];
                   break;
                 }
-                
+
                 console.log(datatype, possible_values, conditions);
-                
+
                 //console.log('possible values', datatype, attr, possible_values);
                 //console.log('conditions', conditions);
                 // =======================================================================================================
-                
-                
+
+
                 for (cond in conditions)
                 {
                   // starts with underscore is for internal use, avoid processing,
@@ -1015,13 +1015,13 @@ resp.responseJSON.result.message +'</div>'
                   criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
                 criteria += '</select></div>';
-                
-                
-                
+
+
+
                 // *******************************************************************************
                 // FIXME: date* is not supported bu FF, we might need to use a JS lib / polyfill
                 // *******************************************************************************
-                
+
                 // input type by datatype and attr
                 var input_type = 'text';
                 var class_type = ''; // date, datetime and datetime-local types don't work on all browsers, we use bootstrap datetime picker for those, applied using a class
@@ -1053,26 +1053,26 @@ resp.responseJSON.result.message +'</div>'
                     if (attr == 'size') input_type = 'number';
                   break;
                 }
-                
-                
+
+
                 // indexes of operand and value should be linked.
                 criteria += '<div class="criteria_value_container col-sm-5">';
                 var i = 0;
                 for (cond in conditions)
                 {
                   //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
-                  
-                  
+
+
                   // starts with underscore is for internal use, avoid processing,
                   // used to pass list of codes to fill the condition value criteria
                   if (cond.startsWith('_'))
                   {
                      continue;
                   }
-                  
-                  
+
+
                   criteria += '<span class="criteria_value '+ attr +'" data-criteria="'+ global_criteria_id +'">';
-                  
+
                   if (cond == 'eq_one')
                   {
                     criteria += '<select name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
@@ -1140,37 +1140,37 @@ resp.responseJSON.result.message +'</div>'
                       }
                     }
                   }
-                  
+
                   criteria += '</span>'; // criteria value
-                   
+
                   i++;
                 }
                 criteria += '</div>'; // criteria value container
                 criteria += '</div>'; // criteria attribute
-                
+
               } // for aspec
-              
+
               criteria += '</div></div>'; // /col-sm-11 /row
-                
+
             }; // for render criteria spec
-            
+
             $('#composition_criteria_builder').append( criteria );
-            
-            
-            
+
+
+
             // apply datepicker behavior for generated fields, if any is datetime picker
             apply_datetime_picker_behavior_for_criteria( $('#composition_criteria_builder') );
-            
+
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
-            
+
             console.log(textStatus, errorThrown);
           }
         });
       };
-      
-      
-      
+
+
+
       /**
        * Applies datepicker behavior for generated fields, if any is datetime picker.
        */
@@ -1178,36 +1178,36 @@ resp.responseJSON.result.message +'</div>'
       {
         // datetime
         var fields = $('.input_datetime', criteria_container)
-        
+
         // http://momentjs.com/docs/#/displaying/format/
         fields.datetimepicker({
           format: "YYYY-MM-DDThh:mm:ssZ",
           ignoreReadonly: true
         });
-        
+
         fields.attr('readonly', true);
-        
+
         // date
         fields = $('.input_date', criteria_container)
-        
+
         fields.datetimepicker({
           format: "YYYY-MM-DD",
           ignoreReadonly: true,
           viewMode: 'months'
         });
-        
+
         fields.attr('readonly', true);
       };
-      
-      
+
+
       // Validation of snomed expressions used iin criteria values
       $(document).on('click', '.validate_snomed_expression', function(evt) {
-      
+
         //console.log( $(this).prev(), $(this).prev()[0].value );
-        
+
         expression_container = $(this).prev();
         expression_value = expression_container[0].value;
-        
+
         $.ajax({
           url: '${createLink(controller:"query", action:"validateSnomedExpression")}',
           data: {
@@ -1234,30 +1234,30 @@ resp.responseJSON.result.message +'</div>'
             }
           },
           error: function(xhr, textStatus, errorThrown) {
-            
+
             console.log(xhr, textStatus, errorThrown);
           }
         });
       });
-      
-      
+
+
       // Saves previous values of operand selects, needed to update the criteria area
       // after using in_snomed_exp operand.
       $(document).on('focus', 'select.operand', function(evt) {
         $(this).data('previous', this.value);
       });
-      
+
       // attachs onchange for operand selects created by the 'get_criteria_specs' function.
       $(document).on('change', 'select.operand', function(evt) {
-         
+
         //console.log('operand change', this.selectedIndex, $(this).data('criteria'));
         //console.log('prev', $(this).data('previous'));
-        
-        
+
+
         // Specific code to support in_snomed_exp as criteria operand
         //console.log(this.options[this.selectedIndex].value); // eq, in_list, in_snomed_exp, ...
         //console.log(current_criteria_spec);
-        
+
         if (this.options[this.selectedIndex].value == 'in_snomed_exp')
         {
            /*
@@ -1265,45 +1265,45 @@ resp.responseJSON.result.message +'</div>'
               2. save/hide current criteria value select
               3. dynamically create criteria value select for terminologyID with values current_criteria_spec[spec#][terminologyId]._snomed
            */
-           
+
            // 1. setear el 'eq' en este select
            //console.log( $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId') );
-           
+
            // 2.
            $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId').val('eq');
-           
+
            // for each operand, there is a criteria_value, I want the index of the operand eq to select the correspondent criteria_value select
            criteria_value_index = $('select[data-criteria="'+ $(this).data('criteria') +'"].operand.terminologyId')[0].selectedIndex;
-           
+
            // copiar el select o esconderlo, el que corresponda con el 'eq'
            // this selects all the selects with codes for each operand of the terminologyId (eq, contains), I want to set the eq select!
            //console.log( $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index] );
-           
+
            //$('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index].style.border = '1px solid red';
-           
+
            // selected criteria
            selected_criteria_spec_index = $('input[name=criteria]:checked', '#query_form').data('spec');
-           
+
            //console.log( current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed );
-           
+
            possible_values = current_criteria_spec[selected_criteria_spec_index].terminologyId._snomed;
-           
+
            // select to set with the terminolgy ids from snomed (can be undefined if the terminology doesnt have a list of values)
            //select_for_terminology_operand_eq = $('select.value.terminologyId', '[data-criteria="'+ $(this).data('criteria') +'"].criteria_value')[criteria_value_index];
-           //select_for_terminology_operand_eq.innerHTML = ''; 
-           
+           //select_for_terminology_operand_eq.innerHTML = '';
+
            select_container = $('[data-criteria="'+ $(this).data('criteria') +'"].criteria_value.terminologyId')[criteria_value_index];
-           
+
            // remove current options / criteria value
            while (select_container.hasChildNodes()) {
              select_container.removeChild(select_container.lastChild);
            }
-           
+
            //select_container.removeChild(select_for_terminology_operand_eq);  // remove current select
            select_for_terminology_snomed = document.createElement("select");   // new select
            select_for_terminology_snomed.className = "value terminologyId form-control input-sm selected";
            select_container.appendChild(select_for_terminology_snomed);        // add select to container
-           
+
            // add options to select for snomed versions
            for (k in possible_values)
            {
@@ -1316,15 +1316,15 @@ resp.responseJSON.result.message +'</div>'
         else
         {
            // reset the criteria_value select with the initial values because in_snomed_exp is not selected.
-           
+
            // Easiest way is to call again getCriteriaSpec for the current path.
            // The problem is every time the operand is changed, it does the request and render again,
-           // sinece we already have the spec, the request is no needed, just the render, but the 
+           // sinece we already have the spec, the request is no needed, just the render, but the
            // render is tied to the request in get_criteria_specs, we need to separate those processes
            // like we have on query_create.js for supporting concept filters: request and render are
-           // two different methods, and the render is called from the request as a callback, but 
+           // two different methods, and the render is called from the request as a callback, but
            // the render can be called and reused from anywhere passing the model to render.
-           
+
            // only updated if in_snomed_exp was used
            if ($(this).data('previous') == 'in_snomed_exp')
            {
@@ -1332,35 +1332,35 @@ resp.responseJSON.result.message +'</div>'
               get_criteria_specs(datatype);
            }
         }
-        
-        
-        
+
+
+
         var criteria_value_container = $(this).parent().next();
-        
+
         // All criteria values hidden
         criteria_value_container.children().css('display', 'none');
         $(':input', criteria_value_container).removeClass('selected'); // unselect the current selected criteria values
-        
+
         // criteria value [i] should be displayed
         var value_container = $(criteria_value_container.children()[this.selectedIndex]).css('display', 'inline')
         $(':input', value_container).addClass('selected'); // add selected to all the inputs, textareas and selects, this is to add the correct values to the criteria
-        
+
         //console.log( $('#query_form').serialize() );
-        
-        
+
+
         // update previous value, needed to support gui update after using in_snomed_exp
         $(this).data('previous', this.value);
       });
-      
-      
+
+
       // Add/Delete multiple input values for value list criteria when enter is pressed
       $(document).on('keypress', ':input.value.list', function(evt) {
-      
+
         if (!evt) evt = window.event;
         var keyCode = evt.keyCode || evt.which;
-        
+
         //console.log('keypress', keyCode);
-        
+
         // Enter pressed on an item from an input value list (inlist criteria condition)
         if (keyCode == '13')
         {
@@ -1370,12 +1370,12 @@ resp.responseJSON.result.message +'</div>'
         }
       });
       $(document).on('keyup', ':input.value.list', function(evt) {
-      
+
         if (!evt) evt = window.event;
         var keyCode = evt.keyCode || evt.which;
-        
+
         //console.log('keyup', keyCode);
-        
+
         // Backspace or delete pressed on an item from an input value list (inlist criteria condition)
         if (keyCode == '8' || keyCode == '46')
         {
@@ -1383,7 +1383,7 @@ resp.responseJSON.result.message +'</div>'
           var __parent = $(this).parent();
           //console.log(__parent.children());
           if (__parent.children().size() == 1) return;
-          
+
           $(this).remove();
           return false;
         }
@@ -1393,24 +1393,24 @@ resp.responseJSON.result.message +'</div>'
         input_to_clone = $(this).next().children()[0];
         $(input_to_clone).after( $(input_to_clone).clone().val('') );
       });
-     
-      
+
+
       // =================================
       // /COMMON QUERY CREATE/EDIT =======
       // =================================
-      
+
       var show_controls = function (query_type) {
 
         $('#query_common').show();
         $('#query_'+ query_type).show();
         $('.btn-toolbar.bottom').show();
       };
-      
-    
+
+
       $(document).ready(function() {
-      
+
         $('input[name=display_null_flavour]').on('change', function(evt) {
-        
+
           if (this.checked)
           {
             $('option.null_flavour').css('display', 'block');
@@ -1420,81 +1420,81 @@ resp.responseJSON.result.message +'</div>'
             $('option.null_flavour').css('display', 'none');
           }
         });
-      
+
         $('select[name=type]').val(""); // select empty option by default
-        
+
         // zebra style to the selects that have the size attr
         $.each($('select[size] option'), function( i, option ) {
-        
+
           if (i % 2 == 0) $(option).css('background-color', '#f3f3f3');
         });
-      
+
         <%
         // =====================================================================
         // a little groovy code to setup the edit/update ...
-        
+
         if (mode == 'edit')
         {
           // dont allow to change type
           println '$("select[name=type]").val("'+ queryInstance.type +'");'
           println '$("select[name=type]").prop("disabled", "disabled");'
-          
+
           println 'show_controls("'+ queryInstance.type +'");'
-          
+
           println '$("select[name=format]").val("'+ queryInstance.format +'");'
           println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
-          
+
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
           println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           println '$("select[name=queryGroup]").val("'+ queryInstance.queryGroup?.uid +'");'
-          
+
           println 'query.set_id("'+ queryInstance.id +'");'
           println 'query.set_name("'+ queryInstance.name +'");'
           println 'query.set_query_group("'+ queryInstance.queryGroup?.uid +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
-          
+
           if (queryInstance.isPublic)
             println 'query.set_public();'
-          
+
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
           println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
-          
+
           if (queryInstance.templateId)
             println 'query.set_template_id("'+ queryInstance.templateId +'");'
-          
-          
+
+
           if (queryInstance.type == 'composition')
           {
              println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
-             
+
              // similar code to dom_add_criteria_2 in JS
-             
+
              def attrs, attrValueField, attrOperandField, attrNegationField, value, operand, name
              println 'var criteria;'
-             
+
              queryInstance.where.each { data_criteria ->
-                
+
                 attrs = data_criteria.criteriaSpec(data_criteria.archetypeId, data_criteria.path)[data_criteria.spec].keySet() // attribute names of the datacriteria
-                
+
                 println 'criteria = new Criteria('+ data_criteria.spec +');'
-                
+
                 attrs.each { attr ->
-                
-                   attrValueField = attr + 'Value' 
+
+                   attrValueField = attr + 'Value'
                    attrOperandField = attr + 'Operand'
                    attrNegationField = attr + 'Negation'
                    operand = data_criteria."$attrOperandField"
                    value = data_criteria."$attrValueField"
-                   
+
                    // DV_BOOLEAN doesn't have negation, just checking
                    if (data_criteria.hasProperty(attrNegationField))
                       negation = data_criteria."$attrNegationField"
-                   
+
                    // TODO
                    // date?.format(Holders.config.app.l10n.db_datetime_format)
                    // ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                   
+
                    if (value instanceof List)
                    {
                       if (value[0] instanceof Date)
@@ -1523,19 +1523,19 @@ resp.responseJSON.result.message +'</div>'
                          value +'"], '+
                          negation +');'
                    }
-                   
+
                 } // each attr
-                
-                
+
+
                 println 'cid = query.add_criteria("'+
                   data_criteria.archetypeId +'", "'+
                   data_criteria.path +'", "'+
                   data_criteria.rmTypeName +'", '+
                   'criteria,'+
                   data_criteria.allowAnyArchetypeVersion +');'
-                
-                println 'var criteria_str = "'+ data_criteria.toSQL() +'";'
-                
+
+                println 'var criteria_str = "'+ data_criteria.toGUI() +'";'
+
                 // shows openEHR-EHR-...* instead of .v1
                 def archetype_id = data_criteria.archetypeId
                 if (data_criteria.allowAnyArchetypeVersion)
@@ -1544,7 +1544,7 @@ resp.responseJSON.result.message +'</div>'
                 }
 
                 name = data_criteria.indexItem.name['ISO_639-1::'+ session.lang]
-                
+
                 println """
                   \$('#criteria').append(
                      '<tr data-id="'+ cid +'">'+
@@ -1564,63 +1564,63 @@ resp.responseJSON.result.message +'</div>'
                      '</td></tr>'
                   );
                 """
-                 
+
                 criteria_str = ""
              }
           }
           else // datavalue
           {
              println '$("select[name=dv_templateId]").val("'+ queryInstance.templateId +'");'
-             
+
              def name
              queryInstance.select.each { data_get ->
-                
+
                 name = data_get.indexItem.name['ISO_639-1::'+ session.lang]
 
                 // Updates the UI and the query object
                 println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'", '+ data_get.allowAnyArchetypeVersion +');'
              }
           }
-          
+
           // add id of query to form
           println '$("#query_form").append(\'<input type="hidden" name="id" value="'+ queryInstance.id +'"/>\');'
-          
+
           // show update button, hide create button
           println '$("#update_button").show();'
           println '$("#create_button").hide();'
         }
-        
+
         // EDIT SERVER-SIDE LOGIC
         %>
-        
-        
+
+
         /** ***************************************************************
          * ACTIONS ASSOCIATED TO ELEMENTS OF THE UI
          */
-         
+
         // ========================================================
         // Los registros de eventos deben estar en document.ready
-        
+
         /**
           * Clic en [+]
           * Agregar una condicion al criterio de busqueda.
           */
          $('#addCriteria').on('click', function(e) {
-    
+
             e.preventDefault();
-            
+
             query_composition_add_criteria_2();
          });
-          
-          
+
+
          /**
           * Clic en [-]
           * Elimina un criterio de la lista de criterios de busqueda.
           */
          $(document).on("click", "a.removeCriteria", function(e) {
-          
+
             e.preventDefault();
-            
+
             // parent=DIV, parent.parent = TD y parent.parent.parent = TR a eliminar
             //console.log(this); // a href=#
             //console.log($(this).parent().parent().parent());
@@ -1628,47 +1628,47 @@ resp.responseJSON.result.message +'</div>'
             row = $(this).parent().parent().parent();
             id = row.data('id');
             row.remove(); // deletes from DOM
-            
+
             query.remove_criteria( id ); // updates the query
          });
-         
+
          /**
           * Clic en [+]
           * Agregar una seleccion.
           */
          $('#addSelection').click( function(e) {
-          
+
             e.preventDefault();
-            
+
             query_datavalue_add_selection();
          });
-          
-          
+
+
          /**
           * Clic en [-]
           * Elimina una seleccion de la lista.
           */
          $(document).on("click", "a.removeSelection", function(e) {
-          
+
             e.preventDefault();
-            
+
             row = $(this).parent().parent().parent();
            id = row.data('id');
            row.remove(); // deletes from DOM
-           
+
            query.remove_projection( id ); // updates the query
          });
-         
+
          // ========================================================
-          
-      
-      
+
+
+
         $('.info img').click(function(e) {
           //console.log($('.content', $(this).parent()));
           $('.content', $(this).parent()).toggle('slow');
         });
 
-        
+
         /*
          * Change del tipo de consulta. Muestra campos dependiendo del tipo de consulta a crear.
          */
@@ -1692,25 +1692,25 @@ resp.responseJSON.result.message +'</div>'
           // se cambia el tipo de la query para evitar errores.
           clearCriteriaAndSelection();
           clearTest();
-          
+
           // La class query_build marca las divs con campos para crear consultas,
           // tanto los comunes como los particulares para busqueda de compositions
           // o de data_values
           $('.query_build').hide();
-          
-          
+
+
           // Id the query has some data, it is deleted to the clean instance of query.
           query.reset();
-          
+
           if (this.value != '')
           {
             show_controls(this.value);
-            
+
             // query management
             // this needs to be here because it is needed to add_criteria and add_projection
             query.set_type(this.value);
           }
-          
+
           // https://github.com/ppazos/cabolabs-ehrserver/issues/728
           // reset results if a previous test was executed
           $('#results').empty();
@@ -1720,49 +1720,49 @@ resp.responseJSON.result.message +'</div>'
           code.empty();
           code.hide();
         });
-        
-        
+
+
         /**
          * Clic en un arquetipo de la lista de arquetipos (select[view_archetype_id])
          * Lista las paths del arquetipo en select[view_archetype_path]
          */
         $('select[name=view_archetype_id]').change(function() {
-        
+
           // clean the current criteria if the user defined it for another archetype/path
           $('#composition_criteria_builder').empty();
-        
+
           var archetype_id = $(this).val(); // arquetipo seleccionado
           var template_id  = $('#view_template_id').val();
           get_and_render_archetype_paths(template_id, archetype_id);
-          
+
         }); // click en select view_archetype_id
-        
-        
+
+
         /**
          * Clic en una path de la lista (select[view_archetype_path])
          */
         $('select[name=view_archetype_path]').change(function() {
-        
+
           var datatype = $(this).find(':selected').data('type');
           get_criteria_specs(datatype);
-          
+
         }); // click en select view_archetype_path
-        
-        
+
+
         /*
          * Valida antes de hacer test o guardar.
          */
         $('form[name=query_form]').submit( function(e) {
-        
+
           // Valida que haya algun criterio o alguna seleccion,
           // sino hay, retorna false y el submit no se hace.
-          // Ademas muestra un alert con el error. 
+          // Ademas muestra un alert con el error.
           return validate();
         });
-        
+
       }); // ready
-      
-      
+
+
       /**
        * Limpia la tabla de archetypeIds y paths seleccionadas
        * cuando se cambia el tipo de la query a crear, asi se
@@ -1772,17 +1772,17 @@ resp.responseJSON.result.message +'</div>'
       var clearCriteriaAndSelection = function()
       {
         //console.log( 'clearCriteriaAndSelection' );
-      
+
         selectionTable = $('#selection');
         criteriaTable = $('#criteria');
-        
+
         // remueve todos menos el primer TR
         removeTRsFromTable(selectionTable, 1);
         removeTRsFromTable(criteriaTable, 1);
-        
+
         $('.btn-toolbar.bottom').hide();
       };
-      
+
       /**
        * Clears the current test panel when the query type is changed.
        */
@@ -1790,8 +1790,8 @@ resp.responseJSON.result.message +'</div>'
       {
          $('#query_test').hide();
       };
-      
-      
+
+
       /**
        * Auxiliar usada por cleanCriteriaOrSelection
        * Elimina los TRs desde from:int, si from es undefined o 0, elimina todos los TRs.
@@ -1800,12 +1800,12 @@ resp.responseJSON.result.message +'</div>'
       {
         if (from == undefined) from = 0;
         $('tr', table).each( function(i, tr) {
-          
+
           if (i >= from) $(tr).remove();
         });
       };
-      
-      
+
+
       // Validacion antes de submit a test:
       //   1. type = composition debe tener algun criterio de datos
       //   2. type = path debe tener alguna path en su seleccion
@@ -1813,7 +1813,7 @@ resp.responseJSON.result.message +'</div>'
       var validate = function()
       {
         type = $('select[name=type]').val();
-        
+
         if (type == 'composition')
         {
           // Si la tabla de criterio solo tiene el tr del cabezal, no tiene criterio seleccionado
@@ -1822,10 +1822,10 @@ resp.responseJSON.result.message +'</div>'
             alert('${g.message(code:"query.create.missingCriteria")}');
             return false;
           }
-          
+
           return true;
         }
-        
+
         if (type == 'datavalue')
         {
           if ($('tr', '#selection').length == 1)
@@ -1833,7 +1833,7 @@ resp.responseJSON.result.message +'</div>'
             alert('${g.message(code:"query.create.missingProjections")}');
             return false;
           }
-          
+
           return true;
         }
       }; // validate
@@ -1852,11 +1852,11 @@ resp.responseJSON.result.message +'</div>'
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-          
+
         <g:if test="${flash.message}">
           <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-          
+
         <g:hasErrors bean="${queryInstance}">
           <ul class="errors" role="alert">
             <g:eachError bean="${queryInstance}" var="error">
@@ -1864,9 +1864,9 @@ resp.responseJSON.result.message +'</div>'
             </g:eachError>
           </ul>
         </g:hasErrors>
-        
+
         <g:form name="query_form" controller="query">
-    
+
           <%-- campos comunes a ambos tipos de query --%>
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
@@ -1917,11 +1917,11 @@ resp.responseJSON.result.message +'</div>'
                   </td>
                 </tr>
               </sec:ifAnyGranted>
-    
+
             </table>
           </div>
-    
-          
+
+
           <%-- campos comunes a ambos tipos de query --%>
           <div id="query_common" class="query_build">
             <div class="table-responsive">
@@ -1964,19 +1964,19 @@ resp.responseJSON.result.message +'</div>'
                </table>
              </div>
           </div>
-            
+
           <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
           <!-- Campos de queryByData -->
-    
+
           <div id="query_composition" class="query_build">
-          
+
             <h2><g:message code="query.create.criteria_builder"/></h2>
-            
+
             <%-- conditions depending on the data type selected from path --%>
             <div id="composition_criteria_builder" class="form-horizontal">
               <g:message code="query.create.select_concept_and_data" />
             </div>
-            
+
             <div class="btn-toolbar" role="toolbar">
               <a href="#" id="addCriteria">
                 <button type="button" class="btn btn-default btn-md">
@@ -1984,20 +1984,20 @@ resp.responseJSON.result.message +'</div>'
                 </button>
               </a>
             </div>
-            
+
             <!--
             value puede especificarse aqui como filtro o puede ser un
             parametro de la query sino se especifica aqui.
-            
+
             ehrUid y rangos de fechas son parametros de la query
-            
-            archetypeId se puede especificar como filtro (tipo de documento), 
+
+            archetypeId se puede especificar como filtro (tipo de documento),
             sino se especifica aqui puede pasarse como parametro de la query
             -->
-            
+
             <a name="criteria"></a>
             <h3><g:message code="query.create.criteria" /></h3>
-            
+
             <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover" id="criteria">
@@ -2011,9 +2011,9 @@ resp.responseJSON.result.message +'</div>'
                 </tr>
               </table>
             </div>
-            
+
             <h2><g:message code="query.create.parameters" /></h2>
-             
+
             <!-- Indices de nivel 1 -->
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover" id="query_setup">
@@ -2030,10 +2030,10 @@ resp.responseJSON.result.message +'</div>'
                   <td>
                     <%-- If two OPTs generated from the same template are uploaded, here we can have the samte templateId twice --%>
                     <g:select name="templateId"
-                              size="5" 
+                              size="5"
                               from="${templateIndexes}"
                               optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
-                              optionKey="templateId" 
+                              optionKey="templateId"
                               class="form-control withsize"/>
                   </td>
                 </tr>
@@ -2082,15 +2082,15 @@ resp.responseJSON.result.message +'</div>'
               </table>
             </div>
           </div><!-- query_composition -->
-            
+
           <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-            
+
           <div id="query_datavalue" class="query_build">
-    
+
             <h2><g:message code="query.create.dataprojection" /></h2>
-    
+
             <g:message code="query.create.select_concept_and_data_projection" />
-    
+
             <div class="btn-toolbar" role="toolbar">
               <a href="#" id="addSelection">
                 <button type="button" class="btn btn-default btn-md">
@@ -2098,7 +2098,7 @@ resp.responseJSON.result.message +'</div>'
                 </button>
               </a>
             </div>
-            
+
             <h3><g:message code="query.create.projections" /></h3>
             <!-- Esta tabla guarda la seleccion de paths de los datavalues a obtener -->
             <a name="selection"></a>
@@ -2113,20 +2113,20 @@ resp.responseJSON.result.message +'</div>'
                 </tr>
               </table>
             </div>
-           
+
             <h2><g:message code="query.create.filters" /></h2>
-    
+
             <!--
             ehrUid, archetypeId (tipo de doc), rango de fechas, formato
             y agrupacion son todos parametros de la query.
-            
+
             Aqui se pueden fijar SOLO algunos de esos parametros
             a modo de filtro.
-    
+
             TODO: para los que no se pueden fijar aqui, inluir en la
             definicion de la query si son obligatorios o no.
             -->
-            
+
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover">
                 <tr>
@@ -2142,10 +2142,10 @@ resp.responseJSON.result.message +'</div>'
                   <td>
                     <%-- If two OPTs generated from the same template are uploaded, here we can have the samte templateId twice --%>
                     <g:select name="dv_templateId"
-                              size="5" 
+                              size="5"
                               from="${templateIndexes}"
                               optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
-                              optionKey="templateId" 
+                              optionKey="templateId"
                               class="form-control withsize"/>
                   </td>
                 </tr>
@@ -2174,8 +2174,8 @@ resp.responseJSON.result.message +'</div>'
 
           <script>
             // Toggles the query test on and off.
-            var toggle_test = function() { 
-                
+            var toggle_test = function() {
+
               // Test options for each type of query
               if ( $('select[name=type]').val() == 'composition' )
               {
@@ -2187,7 +2187,7 @@ resp.responseJSON.result.message +'</div>'
                 $('div#query_test_composition').hide();
                 $('div#query_test_datavalue').show();
               }
-                
+
               $('#query_test').toggle('slow');
             };
           </script>
@@ -2206,7 +2206,7 @@ resp.responseJSON.result.message +'</div>'
                 <span class="fa fa-check fa-fw" aria-hidden="true"></span> <g:message code="default.button.update.label" default="Update" />
               </button></a>
           </div>
-          
+
           <!-- test panel -->
           <div id="query_test">
             <g:include action="test" />
@@ -2214,7 +2214,7 @@ resp.responseJSON.result.message +'</div>'
         </g:form>
       </div>
     </div>
-    
+
     <asset:javascript src="query_create.js" />
   </body>
 </html>

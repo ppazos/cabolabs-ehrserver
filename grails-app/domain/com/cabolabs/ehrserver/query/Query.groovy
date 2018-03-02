@@ -51,46 +51,46 @@ class Query {
 
    // Describe lo que hace la query
    String name
-   
+
    // queryByData (composition) o queryData (datavalue)
    // lo que los diferencia es el resultado: composiciones o datos asociados a paths
    String type
-   
+
    // Sino se especifica, por defecto es xml
    String format = 'xml'
-   
+
    // Filter by templateId (this is the document type)
    String templateId
-   
+
    QueryGroup queryGroup
-   
+
    // Si la consulta es de datos, se filtra por indices de nivel 1 y se usa DataGet para especificar que datos se quieren en el resultado.
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
    List select = []
    List where = []
    static hasMany = [select: DataGet, where: DataCriteria]
-   
+
    // For composition queries with criteria in where
    String criteriaLogic = 'AND' // AND or OR
-   
+
    // null, composition o path
    // Sirve para agrupar datos:
    //  composition: sirve para mostrar tablas, donde cada fila es una composition
    //  path: sirve para armar series de valores para graficar
    String group = 'none'
-   
+
    // https://github.com/ppazos/cabolabs-ehrserver/issues/340
    User author
    String organizationUid // current org at the moment of the creation
-   
+
    // true => shared with all the organizations
    boolean isPublic
    boolean isDeleted = false
-   
+
    // partial HQL query cached for this composition Query
    String cachedHQLWhere
-   
+
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
@@ -113,18 +113,18 @@ class Query {
        *   "type":"composition","id_gen":1
        * }
        */
-      
+
       //println json.name
       //println json.get('name')
       //println json['name']
-      
+
       def query = new Query()
-      
+
       query.updateInstance(json)
-      
+
       return query
    }
-   
+
    /**
     * used by updateInstance to create a list of dates from a string or list of strings entered in the query creation ui.
     * @return
@@ -146,7 +146,7 @@ class Query {
       }
       return dateValues
    }
-   
+
    /**
     * For edit/update.
     */
@@ -155,9 +155,9 @@ class Query {
       this.name       = json['name']
       this.type       = json['type']
       this.isPublic   = json['isPublic'] ?: false
-      this.format     = json['format'] ?: 'xml' 
+      this.format     = json['format'] ?: 'xml'
       this.templateId = json['template_id']
-      
+
       if (json['queryGroup'])
       {
          def qgroup = QueryGroup.findByUid(json['queryGroup'])
@@ -173,7 +173,7 @@ class Query {
          else if (qgroup.organizationUid != orgUid)
          {
             //throw new Exception("Query group doesn't belongs to the current organization")
-            
+
             this.errors.rejectValue(
               'queryGroup',
               'query.queryGroup.notInCurrentOrg')
@@ -183,11 +183,11 @@ class Query {
             this.queryGroup = qgroup
          }
       }
-      
+
       // only set on create, not udate
       if (!this.id)
          this.organizationUid = json['organizationUid']
-      
+
       if (this.type == 'composition')
       {
          this.criteriaLogic = json['criteriaLogic']
@@ -196,18 +196,18 @@ class Query {
             it.delete()
          }
          this.where.clear() // remove criterias before adding current ones
-         
+
          def condition
          json.where.each { criteria ->
-         
+
             // removes the version for the archetype id and saves it
             if (criteria.allowAnyArchetypeVersion)
             {
                criteria.archetypeId = criteria.archetypeId.replaceAll(/\.v(\d)*/, '')
             }
-            
+
             //println "Criteria "+ criteria
-            
+
             switch (criteria['class']) {
                case 'DataCriteriaDV_QUANTITY':
                   def magnitudeValue = []
@@ -221,7 +221,7 @@ class Query {
                         magnitudeValue << new Double(it)
                      }
                   }
-                  
+
                   criteria.magnitudeValue = magnitudeValue
                   condition = new DataCriteriaDV_QUANTITY(criteria)
                break
@@ -234,7 +234,7 @@ class Query {
                case 'DataCriteriaDV_DATE_TIME':
 
                   def dateValues = dateValues(criteria.valueValue)
-                  
+
                   // Set the values converted to Date
                   criteria.valueValue = dateValues
                   condition = new DataCriteriaDV_DATE_TIME(criteria)
@@ -242,7 +242,7 @@ class Query {
                case 'DataCriteriaDV_DATE':
 
                   def dateValues = dateValues(criteria.valueValue)
-                  
+
                   // Set the values converted to Date
                   criteria.valueValue = dateValues
                   condition = new DataCriteriaDV_DATE(criteria)
@@ -285,70 +285,79 @@ class Query {
       else
       {
          this.group = json['group']
-         
+
          this.select.each {
             it.delete()
          }
          this.select.clear()
-         
+
          json.select.each { projection ->
-            
+
             // removes the version for the archetype id and saves it
             if (projection.allow_any_archetype_version)
             {
                projection.archetype_id = projection.archetype_id.replaceAll(/\.v(\d)*/, '') //projection.archetype_id.take(projection.archetype_id.lastIndexOf('.'))
             }
-            
+
             this.addToSelect(
-               new DataGet(archetypeId: projection.archetype_id, 
-                           path:        projection.path, 
+               new DataGet(archetypeId: projection.archetype_id,
+                           path:        projection.path,
                            rmTypeName:  projection.rmTypeName,
                            allowAnyArchetypeVersion: projection.allow_any_archetype_version)
             )
          }
       }
    }
-   
-   
+
+
    String toString ()
    {
-      return "id: "+ this.id +", name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString() 
+      return "id: "+ this.id +", name: "+ this.name +", type: "+ this.type +", where: "+ this.where.toString()
    }
-   
-   
+
+
    static constraints = {
-      
+
       // para guardar la query debe tener nombre
       name(nullable:false, blank:false)
-      
+
       // No creo que le guste null en inList, le pongo ''
       group(inList:['none', 'composition', 'path'])
       criteriaLogic(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
-      
+
       templateId(nullable:true)
-      
+
       cachedHQLWhere(nullable:true, size:1..8192)
-      
-      
+
+
       queryGroup nullable: true
    }
-   
+
    static mapping = {
       group column: 'dg_group' // group es palabra reservada de algun dbms
       select cascade: "all-delete-orphan" // cascade delete
       where cascade: "all-delete-orphan" // cascade delete
       organizationUid index: 'org_uid_idx'
    }
-   
+
    def cacheHQLWhere()
    {
       // if a criteria contains a function, the where cant be cached and should be evaluated always.
       if (!compoQueryContainsFunction())
-         this.cachedHQLWhere = generateHQLWhere()
+      {
+         try
+         {
+            this.cachedHQLWhere = generateHQLWhere() // can fail, for instance if in_snomed_exp is used and the service fails
+         }
+         catch (Exception e)
+         {
+            log.warn('where will no be cached because generateHQLWhere failed, cause '+ e.message)
+         }
+      }
    }
-   
+
    def beforeInsert()
    {
       if (this.type == 'datavalue') this.criteriaLogic = null
@@ -358,28 +367,28 @@ class Query {
    {
       if (this.type == 'datavalue') this.criteriaLogic = null
    }
-   
-   def execute(String ehrUid, Date from, Date to, 
+
+   def execute(String ehrUid, Date from, Date to,
                String group, String organizationUid, int max, int offset,
                String composerUid, String composerName)
    {
       if (this.type == 'datavalue') return executeDatavalue(ehrUid, from, to, group, organizationUid, composerUid, composerName)
       return executeComposition(ehrUid, from, to, organizationUid, max, offset, composerUid, composerName)
    }
-   
-   def executeDatavalue(String ehrUid, Date from, Date to, 
+
+   def executeDatavalue(String ehrUid, Date from, Date to,
                         String group, String organizationUid,
                         String composerUid, String composerName)
    {
       //println "ehrUid: $ehrUid - organizationUid: $organizationUid"
-      
+
       // Query data
       def res = DataValueIndex.withCriteria {
-         
+
          // SELECT
          or { // matchea algun par archId+path
             this.select.each { dataGet ->
-               
+
                and {
                   if (dataGet.allowAnyArchetypeVersion)
                      like('archetypeId', dataGet.archetypeId+'%') // version was removed on save
@@ -390,13 +399,13 @@ class Query {
                }
             }
          }
-         
+
          // WHERE level 1 filters
          owner { // CompositionIndex
             if (templateId) eq('templateId', templateId)
             if (ehrUid) eq('ehrUid', ehrUid) // Ya se verifico que viene el param y que el ehr existe
             if (organizationUid) eq('organizationUid', organizationUid)
-            
+
             if (composerUid || composerName)
             {
                composer {
@@ -410,7 +419,7 @@ class Query {
                   }
                }
             }
-            
+
             // event can use startTime, persistent uses timeCommitted to filter by date
             or {
               and {
@@ -424,18 +433,18 @@ class Query {
                 if (to) le('timeCommitted', to)
               }
             }
-            
+
             eq('lastVersion', true) // query only latest versions
          }
       }
-      
+
       //println res
-      
-      
+
+
       // Group
       // If group is not empty, use that, if not, use the query grouping
       if (!group) group = this.group
-      
+
       if (group == 'composition')
       {
          res = queryDataGroupComposition(res, (!ehrUid))
@@ -448,10 +457,10 @@ class Query {
       {
          if (!ehrUid) res = res.groupBy { dvi -> dvi.owner.ehrUid }
       }
-      
+
       return res
    }
-   
+
    /**
     * Usada por queryData para agrupar por composition
     */
@@ -459,11 +468,11 @@ class Query {
    {
       def resHeaders = [:]
       def dataidx
-      
+
       // =========================================================================
       // TODO: obtener el nombre del arquetipo en cada path para usar de header
       // =========================================================================
-      
+
       // Headers para la tabla: 1 col por path, y dentro de cada path 1 col por atributo del DataValue
       // h1: | path1 (DvQuantity) | path2 (DvCodedText) | ... |
       // h2: | magnitude | units  |   code   |  value   | ... |
@@ -473,13 +482,13 @@ class Query {
       //  path2: [ type:'DV_CODED_TEXT', attrs:['code','value'],
       //  ...
       // ]
-      
+
       // Usa ruta absoluta para agrupar.
       String absPath
-      
+
       // If any archetype version is allowed, results is be grouped by the archid concept,
       // but maybe inside the data we can add the specific archetype with version.
-      
+
       this.select.each { dataGet ->
 
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
@@ -496,11 +505,11 @@ class Query {
             absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
             dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          }
-         
+
          resHeaders[absPath] = [:]
          resHeaders[absPath]['type'] = dataGet.rmTypeName // FIX to the PROBLEM above
          resHeaders[absPath]['name'] = dataidx.name
-         
+
          // DataCriteria is used bellow because they have the attribute definitions per datatype.
          switch (dataGet.rmTypeName)
          {
@@ -553,11 +562,11 @@ class Query {
                throw new Exception("type "+dataGet.rmTypeName+" not supported")
          }
       }
-      
-      
+
+
       // Filas de la tabla
       def resGrouped
-      
+
       if (groupByEHR)
       {
          resGrouped = queryDataGroupByEHRAndComposition(res, resHeaders)
@@ -566,25 +575,25 @@ class Query {
       {
          resGrouped = queryDataGroupByComposition(res, resHeaders)
       }
-      
+
       return [resHeaders, resGrouped]
-      
+
    } // queryDataGroupComposition
-   
-   
+
+
    private Map queryDataGroupByEHRAndComposition(res, resHeaders)
    {
       def resGrouped = [:]
       def rows = res.groupBy { dvi -> dvi.owner.ehrUid }
-      
+
       rows.each { ehrUid, dvis ->
-         
+
          resGrouped[ehrUid] = queryDataGroupByComposition(dvis, resHeaders)
       }
-      
+
       return resGrouped
    }
-   
+
    private Map queryDataGroupByComposition(res, resHeaders)
    {
       def coldvis
@@ -594,45 +603,45 @@ class Query {
       def elem
       def tmp_arch_id
       def _absPathVersion // abstract path with specific arch id version
-      
+
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
-      
+
       rows.each { compoId, dvis ->
-         
+
          uid = dvis[0].owner.uid
-         
+
          resGrouped[uid] = [:]
-         
+
          // Datos de la composition
          // FIXME: deberia haber por lo menos un dvi, sino esto da error
          if (dvis[0].owner.category == 'event')
             resGrouped[uid]['date'] = dvis[0].owner.startTime
          else
             resGrouped[uid]['date'] = dvis[0].owner.timeCommitted
-            
+
          //resGrouped[compoId]['uid']  = dvis[0].owner.uid
          resGrouped[uid]['cols'] = []
-         
+
          // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
          // Cada columna de la fila
-         
+
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
-            
+
             // values contain 1 element if there is only 1 DV occurrence, or many elements
             // as occurrences of that node exist.
-            
+
             // colValues.path should be the one on the OPT that constraints the compo {uid},
-            // and include the archetype id with a specific version, even if the 
+            // and include the archetype id with a specific version, even if the
             // query has any vesion allowed. The path portion is the same as the _absPath.
             // This can't be taken from the data, since results can be empty.
-            
+
             _absPathVersion = dvis[0].owner.archetypeId + _absPath[_absPath.indexOf("/")..-1]
             colValues = [type: colData['type'], path: _absPathVersion, values:[]] // pongo la path para debug
-            
+
             // dvi para la columna actual
             // pueden ser varios si hay multiples ocurrencias del mismo nodo
-            
+
             tmp_arch_id = _absPath.take(_absPath.indexOf('/'))
             if (tmp_arch_id.endsWith('.*')) // allowAnyArchetypeVersion?
             {
@@ -643,9 +652,9 @@ class Query {
                coldvis = dvis.findAll{ (it.archetypeId + it.archetypePath + '<'+ it.rmTypeName +'>') == _absPath && it.owner.id == compoId}
             }
             coldvis.each { dvi ->
-            
+
                elem = [:]
-            
+
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
@@ -709,17 +718,17 @@ class Query {
                   default:
                      throw new Exception("type "+colData['type']+" not supported")
                }
-               
+
                colValues.values << elem
             } // each dvi
-            
+
             resGrouped[uid]['cols'] << colValues
          }
       }
-      
+
       return resGrouped
    }
-   
+
    /**
     * Usada por queryData para agrupar por path
     */
@@ -731,27 +740,27 @@ class Query {
       }
 
       return queryDataGroupByPath(res)
-      
+
    } // queryDataGroupPath
-   
-   
+
+
    private Map queryDataGroupByEHRAndPath(res)
    {
       def resGrouped = [:]
       def cols = res.groupBy { dvi -> dvi.owner.ehrUid }
-      
+
       cols.each { ehrUid, dvis ->
-         
+
          resGrouped[ehrUid] = queryDataGroupByPath(dvis)
       }
-      
+
       return resGrouped
    }
-   
+
    private Map queryDataGroupByPath(res)
    {
       def dataidx
-      
+
       // Columnas de la tabla (series)
       def resGrouped = [:]
 
@@ -759,19 +768,19 @@ class Query {
       def cols = res.groupBy { dvi ->
          dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>'
       }
-      
+
       String absPath // absolute path used to group
       Date dviDate
       def tmp_arch_id
       def elems
-      
+
       this.select.each { dataGet ->
-         
+
          // PROBLEM: this gets just one alternative for the arch+path, so the type should be taken from the dataGet,
          // using the dataidx to get the name is correct because the name doesn't vary for the alternative contraints.
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         
+
          if (dataGet.allowAnyArchetypeVersion)
          {
             tmp_arch_id = dataGet.archetypeId +'.*'
@@ -789,30 +798,30 @@ class Query {
          resGrouped[absPath]['type'] = dataGet.rmTypeName // type va en cada columna
          resGrouped[absPath]['name'] = dataidx.name // name va en cada columna, nombre asociado a la path por la que se agrupa
          resGrouped[absPath]['serie'] = []
-         
+
          // absPath can have any archetype version .* but cols are grouped by
          // specific versions of arcehtypes, so cols[absPath can be empty].
          // Need to use matches
-         
+
          //println "COLS to group by path "+ cols
-         
+
          if (tmp_arch_id.endsWith('.*'))
             elems = cols.find { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.value
          else
             elems = cols[absPath]
-            
+
          //println "ELEMS group by path "+ elems
-         
+
          elems.each { dvi ->
-            
+
             //println "dvi: "+ dvi + " rmTypeName: "+ dataidx.rmTypeName
-            
+
             if (dvi.owner.category == 'event')
                dviDate = dvi.owner.startTime
             else
                dviDate = dvi.owner.timeCommitted
-            
-            
+
+
             // Datos de cada path seleccionada dentro de la composition
             switch (dataGet.rmTypeName)
             {
@@ -890,25 +899,25 @@ class Query {
                default:
                   throw new Exception("type "+dataGet.rmTypeName+" not supported")
             }
-            
+
             // para cada fila quiero fecha y uid de la composition
          }
       }
-      
+
       return resGrouped
    }
-   
-   
+
+
    def getCompositionQueryFilters (String ehrUid, Date from, Date to,
                                    String organizationUid,
                                    String composerUid, String composerName)
    {
       def filters = new StringBuilder()
-      
+
       if (composerUid || composerName)
       {
          filters.append("join ci.composer as doc WHERE ")
-         
+
          if (composerUid)
          {
             filters.append("doc.value = '${composerUid}' AND ")
@@ -924,23 +933,23 @@ class Query {
       {
          filters.append("WHERE ci.lastVersion=true AND ") // Query only latest versions
       }
-      
-      
+
+
       // ===============================================================
       // Criteria nivel 1 ehrUid
       // RestController verifies the ehr is in the org
       if (ehrUid) filters.append("ci.ehrUid = '").append(ehrUid).append("' AND ")
       if (organizationUid) filters.append("ci.organizationUid = '").append(organizationUid).append("' AND ")
-       
+
       // Filter by templateId
       if (this.templateId) filters.append("ci.templateId = '").append(this.templateId).append("' AND ")
-      
-      
+
+
       // Criterio de rango de fechas para ci.startTime (event), timeCommitted (persistent)
       // Formatea las fechas al formato de la DB
-      
+
       def formatterDateDB = new java.text.SimpleDateFormat( Holders.config.app.l10n.db_date_format )
-      
+
       String eventDateCriteria = "ci.category = 'event' AND "
       boolean hasEventDateCriteria = false
       if (from)
@@ -954,7 +963,7 @@ class Query {
          hasEventDateCriteria = true
          eventDateCriteria += "ci.startTime <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
       }
-      
+
       String persistentDateCriteria = "ci.category = 'persistent' AND "
       boolean hasPersistentDateCriteria = false
       if (from)
@@ -968,7 +977,7 @@ class Query {
          hasPersistentDateCriteria = true
          persistentDateCriteria += "ci.timeCommitted <= '"+ formatterDateDB.format( to ) +"'" // lower or equal
       }
-      
+
       if (hasEventDateCriteria && hasPersistentDateCriteria)
       {
          filters.append("((").append(eventDateCriteria).append(") OR (").append(persistentDateCriteria).append(")) AND ")
@@ -981,27 +990,27 @@ class Query {
       {
          filters.append("(").append(persistentDateCriteria).append(") AND ")
       }
-      
+
       return filters.toString()
    }
-   
+
    def executeComposition(String ehrUid, Date from, Date to,
                           String organizationUid, int max, int offset,
                           String composerUid, String composerName, docount = false, grouByEhr = false)
    {
       // Armado de la query
       String q
-      
+
       if (docount)
          q = "SELECT COUNT(ci.id) FROM CompositionIndex ci "
       else if (grouByEhr)
          q = "SELECT ehr.uid, COUNT(ci.id) FROM Ehr ehr, CompositionIndex ci " // count will return 0 or 1 because max is limited to 1
       else
          q = "SELECT ci FROM CompositionIndex ci "
-      
+
       q += getCompositionQueryFilters(ehrUid, from, to, organizationUid, composerUid, composerName)
-      
-      
+
+
       // Si no hay criterio, hace la busqueda solo por tipo de documento.
       // Sin este chequeo, se rompe la query porque sobra un " AND "
       if (!this.where)
@@ -1013,12 +1022,12 @@ class Query {
          if (this.cachedHQLWhere)
             q += this.cachedHQLWhere
          else
-            q += generateHQLWhere()
-         
+            q += generateHQLWhere() // can return exception and that should reach the top level to show an error to the user on GUI or API
+
          /*
             //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
             //println DataValueIndex.executeQuery(subq.replace("dvi.owner.id = ci.id AND ", ""))
-            
+
             //       EXISTS (
             //         SELECT dvi.id
             //         FROM ArchetypeIndexItem dvi
@@ -1045,63 +1054,63 @@ class Query {
          */
       }
 
-      
+
       // default pagination
       if (!max)
       {
          max = 20 // FIXME get from config
          offset = 0
       }
-      
+
       // Just want to check if there is any result that complies with the criteria
       if (grouByEhr)
       {
          q += ' AND ehr.uid = ci.ehrUid'
          q += ' GROUP BY ehr.uid'
       }
-      
-      
+
+
       println "HQL QUERY: \n" + q
-      
-      
+
+
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
-      
+
       //println "executeComposition results "+ cilist
-      
+
       return cilist
    }
-   
+
    def generateHQLWhere()
    {
       def _where = new StringBuilder()
-      
+
       _where.append('(') // exists blocks should be isolated to avoid bad AND/OR association
-         
+
       def idxtype, fromMap, _subq, _subq_criteria
       this.where.eachWithIndex { dataCriteria, i ->
-          
+
          // Aux to build the query FROM
          fromMap = ['DataValueIndex': 'dvi']
-          
+
          // Lookup del tipo de objeto en la path para saber los nombres de los atributos
          // concretos por los cuales buscar (la path apunta a datavalue no a sus campos).
-         
+
          // FIX to the problem: we have the DV in the DataCriteria
          idxtype = dataCriteria.rmTypeName
-         
+
          // ================================================================
          // TODO:
          // Since GRAILS 2.4 it seems that exists can be done in Criteria,
          // should use that instead of HQL.
          // https://jira.grails.org/browse/GRAILS-9223
          // ================================================================
-          
-          
+
+
          // Subqueries sobre los DataValueIndex de los CompositionIndex
          _where.append(" EXISTS (")
-         
+
          _subq_criteria = new StringBuilder()
-         
+
          /*
             WHERE dvi.owner.id = ci.id
                AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
@@ -1128,7 +1137,7 @@ class Query {
                           .append(dataCriteria.path)
                           .append("'")
          }
-          
+
          // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
          switch (idxtype)
          {
@@ -1197,15 +1206,18 @@ class Query {
             default:
                throw new Exception("type $idxtype not supported")
          }
-         
+
+         // toSQL can fail, for instance if the criteria has a SNOMED expression and the SNOMED service
+         // return a 429 To Many Requests, that exception should reach the top level to show the error
+         // to the user on GUI or API, and the whole query process should stop.
          _subq_criteria.append(" AND ")
                        .append(dataCriteria.toSQL()) // important part: complex criteria to SQL, depends on the datatype
-         
+
          // dvi.owner.id = ci.id
          // Asegura de que todos los EXISTs se cumplen para el mismo CompositionIndex
          // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
          // se cumpla uno de los criterios que vienen en params)
-         
+
          /*
          FROM ArchetypeIndexItem dvi, ...
          WHERE dvi.owner.id = ci.id AND
@@ -1215,31 +1227,31 @@ class Query {
          */
          _subq = new StringBuilder()
          _subq.append("SELECT dvi.id FROM ")
-         
+
          fromMap.each { index, alias ->
-             
+
             _subq.append(index).append(' ').append(alias).append(' , ')
          }
-         
+
          //_subq = _subq.substring(0, _subq.size()-2)
          _subq.setLength(_subq.length() - 2)
          _subq.append(_subq_criteria)
-         
-         
+
+
          _where.append(_subq)
          _where.append(")") // closes exists (...
-         
+
 
          // Agrega ANDs para los EXISTs, menos el ultimo
          if (i+1 < this.where.size()) _where.append(' ').append(criteriaLogic).append(' ') // AND or OR
       }
-      
+
       _where.append(')') // exists blocks should be isolated to avoid bad AND/OR association
-      
+
       return _where.toString()
    }
-   
-   
+
+
    /**
     * checks if the query contains a function on the criteria,
     * making the where not cacheable.
@@ -1247,20 +1259,20 @@ class Query {
    private boolean compoQueryContainsFunction()
    {
       if (this.type != 'composition') return false
-      
+
       for (criteria in this.where)
       {
          if (criteria.containsFunction()) return true
       }
-      
+
       return false
    }
-   
+
    def getXML()
    {
       return this as grails.converters.XML
    }
-   
+
    def getJSON()
    {
       return this as grails.converters.JSON

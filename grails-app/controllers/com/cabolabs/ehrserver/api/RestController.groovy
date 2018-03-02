@@ -69,6 +69,7 @@ import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.ehrserver.exceptions.XmlValidationException
+import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 
 import grails.transaction.Transactional
 import grails.util.Environment
@@ -1096,7 +1097,24 @@ class RestController {
       def start_time = System.currentTimeMillis()
       // /measuring query timing
 
-      def res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset, composerUid, composerName) // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
+      def res
+
+      try
+      {
+         // res is a list for composition queries and datavalue with group none, a map for datavalue of group path or compo
+         res = query.execute(ehrUid, qFromDate, qToDate, group, organizationUid, max, offset, composerUid, composerName)
+      }
+      catch (QuerySnomedServiceException e)
+      {
+         renderError(message(code:e.message), "4801", 424)
+         return
+      }
+      catch (Exception e)
+      {
+         renderError(e.message, "4802", 424)
+         return
+      }
+
 
       // measuring query timing
       def end_time = System.currentTimeMillis()
@@ -1559,7 +1577,25 @@ class RestController {
 
       request.JSON.query.organizationUid = organizationUid
       def query = Query.newInstance(request.JSON.query)
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset, composerUid, composerName)
+      def cilist = []
+
+      try
+      {
+         cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset, composerUid, composerName)
+      }
+      catch (QuerySnomedServiceException e)
+      {
+         renderError(message(code:e.message), "4801", 424)
+         return
+      }
+      catch (Exception e)
+      {
+         renderError(e.message, "4802", 424)
+         return
+      }
+
+
+
       def result = cilist
 
       // If no ehrUid was specified, the results will be for different ehrs

@@ -20,7 +20,7 @@
         <g:if test="${flash.message}">
           <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -96,7 +96,7 @@
                   <td>${w.archetypeId}</td>
                   <td>${w.path}</td>
                   <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(w.archetypeId, w.path).name['ISO_639-1::'+ session.lang]}</td>
-                  <td>${w.toSQL()}</td>
+                  <td>${w.toGUI()}</td>
                 </tr>
               </g:each>
             </table>
@@ -104,7 +104,7 @@
         </g:if>
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col-md-6">
         <g:message code="query.show.query_xml.label" />
@@ -115,7 +115,7 @@
         <pre><code id="json"></code></pre>
       </div>
     </div>
-     
+
     <div class="row">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
@@ -125,11 +125,11 @@
           <g:else>
             <g:message code="query.show.cantEditQueryHelp" args="[Organization.findByUid(queryInstance.organizationUid).name]" />
           </g:else>
-          
+
           <g:if test="${!queryInstance.isPublic}">
             <g:link controller="resource" action="shareQuery" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-share fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>
           </g:if>
-          
+
           <g:form method="DELETE" action="delete" style="display:inline">
             <input type="hidden" name="uid" value="${queryInstance.uid}" />
             <button class="btn btn-default btn-md" name="delete" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><span class="fa fa-trash-o fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.delete" /></button>
@@ -137,7 +137,7 @@
         </div>
       </div>
     </div>
-    
+
     <script type="text/javascript">
       $.ajax({
          url: '${createLink(controller:"query", action:"export")}',
@@ -149,7 +149,7 @@
             $('#json').each(function(i, e) { hljs.highlightBlock(e); });
          },
          error: function(XMLHttpRequest, textStatus, errorThrown) {
-           
+
            console.log(textStatus, errorThrown);
          }
       });
@@ -163,7 +163,7 @@
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
          },
          error: function(XMLHttpRequest, textStatus, errorThrown) {
-            
+
             console.log(textStatus, errorThrown);
          }
       });

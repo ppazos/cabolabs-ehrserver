@@ -20,41 +20,17 @@
  * limitations under the License.
  */
 
-/**
- *
- */
 package com.cabolabs.ehrserver.exceptions
 
-import grails.validation.ValidationException
-import org.springframework.validation.Errors
+public class QuerySnomedServiceException extends RuntimeException {
 
-/**
- * @author pab
- *
- */
-class DataIndexException extends ValidationException {
-
-   String index
-
-   /**
-    *
-    * @param message
-    * @param index path associated with the index failted to create.
-    */
-   public DataIndexException(String message, Errors e, String index)
+   public QuerySnomedServiceException(String message)
    {
-      super(message, e)
-      this.index = index
+      super(message)
    }
 
-   public DataIndexException(String message, Errors e)
+   public QuerySnomedServiceException(String message, Throwable cause)
    {
-      super(message, e)
-   }
-
-   @Override
-   public String getMessage()
-   {
-      return super.getMessage() + (index ? '. Index: '+ index : '')
+      super(message, cause)
    }
 }

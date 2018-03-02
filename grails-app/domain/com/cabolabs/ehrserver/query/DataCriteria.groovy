@@ -25,6 +25,7 @@ package com.cabolabs.ehrserver.query
 import grails.util.Holders
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 
 /**
  * WHERE archId/path operand value
@@ -257,20 +258,22 @@ class DataCriteria {
                // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
                def conceptids = []
 
-               try
-               {
+//               try
+//               {
+                  // will throw exceptions on any fail case, this should make the whole .toSQL to fail, since the result wouldn't be valid
+                  // the exception should reach the top level to return the error to the user on GUI or API, so no catch here!
                   conceptids = querySnomedService.getCodesFromExpression(value[0])
-               }
-               catch (e)
-               {
-                  println e.message
-                  println e
+//               }
+//               catch (e)
+//               {
+//                  println e.message
+//                  println e
                   // FIXME: if there is an error resolving the snomed expression,
                   //        the whole getSQL should fail and the error should reach
                   //        the upper level to show a friendly message to the user,
                   //        like server not available or max requests reached.
                   //        On a server down situation 'e' will be java.net.UnknownHostException
-               }
+//               }
 
                //println conceptids
                // be prepared for communication errors to avoid generating invalid HQL
@@ -285,7 +288,10 @@ class DataCriteria {
                }
                else
                {
-                  sql += ' 1=1 ' // just a placeholder to have a valid query, TODO: this should be an empty list
+                  // conceptually if the list of concepts is empty, the SQL IN operator should return always false since x IN [] is false.
+                  // so we throw an exception when no concepts are returned from the service.
+                  throw new QuerySnomedServiceException('querySnomedService.error.emptyResults')
+                  //sql += ' 1=1 ' // just a placeholder to have a valid query, TODO: this should be an empty list
                }
             }
 
@@ -297,6 +303,104 @@ class DataCriteria {
 
       return sql
    }
+
+
+   /**
+    * Returns a string form of the criteria for UI display. Has the same logic as toSQL but this is not for evaluating SQL.
+    */
+   String toGUI()
+   {
+      // booleano false no devuelve listas de valores porque aca no las uso ej para coded text
+      def specs = criteriaSpec(this.archetypeId, this.path, false)
+
+      // TODO: we need to think another way of referencing the spec that is not by the index,
+      // this difficults executing not stored queries, since the spec number should be set.
+      def criteria_spec = specs[this.spec] // spec used Map
+      def attributes_or_functions = criteria_spec.keySet()
+      def ui = ""
+      def operand
+      def operandField
+      def valueField
+      def negationField
+      def criteriaValueType // value, list, range ...
+      def value, attr, negation
+
+      attributes_or_functions.each { attr_or_function ->
+
+         attr = attr_or_function
+         operandField = attr+'Operand'
+         operand = this."$operandField"
+         valueField = attr+'Value'
+         value = this."$valueField" // can be a list
+         negationField = attr+'Negation'
+
+         if (this.functions().contains(attr_or_function))
+         {
+            ui += attr_or_function +' '+ operand +' '+ value + '     ' // extra spaces are to avoid cutting the criteria value
+         }
+         else
+         {
+
+            // not all DataCriteria have negation (boolean, identifier don't have negation fields)
+            if (this.hasProperty(negationField))
+               negation = this."$negationField"
+
+            criteriaValueType = criteria_spec[attr][operand]
+
+            // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
+            if (criteriaValueType == 'value')
+            {
+               if (value instanceof List) // it can be a list but have just one value e.g. because it can also have a range
+                  ui += (negation ? 'NOT ' : '') + attr +' '+ operand +' '+ value[0]
+               else
+                  ui += (negation ? 'NOT ' : '') + attr +' '+ operand +' '+ value
+            }
+            else if (criteriaValueType == 'list')
+            {
+               assert ['in_list', 'contains_like'].contains(operand)
+
+               if (operand == 'contains_like')
+               {
+                  ui += (negation ? 'NOT ' : '')
+                  ui += '('
+
+                  value.each { singleValue ->
+                     ui += attr +' '+ operand +' '+ singleValue +" OR "
+                  }
+                  ui = ui[0..-5] + ')' // removes last OR
+               }
+               else
+               {
+                  ui += attr + (negation ? ' NOT' : '') +' IN ('
+
+                  value.each { singleValue ->
+                     ui += singleValue +','
+                  }
+                  ui = ui[0..-2] + ')' // removes last ,
+               }
+            }
+            else if (criteriaValueType == 'range')
+            {
+               assert operand == 'between'
+
+               ui += attr + (negation ? ' NOT' : '') +' '+ operand +' '+ value[0] +' AND '+ value[1]
+            }
+            else if (criteriaValueType == 'snomed_exp')
+            {
+               assert 'in_snomed_exp' == operand
+
+               ui += attr + (negation ? ' NOT' : '') +' '+ operand +' '+ value[0]
+            }
+
+            ui += ' AND '
+         }
+      }
+
+      ui = ui[0..-6] // removes the last AND
+
+      return ui
+   }
+
 
    ArchetypeIndexItem getIndexItem()
    {
