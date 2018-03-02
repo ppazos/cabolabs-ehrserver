@@ -46,6 +46,8 @@ import com.cabolabs.ehrserver.notification.*
 import grails.util.Environment
 import com.cabolabs.ehrserver.conf.ConfigurationItem
 import com.cabolabs.ehrserver.ehr.*
+import com.cabolabs.ehrserver.log.CommitLoggerService
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
 
 class BootStrap {
 
@@ -55,7 +57,8 @@ class BootStrap {
    def grailsApplication
    def resourceService
    def configurationService
-
+   def versionFSRepoService
+   def commitLoggerService
 
    def defaultConfigurationItems()
    {
