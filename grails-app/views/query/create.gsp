@@ -1929,9 +1929,20 @@ resp.responseJSON.result.message +'</div>'
                   <tr>
                     <td><g:message code="query.create.templates" /></td>
                     <td>
+                      <%--
                       <select id="view_template_id" class="form-control" size="10">
                         <option value=""><g:message code="query.create.templates.select_template" /></option>
                       </select>
+                      --%>
+
+                      <g:select name="view_template_id"
+                                size="10"
+                                from="${templateIndexes}"
+                                noSelection="['':message(code:"query.create.templates.select_template")]"
+                                optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
+                                optionKey="templateId"
+                                class="form-control withsize"/>
+
                     </td>
                   </tr>
                   <tr>
