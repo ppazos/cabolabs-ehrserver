@@ -171,21 +171,21 @@ class BootStrap {
       Organization.list().each { org ->
 
          // version repos per existing org
-         if (!versionFSRepoService.repoExistsOrg(org))
+         if (!versionFSRepoService.repoExistsOrg(org.uid))
          {
             throw new Exception("Version repo doesn't for organization "+ org.uid)
          }
-         if (!versionFSRepoService.canWriteRepoOrg(org))
+         if (!versionFSRepoService.canWriteRepoOrg(org.uid))
          {
             throw new Exception("Can't write version repo for organization "+ org.uid +" check permissions")
          }
 
          // commit log repos per existing org
-         if (!commitLoggerService.repoExistsOrg(org))
+         if (!commitLoggerService.repoExistsOrg(org.uid))
          {
             throw new Exception("Commit log repo doesn't for organization "+ org.uid)
          }
-         if (!commitLoggerService.canWriteRepoOrg(org))
+         if (!commitLoggerService.canWriteRepoOrg(org.uid))
          {
             throw new Exception("Can't write commit log repo for organization "+ org.uid +" check permissions")
          }
