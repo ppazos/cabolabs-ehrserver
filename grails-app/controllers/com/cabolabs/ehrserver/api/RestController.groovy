@@ -276,19 +276,19 @@ class RestController {
 
       if (!ehrUid)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
       if (!auditSystemId)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
       if (!auditCommitter)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.error.auditCommitter_required'), '400', 400)
          return
       }
@@ -296,7 +296,7 @@ class RestController {
       def ehr = Ehr.findByUid(ehrUid)
       if (!ehr)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), '403', 404)
          return
       }
@@ -306,7 +306,7 @@ class RestController {
       def _user = User.findByUsername(_username)
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
          return
       }
@@ -318,7 +318,7 @@ class RestController {
       {
          if (plan_assoc.plan.repo_total_size_in_kb <= account.totalRepoSizeInKb)
          {
-           commitLoggerService.log(request, null, false, null, session)
+           commitLoggerService.log(request, null, false, null, session, params)
            renderError(message(code:'rest.commit.error.cant_commit.insufficient_storage'), '4507', 507) // 507 Insufficient Storage
            return
          }
@@ -349,7 +349,7 @@ class RestController {
 
       if (!content)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.commit.error.emptyRequest'), '4012', 400)
          return
       }
@@ -363,7 +363,7 @@ class RestController {
 
          if (!versionsXML) // if empty, JSON is invalid, excepts are cached internally in the service
          {
-            commitLoggerService.log(request, null, false, null, session)
+            commitLoggerService.log(request, null, false, null, session, params)
             renderError(message(code:'rest.commit.error.invalidJSON'), '50112', 400)
             return
          }
@@ -389,7 +389,7 @@ class RestController {
          }
          catch (org.xml.sax.SAXParseException sex) // checks malformed XML
          {
-            commitLoggerService.log(request, null, false, null, session)
+            commitLoggerService.log(request, null, false, null, session, params)
             renderError(message(code:'rest.commit.error.invalidXML'), '50111', 400, [], sex)
             return
          }
@@ -398,7 +398,7 @@ class RestController {
 
       if (!_parsedVersions)
       {
-         commitLoggerService.log(request, null, false, null, session)
+         commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.commit.error.versionsRequired'), '401', 400)
          return
       }
@@ -406,13 +406,13 @@ class RestController {
       // TODO: these errors should be related to parsing errors not just that the result is empty.
       if (_parsedVersions.isEmpty())
       {
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402', 400)
          return
       }
       if (_parsedVersions.version.size() == 0)
       {
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
          renderError(message(code:'rest.commit.error.versionsEmpty'), '402.1', 400)
          return
       }
@@ -437,7 +437,7 @@ class RestController {
           * Note that this will override the time_committed from the version in the XML received.
           */
 
-         commitLoggerService.log(request, contribution.uid, true, content, session)
+         commitLoggerService.log(request, contribution.uid, true, content, session, params)
 
 
          // Check if the OPT is loaded for each compo committed, return warning if not.
@@ -495,14 +495,14 @@ class RestController {
       }
       catch (CommitWrongChangeTypeException e)
       {
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
          renderError(message(code:'rest.commit.error.wrongChangeType', args:[e.message]), 'e02.0009.0', 400, [], e)
          return
       }
       catch (XmlValidationException e) // xsd validation errors
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
 
          def detailedErrors = []
 
@@ -518,7 +518,7 @@ class RestController {
       }
       catch (UndeclaredThrowableException e)
       {
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
 
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
          renderError(message(code:'rest.commit.error.cantProcessCompositions', args:[e.cause.message]), '481', 400)
@@ -529,7 +529,7 @@ class RestController {
          println "e message " + e.message
          log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
 
-         commitLoggerService.log(request, null, false, content, session)
+         commitLoggerService.log(request, null, false, content, session, params)
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
       }

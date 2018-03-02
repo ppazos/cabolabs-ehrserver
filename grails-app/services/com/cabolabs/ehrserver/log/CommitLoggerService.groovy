@@ -30,7 +30,7 @@ import com.cabolabs.ehrserver.reporting.ActivityLog
 
 @Transactional
 class CommitLoggerService {
-   
+
    def config = Holders.config.app
 
    /*
@@ -40,12 +40,12 @@ class CommitLoggerService {
    {
       return new File(config.commit_logs).canWrite()
    }
-   
+
    private boolean repoExists()
    {
       return new File(config.commit_logs).exists()
    }
-   
+
    /*
     * Operations for the version repo per organization.
     */
@@ -53,23 +53,23 @@ class CommitLoggerService {
    {
       return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
    }
-   
+
    private boolean repoExistsOrg(String orguid)
    {
       return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
    }
-   
+
    /**
     * If the content (xml or json) was read from the request, we won't be able to read it again,
     * reading twice from the request will result on a java.io.IOException "stream closed"
     */
-   def log(HttpServletRequest request, String contributionUid, boolean success, String content, session)
+   def log(HttpServletRequest request, String contributionUid, boolean success, String content, session, params)
    {
       // http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html
       def clientIP = request.remoteAddr
       def clientLocale = request.locale
       def isSecure = request.isSecure() // it uses https?
-      def params = request.parameterMap.collectEntries{ [(it.key): it.value[0]] } // params is a map of lists, we need a map of strings
+      //def params = request.parameterMap.collectEntries{ [(it.key): it.value[0]] } // params is a map of lists, we need a map of strings
       def contentType = request.contentType
       def contentLength = request.contentLength
       def encoding = request.characterEncoding
@@ -78,12 +78,12 @@ class CommitLoggerService {
 
       // Stateless username
       def authUser = request.securityStatelessMap.username
-         
-      
+
+
       // FIXME: file can be read once from the request ...
       // I think this can be changed to an if (content) .. else try to read.
       def logContent
-      
+
       try
       {
          // this is used when there is no content read from the request.reader yet
@@ -112,7 +112,7 @@ class CommitLoggerService {
       {
          logContent = content // can be null or empty
       }
-      
+
       // TODO: log specific errors thrown by the controller
       /*
       println "commmit log"
@@ -126,10 +126,10 @@ class CommitLoggerService {
       println url
       println authUser
       */
-      
+
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created
-      
+
       def commit = new Commit(
         ehrUid: params.ehrUid,
         contributionUid: contributionUid, // can be null if !success
@@ -143,15 +143,15 @@ class CommitLoggerService {
         success: success,
         activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null)
       )
-      
+
       if (!commit.validate()) println commit.errors
-      
+
       commit.save(failOnError: true)
-      
+
       if (logContent)
       {
          String orguid = request.securityStatelessMap.extradata.org_uid
-         
+
          // TODO: The orguid folder is created just the first time,
          // it might be better to create it whe nthe organization is created.
          if (!repoExistsOrg(orguid))
@@ -159,13 +159,13 @@ class CommitLoggerService {
             // Creates the orguid subfolder
             new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
          }
-         
+
          // save the json or xml to the commit log
          def ext = '.xml'
          if (contentType == 'application/json') ext = '.json'
-         
-         def commitLog = new File(config.commit_logs.withTrailSeparator() + 
-                                  orguid.withTrailSeparator() + 
+
+         def commitLog = new File(config.commit_logs.withTrailSeparator() +
+                                  orguid.withTrailSeparator() +
                                   commit.fileUid + ext)
          commitLog << logContent
       }
