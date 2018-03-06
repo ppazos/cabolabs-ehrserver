@@ -1,6 +1,13 @@
 <%@ page import="com.cabolabs.ehrserver.account.Account" %><%@ page import="com.cabolabs.ehrserver.account.Plan" %>
 
 <div class="form-group ${hasErrors(bean: account, field: 'enabled', 'error')} ">
+  <label class="control-label" for="companyName">
+    <g:message code="account.attr.companyName" default="Company name" /><span class="required-indicator">*</span>
+  </label>
+  <g:textField name="companyName" value="${account?.companyName}" required="" class="form-control" />
+</div>
+
+<div class="form-group ${hasErrors(bean: account, field: 'enabled', 'error')} ">
   <label class="control-label" for="enabled">
     <g:message code="account.attr.enabled" default="Enabled" />
   </label>
@@ -57,9 +64,9 @@
     </g:else>
   </div>
 
-  
+
   <h2><g:message code="account.edit.new_plan" default="New plan" /></h2>
-  
+
   <div class="form-group">
     <label for="plan_id"><g:message code="account.edit.assign_plan" default="Assign plan" /></label>
     <g:select from="${Plan.list()}" name="plan_id"
@@ -67,16 +74,16 @@
 				  noSelection="${['':'']}"
               class="form-control"></g:select>
   </div>
-  
+
   <div class="form-group">
     <label for="plan_id"><g:message code="account.edit.plan.plan_date_start" default="From date" /></label>
     <g:textField name="plan_date_start" value="${params.plan_date_start}" class="form-control"/>
   </div>
-  
+
   <script type="text/javascript">
     $(document).ready(function() {
       var _from = $('[name=plan_date_start]');
-        
+
       _from.datetimepicker({
         format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
         viewMode: 'years'

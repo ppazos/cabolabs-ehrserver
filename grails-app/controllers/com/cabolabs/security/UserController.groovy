@@ -42,13 +42,13 @@ import com.cabolabs.ehrserver.api.ApiResponsesService
 class UserController {
 
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-   
+
    def apiResponsesService
    def simpleCaptchaService
    def notificationService
    def springSecurityService
    def configurationService
-   
+
    //def userService
    def config = Holders.config.app
 
@@ -56,22 +56,22 @@ class UserController {
    {
       session.organization = org
    }
-   
+
    def login()
    {
       // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
    }
-   
+
    def index(int offset, String sort, String order, String username, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       def list, count
       def c = UserRole.createCriteria()
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
@@ -98,7 +98,7 @@ class UserController {
          // current user lists only users from the current org
          def loggedInUser = springSecurityService.currentUser
          def org = session.organization // with this in the criteria makes the unit test fail.
-         
+
          def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
             eq('organization', org)
             if (username)
@@ -108,15 +108,15 @@ class UserController {
                }
             }
          }
-         
+
          list = urs
          count = urs.totalCount
       }
-      
+
       render view: 'index', model: [userInstanceList: list, userInstanceCount: count]
    }
-   
-   
+
+
    // endpoint
    @SecuredStateless
    def profile(String username)
@@ -126,7 +126,7 @@ class UserController {
       def org_uid = request.securityStatelessMap.extradata.org_uid
       def org = Organization.findByUid(org_uid)
       def _user = User.findByUsername(_username)
-      
+
       // user I want to access
       def u = User.findByUsername(username)
       if (!username || !u)
@@ -141,7 +141,7 @@ class UserController {
          }
          return
       }
-      
+
       def allowed
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -155,13 +155,13 @@ class UserController {
             (
                u.username == _username || // user want to access self profile
                ( // org managers can see users with lees power than them
-                  (_user.authoritiesContains(Role.OM, org) || _user.authoritiesContains(Role.AM, org)) && 
+                  (_user.authoritiesContains(Role.OM, org) || _user.authoritiesContains(Role.AM, org)) &&
                    _user.getHigherAuthority(org).higherThan( u.getHigherAuthority(org) )
                )
             )
          )
       }
-      
+
       if (!allowed)
       {
          withFormat {
@@ -180,7 +180,7 @@ class UserController {
          email: u.email,
          organizations: u.organizations
       ]
-      
+
       withFormat {
          xml {
             def result = data as XML
@@ -193,7 +193,7 @@ class UserController {
          }
       }
    }
-   
+
 
    def show(User userInstance)
    {
@@ -202,9 +202,9 @@ class UserController {
          notFound()
          return
       }
-      
+
       def userRoles = UserRole.findAllByUser(userInstance)
-      
+
       // Admins can access all users
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -216,10 +216,10 @@ class UserController {
          def loggedInUser = springSecurityService.currentUser
 
          // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
-         
+
          // cant see the details of a user with higher authority
          // be careful: for the same roles, higherThan returns true
-         
+
          // I can only manage users in the current org, if the user doesnt have a role in the current org
          // this code will return an error since it will compare my higher role with null. That is OK since
          // it's an invalid flow, maybe an attack. For now we don't show a friendly message for attackers,
@@ -235,14 +235,14 @@ class UserController {
          return
       }
    }
-   
+
    /**
     * Roles are per org.
     */
    private rolesICanAssign()
    {
       def rolesPerOrgICanAssing = [:] // org -> roles
-      
+
       // Admins can assign all roles to all orgs
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -258,7 +258,7 @@ class UserController {
          def roles
          def loggedInUser = springSecurityService.currentUser
          def userRoles = UserRole.findAllByUser(loggedInUser) // orgs the user can access and his role on each
-         
+
          userRoles.each { userRole ->
             roles = Role.list()
             def hrole = loggedInUser.getHigherAuthority(userRole.organization)
@@ -274,14 +274,14 @@ class UserController {
                   }
                }
             }
-            
+
             rolesPerOrgICanAssing[userRole.organization] = roles
          }
       }
-      
+
       return rolesPerOrgICanAssing
    }
-   
+
    private organizationsICanAssign()
    {
       def organizations
@@ -294,18 +294,18 @@ class UserController {
          // non admins can only manage users for the current org
          organizations = [session.organization] //springSecurityService.currentUser.organizations
       }
-      
+
       return organizations
    }
-   
+
    def create()
    {
       // roles the current user can assign
       def roles = rolesICanAssign()
-      
+
       // organizations the current user can assign
       def organizations = organizationsICanAssign()
-      
+
       respond new User(params), [model: [roles: roles, organizations: organizations]]
    }
 
@@ -317,11 +317,11 @@ class UserController {
          notFound()
          return
       }
-      
+
       // User should have one org assigned, if not we lose tack of the user and can't be managed.
       def _organizationsICanAssign = organizationsICanAssign()
       def inRoles, valid = false
-      
+
       _organizationsICanAssign.each { org ->
 
          // org uid -> authorities
@@ -338,20 +338,20 @@ class UserController {
          render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
          return
       }
-      
+
       if (!userInstance.password)
       {
          userInstance.enabled = false
          userInstance.setPasswordToken()
       }
-           
+
       // need to save before creating UserRole, so UserRole can be saved
       if (!userInstance.save(flush:true))
       {
          render model: [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign()], view:'create'
          return
       }
-      
+
       def loggedInUser = springSecurityService.currentUser
       def orguids, org, roles
       def _rolesICanAssign = rolesICanAssign()
@@ -359,10 +359,10 @@ class UserController {
       _rolesICanAssign.each { orgRoles ->
          org = orgRoles.key
          roles = orgRoles.value
-         
+
          // org uid -> authorities
          inRoles = params.list(org.uid)
-         
+
          inRoles.each { assignRole ->
             if (roles.authority.contains(assignRole)) // I can assign this role on this org
             {
@@ -370,12 +370,12 @@ class UserController {
             }
          }
       }
-      
+
       // email notification
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserRegisteredOrCreatedEmail( userInstance.email, [userInstance] )
-      
+
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
@@ -392,21 +392,21 @@ class UserController {
          notFound()
          return
       }
-      
+
       // Admins can access all users
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
-         respond userInstance, [model: [roles: rolesICanAssign(), 
-                                        organizations: organizationsICanAssign(), 
+         respond userInstance, [model: [roles: rolesICanAssign(),
+                                        organizations: organizationsICanAssign(),
                                         userRoles: UserRole.findAllByUser(userInstance)]]
          return
       }
       else
       {
          def loggedInUser = springSecurityService.currentUser
-         
+
          // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
-         
+
          // cant see the details of a user with higher authority
          // be careful: for the same roles, higherThan returns true
          if (!loggedInUser.getHigherAuthority(session.organization).higherThan( userInstance.getHigherAuthority(session.organization) ))
@@ -416,8 +416,8 @@ class UserController {
             return
          }
 
-         respond userInstance, [model: [roles: rolesICanAssign(), 
-                                        organizations: organizationsICanAssign(), 
+         respond userInstance, [model: [roles: rolesICanAssign(),
+                                        organizations: organizationsICanAssign(),
                                         userRoles: UserRole.findAllByUserAndOrganization(userInstance, session.organization)]]
          return
       }
@@ -431,9 +431,9 @@ class UserController {
          notFound()
          return
       }
-      
+
       def loggedInUser = springSecurityService.currentUser
-      
+
       // current user can't block it's own account
       // we keep the flags as before the edit, loading from db
       if (loggedInUser.id == userInstance.id)
@@ -441,14 +441,14 @@ class UserController {
          // get user has the flags aleady changed!!!
          def dbuser = User.get(userInstance.id)
          dbuser.refresh() // this solves the issue, it might be due caching...
-         
+
 
          userInstance.enabled = dbuser.enabled
          userInstance.accountExpired = dbuser.accountExpired
          userInstance.accountLocked = dbuser.accountLocked
          userInstance.passwordExpired = dbuser.passwordExpired
       }
-      
+
       // User should have one org assigned, if not we lose tack of the user and can't be managed.
       def userRoles
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // admins manage user roles on any org
@@ -459,10 +459,10 @@ class UserController {
       {
          userRoles = UserRole.findAllByUserAndOrganization(userInstance, session.organization)
       }
-      
+
       def _organizationsICanAssign = organizationsICanAssign()
       def inRoles, valid = false
-      
+
       _organizationsICanAssign.each { org ->
 
          // org uid -> authorities
@@ -476,17 +476,17 @@ class UserController {
       if (!valid)
       {
          flash.message = message(code:"user.update.oneRoleShouldBeSelected")
-         render model: [userInstance: userInstance, 
-                        roles: rolesICanAssign(), 
-                        organizations: organizationsICanAssign(), 
+         render model: [userInstance: userInstance,
+                        roles: rolesICanAssign(),
+                        organizations: organizationsICanAssign(),
                         userRoles: userRoles], view:'edit'
          return
       }
 
-      
+
       def orguids, org, roles, highestRole
       def _rolesICanAssign = rolesICanAssign()
-      
+
 
       // Removes current roles, for the roles and orgs the current user can assign, if those roles were removed.
       userRoles.each { userRole ->
@@ -494,7 +494,7 @@ class UserController {
          // check if a role that the user already has is coming on params => do not delete only delete
          // the onse that the user has and are not coming on the params (and the current user can manage)
          inRoles = params.list(userRole.organization.uid) // this is also checking the org in params exists!
-      
+
          // if user is self, can't remove his highest role on this org
          if (loggedInUser.id == userInstance.id)
          {
@@ -506,7 +506,7 @@ class UserController {
                return // avoids executing the rest of the each, current userRole is not removed
             }
          }
-         
+
          /*
          println "_rolesICanAssign "+ _rolesICanAssign
          println "userRole.organization "+ userRole.organization
@@ -515,7 +515,7 @@ class UserController {
          println "_rolesICanAssign.keySet().contains(userRole.organization) "+ _rolesICanAssign.keySet().contains(userRole.organization)
          println "isEqualOrg "+ (userRole.organization == _rolesICanAssign.keySet().toArray()[0])
          */
-         
+
          // this condition checks 1. that I can assign roles on that org,
          // 2. I can assign that specific role on that org
          // 3. the role was removed from the user in the UI, if it wasn't removed, keep it
@@ -524,14 +524,14 @@ class UserController {
             UserRole.remove( userInstance, userRole.role, userRole.organization, true )
          }
       }
-      
+
       _rolesICanAssign.each { orgRoles ->
          org = orgRoles.key
          roles = orgRoles.value
-         
+
          // org uid -> authorities
          inRoles = params.list(org.uid)
-         
+
          inRoles.each { assignRole ->
             // I can assign this role on this org
             if (roles.authority.contains(assignRole) && !UserRole.exists(userInstance.id, Role.findByAuthority(assignRole).id, org.id))
@@ -540,17 +540,17 @@ class UserController {
             }
          }
       }
-      
-      
+
+
       if (!userInstance.save(flush:true))
       {
-         render model: [userInstance: userInstance, 
-                        roles: rolesICanAssign(), 
-                        organizations: organizationsICanAssign(), 
+         render model: [userInstance: userInstance,
+                        roles: rolesICanAssign(),
+                        organizations: organizationsICanAssign(),
                         userRoles: userRoles], view:'edit'
          return
       }
-      
+
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.updated.message', args: [message(code: 'User.label', default: 'User'), userInstance.id])
@@ -569,7 +569,7 @@ class UserController {
       else
       {
          boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
-        
+
          def u = new User(
             username: params.username,
             email: params.email,
@@ -581,47 +581,70 @@ class UserController {
          u.setPasswordToken()
 
          User.withTransaction{ status ->
-        
+
             try
             {
                // TODO: create an invitation with token, waiting for account confirmation
-               // 
-               o = new Organization(name: params.org_name)
-               o.save(failOnError: true, flush:true)
-               
+               //
+
                u.save(failOnError: true, flush:true)
-               
+
+               // Create account
+               // From the register, accounts will be enabled by default to allow login after pass reset
+               // Rationale: if the web register was enabled, the admin wants new users to login after register
+               // if the admin wants to review user sign ups, needs to disable web sign up and create the accounts manually
+               def account = new Account(contact: u, companyName: params.org_name, enabled: true)
+
+               o = new Organization(name: params.org_name)
+
+               account.addToOrganizations(o)
+
+               account.save(failOnError:true, flush:true)
+
                // TODO: UserRole ORG_* needs a reference to the org, since the user
                //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
                // the user is creating the organization, it should be manager also, because is the first, is account manager
                UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
-               
 
-               // Create account
-               def account = new Account(contact: contact, organizations: [o])
-               account.save(failOnError:true, flush:true)
-               
-               
+
+               // create namespace repo for org OPTs
+               def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + o.uid)
+               opt_repo_org.mkdir()
+
+               // create older OPT version repo for the org (needed for versioning)
+               def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
+               old_versions_opt_repo_org.mkdir()
+
+               def version_repo = new File(config.version_repo.withTrailSeparator() + o.uid)
+               version_repo.mkdir()
+
+               def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + o.uid)
+               commit_logs_repo.mkdir()
+
+
+
                // associate the basic plan to the new org
                // TODO: for cloud we need a plan selector but initially accounts will be
                // created by an admin not by user register
-               def p1 = Plan.get(1)
-               p1.associate(account)
+               //def p1 = Plan.get(1)
+               //p1.associate(account)
+
+               // No default plan is set
             }
             catch (ValidationException e)
             {
                println u.errors
                println o?.errors
-               
+
                status.setRollbackOnly()
             }
-          
+
             // FIXME: avoid saving stuff if the captcha is incorrect
             // WHY not checking this before the instances are created?
             if (!captchaValid) status.setRollbackOnly()
-          
+
          } // transaction
-        
+
          // TODO: create a test of transactionality, were the user is saved but the org not, and check if the user is rolled back
          if (u.errors.hasErrors() || o?.errors.hasErrors() || !captchaValid)
          {
@@ -638,7 +661,7 @@ class UserController {
          }
       }
    }
-   
+
    // just renders, needed because it shows the view in the right locale, without this it doesnt.
    def registerOk()
    {
@@ -663,21 +686,21 @@ class UserController {
          '*'{ render status: NO_CONTENT }
       }
    }
-   
-   
+
+
    // token comes always and is required for reset
    def resetPassword(String token, String newPassword, String confirmNewPassword)
    {
       // GET: display reset view
       // POST: try to reset the pass
-      
+
       if (!token)
       {
          flash.message = message(code:"user.resetPassword.noToken")
          redirect controller:'login', action:'auth'
          return
       }
-      
+
       def user = User.findByResetPasswordToken(token)
       if (!user)
       {
@@ -685,7 +708,7 @@ class UserController {
          redirect controller:'login', action:'auth'
          return
       }
-      
+
       if (request.post)
       {
          if (!newPassword || !confirmNewPassword)
@@ -693,21 +716,21 @@ class UserController {
             flash.message = message(code:"user.resetPassword.passwordConfirmationNeeded")
             return
          }
-         
+
          def min_length = Holders.config.app.security.min_password_length
          if (newPassword.size() < min_length)
          {
             flash.message = message(code:"user.resetPassword.passNotLongEnough", args:[min_length])
             return
          }
-         
+
          if (newPassword != confirmNewPassword)
          {
             flash.message = message(code:"user.resetPassword.confirmDoesntMatch")
             return
          }
-         
-         
+
+
          user.password = newPassword
          user.enabled = true
          user.emptyPasswordToken()
@@ -718,24 +741,24 @@ class UserController {
          return
       }
    }
-   
+
    def forgotPassword(String email)
    {
       if (request.post)
       {
          def user = User.findByEmail(email)
-         
+
          if (!user)
          {
             flash.message = message(code:"user.forgotPassword.emailDoesntExists")
             return
          }
-         
-         
+
+
          // generates a password reset token, used in the email notification
          user.setPasswordToken()
          user.save(flush:true)
-         
+
          try
          {
             notificationService.sendForgotPasswordEmail( user.email, [user] )
@@ -743,41 +766,41 @@ class UserController {
          catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
          {
             log.error e.message
-            
+
             flash.message = message(code:"user.forgotPassword.errorSendingEmail")
             return
          }
-         
-         
+
+
          flash.message = message(code:"user.forgotPassword.passResetSend")
          redirect controller:'login', action:'auth'
          return
       }
       // display the forgotPassword view
    }
-   
-   
+
+
    // same as forgotPassword but it can be triggered by an admin / org manager
    // from the user/show to let users reset their password even if they forgot
    // the email used to register.
    def resetPasswordRequest(String email)
    {
       def user = User.findByEmail(email)
-      
+
       if (!user)
       {
          flash.message = message(code:"user.forgotPassword.emailDoesntExists")
          redirect(action:'show', id:params.id)
          return
       }
-      
-      
+
+
       // generates a password reset token, used in the email notification
       user.setPasswordToken()
       user.enabled = false // if enabled, password token is cleaned beforeInsert
       user.save(flush:true)
-      
-      
+
+
       try
       {
          notificationService.sendForgotPasswordEmail( user.email, [user] )
@@ -785,18 +808,18 @@ class UserController {
       catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
       {
          log.error e.message
-         
+
          flash.message = message(code:"user.forgotPassword.errorSendingEmail")
          redirect(action:'show', id:params.id)
          return
       }
-      
-      
+
+
       flash.message = message(code:"user.forgotPassword.passResetSend")
       redirect(action:'show', id:params.id)
       return
    }
-   
+
 
    protected void notFound() {
       request.withFormat {

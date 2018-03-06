@@ -24,9 +24,9 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
    def compositionService
    def versionFSRepoService
-   
+
    private static String PS = System.getProperty("file.separator")
-   
+
    def xml = $/<?xml version="1.0" encoding="UTF-8"?><version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" xsi:type="ORIGINAL_VERSION">
    <contribution>
      <id xsi:type="HIER_OBJECT_ID">
@@ -493,13 +493,13 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
      </defining_code>
    </lifecycle_state>
  </version>/$
-   
-   
+
+
    private String ehrUid     = '11111111-1111-1111-1111-111111111123'
    private String patientUid = '11111111-1111-1111-1111-111111111145'
    private String orgUid     = '11111111-1111-1111-1111-111111111178'
-   
-   
+
+
    private createEHR()
    {
       def ehr = new Ehr(
@@ -509,11 +509,11 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          ),
          organizationUid: Organization.findByUid(orgUid).uid
       )
-    
+
       ehr.save(failOnError: true)
    }
-   
-   
+
+
    def setup()
    {
       // 1. Account setup: create account manager user
@@ -522,73 +522,73 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          password: 'testaccman',
          email: 'testaccman@domain.com',
       ).save(failOnError:true, flush: true)
-      
+
       // 2. Account setup: create account
-      def account = new Account(contact: accman)
+      def account = new Account(contact: accman, companyName:'Test company')
 
       // 3. Account setup: create organization
       def org = new Organization(uid: orgUid, name: 'CaboLabs', number: '123456')
       account.addToOrganizations(org)
       account.save(failOnError: true) // saves the org
-      
+
       // 4. Account setup: create ACCMAN role
       def accmanRole = new Role(authority: Role.AM).save(failOnError: true, flush: true)
-      
+
       // 5. Account setup: create user role association
       UserRole.create( accman, accmanRole, org, true )
-      
-      
-      
-      createEHR()
-   
 
-      
+
+
+      createEHR()
+
+
+
       // get EHR
       def ehr = Ehr.findByUid(ehrUid)
-      
+
       assert ehr != null
-      
-      
+
+
       // create CompositionIndex for an existing version XML
       def composer = new DoctorProxy(
          value: '5323452345-23452334-23452345',
          name: 'Dr. House'
       )
-      
+
 
       // Load test Version
       //def path = 'test'+PS+'resources'+PS+'versions'+PS+'13a9f2b9-81fe-432a-bcc8-d225377a13f1_EMR_1.xml'
       //def xml = new File(path).text
-      
+
       def parser = new XmlSlurper(false, false)
       def parsedVersion = parser.parseText(xml)
-      
+
       //println parsedVersion.data.getClass() // class groovy.util.slurpersupport.NodeChildren
       //println parsedVersion.data[0].getClass() // class groovy.util.slurpersupport.NodeChild
-      
+
       // ----------------------------------------------------------------------
       // Canonical transformation of the composition to a string to hash
       // FIXME: refactor, code from XmlService.parseCompositionIndex
-      
+
       // need to add namespaces to avoid errors while serializing
       def namespaceMap = [ 'xmlns': 'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
       def compo = parsedVersion.data[0]
-      
+
       namespaceMap.each { ns, val ->
-      
+
          compo."@$ns" = val
       }
-      
+
       def compositionString = groovy.xml.XmlUtil.serialize( compo )
-      
+
       // Removes the added namespaces to avoid saving them on store version
       namespaceMap.each { ns, val ->
          compo.attributes().remove(ns)
       }
-      
+
       def byteSize = compositionString.size()
       def hash = compositionString.md5()
-      
+
       def compoIndex = new CompositionIndex(
          uid:         parsedVersion.data.uid.value.text(),
          category:    parsedVersion.data.category.value.text(),
@@ -618,8 +618,8 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          commitAudit: commitAudit,
          data: compoIndex
       )
-      
-       
+
+
       def contribution = new Contribution(
          uid: '78363227-6655-4784-af29-e9b67afae01f',
          ehr: ehr,
@@ -632,13 +632,13 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
             )
          )
       )
-      
+
       contribution.addToVersions(version)
-      
+
       compoIndex.save(failOnError:true)
       commitAudit.save(failOnError:true)
       contribution.save(failOnError:true)
-      
+
       // save version file
       def file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
       file << xml
@@ -647,15 +647,15 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
    def cleanup()
    {
       Contribution.list()*.delete(flush: true)
-      
+
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
-      
+
       //def org = Organization.findByUid(orgUid)
       //org.delete(flush: true)
-      
+
       Account.list()*.delete() // should delete the orgs
-      
+
       UserRole.list()*.delete()
       User.list()*.delete()
       Role.list()*.delete()
@@ -668,10 +668,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          def xml = compositionService.compositionAsXml(uid)
-         
+
       then:
          println xml
-      
+
       cleanup:
          println "test composition as XML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
          new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
@@ -679,7 +679,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
            it.delete()
          }
    }
-   
+
    void "test composition as JSON"()
    {
       setup:
@@ -687,10 +687,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          def json = compositionService.compositionAsJson(uid)
-         
+
       then:
          println json
-      
+
       cleanup:
          println "test composition as JSON: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
          new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {
@@ -698,7 +698,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
            it.delete()
          }
    }
-   
+
    void "test composition as HTML"()
    {
       setup:
@@ -706,10 +706,10 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          def html = compositionService.compositionAsHtml(uid)
-         
+
       then:
          println html
-      
+
       cleanup:
          println "test composition as HTML: DELETE CREATED FILES FROM "+ Holders.config.app.version_repo
          new File(Holders.config.app.version_repo).eachFileMatch(FileType.FILES, ~/.*\.xml/) {

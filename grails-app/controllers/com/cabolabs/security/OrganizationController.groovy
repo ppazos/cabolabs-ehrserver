@@ -208,6 +208,12 @@ class OrganizationController {
       def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
       old_versions_opt_repo_org.mkdir()
 
+      def version_repo = new File(config.version_repo.withTrailSeparator() + organizationInstance.uid)
+      version_repo.mkdir()
+
+      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + organizationInstance.uid)
+      commit_logs_repo.mkdir()
+      
 
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {

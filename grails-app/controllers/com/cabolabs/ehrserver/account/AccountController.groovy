@@ -134,6 +134,12 @@ class AccountController {
       def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
       old_versions_opt_repo_org.mkdir()
 
+      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
+      version_repo.mkdir()
+
+      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
+      commit_logs_repo.mkdir()
+
 
       // 4. Account setup: get ACCMAN role
       def accmanRole = Role.findByAuthority(Role.AM)

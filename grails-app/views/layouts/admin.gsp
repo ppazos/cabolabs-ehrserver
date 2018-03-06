@@ -11,38 +11,38 @@
     <title><g:layoutTitle default="CaboLabs &copy;"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-     
+
     <g:javascript library="jquery" plugin="jquery" />
-     
+
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-     
+
     <!-- MetisMenu CSS -->
     <asset:link rel="stylesheet" href="metisMenu.min.css" type="text/css" />
     <asset:javascript src="metisMenu.min.js" />
-     
+
     <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
-     
-     
+
+
     <!-- Bootstrap DateTime Picker https://github.com/smalot/bootstrap-datetimepicker -->
     <asset:javascript src="moment.min.js" />
     <asset:link rel="stylesheet" href="bootstrap-datetimepicker.min.css" type="text/css" />
     <asset:javascript src="bootstrap-datetimepicker.min.js" />
-     
-     
+
+
     <!-- Custom CSS -->
     <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
     <asset:javascript src="sb-admin-2.js" />
-     
+
     <!-- Global notifications -->
     <asset:javascript src="notification.js" />
     <asset:link rel="stylesheet" href="notification.css" type="text/css" />
 
-    <!-- ajax forms -->    
+    <!-- ajax forms -->
     <script src="https://cdn.jsdelivr.net/jquery.form/4.2.1/jquery.form.min.js" integrity="sha384-tIwI8+qJdZBtYYCKwRkjxBGQVZS3gGozr3CtI+5JF/oL1JmPEHzCEnIKbDbLTCer" crossorigin="anonymous"></script>
 
-     
+
     <g:layoutHead/>
     <style type="text/css">
      #main_menu {
@@ -73,7 +73,7 @@
       background-color: #4185F3;
       border-color: #4185F3;
      }
-     
+
      /** Adding vertical space between rows when needed **/
      /* usage <div class="row row-grid"> */
      .row.row-grid {
@@ -84,7 +84,7 @@
        padding-bottom: 10px;
        border-bottom: 1px solid #eee;
      }
-     
+
      /* redefinition of Hx size from boostrap to make them smaller */
      h1 { font-size: 30px; line-height: 40px; line-height:1.1; }
      h2 { font-size: 24px; line-height: 40px; margin: 10px 0 10px 0; line-height:1.1; }
@@ -92,7 +92,7 @@
      h4 { font-size: 16px; line-height: 20px; margin: 10px 0 10px 0; line-height:1.1; }
      h5 { font-size: 14px; line-height: 20px; margin: 5px 0 5px 0; line-height:1.1; }
      h6 { font-weight: bold; margin: 5px 0 5px 0; line-height:1.1; }
-     
+
      /**
       * Style for arrow to active sortable column.
       */
@@ -100,7 +100,7 @@
      tr > th.sortable.sorted.desc > a {
        margin-right: 5px;
      }
-     
+
      #powby {
        cursor: pointer;
        color: #337ab7;
@@ -111,11 +111,11 @@
        font-size: 0.8em;
        padding: 10px 5px 5px 5px;
      }
-     
+
      .menu_vertical_separator {
        border-bottom: 3px solid #ddd;
      }
-     
+
      #feedback_form {
        display: inline; /* avoids breaking the modal */
      }
@@ -127,14 +127,14 @@
         assetsRoot : '${ raw(asset.assetPath(src: '')) }', // /ehr/assets/
         baseURL : '${ g.createLink(uri:"/") }' // URL relative to / e.g. '/ehr/'
       };
-       
+
       $(function() {
         /**
          * Add arrow to active sortable column.
          */
         $('tr > th.sortable.sorted.asc').append('<span class="glyphicon glyphicon-triangle-bottom"></span>');
         $('tr > th.sortable.sorted.desc').append('<span class="glyphicon glyphicon-triangle-top"></span>');
-        
+
         /**
          * Get notifications.
          */
@@ -143,7 +143,7 @@
            '${createLink(controller:'notification', action:'dismiss')}',
            '${controllerName}');
       });
-    
+
       /**
        * List filters.
        */
@@ -155,14 +155,14 @@
         $("#filter-reset").on('click', function() {
           // reset doesnt blank the fields but put the fields on the original state that might be with value, we need to blank.
           $(this).closest('form').find("input[type=text], select").val("");
-          
+
           // reload to update the list without filters
           $('.form.filter')[0].submit();
         });
       });
     </g:javascript>
   </head>
-  <body>    
+  <body>
     <div id="wrapper">
       <!-- Navigation -->
       <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -182,6 +182,8 @@
            <li style="padding-right:15px;">
              <g:link controller="user" action="show" id="${sec.loggedInUserInfo(field:'id')}" style="padding: 0; display: inline;"><sec:username/></g:link>
              &commat;
+             <g:link controller="account" action="show" id="${session.organization.account.id}" style="padding: 0; display: inline;">${session.organization.account.companyName}</g:link>
+             :
              <g:link controller="organization" action="show" id="${session.organization.uid}" style="padding: 0; display: inline;">${session.organization.name}</g:link>
            </li>
            <li class="dropdown" id="top-user-menu">
@@ -210,7 +212,7 @@
            </li>
            <!-- /.dropdown -->
           </ul>
-           
+
           <!-- LEFT MENU -->
           <div class="navbar-default sidebar" role="navigation">
             <div class="sidebar-nav navbar-collapse">
@@ -303,7 +305,7 @@
         <div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
       </div>
     </div>
-   
+
     <div id="license_notice" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="license_modal_label">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -326,8 +328,8 @@
         </div>
       </div>
     </div>
-    
-    <script type="text/javascript"> 
+
+    <script type="text/javascript">
     $(function() { // ready
 
       $('#feedback_modal').on('submit', function(e) {
@@ -347,9 +349,9 @@
           }
         });
       });
-    }); 
-    </script> 
-    
+    });
+    </script>
+
     <!-- feedback modal form -->
     <div class="modal fade" id="feedback_modal" tabindex="-1" role="dialog" aria-labelledby="feedback_modal_label">
       <div class="modal-dialog" role="document">
@@ -383,7 +385,7 @@
                 </label>
               </div>
             </div>
-            
+
             <div class="form-group">
               <label><g:message code="ehrserver.messaging.feedbackform.community" /></label>
               <br/>

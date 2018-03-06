@@ -4,6 +4,7 @@ import com.cabolabs.security.*
 
 class Account {
 
+   String companyName
    boolean enabled = false
 
    User contact

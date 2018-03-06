@@ -4,7 +4,7 @@
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  * at CaboLabs Health Informatics (www.cabolabs.com).
  *
- * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, 
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI,
  * you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
  *
  * Any modifications to the provided source code can be stated below this notice.
@@ -40,18 +40,18 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.account.Account
 
 class SecurityFilters {
-   
+
    def springSecurityService
    def messageSource
    def apiResponsesService
-   
+
    static def config = Holders.config.app
 
    String format(request, params)
    {
       def format
       def accept = request.getHeader('Accept')
-      
+
       if (params.format)
       {
          if (params.format == 'json') return 'json'
@@ -61,18 +61,18 @@ class SecurityFilters {
       if (accept.contains('application/json')) return 'json'
       if (accept.contains('application/xml')) return 'xml'
       if (accept.contains('text/xml')) return 'xml'
-      
+
       return 'json' // take json as default
    }
-   
+
    /**
     * map = [json: {}, xml: {}]
     */
    def forFormat( Map map, request, params )
-   {   
+   {
       map[format(request, params)]()
    }
-   
+
    // REF https://github.com/Grails-Plugin-Consortium/grails-cookie/blob/master/src/main/groovy/grails/plugin/cookie/CookieHelper.groovy
    /*
    String getDefaultCookiePath(String path) {
@@ -92,13 +92,13 @@ class SecurityFilters {
    def setLangCookie(String lang, response)
    {
       //println "set lang cookie ${lang}"
-      
+
       Cookie langCookie = new Cookie( 'lang', lang )
       langCookie.path = '/'
       langCookie.maxAge = 604800
       response.addCookie langCookie
    }
-   
+
    def setRequestLocale(String lang, request, response)
    {
       // sets the request locale
@@ -108,7 +108,7 @@ class SecurityFilters {
       localeEditor.setAsText lang
       localeResolver?.setLocale request, response, (Locale)localeEditor.value
    }
-   
+
    def getRequestLocale(request)
    {
       org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)
@@ -134,47 +134,47 @@ class SecurityFilters {
 
       return !avoid
    }
-   
+
    def filters = {
       all(controller:'*', action:'*') {
          before = {
-         
+
             /**
              * Lang check
-             * 
+             *
              * 1. enter first time
              *    cookie == null
              *    params lang == null
              *    request locale == browser lang
              *    set session lang = request locale
-             * 
+             *
              * 2. change lang without login in
              *    cookie == null
              *    params lang != null
              *    set request locale = params lang (grails does this)
              *    set session lang = params lang
-             * 
+             *
              * 3. login
              *    cookie == null
              *    set org pref lang = session lang
              *    set cookie = org pref lang // cookie is always equal to the latest change of the org pref lang
              *    cookie != null
-             * 
+             *
              * 4. enter with cookie set (use cookie to let grails know the previous used lang without login in)
              *    cookie != null
              *    set session lang = cookie
              *    set request locale = cookie
-             *    
+             *
              * 5. login with cookie set (nothing to do here...)
              *    cookie != null
              *    cookie == org pref lang (asset this just to test)
-             * 
+             *
              * 6. enter with cookie set, and change the lang (this is the same as 4.)
              *    cookie != null
              *    params lang == null
              *    set session lang = cookie
              *    set request locale = cookie
-             *    
+             *
              * 7. change the lang with cookie set
              *    cookie != null
              *    params lang != null
@@ -183,13 +183,13 @@ class SecurityFilters {
              *    set cookie = params lang // updates the cookie to avoid the next request to take the old language,
              *                             // on the login the same value will be used to set the org pref lang that
              *                             // is equals to the session lang
-             * 
+             *
              * 8. login
              *    cookie != null
              *    set org pref lang = session lang
              *    // no need to update the cookie because will already have the same lang as the org, but we can double check
              */
-            
+
             def langCookie = request.cookies.find{ it.name == 'lang' }
             if (langCookie)
             {
@@ -219,7 +219,7 @@ class SecurityFilters {
             }
 
 
-            
+
             if (canCreateLog(controllerName, actionName))
             {
                /**
@@ -227,7 +227,7 @@ class SecurityFilters {
                 */
                def username
                def organizationUid
-               
+
                // also consider endpoints outside rest, TODO: stats API.
                if (controllerName == 'rest' || ['user:profile'].contains(controllerName+':'+actionName)) // API call?
                {
@@ -250,10 +250,10 @@ class SecurityFilters {
                      else
                      {
                         // FIXME: do the checks after the activity log, so if there is an error, it gets logged.
-                     
+
                         // check data in the JWT token: username and organization
                         username = request.securityStatelessMap.username
-                        
+
                         if (User.countByUsername(username) == 0)
                         {
                            def result
@@ -273,7 +273,7 @@ class SecurityFilters {
                                  '987653',
                                  params.format)
                            }
-                           
+
                            switch (params.format?.toLowerCase())
                            {
                               case 'xml':
@@ -286,12 +286,12 @@ class SecurityFilters {
                               default:
                                  render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
                            }
-                           
+
                             // TODO: should create activity log and admin notification
                            return false
                         }
-                        
-                        
+
+
                         def org_uid = request.securityStatelessMap.extradata.org_uid
                         if (Organization.countByUid(org_uid) == 0)
                         {
@@ -305,13 +305,13 @@ class SecurityFilters {
                                  code('EHR_SERVER::API::ERRORS::987657') // sys::service::concept::code
                               }
                            }
-                           
+
                            // TODO: should create activity log and admin notification
                            return false
                         }
-                        
+
                         organizationUid = org_uid
-                        
+
                         /*
                         if the user was removed from the org, the token is still valid but it can't access that org
                         */
@@ -328,7 +328,7 @@ class SecurityFilters {
                                  code('EHR_SERVER::API::ERRORS::987654') // sys::service::concept::code
                               }
                            }
-                           
+
                            // TODO: should create activity log and admin notification
                            return false
                         }
@@ -338,11 +338,11 @@ class SecurityFilters {
                else // Web Console, not API
                {
                   def auth = springSecurityService.authentication
-                  
+
                   if (auth instanceof com.cabolabs.security.UserPassOrgAuthToken) // can be anonymous
                   {
                      username = auth.principal.username
-                     
+
                      def _org = Organization.findByNumber(auth.organization)
                      organizationUid = _org.uid
                   }
@@ -355,7 +355,7 @@ class SecurityFilters {
                      }
                   }
                }
-                
+
                def alog = new ActivityLog(
                   username:        username, // can be null
                   organizationUid: organizationUid,
@@ -369,16 +369,16 @@ class SecurityFilters {
                   requestURI:      request.forwardURI,
                   matchedURI:      request.requestURI,
                   sessionId:       session.id)
-                                 
-                
+
+
                // TODO: file log failure
                if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
-               
+
                // experiment to link commit log to this activityLog
                session.activity_log_id = alog.id
             }
-            
-            
+
+
             /**
              * set session.organization to be used on actions to filter by current org without querying.
              */
@@ -387,7 +387,7 @@ class SecurityFilters {
             if (controllerName != 'rest' && !request.forwardURI.contains('rest'))
             {
                def auth = springSecurityService.authentication
-               
+
                // GrailsAnonymousAuthenticationToken instance is returned forthat dont require authentication
                // and UserPassOrgAuthToken when the user is logged in
                if (!session.organization && auth instanceof com.cabolabs.security.UserPassOrgAuthToken)
@@ -397,7 +397,7 @@ class SecurityFilters {
                   {
                      org.preferredLanguage = session.lang // 3. & 8. set org pref lang
                      org.save(failOnError: true)
-                     
+
                      // add a cookie with the latest language selected,
                      // so the next time that cookie can be checked and
                      // the language set, even if the user is not yet
@@ -405,13 +405,13 @@ class SecurityFilters {
                      setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
                   }
                   session.organization = org // to show the org name in the ui
-                  
+
                   // Load OPTS if not loaded for the current org
                   def optMan = OptManager.getInstance()
                   optMan.loadAll(org.uid)
                }
             }
-            
+
          }
          after = { Map model ->
             // this is AFTER: login authfail null when the login failed.
@@ -421,54 +421,80 @@ class SecurityFilters {
             //println "AFTER VIEW: ${controllerName} ${actionName}"
          }
       }
-      
+
       // account management is only for admins
       // index is included because admins can see all the accounts
       // each account manager will see just his account (next filter) // THIS MIGHT NOT BE NEEDED since Accounts don't have much data to show
       // other users will not have access to the account info
-      account_management_access(controller:'account', action:'index|create|save|edit|update|delete|show') {
+      account_management_access(controller:'account', action:'index|create|save|edit|update|delete') {
          before = {
-            
+
             if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
             {
                flash.message = "You don't have access to account management!"
-               
+
                // back action uses chain to show the flash, with redirect that does not work.
                if (request.getHeader('referer'))
                   chain url: request.getHeader('referer')
                else
-                  chain controller: 'app', action: 'index' 
+                  chain controller: 'app', action: 'index'
                return false
             }
-            
+
             return true
          }
       }
+
+      account_show_access(controller:'account', action:'show') {
+         before = {
+
+            if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            {
+               return true
+            }
+
+            def loggedInUser = springSecurityService.currentUser
+
+            //println params.id.getClass() // String!
+            //println loggedInUser.account.id.getClass() // Long
+
+            if (loggedInUser.account.id != Long.valueOf(params.id))
+            {
+               flash.message = "You don't have access to this account!"
+               chain controller: 'app', action: 'index'
+               return false
+            }
+
+            return true
+         }
+      }
+
+
       /*
       account_show_access(controller:'account', action:'show') {
          before = {
-            
+
             if (!SpringSecurityUtils.ifAllGranted("ROLE_ACCOUNT_MANAGER"))
             {
                flash.message = "You don't have access to account management!"
-               
+
                // back action uses chain to show the flash, with redirect that does not work.
                if (request.getHeader('referer'))
                   chain url: request.getHeader('referer')
                else
-                  chain controller: 'app', action: 'index' 
+                  chain controller: 'app', action: 'index'
                return false
             }
-            
+
             return true
          }
       }
       */
-      
-      
+
+
       rest_check_format(controller:'rest', action:'*') {
          before = {
-            
+
             if (!['', null, 'xml', 'json', 'html'].contains(params.format)) // queryCompositions support html
             {
                // bad request in XML
@@ -487,11 +513,11 @@ class SecurityFilters {
             return true
          }
       }
-      
-      
+
+
       allow_user_register_check(controller:'user', action:'register') {
          before = {
-            
+
             if (!config.allow_web_user_register.toBoolean()) // toBoolean needed because the env var is string
             {
                flash.message = messageSource.getMessage('user.register.notAllowed', null, getRequestLocale(request))
@@ -502,72 +528,72 @@ class SecurityFilters {
             return true
          }
       }
-      
-      
+
+
       organization_show(controller:'organization', action:'show') {
          before = {
-            
+
             // user.organizationUid should be one of the orgs associated with the current user
             //
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def us = User.findByUsername(un)
             def orgs = us.organizations
-            
+
             if (!params.uid)
             {
                flash.message = "Organization UID is required"
                chain controller: 'organization', action: 'index'
                return false
             }
-            
+
             def o = Organization.findByUid(params.uid)
-            
+
             if (!o)
             {
                flash.message = "The organization doesn't exists"
                chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
                return false
             }
-            
+
             if (!orgs.uid.contains(o.uid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
             {
                flash.message = "You don't have access to that organization!"
                chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
                return false
             }
-            
+
             params.organizationInstance = o
             return true
          }
       }
-      
+
       organization_edit(controller:'organization', action:'edit') {
          before = {
-            
+
             // user.organizationUid should be one of the orgs associated with the current user
             //
             def auth = springSecurityService.authentication
             def un = auth.principal.username
             def us = User.findByUsername(un)
             def orgs = us.organizations
-            
+
             if (!params.uid)
             {
                flash.message = "Organization UID is required"
                chain controller: 'organization', action: 'index'
                return false
             }
-            
+
             def o = Organization.findByUid(params.uid)
-            
+
             if (!o)
             {
                flash.message = "The organization doesn't exists"
                chain controller: 'organization', action: 'index' // back action uses chain to show the flash, with redirect that does not work.
                return false
             }
-            
+
             // admins can edit any org
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
             {
@@ -579,23 +605,23 @@ class SecurityFilters {
                   return false
                }
             }
-            
+
             params.organizationInstance = o
             return true
          }
       }
-      
+
       organization_update(controller:'organization', action:'update') {
          before = {
-            
+
             //println "org update filter params "+ params
-            
+
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def us = User.findByUsername(un)
             def orgs = us.organizations
             //def org = Organization.findByNumber(auth.organization) // organization used to login
-            
+
             // admins can edit any org
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
             {
@@ -606,11 +632,11 @@ class SecurityFilters {
                   return false
                }
             }
-            
+
             return true
          }
       }
-      
+
       /*
        * Any ADMIN or ORG_MANAGER can share the query to other organizations of their own,
        * if the query is not public AND is shared with the organization used for the login OR the user is the author,
@@ -618,36 +644,36 @@ class SecurityFilters {
        */
       query_share(controller:'resource', action:'saveSharesQuery') {
          before = {
-            
+
             if (!SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER"))
             {
                flash.message = "You need and higher role to edit the shares"
                chain controller: 'query', action: 'list'
                return false
             }
-            
+
             def auth = springSecurityService.authentication
             def un = auth.principal.username // principal is the username before the login, but after is GrailsUser (see AuthProvider)
             def user = User.findByUsername(un)
             //def org = Organization.findByNumber(auth.organization) // org in the login
             def orgs = user.organizations
-            
+
             if (!params.uid)
             {
                flash.message = "Query UID is required"
                chain controller: 'query', action: 'list'
                return false
             }
-            
+
             def query = Query.findByUid(params.uid)
-            
+
             if (!query)
             {
                flash.message = "Query not found"
                chain controller: 'query', action: 'list'
                return false
             }
-            
+
             if (query.isPublic)
             {
                log.error "User tries to access public query to share "+ params +", public queries can't be shared"
@@ -658,9 +684,9 @@ class SecurityFilters {
             else
             {
                println "is private"
-               
+
                // if the user is the author, let it pass, the check below is only for non authors
-               
+
                // the login org should be in the currently shared orgs of the query
                // WARNING: if the user unshares the query with the org, won't be able
                // to share it again until the user logs in with another organization
@@ -693,10 +719,10 @@ class SecurityFilters {
                   */
                }
             }
-            
+
             // check that all the org uids submitted are accessible by the user
             def orgUids = params.list('organizationUid') - [null, '']
-            
+
             orgUids.each { organizationUid ->
                if(!orgs.uid.contains(organizationUid))
                {
@@ -713,19 +739,19 @@ class SecurityFilters {
             return true
          }
       } // query_share
-      
+
       query_edit(controller:'query', action:'edit') {
          before = {
-         
+
             if (!params.uid)
             {
                flash.message = 'query.execute.error.queryUidMandatory'
                redirect(action:'list')
                return
             }
-         
+
             def query = Query.findByUid(params.uid)
-         
+
             // only the author can edit a public query
             // this is to avoid chaos :)
             // not the author
@@ -735,29 +761,29 @@ class SecurityFilters {
                chain controller: 'query', action: 'show', params: params
                return false
             }
-            
+
             params.query = query
          }
       }
-      
+
       /*
        * Query update is done via AJAX from the Query Builder screen.
        */
       query_update(controller:'query', action:'update') {
          before = {
-            
+
             def user = springSecurityService.getCurrentUser()
 
             def json = request.JSON.query
             def query = Query.get(json.id) // the id comes in the json object
-            
+
             if (!query)
             {
                response.status = 400 // bad request
                render (text: [message: "Query not found", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
                return false
             }
-            
+
             // only the author can edit a public query
             if (query.isPublic && query.organizationUid != session.organization.uid)
             {
@@ -765,7 +791,7 @@ class SecurityFilters {
                render (text: [message: "A public query can be edited only from the organization in which it was created", status: 'error'] as JSON, contentType:"application/json", encoding:"UTF-8")
                return false
             }
-            
+
             params.json = json
             params.query = query
          }
@@ -773,21 +799,21 @@ class SecurityFilters {
 
       stats_repo_usage_permissions(controller:'stats', action:'accountRepoUsage') {
          before = {
-         
+
             if (!params.id)
             {
                render(text: [error: 'id is required'] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
                return false
             }
-            
+
             def account = Account.get(params.id)
-            
+
             if (!account)
             {
                render(text: [error: 'account not found'] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
                return false
             }
-         
+
             // admins access stats for all the accounts
             // other users access only stats from their accounts
             if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
@@ -799,25 +825,25 @@ class SecurityFilters {
                def user = springSecurityService.getCurrentUser() // not admin
                if (account.id == user.account.id) return true
             }
-            
+
             render(text: [error: "you don't have access to this account"] as JSON, status: 400, contentType:"application/json", encoding:"UTF-8")
             return false
          }
       }
-      
+
       mgt_api_stats(controller:'stats', action:'userAccountStats') {
          before = {
-            
+
             // 0. auth user is admin
             // 1. username is not empty
             // 2. user for username exists
             // 3. username param is for an account manager user
-            
+
             def _token_username = request.securityStatelessMap.username
             def _token_user = User.findByUsername(_token_username)
             //def _org_uid = request.securityStatelessMap.extradata.org_uid
             //def org = Organization.findByUid(_org_uid)
-            
+
             // Note API Keys can't access this, should be a fully authenticated user.
             if (!_token_user.authoritiesContains(Role.AD, session.organization))
             {
@@ -841,16 +867,16 @@ class SecurityFilters {
                      ]
 
                      response.status = 403
-                     
+
                      // JSONP
                      if (params.callback) result = "${params.callback}( ${result} )"
                      render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
                   }
                ], request, params)
-            
+
                return false
             }
-               
+
             if (!params.username)
             {
                forFormat([
@@ -873,19 +899,19 @@ class SecurityFilters {
                      ]
 
                      response.status = 400
-                     
+
                      // JSONP
                      if (params.callback) result = "${params.callback}( ${result} )"
                      render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
                   }
                ], request, params)
-               
+
                return false
             }
-               
-               
+
+
             def accmgt = User.findByUsername(params.username)
-            
+
             if (!accmgt)
             {
                forFormat([
@@ -908,16 +934,16 @@ class SecurityFilters {
                      ]
 
                      response.status = 404
-                     
+
                      // JSONP
                      if (params.callback) result = "${params.callback}( ${result} )"
                      render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
                   }
                ], request, params)
-               
+
                return false
             }
-               
+
             if (!accmgt.authoritiesContains(Role.AM, session.organization)) // FIXME org is the admin org, not the accmgt org.
             {
                forFormat([
@@ -940,18 +966,18 @@ class SecurityFilters {
                      ]
 
                      response.status = 400
-                     
+
                      // JSONP
                      if (params.callback) result = "${params.callback}( ${result} )"
                      render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
                   }
                ], request, params)
-               
-               
+
+
                return false
             }
          }
       } // stats
-      
+
    } // filters
 }

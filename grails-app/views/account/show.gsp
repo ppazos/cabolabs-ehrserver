@@ -24,6 +24,10 @@
         <table class="table">
           <tbody>
             <tr>
+              <th><g:message code="account.attr.companyName" default="Company name" /></th>
+              <td>${account?.companyName}</td>
+            </tr>
+            <tr>
               <th><g:message code="account.attr.contact" default="Contact" /></th>
               <td><g:link controller="user" action="show" id="${account?.contact?.id}">${account?.contact?.encodeAsHTML()}</g:link></td>
             </tr>

@@ -685,7 +685,13 @@ class BootStrap {
 
         new RequestMap(url: '/dataValueIndex/**',            configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/requestMap/**',                configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/account/**',                  configAttribute: 'ROLE_ADMIN').save()
+
+        new RequestMap(url: '/account/index',                configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/create',               configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/save',                 configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/edit',                 configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/update',               configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/show/**',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -720,7 +726,7 @@ class BootStrap {
    {
       if (Account.count() == 0)
       {
-         def account = new Account(contact: contact, enabled: true)
+         def account = new Account(contact: contact, enabled: true, companyName: 'CaboLabs')
          organizations.each { org ->
             account.addToOrganizations(org)
          }
