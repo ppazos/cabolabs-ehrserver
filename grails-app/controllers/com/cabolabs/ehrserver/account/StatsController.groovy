@@ -32,6 +32,7 @@ import grails.converters.*
 class StatsController {
 
    def versionFSRepoService
+   def OPTService
 
    /**
     * Show stats dashboard for all the organizations accessible by the user.
@@ -167,10 +168,10 @@ class StatsController {
 
       account.organizations.each { org ->
 
-         size = (versionFSRepoService.getRepoSizeInBytes(org.uid) / 1024).setScale(1,0)
+         size = ((versionFSRepoService.getRepoSizeInBytes(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1024).setScale(1,0)
 
          // size is set in KB
-         stats[org.name] = size
+         stats[org.uid] = size
 
          if (!plan_repo_total_size) max_repo_size += stats[org.name]
       }

@@ -37,15 +37,6 @@
             </tr>
             <tr>
               <th>
-                <g:message code="account.stats.repo_usage" default="Repository usage" />
-                <span class="help-block"><g:message code="account.stats.lowUsageOrganizationsAreNotShown" /></span>
-              </th>
-              <td>
-                <div id="account_stats"></div>
-              </td>
-            </tr>
-            <tr>
-              <th>
                 <g:message code="account.stats.organizations" default="Organizations" />
                 <g:if test="${plan_max_orgs}">
                   ${account.organizations.size()} / ${plan_max_orgs}
@@ -54,7 +45,10 @@
               <td>
                 <ul>
                   <g:each in="${account.organizations}" var="org">
-                    <li>${org.name}</li>
+                    <li>
+                      <g:link controller="organization" action="show" params="[uid: org.uid]">${org.name}</g:link>
+                      <span id="${org.uid}"></span>
+                    </li>
                   </g:each>
                 </ul>
               </td>
@@ -92,16 +86,11 @@
         var bar = $('<div class="progress"></div>');
         var org_count = Object.keys(json.usage).length;
         var i = 0;
-        for (org_name in json.usage)
+        for (org_uid in json.usage)
         {
-          percent = precisionRound( json.usage[org_name] * 100 / json.max_repo_size, 1);
+          percent = precisionRound( json.usage[org_uid] * 100 / json.max_repo_size, 1);
 
-          // do not display if usage is too low to show
-          if (percent >= 5)
-          {
-            org_bar = '<div class="progress-bar progress-bar-'+ classes[i%org_count] +'" style="width: '+ percent +'%">'+ org_name +'</div>';
-            bar.append( org_bar );
-          }
+          $('#'+ org_uid).text(percent +'%').append(' <i class="fa fa-database" aria-hidden="true" title="${message(code:'account.stats.repo_usage')}"></i>');
 
           i++;
         }
@@ -110,21 +99,5 @@
       });
     });
     </script>
-
-        <%-- TODO: show organizations
-        <g:if test="${account?.organizations}">
-        <ol>
-        <li class="fieldcontain">
-          <span id="organizations-label" class="property-label"><g:message code="account.organizations.label" default="Organizations" /></span>
-
-            <g:each in="${account.organizations}" var="o">
-            <span class="property-value" aria-labelledby="organizations-label"><g:link controller="organization" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></span>
-            </g:each>
-
-        </li>
-        </ol>
-        </g:if>
-        --%>
-
   </body>
 </html>
