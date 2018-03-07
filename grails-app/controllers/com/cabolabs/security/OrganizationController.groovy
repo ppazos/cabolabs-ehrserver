@@ -213,8 +213,9 @@ class OrganizationController {
 
       def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + organizationInstance.uid)
       commit_logs_repo.mkdir()
-      
 
+
+      def accman_associated = false // prevents associating the accman twice if the current user is accman
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
@@ -228,8 +229,19 @@ class OrganizationController {
       {
          // Assign org to logged user
          // uses the higher role on the current org to assign on the new org
-         UserRole.create( user, user.getHigherAuthority(session.organization), organizationInstance, true )
+         def higher_role_in_current_org = user.getHigherAuthority(session.organization)
+
+         UserRole.create( user, higher_role_in_current_org, organizationInstance, true )
+
+         if (higher_role_in_current_org.authority == Role.AM) accman_associated = true
       }
+
+      // create accman userrole for the account contact
+      if (!accman_associated)
+      {
+         UserRole.create( account.contact, (Role.findByAuthority(Role.AM)), organizationInstance, true )
+      }
+
 
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
       redirect action:'show', params:[uid:organizationInstance.uid]

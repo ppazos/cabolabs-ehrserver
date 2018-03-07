@@ -988,7 +988,7 @@ gr_account.save(failOnError:true, flush:true)
                ),
                new Plan(
                  name:                            "Testing",
-                 max_organizations:               3,
+                 max_organizations:               5,
                  max_opts_per_organization:       3,
                  max_api_tokens_per_organization: 3,
                  repo_total_size_in_kb:           2000, // low for testing! (1MB in KB)
