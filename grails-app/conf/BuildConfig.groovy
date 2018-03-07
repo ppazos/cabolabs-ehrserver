@@ -32,7 +32,7 @@ grails.reload.enabled = true
 forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 512]
 grails.project.fork = [
    test: forkConfig, // configure settings for the test-app JVM
-   run: false, // configure settings for the run-app JVM
+   run: forkConfig, // configure settings for the run-app JVM
    war: forkConfig, // configure settings for the run-war JVM
    console: forkConfig // configure settings for the Swing console JVM
 ]
@@ -73,7 +73,7 @@ grails.project.dependency.resolution = {
 
         mavenLocal()
         mavenCentral()
-        
+
         mavenRepo "http://repo.spring.io/milestone/"
         //mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 
@@ -87,7 +87,7 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.20'
-       
+
        // Este error da si uso http-builder 0.6 con 0.5.2 anda ok
        // FIX: Me da un error luego de poner referencia a http-builder
        // http://jira.grails.org/browse/GPEXPORT-18?focusedCommentId=69307&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-69307
@@ -100,7 +100,7 @@ grails.project.dependency.resolution = {
         excludes 'xmlbeans'
        }
        */
-       
+
        /*
        runtime('com.thoughtworks.xstream:xstream:1.4.3') {
 	      // loader constraint violation: loader (instance of <bootloader>) previously
@@ -108,18 +108,18 @@ grails.project.dependency.resolution = {
 	      //excludes 'xmlbeans'
 	    }
        */
-	   
+
        runtime('org.codehaus.groovy.modules.http-builder:http-builder:0.5.2') {
          excludes "commons-logging", "xml-apis", "groovy", "nekohtml"
        }
 
        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
-       
+
        //compile 'xerces:xercesImpl:2.11.0'
        compile group: 'de.odysseus.staxon', name: 'staxon', version: '1.2'
-       
+
        compile "mysql:mysql-connector-java:5.1.43" //"mysql:mysql-connector-java:5.1.22"
-       
+
        //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
        //compile 'org.pac4j:pac4j-core:1.7.1'
     }
@@ -146,7 +146,7 @@ grails.project.dependency.resolution = {
         runtime ':hibernate4:4.3.10' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
         runtime ':jquery:1.11.1'
-        
+
         // https://github.com/davidtinker/grails-cors
         runtime ":cors:1.1.8"
 

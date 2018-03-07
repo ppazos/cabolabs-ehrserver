@@ -24,6 +24,7 @@ package com.cabolabs.ehrserver.account
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.security.*
@@ -149,6 +150,7 @@ class StatsController {
        from: from, to: to]
    }
 
+   // disk usage for all the organizations in the account
    // results are in KB
    def accountRepoUsage(Account account)
    {
@@ -173,9 +175,40 @@ class StatsController {
          // size is set in KB
          stats[org.uid] = size
 
-         if (!plan_repo_total_size) max_repo_size += stats[org.name]
+         // if there is no plan, we set the max to the current size
+         if (!plan_repo_total_size) max_repo_size += size
       }
 
       render(text: [max_repo_size: max_repo_size, usage: stats] as JSON, contentType:"application/json", encoding:"UTF-8")
+   }
+
+   /**
+    * Stats abuot the number of templates loaded, returns also the max templates per org.
+    */
+   def accountTemplatesLoaded(Account account)
+   {
+      def plan_association = Plan.active(account) // can be null!
+      def max_opts_per_org = 0
+
+      def plan_max_opts = false
+      if (plan_association)
+      {
+         max_opts_per_org = plan_association.plan.max_opts_per_organization
+         plan_max_opts = true
+      }
+
+      def stats = [:] // org name => repo size
+      def count
+
+      account.organizations.each { org ->
+
+         count = OperationalTemplateIndex.forOrg(org).lastVersions.count()
+         stats[org.uid] = count
+
+         // if there is no plan, we set the max to the current amount
+         if (!plan_max_opts) max_opts_per_org += count
+      }
+
+      render(text: [max_opts_per_org: max_opts_per_org, usage: stats] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 }

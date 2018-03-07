@@ -689,7 +689,7 @@ class BootStrap {
         new RequestMap(url: '/account/index',                configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/create',               configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/save',                 configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/account/edit',                 configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/edit/**',                 configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/update',               configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/show/**',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
@@ -991,7 +991,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               3,
                  max_opts_per_organization:       3,
                  max_api_tokens_per_organization: 3,
-                 repo_total_size_in_kb:           900, // low for testing! (1MB in KB)
+                 repo_total_size_in_kb:           2000, // low for testing! (1MB in KB)
                  period:                          Plan.periods.MONTHLY
                )
             ]

@@ -91,7 +91,7 @@ class OperationalTemplateController {
 
          def user = springSecurityService.getCurrentUser()
 
-         // Repo size check
+         // Repo size check and max opt check max_opts_per_organization
          def account = user.account
          def plan_assoc = Plan.active(account) // can be null on dev envs, size check is not done on that case.
          if (plan_assoc)
@@ -102,14 +102,25 @@ class OperationalTemplateController {
                render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
                return
             }
+
+            def opt_count = OperationalTemplateIndex.forOrg(session.organization).lastVersions.count()
+
+            if (plan_assoc.plan.max_opts_per_organization <= opt_count)
+            {
+               res = [status:'error', message:message(code:'opt.upload.error.max_opt_reached'), errors: errors]
+               render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+               return
+            }
          }
+
+
 
          // PROCESS FILE
 
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html
          def f = request.getFile('opt')
 
-         // Add file empty check
+         // file empty check
          if(f.empty)
          {
             errors << message(code:"opt.upload.error.noOPT")
@@ -141,6 +152,7 @@ class OperationalTemplateController {
          }
 
          // /PROCESS FILE
+
 
          // ROOT VALIDATION
 

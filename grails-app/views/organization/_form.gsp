@@ -20,7 +20,7 @@
     <label for="accounts">
       <g:message code="organization.accounts.label" default="Accounts" />
     </label>
-    <g:select from="${accounts}" name="account_id" optionKey="id" optionValue="contact" class="form-control"></g:select>
+    <g:select from="${accounts}" name="account_id" optionKey="id" optionValue="companyName" class="form-control"></g:select>
   </div>
   </g:if>
 </sec:ifAnyGranted>

@@ -43,14 +43,26 @@
                 </g:if>
               </th>
               <td>
-                <ul>
-                  <g:each in="${account.organizations}" var="org">
-                    <li>
-                      <g:link controller="organization" action="show" params="[uid: org.uid]">${org.name}</g:link>
-                      <span id="${org.uid}"></span>
-                    </li>
-                  </g:each>
-                </ul>
+                <div class="table-responsive">
+                  <table class="table table-striped table-bordered table-hover table-org-roles">
+                    <thead>
+                      <tr>
+                        <th><g:message code="organization.name.label" default="Organization" /></th>
+                        <th><g:message code="stats.org.storageUsagePercentage" default="Storage usage %" /></th>
+                        <th><g:message code="stats.org.loadedTemplates" default="Loaded templates" /></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <g:each in="${account.organizations}" var="org">
+                        <tr>
+                          <td><g:link controller="organization" action="show" params="[uid: org.uid]">${org.name}</g:link></td>
+                          <td><span id="stats-storage-${org.uid}"></span></td>
+                          <td><span id="stats-opts-${org.uid}"></span></td>
+                        </tr>
+                      </g:each>
+                    </tbody>
+                  </table>
+                </div>
               </td>
             </tr>
         </table>
@@ -82,20 +94,30 @@
       .done( function(json) {
         console.log('stats', json);
 
-        var classes = ['success', 'info', 'warning', 'danger'];
-        var bar = $('<div class="progress"></div>');
         var org_count = Object.keys(json.usage).length;
         var i = 0;
         for (org_uid in json.usage)
         {
           percent = precisionRound( json.usage[org_uid] * 100 / json.max_repo_size, 1);
 
-          $('#'+ org_uid).text(percent +'%').append(' <i class="fa fa-database" aria-hidden="true" title="${message(code:'account.stats.repo_usage')}"></i>');
+          $('#stats-storage-'+ org_uid).text(percent +'%').append(' <i class="fa fa-database" aria-hidden="true" title="${message(code:'account.stats.repo_usage')}"></i>');
 
           i++;
         }
+      });
 
-        $('#account_stats').append(bar);
+      $.ajax({
+        url: '${createLink(controller:"stats", action:"accountTemplatesLoaded", id:account.id)}',
+        method: 'GET',
+        dataType: 'json'
+      })
+      .done( function(json) {
+        console.log('stats', json);
+
+        for (org_uid in json.usage)
+        {
+          $('#stats-opts-'+ org_uid).text(json.usage[org_uid] +' / '+ json.max_opts_per_org).append(' <i class="fa fa-cubes" aria-hidden="true" title="${message(code:'account.stats.uploaded_opts')}"></i>');
+        }
       });
     });
     </script>
