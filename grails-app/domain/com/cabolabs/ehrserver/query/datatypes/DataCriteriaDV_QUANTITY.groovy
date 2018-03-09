@@ -30,28 +30,28 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
 
    List magnitudeValue
    String unitsValue
-   
+
    // Comparison operands
    String magnitudeOperand
    String unitsOperand
-   
+
    boolean magnitudeNegation = false
    boolean unitsNegation = false
-   
+
    DataCriteriaDV_QUANTITY()
    {
       rmTypeName = 'DV_QUANTITY'
       alias = 'dqi'
    }
-   
+
    static hasMany = [magnitudeValue: Double]
-   
+
    static constraints = {
    }
    static mapping = {
       unitsValue column: "dv_qty_units"
    }
-   
+
    /**
     * Metadata that defines the types of criteria supported to search
     * by conditions over DV_QUANTITY.
@@ -59,11 +59,11 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     */
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
-      
+
       /*
       arch.getNode(path).xmlNode.list.each {
-        u = it.units.text() 
-        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+        u = it.units.text()
+        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT
       }
       */
       def spec = [
@@ -76,52 +76,55 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
             le:  'value',
             ge:  'value',
             between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
-          ], 
+          ],
           units: [
             eq: 'value'
           ]
         ]
       ]
-      
-      //println archetypeId +" "+ path
-      def optMan = OptManager.getInstance()
-      def units = [:]
-      def u
-      
-/* can be many for the one archetypeId
-      println "-------------"
-      println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
-      println "-------------"
-*/
-      def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
-         
-      println "namespace ${namespace}"
-      
-      optMan.getNode(archetypeId, path, namespace)?.xmlNode.list.each {
-        u = it.units.text() 
-        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+
+      if (returnCodes)
+      {
+         //println archetypeId +" "+ path
+         def optMan = OptManager.getInstance()
+         def units = [:]
+         def u
+
+  /* can be many for the one archetypeId
+        println "-------------"
+        println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
+        println "-------------"
+  */
+         def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
+
+         println "namespace ${namespace}"
+
+         optMan.getNode(archetypeId, path, namespace)?.xmlNode.list.each {
+            u = it.units.text()
+            units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+         }
+
+         if (units.size() > 0) spec[0].units.units = units
       }
-      
-      if (units.size() > 0) spec[0].units.units = units
-      
+
       return spec
    }
-   
+
    static List attributes()
    {
       return ['magnitude', 'units']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    String toString()
    {
       return this.getClass().getSimpleName() +": "+ this.magnitudeOperand +" "+ this.magnitudeValue.toString() +" "+ this.unitsOperand +" "+ this.unitsValue
    }
-   
+
    boolean containsFunction()
    {
       return false
