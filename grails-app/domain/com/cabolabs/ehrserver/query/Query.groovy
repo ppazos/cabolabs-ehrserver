@@ -1193,7 +1193,7 @@ class Query {
             break
             case 'DV_PARSABLE':
                fromMap['DvParsableIndex'] = 'dpab'
-               _subq_criteria.append(" AND v.id = dvi.id ")
+               _subq_criteria.append(" AND dpab.id = dvi.id ")
             break
             case 'String':
                fromMap['StringIndex'] = 'dstg'

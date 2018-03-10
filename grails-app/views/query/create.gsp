@@ -991,6 +991,10 @@ resp.responseJSON.result.message +'</div>'
                     possible_values = conditions['mediaTypes'];
                     delete conditions['mediaTypes'];
                   break;
+                  case 'DV_PARSABLE':
+                    possible_values = conditions['codes'];
+                    delete conditions['codes'];
+                  break;
                   case 'DV_BOOLEAN':
                     possible_values = conditions['values'];
                     delete conditions['values'];
