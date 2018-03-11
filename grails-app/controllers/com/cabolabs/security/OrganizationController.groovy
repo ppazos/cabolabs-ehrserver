@@ -37,6 +37,7 @@ class OrganizationController {
    def springSecurityService
    def statelessTokenProvider
    def configurationService
+   def organizationService
 
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -132,15 +133,15 @@ class OrganizationController {
       [organizationInstance: new Organization(params), accounts: accounts]
    }
 
-   @Transactional
-   def save(Organization organizationInstance, Long account_id)
-   {
-      if (organizationInstance == null)
-      {
-         notFound()
-         return
-      }
 
+   /**
+    * name: name of the organization
+    * assign: if true, assign the logged in admin to the created org
+    * account_id: account to be associated with the org
+    */
+   @Transactional
+   def save(String name, Boolean assign, Long account_id)
+   {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/847
       def user = springSecurityService.loadCurrentUser()
       def account
@@ -181,45 +182,13 @@ class OrganizationController {
          }
       }
 
-      account.addToOrganizations(organizationInstance)
-      organizationInstance.validate()
-
-      if (organizationInstance.hasErrors())
-      {
-         def accounts = []
-         if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-         {
-            accounts = Account.list()
-         }
-
-         flash.message = message(code: 'organization.save.organizationHasErrors')
-         render view:'create', model:[organizationInstance: organizationInstance, accounts: accounts]
-         return
-      }
-
-      account.save flush:true // saves the org
-
-
-      // create namespace repo for org OPTs
-      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + organizationInstance.uid)
-      opt_repo_org.mkdir()
-
-      // create older OPT version repo for the org (needed for versioning)
-      def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
-      old_versions_opt_repo_org.mkdir()
-
-      def version_repo = new File(config.version_repo.withTrailSeparator() + organizationInstance.uid)
-      version_repo.mkdir()
-
-      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + organizationInstance.uid)
-      commit_logs_repo.mkdir()
-
+      def organizationInstance = organizationService.create(account, name)
 
       def accman_associated = false // prevents associating the accman twice if the current user is accman
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
-         if (params.assign)
+         if (assign)
          {
             // Assign org to logged user
             UserRole.create( user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true )
@@ -247,10 +216,12 @@ class OrganizationController {
       redirect action:'show', params:[uid:organizationInstance.uid]
    }
 
+
    def edit()
    {
       [organizationInstance: params.organizationInstance]
    }
+
 
    @Transactional
    def update(String uid, Long version)
@@ -360,7 +331,7 @@ class OrganizationController {
    {
       if (!key)
       {
-         println "null"
+         println "empty key to delete..."
       }
 
       // Need to delete the key first because the key has a not null constraint to the user

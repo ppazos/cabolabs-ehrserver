@@ -2,9 +2,12 @@ package com.cabolabs.security
 
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.account.*
+import grails.util.Holders
 
 @Transactional
 class OrganizationService {
+
+   def config = Holders.config.app
 
    def create(Account account, String name)
    {
@@ -16,7 +19,7 @@ class OrganizationService {
       // create repos
 
       // create namespace repo for org OPTs
-      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + organizationInstance.uid)
+      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + org.uid)
       opt_repo_org.mkdir()
 
       // create older OPT version repo for the org (needed for versioning)
@@ -24,11 +27,13 @@ class OrganizationService {
       old_versions_opt_repo_org.mkdir()
 
       // org version repo
-      def version_repo = new File(config.version_repo.withTrailSeparator() + organizationInstance.uid)
+      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
       version_repo.mkdir()
 
       // org commit logs repo
-      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + organizationInstance.uid)
+      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
       commit_logs_repo.mkdir()
+
+      return org
    }
 }

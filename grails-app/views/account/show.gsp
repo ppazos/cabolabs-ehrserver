@@ -94,15 +94,12 @@
       .done( function(json) {
         console.log('stats', json);
 
-        var org_count = Object.keys(json.usage).length;
-        var i = 0;
         for (org_uid in json.usage)
         {
+          if (json.max_repo_size == 0) json.max_repo_size = 1; // avoid div by 0
           percent = precisionRound( json.usage[org_uid] * 100 / json.max_repo_size, 1);
 
           $('#stats-storage-'+ org_uid).text(percent +'%').append(' <i class="fa fa-database" aria-hidden="true" title="${message(code:'account.stats.repo_usage')}"></i>');
-
-          i++;
         }
       });
 

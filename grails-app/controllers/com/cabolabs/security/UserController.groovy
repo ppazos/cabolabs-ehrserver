@@ -27,10 +27,6 @@ import grails.transaction.Transactional
 import grails.validation.ValidationException
 import grails.plugin.springsecurity.SpringSecurityUtils
 
-import com.cabolabs.security.Organization
-import com.cabolabs.security.Role
-import com.cabolabs.security.UserRole
-
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 import grails.util.Holders
@@ -48,6 +44,7 @@ class UserController {
    def notificationService
    def springSecurityService
    def configurationService
+   def organizationService
 
    //def userService
    def config = Holders.config.app
@@ -595,32 +592,12 @@ class UserController {
                // if the admin wants to review user sign ups, needs to disable web sign up and create the accounts manually
                def account = new Account(contact: u, companyName: params.org_name, enabled: true)
 
-               o = new Organization(name: params.org_name)
-
-               account.addToOrganizations(o)
-
-               account.save(failOnError:true, flush:true)
+               o = organizationService.create(account, params.org_name)
 
                // TODO: UserRole ORG_* needs a reference to the org, since the user
                //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
                // the user is creating the organization, it should be manager also, because is the first, is account manager
                UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
-
-
-               // create namespace repo for org OPTs
-               def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + o.uid)
-               opt_repo_org.mkdir()
-
-               // create older OPT version repo for the org (needed for versioning)
-               def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
-               old_versions_opt_repo_org.mkdir()
-
-               def version_repo = new File(config.version_repo.withTrailSeparator() + o.uid)
-               version_repo.mkdir()
-
-               def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + o.uid)
-               commit_logs_repo.mkdir()
-
 
 
                // associate the basic plan to the new org

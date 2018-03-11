@@ -30,6 +30,7 @@ import grails.util.Holders
 class AccountController {
 
    def notificationService
+   def organizationService
    def config = Holders.config.app
 
    // Only admins can see the list of all the Accounts, each AccountManager
@@ -109,9 +110,10 @@ class AccountController {
 
 
       // 3. Account setup: create organization
-      def org = new Organization(name: organization)
-      account.addToOrganizations(org)
+      // saves the account
+      def org = organizationService.create(account, organization)
 
+      /*
       if (!org.validate())
       {
          println org.errors
@@ -119,26 +121,7 @@ class AccountController {
          render (view: 'create', model: [account: account, organization: org])
          return
       }
-
-      account.save(failOnError: true) // saves the org
-
-
-      // 3.5. Create org's repo folders
-      // same as organization controller save, TODO: refactor
-
-      // create namespace repo for org OPTs
-      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + org.uid)
-      opt_repo_org.mkdir()
-
-      // create older OPT version repo for the org (needed for versioning)
-      def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
-      old_versions_opt_repo_org.mkdir()
-
-      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
-      version_repo.mkdir()
-
-      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
-      commit_logs_repo.mkdir()
+      */
 
 
       // 4. Account setup: get ACCMAN role

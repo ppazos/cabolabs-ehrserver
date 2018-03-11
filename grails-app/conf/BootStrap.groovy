@@ -744,11 +744,8 @@ class BootStrap {
          // Default organization
          organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
 
-         /* the account will save the orgs
-         organizations.each {
-            it.save(failOnError:true, flush:true)
-         }
-         */
+         // the account will save the orgs
+
       }
       else organizations = Organization.list()
 
@@ -989,7 +986,7 @@ gr_account.save(failOnError:true, flush:true)
                new Plan(
                  name:                            "Testing",
                  max_organizations:               5,
-                 max_opts_per_organization:       3,
+                 max_opts_per_organization:       20,
                  max_api_tokens_per_organization: 3,
                  repo_total_size_in_kb:           2000, // low for testing! (1MB in KB)
                  period:                          Plan.periods.MONTHLY
