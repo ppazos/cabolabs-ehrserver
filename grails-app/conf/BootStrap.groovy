@@ -690,7 +690,7 @@ class BootStrap {
         new RequestMap(url: '/account/create',               configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/save',                 configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/edit/**',              configAttribute: 'ROLE_ADMIN').save()
-        new RequestMap(url: '/account/update',               configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/account/update/**',            configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/account/show/**',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
         new RequestMap(url: '/plan/**',                      configAttribute: 'ROLE_ADMIN').save()
