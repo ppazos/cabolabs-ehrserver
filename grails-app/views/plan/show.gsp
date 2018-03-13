@@ -2,79 +2,62 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'plan.label', default: 'Plan')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<meta name="layout" content="admin">
+    <title><g:message code="plan.show.title" /></title>
 	</head>
 	<body>
-		<a href="#show-plan" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-			</ul>
-		</div>
-		<div id="show-plan" class="content scaffold-show" role="main">
-			<h1><g:message code="default.show.label" args="[entityName]" /></h1>
-			<g:if test="${flash.message}">
-			  <div class="alert alert-info" role="alert">${flash.message}</div>
-			</g:if>
-			<ol class="property-list plan">
-			
-				<g:if test="${planInstance?.period}">
-				<li class="fieldcontain">
-					<span id="period-label" class="property-label"><g:message code="plan.period.label" default="Period" /></span>
-					<span class="property-value" aria-labelledby="period-label"><g:fieldValue bean="${planInstance}" field="period"/></span>
-				</li>
-				</g:if>
-			
-				<g:if test="${planInstance?.maxDocuments}">
-				<li class="fieldcontain">
-					<span id="maxDocuments-label" class="property-label"><g:message code="plan.maxDocuments.label" default="Max Documents" /></span>
-				  <span class="property-value" aria-labelledby="maxDocuments-label"><g:fieldValue bean="${planInstance}" field="maxDocuments"/></span>
-				</li>
-				</g:if>
-			
-				<g:if test="${planInstance?.maxTransactions}">
-				<li class="fieldcontain">
-					<span id="maxTransactions-label" class="property-label"><g:message code="plan.maxTransactions.label" default="Max Transactions" /></span>
-					<span class="property-value" aria-labelledby="maxTransactions-label"><g:fieldValue bean="${planInstance}" field="maxTransactions"/></span>
-				</li>
-				</g:if>
-			
-				<g:if test="${planInstance?.name}">
-				<li class="fieldcontain">
-					<span id="name-label" class="property-label"><g:message code="plan.name.label" default="Name" /></span>
-					<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${planInstance}" field="name"/></span>
-				</li>
-				</g:if>
-			
-				<g:if test="${planInstance?.repositorySize}">
-				<li class="fieldcontain">
-					<span id="repositorySize-label" class="property-label"><g:message code="plan.repositorySize.label" default="Repository Size" /></span>
-					
-						<span class="property-value" aria-labelledby="repositorySize-label"><g:fieldValue bean="${planInstance}" field="repositorySize"/></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${planInstance?.totalRepositorySize}">
-				<li class="fieldcontain">
-					<span id="totalRepositorySize-label" class="property-label"><g:message code="plan.totalRepositorySize.label" default="Total Repository Size" /></span>
-					
-						<span class="property-value" aria-labelledby="totalRepositorySize-label"><g:fieldValue bean="${planInstance}" field="totalRepositorySize"/></span>
-					
-				</li>
-				</g:if>
-			
-			</ol>
-			<g:form url="[resource:planInstance, action:'delete']" method="DELETE">
-				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${planInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-				</fieldset>
-			</g:form>
+		<div class="row">
+      <div class="col-lg-12">
+      <h1><g:message code="plan.show.title" /></h1>
+      </div>
+    </div>
+    <div class="row row-grid">
+      <div class="col-lg-12">
+	     <g:if test="${flash.message}">
+	       <div class="alert alert-info" role="alert">${flash.message}</div>
+        </g:if>
+
+				<table class="table">
+					<tbody>
+						<tr>
+							<th><g:message code="plan.name.label" default="Name" /></th>
+							<td>${planInstance?.name}</td>
+						</tr>
+						<tr>
+							<th><g:message code="plan.period.label" default="Period" /></th>
+							<td><g:message code="plan.period.${planInstance.period}" /></td>
+						</tr>
+						<tr>
+							<th><g:message code="plan.max_api_tokens_per_organization.label" default="Max API tokens per organization" /></th>
+							<td>${planInstance?.max_api_tokens_per_organization}</td>
+						</tr>
+						<tr>
+							<th><g:message code="plan.max_organizations.label" default="Max organizations" /></th>
+							<td>${planInstance?.max_organizations}</td>
+						</tr>
+						<tr>
+							<th><g:message code="plan.max_opts_per_organization.label" default="Max OPTs per organizations" /></th>
+							<td>${planInstance?.max_opts_per_organization}</td>
+						</tr>
+						<tr>
+							<th><g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in KB" /></th>
+							<td>${planInstance?.repo_total_size_in_kb}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="btn-toolbar" role="toolbar">
+
+					<g:form url="[resource:planInstance, action:'delete']" method="DELETE">
+						<fieldset class="buttons">
+							<g:link class="edit" action="edit" resource="${planInstance}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
+							<%--
+							<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+							--%>
+						</fieldset>
+					</g:form>
+			  </div>
+			</div>
 		</div>
 	</body>
 </html>

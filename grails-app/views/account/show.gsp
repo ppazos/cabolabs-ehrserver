@@ -65,6 +65,7 @@
                 </div>
               </td>
             </tr>
+          </tbody>
         </table>
 
         <div class="btn-toolbar" role="toolbar">

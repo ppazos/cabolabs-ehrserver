@@ -224,6 +224,9 @@
                   <g:link controller="app" action="index" class="${(controllerName=='app' && actionName=='index')?'active':''}"><i class="fa fa-fw fa-dashboard"></i> <g:message code="desktop.dashboard" /></g:link>
                 </li>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
+                  <li id="menu-plan">
+                    <g:link controller="plan" action="index" class="${(controllerName=='plan')?'active':''}"><i class="fa fa-fw fa-cog"></i> <g:message code="desktop.plans" /></g:link>
+                  </li>
                   <li id="menu-accounts">
                     <g:link controller="account" action="index" class="${(controllerName=='account')?'active':''}"><i class="fa fa-fw fa-id-card"></i> <g:message code="desktop.accounts" /></g:link>
                   </li>
