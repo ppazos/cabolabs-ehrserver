@@ -7,6 +7,13 @@
     <style>
       th:first-child { width: 30% ;}
       .help-block{ font-size: 0.8em; }
+      .state-2 {
+        background-color: #4185F3 !important;
+        color: #fff;
+      }
+      td.left {
+        text-align: left !important;
+      }
     </style>
   </head>
   <body>
@@ -65,6 +72,57 @@
                 </div>
               </td>
             </tr>
+            <tr>
+              <th><g:message code="plan.index.title" default="Plans" /></th>
+              <td>
+                <div class="table-responsive">
+                  <table class="table table-striped table-bordered table-hover table-org-roles">
+                    <thead>
+                      <tr>
+                        <th><g:message code="plan_association.attr.state" default="State" /></th>
+                        <th><g:message code="plan.name.label" default="Name" /></th>
+                        <th><g:message code="plan_association.attr.from" default="From" /></th>
+                        <th><g:message code="plan_association.attr.to" default="To" /></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <g:each in="${account.allPlans}" var="plan_assoc">
+                        <tr class="state-${plan_assoc.state}">
+                          <td><g:message code="plan_association.state.${plan_assoc.state}" /></td>
+                          <td>${plan_assoc.plan.name}</td>
+                          <td><g:formatDate date="${plan_assoc.from}" format="yyyy-MM-dd HH:mm"/></td>
+                          <td><g:formatDate date="${plan_assoc.to}" format="yyyy-MM-dd HH:mm"/></td>
+                        </tr>
+                        <tr>
+                          <td colspan="4" class="left">
+                            <ul>
+                              <li>
+                                <g:message code="plan.max_api_tokens_per_organization.label" default="Max API tokens per organization" />
+                                ${plan_assoc.plan.max_api_tokens_per_organization}
+                              </li>
+                              <li>
+                                <g:message code="plan.max_organizations.label" default="Max organizations" />
+                                ${plan_assoc.plan.max_organizations}
+                              </li>
+                              <li>
+                                <g:message code="plan.max_opts_per_organization.label" default="Max OPTs per organizations" />
+                                ${plan_assoc.plan.max_opts_per_organization}
+                              </li>
+                              <li>
+                                <g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in KB" />
+                                ${plan_assoc.plan.repo_total_size_in_kb}
+                              </li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </g:each>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+
+
           </tbody>
         </table>
 

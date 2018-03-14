@@ -22,11 +22,16 @@ class Account {
    static constraints = {
    }
 
-   static transients = ['activePlan', 'totalRepoSizeInKb']
+   static transients = ['activePlan', 'totalRepoSizeInKb', 'allPlans']
 
    PlanAssociation getActivePlan()
    {
       Plan.active(this)
+   }
+
+   List getAllPlans()
+   {
+      PlanAssociation.findAllByAccount(this, [sort:'id', order:'desc'])
    }
 
    long getTotalRepoSizeInKb()
