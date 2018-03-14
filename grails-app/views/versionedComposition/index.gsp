@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
@@ -37,7 +37,7 @@
                 <label for="organizationUid"><g:message code="entity.organization" /></label>
                 <g:select name="organizationUid" from="${organizations}"
 				              optionKey="uid" optionValue="name"
-				              noSelection="${['':'Select One...']}"
+				              noSelection="${['':message(code:'defaut.select.selectOne')]}"
                           value="${params?.organizationUid ?: ''}" class="form-control" />
               </div>
               <div class="btn-toolbar" role="toolbar">
@@ -51,20 +51,20 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
           <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-        
+
         <div class="table-responsive">
           <table class="table table-striped table-bordered table-hover">
             <thead>

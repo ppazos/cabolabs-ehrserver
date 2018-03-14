@@ -12,7 +12,7 @@
 	<label for="roles">
 		<g:message code="requestMap.roles.label" default="Roles" />
 	</label>
-   <g:select from="${roles}" noSelection="${['null':'Select One...']}"
+   <g:select from="${roles}" noSelection="${['null':message(code:'defaut.select.selectOne')]}"
              name="role" class="form-control" />
 </div>
 
@@ -38,7 +38,7 @@ var validate = function () {
   config = $('[name=configAttribute]').val();
   items = config.split(',');
   //console.log(items);
-    
+
   // check valid roles
   $.each( items, function( key, item ) {
     if (item == '')
@@ -52,17 +52,17 @@ var validate = function () {
       valid = false;
     }
   });
-  
+
   // return to correct current errors then check other errors
   if (!valid) return valid;
-    
+
   // check duplicates entered by hand
-  function _unique(value, index, self) { 
+  function _unique(value, index, self) {
     return self.indexOf(value) === index;
   }
   unique_items = items.filter( _unique );
   //console.log(unique_items);
-    
+
   if (unique_items.length < items.length)
   {
     config = '';
@@ -70,13 +70,13 @@ var validate = function () {
       if (config == '') config = role;
       else config += ','+ role;
     });
-      
+
     $('[name=configAttribute]').val(config);
-            
+
     alert('duplicates removed from config attribute');
     valid = false;
   }
-  
+
   return valid;
 };
 
@@ -87,26 +87,26 @@ $(function() {
 
     role = this.value;
     config = $('[name=configAttribute]').val();
-    
+
     if (config == '') config = role;
     else if (config.indexOf(role) == -1) // adds the role if it is not there yet
     {
        config += ','+role;
     }
-    
+
     $('[name=configAttribute]').val(config);
-    
+
   });
-  
+
   // On update of configAttribute, validate role names to avoid errors and remove uneeded ","
   $('[name=configAttribute]').on('keyup', function(e) {
-  
+
     validate();
   });
-  
+
   // Form submit validate
   $('form').on('submit', function (e) {
-  
+
     if (!validate())
     {
       e.preventDefault();

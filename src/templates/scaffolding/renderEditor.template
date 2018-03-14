@@ -248,11 +248,11 @@
     private renderNoSelection(property) {
         if (isOptional()) {
             if (property.manyToOne || property.oneToOne) {
-                return " noSelection=\"['null': '']\""
+                return " noSelection=\"['null': message(code:'defaut.select.selectOne')]\""
             } else if (property.type == Date || property.type == java.sql.Date || property.type == java.sql.Time || property.type == Calendar) {
-                return "default=\"none\" noSelection=\"['': '']\""
+                return "default=\"none\" noSelection=\"['': message(code:'defaut.select.selectOne')]\""
             } else {
-                return " noSelection=\"['': '']\""
+                return " noSelection=\"['': message(code:'defaut.select.selectOne')]\""
             }
         }
         return ""

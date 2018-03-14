@@ -9,12 +9,12 @@
 
       var series = [];
       var serie = { name: '${message(code:"contribution.list.title")}', data: [] };
-    
+
 	   <%
       println 'var start = Date.UTC('+ (start.year + 1900) +','+ (start.month - 1) +','+ start.date +');'
       def match
 	   data.each { point ->
-	       
+
          match = (point[1].toString() =~ /(\d{4})(\d{2})/) //=match for year and month, /(\d{4})(\d{2})(\d{2})/ match for ymd
 
          // -1 because month is 0 based
@@ -28,7 +28,7 @@
       if (serie.data.length > 0) series.push(serie);
 
 	   console.log(series);
-    
+
 	   $(function () {
 	      var chart = new Highcharts.Chart({
            chart: {
@@ -99,12 +99,12 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
           <div class="panel-body">
-          
+
             <g:form class="form filter" action="list">
               <input type="hidden" name="sort" value="${params.sort}" />
               <input type="hidden" name="order" value="${params.order}" />
@@ -116,7 +116,7 @@
                 <label for="organizationUid"><g:message code="entity.organization" /></label>
                 <g:select name="organizationUid" from="${organizations}"
 				              optionKey="uid" optionValue="name"
-				              noSelection="${['':'Select One...']}"
+				              noSelection="${['':message(code:'defaut.select.selectOne')]}"
                           value="${params?.organizationUid ?: ''}" class="form-control" />
               </div>
               <div class="btn-toolbar" role="toolbar">
@@ -130,20 +130,20 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <div id="contributionsChartContainer"></div>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">

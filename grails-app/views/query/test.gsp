@@ -18,11 +18,11 @@
     <g:if test="${flash.message}">
       <div class="alert alert-info" role="alert">${flash.message}</div>
     </g:if>
-    
+
     <div id="query_test_composition">
       <h2><g:message code="query.test.search_documents" /></h2>
       <h3><g:message code="query.test.filters" /></h3>
-      
+
       <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover">
 		    <tr>
@@ -44,7 +44,7 @@
       <h2><g:message code="query.test.search_data" /></h2>
       <h3><g:message code="query.test.filters" /></h3>
     </div><!-- query_test_datavalues -->
-    
+
     <div id="query_test_common">
       <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover">
@@ -53,7 +53,7 @@
               <g:message code="query.test.ehr_id" />
             </td>
             <td>
-              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':g.message(code:'defaut.select.selectOne')]}" class="form-control withsize" />
+              <g:select name="qehrId" from="${ehrs}" optionKey="uid" size="4" noSelection="${['':message(code:'defaut.select.selectOne')]}" class="form-control withsize" />
             </td>
           </tr>
           <tr>
@@ -77,7 +77,7 @@
               <g:message code="query.test.composerUid" />
             </td>
             <td>
-              <g:select from="${composerUids}" name="composerUid" class="form-control" noSelection="${['':'Select One...']}" />
+              <g:select from="${composerUids}" name="composerUid" class="form-control" noSelection="${['':message(code:'defaut.select.selectOne')]}" />
             </td>
           </tr>
           <tr>
@@ -105,7 +105,7 @@
         </table>
       </div>
     </div>
-    
+
     <div class="btn-toolbar" role="toolbar">
       <a href="javascript:void(0);" onclick="javascript:ajax_submit_test_or_save('test');" id="test_query">
         <button type="button" class="btn btn-default btn-md">
@@ -113,7 +113,7 @@
         </button>
       </a>
     </div>
-    
+
     <h2><g:message code="query.execute.results" /></h2>
     <a href="#" id="show_data"><g:message code="query.execute.showData" /></a>
     <div id="results" class="out"></div>

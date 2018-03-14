@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
@@ -42,7 +42,7 @@
                 <label for="organizationUid"><g:message code="entity.organization" /></label>
                 <g:select name="organizationUid" from="${Organization.list()}"
 				              optionKey="uid" optionValue="name"
-				              noSelection="${['':'Select One...']}"
+				              noSelection="${['':message(code:'defaut.select.selectOne')]}"
                           value="${params?.organizationUid ?: ''}" class="form-control" />
               </div>
               </sec:ifAnyGranted>
@@ -56,20 +56,20 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        
+
         <g:each in="${userInstanceList.groupBy{ it.organization }}" var="orgUserRoles">
           <h2>${orgUserRoles.key.name}</h2>
           <div class="table-responsive">
@@ -83,7 +83,7 @@
                   <g:sortableColumn property="passwordExpired" title="${message(code: 'user.attr.password_expired', default: 'Password Expired')}" />
                 </tr>
               </thead>
-              <tbody>                 
+              <tbody>
                 <g:each in="${orgUserRoles.value}" status="i" var="userRole">
                   <g:set var="userInstance" value="${userRole.user}" />
                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
