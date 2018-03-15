@@ -343,7 +343,8 @@ class SecurityFilters {
                   {
                      username = auth.principal.username
 
-                     def _org = Organization.findByNumber(auth.organization)
+                     def _org = Organization.findByNumber(auth.organization) // FIXME: can be null!
+
                      organizationUid = _org.uid
                   }
                   else // not logged in,
