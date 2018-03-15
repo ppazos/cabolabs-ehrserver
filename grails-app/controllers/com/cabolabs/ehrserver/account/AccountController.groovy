@@ -183,6 +183,15 @@ class AccountController {
       // Want to associate a new plan
       if (plan_id)
       {
+         // Check rules on https://github.com/ppazos/cabolabs-ehrserver/issues/906
+         def inactive_plan = PlanAssociation.findByAccountAndState(account, PlanAssociation.states.INACTIVE)
+         if (inactive_plan)
+         {
+           flash.message = message(code:'account.update.cantAssignNewPlanInactivePlanAlreadyExists')
+           render (view: 'edit', model: [account: account])
+           return
+         }
+
          def plan = Plan.get(plan_id)
          if (!plan)
          {
@@ -207,9 +216,6 @@ class AccountController {
             }
          }
 
-println from_date
-println new Date().clearTime()
-
          // Do not allow to assign a new plan starting in the past
          // https://github.com/ppazos/cabolabs-ehrserver/issues/907
          if (from_date < new Date().clearTime())
@@ -218,8 +224,6 @@ println new Date().clearTime()
             render (view: 'edit', model: [account: account])
             return
          }
-
-
 
          def to_date = from_date + 365 // default plan duration = 1Y
          if (plan_date_end)
