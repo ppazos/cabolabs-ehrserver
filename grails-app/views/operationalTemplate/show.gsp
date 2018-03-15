@@ -20,7 +20,7 @@
         <g:if test="${flash.message}">
           <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -43,6 +43,44 @@
               <th><g:message code="template.archetypeId.label" /></th>
               <td><g:fieldValue bean="${opt}" field="archetypeId"/></td>
             </tr>
+            <tr>
+              <th><g:message code="template.createdOn.label" /></th>
+              <td><g:formatDate date="${opt.dateCreated}" format="yyyy-MM-dd HH:mm:ss Z"/></td>
+            </tr>
+            <tr>
+              <th><g:message code="template.versionNumber.label" default="Version" /></th>
+              <td>${opt.versionNumber}</td>
+            </tr>
+            <tr>
+              <th><g:message code="template.versions.label" /></th>
+              <td>
+                <g:if test="${versions.size() > 0}">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover table-org-roles">
+                      <thead>
+                        <tr>
+                          <th><g:message code="template.templateId.label" default="Template ID"/></th>
+                          <th><g:message code="template.uid.label" default="UID"/></th>
+                          <th><g:message code="template.versionNumber.label" default="Version" /></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <g:each in="${versions}" var="opt_version">
+                          <tr>
+                            <td>${opt_version.templateId}</td>
+                            <td>${opt_version.uid}</span></td>
+                            <td>${opt_version.versionNumber}</td>
+                          </tr>
+                        </g:each>
+                      </tbody>
+                    </table>
+                  </div>
+                </g:if>
+                <g:else>
+                  <g:message code="template.noVersions.label" default="No other versions" />
+                </g:else>
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -55,7 +93,7 @@
         <pre><code id="xml"></code></pre>
       </div>
     </div>
-    
+
     <script type="text/javascript">
        $('#xml').addClass('xml');
        // The first replace removes the new lines and empty spaces of indentation

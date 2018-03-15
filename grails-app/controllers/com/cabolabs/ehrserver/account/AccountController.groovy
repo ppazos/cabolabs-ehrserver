@@ -157,7 +157,7 @@ class AccountController {
 
    /**
     * If plan_id is not null, the admin wants to set a plan to the account that
-    * will be activated on plan_date_start (yyyy-mm-dd).
+    * will be activated on plan_date_start (yyyy-MM-dd).
     */
    @Transactional
    def update(Account account, Long plan_id, String plan_date_start)

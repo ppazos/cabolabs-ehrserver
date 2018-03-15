@@ -301,7 +301,10 @@ class OperationalTemplateController {
 
       def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
 
-      [opt_xml: opt_file.getText(), opt: opt]
+      // get other versions of the OPT
+      def versions = OperationalTemplateIndex.findAllBySetIdAndVersionNumberNotEqual(opt.setId, opt.versionNumber, [sort: 'versionNumber', order: 'desc'])
+
+      [opt_xml: opt_file.getText(), opt: opt, versions: versions]
    }
 
    def items(String uid, String sort, String order)
