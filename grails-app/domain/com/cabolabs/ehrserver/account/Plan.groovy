@@ -83,7 +83,13 @@ class Plan {
 
       // TODO: to assing plans in the future I need to check the period overlapping here and assign
       // state INACTIVE for the future one y there is currently an active one
-      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this, state: PlanAssociation.states.ACTIVE)
+      def state = PlanAssociation.states.INACTIVE // if the start date is in the future, the plan is inactive until that date arrives, a job will update the states
+      if (from < new Date())
+      {
+         state = PlanAssociation.states.ACTIVE // if the start date is in the past, activate the plan
+      }
+
+      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this, state: state)
       pa.save(failOnError: true)
    }
 

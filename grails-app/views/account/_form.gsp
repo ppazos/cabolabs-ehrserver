@@ -71,23 +71,55 @@
     <label for="plan_id"><g:message code="account.edit.assign_plan" default="Assign plan" /></label>
     <g:select from="${Plan.list()}" name="plan_id"
               optionKey="id" optionValue="name"
-				  noSelection="${['':'']}"
+              noSelection="${['':'']}"
               class="form-control"></g:select>
   </div>
 
   <div class="form-group">
-    <label for="plan_id"><g:message code="account.edit.plan.plan_date_start" default="From date" /></label>
+    <label for="plan_date_start"><g:message code="account.edit.plan.plan_date_start" default="From date" /></label>
     <g:textField name="plan_date_start" value="${params.plan_date_start}" class="form-control"/>
+  </div>
+  <div class="form-group">
+    <label for="plan_date_end"><g:message code="account.edit.plan.plan_date_end" default="To date" /></label>
+    <g:textField name="plan_date_end" value="${params.plan_date_end}" class="form-control"/>
   </div>
 
   <script type="text/javascript">
     $(document).ready(function() {
-      var _from = $('[name=plan_date_start]');
 
-      _from.datetimepicker({
+      $('[name=plan_date_start]').datetimepicker({
         format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
         viewMode: 'years'
+      }).on("dp.change", function (e) {
+        $('[name=plan_date_end]').data("DateTimePicker").minDate(e.date);
+        console.log(e.date);
+        $('[name=plan_date_end]').data("DateTimePicker").date(e.date.add(365, 'days'));
       });
+
+      $('[name=plan_date_end]').datetimepicker({
+        format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
+        viewMode: 'years',
+        useCurrent: false
+      }).on("dp.change", function (e) {
+        $('[name=plan_date_start]').data("DateTimePicker").maxDate(e.date);
+      });
+
+     // Confirm plan close if current plan exists and new plan is selected
+     <g:if test="${plan_association}">
+
+       $('input[type=submit]').on('click', function(e){   // click on all submits
+         console.log(e.target.name);
+         if (e.target.name == 'update')                   // do not prevent other forms to submit, just the update
+         {
+           if ($('select[name=plan_id]').val() != '')     // if new plan is selected
+           {
+             return confirm(" ${message(code:'overwrite current plan?')} ");
+           }
+         }
+       });
+
+     </g:if>
+
     });
   </script>
 </g:if>

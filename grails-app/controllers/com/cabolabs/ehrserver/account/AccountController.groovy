@@ -160,7 +160,7 @@ class AccountController {
     * will be activated on plan_date_start (yyyy-MM-dd).
     */
    @Transactional
-   def update(Account account, Long plan_id, String plan_date_start)
+   def update(Account account, Long plan_id, String plan_date_start, String plan_date_end)
    {
       if (!account)
       {
@@ -183,16 +183,6 @@ class AccountController {
       // Want to associate a new plan
       if (plan_id)
       {
-         // get current account plan, can be null if none
-         // exists or if the expiry date already passed
-         def plan_association = Plan.active(account)
-         if (plan_association)
-         {
-            flash.message = message(code:'account.update.alreadyHasActivePlan', args:[plan_association.to.toString()])
-            render (view: 'edit', model: [account: account])
-            return
-         }
-
          def plan = Plan.get(plan_id)
          if (!plan)
          {
@@ -217,9 +207,40 @@ class AccountController {
             }
          }
 
+         def to_date = new Date() + 365
+         if (plan_date_end)
+         {
+            try
+            {
+               to_date = DateParser.tryParse(plan_date_end)
+            }
+            catch (Exception e)
+            {
+               log.error( e.message )
+               flash.message = message(code:'account.update.invalidPlanDateEnd')
+               render (view: 'edit', model: [account: account])
+               return
+            }
+         }
+
+         // get current account plan, can be null if none
+         // exists or if the expiry date already passed
+         def plan_association = Plan.active(account)
+         plan_association.to = from_date - 1 // current plan ends on the day before the new plan starts
+
+         // if the current plan end date is older than today, close the plan,
+         // if the current plan end date is in the future, it should be closed when that date arrives, need a
+         // job to check daily if a new plan should be active and old plan should be closed.
+         if (plan_association.to < new Date())
+         {
+            plan_association.state = PlanAssociation.states.CLOSED
+         }
+
+
+
          try
          {
-            plan.associate(account, from_date)
+            plan.associate(account, from_date, to_date - from_date) // 3rd param is duration in days
          }
          catch (Exception e)
          {
