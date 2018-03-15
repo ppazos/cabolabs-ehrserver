@@ -72,6 +72,7 @@
     <g:select from="${Plan.list()}" name="plan_id"
               optionKey="id" optionValue="name"
               noSelection="${['':'']}"
+              value="${params.int('plan_id')}"
               class="form-control"></g:select>
   </div>
 
@@ -89,11 +90,18 @@
 
       $('[name=plan_date_start]').datetimepicker({
         format: "YYYY-MM-DD", // "yyyy-mm-ddThh:ii:ssZ",
-        viewMode: 'years'
+        viewMode: 'years',
+        minDate: new Date(),
+        useCurrent: false
       }).on("dp.change", function (e) {
-        $('[name=plan_date_end]').data("DateTimePicker").minDate(e.date);
-        console.log(e.date);
-        $('[name=plan_date_end]').data("DateTimePicker").date(e.date.add(365, 'days'));
+
+        if (e.date)
+        {
+          $('[name=plan_date_end]').data("DateTimePicker").minDate(e.date);
+
+          // moment clone is needed because it changes the e.date referenced by minDate
+          $('[name=plan_date_end]').data("DateTimePicker").date(e.date.clone().add(365, 'days'));
+        }
       });
 
       $('[name=plan_date_end]').datetimepicker({
@@ -101,7 +109,11 @@
         viewMode: 'years',
         useCurrent: false
       }).on("dp.change", function (e) {
-        $('[name=plan_date_start]').data("DateTimePicker").maxDate(e.date);
+        if (e.date)
+        {
+          $('[name=plan_date_start]').data("DateTimePicker").maxDate(e.date);
+        }
+
       });
 
      // Confirm plan close if current plan exists and new plan is selected
@@ -113,7 +125,7 @@
          {
            if ($('select[name=plan_id]').val() != '')     // if new plan is selected
            {
-             return confirm(" ${message(code:'overwrite current plan?')} ");
+             return confirm(" ${message(code:'account.edit.confirmAssigningNewPlan')} ");
            }
          }
        });

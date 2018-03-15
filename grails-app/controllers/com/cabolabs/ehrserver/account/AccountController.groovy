@@ -207,7 +207,21 @@ class AccountController {
             }
          }
 
-         def to_date = new Date() + 365
+println from_date
+println new Date().clearTime()
+
+         // Do not allow to assign a new plan starting in the past
+         // https://github.com/ppazos/cabolabs-ehrserver/issues/907
+         if (from_date < new Date().clearTime())
+         {
+            flash.message = message(code:'account.update.newPlanCantStartInThePast')
+            render (view: 'edit', model: [account: account])
+            return
+         }
+
+
+
+         def to_date = from_date + 365 // default plan duration = 1Y
          if (plan_date_end)
          {
             try
