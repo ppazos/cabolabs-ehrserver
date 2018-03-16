@@ -93,7 +93,7 @@ class OperationalTemplateController {
 
          // Repo size check and max opt check max_opts_per_organization
          def account = user.account
-         def plan_assoc = Plan.active(account) // can be null on dev envs, size check is not done on that case.
+         def plan_assoc = Plan.associatedNow(account) // can be null on dev envs, size check is not done on that case.
          if (plan_assoc)
          {
             if (plan_assoc.plan.repo_total_size_in_kb <= account.totalRepoSizeInKb)

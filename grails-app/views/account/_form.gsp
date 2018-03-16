@@ -55,7 +55,7 @@
   <div class="form-group">
     <label for="plan_id"><g:message code="account.edit.current_plan" default="Current plan" /></label>
     <br/>
-    <g:set var="plan_association" value="${account.activePlan}" />
+    <g:set var="plan_association" value="${account.currentPlan}" />
     <g:if test="${plan_association}">
       ${plan_association.plan.name}
     </g:if>

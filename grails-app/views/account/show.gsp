@@ -11,6 +11,9 @@
         background-color: #4185F3 !important;
         color: #fff;
       }
+      .overdue-date {
+        background-color: #F38541 !important;
+      }
       td.left {
         text-align: left !important;
       }
@@ -91,7 +94,9 @@
                           <td><g:message code="plan_association.state.${plan_assoc.state}" /></td>
                           <td>${plan_assoc.plan.name}</td>
                           <td><g:formatDate date="${plan_assoc.from}" format="yyyy-MM-dd HH:mm"/></td>
-                          <td><g:formatDate date="${plan_assoc.to}" format="yyyy-MM-dd HH:mm"/></td>
+                          <td ${(plan_assoc.state == 2 && plan_assoc.to < new Date().clearTime()) ? 'class="overdue-date"' : ''}>
+                            <g:formatDate date="${plan_assoc.to}" format="yyyy-MM-dd HH:mm"/>
+                          </td>
                         </tr>
                         <tr>
                           <td colspan="4" class="left">

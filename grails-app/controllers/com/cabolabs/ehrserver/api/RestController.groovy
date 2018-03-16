@@ -314,7 +314,7 @@ class RestController {
 
       // Repo size check
       def account = _user.account
-      def plan_assoc = Plan.active(account) // can be null on dev envs, size check is not done on that case.
+      def plan_assoc = Plan.associatedNow(account) // can be null on dev envs, size check is not done on that case.
       if (plan_assoc)
       {
          if (plan_assoc.plan.repo_total_size_in_kb <= account.totalRepoSizeInKb)

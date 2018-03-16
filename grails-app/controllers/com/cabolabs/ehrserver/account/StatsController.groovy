@@ -120,10 +120,6 @@ class StatsController {
       def dfrom = new Date(from)
       def dto   = new Date(to)
 
-      println dfrom
-      println dto
-
-
       // if on current month, dfrom can be < now and we need to plan
       // active on now not on dfrom.
       def current_month = Calendar.getInstance().get(Calendar.MONTH)
@@ -140,7 +136,7 @@ class StatsController {
       def org = Organization.findByUid(uid)
 
 
-      def plan_association = Plan.activeOn(org.account, active_plan_in) // can be null!
+      def plan_association = Plan.associatedOn(org.account, active_plan_in) // can be null!
 
       [transactions: Contribution.byOrgInPeriod(uid, dfrom, dto).count(),
        documents: Version.byOrgInPeriod(uid, dfrom, dto).count(),

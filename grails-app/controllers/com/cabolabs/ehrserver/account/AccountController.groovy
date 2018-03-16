@@ -60,7 +60,7 @@ class AccountController {
       }
 
       def plan_max_orgs
-      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
       {
          plan_max_orgs = plan_assoc.plan.max_organizations
@@ -243,17 +243,20 @@ class AccountController {
 
          // get current account plan, can be null if none
          // exists or if the expiry date already passed
-         def plan_association = Plan.active(account)
+         def plan_association = Plan.associatedNow(account)
          plan_association.to = from_date - 1 // current plan ends on the day before the new plan starts
 
          // if the current plan end date is older than today, close the plan,
          // if the current plan end date is in the future, it should be closed when that date arrives, need a
          // job to check daily if a new plan should be active and old plan should be closed.
+
+/* The chck for active -> closed is done on the PlanAssociationStateUpdateJob
          if (plan_association.to < new Date())
          {
+            println "A) active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
             plan_association.state = PlanAssociation.states.CLOSED
          }
-
+*/
 
 
          try

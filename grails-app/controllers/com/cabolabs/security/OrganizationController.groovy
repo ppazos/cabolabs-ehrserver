@@ -93,7 +93,7 @@ class OrganizationController {
       def plan_max_tokens
       def user = springSecurityService.loadCurrentUser()
       def account = user.account
-      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
       {
          plan_max_tokens = plan_assoc.plan.max_api_tokens_per_organization
@@ -115,7 +115,7 @@ class OrganizationController {
          // Checks organization creation plan limits
          def user = springSecurityService.loadCurrentUser()
          def account = user.account
-         def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+         def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
          if (plan_assoc)
          {
             def plan_max_orgs = plan_assoc.plan.max_organizations
@@ -168,7 +168,7 @@ class OrganizationController {
       }
 
       // Checks organization creation plan limits
-      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
       {
          def plan_max_orgs = plan_assoc.plan.max_organizations
@@ -282,7 +282,7 @@ class OrganizationController {
       // Checks api key creation plan limits
       def user = springSecurityService.loadCurrentUser()
       def account = user.account
-      def plan_assoc = Plan.active(account) // can be null in dev env, on this case, no constraints apply to org creation
+      def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
       {
          def plan_max_tokens = plan_assoc.plan.max_api_tokens_per_organization

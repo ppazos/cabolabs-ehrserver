@@ -1010,7 +1010,7 @@ gr_account.save(failOnError:true, flush:true)
          accounts.each { acct ->
             if (!PlanAssociation.findByAccount(acct))
             {
-               test_plan.associate(acct, new Date())
+               test_plan.associate(acct, new Date().clearTime())
             }
          }
       } // not TEST ENV

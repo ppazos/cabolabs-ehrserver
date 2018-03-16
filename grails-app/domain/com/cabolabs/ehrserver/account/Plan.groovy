@@ -81,27 +81,38 @@ class Plan {
          from = DateUtils.toFirstDateOfMonth(new Date())
       }
 
+
+      // By default, a new plan is inactive.
+      // If there exists acurrently ACTIVE plan, the PlanAssociationStateUpdateJob will
+      // update the states if the new plan should start today.
+      // Also will activate this plan if today falls under the period and there is no ACTIVE plan
+
       // TODO: to assing plans in the future I need to check the period overlapping here and assign
       // state INACTIVE for the future one y there is currently an active one
-      def state = PlanAssociation.states.INACTIVE // if the start date is in the future, the plan is inactive until that date arrives, a job will update the states
+      //def state = PlanAssociation.states.INACTIVE // if the start date is in the future, the plan is inactive until that date arrives, a job will update the states
+
+/*
       if (from < new Date())
       {
          state = PlanAssociation.states.ACTIVE // if the start date is in the past, activate the plan
       }
+*/
 
-      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this, state: state)
+      def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this)
       pa.save(failOnError: true)
    }
 
    /**
-    * Gets the active plan for the organization.
+    * Gets the currently associated plan for the organization.
+    * Checking if the current date falls into the plan validity period.
+    * Doens't check if the status is active or suspended, etc.
     */
-   static PlanAssociation active(Account account)
+   static PlanAssociation associatedNow(Account account)
    {
-      return activeOn(account, new Date())
+      return associatedOn(account, new Date())
    }
 
-   static PlanAssociation activeOn(Account account, Date on)
+   static PlanAssociation associatedOn(Account account, Date on)
    {
       def pa = PlanAssociation.withCriteria(uniqueResult: true) {
         le('from', on) // from <= on < to
@@ -110,5 +121,17 @@ class Plan {
       }
 
       return pa // can be null
+   }
+
+   // get currently active plan assoc, can be null
+   static PlanAssociation active(Account account)
+   {
+      PlanAssociation.findByAccountAndState(account, PlanAssociation.states.ACTIVE)
+   }
+
+   // get currently inactive plan assoc, can be null
+   static PlanAssociation inactive(Account account)
+   {
+      PlanAssociation.findByAccountAndState(account, PlanAssociation.states.INACTIVE)
    }
 }
