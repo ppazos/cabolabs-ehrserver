@@ -48,16 +48,16 @@ class DataIndexerService {
 
    def config = Holders.config.app
    def versionFSRepoService
-   
+
    def generateIndexes(CompositionIndex compoIndex)
    {
       //def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-      
+
       // created indexes will be loaded here
       def indexes = []
 
       def version, versionFile, versionXml, parsedVersion, compoParsed, org
-     
+
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
       // set, which is probably not what is desired.  Parser will use a default
@@ -77,10 +77,10 @@ class DataIndexerService {
       }
 
       indexes = []
-    
+
       // load xml file from filesystem
       version = compoIndex.getParent()
-    
+
       try
       {
          versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
@@ -98,26 +98,26 @@ class DataIndexerService {
 
       versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
-    
+
 //       error from error handler?
 //       if (message)
 //       {
 //         println "IndexDataJob XML ERROR: "+ message
 //         message = null // empty for the next parse
 //       }
-    
+
       compoParsed = parsedVersion.data
-    
+
       process_COMPOSITION_index(compoParsed, compoIndex.templateId, '', compoIndex.archetypeId, '', compoIndex, indexes)
       //recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex, optMan )
 
       log.debug "index count: "+ indexes.size()
 
       // empty if the OPT for the compo is not loaded in the server
-      
-      def aidx 
+
+      def aidx
       indexes.each { didx ->
-      
+
          //println didx.archetypePath
 
          if (!didx.save())
@@ -125,21 +125,21 @@ class DataIndexerService {
             log.error "index error: ("+ didx.templateId +") "+didx.archetypeId + didx.archetypePath +" "+ didx.rmTypeName +" "+ didx.getClass().getSimpleName() +' for compo '+ didx.owner.uid
             log.error didx.errors.toString()
             // if one index created fails to save, the whole indexing process is rolled back
-         
+
             throw new DataIndexException('Index failed to save', didx.errors, didx.toString())
          }
          else
          {
             //log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
          }
-         
+
          // check if the AII exists, if not, the indexed value wont be able to be queried
          // there is a known issue with paths to ism_transitions, this is to check if besides that there is another path that do not match between OPT indexes and DV indexes
          aidx = ArchetypeIndexItem.findByArchetypeIdAndPath(didx.archetypeId, didx.archetypePath)
          if (!aidx)
          {
-            new DataValueIndexLog(index: didx, message: 'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath).save()
-            
+            new DataValueIndexLog(index: didx, message: 'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath +' TID: '+ compoIndex.templateId +' COMPOSER: '+ compoIndex.composer?.name).save()
+
             def admins = User.allForRole('ROLE_ADMIN')
             admins.each{ admin ->
                new Notification(
@@ -150,10 +150,10 @@ class DataIndexerService {
             }
          }
       }
-    
+
       // all indexes created were saved correctly!
       compoIndex.dataIndexed = true
-    
+
       if (!compoIndex.save())
       {
          log.error "Error al guardar compoIndex: "+ compoIndex.errors.toString()
@@ -164,13 +164,13 @@ class DataIndexerService {
          log.info "Composition ${compoIndex.uid} indexed"
       }
    }
-   
+
    private Map getChildPathsAndRootArchetype(node, templatePath, archetypePath, archetypeId)
    {
       // Path del template para el indice (absoluta)
       String outTemplatePath
       String outArchetypePath
-      
+
       // La path del root va sin nombre, ej. sin esto el root que es / seria /data
       if (templatePath == '')
       {
@@ -182,7 +182,7 @@ class DataIndexerService {
         // Para que los hijos de la raiz no empiecen con //
         if (templatePath == '/') templatePath = ''
         if (archetypePath == '/') archetypePath = ''
-        
+
         // Si es un nodo atNNNN
         if (node.'@archetype_node_id'.text().startsWith('at'))
         {
@@ -201,14 +201,14 @@ class DataIndexerService {
         // Para que los hijos de la raiz no empiecen con //
         if (templatePath == '/') templatePath = ''
         if (archetypePath == '/') archetypePath = ''
-        
+
         outTemplatePath = templatePath + '/' + node.name()
         outArchetypePath = archetypePath + '/' + node.name()
       }
-      
+
       return [templatePath: outTemplatePath, archetypePath: outArchetypePath, rootArchetype: archetypeId]
    }
-   
+
    /**
     * @param path parent node path, absolute to the template, empty for the root node.
     * @param archetypePath absolute path to a root archetype but not to the template, used for querying.
@@ -230,16 +230,16 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths "+ paths
-      
+
       // this continues the recursion, the code is generic can be reused
       def child_type
       attributes.each { attr, type ->
-      
+
          //println "children in $attr "+ node[attr].size() +" "+ node[attr]*.'@xsi:type'
-      
+
          // node[attr] can be multiple, and we need to process individual nodes in $method
          node[attr].each { child_attr_node ->
-         
+
             if (type == '_ask_node_')
             {
                child_type = child_attr_node['@xsi:type']
@@ -248,26 +248,26 @@ class DataIndexerService {
             {
                child_type = type
             }
-            
+
             def method = 'process_'+ child_type +'_index'
             //println "method: "+ method +" node: "+ child_attr_node.name() // +" "+ child_attr_node.getClass()
             this."$method"(child_attr_node, templateId, paths.templatePath, paths.rootArchetype, paths.archetypePath, owner, indexes)
          }
       }
    }
-   
+
    /*
    def methodMissing(String name, args)
    {
       println "-- Method Missing "+ name +" "+ args*.getClass() +" ----------------------------------------------"
    }
    */
-   
+
    // TODO:
    // Refactor all these methods are just implementing a map of class => [attribute]
    // the real logic is on the generic method keepProcessing.
    //
-   
+
    private void process_COMPOSITION_index(
       GPathResult node,
       String templateId, String path,
@@ -281,10 +281,10 @@ class DataIndexerService {
          'context': 'EVENT_CONTEXT',
          'content': '_ask_node_' // This is ENTRY but can be ACTION, OBSERVATION, etc.
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_EVENT_CONTEXT_index(
       GPathResult node,
       String templateId, String path,
@@ -300,10 +300,10 @@ class DataIndexerService {
          'end_time': 'DV_DATE_TIME',
          'other_context': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_SECTION_index(
       GPathResult node,
       String templateId, String path,
@@ -313,10 +313,10 @@ class DataIndexerService {
       def attributes = [
          'items': '_ask_node_' // CONTENT_ITEM
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ADMIN_ENTRY_index(
       GPathResult node,
       String templateId, String path,
@@ -326,10 +326,10 @@ class DataIndexerService {
       def attributes = [
          'data': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_EVALUATION_index(
       GPathResult node,
       String templateId, String path,
@@ -340,10 +340,10 @@ class DataIndexerService {
          'data': '_ask_node_', // ITEM_STRUCTURE
          'protocol': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ACTION_index(
       GPathResult node,
       String templateId, String path,
@@ -357,10 +357,10 @@ class DataIndexerService {
          'instruction_details': 'INSTRUCTION_DETAILS',
          'protocol': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ISM_TRANSITION_index(
       GPathResult node,
       String templateId, String path,
@@ -372,10 +372,10 @@ class DataIndexerService {
          'transition': 'DV_CODED_TEXT',
          'careflow_step': 'DV_CODED_TEXT'
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_INSTRUCTION_DETAILS_index(
       GPathResult node,
       String templateId, String path,
@@ -387,10 +387,10 @@ class DataIndexerService {
          'activity_id': 'String',
          'wf_details': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_INSTRUCTION_index(
       GPathResult node,
       String templateId, String path,
@@ -403,10 +403,10 @@ class DataIndexerService {
          'protocol': '_ask_node_', // ITEM_STRUCTURE
          'activities': 'ACTIVITY'
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ACTIVITY_index(
       GPathResult node,
       String templateId, String path,
@@ -418,10 +418,10 @@ class DataIndexerService {
          'timing': 'DV_PARSABLE',
          'action_archetype_id': 'String'
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_OBSERVATION_index(
       GPathResult node,
       String templateId, String path,
@@ -433,10 +433,10 @@ class DataIndexerService {
          'state': 'HISTORY',
          'protocol': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_HISTORY_index(
       GPathResult node,
       String templateId, String path,
@@ -450,10 +450,10 @@ class DataIndexerService {
          'summary': '_ask_node_', // ITEM_STRUCTURE
          'events': '_ask_node_' // POINT_EVENT, INTERVAL_EVENT
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    // FIXME: if this is called, the committer is using the abstract type EVENT
    // instead of POINT_EVENT, should return a warning.
    private void process_EVENT_index(
@@ -465,7 +465,7 @@ class DataIndexerService {
       // For now treate EVENT as POINT_EVENT
       process_POINT_EVENT_index(node, templateId, path, archetypeId, archetypePath, owner, indexes)
    }
-   
+
    private void process_POINT_EVENT_index(
       GPathResult node,
       String templateId, String path,
@@ -477,10 +477,10 @@ class DataIndexerService {
          'state': '_ask_node_', // ITEM_STRUCTURE
          'data': '_ask_node_' // ITEM_STRUCTURE
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_INTERVAL_EVENT_index(
       GPathResult node,
       String templateId, String path,
@@ -494,7 +494,7 @@ class DataIndexerService {
          'width': 'DV_DURATION',
          'math_function': 'DV_CODED_TEXT'
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
 
@@ -510,7 +510,7 @@ class DataIndexerService {
 
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ITEM_LIST_index(
       GPathResult node,
       String templateId, String path,
@@ -523,7 +523,7 @@ class DataIndexerService {
 
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ITEM_TABLE_index(
       GPathResult node,
       String templateId, String path,
@@ -536,7 +536,7 @@ class DataIndexerService {
 
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ITEM_TREE_index(
       GPathResult node,
       String templateId, String path,
@@ -554,7 +554,7 @@ class DataIndexerService {
       */
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_CLUSTER_index(
       GPathResult node,
       String templateId, String path,
@@ -564,10 +564,10 @@ class DataIndexerService {
       def attributes = [
          'items': '_ask_node_' // CLUSTER, ELEMENT
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
+
    private void process_ELEMENT_index(
       GPathResult node,
       String templateId, String path,
@@ -578,13 +578,13 @@ class DataIndexerService {
          'value': '_ask_node_', // any data value
          'null_flavour': 'DV_CODED_TEXT'
       ]
-      
+
       keepProcessing(node, templateId, path, archetypeId, archetypePath, owner, indexes, attributes)
    }
-   
-   
+
+
    // DVs
-   
+
    private void process_DV_TEXT_index(
       GPathResult node,
       String templateId, String path,
@@ -593,14 +593,14 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths text "+ paths
-      
+
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
       <value xsi:type="DV_TEXT">
         <value>Right arm</value>
       </value>
       */
-      
+
       indexes << new DvTextIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -611,7 +611,7 @@ class DataIndexerService {
         rmTypeName:    'DV_TEXT'
       )
    }
-   
+
    private void process_DV_CODED_TEXT_index(
       GPathResult node,
       String templateId, String path,
@@ -633,11 +633,11 @@ class DataIndexerService {
         </defining_code>
       </value>
       */
-      
+
       // Throws an exception if the node has xsi:type="..." attribute,
       // because the xmlns:xsi is not defined in the node.
       //println "DvCodedTextIndex "+ groovy.xml.XmlUtil.serialize(node)
-      
+
       indexes << new DvCodedTextIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -650,7 +650,7 @@ class DataIndexerService {
         rmTypeName:    'DV_CODED_TEXT'
       )
    }
-   
+
    private void process_DV_DATE_index(
       GPathResult node,
       String templateId, String path,
@@ -659,7 +659,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths date "+ paths
-      
+
       //WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
       //<time>
       //  <value>20070920</value>
@@ -674,7 +674,7 @@ class DataIndexerService {
         rmTypeName:    'DV_DATE'
       )
    }
-   
+
    private void process_DV_DATE_TIME_index(
       GPathResult node,
       String templateId, String path,
@@ -683,7 +683,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths date time "+ paths
-      
+
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_DATE_TIME.
       <time>
@@ -700,7 +700,7 @@ class DataIndexerService {
         rmTypeName:   'DV_DATE_TIME'
       )
    }
-   
+
    private void process_DV_QUANTITY_index(
       GPathResult node,
       String templateId, String path,
@@ -709,7 +709,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths quantity "+ paths
-      
+
       /*
       * WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_QUANTITY
       <value xsi:type="DV_QUANTITY">
@@ -728,7 +728,7 @@ class DataIndexerService {
         rmTypeName:    'DV_QUANTITY'
       )
    }
-   
+
    private void process_DV_COUNT_index(
       GPathResult node,
       String templateId, String path,
@@ -737,7 +737,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths count "+ paths
-      
+
       /*
       <value xsi:type="DV_COUNT">
         <magnitude>120</magnitude>
@@ -753,7 +753,7 @@ class DataIndexerService {
         rmTypeName:    'DV_COUNT'
       )
    }
-   
+
    private void process_DV_DURATION_index(
       GPathResult node,
       String templateId, String path,
@@ -780,7 +780,7 @@ class DataIndexerService {
         //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
       )
    }
-   
+
    private void process_DV_BOOLEAN_index(
       GPathResult node,
       String templateId, String path,
@@ -789,7 +789,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths boolean "+ paths
-      
+
       // WARNING: el nombre de la tag contenedor puede variar segun el nombre del atributo de tipo DV_TEXT.
       //<value xsi:type="DV_BOOLEAN">
       //   <value>true</value>
@@ -804,7 +804,7 @@ class DataIndexerService {
         rmTypeName:    'DV_BOOLEAN'
       )
    }
-   
+
    private void process_DV_IDENTIFIER_index(
       GPathResult node,
       String templateId, String path,
@@ -813,7 +813,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths identifier "+ paths
-      
+
       indexes << new DvIdentifierIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -827,7 +827,7 @@ class DataIndexerService {
         rmTypeName:    'DV_IDENTIFIER'
       )
    }
-   
+
    private void process_DV_ORDINAL_index(
       GPathResult node,
       String templateId, String path,
@@ -836,7 +836,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths identifier "+ paths
-      
+
       //<value xsi:type="DV_ORDINAL">
       // <value>234</value>
       // <symbol>
@@ -862,7 +862,7 @@ class DataIndexerService {
         rmTypeName:    'DV_ORDINAL'
       )
    }
-   
+
    // for ACTIVITY.timing
    private void process_DV_PARSABLE_index(
       GPathResult node,
@@ -872,14 +872,14 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths parsable "+ paths
-      
+
       /*
       <value xsi:type="DV_PARSABLE">
         <value>20170629</value>
         <formalism>iso8601</formalism>
       </value>
       */
-      
+
       indexes << new DvParsableIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -891,7 +891,7 @@ class DataIndexerService {
         rmTypeName:    'DV_PARSABLE'
       )
    }
-   
+
    private void process_LOCATABLE_REF_index(
       GPathResult node,
       String templateId, String path,
@@ -899,14 +899,14 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      
+
       indexes << new LocatableRefIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
         path:          paths.templatePath,
         archetypePath: paths.archetypePath,
         owner:         owner,
-        
+
         locatable_ref_path: node.path.text(),
         namespace:     node.namespace.text(),
         type:          node.type.text(),
@@ -915,7 +915,7 @@ class DataIndexerService {
         rmTypeName:    'LOCATABLE_REF'
       )
    }
-   
+
    // for String RM attributes like ACTIVITY.action_archetype_id
    private void process_String_index(
       GPathResult node,
@@ -924,20 +924,20 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      
+
       indexes << new StringIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
         path:          paths.templatePath,
         archetypePath: paths.archetypePath,
         owner:         owner,
-        
+
         value:         node.text(),
         rmTypeName:    'String'
       )
    }
-   
- 
+
+
    private void process_DV_PROPORTION_index(
       GPathResult node,
       String templateId, String path,
@@ -946,7 +946,7 @@ class DataIndexerService {
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
       //println "paths proportion "+ paths
-      
+
       /**
       * <xs:complexType name="DV_ORDERED" abstract="true">
            <xs:complexContent>
@@ -990,8 +990,8 @@ class DataIndexerService {
                </xs:extension>
            </xs:complexContent>
        </xs:complexType>
-       
-       
+
+
        <value xsi:type="DV_PROPORTION">
          <normal_range>...</normal_range>
          <other_reference_ranges>...</other_reference_ranges>
@@ -1005,12 +1005,12 @@ class DataIndexerService {
          <precision></precision>
        </value>
       */
-      
+
       // 0 = pk_ration: num and denom may be any value so are float
       int type = ( (node.type.text()) ? (new Integer(node.type.text())) : 0 )
-      
+
       //println "DvPropotion parse type: "+ type
-      
+
       // Parsing numerator and denominator considering the type
       // Some checks are done here instead as constraints of DvProportionIndex,
       // that's ok because the checks are done for parsing the data correctly,
@@ -1048,9 +1048,9 @@ class DataIndexerService {
         default:
           throw new Exception("DV_PROPORTION type '$type' not valid")
       }
-      
+
       //println "DvPropotion parse: "+ numerator +"/"+ denominator
-      
+
       indexes << new DvProportionIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -1064,7 +1064,7 @@ class DataIndexerService {
         rmTypeName:    'DV_PROPORTION'
       )
    }
-   
+
    private boolean isIntegral(double num) {
       return (Math.floor(num1) == num1)
    }
@@ -1076,7 +1076,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId)
-      
+
       /*
       <value xsi:type="DV_MULTIMEDIA">
         <alternate_text>blablabla</alternate_text>
