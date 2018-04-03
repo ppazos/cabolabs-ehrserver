@@ -1,0 +1,1176 @@
+swagger: '2.0'
+info:
+  title: EHRServer
+  description: Clinical Data Management and Sharing Platform
+  version: '1.2'
+host: server001.cloudehrserver.com
+schemes:
+  - https
+basePath: /api/v1
+tags:
+  - name: administrative
+    description: Non-clinical related services
+  - name: users
+    description: Endpoints related to client or user authorization for the REST API
+  - name: ehrs
+    description: Enpoint related to health record management
+  - name: queries
+    description: Endpoints related to data queries
+produces:
+  - application/json
+  - text/xml
+paths:
+  /login:
+    post:
+      tags:
+        - administrative
+      summary: Authorize credentials and get auth token
+      parameters:
+        - name: username
+          in: query
+          required: true
+          type: string
+        - name: password
+          in: query
+          required: true
+          type: string
+        - name: organization
+          in: query
+          description: Organization number of an organization associated with the user.
+          required: true
+          type: integer
+          format: int32
+        - name: format
+          in: query
+          description: desired output format
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Token de seguridad
+          examples:
+            application/json:
+              token: >-
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9yZ21hbiIsIm...
+        401:
+          description: Authentication failed
+          examples:
+            applicaton/json:
+              result:
+                type: AR
+                message: Authentication failed
+                code: 'EHR_SERVER::API::ERRORS::e01.0001'
+  /users:
+    post:
+      tags:
+        - administrative
+      summary: Crate a new user and associate it with the current organization.
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: username
+          in: query
+          required: true
+          type: string
+        - name: email
+          in: query
+          required: true
+          type: string
+          format: email
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: user profile
+          examples:
+            application/json:
+              username: pablo
+              email: pablo@gmail.com
+              organizations:
+                - uid: d8b5bcb6-f26a-4192-a754-b98f62cd1234
+                  name: CaboLabs
+                  number: '123456'
+  '/users/{username}':
+    get:
+      tags:
+        - administrative
+      summary: Get user profile.
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: username
+          in: path
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: user profile
+          examples:
+            application/json:
+              username: pablo
+              email: pablo@gmail.com
+              organizations:
+                - uid: d8b5bcb6-f26a-4192-a754-b98f62cd1234
+                  name: CaboLabs
+                  number: '123456'
+  /ehrs:
+    get:
+      summary: Retrieve health records associated with the current organization.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: max
+          in: query
+          description: number or EHRs per page
+          required: false
+          type: integer
+          format: int32
+          default: 10
+        - name: offset
+          in: query
+          description: pagination offset
+          required: false
+          type: integer
+          format: int32
+          default: 0
+      responses:
+        200:
+          description: EHR list with pagination data.
+          examples:
+            application/json:
+              ehrs:
+                - uid: c35dfe02-4ece-465e-9433-0540c6d95f3f
+                  dateCreated: '2017-02-11 18:55:18'
+                  subjectUid: '11111111'
+                  systemId: CABOLABS_EHR_SERVER
+                  organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cd1234
+              pagination:
+                max: 10
+                offset: 0
+                nextOffset: 10
+                prevOffset: 0
+              timing: 0 ms
+    post:
+      summary: Create a new EHR for a subject.
+      description: >-
+        Store the subjectUid in your system to be able to query the EHRServer by
+        the subjectUid.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: subjectUid
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: EHR resource.
+          examples:
+            application/json:
+              uid: b11f37ca-2483-47e1-93aa-93681342ddb1
+              dateCreated: '2017-06-04 19:16:26'
+              subjectUid: 9f7fe6aa-c4f1-4d86-af8a-c1787e599a9b
+              systemId: CABOLABS_EHR_SERVER
+              organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cdc4a4
+  '/ehrs/ehrUid/{uid}':
+    get:
+      summary: Get an EHR by it's UID.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/text
+      responses:
+        200:
+          description: EHR resource.
+          examples:
+            application/json:
+              uid: c35dfe02-4ece-465e-9433-0540c6d95f3f
+              dateCreated: '2017-02-11 18:55:18'
+              subjectUid: '11111111'
+              systemId: CABOLABS_EHR_SERVER
+              organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cd1234
+  '/ehrs/subjectUid/{uid}':
+    get:
+      summary: Get an EHR by subject UID.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/text
+      responses:
+        200:
+          description: EHR resource.
+          examples:
+            application/json:
+              uid: c35dfe02-4ece-465e-9433-0540c6d95f3f
+              dateCreated: '2017-02-11 18:55:18'
+              subjectUid: '11111111'
+              systemId: CABOLABS_EHR_SERVER
+              organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cd1234
+  '/ehrs/{uid}/contributions':
+    get:
+      summary: Get the EHR contributions.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          description: UID of the EHR
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/text
+      responses:
+        200:
+          description: EHR contributions.
+          examples:
+            application/json:
+              contributions:
+                - uid: 42ff9ad9-d7b7-4f92-b69a-03f39b24c4c5
+                  organizationUid: 41467ac9-18a0-49d8-bbdd-5954efb13399
+                  ehrUid: afd64629-93a9-49ea-b7f8-540106bba979
+                  versions:
+                    - '9345f598-65b1-4738-9054-73a40e2d5774::EMR::1'
+                  audit:
+                    timeCommitted: '2017-06-05 19:52:30'
+                    committer:
+                      namespace: local
+                      type: PERSON
+                      value: null
+                      name: Dr. House
+                    systemId: EMR
+                - uid: a51f0df6-0761-420d-a469-8363aed9a8e5
+                  organizationUid: 41467ac9-18a0-49d8-bbdd-5954efb13399
+                  ehrUid: afd64629-93a9-49ea-b7f8-540106bba979
+                  versions:
+                    - '8c3997ce-c59b-406a-823f-ecf1be4bb436::EMR::1'
+                  audit:
+                    timeCommitted: '2017-06-05 19:52:38'
+                    committer:
+                      namespace: local
+                      type: PERSON
+                      value: null
+                      name: Dr. House
+                    systemId: EMR
+              pagination:
+                max: 20
+                offset: 0
+                nextOffset: 20
+                prevOffset: 0
+  /compositions:
+    get:
+      summary: Get clinical document indexes from an EHR.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: ehrUid
+          in: query
+          type: string
+          required: true
+        - name: max
+          in: query
+          description: number or EHRs per page
+          required: false
+          type: integer
+          format: int32
+          default: 10
+        - name: offset
+          in: query
+          description: pagination offset
+          required: false
+          type: integer
+          format: int32
+          default: 0
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Clinical document indexes from an EHR, with pagination data.'
+          examples:
+            application/json:
+              result:
+                - uid: 93b93687-135d-4189-ad01-1b8e1ac13289
+                  category: event
+                  startTime: '2017-02-11 19:57:19'
+                  subjectId: '11111111'
+                  ehrUid: c35dfe02-4ece-465e-9433-0540c6d95f3f
+                  templateId: Simple Encounter
+                  archetypeId: openEHR-EHR-COMPOSITION.encounter.v1
+                  lastVersion: true
+                  organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cdc4a4
+                  parent: 'fc6da40a-3745-4a1f-9914-4fba03f746d9::EMR::1'
+                - uid: 0c6322d2-c5e1-4bb1-8648-eabb21023d5e
+                  category: event
+                  startTime: '2017-02-11 20:00:09'
+                  subjectId: '11111111'
+                  ehrUid: c35dfe02-4ece-465e-9433-0540c6d95f3f
+                  templateId: Simple Lab Order
+                  archetypeId: openEHR-EHR-COMPOSITION.request.v1
+                  lastVersion: true
+                  organizationUid: d8b5bcb6-f26a-4192-a754-b98f62cdc4a4
+                  parent: '6754831a-2f6c-448e-b8de-078a1bf6ba2f::EMR::1'
+              pagination:
+                max: 30
+                offset: 0
+                nextOffset: 30
+                prevOffset: 0
+              timing: 0 ms
+  '/compositions/{uid}':
+    get:
+      summary: Get a composition by it's UID.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: descripcion de parametro format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          type: string
+          required: true
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: Composition resource (example is not a complete composition!)
+          schema:
+            $ref: '#/definitions/VERSION'
+  '/ehrs/{ehrUid}/compositions':
+    post:
+      summary: Commit multiple compositions into an EHR.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: descripcion de parametro format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: ehrUid
+          in: path
+          type: string
+          required: true
+        - name: versions
+          in: body
+          description: list of versioned compositions that are being committed on an EHR.
+          required: true
+          schema:
+            type: object
+      consumes:
+        - application/json
+        - text/xml
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: Composition resource (example is not a complete composition!)
+          examples:
+            application/json: {}
+  /queries:
+    get:
+      summary: Queries shared with the current organization.
+      tags:
+        - queries
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: max
+          in: query
+          description: number or EHRs per page
+          required: false
+          type: integer
+          format: int32
+          default: 10
+        - name: offset
+          in: query
+          description: pagination offset
+          required: false
+          type: integer
+          format: int32
+          default: 0
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: Query list with pagination data.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Query'
+  '/queries/{uid}':
+    get:
+      summary: Get a query by it's UID
+      tags:
+        - queries
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          description: UID of the query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Query list with pagination data.
+          schema:
+            $ref: '#/definitions/Query'
+  '/queries/{uid}/execute':
+    get:
+      summary: Execute a query and get data from the EHRServer
+      tags:
+        - queries
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: uid
+          in: path
+          description: UID of the query
+          required: true
+          type: string
+        - name: ehrUid
+          in: query
+          description: filter query results by this EHR
+          type: string
+          required: false
+        - name: organizationUid
+          in: query
+          description: >-
+            UID of the organization associated with the EHRs being queried,
+            mixed data from different organizations is not allowed
+          required: true
+          type: string
+        - name: retrieveData
+          in: query
+          description: >-
+            for composition queries, this set to true returns the full
+            compositions instead on an index
+          required: false
+          type: boolean
+        - name: group
+          in: query
+          description: overrides the default grouping of a datavalue query
+          required: false
+          type: string
+          enum:
+            - none
+            - composition
+            - path
+          default: path
+        - name: fromDate
+          in: query
+          description: date filter yyyyMMdd
+          required: false
+          type: string
+          pattern: '/(\d{4})(\d{2})(\d{2})/'
+        - name: toDate
+          in: query
+          description: date filter yyyyMMdd
+          required: false
+          type: string
+          pattern: '/(\d{4})(\d{2})(\d{2})/'
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: >-
+            Query result strutures, depending on the type of query (composition
+            or databavlue). For datavalue queries, the resulting structure will
+            depend on the grouping strategy selected.
+          examples:
+            datavalue query group by path:
+              'openEHR-EHR-OBSERVATION.blood_pressure.v1/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value<DV_QUANTITY>':
+                type: DV_QUANTITY
+                name: Sistólica
+                serie:
+                  - magnitude: 106
+                    units: 'mm[Hg]'
+                    date: '2016-01-14 07:34:59'
+              'openEHR-EHR-OBSERVATION.blood_pressure.v1/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value<DV_QUANTITY>':
+                type: DV_QUANTITY
+                name: Diastólica
+                serie:
+                  - magnitude: 56
+                    units: 'mm[Hg]'
+                    date: '2016-01-14 07:34:59'
+              timing: 10 ms
+            composition query with retrieveData=false:
+              results:
+                - uid: 0f78e043-aa09-4212-9669-fcef0adaf470
+                  category: event
+                  startTime: '2016-06-25 07:29:28'
+                  subjectId: 11111111-1111-1111-1111-111111111111
+                  ehrUid: 11111111-1111-1111-1111-111111111111
+                  templateId: Signos
+                  archetypeId: openEHR-EHR-COMPOSITION.signos.v1
+                  lastVersion: true
+                  organizationUid: d04809ca-08dc-454a-8390-96a0b125abf1
+                  parent: '90120202-e7a6-4032-a935-fe91f6e7fd28::EMR::1'
+              timing: 312 ms
+  /checkout:
+    get:
+      summary: get the latest version of a composition with intent of modifying it.
+      tags:
+        - ehrs
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: ehrUid
+          in: query
+          description: identifier of the EHR containing the composition
+          required: true
+          type: string
+        - name: compositionUid
+          in: query
+          description: identifier of the composition being checked out
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: Composition version
+  /organizations:
+    get:
+      summary: >-
+        get the organizations associated with the current user, the same
+        organizations will be retrieved from the user's profile
+      tags:
+        - administrative
+      parameters:
+        - name: Authorization
+          in: header
+          type: string
+          default: Bearer _your_token_here_
+        - name: format
+          in: query
+          description: desired output format
+          required: false
+          type: string
+          enum:
+            - xml
+            - json
+          default: json
+        - name: ehrUid
+          in: query
+          description: identifier of the EHR containing the composition
+          required: true
+          type: string
+      produces:
+        - application/json
+        - text/xml
+      responses:
+        200:
+          description: List of organizations.
+          examples:
+            organizations:
+              - uid: 4f9cfbe4-8cdd-43fc-b0de-5544305fcdd5
+                name: Hospital de Clinicas
+              - uid: 4ea72e8c-9707-4e1e-8acc-9e10e61b2037
+                name: Clinica del Tratamiento del Dolor
+definitions:
+  VERSION:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: Unique identifier of this version, containing owner_id, creating_system_id and version_tree_id.
+      data: #creo que es composition.
+        $ref: "#/definitions/COMPOSITION"
+      lifecycle_state:
+        $ref: "#/definitions/DV_CODED_TEXT"
+      contribution:
+        $ref: "#/definitions/CONTRIBUTION"
+      commit_audit:
+        $ref:  "#/definitions/AUDIT_DETAILS"
+  CONTRIBUTION:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: Unique identifier for this contribution.
+      versions:
+        type: array
+        description: Set of references to versions causing changes to this EHR. Each contribution contains a list of versions, which may include paths pointing to any number of VERSIONABLE items, i.e. items of type COMPOSITION and FOLDER.
+        items:
+            type: string
+      audit:
+        $ref:  "#/definitions/AUDIT_DETAILS"
+  AUDIT_DETAILS:
+    type: object
+    properties:
+       system_id:
+          type: string
+          description: Identity of the system where the change was committed. Ideally this is a machine- and human-processable identifier, but it may not be.
+       time_committed:
+          $ref: "#/definitions/DV_DATE_TIME"
+       change_type:
+         $ref: "#/definitions/DV_CODED_TEXT"
+       description:
+         $ref: "#/definitions/DV_TEXT"
+       committer:
+          type: string
+          description: Identity and optional reference into identity management service, of user who committed the item.
+  COMPOSITION:
+    type: object
+    properties:
+        uid:
+           type: string
+           description: Optional globally unique object identifier for root points of archetyped structures.
+        archetype_node_id:
+            type: string
+            description: Design-time archetype id of this node taken from its generating archetype; used to build archetype paths. Always in the form of an “at” code, e.g. “at0005”. This value enables a 'standardised' name for this node to be generated, by referring to the generating archetype local ontology. At an archetype root point, the value of this attribute is always the stringified form of the archetype_id found in the archetype_details object.
+        name:
+            $ref: "#/definitions/DV_TEXT"
+        archetype_details:
+            $ref: "#/definitions/ARCHETYPED"
+        feeder_audit:
+            $ref:  "#/definitions/FEDDER_AUDIT"
+        links:
+            type: array
+            description: Links to other archetyped structures (data whose root object inherits from ARCHETYPED, such as ENTRY, SECTION and so on). Links may be to structures in other compositions. Details of archetyping used on this node
+            items:
+                 $ref: "#/definitions/LINK"
+        content:
+            type: array
+            description: The content of this Composition.
+            items:
+                 $ref: "#/definitions/CONTENT_ITEM"
+        context:
+            $ref: "#/definitions/EVENT_CONTEXT"
+        composer:
+            type: string
+            description: The person primarily responsible for the content of the Composition (but not necessarily its committal into the EHR system). This is the identifier which should
+              appear on the screen. It may or may not be the person who entered the data. When it is the patient, the special 'self' instance of PARTY_PROXY will be used.
+        category:
+            $ref: "#/definitions/DV_CODED_TEXT"
+        language:
+            $ref: "#/definitions/CODE_PHASE"
+        territory:
+            $ref: "#/definitions/CODE_PHASE"
+  ARCHETYPED:
+    type: object
+    properties:
+        archetype_id:
+            type: string
+            description: Globally unique archetype identifier.
+        template_id:
+            type: string
+            description: Globally unique template identifier, if a template was active at this point in the structure. Normally, a template would only be used at the top of a top-level structure, but the possibility exists for templates at lower levels.
+        rm_version:
+            type: string
+            description: Version of the openEHR reference model used to create this object. Expressed in terms of the release version string, e.g. “1.0”,“1.2.4”.
+  FEDDER_AUDIT:
+    type: object
+    properties:
+        originating_system_audit:
+            $ref: "#/definitions/FEEDER_AUDIT_DETAILS"
+        originating_system_item_ids:
+            type: array
+            description: Identifiers used for the item in the originating system, e.g. filler and placer id.
+            items:
+                 $ref: "#/definitions/DV_IDENTIFIER"
+        feeder_system_audit:
+            $ref: "#/definitions/FEEDER_AUDIT_DETAILS"
+        feeder_system_item_ids:
+            type: array
+            description: Identifiers used for the item in the feeder system, where the feeder system is distinct from the originating system.
+            items:
+                 $ref: "#/definitions/DV_IDENTIFIER"
+        original_content:
+            $ref: "#/definitions/DV_ENCAPSULATED"
+  DV_CODED_TEXT:
+    type: object
+    properties:
+        defining_code:
+            $ref:  "#/definitions/CODE_PHASE"
+  DV_TEXT:
+     type: object
+     properties:
+        value:
+            type: string
+            description: Displayable rendition of the item, regardless of its underlying structure. For DV_CODED_TEXT, this is the rubric of the complete term as provided by the terminology service. No carriage returns, line feeds, or other non-printing characters permitted.
+        hyperlink:
+            $ref:  "#/definitions/DV_URI"
+        formatting:
+            type: string
+            description: A format string of the form name:value; name:value…
+        mappings:
+            $ref:  "#/definitions/TERM_MAPPING"
+        language:
+            $ref: "#/definitions/CODE_PHASE"
+        encodings:
+            $ref: "#/definitions/CODE_PHASE"
+  DV_DURATION:
+     type: object
+     properties:
+        value:
+            type: string
+            description: ISO8601 duration.
+  DV_DATE_TIME:
+    type: object
+    properties:
+        value:
+            type: string
+            description: ISO8601 date/time string
+  DV_EHR_URI:
+     type: object
+     properties:
+        schme:
+            type: string
+            description: A distributed information 'space' in which information objects exist. The scheme simultaneously specifies an information space and a mechanism for accessing objects in that space. For example if scheme = 'ftp', it identifies the information space in which all ftpable objects exist, and also the application - ftp - which can be used to access them. Values may include 'ftp', 'telnet', 'mailto', 'gopher' and many others. Refer to WWW URI RFC for a full list. New information spaces can be accommodated within the URI specification.
+        path:
+            type: string
+            description: A string whose format is a function of the scheme. Identifies the location in <scheme>- space of an information entity. Typical values include hierarchical directory paths for any machine. For example, with scheme = 'ftp', path might be /pub/images/image_01. The strings '.' and '..' are reserved for use in the path. Paths may include internet/intranet location identifiers of the form sub_domain...domain, e.g. 'info.cern.ch'
+        fragment_id:
+            type: string
+            description: A part of, a fragment or a sub-function within an object. Allows references to sub-parts of objects, such as a certain line and character position in a text object. The syntax and semantics are defined by the application responsible for the object.
+        query:
+            type: string
+            description: Query string to send to application implied by scheme and path Enables queries to applications, including databases to be included in the URI Any query meaningful to the server, including SQL.
+  DV_URI:
+     type: object
+     properties:
+        value:
+            type: string
+            description: Value of URI as a String.
+  DV_IDENTIFIER:
+     type: object
+     properties:
+        issuer:
+            type: string
+            description: Authority which issues the kind of id used in the id field of this object.
+        assigner:
+            type: string
+            description: Organisation that assigned the id to the item being identified.
+        id:
+            type: string
+            description: String The identifier value. Often structured, according to the definition of the issuing authority’s rules.
+        type:
+            type: string
+            description: The identifier type, such as “prescription”, or “SSN”. One day a controlled vocabulary might be possible for this.
+  DV_ENCAPSULATED:
+     type: object
+     properties:
+        schme:
+            type: integer
+            description: Original size in bytes of unencoded encapsulated data. I.e. encodings such as base64, hexadecimal etc do not change the value of this attribute.
+        charset:
+            $ref: "#/definitions/CODE_PHASE"
+        language:
+            $ref: "#/definitions/CODE_PHASE"
+  LINK:
+     type: object
+     properties:
+        meaning:
+            $ref: "#/definitions/DV_TEXT"
+        type:
+            $ref: "#/definitions/DV_TEXT"
+        target:
+            $ref: "#/definitions/DV_EHR_URI"
+
+  CODE_PHASE:
+     type: object
+     properties:
+        terminology_id:
+            $ref: "#/definitions/TERMINOLOGY_ID"
+        code_string:
+            type: string
+            description: The key used by the terminology service to identify a concept or coordination of concepts. This string is most likely parsable inside the terminology service, but nothing can be assumed about its syntax outside that context.
+  TERMINOLOGY_ID:
+     type: object
+     properties:
+        scheme:
+          type: string
+          description: Name of the scheme to which this identifier conforms. Ideally this name will be recognisable globally but realistically it may be a local ad hoc scheme whose name is not controlled or standardised in any way.
+  CONTENT_ITEM:
+    type: object
+    properties:
+        uid:
+           type: string
+           description: Optional globally unique object identifier for root points of archetyped structures.
+        archetype_node_id:
+            type: string
+            description: Design-time archetype id of this node taken from its generating archetype; used to build archetype paths. Always in the form of an “at” code, e.g. “at0005”. This value enables a 'standardised' name for this node to be generated, by referring to the generating archetype local ontology. At an archetype root point, the value of this attribute is always the stringified form of the archetype_id found in the archetype_details object.
+        name:
+            $ref: "#/definitions/DV_TEXT"
+        archetype_details:
+            $ref: "#/definitions/ARCHETYPED"
+        feeder_audit:
+            $ref: "#/definitions/FEDDER_AUDIT"
+        links:
+            type: array
+            description: Links to other archetyped structures (data whose root object inherits from ARCHETYPED, such as ENTRY, SECTION and so on). Links may be to structures in other compositions. Details of archetyping used on this node
+            items:
+                $ref: "#/definitions/LINK"
+  EVENT_CONTEXT:
+    type: object
+    properties:
+        health_care_facility:
+            type: string
+            description: The health care facility under whose care the event took place. This is the most specific workgroup or delivery unit within a care delivery enterprise that has an official identifier in the health system, and can be used to ensure medico-legal accountability.
+        start_time:
+            $ref: "#/definitions/DV_DATE_TIME"
+        end_time:
+            $ref: "#/definitions/DV_DATE_TIME"
+        participations:
+            type: array
+            description: Parties involved in the healthcare event. These would normally include the physician(s) and often the patient (but not the latter if the clinical session is a pathology test for example).
+            items:
+                $ref:  "#/definitions/PARTICIPATION"
+        location:
+            type: string
+            description: The actual location where the session occurred, e.g. “microbiol lab 2”, “home”,“ward A3” and so on.
+        setting:
+            $ref: "#/definitions/DV_CODED_TEXT"
+        other_context:
+            $ref: "#/definitions/ITEM_STRUCTURE"
+  ITEM_STRUCTURE:
+    type: object
+    properties:
+        as_hierarchy:
+            $ref: "#/definitions/ITEM"
+  ITEM:
+    type: object
+    properties:
+        uid:
+           type: string
+           description: Optional globally unique object identifier for root points of archetyped structures.
+        archetype_node_id:
+            type: string
+            description: Design-time archetype id of this node taken from its generating archetype; used to build archetype paths. Always in the form of an “at” code, e.g. “at0005”. This value enables a 'standardised' name for this node to be generated, by referring to the generating archetype local ontology. At an archetype root point, the value of this attribute is always the stringified form of the archetype_id found in the archetype_details object.
+        name:
+            $ref: "#/definitions/DV_TEXT"
+        archetype_details:
+            $ref: "#/definitions/ARCHETYPED"
+        feeder_audit:
+            $ref: "#/definitions/FEDDER_AUDIT"
+        links:
+            type: array
+            description: Links to other archetyped structures (data whose root object inherits from ARCHETYPED, such as ENTRY, SECTION and so on). Links may be to structures in other compositions. Details of archetyping used on this node
+            items:
+                $ref: "#/definitions/LINK"
+  PARTICIPATION:
+    type: object
+    properties:
+        performer:
+          type: string
+          description: The id and possibly demographic system link of the party participating in the activity.
+        function:
+            $ref: "#/definitions/DV_TEXT"
+        mode:
+            $ref: "#/definitions/DV_CODED_TEXT"
+        time:
+            $ref: "#/definitions/DV_INTERVAL"
+
+  FEEDER_AUDIT_DETAILS:
+    type: object
+    properties:
+        system_id:
+            type: string
+            description: Identifier of the system which handled the information item.
+        provider:
+            type: string
+            description: Optional provider(s) who created, committed,forwarded or otherwise handled the item.
+        location:
+            type: string
+            description: Identifier of the particular site/facility within an organisation which handled the item. For computability, this identifier needs to be e.g. a PKI identifier which can be included in the identifier list of the PARTY_IDENTIFIED object.
+        time:
+             $ref: "#/definitions/DV_DATE_TIME"
+        subject:
+            type: string
+            description: Identifiers for subject of the received information item.
+        version_id:
+            type: string
+            description: Any identifier used in the system such as “interim”, “final”, or numeric versions if available.
+  TERM_MAPPING:
+    type: object
+    properties:
+        target:
+            $ref: "#/definitions/DV_TEXT"
+        match:
+            type: string
+            description: The relative match of the target term with respect to the mapped text item.
+        purpose:
+            $ref: "#/definitions/DV_CODED_TEXT"
+  DV_INTERVAL:
+    type: object
+
+
+  Ehr:
+    type: object
+    properties:
+      systemId:
+        type: string
+        description: The id of the EHR system on which this EHR was created
+      uid:
+        type: string
+        description: >-
+          Emula un HIER_OBJECT_ID.root y su valor va a ser un UUID
+          (java.util.UUID.randomUUID() as String) que se asigna en el momento
+          que se crea el EHR
+      dateCreated:
+        type: string
+        format: date
+        description: >-
+          Emula timeCreated, se setea automaticamente por Grails en el momento
+          de crear el EHR
+      subject:
+        type: string
+        description: Emula EHR.ehr_status......subject
+      organizationUid:
+        type: string
+        description: organizationUid
+  Query:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: unique identifier
+      name:
+        type: string
+        description: name of the query
+      type:
+        type: string
+        description: type of query
+        enum:
+          - composition
+          - datavalue
+        default: composition
+      format:
+        type: string
+        description: output format for query reulsts
+      group:
+        type: string
+        description: type of grouping for datavalue queries
+        enum:
+          - none
+          - composition
+          - path
+        default: path
+      projections:
+        type: array
+        items:
+          properties:
+            arthcetype_id:
+              type: string
+              description: identifier of the archetype
+            path:
+              type: string
+              description: valid path inside the archetype
+        description: datavalue projections of the query
+      criteria:
+        type: array
+        items:
+          properties:
+            arthcetype_id:
+              type: string
+              description: identifier of the archetype
+            path:
+              type: string
+              description: valid path inside the archetype
+            conditions:
+              type: object
+              description: >-
+                conditions depend on the datavalue, e.g. for DV_QUANITTY the
+                conditions object can be: {"magnitude": {"gt": [140.0]},"units":
+                {"eq": "mm[Hg]"}}
+        description: composition queries are fildered by criteria
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
