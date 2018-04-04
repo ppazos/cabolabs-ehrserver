@@ -320,7 +320,7 @@ class RestController {
          if (plan_assoc.plan.repo_total_size_in_kb <= account.totalRepoSizeInKb)
          {
            commitLoggerService.log(request, null, false, null, session, params)
-           renderError(message(code:'rest.commit.error.cant_commit.insufficient_storage'), '4507', 507) // 507 Insufficient Storage
+           renderError(message(code:'rest.commit.error.cant_commit.insufficient_storage', args:[plan_assoc.plan.repo_total_size_in_kb, account.totalRepoSizeInKb]), '4507', 507) // 507 Insufficient Storage
            return
          }
       }
@@ -490,7 +490,17 @@ class RestController {
       catch (CommitWrongChangeTypeException e)
       {
          commitLoggerService.log(request, null, false, content, session, params)
-         renderError(message(code:'rest.commit.error.wrongChangeType', args:[e.message]), 'e02.0009.0', 400, [], e)
+
+         def detailedErrors = []
+
+         xmlService.validationErrors.each { i, errorList ->
+            errorList.each { errorText ->
+
+               detailedErrors << message(code:'api.commit.changeType.errors', args:[i]) +': '+ errorText
+            }
+         }
+
+         renderError(message(code:'rest.commit.error.wrongChangeType', args:[e.message]), 'e02.0009.0', 400, detailedErrors, e)
          return
       }
       catch (XmlValidationException e) // xsd validation errors
@@ -507,7 +517,7 @@ class RestController {
             }
          }
 
-         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009.1', 400, detailedErrors, null)
+         renderError(message(code:'rest.commit.error.versionsDontValidate'), 'e02.0009.1', 400, detailedErrors, e)
          return
       }
       catch (UndeclaredThrowableException e)
