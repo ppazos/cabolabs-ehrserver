@@ -166,7 +166,7 @@ class StatsController {
 
       account.organizations.each { org ->
 
-         size = ((versionFSRepoService.getRepoSizeInBytes(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1024).setScale(1,0)
+         size = ((versionFSRepoService.getRepoSizeInBytesOrg(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1024).setScale(1,0)
 
          // size is set in KB
          stats[org.uid] = size
