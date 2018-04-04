@@ -418,6 +418,28 @@ class RestController {
          return
       }
 
+
+      // CHECK: all referenced template IDs should exist
+      // gets the template ID from each version in the commit
+      def template_ids = _parsedVersions.version.collect { it.data.archetype_details.template_id.value.text() }
+      def error_opt_not_exists = null
+      def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
+      for (String tid: template_ids)
+      {
+         if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(tid) == 0)
+         {
+            error_opt_not_exists = tid
+            break // ends for loop
+         }
+      }
+      if (error_opt_not_exists)
+      {
+         commitLoggerService.log(request, null, false, content, session, params)
+         renderError(message(code:'api.commit.warning.optNotLoaded', args:[error_opt_not_exists]), '1324', 412)
+         return
+      }
+
+
       def contribution
       try
       {
@@ -425,6 +447,7 @@ class RestController {
          contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
          if (!contribution.save())
          {
+            // FIXME: log and notification!
             println contribution.errors
          }
 
@@ -440,56 +463,26 @@ class RestController {
 
          commitLoggerService.log(request, contribution.uid, true, content, session, params)
 
+         def msg = message(code:'api.commit.ok', args:[ehrUid])
 
-         // Check if the OPT is loaded for each compo committed, return warning if not.
+         withFormat {
+            xml {
+               render(status: 201, contentType:"text/xml", encoding:"UTF-8") {
+                  result {
+                     type ('AA')
+                     message(msg)
 
-         def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
-         def warnings = []
-         contribution.versions.each { version ->
-
-            if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(version.data.templateId) == 0)
-            {
-               warnings << message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid])
-
-               def admins = User.allForRole('ROLE_ADMIN')
-               admins.each{ admin ->
-                  new Notification(
-                     name:    'Template Not Loaded For Commit',
-                     language: 'en', /* TODO: lang should be the preferred by the org 0 of the admin */
-                     text:     message(code:'api.commit.warning.optNotLoaded', args:[version.data.templateId, version.data.uid]),
-                     forUser:  admin.id).save()
+                  }
                }
             }
-         }
-
-         if (warnings.size() > 0)
-         {
-            // TODO: this is not an error, but we use the same method for simplicity, we might want to ad a warning type of result.
-            renderError(message(code:'api.commit.warning.verionsCommittedWithWarnings'), '1324', 202, warnings, null)
-         }
-         else
-         {
-            def msg = message(code:'api.commit.ok', args:[ehrUid])
-
-            withFormat {
-               xml {
-                  render(status: 201, contentType:"text/xml", encoding:"UTF-8") {
-                     result {
-                        type ('AA')
-                        message(msg)
-
-                     }
-                  }
-               }
-               json {
-                  render(status: 201, contentType:"application/json", encoding:"UTF-8") {
-                     [
-                        result: [
-                           type: 'AA',
-                           message: msg
-                        ]
+            json {
+               render(status: 201, contentType:"application/json", encoding:"UTF-8") {
+                  [
+                     result: [
+                        type: 'AA',
+                        message: msg
                      ]
-                  }
+                  ]
                }
             }
          }
