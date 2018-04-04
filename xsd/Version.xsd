@@ -714,11 +714,27 @@
                </xs:extension>
           </xs:complexContent>
      </xs:complexType>
+     <!--
    <xs:complexType name="OBJECT_VERSION_ID">
           <xs:complexContent>
                <xs:extension base="UID_BASED_ID"/>
           </xs:complexContent>
      </xs:complexType>
+
+  -->
+  <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/913 -->
+  <xs:complexType name="OBJECT_VERSION_ID">
+         <xs:complexContent>
+              <xs:restriction base="UID_BASED_ID">
+                 <xs:sequence>
+                      <xs:element name="value" type="OBJECT_VERSION_ID_VALUE_FORMAT"/>
+                 </xs:sequence>
+              </xs:restriction>
+         </xs:complexContent>
+    </xs:complexType>
+
+
+
    <xs:complexType name="ARCHETYPE_ID">
           <xs:complexContent>
                <xs:extension base="OBJECT_ID"/>
@@ -948,6 +964,12 @@
   <xs:simpleType name="NotEmptyUri">
      <xs:restriction base="xs:anyURI">
        <xs:minLength value="1" />
+     </xs:restriction>
+  </xs:simpleType>
+  <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/913 -->
+  <xs:simpleType name="OBJECT_VERSION_ID_VALUE_FORMAT">
+     <xs:restriction base="NotEmptyToken">
+        <xs:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}::(.*)::([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)"/>
      </xs:restriction>
   </xs:simpleType>
 </xsd:schema>
