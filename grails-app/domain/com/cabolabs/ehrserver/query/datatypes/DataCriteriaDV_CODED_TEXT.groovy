@@ -33,24 +33,24 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
    List codeValue
    String terminologyIdValue
    String valueValue
-   
+
    // Comparison operands
    String codeOperand
    String terminologyIdOperand
    String valueOperand
-   
+
    boolean codeNegation = false
    boolean terminologyIdNegation = false
    boolean valueNegation = false
-   
+
    DataCriteriaDV_CODED_TEXT()
    {
       rmTypeName = 'DV_CODED_TEXT'
       alias = 'dcti'
    }
-   
+
    static hasMany = [codeValue: String]
-   
+
    static constraints = {
       codeOperand(nullable:true)
       terminologyIdOperand(nullable:true)
@@ -62,9 +62,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
       valueValue column: "dv_codedtext_value"
       terminologyIdValue column: "dv_codedtext_terminology_id"
    }
-   
+
    /**
-    * Metadata that defines the types of criteria supported to search 
+    * Metadata that defines the types of criteria supported to search
     * by conditions over DV_CODED_TEXT.
     * @return
     */
@@ -75,7 +75,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           code: [
             eq: 'value',     // operand eq can be applied to attribute code and the reference value is a single value
             in_list: 'list', // operand in_list can be applied to attribute code and the reference value is a list of values
-            
+
             // TODO: there is a dependence between code and terminologyId constraints, if in_snomed_exp is selected,
             //       I want codes to terminologyId to be set to this list, or I can send it always and avoid processing it on the ui.
             // International Edition 20170131
@@ -96,47 +96,34 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           value: [contains: 'value']
         ]
       ]
-      
+
       if (returnCodes)
       {
          def optMan = OptManager.getInstance()
-         
-         /*
-         println "path "+ path
-         println "arch 1 "+ arch
-         println "arch "+ arch.archetypeId
-         //println "arch nodes "+ arch.nodes
-         println "node "+ arch.getNode(path).xmlNode.rm_type_name.text()
-         println "text nodes "+ arch.getNode(path).nodes
-         println "node codes "+ arch.getNode(path + '/defining_code').xmlNode.code_list.text()
-         */
-         
-   /* can be many for the one archetypeId
-         println "-------------"
-         println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
-         println "-------------"
-   */
-         
+
          // List of valid codes for the code criteria
          // The path received points to the DV_CODED_TEXT, the codes are in the child CODE_PRHASE
          def codes = [:]
-         def code
-         
+
          def lang = RequestContextHolder.currentRequestAttributes().session.lang
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
-         
-         println "namespace ${namespace}"
 
-         // if the coded text doesn't have a constraint, xmlNode is null
+         // 1. codeList can be empty if the archetype doesn't have a constraint.
+         // 2. for DV_TEXT we generate DV_CODED_TEXT index to support inheritance,
+         // but if the OPT doesn't have a DV_CODED_TEXT, the path will return a null node.
          // https://github.com/ppazos/cabolabs-ehrserver/issues/528
-         optMan.getNode(archetypeId, path + '/defining_code', namespace)?.xmlNode?.code_list.each {
-           
-           code = it.text()
-           codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+
+         def constraint = optMan.getNode(archetypeId, path + '/defining_code', namespace)
+         if (constraint && constraint.type == 'C_CODE_PHRASE') // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
+         {
+            constraint.codeList.each { code ->
+
+              codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+            }
          }
-         
-         
-         
+
+
+
          // if it starts with underscore, do not process on the ui
          /* currently we dont need the versions on the query builder since versions are used to get the name/rubric, and queries use just the conceptid
          spec[0].terminologyId._snomed = ['SNOMED-CT(International Edition 20170131)'         : 'SNOMED-CT(International Edition 20170131)',
@@ -145,10 +132,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                                           'SNOMED-CT(Spanish Edition 20160430)'               : 'SNOMED-CT(Spanish Edition 20160430)',
                                           'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)': 'SNOMED-CT(Spanish Edition 20160430 + SNS 20160430)',
                                           'SNOMED-CT(Spanish Edition 20161031)'               : 'SNOMED-CT(Spanish Edition 20161031)',
-                                          'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)': 'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)'] 
+                                          'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)': 'SNOMED-CT(Spanish Edition 20161031 + SNS 20161031)']
          */
          spec[0].terminologyId._snomed = ['SNOMED-CT': 'SNOMED-CT'] // this needs to be set to the terminology when in_snomed_exp operator is selected.
-         
+
          if (codes.size() > 0)
          {
            spec[0].code.codes = codes
@@ -193,7 +180,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                237: 'nursing home care',
                238: 'other care'
             ]
-            spec[0].terminologyId.codes = ['openehr': 'openehr'] 
+            spec[0].terminologyId.codes = ['openehr': 'openehr']
          }
          else
          {
@@ -204,30 +191,30 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
              // terminology:WHO?subset=ATC&amp;language=en-GB
              // WHO
              def terminology = idef.terminologyRef.split('\\?')[0].split(':')[1]
-             
+
              spec[0].terminologyId.codes = [(terminology): terminology]
            }
          }
       }
-      
+
       return spec
    }
-   
+
    static List attributes()
    {
       return ['value', 'code', 'terminologyId']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    String toString()
    {
       return this.getClass().getSimpleName() +": "+ this.codeOperand +" "+ this.codeValue.toString() +" "+ this.terminologyIdOperand +" "+ this.terminologyIdValue
    }
-   
+
    boolean containsFunction()
    {
       return false

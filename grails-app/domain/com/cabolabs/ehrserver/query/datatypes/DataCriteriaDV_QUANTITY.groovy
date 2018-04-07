@@ -59,13 +59,6 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
     */
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
-
-      /*
-      arch.getNode(path).xmlNode.list.each {
-        u = it.units.text()
-        units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT
-      }
-      */
       def spec = [
         [
           magnitude: [
@@ -88,20 +81,12 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
          //println archetypeId +" "+ path
          def optMan = OptManager.getInstance()
          def units = [:]
-         def u
-
-  /* can be many for the one archetypeId
-        println "-------------"
-        println "criteriaSpec "+ optMan.getReferencedArchetypes(archetypeId)
-        println "-------------"
-  */
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
 
-         println "namespace ${namespace}"
+         optMan.getNode(archetypeId, path, namespace).list.each { c_qty_item ->
 
-         optMan.getNode(archetypeId, path, namespace)?.xmlNode.list.each {
-            u = it.units.text()
-            units[u] = u // mm[Hg] -> mm[Hg] // keep it as map to keep the same structure as the DV_CODED_TEXT 
+            // keep it as map to keep the same structure as the DV_CODED_TEXT
+            units[c_qty_item.units] = c_qty_item.units // mm[Hg] -> mm[Hg]
          }
 
          if (units.size() > 0) spec[0].units.units = units
