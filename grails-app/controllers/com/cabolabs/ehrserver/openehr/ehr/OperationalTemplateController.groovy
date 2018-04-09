@@ -47,7 +47,7 @@ class OperationalTemplateController {
 
       def org = session.organization
       def list = OperationalTemplateIndex
-                 .forOrg(org).likeConcept(concept)
+                 .forOrg(org).likeConcept(concept).notDeleted()
                  .lastVersions
                  .list(max: max, offset: offset, sort: sort, order: order)
 
@@ -82,8 +82,6 @@ class OperationalTemplateController {
     */
    def upload(boolean overwrite, String versionOfTemplateUid)
    {
-      println params
-
       if (params.doit)
       {
          def errors = []
@@ -112,7 +110,6 @@ class OperationalTemplateController {
                return
             }
          }
-
 
 
          // PROCESS FILE
@@ -152,7 +149,6 @@ class OperationalTemplateController {
          }
 
          // /PROCESS FILE
-
 
          // ROOT VALIDATION
 
@@ -294,7 +290,7 @@ class OperationalTemplateController {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
-         flash.message = 'Template not found'
+         flash.message = message(code:"opt.common.error.templateNotFound")
          redirect action:'list'
          return
       }
@@ -349,5 +345,35 @@ class OperationalTemplateController {
       if (order == 'desc') items.reverse(true)
 
       return [items: items, templateInstance: opt]
+   }
+
+   def delete(String uid)
+   {
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+
+      if (!opt)
+      {
+         flash.message = message(code:"opt.common.error.templateNotFound")
+         redirect action:'list'
+         return
+      }
+
+      opt.isDeleted = true
+      opt.save(failOnError: true)
+
+      // TODO: move file to deleted folder
+
+      // load opt in manager cache
+      // TODO: just unload the deleted OPT
+      /*
+      def optMan = OptManager.getInstance()
+      optMan.unloadAll(session.organization.uid)
+      optMan.loadAll(session.organization.uid)
+      */
+
+
+      flash.message = message(code:"opt.delete.deleted.ok")
+      redirect action:'list'
+      return
    }
 }

@@ -31,54 +31,62 @@ class OperationalTemplateIndex {
    String externalUid     // from the OPT file
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
-   
+
    String organizationUid  // OPT multitenancy
-   
+
    // internal versioning #776
    String setId = java.util.UUID.randomUUID() as String
    int versionNumber = 1
    boolean lastVersion = true // to simplify queries
-   
+
    String fileUid = java.util.UUID.randomUUID() as String
-   
+
    Date dateCreated
    Date lastUpdated
-   
+
+   boolean isDeleted = false
+
    static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
-   
+
+
+
    static transients = ['lang']
    def getLang()
    {
       this.language.split('::')[1]
    }
-   
+
    static namedQueries = {
       forOrg { org ->
 
          eq('organizationUid', org.uid)
       }
-      
+
       likeConcept { concept ->
          if (concept)
          {
             like('concept', '%'+concept+'%')
          }
       }
-      
+
       lastVersions {
-      
+
          eq('lastVersion', true)
       }
-      
+
       matchExternalUidOrTemplateId { externalUid, templateId ->
          or {
             eq('externalUid', externalUid)
             eq('templateId', templateId)
          }
       }
+
+      notDeleted {
+         eq('isDeleted', false)
+      }
    }
-   
+
    static mapping = {
       templateNodes cascade: "all-delete-orphan" // delete nodes when opti is deleted
    }

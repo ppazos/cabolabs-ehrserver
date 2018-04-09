@@ -8,6 +8,14 @@
     <asset:javascript src="highlight.pack.js" />
     <!-- xmlToString -->
     <asset:javascript src="xml_utils.js" />
+
+    <asset:javascript src="bootstrap-confirmation.min.js" />
+
+    <style>
+    .btn-toolbar .btn-group { /* fix for confirmation buttons style */
+      float: none;
+    }
+    </style>
   </head>
   <body>
     <div class="row">
@@ -84,8 +92,16 @@
           </tbody>
         </table>
 
+        <div class="btn-toolbar" role="toolbar">
+          <fieldset class="buttons">
+            <g:link class="delete" action="delete" params="[uid: opt.uid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" default="Delete" /></button></g:link>
+          </fieldset>
+        </div>
+
       </div>
     </div>
+
+
 
     <div class="row">
       <div class="col-md-12">
@@ -95,11 +111,16 @@
     </div>
 
     <script type="text/javascript">
-       $('#xml').addClass('xml');
-       // The first replace removes the new lines and empty spaces of indentation
-       // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
-       $('#xml').text(formatXml( '${opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'")}' ));
-       $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+      $('#xml').addClass('xml');
+      // The first replace removes the new lines and empty spaces of indentation
+      // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
+      $('#xml').text(formatXml( '${opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'")}' ));
+      $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+
+      $('[data-toggle=confirmation]').confirmation({
+        rootSelector: '[data-toggle=confirmation]',
+        placement: 'left'
+      });
     </script>
   </body>
 </html>
