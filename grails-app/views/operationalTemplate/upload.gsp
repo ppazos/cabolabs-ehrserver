@@ -50,7 +50,7 @@
               <input type="text" class="form-control" readonly>
             </div>
             <span class="help-block">
-              Try selecting one or more files and watch the feedback
+              <g:message code="opt.upload.file.help" />
             </span>
           </div>
 
