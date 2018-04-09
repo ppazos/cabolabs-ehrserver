@@ -228,7 +228,6 @@ class OperationalTemplateController {
 
                // move old version outside the OPT repo
                def old_version_file = new File( opt_repo_org_path + old_version.fileUid + '.opt' )
-               def old_versions_folder =
                old_version_file.renameTo( new File( opt_repo_org_path + 'older_versions'.withTrailSeparator() + old_version_file.name ) )
 
                // create new version
@@ -362,14 +361,20 @@ class OperationalTemplateController {
       opt.save(failOnError: true)
 
       // TODO: move file to deleted folder
+      def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+      def deleted_file = new File( opt_repo_org_path + opt.fileUid + '.opt' )
+      def moved = deleted_file.renameTo( new File( opt_repo_org_path + 'deleted'.withTrailSeparator() + deleted_file.name ) )
+      if (!moved) println "NOT MOVED!"
 
       // load opt in manager cache
       // TODO: just unload the deleted OPT
-      /*
       def optMan = OptManager.getInstance()
       optMan.unloadAll(session.organization.uid)
       optMan.loadAll(session.organization.uid)
-      */
+
+      // reindex
+      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      ti.indexAll(session.organization)
 
 
       flash.message = message(code:"opt.delete.deleted.ok")

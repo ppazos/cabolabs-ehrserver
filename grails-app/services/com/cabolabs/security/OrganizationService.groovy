@@ -26,6 +26,9 @@ class OrganizationService {
       def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
       old_versions_opt_repo_org.mkdir()
 
+      def deleted_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'deleted')
+      deleted_opt_repo_org.mkdir()
+
       // org version repo
       def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
       version_repo.mkdir()
