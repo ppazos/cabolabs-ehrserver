@@ -7,6 +7,9 @@
       #alternative_opts {
         display: none;
       }
+      #validation_errors.row {
+        margin-bottom: 15px;
+      }
     </style>
   </head>
   <body>
@@ -30,16 +33,12 @@
           </ul>
         </g:if>
 
+        <div id="validation_errors"></div>
+
         <g:form action="upload" enctype="multipart/form-data" useToken="true" name="upload_form">
 
           <input type="hidden" name="doit" value="now" />
 
-<%--
-          <div class="form-group">
-            <label class="control-label"><g:message code="opt.upload.label.opt" /></label>
-            <input type="file" name="opt" value="${params.opt}" class="btn btn-default btn-md form-control" required="required" />
-          </div>
---%>
           <div class="form-group">
             <div class="input-group">
               <label class="input-group-btn">
@@ -122,7 +121,7 @@
       })
       .done(function( data ) {
 
-        console.log('done', data);
+        //console.log('done', data);
 
         if (data.status == "ok")
         {
@@ -139,6 +138,26 @@
             data.message +'</div>'
           );
           // display data.errors
+          row = $('#validation_errors').addClass('row');
+
+          col1 = $('<div class="col-md-4" />');
+          error_container = $('<ul class="nav nav-pills nav-stacked"></ul>');
+          col1.append(error_container);
+          row.append(col1);
+
+          col2 = $('<div class="col-md-8" />');
+          details_container = $('<div class="tab-content"></div>');
+          col2.append(details_container);
+          row.append(col2);
+
+          for (i in data.errors)
+          {
+            j = data.errors[i].indexOf(':');
+            parts = [data.errors[i].substring(0, j), data.errors[i].substring(j+1)];
+
+            error_container.append('<li role="presentation"'+ (i == 0 ? ' class="active"' : '') +'><a href="#ed'+ i +'" aria-controls="ed'+ i +'" role="tab" data-toggle="tab">'+ parts[0] +'</a></li>');
+            details_container.append('<div role="tabpanel" class="tab-pane'+ (i == 0 ? ' active' : '') +'" id="ed'+ i +'">'+ parts[1] +'</div>');
+          }
         }
         else if (data.status == "resolve_duplicate")
         {
@@ -156,7 +175,6 @@
 
           $('#alternative_opts').show();
         }
-
       })
       .fail(function(resp,status,status_msg) {
 
@@ -166,9 +184,7 @@
            resp.responseJSON.message +'</div>'
          );
       });
-
     });
     </script>
-
   </body>
 </html>

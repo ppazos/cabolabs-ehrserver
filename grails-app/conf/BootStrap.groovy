@@ -35,7 +35,7 @@ import com.cabolabs.ehrserver.openehr.common.generic.*
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.openehr.opt.manager.OptManager // load opts
+import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.api.structures.PaginatedResults
 import com.cabolabs.ehrserver.account.*
 import grails.converters.*
@@ -766,6 +766,7 @@ class BootStrap {
       }
    }
 
+   // load base OPTs
    def generateTemplateIndexes()
    {
       // for the default organization

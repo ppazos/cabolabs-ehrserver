@@ -30,6 +30,7 @@ import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import grails.converters.*
 import com.cabolabs.ehrserver.account.Plan
+import com.cabolabs.util.FileUtils
 
 class OperationalTemplateController {
 
@@ -127,6 +128,9 @@ class OperationalTemplateController {
             return
          }
 
+         def xml = FileUtils.removeBOM(f.getBytes())
+
+         /*
          // Avoid BOM on OPT files (the Template Designer exports OPTs with BOM and that breaks the XML parser)
          def bytes = f.getBytes()
          def inputStream = new ByteArrayInputStream(bytes)
@@ -137,6 +141,7 @@ class OperationalTemplateController {
          def isr = new InputStreamReader(bomInputStream)
          def br = new BufferedReader(isr)
          def xml = br.text // getText from Groovy
+         */
 
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))

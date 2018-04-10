@@ -335,7 +335,7 @@
       <value>openEHR-EHR-COMPOSITION.basic_demographic.v1</value>
     </archetype_id>
     <template_id>
-      <value>Datos demograficos</value>
+      <value>datos_demograficos.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

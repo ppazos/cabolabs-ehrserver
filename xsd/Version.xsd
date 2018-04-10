@@ -732,19 +732,30 @@
               </xs:restriction>
          </xs:complexContent>
     </xs:complexType>
-
-
-
    <xs:complexType name="ARCHETYPE_ID">
           <xs:complexContent>
                <xs:extension base="OBJECT_ID"/>
           </xs:complexContent>
      </xs:complexType>
+
+   <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/917 -->
+   <!--
    <xs:complexType name="TEMPLATE_ID">
           <xs:complexContent>
                <xs:extension base="OBJECT_ID"/>
           </xs:complexContent>
      </xs:complexType>
+   -->
+   <xs:complexType name="TEMPLATE_ID">
+		    <xs:complexContent>
+			      <xs:restriction base="OBJECT_ID">
+				 <xs:sequence>
+				      <xs:element name="value" type="TEMPLATE_ID_VALUE_FORMAT"/>
+				 </xs:sequence>
+			      </xs:restriction>
+		    </xs:complexContent>
+	  </xs:complexType>
+
    <xs:complexType name="TERMINOLOGY_ID">
           <xs:complexContent>
                <xs:extension base="OBJECT_ID"/>
@@ -951,6 +962,7 @@
          </xs:extension>
       </xs:complexContent>
   </xs:complexType>
+
   <xs:simpleType name="NotEmptyString">
      <xs:restriction base="xs:string">
        <xs:minLength value="1" />
@@ -966,10 +978,18 @@
        <xs:minLength value="1" />
      </xs:restriction>
   </xs:simpleType>
+
   <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/913 -->
   <xs:simpleType name="OBJECT_VERSION_ID_VALUE_FORMAT">
      <xs:restriction base="NotEmptyToken">
         <xs:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}::(\w.*)::([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)"/>
+     </xs:restriction>
+  </xs:simpleType>
+
+  <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/917 concept_snake_case.en.1.5-->
+  <xs:simpleType name="TEMPLATE_ID_VALUE_FORMAT">
+     <xs:restriction base="NotEmptyToken">
+        <xs:pattern value="([a-z]+(_[a-z]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)"/>
      </xs:restriction>
   </xs:simpleType>
 </xsd:schema>
