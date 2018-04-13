@@ -75,7 +75,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
          <value>openEHR-EHR-COMPOSITION.signos.v1</value>
        </archetype_id>
        <template_id>
-         <value>Signos</value>
+         <value>signos.es.v1</value>
        </template_id>
        <rm_version>1.0.2</rm_version>
      </archetype_details>

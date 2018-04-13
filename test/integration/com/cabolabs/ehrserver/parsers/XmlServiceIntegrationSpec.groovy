@@ -305,7 +305,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
    }
 
 
-   void "multiple / dupliacted compo.uid"()
+   void "multiple / duplicated compo.uid"()
    {
       setup:
          def ehr = Ehr.findByUid(ehrUid)

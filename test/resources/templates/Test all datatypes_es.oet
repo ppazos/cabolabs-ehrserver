@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="openEHR/v1/Template">
   <id>4d0546d8-dda0-45d3-8062-fc67c7c5f0b6</id>
-  <name>Test all datatypes</name>
+  <name>test_all_datatypes.es.v1</name>
   <description>
     <lifecycle_state>Initial</lifecycle_state>
     <details>

@@ -36,7 +36,7 @@
         <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
       </archetype_id>
       <template_id>
-        <value>Test all datatypes</value>
+        <value>test_all_datatypes.es.v1</value>
       </template_id>
       <rm_version>1.0.2</rm_version>
     </archetype_details>
@@ -180,7 +180,7 @@
         <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
       </archetype_id>
       <template_id>
-        <value>Test all datatypes</value>
+        <value>test_all_datatypes.es.v1</value>
       </template_id>
       <rm_version>1.0.2</rm_version>
     </archetype_details>

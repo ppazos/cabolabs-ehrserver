@@ -85,6 +85,8 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         ti.setupBaseOpts( org )
         ti.indexAll( org )
+
+        println "Indexed ${OperationalTemplateIndex.count()} OPTs"
       }
 
       // OPT loading

@@ -5,9 +5,9 @@ import grails.test.spock.IntegrationSpec
 class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
 
    def xmlValidationService
-   
+
    private static String PS = System.getProperty("file.separator")
-   
+
    def valid_xml = $/<?xml version="1.0" encoding="UTF-8"?><version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
@@ -49,7 +49,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
         <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
       </archetype_id>
       <template_id>
-        <value>Test all datatypes_en</value>
+        <value>test_all_datatypes.en.v1</value>
       </template_id>
       <rm_version>1.0.2</rm_version>
     </archetype_details>
@@ -149,7 +149,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
     </defining_code>
   </lifecycle_state>
 </version>/$
-   
+
    def invalid_xml = $/<?xml version="1.0" encoding="UTF-8"?><version xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1" xsi:type="ORIGINAL_VERSION">
   <contribution>
     <id xsi:type="HIER_OBJECT_ID">
@@ -170,7 +170,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
         <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
       </archetype_id>
       <template_id>
-        <value>Test all datatypes_en</value>
+        <value>test_all_datatypes.en.v1</value>
       </template_id>
       <rm_version>1.0.2</rm_version>
     </archetype_details>
@@ -270,7 +270,7 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
     </defining_code>
   </lifecycle_state>
 </version>/$
-   
+
    def setup()
    {
    }
@@ -284,28 +284,28 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
       setup:
          def path = 'test'+PS+'resources'+PS+'opts'+PS+'Encuentro.opt'
          def opt = new File(path).text
-      
+
       when:
          def valid = xmlValidationService.validateOPT(opt)
-      
+
       then:
          assert valid
    }
-   
+
    void "validate invalid OPT"()
    {
       setup:
          def path = 'test'+PS+'resources'+PS+'opts'+PS+'Encuentro_invalid.opt'
          def opt = new File(path).text
-      
+
       when:
          def valid = xmlValidationService.validateOPT(opt)
-      
+
       then:
          assert !valid
          assert xmlValidationService.getErrors().size() > 0
    }
-   
+
    void "validate version"()
    {
       setup:
@@ -315,14 +315,14 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
          def slurper = new XmlSlurper(false, false)
          def parsedVersion = slurper.parseText(xml)
          def namespaces = [:]
-      
+
       when:
          def valid = xmlValidationService.validateVersion(parsedVersion, namespaces)
-      
+
       then:
          assert valid
    }
-   
+
    void "validate invalid version"()
    {
       setup:
@@ -332,39 +332,39 @@ class XmlValidationServiceIntegrationSpec extends IntegrationSpec {
          def slurper = new XmlSlurper(false, false)
          def parsedVersion = slurper.parseText(xml)
          def namespaces = [:]
-      
+
       when:
          def valid = xmlValidationService.validateVersion(parsedVersion, namespaces)
-      
+
       then:
          assert !valid
          assert xmlValidationService.getErrors().size() > 0
    }
-   
+
    void "validate string version"()
    {
       setup:
          //def path = 'test'+PS+'resources'+PS+'versions'+PS+'91cf9ded-e926-4848-aa3f-3257c1d89554_EMR_APP_1.xml'
          //def xml = new File(path).text
          def xml = valid_xml
-      
+
       when:
          def valid = xmlValidationService.validateVersion(xml)
-      
+
       then:
          assert valid
    }
-   
+
    void "validate invalid string version"()
    {
       setup:
          //def path = 'test'+PS+'resources'+PS+'versions'+PS+'91cf9ded-e926-4848-aa3f-3257c1d89554_EMR_APP_1_invalid.xml'
          //def xml = new File(path).text
          def xml = invalid_xml
-      
+
       when:
          def valid = xmlValidationService.validateVersion(xml)
-      
+
       then:
          assert !valid
          assert xmlValidationService.getErrors().size() > 0

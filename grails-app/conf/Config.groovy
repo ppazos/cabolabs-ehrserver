@@ -157,7 +157,7 @@ environments {
     app {
        version_repo = "test"+ PS +"resources"+ PS +"temp_versions" + PS
        commit_logs = "commits" + PS
-       opt_repo = "opts" + PS + "tests" + PS
+       opt_repo = "test"+ PS +"resources"+ PS +"opts" + PS
        allow_web_user_register = true
     }
   }
