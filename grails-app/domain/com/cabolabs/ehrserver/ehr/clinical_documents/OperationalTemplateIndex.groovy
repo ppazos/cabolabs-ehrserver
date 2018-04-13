@@ -85,6 +85,9 @@ class OperationalTemplateIndex {
       notDeleted {
          eq('isDeleted', false)
       }
+      deleted {
+         eq('isDeleted', true)
+      }
    }
 
    static mapping = {

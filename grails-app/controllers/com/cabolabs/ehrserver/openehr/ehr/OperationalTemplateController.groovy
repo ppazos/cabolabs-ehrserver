@@ -39,18 +39,29 @@ class OperationalTemplateController {
    def springSecurityService
    def configurationService
 
-   def list(int offset, String sort, String order, String concept)
+   def list(int offset, String sort, String order, String concept, Boolean deleted)
    {
+      println params
+
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
 
       def org = session.organization
-      def list = OperationalTemplateIndex
-                 .forOrg(org).likeConcept(concept).notDeleted()
-                 .lastVersions
+      def list
+      if (!deleted)
+      {
+         list = OperationalTemplateIndex
+                 .forOrg(org).likeConcept(concept).notDeleted.lastVersions
                  .list(max: max, offset: offset, sort: sort, order: order)
+     }
+     else
+     {
+         list = OperationalTemplateIndex
+                .forOrg(org).likeConcept(concept).deleted.lastVersions
+                .list(max: max, offset: offset, sort: sort, order: order)
+     }
 
       [opts: list, total: list.totalCount]
    }
@@ -351,6 +362,9 @@ class OperationalTemplateController {
       return [items: items, templateInstance: opt]
    }
 
+   /*
+    * Logical delete of one item.
+    */
    def delete(String uid)
    {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
@@ -365,25 +379,42 @@ class OperationalTemplateController {
       opt.isDeleted = true
       opt.save(failOnError: true)
 
-      // TODO: move file to deleted folder
-      def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
-      def deleted_file = new File( opt_repo_org_path + opt.fileUid + '.opt' )
-      def moved = deleted_file.renameTo( new File( opt_repo_org_path + 'deleted'.withTrailSeparator() + deleted_file.name ) )
-      if (!moved) println "NOT MOVED!"
-
-      // load opt in manager cache
-      // TODO: just unload the deleted OPT
-      def optMan = OptManager.getInstance()
-      optMan.unloadAll(session.organization.uid)
-      optMan.loadAll(session.organization.uid)
-
-      // reindex
-      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      ti.indexAll(session.organization)
-
+      // If the OPT file is moved and the reindex executed, the OPTIndex is deleted from the database and not listed on trash,
+      // we need the OPTIndex to be on the DB and remove it when it is physically deleted.
 
       flash.message = message(code:"opt.delete.deleted.ok")
       redirect action:'list'
       return
+   }
+
+   /*
+    * Physical delete all logically deleted items.
+    */
+   def empty_trash()
+   {
+      def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
+      opts.each { opt ->
+
+         // move file to deleted folder, we don't actually delete the file, just in case!
+         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
+         def deleted_file = new File( opt_repo_org_path + opt.fileUid + '.opt' )
+         def moved = deleted_file.renameTo( new File( opt_repo_org_path + 'deleted'.withTrailSeparator() + deleted_file.name ) )
+         if (!moved) println "NOT MOVED!"
+
+         // index update deletes items from the database
+
+         // load opt in manager cache
+         // TODO: just unload the deleted OPT
+         def optMan = OptManager.getInstance()
+         optMan.unloadAll(session.organization.uid)
+         optMan.loadAll(session.organization.uid)
+
+         // reindex
+         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+         ti.indexAll(session.organization)
+      }
+
+      flash.message = message(code:"opt.trash.emptied")
+      redirect action: 'trash' // URLMapping maps trash to list?deleted=true
    }
 }

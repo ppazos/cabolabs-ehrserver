@@ -10,7 +10,6 @@
     <asset:javascript src="xml_utils.js" />
 
     <asset:javascript src="bootstrap-confirmation.min.js" />
-
     <style>
     .btn-toolbar .btn-group { /* fix for confirmation buttons style */
       float: none;
@@ -101,8 +100,6 @@
       </div>
     </div>
 
-
-
     <div class="row">
       <div class="col-md-12">
         <g:message code="common.format.xml" />
@@ -119,7 +116,9 @@
 
       $('[data-toggle=confirmation]').confirmation({
         rootSelector: '[data-toggle=confirmation]',
-        placement: 'left'
+        placement: 'left',
+        btnOkClass: 'btn btn-primary',
+        btnCancelClass: 'btn btn-default'
       });
     </script>
   </body>

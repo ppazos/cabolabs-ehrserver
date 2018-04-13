@@ -27,13 +27,13 @@ class UrlMappings {
       "/"(
          controller: 'login' // auth or if the user is logged in /app/index
       )
-      
+
       "500"(view:'/error')
 
       /**
        * Use UIDs on webconsole show/edit
        */
-      
+
       "/organization/show/$uid"(
          controller: 'organization',
          action: 'show'
@@ -46,7 +46,25 @@ class UrlMappings {
          controller: 'organization',
          action: 'update'
       )
-      
+
+/*
+      "/operationalTemplate/trash"(
+         controller: 'operationalTemplate',
+         action: 'list',
+         deleted: true
+      )
+      */
+      "/operationalTemplate/list" {
+         controller = 'operationalTemplate'
+         action = 'list'
+         deleted = false
+      }
+      "/operationalTemplate/trash" {
+         controller = 'operationalTemplate'
+         action = 'list'
+         deleted = true
+      }
+
       "/logs/show/$id" {
          controller = 'activityLog'
          action = 'show'
@@ -55,7 +73,7 @@ class UrlMappings {
          controller = 'activityLog'
          action = 'index'
       }
-      
+
       "/api/v1/login"(
          method: 'POST',
          controller: 'rest',
@@ -76,7 +94,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'userRegister'
       )
-      
+
       "/api/v1/ehrs"(
          controller: 'rest',
          action: 'ehrList'
@@ -113,7 +131,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'commit'
       )
-      
+
       "/api/v1/compositions"(
          method: 'GET',
          controller: 'rest',
@@ -123,14 +141,14 @@ class UrlMappings {
          controller: 'rest',
          action: 'getComposition'
       )
-      
+
       // execute given query (not stored)
       "/api/v1/query/composition/execute"(
          method: 'POST',
          controller: 'rest',
          action: 'executedNotStoredCompositionQuery'
       )
-      
+
       "/api/v1/queries"(
          controller: 'rest',
          action: 'queryList'
@@ -160,7 +178,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'checkout'
       )
-      
+
       "/api/v1/templates"(
          controller: 'rest',
          action: 'templates'
@@ -169,7 +187,7 @@ class UrlMappings {
          controller: 'rest',
          action: 'getTemplate'
       )
-      
+
       // TODO: fancy restful urls
       "/api/v1/getEhrQueries"(
          method: 'GET',
@@ -186,13 +204,13 @@ class UrlMappings {
          controller: 'rest',
          action: 'getMatchingEhrs'
       )
-      
+
       // management API
       "/mgt/v1/stats/$username"(
          controller: 'stats',
          action: 'userAccountStats'
       )
-      
+
       "/$controller/$action?/$id?"{
          constraints {
             // apply constraints here

@@ -73,6 +73,10 @@
       background-color: #4185F3;
       border-color: #4185F3;
      }
+     .btn-primary { /* change the default bootstrap blue to our blue */
+       background-color: #4185F3;
+       border-color: #4185F3;
+     }
 
      /** Adding vertical space between rows when needed **/
      /* usage <div class="row row-grid"> */

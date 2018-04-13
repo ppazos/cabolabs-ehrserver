@@ -2,34 +2,63 @@
 <html>
   <head>
     <meta name="layout" content="admin">
-    <title><g:message code="opt.list.title" /></title>
+    <g:if test="${params.deleted}">
+      <title><g:message code="opt.trash.title" /></title>
+    </g:if>
+    <g:else>
+      <title><g:message code="opt.list.title" /></title>
+    </g:else>
+    <asset:javascript src="bootstrap-confirmation.min.js" />
+    <style>
+    .btn-toolbar .btn-group { /* fix for confirmation buttons style */
+      float: none;
+    }
+    </style>
   </head>
   <body>
     <div class="row">
       <div class="col-lg-12">
-        <h1><g:message code="opt.list.title" /></h1>
+        <g:if test="${params.deleted}">
+          <h1><g:message code="opt.trash.title" /></h1>
+        </g:if>
+        <g:else>
+          <h1><g:message code="opt.list.title" /></h1>
+        </g:else>
       </div>
     </div>
     <div class="row row-grid">
       <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
-          <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
-            <span class="fa fa-filter fa-fw" aria-hidden="true"></span>
-          </button>
-          
-          <g:link action="upload" title="upload operational template">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-upload fa-fw" aria-hidden="true"></span>
+          <g:if test="${params.deleted}">
+          <g:link action="empty_trash" data-toggle="confirmation" data-title="Are you sure?" data-content="This action can't be undone!">
+            <button type="button" class="btn btn-danger btn-md">
+              <span class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.empty_trash.label" />
             </button></g:link>
-            
-          <g:link action="generate">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-refresh fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
-            </button></g:link>
+          </g:if>
+          <g:else>
+            <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
+              <span class="fa fa-filter fa-fw" aria-hidden="true"></span>
+            </button>
+
+            <g:link action="upload" title="upload operational template">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-upload fa-fw" aria-hidden="true"></span>
+              </button></g:link>
+
+            <g:link action="generate">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-refresh fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+              </button></g:link>
+
+            <g:link action="trash">
+              <button type="button" class="btn btn-default btn-md">
+                <span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.trash.label" />
+              </button></g:link>
+          </g:else>
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
@@ -53,14 +82,14 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
@@ -129,5 +158,14 @@
         <g:paginator total="${total}" args="${params}" />
       </div>
     </div>
+
+    <script type="text/javascript">
+      $('[data-toggle=confirmation]').confirmation({
+        rootSelector: '[data-toggle=confirmation]',
+        placement: 'left',
+        btnOkClass: 'btn btn-primary',
+        btnCancelClass: 'btn btn-default'
+      });
+    </script>
   </body>
 </html>
