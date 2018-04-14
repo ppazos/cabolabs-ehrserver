@@ -1,0 +1,147 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-COMPOSITION.psychotherapy_note.v1
+
+concept
+	[at0000]	-- Nota de psicoterapia
+language
+	original_language = <[ISO_639-1::es]>
+	translations = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			author = <
+				["name"] = <"?">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Documento que registra notas de sesiones de psicoterapia.">
+			use = <"Como documentación de sesiones de psicoterapia.">
+			misuse = <"">
+			copyright = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"*Documento que registra notas de sesiones de psicoterapia.(es)">
+			use = <"*Como documentación de sesiones de psicoterapia.(es)">
+			misuse = <"*(es)">
+			copyright = <"*(es)">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"F64E35D1F82C58EADD34F7341208B386">
+	>
+
+definition
+	COMPOSITION[at0000] matches {	-- Nota de psicoterapia
+		category matches {
+			DV_CODED_TEXT matches {
+				defining_code matches {[openehr::433]}
+			}
+		}
+		context matches {
+			EVENT_CONTEXT matches {
+				other_context matches {
+					ITEM_TREE[at0001] matches {	-- Arbol
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0002] occurrences matches {0..1} matches {	-- Categoría
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {[ac0001]}		-- Categoría codificada
+									}
+								}
+							}
+							ELEMENT[at0003] occurrences matches {0..*} matches {	-- Etiqueta
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		content cardinality matches {0..*; unordered} matches {
+			allow_archetype OBSERVATION[at0004] occurrences matches {0..*} matches {	-- Nota
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.psychotherapy_note(-[a-zA-Z0-9_]+)*\.v1/}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Nota de psicoterapia">
+					description = <"*">
+				>
+				["at0001"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Categoría">
+					description = <"Categoría de la nota en texto codificado">
+				>
+				["at0003"] = <
+					text = <"Etiqueta">
+					description = <"Etiquetas opcionales para gestión de notas, en texto libre o codificadas.">
+				>
+				["at0004"] = <
+					text = <"Nota">
+					description = <"*">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Psychotherapy note">
+					description = <"*">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Category">
+					description = <"Note coded category">
+				>
+				["at0003"] = <
+					text = <"Tag">
+					description = <"Optional tags in free or coded text">
+				>
+				["at0004"] = <
+					text = <"Note">
+					description = <"*">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["es"] = <
+			items = <
+				["ac0001"] = <
+					text = <"Categoría codificada">
+					description = <"*">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["ac0001"] = <
+					text = <"*Categoría codificada(es)">
+					description = <"**(es)">
+				>
+			>
+		>
+	>
