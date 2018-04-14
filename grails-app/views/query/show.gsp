@@ -74,7 +74,7 @@
                 <tr>
                   <td>${s.archetypeId}</td>
                   <td>${s.path}</td>
-                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(s.archetypeId, s.path).name['ISO_639-1::'+ session.lang]}</td>
+                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(s.archetypeId, s.path).name[session.lang]}</td>
                 </tr>
               </g:each>
             </table>
@@ -95,7 +95,7 @@
                 <tr>
                   <td>${w.archetypeId}</td>
                   <td>${w.path}</td>
-                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(w.archetypeId, w.path).name['ISO_639-1::'+ session.lang]}</td>
+                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(w.archetypeId, w.path).name[session.lang]}</td>
                   <td>${w.toGUI()}</td>
                 </tr>
               </g:each>

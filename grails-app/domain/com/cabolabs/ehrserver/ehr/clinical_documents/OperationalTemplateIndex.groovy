@@ -26,7 +26,7 @@ class OperationalTemplateIndex {
 
    String templateId
    String concept          // Concept name of the OPT
-   String language         // en formato ISO_639-1::en
+   String language         // en formato 'en', antes era ISO_639-1::en pero https://github.com/ppazos/cabolabs-ehrserver/issues/878
    String uid = java.util.UUID.randomUUID() as String
    String externalUid     // from the OPT file
    String archetypeId      // root archetype id
@@ -54,7 +54,7 @@ class OperationalTemplateIndex {
    static transients = ['lang']
    def getLang()
    {
-      this.language.split('::')[1]
+      this.language
    }
 
    static namedQueries = {

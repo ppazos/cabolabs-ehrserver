@@ -14,7 +14,7 @@
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
@@ -26,7 +26,7 @@
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-	      
+
         <div class="table-responsive">
           <table class="table table-striped table-bordered table-hover">
 		      <thead>

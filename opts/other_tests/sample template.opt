@@ -36,7 +36,7 @@
     <value>b6bbeca2-46c0-447d-8339-7a8dcfc6222e</value>
   </uid>
   <template_id>
-    <value>sample template</value>
+    <value>sample_template.es.v1</value>
   </template_id>
   <concept>sample template</concept>
   <definition>
@@ -501,7 +501,7 @@
       <value>openEHR-EHR-COMPOSITION.sample_composition.v1</value>
     </archetype_id>
     <template_id>
-      <value>sample template</value>
+      <value>sample_template.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

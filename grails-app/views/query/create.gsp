@@ -886,12 +886,12 @@ resp.responseJSON.result.message +'</div>'
             $(data).each(function(i, didx) {
 
               // if there is no name for the current lang, the node is from a template that is on another language, should not be on the query create.
-              if (didx.name['ISO_639-1::${session.lang}'])
+              if (didx.name[session_lang])
               {
                 $('select[name=view_archetype_path]').append(
-                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name['ISO_639-1::${session.lang}'] +'"'+
+                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name[session_lang] +'"'+
                   (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+
-                  didx.name['ISO_639-1::${session.lang}'] +' ('+ didx.rmTypeName + ')</option>'
+                  didx.name[session_lang] +' ('+ didx.rmTypeName + ')</option>'
                 );
               }
             });
@@ -1547,7 +1547,7 @@ resp.responseJSON.result.message +'</div>'
                    archetype_id = archetype_id +".*";
                 }
 
-                name = data_criteria.indexItem.name['ISO_639-1::'+ session.lang]
+                name = data_criteria.indexItem.name[session.lang]
 
                 println """
                   \$('#criteria').append(
@@ -1579,7 +1579,7 @@ resp.responseJSON.result.message +'</div>'
              def name
              queryInstance.select.each { data_get ->
 
-                name = data_get.indexItem.name['ISO_639-1::'+ session.lang]
+                name = data_get.indexItem.name[session.lang]
 
                 // Updates the UI and the query object
                 println 'dom_add_selection("'+ data_get.archetypeId +'", "'+ data_get.path +'", "'+ name +'", "'+ data_get.rmTypeName +'", '+ data_get.allowAnyArchetypeVersion +');'

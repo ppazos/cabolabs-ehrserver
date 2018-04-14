@@ -18,7 +18,7 @@
             <span class="fa fa-filter" aria-hidden="true"></span>
           </button>
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>

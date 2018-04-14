@@ -18,14 +18,14 @@
             <span class="fa fa-filter" aria-hidden="true"></span>
           </button>
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
@@ -53,14 +53,14 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">

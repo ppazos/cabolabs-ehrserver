@@ -17,27 +17,27 @@
 	     <h1><g:message code="query.list.title" /></h1>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
           <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
-            <span class="fa fa-filter fa-fw" aria-hidden="true"></span>
+            <span class="fa fa-filter" aria-hidden="true"></span>
           </button>
-          
+
           <g:link action="groups" title="groups">
             <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-sitemap fa-fw" aria-hidden="true"></span>
+              <span class="fa fa-sitemap" aria-hidden="true"></span>
             </button></g:link>
-          
+
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
-              <span class="fa fa-plus fa-fw" aria-hidden="true"></span>
+            <button type="button" class="btn btn-primary btn-md">
+              <span class="fa fa-plus" aria-hidden="true"></span>
             </button></g:link>
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid collapse" id="collapse-filter">
       <div class="col-md-12">
         <div class="panel panel-default">
@@ -61,14 +61,14 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump. 
+    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
     if (${params.containsKey('filter')})
     {
       $("#collapse-filter").addClass('in');
       $(".btn.filter").toggleClass( "btn-primary" );
     }
     </script>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
 	     <g:if test="${flash.message}">
@@ -119,14 +119,14 @@
 	     <g:paginator total="${queryInstanceTotal}" args="${params}" />
       </div>
     </div>
-    
+
     <script>
     $('.execute_count').on('click', function(e) {
-    
+
       button = $(this);
-    
+
       e.preventDefault();
-     
+
       icon = $('span', this);
       icon.addClass('fa-spin');
 
@@ -137,16 +137,16 @@
          styling: 'bootstrap3',
          history: false
       });
-      
+
       $.ajax({
         method: 'GET',
         url: this.href,
         dataType: 'json'
       })
       .done(function( res ) {
-     
+
         //console.log(res); // [queryUid: #ehrs, queryUid: #ehrs, ...]
-        
+
         new PNotify({
          title: '${g.message(code:"query.list.executing_count_done")}',
          text : '${g.message(code:"query.list.executing_count_result")}',
@@ -154,23 +154,23 @@
          styling: 'bootstrap3',
          history: false
         });
-        
+
         for (queryUid in res)
         {
           // result cotainer
           $('#'+queryUid).text(res[queryUid]);
         };
-        
+
         table_container = button.closest('.btn-toolbar').siblings('.table-responsive');
 
         $('.count-results', table_container).show();
-     
+
         icon.removeClass('fa-spin');
       })
       .fail(function(resp,status,status_msg) {
-        
+
         console.log(resp);
-       
+
         icon.removeClass('fa-spin');
       });
     });

@@ -32,22 +32,22 @@
           <g:if test="${params.deleted}">
           <g:link action="empty_trash" data-toggle="confirmation" data-title="Are you sure?" data-content="This action can't be undone!">
             <button type="button" class="btn btn-danger btn-md">
-              <span class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.empty_trash.label" />
+              <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> <g:message code="operationalTemplate.empty_trash.label" />
             </button></g:link>
           </g:if>
           <g:else>
             <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
-              <span class="fa fa-filter fa-fw" aria-hidden="true"></span>
+              <span class="fa fa-filter" aria-hidden="true"></span>
             </button>
-
-            <g:link action="upload" title="upload operational template">
-              <button type="button" class="btn btn-default btn-md">
-                <span class="fa fa-upload fa-fw" aria-hidden="true"></span>
-              </button></g:link>
 
             <g:link action="generate">
               <button type="button" class="btn btn-default btn-md">
-                <span class="fa fa-refresh fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+                <span class="fa fa-refresh" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+              </button></g:link>
+
+            <g:link action="upload" title="upload operational template">
+              <button type="button" class="btn btn-primary btn-md">
+                <span class="fa fa-upload" aria-hidden="true"></span>
               </button></g:link>
 
             <g:link action="trash">

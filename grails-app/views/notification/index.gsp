@@ -11,19 +11,19 @@
         <h1><g:message code="notifications.index.title" /></h1>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">

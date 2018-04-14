@@ -58,7 +58,7 @@ templateid_select.onchange = function (ev) {
 
       option = document.createElement("option");
       option.value = aii.archetypeId;
-      option.text = aii.name['ISO_639-1::'+ session_lang] +' ('+ aii.archetypeId +')';
+      option.text = aii.name[session_lang] +' ('+ aii.archetypeId +')';
 
 
       // to be used on the archetype id filter matching

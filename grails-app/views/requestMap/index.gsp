@@ -14,7 +14,7 @@
       <div class="col-lg-12">
         <div class="btn-toolbar" requestMap="toolbar">
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>

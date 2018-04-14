@@ -106,8 +106,7 @@ class QueryController {
       */
       [
        queryInstance: new Query(params),
-       //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, 'ISO_639-1::'+ session.lang), // queries cna be created for any version of the OPT
+       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, session.lang), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
    }
@@ -141,8 +140,7 @@ class QueryController {
            view: 'create',
            model: [
              queryInstance: query,
-             //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-             templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, 'ISO_639-1::'+ session.lang), // queries can be created for any version of the OPT
+             templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, session.lang), // queries can be created for any version of the OPT
              queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
              mode: 'edit'
            ]
@@ -181,8 +179,7 @@ class QueryController {
         view: 'create',
         model: [
           queryInstance: queryInstance,
-          //dataIndexes: ArchetypeIndexItem.findAllByPathNotEqual('/').findAll{ it.name['ISO_639-1::'+ session.lang] }, // to create filters or projections
-          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, 'ISO_639-1::'+ session.lang), // queries can be created for any version of the OPT
+          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, session.lang), // queries can be created for any version of the OPT
           queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
         ]

@@ -12,18 +12,18 @@ var chart;
 
 $(document).ready(function() {
 
-   /* ===================================================================================== 
+   /* =====================================================================================
     * Calendars para filtros de compositions.
     */
    $("input[name=fromDate]").datepicker({
-       // Icono para mostrar el calendar 
+       // Icono para mostrar el calendar
        showOn: "button",
        buttonImage: window.grailsSupport.assetsRoot + "calendar.gif", // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
        buttonImageOnly: true,
        buttonText: 'pick a date',
        // Formato
        dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-       // Menus para cambiar mes y anio 
+       // Menus para cambiar mes y anio
        changeMonth: true,
        changeYear: true,
        // La fecha maxima es la que esta seleccionada en toDate si la hay
@@ -32,14 +32,14 @@ $(document).ready(function() {
       // }
    });
    $("input[name=toDate]").datepicker({
-       // Icono para mostrar el calendar 
+       // Icono para mostrar el calendar
        showOn: "button",
        buttonImage: window.grailsSupport.assetsRoot + "calendar.gif", // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
        buttonImageOnly: true,
        buttonText: 'pick a date',
        // Formato
        dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-       // Menus para cambiar mes y anio 
+       // Menus para cambiar mes y anio
        changeMonth: true,
        changeYear: true,
        // La fecha minima es la que esta seleccionada en fromDate si la hay
@@ -47,15 +47,15 @@ $(document).ready(function() {
        //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
        //}
    });
-   
+
 // ====================================================================
    // Muestra los datos crudos devueltos por el servidor
    // ====================================================================
-   
+
    $('#show_data').click( function(e) {
-     
+
      e.preventDefault();
-     
+
      $('#code').toggle('slow');
    });
 });
@@ -73,7 +73,7 @@ var queryDataRenderChart = function(data)
    */
    var series = [];
    var point;
-   
+
    // FIXME: externalize point builders, it doesnt need to be created on each call.
    // El punto a graficar depende del tipo de dato, se usa
    // point_builders para resolver la construccion del punto.
@@ -110,7 +110,7 @@ var queryDataRenderChart = function(data)
          };
       }
    };
-   
+
    /*
    data = {
      path: {
@@ -121,7 +121,7 @@ var queryDataRenderChart = function(data)
    }
    */
    $.each( data, function(path, dviseries) {
-   
+
      //console.log('path y dviseries', path, dviseries);
 
      // Filter: only chart numeric data
@@ -130,7 +130,7 @@ var queryDataRenderChart = function(data)
         //console.log('type filtered '+ dviseries.type);
         return;
      }
-     
+
      /**
       * Estructura:
       *   { name: 'John', data: [5, 7, 3] }
@@ -138,24 +138,24 @@ var queryDataRenderChart = function(data)
       *   o si quiero mostrar una etiqueta en el punto:
       *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
       */
-     var name = dviseries.name["ISO_639-1::"+ session_lang];
+     var name = dviseries.name[session_lang];
      if (!name) name = ""; // case that the archetype item doesnt have a name translation to the current language, this should be avoided by listing only OPTs in the current lang.
      var serie = { name: name, data: [] };
-     //console.log('name', dviseries, dviseries.name, dviseries.name["ISO_639-1::"+ session_lang]);
+     
      $.each( dviseries.serie, function(ii, dvi) {
-      
+
        //console.log('ii y dvi', ii, dvi);
-      
+
        point = point_builders[dviseries.type](dvi);
 
        serie.data.push(point);
      });
-     
+
      series.push(serie);
    });
-   
+
    //console.log( series );
-   
+
    // ========================================
    // Test chart
    if (series.length > 0)
@@ -207,52 +207,52 @@ var queryDataRenderTable = function(data)
 {
   console.log('queryDataRenderTable');
   console.log(data);
-  
+
   var headers = data[0];
   var rows = data[1];
   var table = $('<table width="100%"></table>');
-  
+
   // ================================================================
   // Muestra headesr y subheaders
   htmlheaders = '<tr>';
   $.each(headers, function(path, header) {
-  
+
     //console.log('path y subheaders', path, subheaders);
     // TODO: deberia ser archetype+path para que sea absoluta
     // name es el nombre del ArchetypeIndexItem coorespondiente al archId y path del DataValueIndex
-    htmlheaders += '<th title="'+ path +'">'+ header.name['ISO_639-1::'+ session_lang] +' ('+ header.type +')</th>';
+    htmlheaders += '<th title="'+ path +'">'+ header.name[session_lang] +' ('+ header.type +')</th>';
   });
   htmlheaders +='<th></th></tr>'; // th extra para las acciones de ver composition de cada fila
-  
+
   // =================================================================
   // Muestra cada fila
   htmlrows = '';
-  
+
   linkCompoXML = window.grailsSupport.baseURL + "ehr/showComposition";
   linkCompoUI = window.grailsSupport.baseURL + "ehr/showCompositionUI";
-  
+
   // itera por filas
   $.each(rows, function(compoUid, data) { // data [date, uid, cols [ {type, path, attrs dep. del type}, {...}] ]
-  
+
     // itera por columnas (headesrs = paths)
     htmlrows += '<tr>';
     $.each(data.cols, function(column, colvalues) { // evito attr type y path, los demas son los atributos de los subheaders que dependen del type del datavalue
-    
+
       //console.log('colvalues', colvalues);
       htmlrows += '<td>';
-      
+
       elem_columns = headers[colvalues.path].attrs; // units, magnitude
       //console.log('elem_columns', elem_columns);
-      
+
       htmlrows += '<table width="100%"><tr>';
       $.each(elem_columns, function(jjj, colattr) {
          htmlrows += '<th>'+ colattr +'</th>';
       });
       htmlrows += '</tr>';
-      
+
       // itera por atributos simples de datavalues de cada columna (subheaders)
       $.each(colvalues.values, function(iii, elem) {
-        
+
         //console.log('elem', elem);
         htmlrows += '<tr>';
         $.each(elem, function(attr, value) {
@@ -261,17 +261,17 @@ var queryDataRenderTable = function(data)
         htmlrows += '</tr>';
       });
       htmlrows += '</table>';
-      
+
       htmlrows += '</td>';
     });
-    
+
     // links a composition
     htmlrows += '<td>';
     htmlrows += '<a href="'+ linkCompoXML +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'xml.png" class="icon" /></a>';
     htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'doc.png" class="icon" /></a>';
     htmlrows += '</td></tr>';
   });
-  
+
   // Uso el chartContainer para mostrar la tabla
   table.html( htmlheaders + htmlrows );
   $('#chartContainer').append(table);

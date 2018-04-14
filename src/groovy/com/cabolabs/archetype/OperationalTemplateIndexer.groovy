@@ -344,7 +344,7 @@ class OperationalTemplateIndexer {
 
    private String getTemplateLanguage(GPathResult template)
    {
-      template.language.terminology_id.value.text() +"::"+ template.language.code_string.text()
+      template.language.code_string.text() // https://github.com/ppazos/cabolabs-ehrserver/issues/878
    }
 
    def index(GPathResult template, String file_uid, Organization org)

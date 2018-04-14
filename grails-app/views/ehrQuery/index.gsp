@@ -18,14 +18,14 @@
             <span class="fa fa-filter" aria-hidden="true"></span>
           </button>
           <g:link action="create">
-            <button type="button" class="btn btn-default btn-md">
+            <button type="button" class="btn btn-primary btn-md">
               <span class="fa fa-plus" aria-hidden="true"></span>
             </button>
           </g:link>
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
