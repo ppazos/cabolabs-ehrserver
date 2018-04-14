@@ -321,7 +321,7 @@
             <h4 class="modal-title" id="license_modal_label">License Notice</h4>
           </div>
           <div class="modal-body">
-            <p>Copyright 2011-2017 <a href="https://www.cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
+            <p>Copyright 2011-${Calendar.getInstance().get(Calendar.YEAR)} <a href="https://www.cabolabs.com" target="_blank">CaboLabs Health Informatics</a></p>
             <p>The EHRServer was designed and developed by Pablo Pazos Gutierrez &lt;pablo.pazos@cabolabs.com&gt; at CaboLabs Health Informatics (<a href="https://www.cabolabs.com" target="_blank">www.cabolabs.com</a>).</p>
             <p>You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.</p>
             <p>Any modifications to the provided source code can be stated below this notice.
