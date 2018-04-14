@@ -17,7 +17,7 @@
         <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        
+
         <g:each in="${activityLogInstanceList}" var="e">
           <g:set var="sessionId" value="${e.key}" />
           <h2><g:message code="activityLog.attr.sessionId" /> ${sessionId}</h2>
@@ -29,7 +29,7 @@
                   <g:sortableColumn property="username" mapping="logs" title="${message(code: 'activityLog.username.label', default: 'Username')}" />
                   <g:sortableColumn property="objectId" mapping="logs" title="${message(code: 'activityLog.objectId.label', default: 'Object Id')}" />
                   <g:sortableColumn property="action" mapping="logs" title="${message(code: 'activityLog.action.label', default: 'Action')}" />
-                  <g:sortableColumn property="clientIp" mapping="logs" title="${message(code: 'activityLog.clientIp.label', default: 'Client Ip')}" />
+                  <g:sortableColumn property="remoteAddr" mapping="logs" title="${message(code: 'activityLog.remoteAddr.label', default: 'Address')}" />
                 </tr>
                </thead>
                <tbody>
@@ -39,7 +39,7 @@
                      <td>${fieldValue(bean: activityLogInstance, field: "username")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "objectId")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "clientIp")}</td>
+                     <td>${fieldValue(bean: activityLogInstance, field: "remoteAddr")}</td>
                    </tr>
                    <g:set var="commit" value="${Commit.findByActivityLog(activityLogInstance)}" />
                    <g:if test="${commit}">
@@ -69,8 +69,8 @@
             </table>
           </div>
         </g:each>
-        
-        
+
+
         <g:paginator total="${activityLogInstanceCount}" args="${params}" />
       </div>
     </div>
