@@ -26,9 +26,6 @@
       </defining_code>
     </change_type>
   </commit_audit>
-  <uid>
-    <value>91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::1</value>
-  </uid>
   <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.test_all_datatypes.v1">
     <name>
       <value>Test all datatypes</value>
@@ -134,6 +131,9 @@
       </data>
     </content>
   </data>
+  <preceding_version_uid>
+    <value>91cf9ded-e926-4848-aa3f-3257c1d89e37::EMR_APP::1</value>
+  </preceding_version_uid>
   <lifecycle_state>
     <value>complete</value>
     <defining_code>

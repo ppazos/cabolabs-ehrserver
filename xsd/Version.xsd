@@ -67,9 +67,10 @@
           <xs:complexContent>
                <xs:extension base="VERSION">
                     <xs:sequence>
-                         <xs:element name="uid" type="OBJECT_VERSION_ID"/>
+                       <!-- relaxed schema 0..1 uid -->
+                         <xs:element name="uid" type="OBJECT_VERSION_ID" minOccurs="0" maxOccurs="1"/>
                          <xs:element name="data" type="xs:anyType" minOccurs="0" maxOccurs="1"/>
-                         <xs:element name="preceding_version_uid" type="OBJECT_VERSION_ID" minOccurs="0"/>
+                         <xs:element name="preceding_version_uid" type="OBJECT_VERSION_ID" minOccurs="0" maxOccurs="1"/>
                          <xs:element name="other_input_version_uids" type="OBJECT_VERSION_ID" minOccurs="0"
                            maxOccurs="unbounded"/>
                          <xs:element name="attestations" type="ATTESTATION" minOccurs="0" maxOccurs="unbounded"/>

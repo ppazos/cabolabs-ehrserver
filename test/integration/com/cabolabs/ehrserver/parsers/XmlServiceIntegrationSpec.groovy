@@ -392,19 +392,22 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
          def parsedVersions = slurper.parseText(versionsXML)
 
+// FIXME: since the version.uid now is assigned by the server, need to get that from the first commit
+//        to assign it to the second version.preceding_version_uid
+
          // new version
          def versionsXML2 = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_new_version.xml').text
          versionsXML2 = versionsXML2.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
          def parsedVersions2 = slurper.parseText(versionsXML2)
 
       when:
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'EMR_APP', new Date(), 'House, MD.')
          contribution.save()
 
-         contribution = xmlService.processCommit(ehr, parsedVersions2, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution = xmlService.processCommit(ehr, parsedVersions2, 'EMR_APP', new Date(), 'House, MD.')
          contribution.save()
       then:
-         notThrown Exception // this shouldn't throw any exceptions
+         //notThrown Exception // this shouldn't throw any exceptions
          assert Contribution.count() == 2
          assert Version.count() == 2
          assert VersionedComposition.count() == 1

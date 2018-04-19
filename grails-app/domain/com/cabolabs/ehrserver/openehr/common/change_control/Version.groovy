@@ -50,6 +50,7 @@ class Version {
    // El id lo establece el EHR Server cuando recibe un commit.
    //
    String uid
+   String precedingVersionUid
 
    // Emula ORIGINAL_VERSION.lifecycle_state.code_string
    String lifecycleState
@@ -113,8 +114,9 @@ class Version {
    static belongsTo = [Contribution]
 
    static constraints = {
-      contribution(nullable:false) // La version debe estar dentro de una contribution
-      lifecycleState(inList:['532', '553', '523']) // complete, incomplete, deleted
+      contribution(nullable: false) // La version debe estar dentro de una contribution
+      lifecycleState(inList: ['532', '553', '523']) // complete, incomplete, deleted
+      precedingVersionUid(nullable: true)
    }
 
    static namedQueries = {

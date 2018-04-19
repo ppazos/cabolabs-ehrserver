@@ -447,7 +447,7 @@ class RestController {
          contribution = xmlService.processCommit(ehr, _parsedVersions, auditSystemId, new Date(), auditCommitter)
          if (!contribution.save())
          {
-            // FIXME: log and notification!
+            // FIXME: log and notification! an admin should review this situation
             println contribution.errors
          }
 

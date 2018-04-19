@@ -612,6 +612,8 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
             name: parsedVersion.commit_audit.committer.name.text()
          )
       )
+
+      // FIXME: now the version.uid is assigned only by the server
       def version = new Version(
          uid: (parsedVersion.uid.value.text()), // the 3 components come from the client.
          lifecycleState: parsedVersion.lifecycle_state.defining_code.code_string.text(),
