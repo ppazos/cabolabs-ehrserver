@@ -94,7 +94,7 @@ class XmlService {
       //    - change the last version status on previous version
       //    - update the trunk version id on the previous version
       //  Associate the version with the contribution
-      def domainVersions = parseVersions(ehr, versions, auditTimeCommitted, auditSystemId, contribution)
+      def parsedVersionsMap = parseVersions(ehr, versions, auditTimeCommitted, auditSystemId, contribution)
 
       // just checking :)
       assert contribution.versions != null
@@ -109,12 +109,12 @@ class XmlService {
       //   - check if a versioned compo already exists, error if not
       //   -
       //  TODO: support more types
-      manageVersionedCompositions(domainVersions, ehr)
+      manageVersionedCompositions(contribution.versions, ehr)
 
       // If contribution and versions can be saved ok
       //  - check if file exists, error if exists
       //  - save version XML files on file system
-      storeVersionXMLs(ehr, versions, contribution)
+      storeVersionXMLs(ehr, parsedVersionsMap, contribution)
 
       // Save the contribution with all the versions
       //  throws grails.validation.ValidationException that contains the errors
@@ -290,8 +290,6 @@ class XmlService {
 
       this.validationErrors = errors
 
-      println errors
-
       if (this.validationErrors.size() > 0) throw new CommitWrongChangeTypeException('Please check the detailed errors.')
    }
 
@@ -302,9 +300,9 @@ class XmlService {
     * @param parsedVersions
     * @return
     */
-   def manageVersionedCompositions(List parsedVersions, Ehr ehr)
+   def manageVersionedCompositions(List domainVersions, Ehr ehr)
    {
-      parsedVersions.eachWithIndex { version, i ->
+      domainVersions.each { version ->
 
          def versionedComposition
          switch (version.commitAudit.changeType)
@@ -384,7 +382,7 @@ class XmlService {
     * @param versions
     * @return
     */
-   def storeVersionXMLs(Ehr ehr, GPathResult versions, Contribution contribution)
+   def storeVersionXMLs(Ehr ehr, Map versions, Contribution contribution)
    {
       // CHECK: the compo in version.data doesn't have the injected
       // compo.uid that parsedCompositions[i] does have.
@@ -396,15 +394,17 @@ class XmlService {
        */
 
       def file, path, version
-      versions.version.each { versionXML ->
+      versions.each { version_uid, versionXML ->
 
          try
          {
             // FIXME: returns null!
-            println "XML version.uid "+ versionXML.uid.value.text()
+            println "XML version.uid "+ versionXML.uid.value //.text()
+            println "XML version_uid "+ version_uid
             println groovy.xml.XmlUtil.serialize( versionXML )
+            println "--------"
 
-            version = contribution.versions.find { it.uid == versionXML.uid.text()}
+            version = contribution.versions.find { it.uid == version_uid}
             file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
          }
          catch (VersionRepoNotAccessibleException e)
@@ -496,7 +496,8 @@ class XmlService {
           version_uid, preceding_version_uid, preceding_version_uid_parts,
           object_id, version_tree_id, lastVersion, previousLastVersion
 
-      def dataOut = []
+      // version_uid => versionXML (GPathResult)
+      def dataOut = [:]
 
       def parsedVersion
       for (int i = 0; i <versionsXML.version.size(); i++)
@@ -541,8 +542,6 @@ class XmlService {
          )
 
          if (preceding_version_uid) version.precedingVersionUid = preceding_version_uid
-
-println "Version.uid "+ version.uid
 
          // Verify correct parameters for persistent commit
          // If the version is a persistent composition, and for the EHR there is already a version,
@@ -598,9 +597,37 @@ println "Version.uid "+ version.uid
          }
 
          // Server sets the XML with the new version uid.
-         parsedVersion.uid.value.replaceBody(version.uid)
+         //parsedVersion.uid.value.replaceBody(version.uid)
+         //parsedVersion.uid.value = version.uid
+         /*
+         parsedVersion.appendNode {
+            uid {
+               value(version.uid)
+            }
+         }
+         */
 
-         dataOut[i] = version
+         // delete uid if present from the client
+         parsedVersion.uid.replaceNode {}
+
+         // append sibling after commit_audit adds version.uid
+         parsedVersion.commit_audit.replaceNode { commit_audit ->
+            mkp.yield(commit_audit)
+            uid {
+               value(version.uid)
+               //value {}
+            }
+         }
+
+         //parsedVersion.uid.value = version.uid
+         //parsedVersion.uid.value.replaceBody(version.uid)
+
+         println "APPEND XML version.uid "+ parsedVersion.uid.value.text()
+         println "EVAL XML version.uid "+ Eval.x(parsedVersion, 'x.uid.value.text()').toString()
+         println "EVAL XML2 version.uid "+ Eval.me('x', parsedVersion, 'x.uid.value.text()')
+         println "APPEND XML2 version.uid "+ parsedVersion.uid.toString()
+
+         dataOut[version.uid] = parsedVersion
          contribution.addToVersions(version)
 
       } // each versionXML

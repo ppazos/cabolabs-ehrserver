@@ -36,7 +36,7 @@ import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.openehr.opt.manager.OptManager
-import com.cabolabs.ehrserver.api.structures.PaginatedResults
+import com.cabolabs.ehrserver.api.structures.*
 import com.cabolabs.ehrserver.account.*
 import grails.converters.*
 import groovy.xml.MarkupBuilder
@@ -279,17 +279,35 @@ class BootStrap {
         return it?.format(Holders.config.app.l10n.db_datetime_format)
      }
 
+     JSON.registerObjectMarshaller(Version) { version ->
+        return [uid:                 version.uid,
+                precedingVersionUid: version.precedingVersionUid,
+                lifecycleState:      version.lifecycleState,
+                commitAudit:         version.commitAudit,
+                data:                version.data
+               ]
+     }
+     XML.registerObjectMarshaller(Version) { version, xml ->
+       xml.build {
+          uid(version.uid)
+          precedingVersionUid(version.precedingVersionUid)
+          lifecycleState(version.lifecycleState)
+          commitAudit(version.commitAudit)
+          data(version.data)
+       }
+     }
+
      JSON.registerObjectMarshaller(CompositionIndex) { composition ->
         return [uid: composition.uid,
-                category: composition.category,
-                startTime: composition.startTime,
-                subjectId: composition.subjectId,
-                ehrUid: composition.ehrUid,
-                templateId: composition.templateId,
-                archetypeId: composition.archetypeId,
-                lastVersion: composition.lastVersion,
+                category:        composition.category,
+                startTime:       composition.startTime,
+                subjectId:       composition.subjectId,
+                ehrUid:          composition.ehrUid,
+                templateId:      composition.templateId,
+                archetypeId:     composition.archetypeId,
+                lastVersion:     composition.lastVersion,
                 organizationUid: composition.organizationUid,
-                parent: composition.getParent().uid
+                parent:          composition.getParent().uid
                ]
      }
 
@@ -350,7 +368,7 @@ class BootStrap {
           timeCommitted(audit.timeCommitted)
           committer(audit.committer) // DoctorProxy
           systemId(audit.systemId)
-          if (audit.changeType) changeType(audit.changeType)
+          if (audit.changeType) changeType(audit.changeType.toString())
         }
      }
 
@@ -580,7 +598,7 @@ class BootStrap {
      })
      */
 
-     JSON.registerObjectMarshaller(PaginatedResults) { pres ->
+      JSON.registerObjectMarshaller(PaginatedResults) { pres ->
 
         pres.update() // updates and checks pagination values
 
@@ -601,9 +619,9 @@ class BootStrap {
         if (pres.timing != null) res.timing = pres.timing.toString() + ' ms'
 
         return res
-     }
+      }
 
-     XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
+      XML.registerObjectMarshaller(PaginatedResults) { pres, xml ->
 
         pres.update() // updates and checks pagination values
 
@@ -639,7 +657,39 @@ class BootStrap {
         xml.end()
 
         // TODO: timing
-     }
+      }
+
+
+      JSON.registerObjectMarshaller(CommitResult) { cres ->
+
+         def res = [:]
+         res.type = cres.type
+         res.message = cres.message
+         res.versions = []
+
+         if (cres.versions)
+         {
+            res.versions = cres.versions
+         }
+
+         return res
+      }
+      XML.registerObjectMarshaller(CommitResult) { cres, xml ->
+
+         xml.build {
+            type(cres.type)
+            message(cres.message)
+         }
+
+         xml.startNode 'versions' //cres.root
+
+            if (cres.versions)
+            {
+               xml.convertAnother (cres.versions ?: [])
+            }
+
+         xml.end()
+      }
    }
 
    def registerRequestMap()

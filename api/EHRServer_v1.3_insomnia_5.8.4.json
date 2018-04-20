@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2018-04-14T06:35:02.357Z",
+	"__export_date": "2018-04-20T04:13:29.645Z",
 	"__export_source": "insomnia.desktop.app:v5.8.4",
 	"resources": [
 		{
@@ -47,10 +47,22 @@
 		{
 			"_id": "jar_1562b12758b543f7acc3e9e7aff53e28",
 			"parentId": "wrk_731dc22ad3f14626becf12a0e3f62269",
-			"modified": 1523686987910,
+			"modified": 1524196910576,
 			"created": 1523686987910,
 			"name": "Default Jar",
-			"cookies": [],
+			"cookies": [
+				{
+					"creation": "2018-04-14T06:44:59.326Z",
+					"key": "JSESSIONID",
+					"value": "E86B7C6A1C5D7CB7E5BF59E9C4C7B934",
+					"path": "/ehr/",
+					"httpOnly": true,
+					"hostOnly": true,
+					"domain": "localhost",
+					"lastAccessed": "2018-04-20T04:01:50.575Z",
+					"id": "03546014552416965"
+				}
+			],
 			"_type": "cookie_jar"
 		},
 		{
@@ -510,7 +522,7 @@
 		{
 			"_id": "req_de15e4e991bc4269afa8662f79fc442a",
 			"parentId": "fld_3406cf63f9634c2090c07eba7395a9af",
-			"modified": 1523686987981,
+			"modified": 1524160502426,
 			"created": 1523686987981,
 			"url": "{{base_url}}/api/v1/ehrs",
 			"name": "ehrs",
@@ -520,7 +532,7 @@
 			"parameters": [
 				{
 					"name": "format",
-					"value": "json",
+					"value": "xml",
 					"id": "pair_987d54b328f6482da8dd1b607307aa78"
 				},
 				{
@@ -830,7 +842,7 @@
 		{
 			"_id": "req_069ef0ed731147b0a7e85055c60f1b2d",
 			"parentId": "fld_1091dcc1fc4c4f1395f9276fcda7d4c2",
-			"modified": 1523686988023,
+			"modified": 1524196950928,
 			"created": 1523686988023,
 			"url": "{{base_url}}/api/v1/compositions",
 			"name": "compositions",
@@ -850,7 +862,7 @@
 				},
 				{
 					"name": "archetypeId",
-					"value": "openEHR-EHR-COMPOSITION.basic_demographic.v1",
+					"value": "",
 					"id": "pair_fb3c98c5cdd34573abf1a2125d616cc7"
 				}
 			],
@@ -872,9 +884,9 @@
 		{
 			"_id": "req_2cd8ffa3182845f4bc2b4d009871f21a",
 			"parentId": "fld_1091dcc1fc4c4f1395f9276fcda7d4c2",
-			"modified": 1523686988025,
+			"modified": 1524197052492,
 			"created": 1523686988025,
-			"url": "{{base_url}}/api/v1/compositions/{% response 'body', 'req_5aeeff272547468a9bc8ed7ca5751b4a', '$.result[0].uid' %}",
+			"url": "{{base_url}}/api/v1/compositions/{% response 'body', 'req_069ef0ed731147b0a7e85055c60f1b2d', '$.result[0].uid' %}",
 			"name": "compositions/$uid",
 			"description": "",
 			"method": "GET",
@@ -1120,6 +1132,51 @@
 			],
 			"authentication": {},
 			"metaSortKey": -1507162338330.2812,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_be1477dd747c4ea28e479d8b32b4d23a",
+			"parentId": "fld_1091dcc1fc4c4f1395f9276fcda7d4c2",
+			"modified": 1524197404185,
+			"created": 1524197113353,
+			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_811fd5cedc454c269d9f3de79fe6df51', '$.ehrs[0].uid' %}/compositions",
+			"name": "ehrs/$uid/compositions (json)",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"versions\" : [\n\t\t{\n\t\t\t\"version\": {\n\t\t\t\t\"@xmlns\": \"http://schemas.openehr.org/v1\",\n\t\t\t\t\"@xmlns:xsi\": \"http://www.w3.org/2001/XMLSchema-instance\",\n\t\t\t\t\"@xsi:type\": \"ORIGINAL_VERSION\",\n\t\t\t\t\"contribution\": {\n\t\t\t\t\t\"id\": {\n\t\t\t\t\t\t\"@xsi:type\": \"HIER_OBJECT_ID\",\n\t\t\t\t\t\t\"value\": \"{% uuid 'v4' %}\"\n\t\t\t\t\t},\n\t\t\t\t\t\"namespace\": \"EHR::COMMON\",\n\t\t\t\t\t\"type\": \"CONTRIBUTION\"\n\t\t\t\t},\n\t\t\t\t\"commit_audit\": {\n\t\t\t\t\t\"system_id\": \"CABOLABS_EHR\",\n\t\t\t\t\t\"committer\": {\n\t\t\t\t\t\t\"@xsi:type\": \"PARTY_IDENTIFIED\",\n\t\t\t\t\t\t\"name\": \"Dr. Pablo Pazos\"\n\t\t\t\t\t},\n\t\t\t\t\t\"time_committed\": {\n\t\t\t\t\t\t\"value\": \"2018-04-20T04:01:48.717Z\"\n\t\t\t\t\t},\n\t\t\t\t\t\"change_type\": {\n\t\t\t\t\t\t\"value\": \"creation\",\n\t\t\t\t\t\t\"defining_code\": {\n\t\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\t\"value\": \"openehr\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"code_string\": 249\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"uid\": {\n\t\t\t\t\t\"value\": \"4176f71f-a810-451c-a383-138a9b1ab63b::my.emr::1\"\n\t\t\t\t},\n\t\t\t\t\"data\": {\n\t\t\t\t\t\"@xsi:type\": \"COMPOSITION\",\n\t\t\t\t\t\"@archetype_node_id\": \"openEHR-EHR-COMPOSITION.test_all_datatypes.v1\",\n\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\"value\": \"Test all datatypes\"\n\t\t\t\t\t},\n\t\t\t\t\t\"uid\": {\n\t\t\t\t\t\t\"@xsi:type\": \"HIER_OBJECT_ID\",\n\t\t\t\t\t\t\"value\": \"961e7542-43aa-4396-9cd9-3ffae2c36abd\"\n\t\t\t\t\t},\n\t\t\t\t\t\"archetype_details\": {\n\t\t\t\t\t\t\"archetype_id\": {\n\t\t\t\t\t\t\t\"value\": \"openEHR-EHR-COMPOSITION.test_all_datatypes.v1\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"template_id\": {\n\t\t\t\t\t\t\t\"value\": \"test_all_datatypes.es.v1\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"rm_version\": \"1.0.2\"\n\t\t\t\t\t},\n\t\t\t\t\t\"language\": {\n\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\"value\": \"ISO_639-1\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"code_string\": \"es\"\n\t\t\t\t\t},\n\t\t\t\t\t\"territory\": {\n\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\"value\": \"ISO_3166-1\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"code_string\": \"UY\"\n\t\t\t\t\t},\n\t\t\t\t\t\"category\": {\n\t\t\t\t\t\t\"value\": \"event\",\n\t\t\t\t\t\t\"defining_code\": {\n\t\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\t\"value\": \"openehr\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"code_string\": 433\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\"composer\": {\n\t\t\t\t\t\t\"@xsi:type\": \"PARTY_IDENTIFIED\",\n\t\t\t\t\t\t\"name\": \"Dr. Pablo Pazos\"\n\t\t\t\t\t},\n\t\t\t\t\t\"context\": {\n\t\t\t\t\t\t\"start_time\": {\n\t\t\t\t\t\t\t\"value\": \"2018-04-20T04:01:48.717Z\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"setting\": {\n\t\t\t\t\t\t\t\"value\": \"Hospital Montevideo\",\n\t\t\t\t\t\t\t\"defining_code\": {\n\t\t\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\t\t\"value\": \"openehr\"\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\"code_string\": 229\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\"content\": {\n\t\t\t\t\t\t\"@xsi:type\": \"OBSERVATION\",\n\t\t\t\t\t\t\"@archetype_node_id\": \"openEHR-EHR-OBSERVATION.test_all_datatypes.v1\",\n\t\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\t\"value\": \"Blood Pressure\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"language\": {\n\t\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\t\"value\": \"ISO_639-1\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"code_string\": \"es\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"encoding\": {\n\t\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\t\"value\": \"UNICODE\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"code_string\": \"UTF-8\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"subject\": {\n\t\t\t\t\t\t\t\"@xsi:type\": \"PARTY_IDENTIFIED\",\n\t\t\t\t\t\t\t\"external_ref\": {\n\t\t\t\t\t\t\t\t\"id\": {\n\t\t\t\t\t\t\t\t\t\"@xsi:type\": \"HIER_OBJECT_ID\",\n\t\t\t\t\t\t\t\t\t\"value\": \"11111111-1111-1111-1111-111111111111\"\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\"namespace\": \"DEMOGRAPHIC\",\n\t\t\t\t\t\t\t\t\"type\": \"PERSON\"\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"data\": {\n\t\t\t\t\t\t\t\"@xsi:type\": \"HISTORY\",\n\t\t\t\t\t\t\t\"@archetype_node_id\": \"at0001\",\n\t\t\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\t\t\"value\": \"history\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"origin\": {\n\t\t\t\t\t\t\t\t\"value\": \"2018-04-20T04:01:48.718Z\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\"events\": {\n\t\t\t\t\t\t\t\t\"@xsi:type\": \"POINT_EVENT\",\n\t\t\t\t\t\t\t\t\"@archetype_node_id\": \"at0002\",\n\t\t\t\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\t\t\t\"value\": \"any event\"\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\"time\": {\n\t\t\t\t\t\t\t\t\t\"value\": \"2018-04-20T04:01:48.718Z\"\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\"data\": {\n\t\t\t\t\t\t\t\t\t\"@xsi:type\": \"ITEM_TREE\",\n\t\t\t\t\t\t\t\t\t\"@archetype_node_id\": \"at0003\",\n\t\t\t\t\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\t\t\t\t\"value\": \"Arbol\"\n\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\t\"items\": {\n\t\t\t\t\t\t\t\t\t\t\"@xsi:type\": \"ELEMENT\",\n\t\t\t\t\t\t\t\t\t\t\"@archetype_node_id\": \"at0011\",\n\t\t\t\t\t\t\t\t\t\t\"name\": {\n\t\t\t\t\t\t\t\t\t\t\t\"value\": \"Count\"\n\t\t\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t\t\t\"value\": {\n\t\t\t\t\t\t\t\t\t\t\t\"@xsi:type\": \"DV_COUNT\",\n\t\t\t\t\t\t\t\t\t\t\t\"magnitude\": 3\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"lifecycle_state\": {\n\t\t\t\t\t\"value\": \"complete\",\n\t\t\t\t\t\"defining_code\": {\n\t\t\t\t\t\t\"terminology_id\": {\n\t\t\t\t\t\t\t\"value\": \"openehr\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"code_string\": 532\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t]\n}"
+			},
+			"parameters": [
+				{
+					"name": "auditCommitter",
+					"value": "Gregory House, MD.",
+					"id": "pair_e1a62eada4a94e92972aae1c3e81dd66"
+				},
+				{
+					"name": "auditSystemId",
+					"value": "my.emr",
+					"id": "pair_5f433e8f6e9e4c7c8a788bc3cc73dffb"
+				}
+			],
+			"headers": [
+				{
+					"name": "Authorization",
+					"value": "Bearer {% response 'body', 'req_f10af8cc21d848a2b902075a015d1d2f', '$.token' %}",
+					"id": "pair_00d15d6f7e6b455faf8d98b60cfcc7cf"
+				},
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_a66cc0d99dab4236b8053a1aa8a74e96"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1507162338333.4062,
 			"settingStoreCookies": true,
 			"settingSendCookies": true,
 			"settingDisableRenderRequestBody": false,

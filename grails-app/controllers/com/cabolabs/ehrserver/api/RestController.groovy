@@ -27,7 +27,7 @@ import grails.converters.*
 import java.text.SimpleDateFormat
 
 import com.cabolabs.ehrserver.query.*
-import com.cabolabs.ehrserver.api.structures.PaginatedResults
+import com.cabolabs.ehrserver.api.structures.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
@@ -465,13 +465,32 @@ class RestController {
 
          def msg = message(code:'api.commit.ok', args:[ehrUid])
 
+         def result = new CommitResult(
+            type: 'AA',
+            message: msg,
+            versions: contribution.versions
+         )
+
+
+         withFormat {
+            xml {
+               render( status:201, text:result as XML, contentType:"text/xml", encoding:"UTF-8")
+            }
+            json {
+               render( status:201, text:result as JSON, contentType:"application/json", encoding:"UTF-8")
+            }
+         }
+
+            /*
          withFormat {
             xml {
                render(status: 201, contentType:"text/xml", encoding:"UTF-8") {
                   result {
                      type ('AA')
                      message(msg)
-
+                     versions {
+                        delegate.contribution.versions
+                     }
                   }
                }
             }
@@ -480,12 +499,14 @@ class RestController {
                   [
                      result: [
                         type: 'AA',
-                        message: msg
+                        message: msg,
+                        versions: contribution.versions
                      ]
                   ]
                }
             }
          }
+         */
       }
       catch (CommitWrongChangeTypeException e)
       {
