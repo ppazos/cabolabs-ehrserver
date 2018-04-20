@@ -341,7 +341,7 @@ class BootStrap {
                  systemId: audit.systemId
                 ]
         // audit for contributions have changeType null, so we avoid to add it here if it is null
-        if (audit.changeType) a << [changeType: audit.changeType]
+        if (audit.changeType) a << [changeType: audit.changeType.toString()]
         return a
      }
 

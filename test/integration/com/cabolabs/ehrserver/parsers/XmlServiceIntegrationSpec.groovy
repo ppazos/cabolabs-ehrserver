@@ -180,7 +180,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def slurper = new XmlSlurper(false, false)
          def parsedVersions = slurper.parseText(versionsXML)
 
-
       when:
          // should throw an exception
          def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
@@ -392,9 +391,6 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
          def parsedVersions = slurper.parseText(versionsXML)
 
-// FIXME: since the version.uid now is assigned by the server, need to get that from the first commit
-//        to assign it to the second version.preceding_version_uid
-
          // new version
          def versionsXML2 = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_1_new_version.xml').text
          versionsXML2 = versionsXML2.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
@@ -403,6 +399,11 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       when:
          def contribution = xmlService.processCommit(ehr, parsedVersions, 'EMR_APP', new Date(), 'House, MD.')
          contribution.save()
+
+
+         // since the version.uid now is assigned by the server, need to get that from the first commit
+         // to assign it to the second version.preceding_version_uid
+         parsedVersions2.version[0].preceding_version_uid.value = contribution.versions[0].uid
 
          contribution = xmlService.processCommit(ehr, parsedVersions2, 'EMR_APP', new Date(), 'House, MD.')
          contribution.save()

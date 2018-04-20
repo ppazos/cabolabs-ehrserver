@@ -605,35 +605,29 @@ class RestController {
          return
       }
 
-      // Checks
+      /*
       def versions = Version.withCriteria {
          data {
             eq('uid', compositionUid)
          }
       }
+      */
+
+      def ci = CompositionIndex.findByUid(compositionUid)
 
       // Error cases, just 1 version should be found
-      if (versions.size() == 0)
+      if (!ci)
       {
          renderError(message(code:'rest.commit.error.versionDoesntExists'), '412', 404)
          return
       }
 
-      // this case is impossible: a compo has one version that contains it.
-      if (versions.size() > 1)
-      {
-         renderError(message(code:'rest.commit.error.moreThanOneVersion'), '413', 500)
-         // LOG a disco este caso no se deberia dar
-         return
-      }
-
       // only the latest version can be checked out
-      if (!versions[0].data.lastVersion)
+      if (!ci.lastVersion)
       {
          renderError(message(code:'rest.commit.error.versionIsNotTheLatest'), '416', 400)
          return
       }
-
 
       try
       {

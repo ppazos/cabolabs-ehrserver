@@ -156,6 +156,15 @@ class XmlService {
 
       this.validationErrors = errors
 
+      /*
+      println errors
+
+      if (errors.size() > 0)
+      {
+         println groovy.xml.XmlUtil.serialize( versions )
+      }
+      */
+
       if (this.validationErrors.size() > 0) throw new XmlValidationException('There are errors in the XML versions')
 
       // if there are many compos, and some have uid, the uid should be unique between the compos
@@ -398,11 +407,7 @@ class XmlService {
 
          try
          {
-            // FIXME: returns null!
-            println "XML version.uid "+ versionXML.uid.value //.text()
-            println "XML version_uid "+ version_uid
-            println groovy.xml.XmlUtil.serialize( versionXML )
-            println "--------"
+            //println "XML version.uid "+ versionXML.uid.value // null because XMLSlurper doesn't evalaute the XML after adding the uid to the XML
 
             version = contribution.versions.find { it.uid == version_uid}
             file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
@@ -597,15 +602,6 @@ class XmlService {
          }
 
          // Server sets the XML with the new version uid.
-         //parsedVersion.uid.value.replaceBody(version.uid)
-         //parsedVersion.uid.value = version.uid
-         /*
-         parsedVersion.appendNode {
-            uid {
-               value(version.uid)
-            }
-         }
-         */
 
          // delete uid if present from the client
          parsedVersion.uid.replaceNode {}
@@ -615,17 +611,8 @@ class XmlService {
             mkp.yield(commit_audit)
             uid {
                value(version.uid)
-               //value {}
             }
          }
-
-         //parsedVersion.uid.value = version.uid
-         //parsedVersion.uid.value.replaceBody(version.uid)
-
-         println "APPEND XML version.uid "+ parsedVersion.uid.value.text()
-         println "EVAL XML version.uid "+ Eval.x(parsedVersion, 'x.uid.value.text()').toString()
-         println "EVAL XML2 version.uid "+ Eval.me('x', parsedVersion, 'x.uid.value.text()')
-         println "APPEND XML2 version.uid "+ parsedVersion.uid.toString()
 
          dataOut[version.uid] = parsedVersion
          contribution.addToVersions(version)
