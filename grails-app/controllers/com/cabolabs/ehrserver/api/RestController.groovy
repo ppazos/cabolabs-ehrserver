@@ -605,17 +605,8 @@ class RestController {
          return
       }
 
-      /*
-      def versions = Version.withCriteria {
-         data {
-            eq('uid', compositionUid)
-         }
-      }
-      */
-
       def ci = CompositionIndex.findByUid(compositionUid)
 
-      // Error cases, just 1 version should be found
       if (!ci)
       {
          renderError(message(code:'rest.commit.error.versionDoesntExists'), '412', 404)
@@ -672,7 +663,7 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-   } // ehrList
+   }
 
 
    /**
@@ -714,9 +705,6 @@ class RestController {
          }
          catch (Exception e)
          {
-            //println e.message
-            //println u.errors
-
             status.setRollbackOnly()
             error = true
          }
@@ -746,7 +734,6 @@ class RestController {
          }
       }
    }
-
 
 
    /**
@@ -787,7 +774,6 @@ class RestController {
             return
          }
       }
-
 
       // Create the new EHR
       def ehr = new Ehr(
@@ -871,7 +857,7 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-   } // ehrForSubject
+   }
 
 
    @SecuredStateless
@@ -917,7 +903,7 @@ class RestController {
          if (params.callback) result = "${params.callback}( ${result} )"
          render(text: result, contentType:"application/json", encoding:"UTF-8")
       }
-   } // ehrGet
+   }
 
 
    /*
@@ -1480,7 +1466,6 @@ class RestController {
           render(template:'/compositionIndex/listTable',
                  model:[
                     compositionIndexInstanceList:  result,
-                    //compositionIndexInstanceTotal: cilist.size(),
                     groupedByEhr: (!qehrId)
                  ],
                  contentType: "text/html")
@@ -1611,7 +1596,6 @@ class RestController {
          renderError(e.message, "4802", 424)
          return
       }
-
 
 
       def result = cilist
