@@ -281,12 +281,21 @@ class RestController {
          renderError(message(code:'rest.error.ehr_uid_required'), '400', 400)
          return
       }
+
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/923
+      if (!(auditSystemId ==~ /[A-Za-z0-9_\-\.]*/))
+      {
+         commitLoggerService.log(request, null, false, null, session, params)
+         renderError(message(code:'rest.error.auditSystemId.wrongFormat'), '400', 400)
+         return
+      }
       if (!auditSystemId)
       {
          commitLoggerService.log(request, null, false, null, session, params)
          renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
+      
       if (!auditCommitter)
       {
          commitLoggerService.log(request, null, false, null, session, params)
