@@ -49,7 +49,6 @@ import javax.xml.bind.ValidationException
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.authentication.DisabledException
@@ -121,6 +120,7 @@ class RestController {
       'ehrCreate': '13'
    ]
 
+   // TODO: I18N
    // FIXME: move logic to service
    def login()
    {
@@ -132,6 +132,11 @@ class RestController {
 
       try
       {
+         if (!username || !password || !organization_number)
+         {
+            throw new BadCredentialsException("username, password and organization are required, at least one is empty")
+         }
+
          def user = User.findByUsername(username)
          if (user == null)
          {
@@ -295,7 +300,7 @@ class RestController {
          renderError(message(code:'rest.error.auditSystemId_required'), '400', 400)
          return
       }
-      
+
       if (!auditCommitter)
       {
          commitLoggerService.log(request, null, false, null, session, params)
