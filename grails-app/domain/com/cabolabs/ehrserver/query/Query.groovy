@@ -447,15 +447,16 @@ class Query {
 
       if (group == 'composition')
       {
-         res = queryDataGroupComposition(res, (!ehrUid))
+         res = queryDataGroupComposition(res, true) //(!ehrUid))
       }
       else if (group == 'path')
       {
-         res = queryDataGroupPath(res, (!ehrUid))
+         res = queryDataGroupPath(res, true) //(!ehrUid))
       }
       else
       {
-         if (!ehrUid) res = res.groupBy { dvi -> dvi.owner.ehrUid }
+         //if (!ehrUid)
+         res = res.groupBy { dvi -> dvi.owner.ehrUid }
       }
 
       return res
@@ -567,6 +568,7 @@ class Query {
       // Filas de la tabla
       def resGrouped
 
+      // groupByEHR will always be true because of https://github.com/ppazos/cabolabs-ehrserver/issues/916
       if (groupByEHR)
       {
          resGrouped = queryDataGroupByEHRAndComposition(res, resHeaders)
@@ -655,6 +657,7 @@ class Query {
 
                elem = [:]
 
+               // TODO: this should be on a separate method
                // Datos de cada path seleccionada dentro de la composition
                switch (colData['type'])
                {
@@ -1074,9 +1077,6 @@ class Query {
 
 
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
-
-      //println "executeComposition results "+ cilist
-
       return cilist
    }
 

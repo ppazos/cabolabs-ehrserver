@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2018-04-20T16:09:19.169Z",
+	"__export_date": "2018-04-27T05:38:41.149Z",
 	"__export_source": "insomnia.desktop.app:v5.8.4",
 	"resources": [
 		{
@@ -47,20 +47,20 @@
 		{
 			"_id": "jar_1562b12758b543f7acc3e9e7aff53e28",
 			"parentId": "wrk_731dc22ad3f14626becf12a0e3f62269",
-			"modified": 1524240123109,
+			"modified": 1524806889463,
 			"created": 1523686987910,
 			"name": "Default Jar",
 			"cookies": [
 				{
 					"creation": "2018-04-14T06:44:59.326Z",
 					"key": "JSESSIONID",
-					"value": "5B3BFA36CD12495D3367C125254094C1",
+					"value": "FE6953E42F18DC1FDA9C1EB2987C8B5E",
 					"path": "/ehr/",
 					"httpOnly": true,
 					"hostOnly": true,
 					"domain": "localhost",
-					"lastAccessed": "2018-04-20T16:02:03.107Z",
-					"id": "18109133687839107"
+					"lastAccessed": "2018-04-27T05:28:09.463Z",
+					"id": "4222634305210573"
 				}
 			],
 			"_type": "cookie_jar"
@@ -329,7 +329,7 @@
 		{
 			"_id": "req_7cda708f9e7f40a3a9901f8dd5c17b9f",
 			"parentId": "fld_39b1525c0a2b461eac128813f9432fd5",
-			"modified": 1523686987960,
+			"modified": 1524283831678,
 			"created": 1523686987960,
 			"url": "{{base_url}}/api/v1/login",
 			"name": "login JSON",
@@ -797,7 +797,7 @@
 		{
 			"_id": "req_7cc1f85518474a2da079f8fb93ba9f4b",
 			"parentId": "fld_1091dcc1fc4c4f1395f9276fcda7d4c2",
-			"modified": 1524239450177,
+			"modified": 1524806906873,
 			"created": 1523686988021,
 			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_de15e4e991bc4269afa8662f79fc442a', '$.ehrs[0].uid' %}/compositions",
 			"name": "ehrs/$uid/compositions",
@@ -1223,7 +1223,7 @@
 		{
 			"_id": "req_5d5b6ea4f5554e4088470c3e4598ae8b",
 			"parentId": "fld_1091dcc1fc4c4f1395f9276fcda7d4c2",
-			"modified": 1524240463362,
+			"modified": 1524260813724,
 			"created": 1524239626276,
 			"url": "{{base_url}}/api/v1/ehrs/{% response 'body', 'req_de15e4e991bc4269afa8662f79fc442a', '$.ehrs[0].uid' %}/compositions",
 			"name": "ehrs/$uid/compositions (new version)",
@@ -1305,9 +1305,9 @@
 		{
 			"_id": "req_9d2889efe2cd4015814b27edd11fa202",
 			"parentId": "fld_182181280180423a8974a53b7e108753",
-			"modified": 1523686988045,
+			"modified": 1524806983037,
 			"created": 1523686988045,
-			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_f9b8105da77344938797663733856332', '$.queries[0].uid' %}",
+			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_93fb7c8afdeb4be28b3e7e4aa70ad656', '$.queries[0].uid' %}",
 			"name": "queries/$uid",
 			"description": "",
 			"method": "GET",
@@ -1342,9 +1342,9 @@
 		{
 			"_id": "req_9b9d748c317542b2a5a9a33c0b6b1551",
 			"parentId": "fld_182181280180423a8974a53b7e108753",
-			"modified": 1523686988047,
+			"modified": 1524807498322,
 			"created": 1523686988047,
-			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_f9b8105da77344938797663733856332', '$.queries[0].uid' %}/execute",
+			"url": "{{base_url}}/api/v1/queries/{% response 'body', 'req_93fb7c8afdeb4be28b3e7e4aa70ad656', '$.queries[0].uid' %}/execute",
 			"name": "queries/$uid/execute",
 			"description": "",
 			"method": "GET",
@@ -1356,9 +1356,10 @@
 					"id": "pair_987d54b328f6482da8dd1b607307aa78"
 				},
 				{
-					"name": "",
-					"value": "",
-					"id": "pair_ceb777a8f2054ea28cbae2827b0f8b97"
+					"name": "ehrUid",
+					"value": "{% response 'body', 'req_de15e4e991bc4269afa8662f79fc442a', '$.ehrs[0].uid' %}",
+					"id": "pair_ceb777a8f2054ea28cbae2827b0f8b97",
+					"disabled": true
 				}
 			],
 			"headers": [

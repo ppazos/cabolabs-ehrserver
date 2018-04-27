@@ -1071,7 +1071,7 @@ class RestController {
       }
 
       // --------------------------------------------------------------
-      // FIXME: do query execution and output processing in a service
+      // TODO: do query execution and output processing in a service
       // --------------------------------------------------------------
 
       if (!max)
@@ -1147,10 +1147,10 @@ class RestController {
       {
          // If no ehrUid was specified, the results will be for different ehrs
          // we need to group those CompositionIndexes by EHR.
-         if (!ehrUid)
-         {
+         //if (!ehrUid)
+         //{
             res = res.groupBy { ci -> ci.ehrUid } // res is a map
-         }
+         //}
 
          // Muestra compositionIndex/list
          if (showUI)
@@ -1191,114 +1191,114 @@ class RestController {
             return
          }
 
-          // FIXME: hay que armar bien el XML: declaracion de xml solo al
-          //        inicio y namespaces en el root.
-          //
-          //  REQUERIMIENTO:
-          //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
-          //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
-          //  para extraer datos con reglas sobre un conjunto de compositions en un
-          //  solo XML.
-          //
-          // FIXME: no genera xml valido porque las compos se guardan con:
-          // <?xml version="1.0" encoding="UTF-8"?>
-          //
-          def version
-          String buff
-          String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-          def vf
-          if (!ehrUid) // group by ehrUid
-          {
-             res.each { _ehrUid, compoIndexes ->
+         // retrieveData
 
-                out += '<ehr uid="'+ _ehrUid +'">'
+         // FIXME: hay que armar bien el XML: declaracion de xml solo al
+         //        inicio y namespaces en el root.
+         //
+         //  REQUERIMIENTO:
+         //  POR AHORA NO ES NECESARIO ARREGLARLO, listando los index y luego
+         //  haciendo get por uid de la composition alcanza. Esto es mas para XRE
+         //  para extraer datos con reglas sobre un conjunto de compositions en un
+         //  solo XML.
+         //
+         // FIXME: no genera xml valido porque las compos se guardan con:
+         // <?xml version="1.0" encoding="UTF-8"?>
+         //
+         def version
+         String buff
+         String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
+         def vf
+         //if (!ehrUid) // group by ehrUid
+         //{
+            res.each { _ehrUid, compoIndexes ->
 
-                // idem else, TODO refactor
-                compoIndexes.each { compoIndex ->
+               out += '<ehr uid="'+ _ehrUid +'">'
 
-                   // FIXME: verificar que esta en disco, sino esta hay un problema
-                   //        de sincronizacion entre la base y el FS, se debe omitir
-                   //        el resultado y hacer un log con prioridad alta para ver
-                   //        cual fue el error.
+               // idem else, TODO refactor
+               compoIndexes.each { compoIndex ->
 
-                   // adds the version, not just the composition
-                   version = compoIndex.getParent()
+                  // FIXME: verificar que esta en disco, sino esta hay un problema
+                  //        de sincronizacion entre la base y el FS, se debe omitir
+                  //        el resultado y hacer un log con prioridad alta para ver
+                  //        cual fue el error.
 
-                   try
-                   {
-                      vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                      buff = vf.getText()
-                   }
-                   catch (VersionRepoNotAccessibleException e)
-                   {
-                      log.warning e.message
-                      return // continue with next compoIndex
-                   }
-                   catch (FileNotFoundException e)
-                   {
-                      log.warning e.message
-                      return // continue with next compoIndex
-                   }
+                  // adds the version, not just the composition
+                  version = compoIndex.getParent()
 
+                  try
+                  {
+                     vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                     buff = vf.getText()
+                  }
+                  catch (VersionRepoNotAccessibleException e)
+                  {
+                     log.warning e.message
+                     return // continue with next compoIndex
+                  }
+                  catch (FileNotFoundException e)
+                  {
+                     log.warning e.message
+                     return // continue with next compoIndex
+                  }
 
-                   buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-                   buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-                   buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+                  buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+                  buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+                  buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
 
-                   /**
+                  /**
                     * Composition queda:
                     *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
                     */
 
-                   out += buff + "\n"
-                }
-                out += '</ehr>'
-             }
-          }
-          else
-          {
-             res.each { compoIndex ->
-
-                // FIXME: verificar que esta en disco, sino esta hay un problema
-                //        de sincronizacion entre la base y el FS, se debe omitir
-                //        el resultado y hacer un log con prioridad alta para ver
-                //        cual fue el error.
-
-                // adds the version, not just the composition
-                version = compoIndex.getParent()
-
-                try
-                {
-                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                   buff = vf.getText()
-                }
-                catch (VersionRepoNotAccessibleException e)
-                {
-                   log.warning e.message
-                   return // continue with next compoIndex
-                }
-                catch (FileNotFoundException e)
-                {
-                   log.warning e.message
-                   return // continue with next compoIndex
-                }
-
-                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
-
-                /**
-                 * Composition queda:
-                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-                 */
-
-                out += buff + "\n"
+                  out += buff + "\n"
+               }
+               out += '</ehr>'
             }
-         }
+         //}
+         //else
+         //{
+         /*
+            res.each { compoIndex ->
+
+               // FIXME: verificar que esta en disco, sino esta hay un problema
+               //        de sincronizacion entre la base y el FS, se debe omitir
+               //        el resultado y hacer un log con prioridad alta para ver
+               //        cual fue el error.
+
+               // adds the version, not just the composition
+               version = compoIndex.getParent()
+
+               try
+               {
+                  vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                  buff = vf.getText()
+               }
+               catch (VersionRepoNotAccessibleException e)
+               {
+                  log.warning e.message
+                  return // continue with next compoIndex
+               }
+               catch (FileNotFoundException e)
+               {
+                  log.warning e.message
+                  return // continue with next compoIndex
+               }
+
+               buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
+               buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+               buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
+
+               //Composition queda:
+               //<data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
+
+               out += buff + "\n"
+            }
+         */
+         //}
          // measuring query timing
          out += '<timing>'+ (end_time - start_time) +' ms</timing>'
          out += '</list>'
-
 
          if (format == 'json')
             render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
@@ -1465,14 +1465,14 @@ class RestController {
 
 
       // group results by ehr uid
-      if (!qehrId)
-      {
+      //if (!qehrId)
+      //{
          result = result.result.groupBy { ci -> ci.ehrUid }
-      }
-      else
-      {
-         result = result.result
-      }
+      //}
+      //else
+      //{
+      //   result = result.result
+      //}
 
       if (showUI)
       {
@@ -1499,7 +1499,7 @@ class RestController {
 
 
       // Retrieve data
-      String data = queryService.retrieveDataFroCompositionQueryResult(result, qehrId, request.securityStatelessMap.extradata.org_uid)
+      String data = queryService.retrieveDataFromCompositionQueryResult(result, qehrId, request.securityStatelessMap.extradata.org_uid)
 
       if (format == 'json')
          render(text: jsonService.xmlToJson(data), contentType:"application/json", encoding:"UTF-8")
@@ -1616,10 +1616,10 @@ class RestController {
 
       // If no ehrUid was specified, the results will be for different ehrs
       // we need to group those CompositionIndexes by EHR.
-      if (!qehrId)
-      {
+      //if (!qehrId)
+      //{
          result = cilist.groupBy { ci -> ci.ehrUid }
-      }
+      //}
 
       // Muestra compositionIndex/list
       if (showUI)
@@ -1663,8 +1663,8 @@ class RestController {
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
       def vf
-      if (!qehrId) // group by ehrUid
-      {
+      //if (!qehrId) // group by ehrUid
+      //{
          result.each { ehrUid, compoIndexes ->
 
              out += '<ehr uid="'+ ehrUid +'">'
@@ -1709,10 +1709,10 @@ class RestController {
              }
              out += '</ehr>'
          }
-      }
-      else
-      {
-         result.each { compoIndex ->
+      //}
+      //else
+      //{
+      //   result.each { compoIndex ->
 
             // FIXME: verificar que esta en disco, sino esta hay un problema
             //        de sincronizacion entre la base y el FS, se debe omitir
@@ -1748,8 +1748,8 @@ class RestController {
              */
 
             out += buff + "\n"
-         }
-      }
+      //   }
+      //}
       out += '</list>'
 
 
