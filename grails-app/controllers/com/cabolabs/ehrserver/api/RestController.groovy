@@ -409,7 +409,13 @@ class RestController {
             return
          }
       }
-      // TODO: else content type not supported!
+      else // only json or xml are allowed
+      {
+         commitLoggerService.log(request, null, false, null, session, params)
+         renderError(message(code:'rest.commit.error.contentTypeNotSupported'), '50112', 400, [], sex)
+         return
+      }
+
 
       if (!_parsedVersions)
       {
