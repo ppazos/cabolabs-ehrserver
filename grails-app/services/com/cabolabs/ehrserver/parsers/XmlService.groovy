@@ -66,6 +66,9 @@ class XmlService {
    def CHANGE_TYPE_MODIFICATION = 251
    def CHANGE_TYPE_DELETED = 523
 
+   def CATEGORY_EVENT = "433"
+   def CATEGORY_PERSISTENT = "431"
+
    def processCommit(Ehr ehr, GPathResult versions, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
    {
       // Validate versions
@@ -151,6 +154,17 @@ class XmlService {
          else if (!xmlValidationService.validateVersion(versionXML, namespaceMap)) // XSD validation
          {
             errors[i] = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+         }
+
+         // event compose require context.start_time to be not empty
+         if (versionXML.data.category.defining_code.code_string.text() == CATEGORY_EVENT)
+         {
+            if (versionXML.data.context.size() == 0 ||
+                versionXML.data.context.start_time.size() == 0 ||
+                versionXML.data.context.start_time.value.size() == 0)
+            {
+               errors[i] = ['version.data.context.start_time.value should be present when version.data.category.defining_code.code_string is 433']
+            }
          }
       }
 
@@ -656,8 +670,6 @@ class XmlService {
       Date startTime, endTime
       String location
 
-      String category
-
       /* <category>
             <value>evento</value>
             <defining_code>
@@ -666,16 +678,23 @@ class XmlService {
               </terminology_id>
               <code_string>433</code_string>
             </defining_code>
-          </category>
-       */
-      // Correct assignation of category without depending on the name (locale dependant!)
-      def category_code = version.data.category.defining_code.code_string.text()
-      if (category_code == "431") category = 'persistent'
-      else if (category_code == "433") category = 'event'
-      else
+         </category>
+      */
+      String category
+      String category_code = version.data.category.defining_code.code_string.text()
+
+      // extract string value that will be persisted in the compo index
+      switch (category_code)
       {
-         println "Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433"
-         throw new RuntimeException("Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433")
+         case CATEGORY_PERSISTENT:
+            category = 'persistent'
+         break
+         case CATEGORY_EVENT:
+            category = 'event'
+         break
+         default:
+            println "Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433"
+            throw new RuntimeException("Incorrect category code '${category_code}' for COMPOSITION, should be 431 or 433")
       }
 
 
@@ -692,7 +711,7 @@ class XmlService {
       //  - composition.'@xsi:type' = 'COMPOSITION'
       // -----------------------
 
-      if (category == 'event')
+      if (category_code == CATEGORY_EVENT)
       {
          // start time is mandatory for event, that is checked by the XSD on a previous step.
 

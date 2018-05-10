@@ -1041,7 +1041,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               5,
                  max_opts_per_organization:       20,
                  max_api_tokens_per_organization: 3,
-                 repo_total_size_in_kb:           2000, // low for testing! (1MB in KB)
+                 repo_total_size_in_kb:           200000, // low for testing! (1MB in KB)
                  period:                          Plan.periods.MONTHLY
                )
             ]
