@@ -739,7 +739,13 @@ class RestController {
    {
       if (!subjectUid)
       {
-         renderError(message(code:'rest.ehrCreate.error.subjectUid.required'), '999', 400)
+         renderError(message(code:'rest.ehrCreate.error.subjectUid.required'), '9990', 400)
+         return
+      }
+
+      if (!(subjectUid ==~ /([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/))
+      {
+         renderError(message(code:'rest.ehrCreate.error.subjectUid.invalidUUID'), '9991', 400)
          return
       }
 
@@ -763,6 +769,12 @@ class RestController {
          if (existing_ehr)
          {
             renderError(message(code:'ehr.createEhr.ehrUidAlreadyExists', args:[uid]), '997', 400)
+            return
+         }
+
+         if (!(uid ==~ /([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/))
+         {
+            renderError(message(code:'rest.ehrCreate.error.uid.invalidUUID'), '9991', 400)
             return
          }
       }
