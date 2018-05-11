@@ -790,14 +790,14 @@ class RestController {
 
       if (!format || format == "xml")
       {
-         render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8", status: 201)
       }
       else if (format == "json")
       {
          def result = ehr as JSON
          // JSONP
          if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
+         render(text: result, contentType:"application/json", encoding:"UTF-8", status: 201)
       }
    }
 
