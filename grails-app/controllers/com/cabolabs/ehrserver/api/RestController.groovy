@@ -2119,17 +2119,43 @@ class RestController {
    @SecuredStateless
    def ehrChecker(String ehrQueryUid, String ehrUid, String format)
    {
-      def eq = EhrQuery.findByUid(ehrQueryUid)
-      def res = eq.checkEhr(ehrUid)
+      if (!ehrQueryUid)
+      {
+         renderError("ehrQueryUid is required", '9456', 404)
+         return
+      }
+
+      def equery = EhrQuery.findByUid(ehrQueryUid)
+
+      if (!equery)
+      {
+         renderError("Query not found for ehrQueryUid ${ehrQueryUid}", '9457', 404)
+         return
+      }
+
+      def res = equery.checkEhr(ehrUid)
       render ( [res] as JSON)
    }
 
    @SecuredStateless
    def getMatchingEhrs(String ehrQueryUid, String format)
    {
-      def eq = EhrQuery.findByUid(ehrQueryUid)
+      if (!ehrQueryUid)
+      {
+         renderError("ehrQueryUid is required", '9456', 404)
+         return
+      }
+
+      def equery = EhrQuery.findByUid(ehrQueryUid)
+
+      if (!equery)
+      {
+         renderError("Query not found for ehrQueryUid ${ehrQueryUid}", '9457', 404)
+         return
+      }
+
       def orgUid = request.securityStatelessMap.extradata.org_uid
-      def ehrUids = eq.getEhrUids(orgUid)
+      def ehrUids = equery.getEhrUids(orgUid)
       render (ehrUids as JSON)
    }
 
