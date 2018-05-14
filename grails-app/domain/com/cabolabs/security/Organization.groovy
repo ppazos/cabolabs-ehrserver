@@ -30,7 +30,7 @@ class Organization {
    String name
    String number // identifier of the organization to be used for user registration
    String preferredLanguage
-   
+
    Date dateCreated
    Date lastUpdated
 
@@ -46,30 +46,30 @@ class Organization {
    {
       if (!this.number) assignNumber()
    }
-   
+
    def beforeUpdate()
    {
       if (!this.number) assignNumber()
    }
-   
+
    private void assignNumber()
    {
       def _number = String.randomNumeric(6)
-      
+
       while (Organization.countByNumber(_number) == 1) // avoids repeated number
       {
       println _number
          _number = String.randomNumeric(6)
       }
-      
+
       this.number = _number
    }
-   
+
    @Override
-	boolean equals(other) {
-		is(other) || (other instanceof Organization && other.id == this.id)
-	}
-   
+   boolean equals(other) {
+      is(other) || (other instanceof Organization && other.id == this.id)
+   }
+
    // this is needed so the map with key org used in UserController.update to assign roles works OK.
    @Override
    public int hashCode() {

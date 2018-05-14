@@ -42,18 +42,18 @@ environments {
            dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
 
            //logSql = true
-           
+
            // ===========================================================
            // Config for OpenShift ======================================
-           
+
            String host = "localhost"
            String port = 3306
            String dbName = "ehrserver"
-           
+
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
-           
+
            username = 'root'
-           password = ''
+           password = 'toor'
         }
     }
     test {
@@ -63,50 +63,50 @@ environments {
             String port = 3306
             String dbName = "ehrservertest"
             url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
-            
+
             username = 'root'
-            password = ''
+            password = 'toor'
         }
     }
     production {
         dataSource {
-           
+
            /* For testing prod on localhost
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
-           
+
            driverClassName = 'com.mysql.jdbc.Driver'
            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-           
+
            // ===========================================================
            // Config for OpenShift ======================================
-           
+
            String host = "localhost"
            String port = 3306
            String dbName = "ehrserver"
-           
+
            url = "jdbc:mysql://$host:$port/$dbName"
-           
+
            username = 'root'
            password = ''
            */
 
             dbCreate = "update"
-            
+
             // ===========================================================
             // Config for OpenShift ======================================
-            
+
             String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
             String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
             String dbName = System.getenv('OPENSHIFT_APP_NAME')
-            
+
             url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
-            
+
             username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
             password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
-            
+
             // ===========================================================
-            
+
             pooled = true
             properties {
                // From http://grails.github.io/grails-doc/2.3.7/guide/conf.html
@@ -132,7 +132,7 @@ environments {
                // http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#JDBC_interceptors
                jdbcInterceptors = "ConnectionState;StatementCache(max=200)"
                defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED // safe default
-               // controls for leaked connections 
+               // controls for leaked connections
                abandonWhenPercentageFull = 100 // settings are active only when pool is full
                removeAbandonedTimeout = 120
                removeAbandoned = true
@@ -145,21 +145,21 @@ environments {
        dataSource {
 
            dbCreate = "update"
-           
+
            // ===========================================================
            // Config for OpenShift ======================================
-           
+
            String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
            String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
            String dbName = System.getenv('OPENSHIFT_APP_NAME')
-           
+
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
-           
+
            username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
            password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
-           
+
            // ===========================================================
-           
+
            pooled = true
            properties {
               // From http://grails.github.io/grails-doc/2.3.7/guide/conf.html
