@@ -216,6 +216,9 @@ class AccountController {
             }
          }
 
+         // association should start at 00:00 on the start date
+         from_date.clearTime()
+
          // Do not allow to assign a new plan starting in the past
          // https://github.com/ppazos/cabolabs-ehrserver/issues/907
          if (from_date < new Date().clearTime())
@@ -244,7 +247,8 @@ class AccountController {
          // get current account plan, can be null if none
          // exists or if the expiry date already passed
          def plan_association = Plan.associatedNow(account)
-         plan_association.to = from_date - 1 // current plan ends on the day before the new plan starts
+         plan_association.to = from_date // current plan ends when the new starts
+
 
          // if the current plan end date is older than today, close the plan,
          // if the current plan end date is in the future, it should be closed when that date arrives, need a

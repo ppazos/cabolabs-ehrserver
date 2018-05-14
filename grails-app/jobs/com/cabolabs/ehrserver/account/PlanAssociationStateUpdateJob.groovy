@@ -18,7 +18,7 @@ class PlanAssociationStateUpdateJob {
       // TODO: move logic to service for testability
       def active_plan_assoc
       def inactive_plan_assoc
-      def today = new Date().clearTime()
+      def today = new Date() //.clearTime()
 
       Account.list().each { account ->
 
@@ -46,7 +46,7 @@ class PlanAssociationStateUpdateJob {
             return // continues with next account
          }
 
-         // current active plan ends yesterday?
+         // current active plan ended?
          if (active_plan_assoc.to < today)
          {
             //println "active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
@@ -60,7 +60,7 @@ class PlanAssociationStateUpdateJob {
                // if should start today! if not we have <current active> pediod_of_time <new inactive>
                // and there shouldn't be gaps between active and future inactive plans,
                // TODO: need to add a check for that on the account edit.
-               if (today != inactive_plan_assoc.from)
+               if (today < inactive_plan_assoc.from)
                {
                   log.error('inactive plan start date is set in the future and current active plan ends today')
                }
