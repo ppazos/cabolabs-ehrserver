@@ -111,7 +111,7 @@ class AccountController {
 
       // 3. Account setup: create organization
       // saves the account
-      def org = organizationService.create(account, organization)
+      def org = organizationService.create(account, organization, false)
 
       /*
       if (!org.validate())
@@ -123,20 +123,20 @@ class AccountController {
       }
       */
 
+      // THESE SHOULD BE IN THE organizationService.create
 
       // 4. Account setup: get ACCMAN role
       def accmanRole = Role.findByAuthority(Role.AM)
 
-
       // 5. Account setup: create user role association
       UserRole.create( accman, accmanRole, org, true )
+
 
 
       // send password reset email to the account manager
       // TODO: schedule emails
       // token to create the URL for the email is in the userInstance
       notificationService.sendUserRegisteredOrCreatedEmail( accman.email, [accman] )
-
 
 
       flash.message = message(code:'account.save.ok', args:[account.id])

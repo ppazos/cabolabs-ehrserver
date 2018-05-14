@@ -8,8 +8,9 @@ import grails.util.Holders
 class OrganizationService {
 
    def config = Holders.config.app
+   def notificationService
 
-   def create(Account account, String name)
+   def create(Account account, String name, boolean sendNotification = true)
    {
       // create org and set account
       def org = new Organization(name: name)
@@ -36,6 +37,12 @@ class OrganizationService {
       // org commit logs repo
       def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
       commit_logs_repo.mkdir()
+
+      if (sendNotification)
+      {
+         // notify the ACCMAN he has access to the new Organization on his account
+         notificationService.sendNewOrganizationAssociatedEmail([account: account, organization: org])
+      }
 
       return org
    }

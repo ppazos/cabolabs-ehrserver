@@ -582,7 +582,6 @@ class UserController {
             try
             {
                // TODO: create an invitation with token, waiting for account confirmation
-               //
 
                u.save(failOnError: true, flush:true)
 
@@ -592,21 +591,14 @@ class UserController {
                // if the admin wants to review user sign ups, needs to disable web sign up and create the accounts manually
                def account = new Account(contact: u, companyName: params.org_name, enabled: true)
 
-               o = organizationService.create(account, params.org_name)
+               o = organizationService.create(account, params.org_name, false)
 
                // TODO: UserRole ORG_* needs a reference to the org, since the user
                //      can be ORG_ADMIN in one org and ORG_STAFF in another org.
                // the user is creating the organization, it should be manager also, because is the first, is account manager
                UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
 
-
-               // associate the basic plan to the new org
-               // TODO: for cloud we need a plan selector but initially accounts will be
-               // created by an admin not by user register
-               //def p1 = Plan.get(1)
-               //p1.associate(account)
-
-               // No default plan is set
+               // No default plan is set yet!!!
             }
             catch (ValidationException e)
             {
