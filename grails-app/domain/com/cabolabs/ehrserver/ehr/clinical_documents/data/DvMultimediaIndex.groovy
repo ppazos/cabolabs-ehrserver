@@ -31,21 +31,24 @@ class DvMultimediaIndex extends DataValueIndex {
    int size // calculated
    byte[] data
 
-   // TODO: uri: DV_URI to support references
+   // uri: DV_URI to support references
+   String uri
 
    static constraints = {
       data maxSize: 1073741824  // 1GB
       alternateText nullable: true
+      uri nullable: true
 
       // https://www.sitepoint.com/web-foundations/mime-types-complete-list/
       // https://www.iana.org/assignments/media-types/media-types.xhtml
       // https://github.com/openEHR/terminology/blob/master/openEHR_RM/openehr_external_terminologies.xml#L399-L464
-      mediaType inList:["application/dicom",
+      mediaType inList: [
+                        "application/dicom",
                         "application/pdf",
                         "application/rtf",
                         "application/msword",
                         "application/rtf",
-                        
+
                         "image/dicom-rle",
                         "image/jp2",
                         "image/png",
@@ -58,12 +61,12 @@ class DvMultimediaIndex extends DataValueIndex {
                         "video/ogg",
                         "video/mpeg",
                         "video/BT656",
-	                      "video/CelB",
-	                      "video/JPEG",
-	                      "video/H261",
-	                      "video/H263",
-	                      "video/H263-1998",
-	                      "video/H263-2000",
+	                     "video/CelB",
+	                     "video/JPEG",
+	                     "video/H261",
+	                     "video/H263",
+	                     "video/H263-1998",
+	                     "video/H263-2000",
                         "video/MPV",
                         "video/quicktime",
 
@@ -73,18 +76,18 @@ class DvMultimediaIndex extends DataValueIndex {
                         "audio/vorbis",
                         "audio/mpeg3",
                         "audio/DVI4",
-	                      "audio/G722",
-	                      "audio/G723",
-	                      "audio/G726-16",
-	                      "audio/G726-24",
-	                      "audio/G726-32",
-	                      "audio/G726-40",
-	                      "audio/G728",
-	                      "audio/L8",
-	                      "audio/L16",
-	                      "audio/LPC",
-	                      "audio/G729",
-	                      "audio/G729D",
+	                     "audio/G722",
+	                     "audio/G723",
+	                     "audio/G726-16",
+	                     "audio/G726-24",
+	                     "audio/G726-32",
+	                     "audio/G726-40",
+	                     "audio/G728",
+	                     "audio/L8",
+	                     "audio/L16",
+	                     "audio/LPC",
+	                     "audio/G729",
+	                     "audio/G729D",
                         "audio/G729E"
                         ]
    }

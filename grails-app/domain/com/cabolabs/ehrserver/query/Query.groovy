@@ -438,7 +438,7 @@ class Query {
          }
       }
 
-      //println res
+      println "executeDatavalue: " + res
 
 
       // Group
@@ -704,9 +704,10 @@ class Query {
                      elem['assigner'] = dvi.assigner
                   break
                   case 'DV_MULTIMEDIA':
-                     elem['mediaType'] = dvi.mediaType
-                     elem['size'] = dvi.size
+                     elem['mediaType']     = dvi.mediaType
+                     elem['size']          = dvi.size
                      elem['alternateText'] = dvi.alternateText
+                     elem['uri']           = dvi.uri
                   break
                   case 'DV_PARSABLE':
                      elem['value'] = dvi.value
@@ -884,6 +885,7 @@ class Query {
                   resGrouped[absPath]['serie'] << [mediaType:     dvi.mediaType,
                                                    size:          dvi.size,
                                                    alternateText: dvi.alternateText,
+                                                   uri:           dvi.uri,
                                                    date:          dviDate]
                break
                case 'DV_PARSABLE':

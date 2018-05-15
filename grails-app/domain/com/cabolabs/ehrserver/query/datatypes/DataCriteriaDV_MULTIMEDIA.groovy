@@ -30,30 +30,33 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
    List mediaTypeValue // one or more media types in the criteria
    String alternateTextValue
    List sizeValue // can be a range
-   
+   String uriValue
+
    String mediaTypeOperand
    String alternateTextOperand
    String sizeOperand
-   
+   String uriOperand
+
    boolean mediaTypeNegation = false
    boolean alternateTextNegation = false
    boolean sizeNegation = false
+   boolean uriNegation = false
 
    DataCriteriaDV_MULTIMEDIA()
    {
       rmTypeName = 'DV_MULTIMEDIA'
       alias = 'dvmmd'
    }
-   
+
    static hasMany = [mediaTypeValue: String, sizeValue: Integer]
-   
+
    static constraints = {
       mediaTypeOperand nullable: true
       alternateTextOperand nullable: true
       alternateTextValue nullable: true
       sizeOperand nullable: true
    }
-   
+
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
       // FIXME: the OPT can have more constrained mediaTypes, need to get them from there also.
@@ -74,33 +77,38 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
             between: 'range'
           ]
         ],
-        [        
+        [
           mediaType: [
             eq: 'value',
             in_list: 'list',
             mediaTypes: mediaTypesMap
           ]
         ],
-        [        
+        [
           alternateText: [
+            contains: 'value'
+          ]
+        ],
+        [
+          uri: [
             contains: 'value'
           ]
         ]
       ]
-      
+
       return spec
    }
-   
+
    static List attributes()
    {
-      return ['alternateText', 'mediaType', 'size']
+      return ['alternateText', 'mediaType', 'size', 'uri']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

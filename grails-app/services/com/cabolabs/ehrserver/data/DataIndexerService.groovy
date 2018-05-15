@@ -1080,6 +1080,9 @@ class DataIndexerService {
       /*
       <value xsi:type="DV_MULTIMEDIA">
         <alternate_text>blablabla</alternate_text>
+        <uri> -- uri is alternative to data
+          <value></value>
+        </uri>
         <data>gfsdfhgshd554ydtfh45hde45rth</data>
         <media_type>
           <terminology_id>
@@ -1098,9 +1101,10 @@ class DataIndexerService {
         owner:         owner,
         alternateText: node.alternate_text.text(),
         data:          node.data.text().decodeBase64(), // byte[]
+        uri:           node.uri.value.text(),
         mediaType:     node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
         size:          new Integer( node.size.text() ),
-        rmTypeName:   'DV_QUANTITY'
+        rmTypeName:   'DV_MULTIMEDIA'
       )
    }
 }
