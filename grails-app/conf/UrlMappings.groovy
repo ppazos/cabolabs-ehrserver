@@ -205,6 +205,12 @@ class UrlMappings {
          action: 'getMatchingEhrs'
       )
 
+      // This is to grab wrong requested URLs to the API and return 404
+      // https://github.com/ppazos/cabolabs-ehrserver/issues/901
+      "/api/v1/**"(
+         controller: 'rest'
+      )
+
       // management API
       "/mgt/v1/stats/$username"(
          controller: 'stats',

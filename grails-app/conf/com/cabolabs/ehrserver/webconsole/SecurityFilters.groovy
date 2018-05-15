@@ -218,8 +218,6 @@ class SecurityFilters {
                }
             }
 
-
-
             if (canCreateLog(controllerName, actionName))
             {
                /**
@@ -251,45 +249,67 @@ class SecurityFilters {
                      {
                         // FIXME: do the checks after the activity log, so if there is an error, it gets logged.
 
-                        // check data in the JWT token: username and organization
-                        username = request.securityStatelessMap.username
+                        def result, status = 400
 
-                        if (User.countByUsername(username) == 0)
+                        // 404 case, requested url is not valid in the API
+                        // if there is no securityStatelessMap it means the action requested
+                        // was not annotated and was requetsed to the RestController because
+                        // controllerName == 'rest', so the URL to the API is wrong.
+                        // https://github.com/ppazos/cabolabs-ehrserver/issues/901
+                        if (!request.securityStatelessMap)
                         {
-                           def result
-                           if (username.startsWith("apikey"))
-                           {
-                              result = apiResponsesService.feedback(
-                                 messageSource.getMessage('rest.error.token.apiKeyExpired', null, getRequestLocale(request)),
-                                 'AR',
-                                 '987656',
-                                 params.format)
-                           }
-                           else
-                           {
-                              result = apiResponsesService.feedback(
-                                 messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request)),
-                                 'AR',
-                                 '987653',
-                                 params.format)
-                           }
+                           status = 404
+                           result = apiResponsesService.feedback(
+                              messageSource.getMessage('rest.error.notFound', null, getRequestLocale(request)),
+                              'AR',
+                              '987600',
+                              params.format)
+                        }
+                        else
+                        {
+                           // check data in the JWT token: username and organization
+                           username = request.securityStatelessMap.username
 
+                           if (User.countByUsername(username) == 0)
+                           {
+                              if (username.startsWith("apikey"))
+                              {
+                                 result = apiResponsesService.feedback(
+                                    messageSource.getMessage('rest.error.token.apiKeyExpired', null, getRequestLocale(request)),
+                                    'AR',
+                                    '987656',
+                                    params.format)
+                              }
+                              else
+                              {
+                                 result = apiResponsesService.feedback(
+                                    messageSource.getMessage('rest.error.token.usernameDoesntExists', [username] as Object[], getRequestLocale(request)),
+                                    'AR',
+                                    '987653',
+                                    params.format)
+                              }
+                           }
+                        }
+
+                        if (result) // there was a problem
+                        {
                            switch (params.format?.toLowerCase())
                            {
                               case 'xml':
-                                 render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                                 render(status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
                               break
                               case 'json':
-                                 response.status = 400
+                                 response.status = status
                                  render(text:result, contentType:"application/json", encoding:"UTF-8")
                               break
                               default:
-                                 render( status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                                 render(status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
                            }
 
                             // TODO: should create activity log and admin notification
                            return false
                         }
+
 
 
                         def org_uid = request.securityStatelessMap.extradata.org_uid
@@ -414,6 +434,7 @@ class SecurityFilters {
             }
 
          }
+         /*
          after = { Map model ->
             // this is AFTER: login authfail null when the login failed.
             //println "AFTER: ${controllerName} ${actionName} ${model}"
@@ -421,6 +442,7 @@ class SecurityFilters {
          afterView = { Exception e ->
             //println "AFTER VIEW: ${controllerName} ${actionName}"
          }
+         */
       }
 
       // account management is only for admins
