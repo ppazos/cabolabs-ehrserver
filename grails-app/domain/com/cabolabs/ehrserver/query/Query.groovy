@@ -438,7 +438,7 @@ class Query {
          }
       }
 
-      println "executeDatavalue: " + res
+      //println "executeDatavalue: " + res
 
 
       // Group

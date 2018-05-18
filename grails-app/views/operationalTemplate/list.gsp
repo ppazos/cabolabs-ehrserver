@@ -50,6 +50,13 @@
                 <span class="fa fa-upload" aria-hidden="true"></span>
               </button></g:link>
 
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
+              <g:link action="opt_manager_status" title="upload operational template">
+                <button type="button" class="btn btn-primary btn-md">
+                  <span class="fa fa-eye" aria-hidden="true"></span> <g:message code="operationalTemplate.optManagerStatus.label" />
+                </button></g:link>
+            </sec:ifAnyGranted>
+
             <g:link action="trash">
               <button type="button" class="btn btn-default btn-md">
                 <span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.trash.label" />

@@ -417,4 +417,10 @@ class OperationalTemplateController {
       flash.message = message(code:"opt.trash.emptied")
       redirect action: 'trash' // URLMapping maps trash to list?deleted=true
    }
+
+   def opt_manager_status()
+   {
+      def optMan = OptManager.getInstance()
+      return [optMap: optMan.getLoadedOpts(session.organization.uid)]
+   }
 }
