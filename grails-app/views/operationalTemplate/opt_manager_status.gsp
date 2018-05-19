@@ -20,29 +20,39 @@
         padding-bottom: 5px;
       }
       .COMPOSITION {
-        background-color: #fabe6e;
+        background-color: #458cff;
       }
       .EVENT_CONTEXT, .HISTORY {
-        background-color: #f69c6b;
+        background-color: #5797FF;
       }
       .SECTION, .EVENT, .POINT_EVENT, .INTERVAL_EVENT {
-        background-color: #ffdc4f;
+        background-color: #6AA3FF;
       }
       .OBSERVATION, .EVALUATION, .INSTRUCTION, .ACTION, .ADMIN_ENTRY {
-        background-color: #cdeefa;
+        background-color: #7CAEFF;
       }
       .ITEM_TREE, .ITEM_LIST, .ITEM_TABLE, .ITEM_SINGLE {
-        background-color: #dbe7f3;
+        background-color: #8FBAFF;
       }
       .CLUSTER {
-        background-color: #eb839a;
+        background-color: #A2C5FF;
       }
       .ELEMENT {
-        background-color: #c58fc0;
+        background-color: #B4D1FF;
       }
       .DV_TEXT, .DV_CODED_TEXT, .DV_DATE, .DV_DATE_TIME, .DV_QUANTITY {
-        background-color: #a6d585;
+        background-color: #C7DCFF;
       }
+      .CODE_PHRASE {
+        background-color: #D9E8FF;
+      }
+      .DATE, .STRING {
+        background-color: #ECF3FF;
+      }
+      /*
+      more gradient colors
+      FFFFFF
+      */
       .fa-stack {
         margin-right: 5px;
         font-size: 0.6em;
@@ -50,6 +60,7 @@
       }
       .results h3 {
         margin-top: 0;
+        cursor: pointer;
       }
       .results h3 i {
         margin-left: 5px;
@@ -120,9 +131,8 @@
 
             <g:each in="${optMap}" status="i" var="optId_opt">
               <tr>
-                <td>${optId_opt.key}
-                </td>
                 <td class="results">
+                  <h2>${optId_opt.key}</h2>
                   <g:displayOPTTree opt="${optId_opt.value}" />
                 </td>
               </tr>
@@ -133,6 +143,16 @@
       </div>
     </div>
     <script>
+
+    // fold all by default
+    foldables = $('.row h3');
+    foldables.each(function(i){
+      it = $(this);
+      it.parent().siblings().hide();
+      it.addClass('folded');
+    });
+
+
     $('.row h3').on('click', function(){
       it = $(this);
       if (!it.hasClass('folded'))
