@@ -1931,14 +1931,21 @@ resp.responseJSON.result.message +'</div>'
             <div class="table-responsive">
               <table class="table table-striped table-bordered table-hover">
                   <tr>
-                    <td><g:message code="query.create.templates" /></td>
+                    <td>
+                      <g:message code="query.create.templates" /><br/>
+                      <span class="info">
+                        <asset:image src="skin/information.png" />
+                        <span class="content">
+                          <g:message code="query.create.conceptInfo" args="[session.lang]" />
+                        </span>
+                      </span>
+                    </td>
                     <td>
                       <%--
                       <select id="view_template_id" class="form-control" size="10">
                         <option value=""><g:message code="query.create.templates.select_template" /></option>
                       </select>
                       --%>
-
                       <g:select name="view_template_id"
                                 size="10"
                                 from="${templateIndexes}"
@@ -1946,18 +1953,11 @@ resp.responseJSON.result.message +'</div>'
                                 optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
                                 optionKey="templateId"
                                 class="form-control withsize"/>
-
                     </td>
                   </tr>
                   <tr>
                     <td>
-                      <g:message code="query.create.concept" /><br/>
-                      <span class="info">
-                        <asset:image src="skin/information.png" />
-                        <span class="content">
-                          <g:message code="query.create.conceptInfo" args="[session.lang]" />
-                        </span>
-                      </span>
+                      <g:message code="query.create.concept" />
                     </td>
                     <td>
                       <select id="view_archetype_id" name="view_archetype_id" size="10" class="form-control withsize"></select>
