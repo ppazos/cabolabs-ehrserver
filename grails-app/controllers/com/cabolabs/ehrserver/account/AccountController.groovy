@@ -247,8 +247,10 @@ class AccountController {
          // get current account plan, can be null if none
          // exists or if the expiry date already passed
          def plan_association = Plan.associatedNow(account)
-         plan_association.to = from_date // current plan ends when the new starts
-
+         if (plan_association)
+         {
+            plan_association.to = from_date // current plan ends when the new starts
+         }
 
          // if the current plan end date is older than today, close the plan,
          // if the current plan end date is in the future, it should be closed when that date arrives, need a
@@ -261,7 +263,6 @@ class AccountController {
             plan_association.state = PlanAssociation.states.CLOSED
          }
 */
-
 
          try
          {
