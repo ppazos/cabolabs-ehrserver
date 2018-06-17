@@ -18,16 +18,16 @@
         -webkit-box-sizing: border-box;
            -moz-box-sizing: border-box;
                 box-sizing: border-box;
-        
+
         margin: 0;
         padding: 0;
         padding-bottom: 15px;
       }
-      
+
       .gi-3x{font-size: 3em;}
       .gi-4x{font-size: 4em;}
       .gi-5x{font-size: 5em;}
-      
+
       #awrapper{
         height:100%;
         width:100%;
@@ -57,10 +57,10 @@
         -webkit-border-radius: 8px;
         -moz-border-radius: 8px;
         border-radius: 8px;
-        
+
         width: 540px;
       }
-      
+
       .error {
         /* TODO: meter icono de error ! */
         border: 1px solid #f00;
@@ -76,7 +76,7 @@
       img {
         border: 0px;
       }
-      
+
 
       /* Test mostrar icon */
       #index_menu a {
@@ -84,34 +84,34 @@
         padding-right: 4px;
         padding-top: 4px;
         padding-bottom: 4px;
-        
+
         margin: 0.8em;
-        
+
         /*height: 48px; no funciona */
         line-height: 1.6em; /* deja el texto en el medio vertical del icono de fondo */
         font-size: 1.6em;
-        
+
         display: inline-block;
         text-decoration: none;
       }
-      
+
       .access:hover {
         background-color: #ddddff;
       }
-      
+
       #panel {
         overflow: visible;
         display: inline-block;
       }
-      
+
       div.content > div {
         margin-top: 15px;
       }
-      
+
       .panel-default>.panel-heading {
         min-height: 8em; /* make all repo status boxes of the same height even if the org name occupies two rows */
       }
-      
+
       .separator {
         margin: 0px;
       }
@@ -247,11 +247,10 @@
         </div>
       </div>
     </div>
-    
+
     <hr class="separator" />
-    
+
     <div class="row content">
-      
       <g:each in="${version_repo_sizes}" var="org_repo_size">
         <div class="col-lg-3 col-md-6">
           <div class="panel panel-default">
@@ -261,7 +260,7 @@
                   <i class="glyphicon glyphicon-hdd gi-4x"></i>
                 </div>
                 <div class="col-xs-9 text-right">
-                  <div class="huge">${(org_repo_size.value / 1024).setScale(2,0)} KB</div>
+                  <div class="huge">${((org_repo_size.value/1024) < 1024) ? (org_repo_size.value/1024).setScale(2,0).toString() + 'KB' : (org_repo_size.value/(1024*1024)).setScale(1,0).toString() + 'MB'}</div>
                   <div><g:link controller="organization" action="show" id="${org_repo_size.key.uid}">${org_repo_size.key.name}</g:link></div>
                 </div>
               </div>

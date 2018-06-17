@@ -114,14 +114,14 @@
                return d;
             };
 
+            /*
             console.log('now', new Date(ref_date).toUTCString());
-
-
             console.log(first_day_prev_month_of(ref_date).toUTCString());
             console.log(first_day_current_month_of(ref_date).toUTCString());
             console.log(first_day_next_month_of(ref_date).toUTCString());
             console.log(first_day_next_next_month_of(ref_date).toUTCString());
-
+            */
+            
             $(function() {
 
               $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
