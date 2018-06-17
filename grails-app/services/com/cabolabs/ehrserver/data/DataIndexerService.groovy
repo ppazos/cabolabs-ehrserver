@@ -23,23 +23,21 @@
 package com.cabolabs.ehrserver.data
 
 import com.cabolabs.ehrserver.exceptions.DataIndexException
-import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
+import java.io.FileNotFoundException
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import grails.util.Holders
 import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
-import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
-import java.io.FileNotFoundException
-import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
-import com.cabolabs.security.Organization
-import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
-//import com.cabolabs.openehr.opt.manager.OptManager
-
 import com.cabolabs.security.User
+import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 
@@ -51,11 +49,8 @@ class DataIndexerService {
 
    def generateIndexes(CompositionIndex compoIndex)
    {
-      //def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-
       // created indexes will be loaded here
       def indexes = []
-
       def version, versionFile, versionXml, parsedVersion, compoParsed, org
 
       // Error handler to avoid:
@@ -66,7 +61,6 @@ class DataIndexerService {
       def message
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
-
 
       org = Organization.findByUid(compoIndex.organizationUid)
       if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
@@ -99,17 +93,16 @@ class DataIndexerService {
       versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
 
-//       error from error handler?
-//       if (message)
-//       {
-//         println "IndexDataJob XML ERROR: "+ message
-//         message = null // empty for the next parse
-//       }
+      //       error from error handler?
+      //       if (message)
+      //       {
+      //         println "IndexDataJob XML ERROR: "+ message
+      //         message = null // empty for the next parse
+      //       }
 
       compoParsed = parsedVersion.data
 
       process_COMPOSITION_index(compoParsed, compoIndex.templateId, '', compoIndex.archetypeId, '', compoIndex, indexes)
-      //recursiveIndexData( '', '', compoParsed, indexes, compoIndex.templateId, compoIndex.archetypeId, compoIndex, optMan )
 
       log.debug "index count: "+ indexes.size()
 
@@ -130,8 +123,9 @@ class DataIndexerService {
          }
          else
          {
-            //log.info "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
+            log.debug "index created: "+ didx.archetypeId + didx.archetypePath +' for compo '+ didx.owner.uid
          }
+
 
          // check if the AII exists, if not, the indexed value wont be able to be queried
          // there is a known issue with paths to ism_transitions, this is to check if besides that there is another path that do not match between OPT indexes and DV indexes
