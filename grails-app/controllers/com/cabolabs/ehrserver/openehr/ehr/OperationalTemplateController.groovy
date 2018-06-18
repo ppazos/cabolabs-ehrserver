@@ -312,8 +312,8 @@ class OperationalTemplateController {
 
       def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
 
-      // get other versions of the OPT
-      def versions = OperationalTemplateIndex.findAllBySetIdAndVersionNumberNotEqual(opt.setId, opt.versionNumber, [sort: 'versionNumber', order: 'desc'])
+      // get all versions of the OPT, including last (current opt uid)
+      def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])
 
       [opt_xml: opt_file.getText(), opt: opt, versions: versions]
    }
@@ -363,7 +363,7 @@ class OperationalTemplateController {
    }
 
    /*
-    * Logical delete of one item.
+    * Logical delete of one OPT.
     */
    def delete(String uid)
    {
@@ -382,9 +382,64 @@ class OperationalTemplateController {
       // If the OPT file is moved and the reindex executed, the OPTIndex is deleted from the database and not listed on trash,
       // we need the OPTIndex to be on the DB and remove it when it is physically deleted.
 
+      // Should this delete orphan AIIs and OPT items? a.k.a. reindex, but not delete the opt from the DB because there it is marked as deleted, and the file is moved to the deleted folder
+
       flash.message = message(code:"opt.delete.deleted.ok")
       redirect action:'list'
       return
+   }
+
+   def activate(String uid)
+   {
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+
+      if (!opt)
+      {
+         flash.message = message(code:"opt.common.error.templateNotFound")
+         redirect action:'list'
+         return
+      }
+
+      def indexer = new OperationalTemplateIndexer()
+      indexer._event_activate(opt)
+
+      // show should be for the latest version
+      def c = OperationalTemplateIndex.createCriteria()
+      def latest_version_uid = c.list {
+         eq('setId', opt.setId)
+         eq('lastVersion', true)
+         projections {
+            property('uid')
+         }
+      }
+
+      redirect action:'show', params: [uid:latest_version_uid]
+   }
+   def deactivate(String uid)
+   {
+      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+
+      if (!opt)
+      {
+         flash.message = message(code:"opt.common.error.templateNotFound")
+         redirect action:'list'
+         return
+      }
+
+      def indexer = new OperationalTemplateIndexer()
+      indexer._event_deactivate(opt)
+
+      // show should be for the latest version
+      def c = OperationalTemplateIndex.createCriteria()
+      def latest_version_uid = c.list {
+         eq('setId', opt.setId)
+         eq('lastVersion', true)
+         projections {
+            property('uid')
+         }
+      }
+
+      redirect action:'show', params: [uid:latest_version_uid]
    }
 
    /*

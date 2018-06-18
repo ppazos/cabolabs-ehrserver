@@ -11,6 +11,11 @@ class OPTService {
 
    // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
 
+   static File getOPTFile(String fileUid, String orguid)
+   {
+      return new File(Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + fileUid +'.opt')
+   }
+
    /**
     * size of opts in an org
     */

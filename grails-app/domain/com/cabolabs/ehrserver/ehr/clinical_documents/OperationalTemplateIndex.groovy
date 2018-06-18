@@ -45,6 +45,7 @@ class OperationalTemplateIndex {
    Date lastUpdated
 
    boolean isDeleted = false
+   boolean isActive = true
 
    static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
@@ -87,6 +88,10 @@ class OperationalTemplateIndex {
       }
       deleted {
          eq('isDeleted', true)
+      }
+
+      active {
+         eq('isActive', true)
       }
    }
 

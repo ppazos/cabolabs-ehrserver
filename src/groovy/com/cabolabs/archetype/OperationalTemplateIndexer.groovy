@@ -32,6 +32,7 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexItem
+import com.cabolabs.ehrserver.openehr.OPTService
 
 /*
  * TODO: refactor to service.
@@ -258,19 +259,30 @@ class OperationalTemplateIndexer {
     * @param opt
     * @return
     */
-   def deleteOptReferences(OperationalTemplateIndex opt)
+   def deleteOptReferences(OperationalTemplateIndex opt, boolean delete_opt = true)
    {
       //println "opt: "+ opt.templateId
 
       def archNodes = opt.referencedArchetypeNodes.collect() // avoid ConcurrentModificationException
-
       archNodes.each { archNode ->
 
          opt.removeFromReferencedArchetypeNodes(archNode)
       }
 
+      def templateNodes = opt.templateNodes.collect()
+
+      // explicit delete is not needed because the opt defines delete orphan, so orphan items are deleted automatically
+      templateNodes.each { optIndexItem ->
+
+         opt.removeFromTemplateNodes(optIndexItem)
+      }
+
       opt.save(flush:true)
-      opt.delete(flush:true)
+
+      if (delete_opt)
+      {
+         opt.delete(flush:true)
+      }
 
       archNodes.each { archNode ->
 
@@ -292,6 +304,40 @@ class OperationalTemplateIndexer {
       }
    }
 
+   /**
+    * Delete indexes from DB
+    * Do not move file
+    * Delete in-memory OPT from OPTManager (TODO)
+    */
+   def _event_deactivate(OperationalTemplateIndex opt)
+   {
+      opt.isActive = false
+      opt.save(failOnError: true)
+
+      deleteOptReferences(opt, false) // do not delete OPT
+   }
+
+   /**
+    * Index OPT on DB
+    * Parse from disk and add in-memory OPT from OPTManager (TODO)
+    */
+   def _event_activate(OperationalTemplateIndex opt)
+   {
+      opt.isActive = true
+      opt.save(failOnError: true)
+
+      def opt_file = OPTService.getOPTFile(opt.fileUid, opt.organizationUid)
+      def org = Organization.findByUid(opt.organizationUid)
+
+      def template_xml = FileUtils.removeBOM(opt_file.getBytes())
+      def slurper = new XmlSlurper(false, false)
+      def template_xml_parsed = slurper.parseText(template_xml)
+
+      this.templateIndex = opt
+      index(template_xml_parsed, null, org)
+      this.templateIndex = null
+   }
+
    def indexAll(Organization org)
    {
       def path = config.opt_repo
@@ -302,7 +348,7 @@ class OperationalTemplateIndexer {
       if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
       if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
 
-      def opts = OperationalTemplateIndex.forOrg(org).list()
+      def opts = OperationalTemplateIndex.forOrg(org).active().list()
 
       opts.each { opt ->
 
