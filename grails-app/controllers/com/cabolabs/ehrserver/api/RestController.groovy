@@ -439,6 +439,10 @@ class RestController {
       }
 
 
+      // ---------------------------------------------
+      // TODO: check the template is active
+      // ---------------------------------------------
+
       // CHECK: all referenced template IDs should exist
       // gets the template ID from each version in the commit
       def template_ids = _parsedVersions.version.collect { it.data.archetype_details.template_id.value.text() }

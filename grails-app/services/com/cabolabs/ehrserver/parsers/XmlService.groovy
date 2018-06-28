@@ -48,6 +48,8 @@ import com.cabolabs.ehrserver.versions.VersionFSRepoService
 // https://stackoverflow.com/questions/21138173/grails-saving-multiple-object-rollback-all-object-if-one-fails-to-save
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 
+import com.cabolabs.archetype.SemanticValidationLevel1
+
 //import grails.transaction.Transactional
 
 //@Transactional
@@ -74,7 +76,18 @@ class XmlService {
       // Validate versions
       // Throw javax.xml.bind.ValidationException if there are a validation error
       //  - errors will be saved into validationErrors
-      validateVersions(versions)
+      validateVersionsSyntactic(versions)
+
+      def semVal = new SemanticValidationLevel1()
+      semVal.validateVersions(versions)
+      if (semVal.errors.size() > 0)
+      {
+         println "---- ERRORS ----"
+         semVal.errors.each { e ->
+            println e.key
+            println ""
+         }
+      }
 
       // Check contribution id
       //  If there is more than 1 version in the commit
@@ -136,7 +149,7 @@ class XmlService {
     * @param versions
     * @return
     */
-   def validateVersions(GPathResult versions)
+   def validateVersionsSyntactic(GPathResult versions)
    {
       // This will have the ns declared in the versions element,
       // like: ['xmlns':'http://schemas.openehr.org/v1', 'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance']
