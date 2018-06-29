@@ -12,7 +12,7 @@ import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.security.*
 import com.cabolabs.ehrserver.account.*
-
+import com.cabolabs.openehr.opt.manager.OptManager
 import groovy.io.FileType
 import spock.lang.Ignore
 import grails.util.Holders
@@ -73,6 +73,10 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       // 5. Account setup: create user role association
       UserRole.create( accman, accmanRole, org, true )
 
+      // Need the OPTs cached for semantic validation when testing XmlService
+      // Repo path was set on Bootstrap so no need to pass it here
+      def optMan = OptManager.getInstance()
+      optMan.loadAll(org.uid)
 
       createEHR()
    }

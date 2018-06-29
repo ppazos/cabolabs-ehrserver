@@ -20,8 +20,13 @@
  * limitations under the License.
  */
 
-import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import grails.converters.*
 import grails.util.Holders
+import grails.util.Environment
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
 
 import com.cabolabs.security.RequestMap
 import com.cabolabs.security.User
@@ -32,22 +37,17 @@ import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
-import grails.plugin.springsecurity.SecurityFilterPosition
-import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.api.structures.*
 import com.cabolabs.ehrserver.account.*
-import grails.converters.*
-import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.web.converters.marshaller.NameAwareMarshaller
+import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.ehrserver.notification.*
-import grails.util.Environment
 import com.cabolabs.ehrserver.conf.ConfigurationItem
 import com.cabolabs.ehrserver.ehr.*
 import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.openehr.opt.manager.OptManager
 
 class BootStrap {
 
@@ -835,10 +835,8 @@ class BootStrap {
          ti.indexAll( org ) // also shares with all existing orgs if there are no shares
       }
 
-      // OPT loading
+      // OptManager OPT loading
       // This is done to set the OPT repo internally, further uses will not pass the repo path.
-      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-
       // OPTs are loaded into the manager in the login, after we know the org of the current user
    }
 
@@ -915,8 +913,6 @@ gr_account.addToOrganizations(gr_org)
 gr_account.save(failOnError:true, flush:true)
 */
 
-
-
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
       {
@@ -956,7 +952,6 @@ gr_account.save(failOnError:true, flush:true)
          def account = defaultAccount(accManUser, organizations)
 
 
-
          // Assign Roles for Users under Org 0, needs the org to be saved
          if (UserRole.count() == 0)
          {
@@ -966,8 +961,6 @@ gr_account.save(failOnError:true, flush:true)
             UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
             UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
          }
-
-
 
 
          // test, needs orgs to be saved
@@ -1067,6 +1060,19 @@ gr_account.save(failOnError:true, flush:true)
             }
          }
       } // not TEST ENV
+
+
+      // Need to set the base OPT repo for the OptManager so all calls later to
+      // getInstance don't need to pass the path. The path will change with the
+      // environment automatically (set by ENV in Config.groovy).
+      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
+
+      // Cache OPTs on run/deploy to avoid problems later
+      // On test, this should be done after creating the orgs
+      def orgs = Organization.list()
+      orgs.each { org ->
+         optMan.loadAll(org.uid)
+      }
 
 
       // ============================================================

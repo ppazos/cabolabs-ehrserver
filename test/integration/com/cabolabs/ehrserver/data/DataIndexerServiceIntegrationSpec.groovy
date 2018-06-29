@@ -15,6 +15,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.security.*
 import com.cabolabs.ehrserver.account.*
 import java.util.logging.Logger
+import grails.util.Environment
 
 class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
 

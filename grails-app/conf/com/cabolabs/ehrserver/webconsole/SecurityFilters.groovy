@@ -428,8 +428,10 @@ class SecurityFilters {
                   session.organization = org // to show the org name in the ui
 
                   // Load OPTS if not loaded for the current org
-                  def optMan = OptManager.getInstance()
+                  /* this is done on bootstrap now (2018-06-28)
+                  def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
                   optMan.loadAll(org.uid)
+                  */
                }
             }
 

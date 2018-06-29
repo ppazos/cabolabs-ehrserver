@@ -26,6 +26,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexIte
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import groovy.util.slurpersupport.GPathResult
 import java.util.logging.Logger
+import grails.util.Holders
 //import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.openehr.opt.manager.OptManager
 import org.springframework.web.context.request.RequestContextHolder
@@ -48,8 +49,8 @@ import com.cabolabs.openehr.opt.model.OperationalTemplate
 class SemanticValidationLevel1 {
 
    def log = Logger.getLogger('com.cabolabs.archetype.SemanticValidationLevel1')
-
-   def errors = [:]
+   String namespace
+   Map errors = [:]
 
    // pruned attrs
    // name is attr from LOCATABLE
@@ -287,6 +288,10 @@ class SemanticValidationLevel1 {
      ]
    ]
 
+   SemanticValidationLevel1(String org_uid)
+   {
+      this.namespace = org_uid
+   }
 
    /**
     * Validate each version.data in the parsed versions.
@@ -311,9 +316,9 @@ class SemanticValidationLevel1 {
       def archetypeId = compo.archetype_details.archetype_id.value.text()
       log.info (templateId+' '+archetypeId)
 
-      def optMan = OptManager.getInstance()
-      def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
-      def opt = optMan.getOpt(templateId, namespace)
+      def optMan = OptManager.getInstance(Holders.config.app.opt_repo.withTrailSeparator())
+      //def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
+      def opt = optMan.getOpt(templateId, this.namespace)
 
       traverseCompoNodes(compo, templateId, '/', archetypeId, '/', 'COMPOSITION', opt)
    }

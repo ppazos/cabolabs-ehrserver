@@ -192,6 +192,9 @@ log4j = {
     info 'com.cabolabs.archetype.OperationalTemplateIndexer'
 
     info 'grails.app.jobs'
+
+    // openEHR-OPT
+    warn 'com.cabolabs.openehr.opt.manager'
 }
 
 app {

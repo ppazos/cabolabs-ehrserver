@@ -78,7 +78,7 @@ class XmlService {
       //  - errors will be saved into validationErrors
       validateVersionsSyntactic(versions)
 
-      def semVal = new SemanticValidationLevel1()
+      def semVal = new SemanticValidationLevel1(ehr.organizationUid)
       semVal.validateVersions(versions)
       if (semVal.errors.size() > 0)
       {
