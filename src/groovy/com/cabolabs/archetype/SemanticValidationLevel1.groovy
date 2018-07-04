@@ -50,7 +50,7 @@ class SemanticValidationLevel1 {
 
    def log = Logger.getLogger('com.cabolabs.archetype.SemanticValidationLevel1')
    String namespace
-   Map errors = [:]
+   Map errors = [:] // compo index => error list
 
    // pruned attrs
    // name is attr from LOCATABLE
@@ -299,9 +299,9 @@ class SemanticValidationLevel1 {
    def validateVersions(GPathResult versions)
    {
       // TODO: add index to associate errors with each COMPO
-      versions.version.each { version ->
+      versions.version.eachWithIndex { version, i ->
          // TODO: can paralelize if versions > 1
-         validateComposition(version.data)
+         validateComposition(version.data, i)
       }
    }
 
@@ -310,7 +310,7 @@ class SemanticValidationLevel1 {
     * just checking paths against the referenced OPT. If a COMPOSITION node is not on the
     * OPT, the traverse for that branch stops since the whole subtree won't exist in the OPT.
     */
-   def validateComposition(GPathResult compo)
+   def validateComposition(GPathResult compo, int compoIndex)
    {
       def templateId = compo.archetype_details.template_id.value.text()
       def archetypeId = compo.archetype_details.archetype_id.value.text()
@@ -320,19 +320,20 @@ class SemanticValidationLevel1 {
       //def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
       def opt = optMan.getOpt(templateId, this.namespace)
 
-      traverseCompoNodes(compo, templateId, '/', archetypeId, '/', 'COMPOSITION', opt)
+      traverseCompoNodes(compo, templateId, '/', archetypeId, '/', 'COMPOSITION', opt, compoIndex)
    }
 
    /**
     * paths are for the parent, current node paths are calculated internally
     */
    def traverseCompoNodes(GPathResult node, String templateId, String templatePath,
-                          String archetypeId, String archetypePath, String nodeRMType, OperationalTemplate opt)
+                          String archetypeId, String archetypePath, String nodeRMType,
+                          OperationalTemplate opt, int compoIndex)
    {
       // paths to current node are templatePath and archetypePath
       // path for children are calculated using getChildPathsAndRootArchetype
 
-      println 'templatePath '+ templatePath
+      //println 'templatePath '+ templatePath
 
       // TODO: data value attributesshould be avoided since those won't have AIIs
       // ISSUE: AIIs doesnt have intermediate structures, HISTORY, ITEM_TREE, etc. need to ask on
@@ -348,19 +349,20 @@ class SemanticValidationLevel1 {
       println optMan.getNode(archetypeId, archetypePath, namespace)?.rmTypeName
       println "----------"
       */
-      println 'opt.getNode '+ opt.getNode(templatePath)
+      //println 'opt.getNode '+ opt.getNode(templatePath)
 
       // check the node is defined by the OPT
       if (!continue_with_children_attrs.contains(node.name()) &&
           opt.getNode(templatePath) == null) // in memory verification!
       {
-         errors[templateId + templatePath] = 'Node not defined by template "'+ templateId +'"'
+         if (!errors[compoIndex]) errors[compoIndex] = []
+         errors[compoIndex] << 'Found a node ('+ templatePath +') that is not defined in the template "'+ templateId +'"' // TODO: i18n
       }
       else // continiue traverse
       {
          if (nodeRMType == '_ask_node_') nodeRMType = node.'@xsi:type'.text()
 
-         println 'nodeRMType '+ nodeRMType
+         //println 'nodeRMType '+ nodeRMType
          if (!nodeRMType)
          {
             throw new Exception('missing node on rm_schema '+ node.name() +' '+ node.name.text() +' '+ templatePath)
@@ -380,7 +382,8 @@ class SemanticValidationLevel1 {
                // rm_attributes[nodeRMType][it.name()] => childRMType
                traverseCompoNodes(it, templateId, paths.templatePath,
                                   paths.rootArchetype, paths.archetypePath,
-                                  rm_schema[nodeRMType][it.name()], opt)
+                                  rm_schema[nodeRMType][it.name()],
+                                  opt, compoIndex)
             }
          }
       }

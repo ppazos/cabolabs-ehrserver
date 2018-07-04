@@ -22,9 +22,9 @@
 
 package com.cabolabs.ehrserver.exceptions
 
-public class XmlValidationException extends RuntimeException {
+public class XmlSemanticValidationExceptionLevel1 extends RuntimeException {
 
-   public XmlValidationException(String message)
+   public XmlSemanticValidationExceptionLevel1(String message)
    {
       super(message)
    }
