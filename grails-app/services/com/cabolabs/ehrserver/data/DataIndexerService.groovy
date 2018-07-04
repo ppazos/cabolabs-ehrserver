@@ -128,7 +128,8 @@ class DataIndexerService {
 
 
          // check if the AII exists, if not, the indexed value wont be able to be queried
-         // there is a known issue with paths to ism_transitions, this is to check if besides that there is another path that do not match between OPT indexes and DV indexes
+         // there is a known issue with paths to ism_transitions, this is to check if besides that
+         // there is another path that do not match between OPT indexes and DV indexes
          aidx = ArchetypeIndexItem.findByArchetypeIdAndPath(didx.archetypeId, didx.archetypePath)
          if (!aidx)
          {

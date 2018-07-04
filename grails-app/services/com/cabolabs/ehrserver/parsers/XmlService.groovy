@@ -38,6 +38,7 @@ import com.cabolabs.ehrserver.exceptions.CommitRequiredValueNotPresentException
 import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 import com.cabolabs.ehrserver.exceptions.XmlValidationException
+import com.cabolabs.ehrserver.exceptions.XmlSemanticValidationExceptionLevel1
 import grails.util.Holders
 import java.nio.file.AccessDeniedException
 import java.nio.file.FileAlreadyExistsException
@@ -59,7 +60,11 @@ class XmlService {
 
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
-   def validationErrors = [:] // xsd validatios errros for the committed versions
+
+   // xsd validatios errros for the committed versions
+   // or semantic validation errors
+   def validationErrors = [:] // compoIndex -> error list
+
    def xmlValidationService
    def versionFSRepoService
 
@@ -82,11 +87,17 @@ class XmlService {
       semVal.validateVersions(versions)
       if (semVal.errors.size() > 0)
       {
+         /*
          println "---- ERRORS ----"
          semVal.errors.each { e ->
             println e.key
             println ""
          }
+         */
+
+         this.validationErrors = semVal.errors // compo index -> error list
+
+         throw new XmlSemanticValidationExceptionLevel1('There are errors in the committed versions')
       }
 
       // Check contribution id
@@ -192,7 +203,7 @@ class XmlService {
       }
       */
 
-      if (this.validationErrors.size() > 0) throw new XmlValidationException('There are errors in the XML versions')
+      if (this.validationErrors.size() > 0) throw new XmlValidationException('There are errors in the committed versions')
 
       // if there are many compos, and some have uid, the uid should be unique between the compos
       if (versions.version.size() > 1)

@@ -159,7 +159,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       then:
          Exception e = thrown() // TODO: use specific exception type
-         assert e.message == "There are errors in the XML versions"
+         assert e.message == "There are errors in the committed versions"
          assert Contribution.count() == 0
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
@@ -194,7 +194,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
          println xmlService.validationErrors // stores all the validation errors
 
-         assert e.message == "There are errors in the XML versions"
+         assert e.message == "There are errors in the committed versions"
          assert Contribution.count() == 0
          assert Version.count() == 0
          assert VersionedComposition.count() == 0
@@ -501,5 +501,45 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
                                                  .findAll { it.name ==~ /.*\.xml/ }
                                                  .size() == 0
+   }
+
+   /*
+   Commit includes sintactically valid nodes that are not defined in the OPT,
+   causing a semantic validation error.
+   */
+   void "test commit extra undefined nodes"()
+   {
+      setup:
+         def ehr = Ehr.findByUid(ehrUid)
+
+         def versionsXML = new File('test'+PS+'resources'+PS+'commit'+PS+'test_commit_extra_undefined_nodes.xml').text
+         versionsXML = versionsXML.replaceAll('\\[PATIENT_UID\\]', ehr.subject.value)
+
+         def slurper = new XmlSlurper(false, false)
+         def parsedVersions = slurper.parseText(versionsXML)
+
+
+      when:
+         // should throw an exception
+         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution.save()
+
+      then:
+         Exception e = thrown() // TODO: use specific exception type
+         assert e.message == "There are errors in the committed versions"
+
+         // there are 2 extra undefined nodes in the first version
+         assert xmlService.validationErrors.size() == 1
+         assert xmlService.validationErrors[0].size() == 2
+
+         assert Contribution.count() == 0
+         assert Version.count() == 0
+         assert VersionedComposition.count() == 0
+         assert CompositionIndex.count() == 0
+
+         // no version files should be created in the filesystem
+         assert new File(config.app.version_repo.withTrailSeparator() + orgUid.withTrailSeparator()).listFiles()
+                                                   .findAll { it.name ==~ /.*\.xml/ }
+                                                   .size() == 0
    }
 }
