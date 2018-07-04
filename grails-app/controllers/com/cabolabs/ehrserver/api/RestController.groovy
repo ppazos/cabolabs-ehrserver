@@ -22,10 +22,7 @@
 
 package com.cabolabs.ehrserver.api
 
-import grails.converters.*
-
 import java.text.SimpleDateFormat
-
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.api.structures.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
@@ -38,16 +35,12 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Organization
-
+import com.cabolabs.security.*
 import com.cabolabs.ehrserver.notification.Notification
-
-import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import java.lang.reflect.UndeclaredThrowableException
 import javax.xml.bind.ValidationException
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
-
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.authentication.LockedException
@@ -55,23 +48,16 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.AuthenticationProvider
-
-import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
-import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
-
-import com.cabolabs.security.*
 import com.cabolabs.ehrserver.account.Plan
-
 import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
-
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
-import com.cabolabs.ehrserver.exceptions.XmlValidationException
-import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
-
+import com.cabolabs.ehrserver.exceptions.*
 import grails.transaction.Transactional
 import grails.util.Environment
+import grails.util.Holders
+import grails.converters.*
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
@@ -446,21 +432,30 @@ class RestController {
       // CHECK: all referenced template IDs should exist
       // gets the template ID from each version in the commit
       def template_ids = _parsedVersions.version.collect { it.data.archetype_details.template_id.value.text() }
-      def error_opt_not_exists = null
+      def _check_opt
       def _org = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
       for (String tid: template_ids)
       {
-         if (OperationalTemplateIndex.forOrg(_org).countByTemplateId(tid) == 0)
+         // is findByX not findAllByX because if it is lastVersion for a tid, should exist 0..1
+         _check_opt = OperationalTemplateIndex.forOrg(_org).lastVersions().findByTemplateId(tid)
+         if (!_check_opt)
          {
-            error_opt_not_exists = tid
-            break // ends for loop
+            commitLoggerService.log(request, null, false, content, session, params)
+            renderError(message(code:'api.commit.warning.optNotLoaded', args:[tid]), '1324', 412)
+            return
          }
-      }
-      if (error_opt_not_exists)
-      {
-         commitLoggerService.log(request, null, false, content, session, params)
-         renderError(message(code:'api.commit.warning.optNotLoaded', args:[error_opt_not_exists]), '1324', 412)
-         return
+         if (_check_opt.isDeleted)
+         {
+            commitLoggerService.log(request, null, false, content, session, params)
+            renderError(message(code:'api.commit.warning.optIsDeleted', args:[tid]), '1324.1', 412)
+            return
+         }
+         if (!_check_opt.isActive)
+         {
+            commitLoggerService.log(request, null, false, content, session, params)
+            renderError(message(code:'api.commit.warning.optExistsButInactive', args:[tid]), '1324.2', 412)
+            return
+         }
       }
 
 
@@ -520,7 +515,7 @@ class RestController {
          renderError(message(code:'rest.commit.error.wrongChangeType', args:[e.message]), 'e02.0009.0', 400, detailedErrors, e)
          return
       }
-      catch (XmlValidationException e) // xsd validation errors
+      catch (XmlValidationException | XmlSemanticValidationExceptionLevel1 e) // xsd validation errors
       {
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content, session, params)

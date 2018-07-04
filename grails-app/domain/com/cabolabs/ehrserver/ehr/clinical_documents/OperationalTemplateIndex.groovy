@@ -63,33 +63,28 @@ class OperationalTemplateIndex {
 
          eq('organizationUid', org.uid)
       }
-
       likeConcept { concept ->
          if (concept)
          {
             like('concept', '%'+concept+'%')
          }
       }
-
       lastVersions {
 
          eq('lastVersion', true)
       }
-
       matchExternalUidOrTemplateId { externalUid, templateId ->
          or {
             eq('externalUid', externalUid)
             eq('templateId', templateId)
          }
       }
-
       notDeleted {
          eq('isDeleted', false)
       }
       deleted {
          eq('isDeleted', true)
       }
-
       active {
          eq('isActive', true)
       }
