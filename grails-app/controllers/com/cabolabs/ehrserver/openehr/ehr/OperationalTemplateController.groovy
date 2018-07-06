@@ -203,7 +203,7 @@ class OperationalTemplateController {
                                             .list()
          if (alternatives.size() > 0)
          {
-            if (!versionOfTemplateUid)
+            if (!versionOfTemplateUid) // user needs to resolve revision
             {
                // start the new versioning process for OPTs
 
@@ -211,13 +211,12 @@ class OperationalTemplateController {
                render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
                return
             }
-            else
+            else // revision choosen by user
             {
                def old_version = alternatives.find{ it.uid == versionOfTemplateUid }
 
-               if (!old_version)
+               if (!old_version) // invalid uid
                {
-                  // invalid uid
                   res = [status:'resolve_duplicate', message:'OPT UID not found, please select one OPT from the list.', alternatives: alternatives]
                   render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
                   return
@@ -236,7 +235,10 @@ class OperationalTemplateController {
 
                // old version update
                old_version.lastVersion = false
-               old_version.save()
+               //old_version.save() // the deactivation already saves
+
+               def indexer = new OperationalTemplateIndexer()
+               indexer._event_deactivate(old_version)
 
                // data for new version
                setId = old_version.setId
@@ -450,7 +452,7 @@ class OperationalTemplateController {
     */
    def empty_trash()
    {
-      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      def ti = new OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
       opts.each { opt ->
 
