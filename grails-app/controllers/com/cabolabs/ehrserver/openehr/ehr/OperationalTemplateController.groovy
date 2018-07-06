@@ -379,10 +379,13 @@ class OperationalTemplateController {
       opt.isDeleted = true
       opt.save(failOnError: true)
 
-      // If the OPT file is moved and the reindex executed, the OPTIndex is deleted from the database and not listed on trash,
-      // we need the OPTIndex to be on the DB and remove it when it is physically deleted.
+      // If the OPT file is moved and the reindex executed, the OPTIndex is deleted
+      // from the database and not listed on trash, we need the OPTIndex to be on
+      // the DB and remove it when it is physically deleted.
 
-      // Should this delete orphan AIIs and OPT items? a.k.a. reindex, but not delete the opt from the DB because there it is marked as deleted, and the file is moved to the deleted folder
+      // Should this delete orphan AIIs and OPT items? a.k.a. reindex, but not delete
+      // the opt from the DB because there it is marked as deleted, and the file is
+      // moved to the deleted folder
 
       flash.message = message(code:"opt.delete.deleted.ok")
       redirect action:'list'
@@ -447,6 +450,7 @@ class OperationalTemplateController {
     */
    def empty_trash()
    {
+      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
       opts.each { opt ->
 
@@ -456,18 +460,20 @@ class OperationalTemplateController {
          def moved = deleted_file.renameTo( new File( opt_repo_org_path + 'deleted'.withTrailSeparator() + deleted_file.name ) )
          if (!moved) println "NOT MOVED!"
 
-         // index update deletes items from the database
+         // deletes OPT and references from DB
+         ti.deleteOptReferences(opt, true)
+         /*
+         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+         ti.indexAll(session.organization)
+         */
 
          // load opt in manager cache
          // TODO: just unload the deleted OPT
          def optMan = OptManager.getInstance()
          optMan.unloadAll(session.organization.uid)
          optMan.loadAll(session.organization.uid)
-
-         // reindex
-         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         ti.indexAll(session.organization)
       }
+
 
       flash.message = message(code:"opt.trash.emptied")
       redirect action: 'trash' // URLMapping maps trash to list?deleted=true
