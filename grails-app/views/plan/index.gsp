@@ -41,7 +41,7 @@
 								<g:sortableColumn property="max_api_tokens_per_organization" title="${message(code: 'plan.max_api_tokens_per_organization.label', default: 'Max API Tolens per organization')}" />
 								<g:sortableColumn property="max_opts_per_organization" title="${message(code: 'plan.max_opts_per_organization.label', default: 'Max OPTs per organization')}" />
 								<g:sortableColumn property="max_organizations" title="${message(code: 'plan.max_organizations.label', default: 'Max organizations')}" />
-								<g:sortableColumn property="repo_total_size_in_kb" title="${message(code: 'plan.repo_total_size_in_kb.label', default: 'Repository total size in KB')}" />
+								<g:sortableColumn property="repo_total_size_in_kb" title="${message(code: 'plan.repo_total_size_in_kb.label', default: 'Repository total size in kB')}" />
 							</tr>
 						</thead>
 						<tbody>

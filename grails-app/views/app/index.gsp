@@ -260,7 +260,8 @@
                   <i class="glyphicon glyphicon-hdd gi-4x"></i>
                 </div>
                 <div class="col-xs-9 text-right">
-                  <div class="huge">${((org_repo_size.value/1024) < 1024) ? (org_repo_size.value/1024).setScale(2,0).toString() + 'KB' : (org_repo_size.value/(1024*1024)).setScale(1,0).toString() + 'MB'}</div>
+                  <!-- TODO: create taglib to display kB or MB -->
+                  <div class="huge">${((org_repo_size.value/1000) < 1000) ? (org_repo_size.value/1000).setScale(2,0).toString() + ' kB' : (org_repo_size.value/(1000*1000)).setScale(1,0).toString() + ' MB'}</div>
                   <div><g:link controller="organization" action="show" id="${org_repo_size.key.uid}">${org_repo_size.key.name}</g:link></div>
                 </div>
               </div>

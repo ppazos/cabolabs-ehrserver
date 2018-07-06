@@ -42,7 +42,7 @@
 
 <div class="form-group  ${hasErrors(bean: planInstance, field: 'repo_total_size_in_kb', 'error')} required">
 	<label for="repo_total_size_in_kb">
-		<g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in KB" />
+		<g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in kB" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:field name="repo_total_size_in_kb" type="number" value="${planInstance.repo_total_size_in_kb}" required="" class="form-control"/>

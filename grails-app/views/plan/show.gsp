@@ -40,7 +40,7 @@
 							<td>${planInstance?.max_opts_per_organization}</td>
 						</tr>
 						<tr>
-							<th><g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in KB" /></th>
+							<th><g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in kB" /></th>
 							<td>${planInstance?.repo_total_size_in_kb}</td>
 						</tr>
 					</tbody>

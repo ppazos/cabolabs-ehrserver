@@ -152,7 +152,8 @@
              <i class="fa fa-database fa-4x"></i>
            </div>
            <div class="col-xs-9 text-right">
-             <div class="big">${(size/(1024*1024)).setScale(1,0)} / ${(plan.repo_total_size_in_kb/1024).setScale(1,0)} MB</div>
+             <!-- TODO: taglib to display size -->
+             <div class="big">${(size/(1000*1000)).setScale(1,0)} / ${(plan.repo_total_size_in_kb/1000).setScale(1,0)} MB</div>
              <div><g:message code="stats.size" /></div>
            </div>
          </div>

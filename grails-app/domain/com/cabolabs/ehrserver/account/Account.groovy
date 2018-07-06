@@ -34,8 +34,9 @@ class Account {
       PlanAssociation.findAllByAccount(this, [sort:'id', order:'desc'])
    }
 
+   // Result is in kB = 1000 bytes
    long getTotalRepoSizeInKb()
    {
-      (current_version_repo_size + current_opt_repo_size) / 1024
+      (current_version_repo_size + current_opt_repo_size) / 1000
    }
 }

@@ -147,7 +147,7 @@ class StatsController {
    }
 
    // disk usage for all the organizations in the account
-   // results are in KB
+   // results are in kB (1000 bytes)
    def accountRepoUsage(Account account)
    {
       // If there is no current plan, the max repo size is set to the sum of the size of all repos
@@ -166,9 +166,9 @@ class StatsController {
 
       account.organizations.each { org ->
 
-         size = ((versionFSRepoService.getRepoSizeInBytesOrg(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1024).setScale(1,0)
+         size = ((versionFSRepoService.getRepoSizeInBytesOrg(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1000).setScale(1,0)
 
-         // size is set in KB
+         // size is set in kB = 1000 bytes
          stats[org.uid] = size
 
          // if there is no plan, we set the max to the current size

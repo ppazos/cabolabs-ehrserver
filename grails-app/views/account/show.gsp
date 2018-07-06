@@ -114,7 +114,7 @@
                                 ${plan_assoc.plan.max_opts_per_organization}
                               </li>
                               <li>
-                                <g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in KB" />
+                                <g:message code="plan.repo_total_size_in_kb.label" default="Repository total size in kB" />
                                 ${plan_assoc.plan.repo_total_size_in_kb}
                               </li>
                             </ul>

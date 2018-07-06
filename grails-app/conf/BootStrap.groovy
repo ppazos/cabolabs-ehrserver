@@ -1012,7 +1012,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               1,
                  max_opts_per_organization:       5,
                  max_api_tokens_per_organization: 5,
-                 repo_total_size_in_kb:           2.5*1024*1024, //2.5*1024*1024, // 2.5 GB in KB, low for testing! (1MB in KB)
+                 repo_total_size_in_kb:           2.5*1000*1000, // 2.5 GB in kB (kB are 1000 B, KB or KiB are 1024 bytes)
                  period:                          Plan.periods.MONTHLY
                ),
                new Plan(
@@ -1020,7 +1020,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               3,
                  max_opts_per_organization:       10,
                  max_api_tokens_per_organization: 20,
-                 repo_total_size_in_kb:           7.5*1024*1024,
+                 repo_total_size_in_kb:           7.5*1000*1000,
                  period:                          Plan.periods.MONTHLY
                ),
                new Plan(
@@ -1028,7 +1028,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               10,
                  max_opts_per_organization:       25,
                  max_api_tokens_per_organization: 999,
-                 repo_total_size_in_kb:           15*1024*1024,
+                 repo_total_size_in_kb:           15*1000*1000,
                  period:                          Plan.periods.MONTHLY
                ),
                new Plan(
@@ -1036,7 +1036,7 @@ gr_account.save(failOnError:true, flush:true)
                  max_organizations:               5,
                  max_opts_per_organization:       20,
                  max_api_tokens_per_organization: 3,
-                 repo_total_size_in_kb:           200000, // low for testing! (1MB in KB)
+                 repo_total_size_in_kb:           200000, // low for testing! (1MB in kB = 1000 kB)
                  period:                          Plan.periods.MONTHLY
                )
             ]
