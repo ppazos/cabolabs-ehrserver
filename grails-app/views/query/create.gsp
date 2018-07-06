@@ -75,12 +75,10 @@
 
     <!-- query test -->
     <asset:stylesheet src="query_execution.css" />
-    <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css" />
     <asset:stylesheet src="highlightjs/xcode.css" />
     <asset:stylesheet src="animate.css" />
     <asset:stylesheet src="pnotify.custom.min.css" />
 
-    <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <asset:javascript src="jquery.form.js" /><!-- ajax form -->
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <asset:javascript src="highcharts/highcharts.js" />

@@ -47,14 +47,3 @@ label {
 tr td:last-child input[name=toDate], tr td:last-child input[name=fromDate]  {
   width: 92%;
 }
-img.ui-datepicker-trigger { /* <<<<< datepicker icon adjustments */
-  vertical-align: middle;
-  height: 1.9em;
-  padding-bottom: 6px; /* alinea con el input */
-}
-table.ui-datepicker-calendar th {
-  padding: 0;
-}
-table.ui-datepicker-calendar tr td:first-child {
-  width: auto;
-}

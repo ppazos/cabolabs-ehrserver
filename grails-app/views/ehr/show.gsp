@@ -24,11 +24,6 @@
       padding: 5px 0px 10px 0px;
       border-bottom: 1px solid #ddd;
     }
-    img.ui-datepicker-trigger { /* <<<< datepicker icon adjustments */
-      vertical-align: middle;
-      height: 1.9em;
-      padding-bottom: 6px; /* alinea con el input */
-    }
     .folder {
       padding-left: 1em;
     }
@@ -44,8 +39,6 @@
     <!-- xmlToString -->
     <asset:javascript src="xml_utils.js" />
 
-    <asset:stylesheet src="jquery-ui-1.9.2.datepicker.min.css "/>
-    <asset:javascript src="jquery-ui-1.9.2.datepicker.min.js" />
     <asset:javascript src="highcharts/highcharts.js" />
 
     <script type="text/javascript">
@@ -54,38 +47,22 @@
       /* =====================================================================================
        * Calendars para filtros de compositions.
        */
-      $("input[name=fromDate]").datepicker({
-        // Icono para mostrar el calendar
-         showOn: "button",
-         buttonImage: "${assetPath(src:'calendar.gif')}",
-         buttonImageOnly: true,
-         buttonText: 'pick a date',
-         // Formato
-         dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-         // Menus para cambiar mes y anio
-         changeMonth: true,
-         changeYear: true,
-         // La fecha maxima es la que esta seleccionada en toDate si la hay
-         //onClose: function( selectedDate ) {
-         //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
-        // }
-      });
-      $("input[name=toDate]").datepicker({
-        // Icono para mostrar el calendar
-         showOn: "button",
-         buttonImage: "${assetPath(src:'calendar.gif')}",
-         buttonImageOnly: true,
-         buttonText: 'pick a date',
-         // Formato
-         dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-         // Menus para cambiar mes y anio
-         changeMonth: true,
-         changeYear: true,
-         // La fecha minima es la que esta seleccionada en fromDate si la hay
-         //onClose: function( selectedDate ) {
-         //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
-         //}
-      });
+      $("input[name=fromDate]").datetimepicker({
+          format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ", "YYYY-MM-DD"
+          viewMode: 'years',
+          useCurrent: false
+       }).on("dp.change", function (e) {
+
+          if (e.date) $('input[name=toDate]').data("DateTimePicker").minDate(e.date);
+       });
+       $("input[name=toDate]").datetimepicker({
+          format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ",
+          viewMode: 'years',
+          useCurrent: false
+       }).on("dp.change", function (e) {
+
+          if (e.date) $('input[name=fromDate]').data("DateTimePicker").maxDate(e.date);
+       });
       /* ===================================================================================== */
 
     });
@@ -162,8 +139,8 @@
 
         <div class="composition_filters">
           <g:form id="${ehr.id}" class="form-inline">
-            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" readonly="readonly" class="form-control" />
-            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" readonly="readonly" class="form-control" />
+            <input type="text" name="fromDate" placeholder="${message(code:'filter.fromDate')}" class="form-control" />
+            <input type="text" name="toDate" placeholder="${message(code:'filter.toDate')}" class="form-control" />
 
             <g:message code="filter.rootArchetypeId" />
             <g:select name="qarchetypeId"

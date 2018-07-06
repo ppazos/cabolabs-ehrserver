@@ -15,37 +15,21 @@ $(document).ready(function() {
    /* =====================================================================================
     * Calendars para filtros de compositions.
     */
-   $("input[name=fromDate]").datepicker({
-       // Icono para mostrar el calendar
-       showOn: "button",
-       buttonImage: window.grailsSupport.assetsRoot + "calendar.gif", // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
-       buttonImageOnly: true,
-       buttonText: 'pick a date',
-       // Formato
-       dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-       // Menus para cambiar mes y anio
-       changeMonth: true,
-       changeYear: true,
-       // La fecha maxima es la que esta seleccionada en toDate si la hay
-       //onClose: function( selectedDate ) {
-       //  $( "input[name=toDate]" ).datepicker( "option", "minDate", selectedDate );
-      // }
+   $("input[name=fromDate]").datetimepicker({
+      format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ", "YYYY-MM-DD"
+      viewMode: 'years',
+      useCurrent: false
+   }).on("dp.change", function (e) {
+
+      if (e.date) $('input[name=toDate]').data("DateTimePicker").minDate(e.date);
    });
-   $("input[name=toDate]").datepicker({
-       // Icono para mostrar el calendar
-       showOn: "button",
-       buttonImage: window.grailsSupport.assetsRoot + "calendar.gif", // http://stackoverflow.com/questions/24048628/how-can-i-access-images-from-javascript-using-grails-asset-pipeline-plugin
-       buttonImageOnly: true,
-       buttonText: 'pick a date',
-       // Formato
-       dateFormat: 'yymmdd', // poner yy hace salir yyyy ...
-       // Menus para cambiar mes y anio
-       changeMonth: true,
-       changeYear: true,
-       // La fecha minima es la que esta seleccionada en fromDate si la hay
-       //onClose: function( selectedDate ) {
-       //  $( "input[name=fromDate]" ).datepicker( "option", "maxDate", selectedDate );
-       //}
+   $("input[name=toDate]").datetimepicker({
+      format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ",
+      viewMode: 'years',
+      useCurrent: false
+   }).on("dp.change", function (e) {
+
+      if (e.date) $('input[name=fromDate]').data("DateTimePicker").maxDate(e.date);
    });
 
 // ====================================================================
@@ -141,7 +125,7 @@ var queryDataRenderChart = function(data)
      var name = dviseries.name[session_lang];
      if (!name) name = ""; // case that the archetype item doesnt have a name translation to the current language, this should be avoided by listing only OPTs in the current lang.
      var serie = { name: name, data: [] };
-     
+
      $.each( dviseries.serie, function(ii, dvi) {
 
        //console.log('ii y dvi', ii, dvi);
