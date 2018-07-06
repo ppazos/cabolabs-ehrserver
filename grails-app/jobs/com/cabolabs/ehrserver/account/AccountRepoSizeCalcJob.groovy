@@ -11,7 +11,7 @@ class AccountRepoSizeCalcJob {
    def versionFSRepoService
 
    static triggers = {
-      simple repeatInterval: 30000l, startDelay: 240000l // execute job once in x/1000 seconds
+      simple repeatInterval: 600000l, startDelay: 240000l // execute job once in x/1000 seconds
    }
 
    def execute()
