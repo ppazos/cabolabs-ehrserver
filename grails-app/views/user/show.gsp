@@ -18,11 +18,11 @@
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-      
+
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -40,6 +40,7 @@
                   <table class="table table-striped table-bordered table-hover table-org-roles">
                     <thead>
                       <tr>
+                        <th><g:message code="user.account.label" default="Accounts" /></th>
                         <th><g:message code="user.organizations.label" default="Organizations" /></th>
                         <g:each in="${Role.list()}" var="role">
                           <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
@@ -57,6 +58,7 @@
                       <g:each in="${roles}" status="i" var="roleOrg">
                         <g:set var="org" value="${roleOrg.key}" />
                         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                          <td><g:link controller="account" action="show" id="${org.account.id}">${org.account.companyName}</g:link></td>
                           <td><g:link controller="organization" action="show" id="${org.uid}">${org.name}</g:link></td>
                           <g:each in="${Role.list()}" var="role">
                             <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
@@ -101,7 +103,7 @@
             </tr>
           </tbody>
         </table>
-	     
+
 		  <g:canEditUser userInstance="${userInstance}">
           <div class="btn-toolbar" role="toolbar">
             <fieldset class="buttons">
@@ -113,7 +115,7 @@
             </fieldset>
           </div>
 	     </g:canEditUser>
-	     
+
       </div>
     </div>
   </body>

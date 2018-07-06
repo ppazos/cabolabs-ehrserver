@@ -29,6 +29,7 @@
       <table class="table table-striped table-bordered table-hover table-org-roles">
         <thead>
           <tr>
+            <th><g:message code="user.account.label" default="Accounts" /></th>
             <th><g:message code="user.organizations.label" default="Organizations" /></th>
             <g:each in="${Role.list()}" var="role">
               <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
@@ -46,6 +47,7 @@
           <g:each in="${roles}" status="i" var="roleOrg">
             <g:set var="org" value="${roleOrg.key}" />
             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+              <td>${org.account.companyName}</td>
               <td>${org.name}</td>
               <g:each in="${Role.list()}" var="role">
                 <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
@@ -78,17 +80,17 @@
     <g:checkBox name="accountExpired" value="${userInstance?.accountExpired}" />
     <label for="accountExpired"><g:message code="user.accountExpired.label" default="Account Expired" /></label>
   </div>
-  
+
   <div class="form-group ${hasErrors(bean: userInstance, field: 'accountLocked', 'error')} ">
     <g:checkBox name="accountLocked" value="${userInstance?.accountLocked}" />
     <label for="accountLocked"><g:message code="user.accountLocked.label" default="Account Locked" /></label>
   </div>
-  
+
   <div class="form-group ${hasErrors(bean: userInstance, field: 'enabled', 'error')} ">
     <g:checkBox name="enabled" value="${userInstance?.enabled}" />
     <label for="enabled"><g:message code="user.enabled.label" default="Enabled" /></label>
   </div>
-  
+
   <div class="form-group ${hasErrors(bean: userInstance, field: 'passwordExpired', 'error')} ">
     <g:checkBox name="passwordExpired" value="${userInstance?.passwordExpired}" />
     <label for="passwordExpired"><g:message code="user.passwordExpired.label" default="Password Expired" /></label>
