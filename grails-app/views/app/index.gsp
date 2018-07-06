@@ -185,7 +185,7 @@
           <div class="panel-heading">
             <div class="row">
               <div class="col-xs-3">
-                <i class="glyphicon glyphicon-search gi-4x"></i>
+                <i class="fa fa-fw fa-search fa-4x"></i>
               </div>
               <div class="col-xs-9 text-right">
                 <div class="huge">${count_queries}</div>
@@ -207,7 +207,7 @@
           <div class="panel-heading">
             <div class="row">
               <div class="col-xs-3">
-                <i class="glyphicon glyphicon-file gi-4x"></i>
+                <i class="fa fa-fw fa-cubes fa-4x"></i>
               </div>
               <div class="col-xs-9 text-right">
                 <div class="huge">${OperationalTemplateIndex.countByOrganizationUid(session.organization.uid)}</div>
@@ -257,7 +257,7 @@
             <div class="panel-heading">
               <div class="row">
                 <div class="col-xs-3">
-                  <i class="glyphicon glyphicon-hdd gi-4x"></i>
+                  <i class="fa fa-hdd-o fa-4x" aria-hidden="true"></i>
                 </div>
                 <div class="col-xs-9 text-right">
                   <!-- TODO: create taglib to display kB or MB -->
