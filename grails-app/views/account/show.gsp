@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.account.Account" %>
+<%@ page import="com.cabolabs.ehrserver.account.Account" %><%@ page import="com.cabolabs.ehrserver.account.PlanAssociation" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -17,7 +17,11 @@
       td.left {
         text-align: left !important;
       }
+      .btn-toolbar .btn-group { /* fix for confirmation buttons style */
+        float: none;
+      }
     </style>
+    <asset:javascript src="bootstrap-confirmation.min.js" />
   </head>
   <body>
     <div class="row">
@@ -118,6 +122,13 @@
                                 ${plan_assoc.plan.repo_total_size_in_kb}
                               </li>
                             </ul>
+                            <g:if test="${plan_assoc.state == PlanAssociation.states.INACTIVE && plan_assoc.from > new Date()}">
+                              <div class="btn-toolbar" role="toolbar">
+                                <fieldset class="buttons">
+                                  <g:link class="delete" action="deleteInactiveAssociation" params="[id:account.id, plan_association_id: plan_assoc.id]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" default="Delete" /></button></g:link>
+                                </fieldset>
+                              </div>
+                            </g:if>
                           </td>
                         </tr>
                       </g:each>
@@ -126,8 +137,6 @@
                 </div>
               </td>
             </tr>
-
-
           </tbody>
         </table>
 
@@ -156,7 +165,7 @@
         dataType: 'json'
       })
       .done( function(json) {
-        console.log('stats', json);
+        //console.log('stats', json);
 
         for (org_uid in json.usage)
         {
@@ -173,12 +182,19 @@
         dataType: 'json'
       })
       .done( function(json) {
-        console.log('stats', json);
+        //console.log('stats', json);
 
         for (org_uid in json.usage)
         {
           $('#stats-opts-'+ org_uid).text(json.usage[org_uid] +' / '+ json.max_opts_per_org).append(' <i class="fa fa-cubes" aria-hidden="true" title="${message(code:'account.stats.uploaded_opts')}"></i>');
         }
+      });
+
+      $('[data-toggle=confirmation]').confirmation({
+        rootSelector: '[data-toggle=confirmation]',
+        placement: 'left',
+        btnOkClass: 'btn btn-primary',
+        btnCancelClass: 'btn btn-default'
       });
     });
     </script>

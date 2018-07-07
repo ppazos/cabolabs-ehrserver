@@ -53,11 +53,9 @@
   <h2><g:message code="account.edit.current_plan" default="Current plan" /></h2>
 
   <div class="form-group">
-    <label for="plan_id"><g:message code="account.edit.current_plan" default="Current plan" /></label>
-    <br/>
     <g:set var="plan_association" value="${account.currentPlan}" />
     <g:if test="${plan_association}">
-      ${plan_association.plan.name}
+      ${plan_association.plan.name} (<g:formatDate date="${plan_association.from}" format="yyyy-MM-dd" /> / <g:formatDate date="${plan_association.to}" format="yyyy-MM-dd" />)
     </g:if>
     <g:else>
       <g:message code="account.edit.noActivePlan" />

@@ -249,7 +249,11 @@ class AccountController {
          def plan_association = Plan.associatedNow(account)
          if (plan_association)
          {
-            plan_association.to = from_date // current plan ends when the new starts
+            // Change the "to" of the current association, if the new "from" is smaller,
+            // so the old plan ends when the new starts.
+            // If the new plan "from" is > current plan "to", there is a gap, that should be avoided.
+            if (plan_association.to > from_date)
+               plan_association.to = from_date // current plan ends when the new starts
          }
 
          // if the current plan end date is older than today, close the plan,
@@ -279,6 +283,30 @@ class AccountController {
 
       flash.message = message(code:'account.update.ok', args:[account.id])
       redirect action:'show', id: account.id
+   }
+
+   // Admins only delete an inactive plan association that didnt started yet
+   @Transactional
+   def deleteInactiveAssociation(Long plan_association_id, Long id)
+   {
+      def plan_assoc = PlanAssociation.get(plan_association_id)
+      if (!plan_assoc)
+      {
+println "no plan"
+      }
+
+      // the plan assoc if for the past?
+      if (plan_assoc.from < new Date())
+      {
+println "plan in the past"
+      }
+
+println plan_assoc
+println "plan assoc delete"
+      plan_assoc.delete(flush: true)
+
+      flash.message = message(code:'account.update.ok', args:[id])
+      redirect action:'show', id: id
    }
 
    // TODO: delete, we need to define rules
