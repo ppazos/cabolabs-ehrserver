@@ -73,7 +73,7 @@ class Plan {
     * Creates the PlanAssociation between Plan and Account.
     * The caller should check there is no active plan for the account on the same period.
     */
-   def associate(Account account, Date from, int duration_in_days = 365)
+   def associate(Account account, Date from, Integer duration_in_days = 365, Integer default_state = null)
    {
       if (!from)
       {
@@ -99,6 +99,9 @@ class Plan {
 */
 
       def pa = new PlanAssociation(account: account, from: from, to: from+duration_in_days, plan: this)
+
+      if (default_state) pa.state = default_state
+
       pa.save(failOnError: true)
    }
 

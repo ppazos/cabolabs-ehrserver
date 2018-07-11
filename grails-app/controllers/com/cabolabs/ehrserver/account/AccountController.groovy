@@ -77,7 +77,7 @@ class AccountController {
     * Creates the account manager user, the account, the organization, and the user role.
     */
    @Transactional
-   def save(Account account, String username, String email, String organization)
+   def save(Account account, String username, String email, String organization, Long plan_id)
    {
       if (!account)
       {
@@ -85,14 +85,19 @@ class AccountController {
          render (view: 'create')
          return
       }
-
+      if (!plan_id)
+      {
+         flash.message = message(code:'account.save.no_plan_selected.error')
+         render (view: 'create')
+         return
+      }
 
       // 1. Account setup: create account manager user
       def accman = new User(username: username, email: email, enabled: false)
       accman.setPasswordToken()
       account.contact = accman
 
-      if (!accman.save(flush: true))
+      if (!accman.save())
       {
          flash.message = message(code:'account.contact.save.error')
          render (view: 'create', model: [account: account])
@@ -131,6 +136,21 @@ class AccountController {
       // 5. Account setup: create user role association
       UserRole.create( accman, accmanRole, org, true )
 
+
+      // 6. Set plan for the account
+      try
+      {
+         def plan = Plan.get(plan_id)
+         def assoc = plan.associate(account, new Date(), 365, PlanAssociation.states.ACTIVE) // 3rd param is duration in days
+      }
+      catch (Exception e)
+      {
+         // If this fails, the controller doesnt rollback, need to move this to a service!
+         log.error( e.message )
+         flash.message = message(code:'account.save.errorAssigningPlan')
+         render (view: 'create')
+         return
+      }
 
 
       // send password reset email to the account manager
@@ -260,13 +280,13 @@ class AccountController {
          // if the current plan end date is in the future, it should be closed when that date arrives, need a
          // job to check daily if a new plan should be active and old plan should be closed.
 
-/* The chck for active -> closed is done on the PlanAssociationStateUpdateJob
+         /* The chck for active -> closed is done on the PlanAssociationStateUpdateJob
          if (plan_association.to < new Date())
          {
             println "A) active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
             plan_association.state = PlanAssociation.states.CLOSED
          }
-*/
+         */
 
          try
          {
