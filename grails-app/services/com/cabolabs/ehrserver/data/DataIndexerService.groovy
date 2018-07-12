@@ -210,20 +210,29 @@ class DataIndexerService {
 
       // instance paths
       def avoid = ['/', '/context']
+      def collection_attrs = [
+         'COMPOSITION': ['content'],
+         'SECTION': ['items'],
+         'HISTORY': ['events'],
+         'INSTRUCTION': ['activities'],
+         'ITEM_TREE': ['items'],
+         'ITEM_LIST': ['items'],
+         'ITEM_TABLE': ['rows'],
+         'CLUSTER': ['items']
+      ]
+
       def avoid_index = [ // these class.attr should not have index because are not collections (should be index_collection_attrs instead of avoid the rest)
          'ELEMENT': ['value']
       ]
       if (!avoid.contains(outTemplatePath))
       {
-         println "parentClass ${parentClass}, attr ${node.name()}"
-         if (avoid_index[parentClass] && avoid_index[parentClass].contains(node.name()))
+         //println "parentClass ${parentClass}, attr ${node.name()}"
+         //if (avoid_index[parentClass] && avoid_index[parentClass].contains(node.name())) { avoid }
+         if (collection_attrs[parentClass] && collection_attrs[parentClass].contains(node.name()))
          {
-            // avoid :)
+            instanceTemplatePath = instanceTemplatePath +'('+ multiple_index +')'
          }
-         else instanceTemplatePath = instanceTemplatePath +'('+ multiple_index +')'
       }
-
-      //println "outTemplatePath ${outTemplatePath} --- parentInstancePath ${parentInstancePath}"
 
       return [templatePath: outTemplatePath, archetypePath: outArchetypePath, rootArchetype: archetypeId, instanceTemplatePath: instanceTemplatePath]
    }
@@ -249,7 +258,7 @@ class DataIndexerService {
       int multiple_index, String parentInstancePath, String parentClass) // multiple_index is the multiple_children_index that comes from the parent to this node, and should be added to the current node's templatePath
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId, multiple_index, parentInstancePath, parentClass)
-      println "paths "+ paths.instanceTemplatePath
+      //println "paths "+ paths.instanceTemplatePath
 
       // this continues the recursion, the code is generic can be reused
       def child_type
@@ -303,6 +312,7 @@ class DataIndexerService {
    {
       // Attributes already indexed on CompoIndex are avoided
       def attributes = [
+         '_class' : 'COMPOSITION',
          //'language': 'CODE_PHRASE',
          //'territory': 'CODE_PHRASE',
          'context': 'EVENT_CONTEXT',
@@ -320,6 +330,7 @@ class DataIndexerService {
    {
       // start time is already indexed by compo index
       def attributes = [
+         '_class' : 'EVENT_CONTEXT',
          'location': 'String',
          //'health_care_facility': 'PARTY_IDENTIFIED', // TODO, might be indexed with the compo
          'setting': 'DV_CODED_TEXT',
@@ -338,6 +349,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class' : 'SECTION',
          'items': '_ask_node_' // CONTENT_ITEM
       ]
 
@@ -351,6 +363,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ADMIN_ENTRY',
          'data': '_ask_node_' // ITEM_STRUCTURE
       ]
 
@@ -364,6 +377,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'EVALUATION',
          'data': '_ask_node_', // ITEM_STRUCTURE
          'protocol': '_ask_node_' // ITEM_STRUCTURE
       ]
@@ -378,6 +392,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ACTION',
          'time': 'DV_DATE_TIME',
          'description': '_ask_node_', // ITEM_STRUCTURE
          'ism_transition': 'ISM_TRANSITION',
@@ -395,6 +410,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ISM_TRANSITION',
          'current_state': 'DV_CODED_TEXT',
          'transition': 'DV_CODED_TEXT',
          'careflow_step': 'DV_CODED_TEXT'
@@ -410,6 +426,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'LOCATABLE_REF',
          'instruction_id': 'LOCATABLE_REF',
          'activity_id': 'String',
          'wf_details': '_ask_node_' // ITEM_STRUCTURE
@@ -425,6 +442,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'INSTRUCTION',
          'narrative': 'DV_TEXT',
          'expiry_time': 'DV_DATE_TIME',
          'protocol': '_ask_node_', // ITEM_STRUCTURE
@@ -441,6 +459,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ACTIVITY',
          'description': '_ask_node_', // ITEM_STRUCTURE
          'timing': 'DV_PARSABLE',
          'action_archetype_id': 'String'
@@ -456,6 +475,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'OBSERVATION',
          'data': 'HISTORY',
          'state': 'HISTORY',
          'protocol': '_ask_node_' // ITEM_STRUCTURE
@@ -471,6 +491,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'HISTORY',
          'origin': 'DV_DATE_TIME',
          'period': 'DV_DURATION',
          'duration': 'DV_DURATION',
@@ -500,6 +521,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'POINT_EVENT',
          'time': 'DV_DATE_TIME',
          'state': '_ask_node_', // ITEM_STRUCTURE
          'data': '_ask_node_' // ITEM_STRUCTURE
@@ -515,6 +537,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'INTERVAL_EVENT',
          'time': 'DV_DATE_TIME',
          'state': '_ask_node_', // ITEM_STRUCTURE
          'data': '_ask_node_', // ITEM_STRUCTURE
@@ -532,6 +555,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ITEM_SINGLE',
          'item': 'ELEMENT'
       ]
 
@@ -545,6 +569,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ITEM_LIST',
          'items': 'ELEMENT'
       ]
 
@@ -558,6 +583,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ITEM_TABLE',
          'rows': 'CLUSTER'
       ]
 
@@ -571,6 +597,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'ITEM_TREE',
          'items': '_ask_node_' // CLUSTER, ELEMENT
       ]
       /*
@@ -589,6 +616,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def attributes = [
+         '_class': 'CLUSTER',
          'items': '_ask_node_' // CLUSTER, ELEMENT
       ]
 
@@ -636,7 +664,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         node.value.text(),
-        rmTypeName:    'DV_TEXT'
+        rmTypeName:    'DV_TEXT',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -675,7 +704,8 @@ class DataIndexerService {
         value:         node.value.text(),
         code:          node.defining_code.code_string.text(),
         terminologyId: node.defining_code.terminology_id.value.text(),
-        rmTypeName:    'DV_CODED_TEXT'
+        rmTypeName:    'DV_CODED_TEXT',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -699,7 +729,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         DateParser.tryParse(node.value.text()),
-        rmTypeName:    'DV_DATE'
+        rmTypeName:    'DV_DATE',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -725,7 +756,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         DateParser.tryParse(node.value.text()),
-        rmTypeName:   'DV_DATE_TIME'
+        rmTypeName:   'DV_DATE_TIME',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -753,7 +785,8 @@ class DataIndexerService {
         owner:         owner,
         magnitude:     new Double( node.magnitude.text() ),
         units:         node.units.text(),
-        rmTypeName:    'DV_QUANTITY'
+        rmTypeName:    'DV_QUANTITY',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -764,7 +797,7 @@ class DataIndexerService {
       CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, String parentClass)
    {
       def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId, multiple_index, parentInstancePath, parentClass)
-      println "paths count "+ paths.instanceTemplatePath
+      //println "paths count "+ paths.instanceTemplatePath
 
       /*
       <value xsi:type="DV_COUNT">
@@ -778,7 +811,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         magnitude:     new Long( node.magnitude.text() ),
-        rmTypeName:    'DV_COUNT'
+        rmTypeName:    'DV_COUNT',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -804,7 +838,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         node.value.text(),
-        rmTypeName:    'DV_DURATION'
+        rmTypeName:    'DV_DURATION',
+        instanceTemplatePath: paths.instanceTemplatePath
         //magnitude: new Double( node.magnitude.text() ) // TODO: parse duration in seconds using Joda time.
       )
    }
@@ -829,7 +864,8 @@ class DataIndexerService {
         archetypePath: paths.archetypePath,
         owner:         owner,
         value:         new Boolean(node.value.text()),
-        rmTypeName:    'DV_BOOLEAN'
+        rmTypeName:    'DV_BOOLEAN',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -852,7 +888,8 @@ class DataIndexerService {
         type:          node.type.text(),
         issuer:        node.issuer.text(),
         assigner:      node.assigner.text(),
-        rmTypeName:    'DV_IDENTIFIER'
+        rmTypeName:    'DV_IDENTIFIER',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -887,7 +924,8 @@ class DataIndexerService {
         symbol_value:  node.symbol.value.text(),
         symbol_code:   node.symbol.defining_code.code_string.text(),
         symbol_terminology_id: node.symbol.defining_code.terminology_id.value.text(),
-        rmTypeName:    'DV_ORDINAL'
+        rmTypeName:    'DV_ORDINAL',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -916,7 +954,8 @@ class DataIndexerService {
         owner:         owner,
         value:         node.value.text(),
         formalism:     node.formalism.text().toLowerCase(), // formalism is always lower case, this is to avoid case issues from the client
-        rmTypeName:    'DV_PARSABLE'
+        rmTypeName:    'DV_PARSABLE',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -940,7 +979,8 @@ class DataIndexerService {
         type:          node.type.text(),
         value:         node.id.value.text(),
 
-        rmTypeName:    'LOCATABLE_REF'
+        rmTypeName:    'LOCATABLE_REF',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -961,7 +1001,8 @@ class DataIndexerService {
         owner:         owner,
 
         value:         node.text(),
-        rmTypeName:    'String'
+        rmTypeName:    'String',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -1089,7 +1130,8 @@ class DataIndexerService {
         denominator:   denominator,
         type:          type,
         precision:     ((node.precision.text()) ? new Integer(node.precision.text()) : -1),
-        rmTypeName:    'DV_PROPORTION'
+        rmTypeName:    'DV_PROPORTION',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 
@@ -1132,7 +1174,8 @@ class DataIndexerService {
         uri:           node.uri.value.text(),
         mediaType:     node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
         size:          new Integer( node.size.text() ),
-        rmTypeName:   'DV_MULTIMEDIA'
+        rmTypeName:   'DV_MULTIMEDIA',
+        instanceTemplatePath: paths.instanceTemplatePath
       )
    }
 }

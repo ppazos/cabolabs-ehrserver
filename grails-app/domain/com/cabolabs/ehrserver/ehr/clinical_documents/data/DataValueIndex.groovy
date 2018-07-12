@@ -32,29 +32,31 @@ class DataValueIndex {
    String path
    String archetypePath
    String rmTypeName
-   
+
+   String instanceTemplatePath
+
    CompositionIndex owner
-   
+
    // TODO: ver si puedo sacarle las xpaths al xml
    //       y guardarlas, para un path de arquetipo
    //       pueden haber varias xpaths, esto permite
    //       devolver a los sistemas clientes las xpaths
    //       donde encuentran los datos que buscan en los
    //       xmls que resulten de las queries.
-   
+
    static mapping = {
       tablePerHierarchy false // tabla por subclase
       archetypeId index: 'arch_id_path_idx,arch_id_idx'
       // Grails is not creating an index on this because it is > 255 the max index size in MySQL, in Postgres it is 2713
       archetypePath index: 'arch_id_path_idx,arch_path_idx'
    }
-   
+
    static constraints = {
       path(maxSize: 4096)
       archetypePath(maxSize: 2048)
    }
-   
-   
+
+
    public String toString()
    {
       return this.archetypeId + this.archetypePath
