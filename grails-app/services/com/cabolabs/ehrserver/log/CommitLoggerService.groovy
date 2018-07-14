@@ -84,11 +84,15 @@ class CommitLoggerService {
       // I think this can be changed to an if (content) .. else try to read.
       def logContent
 
+      // contentType can include charset, and here we need to check only the MIME type
+      // text/xml; charset=UTF-8
+      def requestContentTypeOnly = contentType.split(';')[0]
+
       try
       {
          // this is used when there is no content read from the request.reader yet
          // if the content (xml or json commit) was read, it should come in the content param
-         switch (contentType)
+         switch (requestContentTypeOnly)
          {
             // urlencoded not supported
             //case 'application/x-www-form-urlencoded':

@@ -326,7 +326,7 @@ class RestController {
       }
 
       //println request.getClass() // org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper
-      //println request.contentType // application/xml, application/json
+      //println request.contentType // application/xml, application/json, MIGHT INCLUDE charset: text/xml; charset=UTF-8
 
       // FIXME: if the request is XML we can access an XmlSlurper instance from request.XML, so
       //        there is no need of accessing request.reader.text, the only problem is that request.XML
@@ -355,8 +355,14 @@ class RestController {
          return
       }
 
+      // contentType can include charset, and here we need to check only the MIME type
+      // text/xml; charset=UTF-8
+      //println "request.contentType "+ request.contentType
+      def requestContentTypeOnly = request.contentType.split(';')[0] // will do nothing if charset is not present
+      //println "request content type only: '"+ requestContentTypeOnly + "'"
+
       def versionsXML, _parsedVersions
-      if (request.contentType == "application/json")
+      if (requestContentTypeOnly == "application/json")
       {
          // JSON to XML, then process as XML
          // the json is transformed to xml and processed as an xml commit internally
@@ -381,7 +387,7 @@ class RestController {
             // if _parsedVersions is empty, the error is reported below
          }
       }
-      else if (["application/xml", "text/xml"].contains(request.contentType))
+      else if (["application/xml", "text/xml"].contains(requestContentTypeOnly))
       {
          def slurper = new XmlSlurper(false, false)
          try
@@ -398,7 +404,7 @@ class RestController {
       else // only json or xml are allowed
       {
          commitLoggerService.log(request, null, false, null, session, params)
-         renderError(message(code:'rest.commit.error.contentTypeNotSupported'), '50112', 400, [], sex)
+         renderError(message(code:'rest.commit.error.contentTypeNotSupported'), '50112', 400)
          return
       }
 
