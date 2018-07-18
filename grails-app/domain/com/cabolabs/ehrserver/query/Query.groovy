@@ -628,6 +628,7 @@ class Query {
          // Las columnas no incluyen la path porque se corresponden en el indice con la path en resHeaders
          // Cada columna de la fila
 
+         // absPath = archId / path <datatype>, archId = arch.vX | arch.* (any version)
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
 
             // values contain 1 element if there is only 1 DV occurrence, or many elements
@@ -656,6 +657,8 @@ class Query {
             coldvis.each { dvi ->
 
                elem = [:]
+
+               elem['instanceTemplatePath'] = dvi.templateId + dvi.instanceTemplatePath
 
                // TODO: this should be on a separate method
                // Datos de cada path seleccionada dentro de la composition
@@ -832,74 +835,88 @@ class Query {
                case 'DV_QUANTITY': // FIXME: this is a bug on adl parser it uses Java types instead of RM ones
                   resGrouped[absPath]['serie'] << [magnitude:    dvi.magnitude,
                                                    units:        dvi.units,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_CODED_TEXT':
                   resGrouped[absPath]['serie'] << [code:         dvi.code,
                                                    value:        dvi.value,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_ORDINAL':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
                                                    symbol_value: dvi.symbol_value,
                                                    symbol_code:  dvi.symbol_code,
                                                    symbol_terminology_id: dvi.symbol_terminology_id,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_TEXT':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case ['DV_DATE_TIME', 'DV_DATE']:
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_BOOLEAN':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_COUNT':
                   resGrouped[absPath]['serie'] << [magnitude:    dvi.magnitude,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_PROPORTION':
                   resGrouped[absPath]['serie'] << [numerator:    dvi.numerator,
                                                    denominator:  dvi.denominator,
                                                    type:         dvi.type,
                                                    precision:    dvi.precision,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_DURATION':
                   resGrouped[absPath]['serie'] << [value:        dvi.value,
                                                    magnitude:    dvi.magnitude,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_IDENTIFIER':
                   resGrouped[absPath]['serie'] << [id:           dvi.identifier, // needed to change the DV_IDENTIFIER.id attr name to identifier because it is used by grails for the identity.
                                                    type:         dvi.type,
                                                    issuer:       dvi.issuer,
                                                    assigner:     dvi.assigner,
-                                                   date:         dviDate]
+                                                   date:         dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_MULTIMEDIA':
                   resGrouped[absPath]['serie'] << [mediaType:     dvi.mediaType,
                                                    size:          dvi.size,
                                                    alternateText: dvi.alternateText,
                                                    uri:           dvi.uri,
-                                                   date:          dviDate]
+                                                   date:          dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'DV_PARSABLE':
                   resGrouped[absPath]['serie'] << [value:         dvi.value,
                                                    formalism:     dvi.formalism,
-                                                   date:          dviDate]
+                                                   date:          dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'String':
                   resGrouped[absPath]['serie'] << [value:         dvi.value,
-                                                   date:          dviDate]
+                                                   date:          dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                case 'LOCATABLE_REF':
                   resGrouped[absPath]['serie'] << [locatable_ref_path: dvi.locatable_ref_path,
-                                                   date:          dviDate]
+                                                   date:          dviDate,
+                                                   instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
                default:
                   throw new Exception("type "+dataGet.rmTypeName+" not supported")
