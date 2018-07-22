@@ -604,7 +604,7 @@ class Query {
       def resGrouped = [:]
       def elem
       def tmp_arch_id
-      def _absPathVersion // abstract path with specific arch id version
+      //def _absPathVersion // abstract path with specific arch id version
 
       // dvis por composition (Map[compo.id] = [dvi, dvi, ...])
       def rows = res.groupBy { it.owner.id }
@@ -631,6 +631,9 @@ class Query {
          // absPath = archId / path <datatype>, archId = arch.vX | arch.* (any version)
          resHeaders.each { _absPath, colData -> // colData = [type:'XX', attrs:['cc','vv']]
 
+            //println "absPath ${_absPath}" // we keep the .* in the absPath because the header also has the *
+            // before we tried to remove that and get the specific arch version, but that depends on the dvi.archetypeId
+
             // values contain 1 element if there is only 1 DV occurrence, or many elements
             // as occurrences of that node exist.
 
@@ -639,8 +642,8 @@ class Query {
             // query has any vesion allowed. The path portion is the same as the _absPath.
             // This can't be taken from the data, since results can be empty.
 
-            _absPathVersion = dvis[0].owner.archetypeId + _absPath[_absPath.indexOf("/")..-1]
-            colValues = [type: colData['type'], path: _absPathVersion, values:[]] // pongo la path para debug
+            //_absPathVersion = dvis[0].owner.archetypeId + _absPath[_absPath.indexOf("/")..-1] // this is not right since the path can be for an OBS and the owner arhc is always a COMPO!
+            colValues = [type: colData['type'], path: _absPath, values:[]] // pongo la path para debug
 
             // dvi para la columna actual
             // pueden ser varios si hay multiples ocurrencias del mismo nodo

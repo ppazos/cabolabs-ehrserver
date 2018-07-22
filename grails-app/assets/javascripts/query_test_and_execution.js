@@ -46,7 +46,8 @@ $(document).ready(function() {
 
 var queryDataRenderChart = function(data)
 {
-  /*
+   //console.log('queryDataRenderChart', data);
+   /*
    series: [{
      name: 'Jane',
      data: [1, 0, 4]
@@ -97,47 +98,51 @@ var queryDataRenderChart = function(data)
 
    /*
    data = {
-     path: {
-       type: 'xx',
-       name: 'yy',
-       serie: [ dvi, dvi, dvi ]
+     ehrUid {
+        path: {
+           type: 'xx',
+           name: 'yy',
+           serie: [ dvi, dvi, dvi ]
+        }
      }
    }
    */
-   $.each( data, function(path, dviseries) {
+   $.each( data, function(ehdUid, pathdata) {
 
-     //console.log('path y dviseries', path, dviseries);
+      $.each( pathdata, function(path, dviseries) {
 
-     // Filter: only chart numeric data
-     if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']) == -1)
-     {
-        //console.log('type filtered '+ dviseries.type);
-        return;
-     }
+        //console.log('path y dviseries', path, dviseries);
 
-     /**
-      * Estructura:
-      *   { name: 'John', data: [5, 7, 3] }
-      *
-      *   o si quiero mostrar una etiqueta en el punto:
-      *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
-      */
-     var name = dviseries.name[session_lang];
-     if (!name) name = ""; // case that the archetype item doesnt have a name translation to the current language, this should be avoided by listing only OPTs in the current lang.
-     var serie = { name: name, data: [] };
+        // Filter: only chart numeric data
+        if ( $.inArray(dviseries.type, ['DV_QUANTITY', 'DV_COUNT', 'DV_PROPORTION', 'DV_ORDINAL', 'DV_DURATION']) == -1)
+        {
+           //console.log('type filtered '+ dviseries.type);
+           return;
+        }
 
-     $.each( dviseries.serie, function(ii, dvi) {
+        /**
+         * Estructura:
+         *   { name: 'John', data: [5, 7, 3] }
+         *
+         *   o si quiero mostrar una etiqueta en el punto:
+         *   { name: 'John', data: [{name:'punto', color:'#XXX', y:5},{..},{..}] }
+         */
+        var name = dviseries.name[session_lang];
+        if (!name) name = ""; // case that the archetype item doesnt have a name translation to the current language, this should be avoided by listing only OPTs in the current lang.
+        var serie = { name: name, data: [] };
 
-       //console.log('ii y dvi', ii, dvi);
+        $.each( dviseries.serie, function(ii, dvi) {
 
-       point = point_builders[dviseries.type](dvi);
+          //console.log('ii y dvi', ii, dvi);
 
-       serie.data.push(point);
-     });
+          point = point_builders[dviseries.type](dvi);
 
-     series.push(serie);
+          serie.data.push(point);
+        });
+
+        series.push(serie);
+      });
    });
-
    //console.log( series );
 
    // ========================================
@@ -190,7 +195,7 @@ var renderchart = function(series)
 var queryDataRenderTable = function(data)
 {
   console.log('queryDataRenderTable');
-  console.log(data);
+  //console.log(data);
 
   var headers = data[0];
   var rows = data[1];
@@ -206,7 +211,7 @@ var queryDataRenderTable = function(data)
     // name es el nombre del ArchetypeIndexItem coorespondiente al archId y path del DataValueIndex
     htmlheaders += '<th title="'+ path +'">'+ header.name[session_lang] +' ('+ header.type +')</th>';
   });
-  htmlheaders +='<th></th></tr>'; // th extra para las acciones de ver composition de cada fila
+  htmlheaders +='<th>Docs</th></tr>'; // th extra para las acciones de ver composition de cada fila
 
   // =================================================================
   // Muestra cada fila
@@ -215,45 +220,54 @@ var queryDataRenderTable = function(data)
   linkCompoXML = window.grailsSupport.baseURL + "ehr/showComposition";
   linkCompoUI = window.grailsSupport.baseURL + "ehr/showCompositionUI";
 
-  // itera por filas
-  $.each(rows, function(compoUid, data) { // data [date, uid, cols [ {type, path, attrs dep. del type}, {...}] ]
+  //console.log('headers', headers);
 
-    // itera por columnas (headesrs = paths)
-    htmlrows += '<tr>';
-    $.each(data.cols, function(column, colvalues) { // evito attr type y path, los demas son los atributos de los subheaders que dependen del type del datavalue
+  $.each(rows, function(ehrUid, compoData) {
 
-      //console.log('colvalues', colvalues);
-      htmlrows += '<td>';
+     //console.log(ehrUid, compoData);
 
-      elem_columns = headers[colvalues.path].attrs; // units, magnitude
-      //console.log('elem_columns', elem_columns);
+     $.each(compoData, function(compoUid, data) { // data [date, uid, cols [ {type, path, attrs dep. del type}, {...}] ]
 
-      htmlrows += '<table width="100%"><tr>';
-      $.each(elem_columns, function(jjj, colattr) {
-         htmlrows += '<th>'+ colattr +'</th>';
-      });
-      htmlrows += '</tr>';
+       // itera por columnas (headesrs = paths)
+       htmlrows += '<tr>';
+       $.each(data.cols, function(column, colvalues) { // evito attr type y path, los demas son los atributos de los subheaders que dependen del type del datavalue
 
-      // itera por atributos simples de datavalues de cada columna (subheaders)
-      $.each(colvalues.values, function(iii, elem) {
+         //console.log('colvalues', colvalues);
 
-        //console.log('elem', elem);
-        htmlrows += '<tr>';
-        $.each(elem, function(attr, value) {
-          htmlrows += '<td>'+ value +'</td>';
-        });
-        htmlrows += '</tr>';
-      });
-      htmlrows += '</table>';
+         htmlrows += '<td>';
 
-      htmlrows += '</td>';
-    });
+         elem_columns = headers[colvalues.path].attrs; // units, magnitude
+         //console.log('elem_columns', elem_columns);
 
-    // links a composition
-    htmlrows += '<td>';
-    htmlrows += '<a href="'+ linkCompoXML +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'xml.png" class="icon" /></a>';
-    htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'doc.png" class="icon" /></a>';
-    htmlrows += '</td></tr>';
+         htmlrows += '<table width="100%"><tr>';
+         $.each(elem_columns, function(jjj, colattr) {
+            if (colattr == 'instanceTemplatePath') return true;
+            htmlrows += '<th>'+ colattr +'</th>';
+         });
+         htmlrows += '</tr>';
+
+         // itera por atributos simples de datavalues de cada columna (subheaders)
+         $.each(colvalues.values, function(iii, elem) {
+
+           //console.log('elem', elem);
+           htmlrows += '<tr>';
+           $.each(elem, function(attr, value) {
+             if (attr == 'instanceTemplatePath') return true;
+             htmlrows += '<td>'+ value +'</td>';
+           });
+           htmlrows += '</tr>';
+         });
+         htmlrows += '</table>';
+
+         htmlrows += '</td>';
+       });
+
+       // links a composition
+       htmlrows += '<td>';
+       htmlrows += '<a href="'+ linkCompoXML +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'xml.png" class="icon" /></a>';
+       htmlrows += '<a href="'+ linkCompoUI  +'?uid='+ compoUid +'" target="_blank"><img src="'+ window.grailsSupport.assetsRoot +'doc.png" class="icon" /></a>';
+       htmlrows += '</td></tr>';
+     });
   });
 
   // Uso el chartContainer para mostrar la tabla

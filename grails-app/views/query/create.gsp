@@ -533,23 +533,22 @@ resp.responseJSON.result.message +'</div>'
               code.text(JSON.stringify(res, undefined, 2));
               code.each(function(i, e) { hljs.highlightBlock(e); });
 
+              // Rendering the table for group by composition doesnt depend if there is a qehrId value
+              if ($('select[name=group]').val() == 'composition')
+              {
+                queryDataRenderTable(res);
+              }
+
               if (qehrId != null)
               {
-                // =================================================================
-                // Si agrupa por composition (muestra tabla)
-                //
-                if ($('select[name=group]').val() == 'composition')
-                {
-                  queryDataRenderTable(res);
-                }
-                else if ($('select[name=group]').val() == 'path')
+                if ($('select[name=group]').val() == 'path')
                 {
                   queryDataRenderChart(res);
                 }
               }
               else
               {
-                // chart grouped by ehr
+                // chart grouped by ehr?
               }
             }
             else // Si devuelve el XML

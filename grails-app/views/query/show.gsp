@@ -72,9 +72,24 @@
                  <span class="property-value" aria-labelledby="select-label">  <g:link controller="dataGet" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></span>
                  -->
                 <tr>
-                  <td>${s.archetypeId}</td>
+                  <td>
+                    <%-- finishes with version or is for any version? --%>
+                    <g:if test="${s.archetypeId.matches(/.*v(\d)*$/)}">
+                      ${s.archetypeId}
+                    </g:if>
+                    <g:else>
+                      ${s.archetypeId}.*
+                    </g:else>
+                  </td>
                   <td>${s.path}</td>
-                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(s.archetypeId, s.path).name[session.lang]}</td>
+                  <td>
+                    <g:if test="${s.archetypeId.matches(/.*v(\d)*$/)}">
+                      ${ArchetypeIndexItem.findByArchetypeIdAndPath(s.archetypeId, s.path).name[session.lang]}
+                    </g:if>
+                    <g:else>
+                      ${ArchetypeIndexItem.findByArchetypeIdLikeAndPath(s.archetypeId+'%', s.path).name[session.lang]}
+                    </g:else>
+                  </td>
                 </tr>
               </g:each>
             </table>
