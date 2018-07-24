@@ -100,6 +100,169 @@
 
     <script type="text/javascript">
 
+      // temporal holder for invalid complex criteria while it is edited and becomes valid
+      var criteria_builder = {
+        items: [], // list of trees, each tree is a sub-expression
+        id_gen: 0,
+        add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version)
+        {
+          //if (this.type != 'composition') return false;
+
+          this.id_gen++;
+
+          var c = {
+                   cid: this.id_gen,
+                   archetypeId: archetype_id,
+                   path: path,
+                   rmTypeName: rm_type_name,
+                   class: 'DataCriteria'+rm_type_name,
+                   allowAnyArchetypeVersion: allow_any_archetype_version
+                  };
+
+          // copy attributes
+          for (a in criteria.conditions) c[a] = criteria.conditions[a];
+
+          c['spec'] = criteria.spec;
+
+          this.items.push( c );
+          //this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
+
+          // when items are removed and then added, there are undefined entries in the array
+          // this cleans the undefined items so the server doesnt receive empty values.
+          //this.where = this.where.filter(function(n){ return n != undefined });
+
+          return this.id_gen;
+        },
+        add_and: function (criteria_1_id, criteria_2_id)
+        {
+          // get c1 and c2 from root
+          var c1 = this.items.find(function(e){ return e.cid == criteria_1_id });
+          var c2 = this.items.find(function(e){ return e.cid == criteria_2_id });
+
+          this.id_gen++;
+
+          // create and criteria item
+          var _and = {
+            '_type': 'AND',
+            'left': c1,
+            'right': c2,
+            'cid': this.id_gen
+          }
+
+          // remove c1 and c2 from root
+          var c1idx = this.items.findIndex( function(e){ return e.cid == criteria_1_id } );
+          this.items.splice(c1idx, 1);
+          var c2idx = this.items.findIndex( function(e){ return e.cid == criteria_2_id } );
+          this.items.splice(c2idx, 1);
+
+          // add and criteria item to root
+          this.items.push(_and);
+
+          return this.id_gen;
+        },
+        add_or: function (criteria_1_id, criteria_2_id)
+        {
+          // get c1 and c2 from root
+          var c1 = this.items.find(function(e){ return e.cid == criteria_1_id });
+          var c2 = this.items.find(function(e){ return e.cid == criteria_2_id });
+
+          this.id_gen++;
+
+          // create and criteria item
+          var _or = {
+            '_type': 'OR',
+            'left': c1,
+            'right': c2,
+            'cid': this.id_gen
+          }
+
+          // remove c1 and c2 from root
+          var c1idx = this.items.findIndex( function(e){ return e.cid == criteria_1_id } );
+          this.items.splice(c1idx, 1);
+          var c2idx = this.items.findIndex( function(e){ return e.cid == criteria_2_id } );
+          this.items.splice(c2idx, 1);
+
+          // add and criteria item to root
+          this.items.push(_or);
+
+          return this.id_gen;
+        },
+        is_valid: function (criteria_1_id, criteria_2_id)
+        {
+          return this.items.length == 1;
+        }
+      };
+
+      // criteria builder UI events
+
+      // on root checkbox selector click, if two are selected, enable AND/OR add
+      $(document).on('click', 'input[type=checkbox]', function(e) {
+
+        console.log('checkbox click', e, $('#criteria_builder input:checked').length);
+
+        if ( $('#criteria_builder input:checked').length == 2 )
+        {
+          console.log($('#criteria_builder_add_and'), $('#criteria_builder_add_or'));
+          $('#criteria_builder_add_and')[0].disabled = false;
+          $('#criteria_builder_add_or')[0].disabled = false;
+        }
+      });
+
+
+$(function() {
+      $('#criteria_builder_add_and').on('click', function(e) {
+        console.log('criteria_builder_add_and click', $('#criteria_builder input:checked'));
+
+        var c1_dom = $('#criteria_builder input:checked')[0];
+        var c2_dom = $('#criteria_builder input:checked')[1];
+
+        // updates model
+        var cid = criteria_builder.add_and($(c1_dom).data('cid'), $(c2_dom).data('cid'));
+
+        // update dom
+        // remove criteria items UI from DOM
+        var li_c1 = $(c1_dom).parent().detach();
+        var li_c2 = $(c2_dom).parent().detach();
+
+        // remove checkboxes from li_cx
+        $('[type=checkbox]', li_c1).detach();
+        $('[type=checkbox]', li_c2).detach();
+
+        // first li is the criteria item for the root ul
+        var _and_ui = $('<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" />'+
+                          '<span>AND</span>'+
+                        '</li>');
+        var _subcriteria_ui = $('<ul/>');
+        // FIXME: if one of the conds is also an AND, this appends the single item to the AND's ul
+        // test:
+        // add c1
+        // add c2
+        // add AND
+        // add c3
+        // add AND
+        // ce is copied inside the first AND with c1 and c2
+        // this append should only apped to _and_ui root, not descendants
+        _subcriteria_ui.append(li_c1);
+        _subcriteria_ui.append(li_c2);
+        _and_ui.append(_subcriteria_ui);
+
+
+        $('#criteria_builder > ul').append(_and_ui);
+
+        // AND/OR buttons back to disabled
+        $('#criteria_builder_add_and')[0].disabled = true;
+        $('#criteria_builder_add_or')[0].disabled = true;
+
+        e.preventDefault();
+      });
+
+      $('#criteria_builder_add_or').on('click', function(e) {
+        console.log('criteria_builder_add_or click', $('#criteria_builder input:checked'));
+
+        e.preventDefault();
+      });
+});
+
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
@@ -731,7 +894,8 @@ resp.responseJSON.result.message +'</div>'
 
 
         // query object mgt
-        cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
+        //cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
+        cid = criteria_builder.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
         //query.log();
 
         // shows openEHR-EHR-...* instead of .v1
@@ -740,24 +904,53 @@ resp.responseJSON.result.message +'</div>'
            archetype_id = archetype_id.substr(0, archetype_id.lastIndexOf(".")) + ".*";
         }
 
-        // shows the criteria in the UI
-        $('#criteria').append(
-           '<tr data-id="'+ cid +'">'+
-           '<td>'+ archetype_id +'</td>'+
-           '<td>'+ path +'</td>'+
-           '<td>'+ name +'</td>'+
-           '<td>'+ type +'</td>'+
-           '<td>'+ criteria_str +'</td>'+
-           '<td>'+
-             '<div class="btn-toolbar" role="toolbar">'+
-               '<a href="#" class="removeCriteria">'+
-                 '<button type="button" class="btn btn-default btn-sm">'+
-                   '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
-                 '</button>'+
-               '</a>'+
-             '</div>'+
-           '</td></tr>'
+        // displays simple criteria on criteria builder component
+        // the selector on the li element is to select for adding AND/OR
+        /*
+        ul < criteria builder
+          li < criteria item <<<< inserting item here as a table (criteria item single)
+            table < criteria item single
+            ul < criteria item and / or
+              li < and left (criteria item, single or and/or)
+              li < and right (criteria item, single or and/or)
+        */
+        $('#criteria_builder > ul').append(
+          '<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" />'+
+          '<table class="table table-striped table-bordered table-hover" data-id="'+ cid +'">'+
+            '<tr>'+
+            '<th><g:message code="query.create.archetype_id" /></th>'+
+            '<th><g:message code="query.create.path" /></th>'+
+            '<th><g:message code="query.create.name" /></th>'+
+            '<th><g:message code="query.create.type" /></th>'+
+            '<th><g:message code="query.create.criteria" /></th>'+
+            '<th></th>'+
+            '</tr>'+
+            '<tr>'+
+              '<td>'+ archetype_id +'</td>'+
+              '<td>'+ path +'</td>'+
+              '<td>'+ name +'</td>'+
+              '<td>'+ type +'</td>'+
+              '<td>'+ criteria_str +'</td>'+
+              '<td>'+
+                '<div class="btn-toolbar" role="toolbar">'+
+                  '<a href="#" class="removeCriteria">'+
+                    '<button type="button" class="btn btn-default btn-sm">'+
+                      '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
+                    '</button>'+
+                  '</a>'+
+                '</div>'+
+              '</td>'+
+            '</tr>'+
+          '</table></li>'
         );
+
+        // if there are more than one criteria item in the criteria builder root,
+        // add AND/OR buttons should be enabled.
+        if ( $('#criteria_builder > ul').children().length > 1 )
+        {
+          $('#criteria_builder_add_and').disabled = false;
+          $('#criteria_builder_add_or').disabled = false;
+        }
 
         return true;
 
@@ -1102,7 +1295,7 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '<span class="help-block">${message(code:"query.create.criteria.inlist.hint")}</span>';
                           criteria += '<span class="btn btn-default btn-sm criteria_list_add"><i class="fa fa-plus"></i></span>';
                           criteria += '<div class="criteria_list_container">';
-                            criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
+                          criteria += '<input type="'+ input_type +'" name="list" class="value list'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" /><!-- <span class="criteria_list_add_value">[+]</span> -->';
                           criteria += '</div>';
                         break
                         case 'range':
@@ -1126,12 +1319,12 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '<span class="help-block">${message(code:"query.create.criteria.inlist.hint")}</span>';
                           criteria += '<span class="btn btn-default btn-sm criteria_list_add"><i class="fa fa-plus"></i></span>';
                           criteria += '<div class="criteria_list_container">';
-                             criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
-                             for (k in possible_values)
-                             {
-                               criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
-                             }
-                             criteria += '</select>';
+                          criteria += '<select name="list" class="value list '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
+                          for (k in possible_values)
+                          {
+                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                          }
+                          criteria += '</select>';
                           criteria += '</div>';
                         break
                         case 'range':
@@ -2011,17 +2204,19 @@ resp.responseJSON.result.message +'</div>'
             <h3><g:message code="query.create.criteria" /></h3>
 
             <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
-            <div class="table-responsive">
-              <table class="table table-striped table-bordered table-hover" id="criteria">
-                <tr>
-                  <th><g:message code="query.create.archetype_id" /></th>
-                  <th><g:message code="query.create.path" /></th>
-                  <th><g:message code="query.create.name" /></th>
-                  <th><g:message code="query.create.type" /></th>
-                  <th><g:message code="query.create.criteria" /></th>
-                  <th></th>
-                </tr>
-              </table>
+            <!--
+            ul < criteria builder
+              li < criteria item
+                table < criteria item single
+                ul < criteria item and / or
+                  li < and left (criteria item, single or and/or)
+                  li < and right (criteria item, single or and/or)
+            -->
+            <div class="table-responsive" id="criteria_builder">
+              <button type="button" class="btn btn-success" id="criteria_builder_add_and" disabled="true">+ AND</button>
+              <button type="button" class="btn btn-success" id="criteria_builder_add_or" disabled="true">+ OR</button>
+              <ul>
+              </ul>
             </div>
 
             <h2><g:message code="query.create.parameters" /></h2>

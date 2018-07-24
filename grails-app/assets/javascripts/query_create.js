@@ -180,7 +180,7 @@ templateid_select.onchange = function (ev) {
     return !!this.expr_left && !!this.expr_right && this.expr_left instanceof criteria_expression && this.expr_right instanceof criteria_expression && this.expr_left.is_valid() && this.expr_right.is_valid();;
   };
 
-
+/*
   // criteria builder -------------------------------------------------------
   // holds a temporal, maybe invalid expression, until it is valid because the
   // user edited the expression, then can be part of a query.
@@ -242,7 +242,7 @@ templateid_select.onchange = function (ev) {
     }
     throw "Current expression is not valid";
   };
-
+*/
 
 
   // parent can be criteria_builder / null, or an and / or expression (all the container types)
@@ -256,7 +256,7 @@ templateid_select.onchange = function (ev) {
 
 
   // glogals ----------------------------------------------------------------
-  window.criteria_builder = criteria_builder;
+  //window.criteria_builder = criteria_builder;
   window.criteria_expression = criteria_expression;
   window.criteria_expression_condition = criteria_expression_condition;
   window.criteria_expression_or = criteria_expression_or;
