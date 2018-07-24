@@ -6,3 +6,7 @@ theme: jekyll-theme-minimal
 
 gems:
   - jekyll-mentions
+
+github:
+  zip_url: https://github.com/ppazos/cabolabs-ehrserver/zipball/master
+  tar_url: https://github.com/ppazos/cabolabs-ehrserver/tarball/master
