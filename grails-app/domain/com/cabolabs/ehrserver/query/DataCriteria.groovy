@@ -67,7 +67,16 @@ class DataCriteria {
 
    String alias // for the query, private
 
-   static transients = ['indexItem']
+   // transient used to build the associative expression for complex criteria
+   // is a JSONObject
+   def parent
+
+   // needed by the algorithm to transform the criteria tree into a list of DataCriteriaExpression
+   // tree_node is used as a reference to the correspondent node in the tree from the current DataCriteria
+   // is used to know if the current node is left or right in a parent
+   def tree_node
+
+   static transients = ['indexItem', 'parent', 'tree_node']
 
    static constraints = {
       rmTypeName(inList: DataValues.valuesStringList() )

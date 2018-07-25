@@ -130,7 +130,7 @@ class QueryController {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
       def user = springSecurityService.getCurrentUser()
       query.author = user
-      query.cacheHQLWhere()
+      //query.cacheHQLWhere()
 
       if (query.hasErrors())
       {

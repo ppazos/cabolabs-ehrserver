@@ -68,8 +68,8 @@ class Query {
    // Si la consulta es de compositions, se filtra por indices de nivel 1 y tambien por nivel 2 (para n2 se usa DataCriteria)
    // Los filtros/criterios de n1 y de n2 son parametros de la query.
    List select = []
-   List where = []
-   static hasMany = [select: DataGet, where: DataCriteria]
+   List where = [] // List<DataCriteriaExpression> that is a binary tree codification for complex boolean expresions
+   static hasMany = [select: DataGet, where: DataCriteriaExpression]
 
    // For composition queries with criteria in where
    String criteriaLogic = 'AND' // AND or OR
@@ -192,95 +192,22 @@ class Query {
       {
          this.criteriaLogic = json['criteriaLogic']
 
+         // clean for update
          this.where.each {
             it.delete()
          }
          this.where.clear() // remove criterias before adding current ones
 
          def condition
+
+         // from tree to associative expression
+         this.where = DataCriteriaExpression.treeToExpression(json.where)
+         /*
          json.where.each { criteria ->
-
-            // removes the version for the archetype id and saves it
-            if (criteria.allowAnyArchetypeVersion)
-            {
-               criteria.archetypeId = criteria.archetypeId.replaceAll(/\.v(\d)*/, '')
-            }
-
-            //println "Criteria "+ criteria
-
-            switch (criteria['class']) {
-               case 'DataCriteriaDV_QUANTITY':
-                  def magnitudeValue = []
-                  if (criteria.magnitudeValue instanceof String)
-                  {
-                     magnitudeValue << new Double(criteria.magnitudeValue)
-                  }
-                  else
-                  {
-                     criteria.magnitudeValue.each {
-                        magnitudeValue << new Double(it)
-                     }
-                  }
-
-                  criteria.magnitudeValue = magnitudeValue
-                  condition = new DataCriteriaDV_QUANTITY(criteria)
-               break
-               case 'DataCriteriaDV_CODED_TEXT':
-                  condition = new DataCriteriaDV_CODED_TEXT(criteria)
-               break
-               case 'DataCriteriaDV_TEXT':
-                  condition = new DataCriteriaDV_TEXT(criteria)
-               break
-               case 'DataCriteriaDV_DATE_TIME':
-
-                  def dateValues = dateValues(criteria.valueValue)
-
-                  // Set the values converted to Date
-                  criteria.valueValue = dateValues
-                  condition = new DataCriteriaDV_DATE_TIME(criteria)
-               break
-               case 'DataCriteriaDV_DATE':
-
-                  def dateValues = dateValues(criteria.valueValue)
-
-                  // Set the values converted to Date
-                  criteria.valueValue = dateValues
-                  condition = new DataCriteriaDV_DATE(criteria)
-               break
-               case 'DataCriteriaDV_BOOLEAN':
-                  condition = new DataCriteriaDV_BOOLEAN(criteria)
-               break
-               case 'DataCriteriaDV_COUNT':
-                  condition = new DataCriteriaDV_COUNT(criteria)
-               break
-               case 'DataCriteriaDV_PROPORTION':
-                  condition = new DataCriteriaDV_PROPORTION(criteria)
-               break
-               case 'DataCriteriaDV_ORDINAL':
-                  condition = new DataCriteriaDV_ORDINAL(criteria)
-               break
-               case 'DataCriteriaDV_DURATION':
-                  condition = new DataCriteriaDV_DURATION(criteria)
-               break
-               case 'DataCriteriaDV_IDENTIFIER':
-                  condition = new DataCriteriaDV_IDENTIFIER(criteria)
-               break
-               case 'DataCriteriaDV_MULTIMEDIA':
-                  condition = new DataCriteriaDV_MULTIMEDIA(criteria)
-               break
-               case 'DataCriteriaDV_PARSABLE':
-                  condition = new DataCriteriaDV_PARSABLE(criteria)
-               break
-               case 'DataCriteriaString':
-                  condition = new DataCriteriaString(criteria)
-               break
-               case 'DataCriteriaLOCATABLE_REF':
-                  condition = new DataCriteriaLOCATABLE_REF(criteria)
-               break
-            }
 
             this.addToWhere(condition)
          }
+         */
       }
       else
       {
@@ -1282,9 +1209,9 @@ class Query {
    {
       if (this.type != 'composition') return false
 
-      for (criteria in this.where)
+      for (criteria_expression_item in this.where)
       {
-         if (criteria.containsFunction()) return true
+         if (criteria_expression_item.criteria.containsFunction()) return true
       }
 
       return false

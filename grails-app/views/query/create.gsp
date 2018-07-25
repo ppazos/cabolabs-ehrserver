@@ -111,6 +111,7 @@
           this.id_gen++;
 
           var c = {
+                   _type: 'COND',
                    cid: this.id_gen,
                    archetypeId: archetype_id,
                    path: path,
@@ -133,7 +134,7 @@
 
           return this.id_gen;
         },
-        add_and: function (criteria_1_id, criteria_2_id)
+        add_complex_criteria: function (criteria_1_id, criteria_2_id, operator) // operator == AND | OR
         {
           // get c1 and c2 from root
           var c1 = this.items.find(function(e){ return e.cid == criteria_1_id });
@@ -141,12 +142,12 @@
 
           this.id_gen++;
 
-          // create and criteria item
-          var _and = {
-            '_type': 'AND',
-            'left': c1,
-            'right': c2,
-            'cid': this.id_gen
+          // create and/or complex criteria item
+          var ccriteria = {
+            _type: operator,
+            left: c1,
+            right: c2,
+            cid: this.id_gen
           }
 
           // remove c1 and c2 from root
@@ -156,40 +157,18 @@
           this.items.splice(c2idx, 1);
 
           // add and criteria item to root
-          this.items.push(_and);
-
-          return this.id_gen;
-        },
-        add_or: function (criteria_1_id, criteria_2_id)
-        {
-          // get c1 and c2 from root
-          var c1 = this.items.find(function(e){ return e.cid == criteria_1_id });
-          var c2 = this.items.find(function(e){ return e.cid == criteria_2_id });
-
-          this.id_gen++;
-
-          // create and criteria item
-          var _or = {
-            '_type': 'OR',
-            'left': c1,
-            'right': c2,
-            'cid': this.id_gen
-          }
-
-          // remove c1 and c2 from root
-          var c1idx = this.items.findIndex( function(e){ return e.cid == criteria_1_id } );
-          this.items.splice(c1idx, 1);
-          var c2idx = this.items.findIndex( function(e){ return e.cid == criteria_2_id } );
-          this.items.splice(c2idx, 1);
-
-          // add and criteria item to root
-          this.items.push(_or);
+          this.items.push(ccriteria);
 
           return this.id_gen;
         },
         is_valid: function (criteria_1_id, criteria_2_id)
         {
           return this.items.length == 1;
+        },
+        get_criteria_tree: function()
+        {
+          if (!this.is_valid()) throw "Can't return invalid criteria from criteria_builder"; // TOOD: I18N
+          return this.items[0];
         }
       };
 
@@ -206,18 +185,23 @@
           $('#criteria_builder_add_and')[0].disabled = false;
           $('#criteria_builder_add_or')[0].disabled = false;
         }
+        else // disable if enabled
+        {
+          $('#criteria_builder_add_and')[0].disabled = true;
+          $('#criteria_builder_add_or')[0].disabled = true;
+        }
       });
 
-
-$(function() {
-      $('#criteria_builder_add_and').on('click', function(e) {
-        console.log('criteria_builder_add_and click', $('#criteria_builder input:checked'));
-
+      // This handler process clicks on +AND +OR buttons and handles UI and model changes.
+      // event.data.type has value AND/OR
+      var add_criteria_item_handler = function (event)
+      {
         var c1_dom = $('#criteria_builder input:checked')[0];
         var c2_dom = $('#criteria_builder input:checked')[1];
 
         // updates model
-        var cid = criteria_builder.add_and($(c1_dom).data('cid'), $(c2_dom).data('cid'));
+        var cid = criteria_builder.add_complex_criteria($(c1_dom).data('cid'), $(c2_dom).data('cid'), event.data.type);
+
 
         // update dom
         // remove criteria items UI from DOM
@@ -229,39 +213,23 @@ $(function() {
         $('[type=checkbox]', li_c2).detach();
 
         // first li is the criteria item for the root ul
-        var _and_ui = $('<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" />'+
-                          '<span>AND</span>'+
-                        '</li>');
-        var _subcriteria_ui = $('<ul/>');
-        // FIXME: if one of the conds is also an AND, this appends the single item to the AND's ul
-        // test:
-        // add c1
-        // add c2
-        // add AND
-        // add c3
-        // add AND
-        // ce is copied inside the first AND with c1 and c2
-        // this append should only apped to _and_ui root, not descendants
-        _subcriteria_ui.append(li_c1);
-        _subcriteria_ui.append(li_c2);
-        _and_ui.append(_subcriteria_ui);
-
-
-        $('#criteria_builder > ul').append(_and_ui);
+        var binary_cond_ui = $('<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" /><span>'+ event.data.type +'</span></li>');
+        var subcriteria_ui = $('<ul/>');
+        subcriteria_ui.append(li_c1);
+        subcriteria_ui.append(li_c2);
+        binary_cond_ui.append(subcriteria_ui);
+        $('#criteria_builder > ul').append(binary_cond_ui);
 
         // AND/OR buttons back to disabled
         $('#criteria_builder_add_and')[0].disabled = true;
         $('#criteria_builder_add_or')[0].disabled = true;
+      };
 
-        e.preventDefault();
+      // these events should be binded on ready because this JS runs before the DOM is ready
+      $(function() {
+        $('#criteria_builder_add_and').on('click', {type:'AND'}, add_criteria_item_handler);
+        $('#criteria_builder_add_or').on('click', {type:'OR'}, add_criteria_item_handler);
       });
-
-      $('#criteria_builder_add_or').on('click', function(e) {
-        console.log('criteria_builder_add_or click', $('#criteria_builder input:checked'));
-
-        e.preventDefault();
-      });
-});
 
       var query = {
         id: undefined, // used for edit/update
@@ -272,7 +240,7 @@ $(function() {
         format: undefined,
         template_id: undefined,
         criteriaLogic: undefined,
-        where: [], // DataCriteria
+        where: undefined, //[], // DataCriteria
         select: [], // DataGet
         queryGroup: undefined,
         group: 'none',
@@ -300,14 +268,19 @@ $(function() {
         set_template_id: function (template_id) {
           if (template_id != null) this.template_id = template_id;
         },
+        set_criteria: function (criteria_tree) // set from criteria builder
+        {
+           return this.where = criteria_tree;
+        },
         has_criteria: function ()
         {
-           return this.where.length != 0;
+           return this.where != undefined;
         },
         has_projections: function ()
         {
            return this.select.length != 0;
         },
+        /*
         add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version)
         {
           if (this.type != 'composition') return false;
@@ -337,6 +310,7 @@ $(function() {
 
           return this.id_gen;
         },
+        */
         add_projection: function (archetype_id, path, rm_type_name, allow_any_archetype_version)
         {
           if (this.type != 'datavalue') return false;
@@ -357,6 +331,7 @@ $(function() {
 
           return this.id_gen;
         },
+        /*
         remove_criteria: function (id)
         {
           // lookup: TODO put this in array prototype
@@ -372,6 +347,7 @@ $(function() {
 
           this.where.splice(pos, 1); // removes 1 item in from the position
         },
+        */
         remove_projection: function (id)
         {
            // lookup: TODO put this in array prototype
@@ -432,15 +408,25 @@ $(function() {
 
       var save_or_update_query = function(action) {
 
+        // does validation first
         if (action != 'save' && action != 'update') throw "Action is not save or update";
 
         query.set_name($('input[name=name]').val());
 
         if (!query.get_name())
         {
-           alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}');
+           alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}'); // TODO: bootstrap alerts
            return;
         }
+
+        if (!criteria_builder.is_valid())
+        {
+          alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
+          return;
+        }
+
+        var criteria = criteria_builder.get_criteria_tree();
+        query.set_criteria(criteria);
 
         query.set_query_group($('select[name=queryGroup]').val());
 
@@ -765,11 +751,7 @@ resp.responseJSON.result.message +'</div>'
 
          //console.log('ajax_submit', action);
 
-         if (action == 'save')
-         {
-            save_or_update_query(action);
-         }
-         else if (action == 'update')
+         if (action == 'save' || action == 'update')
          {
             save_or_update_query(action);
          }
@@ -943,14 +925,6 @@ resp.responseJSON.result.message +'</div>'
             '</tr>'+
           '</table></li>'
         );
-
-        // if there are more than one criteria item in the criteria builder root,
-        // add AND/OR buttons should be enabled.
-        if ( $('#criteria_builder > ul').children().length > 1 )
-        {
-          $('#criteria_builder_add_and').disabled = false;
-          $('#criteria_builder_add_or').disabled = false;
-        }
 
         return true;
 
@@ -1941,21 +1915,7 @@ resp.responseJSON.result.message +'</div>'
           get_criteria_specs(datatype);
 
         }); // click en select view_archetype_path
-
-
-        /*
-         * Valida antes de hacer test o guardar.
-         */
-        $('form[name=query_form]').submit( function(e) {
-
-          // Valida que haya algun criterio o alguna seleccion,
-          // sino hay, retorna false y el submit no se hace.
-          // Ademas muestra un alert con el error.
-          return validate();
-        });
-
       }); // ready
-
 
       /**
        * Limpia la tabla de archetypeIds y paths seleccionadas
@@ -1998,39 +1958,6 @@ resp.responseJSON.result.message +'</div>'
           if (i >= from) $(tr).remove();
         });
       };
-
-
-      // Validacion antes de submit a test:
-      //   1. type = composition debe tener algun criterio de datos
-      //   2. type = path debe tener alguna path en su seleccion
-      //
-      var validate = function()
-      {
-        type = $('select[name=type]').val();
-
-        if (type == 'composition')
-        {
-          // Si la tabla de criterio solo tiene el tr del cabezal, no tiene criterio seleccionado
-          if ($('tr', '#criteria').length == 1)
-          {
-            alert('${g.message(code:"query.create.missingCriteria")}');
-            return false;
-          }
-
-          return true;
-        }
-
-        if (type == 'datavalue')
-        {
-          if ($('tr', '#selection').length == 1)
-          {
-            alert('${g.message(code:"query.create.missingProjections")}');
-            return false;
-          }
-
-          return true;
-        }
-      }; // validate
     </script>
   </head>
   <body>
@@ -2203,7 +2130,6 @@ resp.responseJSON.result.message +'</div>'
             <a name="criteria"></a>
             <h3><g:message code="query.create.criteria" /></h3>
 
-            <!-- Esta tabla almacena el criterio de busqueda que se va poniendo por JS -->
             <!--
             ul < criteria builder
               li < criteria item
