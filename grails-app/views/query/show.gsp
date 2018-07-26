@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem" %><!doctype html>
+<%@ page import="com.cabolabs.security.Organization" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem" %><%@ page import="com.cabolabs.util.QueryUtils" %><!doctype html>
 <html>
   <head>
     <meta name="layout" content="admin">
@@ -8,6 +8,24 @@
     <asset:javascript src="highlight.pack.js" />
     <!-- xmlToString -->
     <asset:javascript src="xml_utils.js" />
+    <style>
+    /* this style displays the AND/OR in vertical middle of chidren expression items */
+    .row-eq-height {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .row-eq-height> [class*='col-'] {
+      display: flex;
+      flex-direction: column;
+    }
+    .expression_criteria table {
+      margin: 0;
+    }
+    </style>
   </head>
   <body>
     <div class="row">
@@ -51,10 +69,6 @@
               <th><g:message code="query.show.template_id.attr" /></th>
               <td><g:fieldValue bean="${queryInstance}" field="templateId"/></td>
             </tr>
-            <tr>
-              <th><g:message code="query.show.criteria.attr" /></th>
-              <td><g:fieldValue bean="${queryInstance}" field="criteriaLogic"/></td>
-            </tr>
           </tbody>
         </table>
 
@@ -96,7 +110,9 @@
           </div>
         </g:if>
         <g:if test="${queryInstance?.where}">
-	       <h2><g:message code="query.where.label" default="Where" /></h2>
+	        <h2><g:message code="query.where.label" default="Where" /></h2>
+          <g:query_criteria query="${queryInstance}" />
+          <%--
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
               <tr>
@@ -105,21 +121,27 @@
                 <th><g:message code="query.show.name.attr" /></th>
                 <th><g:message code="query.show.criteria.attr" /></th>
               </tr>
-              <g:each in="${queryInstance.where}" var="w">
-                <!-- <span class="property-value" aria-labelledby="where-label"><g:link controller="dataCriteria" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></span> -->
+              <g:each in="${queryInstance.where}" var="expression_item">
                 <tr>
-                  <td>${w.archetypeId}</td>
-                  <td>${w.path}</td>
-                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(w.archetypeId, w.path).name[session.lang]}</td>
-                  <td>${w.toGUI()}</td>
+                  <td>${expression_item.criteria.archetypeId}</td>
+                  <td>${expression_item.criteria.path}</td>
+                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(expression_item.criteria.archetypeId, expression_item.criteria.path).name[session.lang]}</td>
+                  <td>${expression_item.criteria.toGUI()}</td>
                 </tr>
               </g:each>
             </table>
           </div>
+          --%>
         </g:if>
       </div>
     </div>
 
+<%
+def qu = new QueryUtils()
+def tree = qu.getCriteriaTree(queryInstance)
+//println tree
+println "EXPRESSION: " + qu.getStringExpression(tree)
+%>
     <div class="row">
       <div class="col-md-6">
         <g:message code="query.show.query_xml.label" />

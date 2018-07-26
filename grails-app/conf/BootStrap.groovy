@@ -458,7 +458,12 @@ class BootStrap {
         {
            j << [criteriaLogic: q.criteriaLogic]
            j << [templateId:    q.templateId]
-           j << [criteria:      q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }]
+           //j << [criteria:      q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }]
+           j << [criteria:      q.where.collect { expression_item ->
+                                  [ criteria: [archetypeId: expression_item.criteria.archetypeId, path: expression_item.criteria.path, conditions: expression_item.criteria.getCriteriaMap()],
+                                    left_assoc: expression_item.left_assoc,
+                                    right_assoc: expression_item.right_assoc ]
+                                }]
         }
         else
         {
@@ -469,100 +474,112 @@ class BootStrap {
         return j
      }
 
-     XML.registerObjectMarshaller(Query) { q, xml ->
-        xml.build {
+      XML.registerObjectMarshaller(Query) { q, xml ->
+         xml.build {
           uid(q.uid)
           name(q.name)
           format(q.format)
           type(q.type)
           author(q.author)
-        }
+         }
 
-        if (q.type == 'composition')
-        {
-           xml.startNode 'criteriaLogic'
-              xml.chars (q.criteriaLogic ?: '')
-           xml.end()
-           xml.startNode 'templateId'
-              xml.chars (q.templateId ?: '') // fails if null!
-           xml.end()
+         if (q.type == 'composition')
+         {
+            xml.startNode 'criteriaLogic'
+               xml.chars (q.criteriaLogic ?: '')
+            xml.end()
+            xml.startNode 'templateId'
+               xml.chars (q.templateId ?: '') // fails if null!
+            xml.end()
 
-           def criteriaMap
-           def _value
-           //q.where.each { criteria -> // with this the criteria clases are marshalled twice, it seems the each is returning the criteria instead of just processing the xml format creation.
-           for (criteria in q.where) // works ok, so we need to avoid .each
-           {
-              criteriaMap = criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+            def criteriaMap
+            def _value
+            //q.where.each { criteria -> // with this the criteria clases are marshalled twice, it seems the each is returning the criteria instead of just processing the xml format creation.
+            for (expression_item in q.where) // works ok, so we need to avoid .each
+            {
+               xml.startNode 'expression_item'
+                  if (expression_item.left_assoc)
+                  {
+                     xml.startNode 'left_assoc'
+                     xml.chars expression_item.left_assoc
+                     xml.end()
+                  }
+                  if (expression_item.right_assoc)
+                  {
+                     xml.startNode 'right_assoc'
+                     xml.chars expression_item.right_assoc
+                     xml.end()
+                  }
+                  xml.startNode 'criteria'
+                     xml.startNode 'archetypeId'
+                        xml.chars expression_item.criteria.archetypeId
+                     xml.end()
+                     xml.startNode 'path'
+                        xml.chars expression_item.criteria.path
+                     xml.end()
+                     xml.startNode 'conditions'
 
-              xml.startNode 'criteria'
-                 xml.startNode 'archetypeId'
-                    xml.chars criteria.archetypeId
-                 xml.end()
-                 xml.startNode 'path'
-                    xml.chars criteria.path
-                 xml.end()
-                 xml.startNode 'conditions'
+                       criteriaMap = expression_item.criteria.getCriteriaMap() // [attr: [operand: value]] value can be a list
+                       criteriaMap.each { attr, cond ->
 
-                    criteriaMap.each { attr, cond ->
+                          _value = cond.find{true}.value // can be a list, string, boolean, ...
 
-                       _value = cond.find{true}.value // can be a list, string, boolean, ...
+                           xml.startNode "$attr"
+                              xml.startNode 'operand'
+                                 xml.chars cond.find{true}.key
+                              xml.end()
 
-                       xml.startNode "$attr"
-                          xml.startNode 'operand'
-                             xml.chars cond.find{true}.key
-                          xml.end()
+                              if (_value instanceof List)
+                              {
+                                 xml.startNode 'list'
+                                    _value.each { val ->
+                                       if (val instanceof Date)
+                                       {
+                                          // FIXME: should use the XML date marshaller
+                                          xml.startNode 'item'
+                                             xml.chars val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
+                                          xml.end()
+                                       }
+                                       else
+                                       {
+                                          xml.startNode 'item'
+                                             xml.chars val.toString() // chars fails if type is Double or other non string
+                                          xml.end()
+                                       }
+                                    }
+                                 xml.end()
+                              }
+                              else
+                              {
+                                 xml.startNode 'value'
+                                    xml.chars _value.toString() // chars fails if type is Double or other non string
+                                 xml.end()
+                              }
+                           xml.end()
+                        }
+                     xml.end()
+                  xml.end()
+               xml.end()
+            }
+         }
+         else
+         {
+            xml.startNode 'group'
+               xml.chars q.group
+            xml.end()
 
-                          if (_value instanceof List)
-                          {
-                             xml.startNode 'list'
-                                _value.each { val ->
-
-                                   if (val instanceof Date)
-                                   {
-                                      // FIXME: should use the XML date marshaller
-                                      xml.startNode 'item'
-                                         xml.chars val.format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
-                                      xml.end()
-                                   }
-                                   else
-                                   {
-                                      xml.startNode 'item'
-                                         xml.chars val.toString() // chars fails if type is Double or other non string
-                                      xml.end()
-                                   }
-                                }
-                             xml.end()
-                          }
-                          else
-                          {
-                             xml.startNode 'value'
-                                xml.chars _value.toString() // chars fails if type is Double or other non string
-                             xml.end()
-                          }
-                       xml.end()
-                    }
-                 xml.end()
-              xml.end()
-           }
-        }
-        else
-        {
-           xml.startNode 'group'
-              xml.chars q.group
-           xml.end()
-
-           q.select.each { proj ->
-              xml.startNode 'projection'
-                xml.startNode 'archetypeId'
-                  xml.chars proj.archetypeId
-                xml.end()
-                xml.startNode 'path'
-                  xml.chars proj.path
-                xml.end()
-              xml.end()
-           }
-        }
-     }
+            q.select.each { proj ->
+               xml.startNode 'projection'
+                  xml.startNode 'archetypeId'
+                     xml.chars proj.archetypeId
+                  xml.end()
+                  xml.startNode 'path'
+                     xml.chars proj.path
+                  xml.end()
+               xml.end()
+            }
+         }
+      }
 
 
      JSON.registerObjectMarshaller(Ehr) { ehr ->
