@@ -26,6 +26,8 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_PARSABLE extends DataCriteria {
 
+   static String indexType = 'DvParsableIndex'
+
    String valueValue
    String valueOperand
 

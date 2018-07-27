@@ -28,7 +28,7 @@ import com.cabolabs.ehrserver.query.datatypes.*
 class QueryUtils {
 
    // need to copy the expression items and all the attributes to avoid modification of domain classes from the expression2tree algorithm
-   private List cloneExpression(Query query)
+   private static List cloneExpression(Query query)
    {
       def expression = []
       query.where.each {
@@ -47,7 +47,7 @@ class QueryUtils {
     * expression key will be the subexpression to create the subtree from a node
     * REF original algorithm: https://gist.github.com/ppazos/5aaa4bc61dfaa176e4985ef0a7817364
     */
-   Map getCriteriaTree(Query query)
+   static Map getCriteriaTree(Query query)
    {
       def expression = cloneExpression(query) // since the map will be modified by the algorithm, we create a new map
 
@@ -59,13 +59,13 @@ class QueryUtils {
    /**
     * expression: List<DataCriteriaExpression>
     */
-   private Map getCriteriaTreeRecursive(Map tree)
+   private static Map getCriteriaTreeRecursive(Map tree)
    {
       processExpressionItem(tree)
       if (tree.left) getCriteriaTreeRecursive(tree.left)
       if (tree.right) getCriteriaTreeRecursive(tree.right)
    }
-   private Map processExpressionItem(Map tree)
+   private static Map processExpressionItem(Map tree)
    {
       def i, left_expression = [], right_expression = []
       i = tree.expression.findIndexOf { it.right_assoc } // gets the first item with right assoc
@@ -106,7 +106,7 @@ class QueryUtils {
    /*
     * Process a Map returned from getCriteriaTree and retrieves the final boolean expression string
     */
-   String getStringExpression(Map tree)
+   static String getStringExpression(Map tree)
    {
       def expr = ''
 
@@ -123,5 +123,204 @@ class QueryUtils {
       }
 
       return expr
+   }
+
+   /*
+    * Process a Map returned from getCriteriaTree and retrieves the final SQL
+    * expression string to be used on the query WHERE
+    */
+   static getFullCriteriaExpressionToSQL(Map tree)
+   {
+      def expr = ''
+
+      if (tree.left)
+      {
+         def lexpr = getFullCriteriaExpressionToSQL(tree.left)
+         def rexpr = getFullCriteriaExpressionToSQL(tree.right)
+
+         expr = '('+ lexpr +' '+ tree.value +' '+ rexpr +')' // value is AND/OR
+      }
+      else
+      {
+         // each of these is an EXISTS condition
+         expr = getFullCriteriaToSQL(tree.value) //.toSQL() // value is DataCriteria
+      }
+
+      return expr
+   }
+
+   /**
+    * Generates EXISTS subquery for one criteria.
+    *
+    * Final full query would look like:
+    *
+      SELECT
+          ci
+      FROM
+          CompositionIndex ci
+      WHERE
+          ci.lastVersion=true
+          AND ci.organizationUid = 'e9d13294-bce7-44e7-9635-8e906da0c914'
+          AND (
+               EXISTS (
+                   SELECT
+                       dvi.id
+                   FROM
+                       DataValueIndex dvi ,
+                       DvCountIndex dci
+                   WHERE
+                       dvi.owner.id = ci.id
+                       AND dvi.archetypeId = 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
+                       AND dvi.archetypePath = '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'
+                       AND dci.id = dvi.id
+                       AND dci.magnitude = 54
+               )
+               OR EXISTS (
+                   SELECT
+                       dvi.id
+                   FROM
+                       DataValueIndex dvi ,
+                       DvCountIndex dci
+                   WHERE
+                       dvi.owner.id = ci.id
+                       AND dvi.archetypeId = 'openEHR-EHR-OBSERVATION.test_all_datatypes.v1'
+                       AND dvi.archetypePath = '/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value'
+                       AND dci.id = dvi.id
+                       AND dci.magnitude = 98
+               )
+          )
+    */
+   static String getFullCriteriaToSQL(DataCriteria dataCriteria)
+   {
+      def idxtype, fromMap, _subq, _subq_criteria
+      fromMap = ['DataValueIndex': 'dvi']
+      idxtype = dataCriteria.rmTypeName
+
+      def _where = new StringBuilder()
+      _where.append("EXISTS (")
+
+      _subq_criteria = new StringBuilder()
+      _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
+      if (dataCriteria.allowAnyArchetypeVersion)
+      {
+         // TODO: check if archetypeId has % at the end
+         _subq_criteria.append("dvi.archetypeId LIKE '").append(dataCriteria.archetypeId)
+      }
+      else
+      {
+         _subq_criteria.append("dvi.archetypeId = '").append(dataCriteria.archetypeId)
+      }
+      _subq_criteria.append("' AND ")
+                    .append("dvi.archetypePath = '")
+                    .append(dataCriteria.path)
+                    .append("'")
+
+      // this makes the code generic, use the alias and class name from the dataCriteria and doesnt need the switch
+
+      /*
+      println "dataCriteria class "+ dataCriteria.getClass().getSimpleName()
+      println "dataCriteria index type "+ dataCriteria.indexType
+      println "dataCriteria alias "+ dataCriteria.alias
+      */
+
+      fromMap[dataCriteria.indexType] = dataCriteria.alias
+      _subq_criteria.append(" AND ${dataCriteria.alias}.id = dvi.id ")
+
+/*
+      switch (idxtype)
+      {
+         case 'DV_DATE_TIME':
+            fromMap['DvDateTimeIndex'] = 'ddti'
+            _subq_criteria.append(" AND ddti.id = dvi.id ")
+         break
+         case 'DV_DATE':
+            fromMap['DvDateIndex'] = 'dcdte'
+            _subq_criteria.append(" AND dcdte.id = dvi.id ")
+         break
+         case 'DV_QUANTITY':
+            fromMap['DvQuantityIndex'] = 'dqi'
+            _subq_criteria.append(" AND dqi.id = dvi.id ")
+         break
+         case 'DV_CODED_TEXT':
+            fromMap['DvCodedTextIndex'] = 'dcti'
+            _subq_criteria.append(" AND dcti.id = dvi.id ")
+         break
+         case 'DV_TEXT':
+            fromMap['DvTextIndex'] = 'dti'
+            _subq_criteria.append(" AND dti.id = dvi.id ")
+         break
+         case 'DV_ORDINAL':
+            fromMap['DvOrdinalIndex'] = 'dvol'
+            _subq_criteria.append(" AND dvol.id = dvi.id ")
+         break
+         case 'DV_BOOLEAN':
+            fromMap['DvBooleanIndex'] = 'dbi'
+            _subq_criteria.append(" AND dbi.id = dvi.id ")
+         break
+         case 'DV_COUNT':
+            fromMap['DvCountIndex'] = 'dci'
+            _subq_criteria.append(" AND dci.id = dvi.id ")
+         break
+         case 'DV_PROPORTION':
+            fromMap['DvProportionIndex'] = 'dpi'
+            _subq_criteria.append(" AND dpi.id = dvi.id ")
+         break
+         case 'DV_DURATION':
+            fromMap['DvDurationIndex'] = 'dduri'
+            _subq_criteria.append(" AND dduri.id = dvi.id ")
+         break
+         case 'DV_IDENTIFIER':
+            fromMap['DvIdentifierIndex'] = 'dvidi'
+            _subq_criteria.append(" AND dvidi.id = dvi.id ")
+         break
+         case 'DV_MULTIMEDIA':
+            fromMap['DvMultimediaIndex'] = 'dvmmd'
+            _subq_criteria.append(" AND dvmmd.id = dvi.id ")
+         break
+         case 'DV_PARSABLE':
+            fromMap['DvParsableIndex'] = 'dpab'
+            _subq_criteria.append(" AND dpab.id = dvi.id ")
+         break
+         case 'String':
+            fromMap['StringIndex'] = 'dstg'
+            _subq_criteria.append(" AND dstg.id = dvi.id ")
+         break
+         case 'LOCATABLE_REF':
+            fromMap['LocatableRefIndex'] = 'dlor'
+            _subq_criteria.append(" AND dlor.id = dvi.id ")
+         break
+         default:
+            throw new Exception("type $idxtype not supported")
+      }
+*/
+
+      // toSQL can fail, for instance if the criteria has a SNOMED expression and the SNOMED service
+      // return a 429 To Many Requests, that exception should reach the top level to show the error
+      // to the user on GUI or API, and the whole query process should stop.
+      _subq_criteria.append(" AND ")
+                    .append(dataCriteria.toSQL()) // important part: complex criteria to SQL, depends on the datatype
+
+      /*
+      FROM ArchetypeIndexItem dvi, ...
+      WHERE dvi.owner.id = ci.id AND
+            dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1 AND
+            dvi.path = /content/data[at0001]/origin AND
+            dvi.value>20080101
+      */
+      _subq = new StringBuilder()
+      _subq.append("SELECT dvi.id FROM ")
+
+      fromMap.each { index, alias ->
+
+         _subq.append(index).append(' ').append(alias).append(' , ')
+      }
+
+      _subq.setLength(_subq.length() - 2)
+      _subq.append(_subq_criteria)
+
+      _where.append(_subq)
+      _where.append(')') // closes EXISTS
+
+      return _where.toString()
    }
 }

@@ -26,10 +26,12 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaLOCATABLE_REF extends DataCriteria {
 
+   static String indexType = 'LocatableRefIndex'
+
    String locatable_ref_pathValue // path to the instruction inside a version, from compo root
    String locatable_ref_pathOperand
    boolean locatable_ref_pathNegation = false
-   
+
    // For LOCATABLE_REF the querying will be customized because LREF.value depends on instances, so is a param, not part of the query definition.
 
    DataCriteriaLOCATABLE_REF()
@@ -40,7 +42,7 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
 
    static constraints = {
    }
-   
+
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
       return [
@@ -52,17 +54,17 @@ class DataCriteriaLOCATABLE_REF extends DataCriteria {
         ]
       ]
    }
-   
+
    static List attributes()
    {
       return ['value']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

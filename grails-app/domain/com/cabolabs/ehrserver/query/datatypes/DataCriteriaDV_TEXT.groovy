@@ -26,24 +26,26 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_TEXT extends DataCriteria {
 
+   static String indexType = 'DvTextIndex'
+
    //String valueValue
    List valueValue
 
    // Comparison operands
    String valueOperand
-   
+
    boolean valueNegation = false
 
    static hasMany = [valueValue: String]
-   
+
    DataCriteriaDV_TEXT()
    {
       rmTypeName = 'DV_TEXT'
       alias = 'dti'
    }
-   
+
    //static hasMany = [valueValues: String] // FIXME: this should be one value since no spec requires a in_list or range.
-   
+
    static constraints = {
    }
    /*
@@ -51,7 +53,7 @@ class DataCriteriaDV_TEXT extends DataCriteria {
       valueValue column: "dv_text_value"
    }
    */
-   
+
    /**
     * Metadata that defines the types of criteria supported to search
     * by conditions over DV_QUANTITY.
@@ -69,17 +71,17 @@ class DataCriteriaDV_TEXT extends DataCriteria {
         ]
       ]
    }
-   
+
    static List attributes()
    {
       return ['value']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

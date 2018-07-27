@@ -456,7 +456,6 @@ class BootStrap {
 
         if (q.type == 'composition')
         {
-           j << [criteriaLogic: q.criteriaLogic]
            j << [templateId:    q.templateId]
            //j << [criteria:      q.where.collect { [archetypeId: it.archetypeId, path: it.path, conditions: it.getCriteriaMap()] }]
            j << [criteria:      q.where.collect { expression_item ->
@@ -485,9 +484,6 @@ class BootStrap {
 
          if (q.type == 'composition')
          {
-            xml.startNode 'criteriaLogic'
-               xml.chars (q.criteriaLogic ?: '')
-            xml.end()
             xml.startNode 'templateId'
                xml.chars (q.templateId ?: '') // fails if null!
             xml.end()

@@ -26,27 +26,29 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_COUNT extends DataCriteria {
 
+   static String indexType = 'DvCountIndex'
+
    List magnitudeValue
 
    // Comparison operands
    String magnitudeOperand
-   
+
    boolean magnitudeNegation = false
-   
+
    DataCriteriaDV_COUNT()
    {
       rmTypeName = 'DV_COUNT'
       alias = 'dci'
    }
-    
+
    static hasMany = [magnitudeValue: Long]
-    
+
    static constraints = {
    }
    static mapping = {
       magnitudeOperand column: "dv_count_operand"
    }
-    
+
    /**
     * Metadata that defines the types of criteria supported to search
     * by conditions over DV_QUANTITY.
@@ -68,17 +70,17 @@ class DataCriteriaDV_COUNT extends DataCriteria {
          ]
       ]
    }
-    
+
    static List attributes()
    {
       return ['magnitude']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

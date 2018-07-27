@@ -29,6 +29,8 @@ import org.springframework.web.context.request.RequestContextHolder
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
+   static String indexType = 'DvCodedTextIndex'
+
    // Comparison values
    List codeValue
    String terminologyIdValue

@@ -28,6 +28,8 @@ import org.springframework.web.context.request.RequestContextHolder
 
 class DataCriteriaDV_QUANTITY extends DataCriteria {
 
+   static String indexType = 'DvQuantityIndex'
+
    List magnitudeValue
    String unitsValue
 

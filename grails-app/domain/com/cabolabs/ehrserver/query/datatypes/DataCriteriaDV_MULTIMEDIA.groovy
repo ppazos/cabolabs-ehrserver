@@ -27,6 +27,8 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvMultimediaIndex
 
 class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
 
+   static String indexType = 'DvMultimediaIndex'
+
    List mediaTypeValue // one or more media types in the criteria
    String alternateTextValue
    List sizeValue // can be a range

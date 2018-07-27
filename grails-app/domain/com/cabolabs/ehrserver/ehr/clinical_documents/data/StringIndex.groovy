@@ -21,17 +21,17 @@
  */
 package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-/** 
+/**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class StringIndex extends DataValueIndex {
 
    String value
-   
+
    static mapping = {
      value column: "string_index_value"
    }
-   
+
    static constraints = {
       value(maxSize: 16777215) //16MB
    }

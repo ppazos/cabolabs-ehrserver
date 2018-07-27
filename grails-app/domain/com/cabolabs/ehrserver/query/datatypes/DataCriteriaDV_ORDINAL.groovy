@@ -26,31 +26,33 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_ORDINAL extends DataCriteria {
 
+   static String indexType = 'DvOrdinalIndex'
+
     // Comparison values
     List valueValue // int
     List symbol_codeValue // coded text
     String symbol_terminology_idValue // coded text
     String symbol_valueValue // text
-    
+
     // Comparison operands
     String valueOperand
     String symbol_valueOperand
     String symbol_codeOperand
     String symbol_terminology_idOperand
-    
+
     boolean valueNegation = false
     boolean symbol_valueNegation = false
     boolean symbol_codeNegation = false
     boolean symbol_terminology_idNegation = false
-    
+
     DataCriteriaDV_ORDINAL()
     {
        rmTypeName = 'DV_ORDINAL'
        alias = 'dvol'
     }
-   
+
     static hasMany = [valueValue: Integer, symbol_codeValue: String]
-    
+
     static constraints = {
        valueOperand(nullable:true)
        symbol_valueOperand(nullable:true)
@@ -63,9 +65,9 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
        symbol_terminology_idValue column: "dv_ordinal_terminology_id"
        symbol_valueValue column: "dv_ordinal_value"
     }
-    
+
     /**
-     * Metadata that defines the types of criteria supported to search 
+     * Metadata that defines the types of criteria supported to search
      * by conditions over DV_CODED_TEXT.
      * @return
      */
@@ -101,17 +103,17 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
           ]
        ]
     }
-    
+
     static List attributes()
     {
        return ['value', 'symbol_value', 'symbol_code', 'symbol_terminology_id']
     }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

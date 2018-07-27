@@ -112,36 +112,17 @@
         <g:if test="${queryInstance?.where}">
 	        <h2><g:message code="query.where.label" default="Where" /></h2>
           <g:query_criteria query="${queryInstance}" />
-          <%--
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover">
-              <tr>
-                <th><g:message code="query.show.archetype_id.attr" /></th>
-                <th><g:message code="query.show.path.attr" /></th>
-                <th><g:message code="query.show.name.attr" /></th>
-                <th><g:message code="query.show.criteria.attr" /></th>
-              </tr>
-              <g:each in="${queryInstance.where}" var="expression_item">
-                <tr>
-                  <td>${expression_item.criteria.archetypeId}</td>
-                  <td>${expression_item.criteria.path}</td>
-                  <td>${ArchetypeIndexItem.findByArchetypeIdAndPath(expression_item.criteria.archetypeId, expression_item.criteria.path).name[session.lang]}</td>
-                  <td>${expression_item.criteria.toGUI()}</td>
-                </tr>
-              </g:each>
-            </table>
-          </div>
-          --%>
         </g:if>
       </div>
     </div>
 
-<%
-def qu = new QueryUtils()
-def tree = qu.getCriteriaTree(queryInstance)
+<%--
+def tree = QueryUtils.getCriteriaTree(queryInstance)
 //println tree
-println "EXPRESSION: " + qu.getStringExpression(tree)
-%>
+println "EXPRESSION: " + QueryUtils.getStringExpression(tree)
+println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
+--%>
+
     <div class="row">
       <div class="col-md-6">
         <g:message code="query.show.query_xml.label" />

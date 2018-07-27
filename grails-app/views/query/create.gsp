@@ -165,6 +165,20 @@
         {
           return this.items.length == 1;
         },
+        remove_criteria: function (criteria_id) // removes complex or simple criteria on root, is complex, children are added to root
+        {
+          //var c = this.items.find(function(e){ return e.cid == criteria_id });
+          var cidx = this.items.findIndex( function(e){ return e.cid == criteria_id } );
+          var c = this.items[cidx];
+
+          this.items.splice(cidx, 1); // remove criteria
+
+          if (c._type != 'COND') // complex criteria
+          {
+            this.items.push(c.left); // add criteria children to root
+            this.items.push(c.right);
+          }
+        },
         get_criteria_tree: function()
         {
           if (!this.is_valid()) throw "Can't return invalid criteria from criteria_builder"; // TOOD: I18N
@@ -177,11 +191,11 @@
       // on root checkbox selector click, if two are selected, enable AND/OR add
       $(document).on('click', 'input[type=checkbox]', function(e) {
 
-        console.log('checkbox click', e, $('#criteria_builder input:checked').length);
+        var checked = $('#criteria_builder input:checked:visible').length;
 
-        if ( $('#criteria_builder input:checked').length == 2 )
+        if ( checked == 2 )
         {
-          console.log($('#criteria_builder_add_and'), $('#criteria_builder_add_or'));
+          //console.log($('#criteria_builder_add_and'), $('#criteria_builder_add_or'));
           $('#criteria_builder_add_and')[0].disabled = false;
           $('#criteria_builder_add_or')[0].disabled = false;
         }
@@ -190,10 +204,19 @@
           $('#criteria_builder_add_and')[0].disabled = true;
           $('#criteria_builder_add_or')[0].disabled = true;
         }
+
+        if (checked == 1)
+        {
+          $('#criteria_builder_remove_criteria')[0].disabled = false;
+        }
+        else
+        {
+          $('#criteria_builder_remove_criteria')[0].disabled = true;
+        }
       });
 
-      // This handler process clicks on +AND +OR buttons and handles UI and model changes.
-      // event.data.type has value AND/OR
+      // This handler process clicks on +AND +OR buttons and handles UI and model
+      // changes. event.data.type has value AND/OR
       var add_criteria_item_handler = function (event)
       {
         var c1_dom = $('#criteria_builder input:checked')[0];
@@ -208,9 +231,11 @@
         var li_c1 = $(c1_dom).parent().detach();
         var li_c2 = $(c2_dom).parent().detach();
 
-        // remove checkboxes from li_cx
-        $('[type=checkbox]', li_c1).detach();
-        $('[type=checkbox]', li_c2).detach();
+        // uncheck and hide checkboxes from li_cx
+        // will be used later if the AND/OR is deleted, to know the criteria id from it's data-cid attribute
+        // and will be shown again when the AND/OR containing these criteria's is removed
+        $('[type=checkbox]', li_c1).prop('checked', false).hide(); //.detach();
+        $('[type=checkbox]', li_c2).prop('checked', false).hide(); //.detach();
 
         // first li is the criteria item for the root ul
         var binary_cond_ui = $('<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" /><span>'+ event.data.type +'</span></li>');
@@ -239,7 +264,6 @@
         isPublic: false,
         format: undefined,
         template_id: undefined,
-        criteriaLogic: undefined,
         where: undefined, //[], // DataCriteria
         select: [], // DataGet
         queryGroup: undefined,
@@ -249,7 +273,6 @@
            this.id_gen = 0;
            this.format = undefined;
            this.template_id = undefined;
-           this.criteriaLogic = undefined;
            this.where = [];
            this.select = [];
            this.group = 'none';
@@ -259,7 +282,6 @@
         get_type:     function () { return this.type; }, // composition or datavalue
         set_public:   function () { this.isPublic = true; },
         set_private:  function () { this.isPublic = false; },
-        set_criteria_logic: function (criteriaLogic) { this.criteriaLogic = criteriaLogic; }, // composition
         set_name:     function (name) { this.name = name; },
         get_name:     function () { return this.name; },
         set_format:   function (format) { this.format = format; },
@@ -446,8 +468,6 @@
         if ( $('input[name=isPublic]').is(':checked') ) query.set_public();
         else query.set_private();
 
-        query.set_criteria_logic($('select[name=criteriaLogic]').val());
-
         if (query.get_type() == 'datavalue')
         {
            query.set_format( $('select[name=format]').val() );
@@ -510,11 +530,18 @@
         //console.log('test composition query');
         //console.log('query_form', $('#query_form'));
 
+        if (!criteria_builder.is_valid())
+        {
+          alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
+          return;
+        }
+
+        var criteria = criteria_builder.get_criteria_tree();
+        query.set_criteria(criteria);
 
         // query management
         query.set_name($('input[name=name]').val());
         query.set_query_group($('select[name=queryGroup]').val());
-        query.set_criteria_logic($('select[name=criteriaLogic]').val());
         query.set_format( $('select[name=composition_format]').val() );
         query.set_template_id( $('select[name=templateId]').val() );
 
@@ -905,7 +932,6 @@ resp.responseJSON.result.message +'</div>'
             '<th><g:message code="query.create.name" /></th>'+
             '<th><g:message code="query.create.type" /></th>'+
             '<th><g:message code="query.create.criteria" /></th>'+
-            '<th></th>'+
             '</tr>'+
             '<tr>'+
               '<td>'+ archetype_id +'</td>'+
@@ -913,15 +939,6 @@ resp.responseJSON.result.message +'</div>'
               '<td>'+ name +'</td>'+
               '<td>'+ type +'</td>'+
               '<td>'+ criteria_str +'</td>'+
-              '<td>'+
-                '<div class="btn-toolbar" role="toolbar">'+
-                  '<a href="#" class="removeCriteria">'+
-                    '<button type="button" class="btn btn-default btn-sm">'+
-                      '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
-                    '</button>'+
-                  '</a>'+
-                '</div>'+
-              '</td>'+
             '</tr>'+
           '</table></li>'
         );
@@ -1613,7 +1630,6 @@ resp.responseJSON.result.message +'</div>'
           println '$("select[name=composition_format]").val("'+ queryInstance.format +'");'
 
           println '$("select[name=group]").val("'+ queryInstance.group +'");'
-          println '$("select[name=criteriaLogic]").val("'+ queryInstance.criteriaLogic +'");'
           println '$("select[name=queryGroup]").val("'+ queryInstance.queryGroup?.uid +'");'
 
           println 'query.set_id("'+ queryInstance.id +'");'
@@ -1626,11 +1642,9 @@ resp.responseJSON.result.message +'</div>'
 
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
-          println 'query.set_criteria_logic("'+ queryInstance.criteriaLogic +'");'
 
           if (queryInstance.templateId)
             println 'query.set_template_id("'+ queryInstance.templateId +'");'
-
 
           if (queryInstance.type == 'composition')
           {
@@ -1721,15 +1735,7 @@ resp.responseJSON.result.message +'</div>'
                      '<td>${name}</td>'+
                      '<td>${data_criteria.rmTypeName}</td>'+
                      '<td>'+ criteria_str +'</td>'+
-                     '<td>'+
-                       '<div class="btn-toolbar" role="toolbar">'+
-                         '<a href="#" class="removeCriteria">'+
-                           '<button type="button" class="btn btn-default btn-sm">'+
-                             '<span class="fa fa-minus-circle fa-fw" aria-hidden="true"></span>'+
-                           '</button>'+
-                         '</a>'+
-                       '</div>'+
-                     '</td></tr>'
+                     '</tr>'
                   );
                 """
 
@@ -1780,24 +1786,50 @@ resp.responseJSON.result.message +'</div>'
             query_composition_add_criteria_2();
          });
 
-
          /**
           * Clic en [-]
           * Elimina un criterio de la lista de criterios de busqueda.
           */
-         $(document).on("click", "a.removeCriteria", function(e) {
+         $("#criteria_builder_remove_criteria").on("click", function(e) {
 
-            e.preventDefault();
+            //e.preventDefault();
 
-            // parent=DIV, parent.parent = TD y parent.parent.parent = TR a eliminar
-            //console.log(this); // a href=#
-            //console.log($(this).parent().parent().parent());
-            //
-            row = $(this).parent().parent().parent();
-            id = row.data('id');
-            row.remove(); // deletes from DOM
+            var c_dom = $('#criteria_builder input:checked')[0];
+            var criteria_id = $(c_dom).data('cid');
 
-            query.remove_criteria( id ); // updates the query
+            // remove criteria item UI from DOM
+            var li_c = $(c_dom).parent().detach();
+
+            // if the li has an ul, it is DOM of a complex criteria,
+            // if not, it contains just the table of a simple criteria
+            // for complex criteria need to put all the ul > lis from the c_dom,
+            // inside the root #criteria_builder > ul
+            // finds direct ul children, not all ul descendants
+            var child_ul_c = li_c.find("> ul"); //$('ul', li_c);
+
+            if (child_ul_c.length > 0)
+            {
+              console.log('complex DOM');
+
+              // show selection checkbox to new li's on root
+              //<input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ cid +'" />
+
+              // show selector checkboxes in each li to be able to manipulate the criteria
+              child_ul_c.children().each(function (idx, li) {
+                $(li).find('> [type=checkbox]').show(); // show checkboxes on direct children, avoid showing on descendants
+              });
+
+              $("#criteria_builder > ul").append( child_ul_c.children() );
+            }
+            else
+            {
+              console.log('simple DOM');
+            }
+
+            criteria_builder.remove_criteria(criteria_id);
+
+            // remove buton back to disabled
+            $("#criteria_builder_remove_criteria")[0].disabled = true;
          });
 
          /**
@@ -2141,6 +2173,7 @@ resp.responseJSON.result.message +'</div>'
             <div class="table-responsive" id="criteria_builder">
               <button type="button" class="btn btn-success" id="criteria_builder_add_and" disabled="true">+ AND</button>
               <button type="button" class="btn btn-success" id="criteria_builder_add_or" disabled="true">+ OR</button>
+              <button type="button" class="btn btn-danger" id="criteria_builder_remove_criteria" disabled="true">Remove</button>
               <ul>
               </ul>
             </div>
@@ -2184,22 +2217,6 @@ resp.responseJSON.result.message +'</div>'
                    <select name="showUI" class="form-control input-sm">
                      <option value="false" selected="selected"><g:message code="default.no" /></option>
                      <option value="true"><g:message code="default.yes" /></option>
-                   </select>
-                 </td>
-                </tr>
-                <tr>
-                 <td>
-                   <g:message code="query.create.criteria_logic" />
-                   <span class="info">
-                     <span class="content">
-                       <g:message code="query.create.criteria_logic_help" />
-                     </span>
-                   </span>
-                 </td>
-                 <td>
-                   <select name="criteriaLogic" class="form-control input-sm">
-                     <option value="AND" selected="selected"><g:message code="query.create.criteriaAND" /></option>
-                     <option value="OR"><g:message code="query.create.criteriaOR" /></option>
                    </select>
                  </td>
                 </tr>

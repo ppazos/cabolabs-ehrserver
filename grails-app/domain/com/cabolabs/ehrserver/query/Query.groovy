@@ -28,6 +28,7 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.security.User
 import com.cabolabs.util.DateParser
+import com.cabolabs.util.QueryUtils
 
 /**
  * Parametros n1 de la query:
@@ -70,9 +71,6 @@ class Query {
    List select = []
    List where = [] // List<DataCriteriaExpression> that is a binary tree codification for complex boolean expresions
    static hasMany = [select: DataGet, where: DataCriteriaExpression]
-
-   // For composition queries with criteria in where
-   String criteriaLogic = 'AND' // AND or OR
 
    // null, composition o path
    // Sirve para agrupar datos:
@@ -190,8 +188,6 @@ class Query {
 
       if (this.type == 'composition')
       {
-         this.criteriaLogic = json['criteriaLogic']
-
          // clean for update
          this.where.each {
             it.delete()
@@ -250,14 +246,10 @@ class Query {
 
       // No creo que le guste null en inList, le pongo ''
       group(inList:['none', 'composition', 'path'])
-      criteriaLogic(nullable: true)
       format(inList:['xml','json'])
       type(inList:['composition','datavalue'])
-
       templateId(nullable:true)
-
       cachedHQLWhere(nullable:true, size:1..8192)
-
 
       queryGroup nullable: true
    }
@@ -276,23 +268,21 @@ class Query {
       {
          try
          {
-            this.cachedHQLWhere = generateHQLWhere() // can fail, for instance if in_snomed_exp is used and the service fails
+            this.cachedHQLWhere = generateFullHQLWhere() // can fail, for instance if in_snomed_exp is used and the service fails
          }
          catch (Exception e)
          {
-            log.warn('where will no be cached because generateHQLWhere failed, cause '+ e.message)
+            log.warn('where will no be cached because generateFullHQLWhere failed, cause '+ e.message)
          }
       }
    }
 
    def beforeInsert()
    {
-      if (this.type == 'datavalue') this.criteriaLogic = null
    }
 
    def beforeUpdate()
    {
-      if (this.type == 'datavalue') this.criteriaLogic = null
    }
 
    def execute(String ehrUid, Date from, Date to,
@@ -974,7 +964,7 @@ class Query {
          if (this.cachedHQLWhere)
             q += this.cachedHQLWhere
          else
-            q += generateHQLWhere() // can return exception and that should reach the top level to show an error to the user on GUI or API
+            q += generateFullHQLWhere() // can return exception and that should reach the top level to show an error to the user on GUI or API
 
          /*
             //println "SUBQ DVI: "+ subq.replace("dvi.owner.id = ci.id AND ", "")
@@ -1029,6 +1019,13 @@ class Query {
       return cilist
    }
 
+   def generateFullHQLWhere()
+   {
+      def tree = QueryUtils.getCriteriaTree(this)
+      return QueryUtils.getFullCriteriaExpressionToSQL(tree)
+   }
+
+   /*
    def generateHQLWhere()
    {
       def _where = new StringBuilder()
@@ -1058,34 +1055,26 @@ class Query {
          // Subqueries sobre los DataValueIndex de los CompositionIndex
          _where.append(" EXISTS (")
 
-         _subq_criteria = new StringBuilder()
+         // WHERE dvi.owner.id = ci.id
+         //      AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
+         //      AND dvi.path = /content/data[at0001]/origin
+         //      AND dvi.value>20080101
 
-         /*
-            WHERE dvi.owner.id = ci.id
-               AND dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1
-               AND dvi.path = /content/data[at0001]/origin
-               AND dvi.value>20080101
-         */
+         _subq_criteria = new StringBuilder()
+         _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
          if (dataCriteria.allowAnyArchetypeVersion)
          {
-            _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
-                          .append("dvi.archetypeId LIKE '")
-                          .append(dataCriteria.archetypeId)
-                          .append("' AND ")
-                          .append("dvi.archetypePath = '")
-                          .append(dataCriteria.path)
-                          .append("'")
+            // TODO: check if archetypeId has % at the end
+            _subq_criteria.append("dvi.archetypeId LIKE '").append(dataCriteria.archetypeId)
          }
          else
          {
-            _subq_criteria.append("WHERE dvi.owner.id = ci.id AND ")
-                          .append("dvi.archetypeId = '")
-                          .append(dataCriteria.archetypeId)
-                          .append("' AND ")
-                          .append("dvi.archetypePath = '")
-                          .append(dataCriteria.path)
-                          .append("'")
+            _subq_criteria.append("dvi.archetypeId = '").append(dataCriteria.archetypeId)
          }
+         _subq_criteria.append("' AND ")
+                       .append("dvi.archetypePath = '")
+                       .append(dataCriteria.path)
+                       .append("'")
 
          // Consulta sobre atributos del ArchetypeIndexItem dependiendo de su tipo
          switch (idxtype)
@@ -1167,13 +1156,12 @@ class Query {
          // (los criterios se consideran AND, sin esta condicion es un OR y alcanza que
          // se cumpla uno de los criterios que vienen en params)
 
-         /*
-         FROM ArchetypeIndexItem dvi, ...
-         WHERE dvi.owner.id = ci.id AND
-               dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1 AND
-               dvi.path = /content/data[at0001]/origin AND
-               dvi.value>20080101
-         */
+
+         //FROM ArchetypeIndexItem dvi, ...
+         //WHERE dvi.owner.id = ci.id AND
+         //      dvi.archetypeId = openEHR-EHR-COMPOSITION.encounter.v1 AND
+         //      dvi.path = /content/data[at0001]/origin AND
+         //      dvi.value>20080101
          _subq = new StringBuilder()
          _subq.append("SELECT dvi.id FROM ")
 
@@ -1199,6 +1187,7 @@ class Query {
 
       return _where.toString()
    }
+   */
 
 
    /**

@@ -26,6 +26,8 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaDV_DURATION extends DataCriteria {
 
+   static String indexType = 'DvDurationIndex'
+
    // magnitude is not an attribute from the IM but is an EHRServer
    // shorthand to know how many seconds are expressed in the duration.value
    // Also is easier to search by a number and not by an ISO 8601 duration string
@@ -35,19 +37,19 @@ class DataCriteriaDV_DURATION extends DataCriteria {
    String magnitudeOperand
 
    boolean magnitudeNegation = false
-   
-   
+
+
    DataCriteriaDV_DURATION()
    {
       rmTypeName = 'DV_DURATION'
       alias = 'dduri'
    }
-   
+
    static hasMany = [magnitudeValue: Integer]
-   
+
    static constraints = {
    }
-   
+
    /**
     * Metadata that defines the types of criteria supported to search
     * by conditions over DV_QUANTITY.
@@ -69,17 +71,17 @@ class DataCriteriaDV_DURATION extends DataCriteria {
         ]
       ]
    }
-   
+
    static List attributes()
    {
       return ['value', 'magnitude']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

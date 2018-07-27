@@ -26,10 +26,12 @@ import com.cabolabs.ehrserver.query.DataCriteria
 
 class DataCriteriaString extends DataCriteria {
 
+   static String indexType = 'StringIndex'
+
    String valueValue
    String valueOperand
    boolean valueNegation = false
-   
+
    DataCriteriaString()
    {
       rmTypeName = 'String'
@@ -38,7 +40,7 @@ class DataCriteriaString extends DataCriteria {
 
    static constraints = {
    }
-   
+
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
       return [
@@ -50,17 +52,17 @@ class DataCriteriaString extends DataCriteria {
         ]
       ]
    }
-   
+
    static List attributes()
    {
       return ['value']
    }
-   
+
    static List functions()
    {
       return []
    }
-   
+
    boolean containsFunction()
    {
       return false

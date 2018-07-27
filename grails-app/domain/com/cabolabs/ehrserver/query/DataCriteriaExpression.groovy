@@ -43,6 +43,8 @@ class DataCriteriaExpression {
       criteria cascade: "all-delete-orphan"
    }
 
+   // TODO: move logic to com.cabolabs.util.QueryUtils
+
    // sets the parents of each node, that is needed for the algorithm to get the expression from the tree
    private static def prepareCriteriaTree(org.codehaus.groovy.grails.web.json.JSONObject criteria,
                                           org.codehaus.groovy.grails.web.json.JSONObject parent = null)
@@ -69,13 +71,6 @@ class DataCriteriaExpression {
       //println criteria.toString()
       prepareCriteriaTree(criteria) // sets all node.parent
       //println criteria.toString() // this gives a stack overflow because of the parent links, is a graph not a tree
-      /*
-      println criteria._type
-      println criteria.left._type
-      println criteria.right._type
-      println criteria.left.parent._type
-      println criteria.right.parent._type
-      */
 
       def queue = [] as Queue
       def expression = getInitialExpression(criteria)
@@ -83,7 +78,6 @@ class DataCriteriaExpression {
       def expression_item, current = 0, node
       while (current < expression.size()-1) // process all but the last leaf, because that is right sibling
       {
-         println "while 1"
          node = expression[current].criteria
 
          if (node.parent.left == node.tree_node) // node is left, sibling is right, in the parent
@@ -130,12 +124,8 @@ class DataCriteriaExpression {
          current ++
       }
 
-      println "end while 1"
-
       while (!queue.isEmpty())
       {
-         println "queue not empty"
-
          node = queue.poll()
 
          // avoid procesing root or right siblings
@@ -161,11 +151,9 @@ class DataCriteriaExpression {
       }
 
       // expression with the left/right associations resolved to the value AND/OR
-      //def final_expression = []
       expression.each { exp_item ->
-         //final_expression << [ (row[0]?row[0].value:''), (row[1]?row[1].value:''), (row[2]?row[2].value:'')]
-         println 'assocs '+ exp_item.left_assoc_tmp?._type +' '+ exp_item.right_assoc_tmp?._type
 
+         //println 'assocs '+ exp_item.left_assoc_tmp?._type +' '+ exp_item.right_assoc_tmp?._type
          if (exp_item.left_assoc_tmp) exp_item.left_assoc = exp_item.left_assoc_tmp._type
          if (exp_item.right_assoc_tmp) exp_item.right_assoc = exp_item.right_assoc_tmp._type
       }

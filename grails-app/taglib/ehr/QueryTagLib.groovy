@@ -34,9 +34,7 @@ class QueryTagLib {
 
       if (!attrs.query) throw new Exception("Attribute 'query' is required for query_criteria taglib")
 
-      def qu = new QueryUtils()
-      def tree = qu.getCriteriaTree(attrs.query)
-
+      def tree = QueryUtils.getCriteriaTree(attrs.query)
       def html = new groovy.xml.MarkupBuilder(out)
       query_criteria_recursive(tree, html) // renders to out
    }

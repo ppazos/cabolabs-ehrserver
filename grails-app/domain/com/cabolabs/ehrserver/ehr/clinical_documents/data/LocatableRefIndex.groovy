@@ -21,7 +21,7 @@
  */
 package com.cabolabs.ehrserver.ehr.clinical_documents.data
 
-/** 
+/**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class LocatableRefIndex extends DataValueIndex {
