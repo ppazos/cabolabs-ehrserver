@@ -226,7 +226,7 @@ class QueryUtils {
       fromMap[dataCriteria.indexType] = dataCriteria.alias
       _subq_criteria.append(" AND ${dataCriteria.alias}.id = dvi.id ")
 
-/*
+      /*
       switch (idxtype)
       {
          case 'DV_DATE_TIME':
@@ -292,7 +292,7 @@ class QueryUtils {
          default:
             throw new Exception("type $idxtype not supported")
       }
-*/
+      */
 
       // toSQL can fail, for instance if the criteria has a SNOMED expression and the SNOMED service
       // return a 429 To Many Requests, that exception should reach the top level to show the error

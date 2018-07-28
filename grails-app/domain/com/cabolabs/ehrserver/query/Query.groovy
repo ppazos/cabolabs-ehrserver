@@ -188,16 +188,23 @@ class Query {
 
       if (this.type == 'composition')
       {
+         def old_where = this.where
+         this.where.clear() // remove criterias before adding current ones
+
          // clean for update
-         this.where.each {
+         old_where.each {
             it.delete()
          }
-         this.where.clear() // remove criterias before adding current ones
 
          def condition
 
+         // .addAll instead of assigning directly to avoid
+         // A collection with cascade="all-delete-orphan" was no longer referenced
+         // by the owning entity instance: com.cabolabs.ehrserver.query.Query.where
+         // http://codippa.com/how-to-resolve-a-collection-with-cascadeall-delete-orphan-was-no-longer-referenced-by-the-owning-entity-instance/
+
          // from tree to associative expression
-         this.where = DataCriteriaExpression.treeToExpression(json.where)
+         this.where.addAll( DataCriteriaExpression.treeToExpression(json.where) )
          /*
          json.where.each { criteria ->
 

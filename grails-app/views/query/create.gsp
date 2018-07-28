@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.query.Query" %><%@ page import="grails.converters.JSON" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex" %>
+<%@ page import="com.cabolabs.ehrserver.query.Query" %><%@ page import="grails.converters.JSON" %><%@ page import="com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex" %><%@ page import="com.cabolabs.util.QueryUtils" %>
 <!doctype html>
 <html>
   <head>
@@ -104,26 +104,27 @@
       var criteria_builder = {
         items: [], // list of trees, each tree is a sub-expression
         id_gen: 0,
-        add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version)
-        {
-          //if (this.type != 'composition') return false;
 
+        // the name param is optional and passed only on the edit while rendering the criteria
+        // is needed to show the name of the path for each single criteria
+        add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version, name)
+        {
           this.id_gen++;
 
-          var c = {
+          var c = Object.assign({
                    _type: 'COND',
                    cid: this.id_gen,
                    archetypeId: archetype_id,
                    path: path,
                    rmTypeName: rm_type_name,
                    class: 'DataCriteria'+rm_type_name,
-                   allowAnyArchetypeVersion: allow_any_archetype_version
-                  };
+                   allowAnyArchetypeVersion: allow_any_archetype_version,
+                   name: name
+                 }, criteria.conditions); // copies the attributes in conditions to the c object
 
-          // copy attributes
-          for (a in criteria.conditions) c[a] = criteria.conditions[a];
-
+          // copy other attributes
           c['spec'] = criteria.spec;
+          c['attributes'] = criteria.attributes; // array of names of attrs in conditions
 
           this.items.push( c );
           //this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
@@ -183,6 +184,118 @@
         {
           if (!this.is_valid()) throw "Can't return invalid criteria from criteria_builder"; // TOOD: I18N
           return this.items[0];
+        },
+        render: function(container_id) // displays the create/edit DOM for the current state of the criteria builder
+        {
+          var container = $(container_id)
+          var ul = container.find('> ul');
+
+          //console.log('ul', ul);
+
+          // since items can contain many trees, the recursive render is for each tree
+          // this happens while the criteria builder contains a non valid criteria
+          // when the criteria is valid, there is only one tree
+          this.items.forEach(function(criteria, idx){
+            criteria_builder.render_recursive(criteria, ul);
+          });
+
+          // show checkboxes only at root level
+          ul.find('> li > :checkbox').show();
+
+          console.log(ul.find('> li > :checkbox'));
+        },
+        criteria_to_string: function(criteria)
+        {
+          /* criteria
+          {
+            "_type": "COND",
+            "cid": 1,
+            "archetypeId": "openEHR-EHR-OBSERVATION.test_all_datatypes.v1",
+            "path": "/data[at0001]/events[at0002]/data[at0003]/items[at0011]/value",
+            "rmTypeName": "DV_COUNT",
+            "class": "DataCriteriaDV_COUNT",
+            "allowAnyArchetypeVersion": false,
+            "magnitudeValue": "33",
+            "magnitudeOperand": "eq",
+            "magnitudeNegation": false,
+            "spec": 0,
+            "attributes": [
+              "magnitude"
+            ]
+          }
+
+          result "magnitude eq 33"
+          */
+          var criteria_str = "";
+          criteria.attributes.forEach(function(attr, idx){
+
+            var valueAttr = attr+'Value'
+            var operantAttr = attr+'Operand'
+            var negationAttr = attr+'Negation'
+            if (criteria[negationAttr]) criteria_str += 'NOT '
+
+            criteria_str += attr +' ';
+            criteria_str += criteria[operantAttr] +' ';
+
+            // value can be an array
+            var values = criteria[valueAttr];
+            if (Array.isArray(values))
+            {
+              values.forEach(function(val, idx){
+                criteria_str += val + ', ';
+              });
+
+              criteria_str = criteria_str.slice(0, -2);
+            }
+            else // single value
+            {
+              criteria_str += values;
+            }
+
+            criteria_str += ' AND ';
+          });
+
+          criteria_str = criteria_str.slice(0, -5);
+
+          return criteria_str;
+        },
+        render_recursive: function(criteria, parent_ul)
+        {
+          if (criteria._type == 'COND')
+          {
+            // note, the checkbox should be hidden for all but the items at root
+            parent_ul.append(
+              '<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ criteria.cid +'" style="display:none" />'+
+              '<table class="table table-striped table-bordered table-hover" data-id="'+ criteria.cid +'">'+
+                '<tr>'+
+                '<th><g:message code="query.create.archetype_id" /></th>'+
+                '<th><g:message code="query.create.path" /></th>'+
+                '<th><g:message code="query.create.name" /></th>'+
+                '<th><g:message code="query.create.type" /></th>'+
+                '<th><g:message code="query.create.criteria" /></th>'+
+                '</tr>'+
+                '<tr>'+
+                  '<td>'+ criteria.archetypeId +'</td>'+
+                  '<td>'+ criteria.path +'</td>'+
+                  '<td>'+ criteria.name +'</td>'+
+                  '<td>'+ criteria.rmTypeName +'</td>'+
+                  '<td>'+ this.criteria_to_string(criteria) +'</td>'+
+                '</tr>'+
+              '</table></li>'
+            );
+          }
+          else // complex criteria, follows the recursion
+          {
+            var binary_cond_ui = $('<li><input type="checkbox" name="criteria_builder_element_selector" data-cid="'+ criteria.cid +'" style="display:none" /><span>'+ criteria._type +'</span></li>');
+            var subcriteria_ui = $('<ul/>');
+
+            // these append the generated li to the provided ul
+            this.render_recursive(criteria.left, subcriteria_ui);
+            this.render_recursive(criteria.right, subcriteria_ui);
+
+            binary_cond_ui.append(subcriteria_ui);
+            parent_ul.append(binary_cond_ui);
+          }
         }
       };
 
@@ -407,6 +520,7 @@
       function Criteria(spec) {
 
         this.conditions = [];
+        this.attributes = [];
         this.spec = spec;
 
         this.add_condition = function (attr, operand, values, negation) {
@@ -419,6 +533,8 @@
           this.conditions[attr+'Operand'] = operand;
 
           this.conditions[attr+'Negation'] = negation;
+
+          this.attributes.push(attr); // needed for JS render of the conditions
         };
       };
 
@@ -868,6 +984,9 @@ resp.responseJSON.result.message +'</div>'
         // criteria js object
         var criteria = new Criteria(spec);
 
+        // FIXME: Criteria should have a function to generate the criteria_str from
+        // it's data, so other functions can use it, not
+
         $.each( $('.criteria_attribute', fieldset), function (i, e) {
 
           values = [];
@@ -902,10 +1021,8 @@ resp.responseJSON.result.message +'</div>'
         criteria_str = criteria_str.substring(0, criteria_str.length-5); // remove last ' AND '
 
 
-        // query object mgt
-        //cid = query.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
         cid = criteria_builder.add_criteria(archetype_id, path, type, criteria, allow_any_archetype_version);
-        //query.log();
+
 
         // shows openEHR-EHR-...* instead of .v1
         if (allow_any_archetype_version)
@@ -1182,7 +1299,7 @@ resp.responseJSON.result.message +'</div>'
                   break;
                 }
 
-                console.log(datatype, possible_values, conditions);
+                //console.log(datatype, possible_values, conditions);
 
                 //console.log('possible values', datatype, attr, possible_values);
                 //console.log('conditions', conditions);
@@ -1650,8 +1767,12 @@ resp.responseJSON.result.message +'</div>'
           {
              println '$("select[name=templateId]").val("'+ queryInstance.templateId +'");'
 
-             // similar code to dom_add_criteria_2 in JS
+             // generates the code to setup the criteria_builder state
+             // then we need to render the criteria_builder state to update the GUI
+             println g.query_criteria_edit(query: queryInstance)
 
+             // similar code to dom_add_criteria_2 in JS
+             /*
              def attrs, attrValueField, attrOperandField, attrNegationField, value, operand, name
              println 'var criteria;'
 
@@ -1741,6 +1862,7 @@ resp.responseJSON.result.message +'</div>'
 
                 criteria_str = ""
              }
+             */
           }
           else // datavalue
           {
