@@ -71,6 +71,41 @@
        margin-bottom: 5px;
        font-size: 0.8em;
       }
+
+      /* displays criteria_builder GUI of ul/li as a tree */
+      #criteria_builder, #criteria_builder ul, #criteria_builder li {
+        position: relative;
+      }
+      #criteria_builder li {
+        padding-bottom: 10px;
+      }
+      #criteria_builder ul {
+        list-style: none;
+        padding-left: 32px;
+      }
+      #criteria_builder li::before, #criteria_builder li::after {
+        content: "";
+        position: absolute;
+        left: -12px;
+      }
+      #criteria_builder li::before {
+        border-top: 1px solid #000;
+        top: 9px;
+        width: 8px;
+        height: 0;
+      }
+      #criteria_builder li::after {
+        border-left: 1px solid #000;
+        height: 100%;
+        width: 0px;
+        top: 2px;
+      }
+      #criteria_builder ul > li:last-child::after {
+        height: 8px;
+      }
+      #criteria_builder table {
+        margin: 0;
+      }
     </style>
 
     <!-- query test -->
@@ -415,37 +450,6 @@
         {
            return this.select.length != 0;
         },
-        /*
-        add_criteria: function (archetype_id, path, rm_type_name, criteria, allow_any_archetype_version)
-        {
-          if (this.type != 'composition') return false;
-
-          this.id_gen++;
-
-          var c = {
-                   cid: this.id_gen,
-                   archetypeId: archetype_id,
-                   path: path,
-                   rmTypeName: rm_type_name,
-                   class: 'DataCriteria'+rm_type_name,
-                   allowAnyArchetypeVersion: allow_any_archetype_version
-                  };
-
-          // copy attributes
-          for (a in criteria.conditions) c[a] = criteria.conditions[a];
-
-          c['spec'] = criteria.spec;
-
-          //this.where.push( c );
-          this.where[this.id_gen - 1] = c; // uses the id as index, but -1 to start in 0
-
-          // when items are removed and then added, there are undefined entries in the array
-          // this cleans the undefined items so the server doesnt receive empty values.
-          this.where = this.where.filter(function(n){ return n != undefined });
-
-          return this.id_gen;
-        },
-        */
         add_projection: function (archetype_id, path, rm_type_name, allow_any_archetype_version)
         {
           if (this.type != 'datavalue') return false;
@@ -466,23 +470,6 @@
 
           return this.id_gen;
         },
-        /*
-        remove_criteria: function (id)
-        {
-          // lookup: TODO put this in array prototype
-          //var result = $.grep(myArray, function(e){ return e.id == id; });
-          var pos;
-          for (var i = 0, len = this.where.length; i < len; i++) {
-             if (this.where[i].cid == id)
-             {
-                pos = i;
-                break;
-             }
-          }
-
-          this.where.splice(pos, 1); // removes 1 item in from the position
-        },
-        */
         remove_projection: function (id)
         {
            // lookup: TODO put this in array prototype
@@ -531,9 +518,7 @@
             this.conditions[attr+'Value'] = values[0];
 
           this.conditions[attr+'Operand'] = operand;
-
           this.conditions[attr+'Negation'] = negation;
-
           this.attributes.push(attr); // needed for JS render of the conditions
         };
       };
@@ -1770,99 +1755,6 @@ resp.responseJSON.result.message +'</div>'
              // generates the code to setup the criteria_builder state
              // then we need to render the criteria_builder state to update the GUI
              println g.query_criteria_edit(query: queryInstance)
-
-             // similar code to dom_add_criteria_2 in JS
-             /*
-             def attrs, attrValueField, attrOperandField, attrNegationField, value, operand, name
-             println 'var criteria;'
-
-             queryInstance.where.each { data_criteria ->
-
-                attrs = data_criteria.criteriaSpec(data_criteria.archetypeId, data_criteria.path)[data_criteria.spec].keySet() // attribute names of the datacriteria
-
-                println 'criteria = new Criteria('+ data_criteria.spec +');'
-
-                attrs.each { attr ->
-
-                   attrValueField = attr + 'Value'
-                   attrOperandField = attr + 'Operand'
-                   attrNegationField = attr + 'Negation'
-                   operand = data_criteria."$attrOperandField"
-                   value = data_criteria."$attrValueField"
-
-                   // DV_BOOLEAN doesn't have negation, just checking
-                   if (data_criteria.hasProperty(attrNegationField))
-                      negation = data_criteria."$attrNegationField"
-
-                   // TODO
-                   // date?.format(Holders.config.app.l10n.db_datetime_format)
-                   // ext_datetime_utcformat_nof = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-
-                   if (value instanceof List)
-                   {
-                      if (value[0] instanceof Date)
-                      {
-                         println 'criteria.add_condition("'+
-                            attr +'", "'+
-                            operand +'", '+
-                            ( value.collect{ it.format(grailsApplication.config.app.l10n.ext_datetime_utcformat_nof) } as JSON ) +', '+
-                            negation +');'
-                      }
-                      else
-                      {
-                         println 'criteria.add_condition("'+
-                            attr +'", "'+
-                            operand +'", '+
-                            ( value.collect{ it.toString() } as JSON ) +', '+ // toString to have the items with quotes on JSON, without the quotes I get an error when saving/binding the uptates to criterias.
-                            negation +');'
-                      }
-                   }
-                   else // value is an array of 1 element
-                   {
-                      // FIXME: if the value is not string or date, dont include the quotes
-                      println 'criteria.add_condition("'+
-                         attr +'", "'+
-                         operand +'", [ "'+
-                         value +'"], '+
-                         negation +');'
-                   }
-
-                } // each attr
-
-
-                println 'cid = query.add_criteria("'+
-                  data_criteria.archetypeId +'", "'+
-                  data_criteria.path +'", "'+
-                  data_criteria.rmTypeName +'", '+
-                  'criteria,'+
-                  data_criteria.allowAnyArchetypeVersion +');'
-
-                println 'var criteria_str = "'+ data_criteria.toGUI() +'";'
-
-                // shows openEHR-EHR-...* instead of .v1
-                def archetype_id = data_criteria.archetypeId
-                if (data_criteria.allowAnyArchetypeVersion)
-                {
-                   archetype_id = archetype_id +".*";
-                }
-
-                name = data_criteria.indexItem.name[session.lang]
-
-                println """
-                  \$('#criteria').append(
-                     '<tr data-id="'+ cid +'">'+
-                     '<td>${archetype_id}</td>'+
-                     '<td>${data_criteria.path}</td>'+
-                     '<td>${name}</td>'+
-                     '<td>${data_criteria.rmTypeName}</td>'+
-                     '<td>'+ criteria_str +'</td>'+
-                     '</tr>'
-                  );
-                """
-
-                criteria_str = ""
-             }
-             */
           }
           else // datavalue
           {
@@ -2282,7 +2174,7 @@ resp.responseJSON.result.message +'</div>'
             -->
 
             <a name="criteria"></a>
-            <h3><g:message code="query.create.criteria" /></h3>
+            <h2><g:message code="query.create.criteria" /></h2>
 
             <!--
             ul < criteria builder

@@ -23,6 +23,7 @@
 package com.cabolabs.ehrserver.query
 
 import com.cabolabs.ehrserver.query.datatypes.*
+import com.cabolabs.util.DateParser
 
 class DataCriteriaExpression {
 
@@ -159,6 +160,25 @@ class DataCriteriaExpression {
       }
 
       return expression
+   }
+
+   // used by getInitialExpression
+   private static List dateValues(Object criteriaValuesFromUI)
+   {
+      def dateValues = []
+      if (criteriaValuesFromUI instanceof String)
+      {
+         //println "try to parse "+ criteria.valueValue
+         def dateValue = DateParser.tryParse(criteriaValuesFromUI)
+         dateValues << dateValue
+      }
+      else // criteria.valueValue is a list
+      {
+         criteriaValuesFromUI.each { stringDateValue ->
+            dateValues << DateParser.tryParse(stringDateValue)
+         }
+      }
+      return dateValues
    }
 
 

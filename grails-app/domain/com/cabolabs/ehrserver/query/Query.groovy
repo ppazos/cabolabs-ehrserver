@@ -27,7 +27,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.security.User
-import com.cabolabs.util.DateParser
+
 import com.cabolabs.util.QueryUtils
 
 /**
@@ -123,27 +123,6 @@ class Query {
       return query
    }
 
-   /**
-    * used by updateInstance to create a list of dates from a string or list of strings entered in the query creation ui.
-    * @return
-    */
-   def dateValues(criteriaValuesFromUI)
-   {
-      def dateValues = []
-      if (criteriaValuesFromUI instanceof String)
-      {
-         //println "try to parse "+ criteria.valueValue
-         def dateValue = DateParser.tryParse(criteriaValuesFromUI)
-         dateValues << dateValue
-      }
-      else // criteria.valueValue is a list
-      {
-         criteriaValuesFromUI.each { stringDateValue ->
-            dateValues << DateParser.tryParse(stringDateValue)
-         }
-      }
-      return dateValues
-   }
 
    /**
     * For edit/update.

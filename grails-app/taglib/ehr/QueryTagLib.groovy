@@ -104,7 +104,7 @@ class QueryTagLib {
    }
 
    // renders JS to update the model on the client side but doesn't do the GUI render
-   // the render is done via JS.
+   // the GUI is updated by the JS criteria_builder.render()
    private void query_criteria_edit_recursive(tree, params)
    {
       if (['AND', 'OR'].contains( tree.value )) // complex, has children
@@ -178,32 +178,6 @@ class QueryTagLib {
                            data_criteria.allowAnyArchetypeVersion +',"'+
                            ArchetypeIndexItem.findByArchetypeIdAndPath(data_criteria.archetypeId, data_criteria.path).name[session.lang] +
                         '");'
-
-         /* this tries to update the GUI, that is better done by rendering the current status of the criteria_builder from JS instead of generating the DOM here.
-
-         code.concat('var criteria_str = "'+ data_criteria.toGUI() +'";')
-
-         // shows openEHR-EHR-...* instead of .v1
-         def archetype_id = data_criteria.archetypeId
-         if (data_criteria.allowAnyArchetypeVersion)
-         {
-            archetype_id = archetype_id +".*";
-         }
-
-         name = data_criteria.indexItem.name[session.lang]
-
-         code.concat("""
-            \$('#criteria').append(
-               '<tr data-id="'+ ${criteria_id_gen} +'">'+
-               '<td>${archetype_id}</td>'+
-               '<td>${data_criteria.path}</td>'+
-               '<td>${name}</td>'+
-               '<td>${data_criteria.rmTypeName}</td>'+
-               '<td>'+ criteria_str +'</td>'+
-               '</tr>'
-            );
-         """)
-         */
 
          params.code += '}());' // close JS module
       }
