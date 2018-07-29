@@ -57,6 +57,8 @@ class DataCriteriaDV_MULTIMEDIA extends DataCriteria {
       alternateTextOperand nullable: true
       alternateTextValue nullable: true
       sizeOperand nullable: true
+      uriValue nullable: true
+      uriOperand nullable: true
    }
 
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)

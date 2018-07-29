@@ -40,7 +40,11 @@ class QueryTagLib {
 
       def tree = QueryUtils.getCriteriaTree(attrs.query)
       def html = new groovy.xml.MarkupBuilder(out)
-      query_criteria_recursive(tree, html) // renders to out
+      html.div(id:'criteria_builder') {
+         ul {
+            query_criteria_recursive(tree, html) // renders to out
+         }
+      }
    }
 
    /**
@@ -48,39 +52,32 @@ class QueryTagLib {
     */
    private void query_criteria_recursive(tree, html)
    {
-      html.div(class:'expression_container row-eq-height') {
+      html.li {
          if (['AND', 'OR'].contains( tree.value ))
          {
-            div(class:'expression_column_complex col-md-1', tree.value)
-            div(class:'expression_column_sub col-md-11') {
-               //div(class:'expression_row_left row') {
-                  query_criteria_recursive(tree.left, html)
-               //}
-               //div(class:'expression_row_right row')
-               //{
-                  query_criteria_recursive(tree.right, html)
-               //}
+            span(tree.value)
+            ul {
+               query_criteria_recursive(tree.left, html)
+               query_criteria_recursive(tree.right, html)
             }
          }
          else // simple criteria
          {
-            div(class:'expression_criteria col-md-12') {
-               div(class:'table-responsive') {
-                  table(class:'table table-striped table-bordered table-hover') {
-                     tr {
-                        th(message(code:'query.show.archetype_id.attr'))
-                        th(message(code:'query.show.path.attr'))
-                        th(message(code:'query.show.name.attr'))
-                        th(message(code:'query.create.type'))
-                        th(message(code:'query.show.criteria.attr'))
-                     }
-                     tr {
-                        td(tree.value.archetypeId)
-                        td(tree.value.path)
-                        td(ArchetypeIndexItem.findByArchetypeIdAndPath(tree.value.archetypeId, tree.value.path).name[session.lang])
-                        td(tree.value.rmTypeName)
-                        td(tree.value.toGUI())
-                     }
+            div(class:'table-responsive') {
+               table(class:'table table-striped table-bordered table-hover') {
+                  tr {
+                     th(message(code:'query.show.archetype_id.attr'))
+                     th(message(code:'query.show.path.attr'))
+                     th(message(code:'query.show.name.attr'))
+                     th(message(code:'query.create.type'))
+                     th(message(code:'query.show.criteria.attr'))
+                  }
+                  tr {
+                     td(tree.value.archetypeId)
+                     td(tree.value.path)
+                     td(ArchetypeIndexItem.findByArchetypeIdAndPath(tree.value.archetypeId, tree.value.path).name[session.lang])
+                     td(tree.value.rmTypeName)
+                     td(tree.value.toGUI())
                   }
                }
             }

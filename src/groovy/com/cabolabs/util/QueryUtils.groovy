@@ -224,7 +224,7 @@ class QueryUtils {
       */
 
       fromMap[dataCriteria.indexType] = dataCriteria.alias
-      _subq_criteria.append(" AND ${dataCriteria.alias}.id = dvi.id ")
+      _subq_criteria.append(" AND ${dataCriteria.alias}.id = dvi.id")
 
       /*
       switch (idxtype)

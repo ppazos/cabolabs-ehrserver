@@ -86,12 +86,12 @@
       #criteria_builder li::before, #criteria_builder li::after {
         content: "";
         position: absolute;
-        left: -12px;
+        left: -20px;
       }
       #criteria_builder li::before {
         border-top: 1px solid #000;
         top: 9px;
-        width: 8px;
+        width: 15px;
         height: 0;
       }
       #criteria_builder li::after {
@@ -105,6 +105,10 @@
       }
       #criteria_builder table {
         margin: 0;
+      }
+      /* removes the tree from the root nodes */
+      #criteria_builder > ul > li::before, #criteria_builder > ul > li::after {
+        border: 0;
       }
     </style>
 
@@ -236,8 +240,6 @@
 
           // show checkboxes only at root level
           ul.find('> li > :checkbox').show();
-
-          console.log(ul.find('> li > :checkbox'));
         },
         criteria_to_string: function(criteria)
         {

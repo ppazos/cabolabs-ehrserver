@@ -83,42 +83,42 @@ class DataCriteriaExpression {
 
          if (node.parent.left == node.tree_node) // node is left, sibling is right, in the parent
          {
-            println "node is left "+ node.tree_node._type
+            //println "node is left "+ node.tree_node._type
             if (node.parent.right._type == 'COND') // sibling is simple
             {
-               println "sibling is simple"
+               //println "sibling is simple"
                // expression_item of the sibling of the current node
                expression_item = expression.find { it.criteria.tree_node == node.parent.right }
 
-               println "sibling expression "+ expression_item.criteria.tree_node._type
+               //println "sibling expression "+ expression_item.criteria.tree_node._type
 
-               println "sibling left assoc set to parent "+ node.parent._type
+               //println "sibling left assoc set to parent "+ node.parent._type
 
                // left assoc = parent (this is BinaryTree needs to be transformed to it's value when finished)
                expression_item.left_assoc_tmp = node.parent
 
-               println "after sibling left assoc is set"
+               //println "after sibling left assoc is set"
             }
             else
             {
-               println "sibling is complex"
+               //println "sibling is complex"
                // row of the current node
                expression_item = expression[current]
 
-               println "sibling right assoc set to parent "+ node.parent._type
+               //println "sibling right assoc set to parent "+ node.parent._type
 
                // right assoc = parent
                expression_item.right_assoc_tmp = node.parent
             }
 
-            println "add parent to queue "+ node.parent._type
+            //println "add parent to queue "+ node.parent._type
 
             // add parent to queue
             queue.offer(node.parent) // node.parent is JSONObject
          }
          else
          {
-            println "node is right "+ node.tree_node._type
+            //println "node is right "+ node.tree_node._type
          }
 
          // current = next

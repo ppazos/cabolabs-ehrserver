@@ -9,22 +9,44 @@
     <!-- xmlToString -->
     <asset:javascript src="xml_utils.js" />
     <style>
-    /* this style displays the AND/OR in vertical middle of chidren expression items */
-    .row-eq-height {
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: -ms-flexbox;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .row-eq-height> [class*='col-'] {
-      display: flex;
-      flex-direction: column;
-    }
-    .expression_criteria table {
-      margin: 0;
-    }
+      /* displays criteria_builder GUI of ul/li as a tree */
+      #criteria_builder, #criteria_builder ul, #criteria_builder li {
+        position: relative;
+      }
+      #criteria_builder li {
+        padding-bottom: 10px;
+      }
+      #criteria_builder ul {
+        list-style: none;
+        padding-left: 32px;
+      }
+      #criteria_builder li::before, #criteria_builder li::after {
+        content: "";
+        position: absolute;
+        left: -20px;
+      }
+      #criteria_builder li::before {
+        border-top: 1px solid #000;
+        top: 9px;
+        width: 15px;
+        height: 0;
+      }
+      #criteria_builder li::after {
+        border-left: 1px solid #000;
+        height: 100%;
+        width: 0px;
+        top: 2px;
+      }
+      #criteria_builder ul > li:last-child::after {
+        height: 8px;
+      }
+      #criteria_builder table {
+        margin: 0;
+      }
+      /* removes the tree from the root nodes */
+      #criteria_builder > ul > li::before, #criteria_builder > ul > li::after {
+        border: 0;
+      }
     </style>
   </head>
   <body>

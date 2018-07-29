@@ -47,12 +47,12 @@ class DataCriteriaDV_PARSABLE extends DataCriteria {
    static hasMany = [formalismValue: String]
 
    static constraints = {
+      valueValue nullable: true // the criteria can be only for formalism
+      valueOperand nullable: true
    }
 
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
-      println path
-
       def spec = [
         [
           value: [
