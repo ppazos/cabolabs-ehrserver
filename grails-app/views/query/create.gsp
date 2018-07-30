@@ -544,10 +544,13 @@
            return;
         }
 
-        if (!criteria_builder.is_valid())
+        if (query.get_type() == 'composition')
         {
-          alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
-          return;
+          if (!criteria_builder.is_valid())
+          {
+            alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
+            return;
+          }
         }
 
         var criteria = criteria_builder.get_criteria_tree();
