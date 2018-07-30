@@ -40,20 +40,14 @@ environments {
     development {
         dataSource {
            dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
-
            //logSql = true
-
-           // ===========================================================
-           // Config for OpenShift ======================================
-
            String host = "localhost"
            String port = 3306
            String dbName = "ehrserver"
-
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
            username = 'root'
-           password = ''
+           password = 'toor'
         }
     }
     test {
@@ -65,7 +59,7 @@ environments {
             url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
             username = 'root'
-            password = ''
+            password = 'toor'
         }
     }
     production {
@@ -77,35 +71,18 @@ environments {
 
            driverClassName = 'com.mysql.jdbc.Driver'
            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-
-           // ===========================================================
-           // Config for OpenShift ======================================
-
-           String host = "localhost"
-           String port = 3306
-           String dbName = "ehrserver"
-
-           url = "jdbc:mysql://$host:$port/$dbName"
-
-           username = 'root'
-           password = ''
            */
 
             dbCreate = "update"
 
-            // ===========================================================
-            // Config for OpenShift ======================================
-
-            String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
-            String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
-            String dbName = System.getenv('OPENSHIFT_APP_NAME')
+            String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
+            String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
+            String dbName = System.getenv('EHRSERVER_DB_NAME')
 
             url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
-            username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
-            password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
-
-            // ===========================================================
+            username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
+            password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')
 
             pooled = true
             properties {
@@ -147,16 +124,16 @@ environments {
            dbCreate = "update"
 
            // ===========================================================
-           // Config for OpenShift ======================================
+           // Config for EHRSERVER ======================================
 
-           String host = System.getenv('OPENSHIFT_MYSQL_DB_HOST')
-           String port = System.getenv('OPENSHIFT_MYSQL_DB_PORT')
-           String dbName = System.getenv('OPENSHIFT_APP_NAME')
+           String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
+           String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
+           String dbName = System.getenv('EHRSERVER_APP_NAME')
 
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
-           username = System.getenv('OPENSHIFT_MYSQL_DB_USERNAME')
-           password = System.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
+           username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
+           password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')
 
            // ===========================================================
 

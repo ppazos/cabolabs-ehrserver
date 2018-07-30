@@ -122,11 +122,9 @@ environments {
   production { // use on server prod environment, https, root = /
     grails.logging.jul.usebridge = false
     //grails.dbconsole.enabled = true // this is for testing in prod
-    // System.getenv('OPENSHIFT_APP_DNS') == "ehrserver-cabolabs2.rhcloud.com"
-    grails.serverURL = "https://" + System.getenv('OPENSHIFT_APP_DNS') //"https://cabolabs-ehrserver.rhcloud.com/ehr" // comment this if testing prod on localhost
+    grails.serverURL = "https://" + System.getenv('EHRSERVER_APP_DNS') //"https://cabolabs-ehrserver.com/ehr" // comment this if testing prod on localhost
     grails.app.context = '/' // use domain.com/ instead of domain.com/ehr
     app {
-      //opt_repo = System.getenv('OPENSHIFT_DATA_DIR') + 'opts' + PS  // OPT file upload destination
       version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
       commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
       opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
