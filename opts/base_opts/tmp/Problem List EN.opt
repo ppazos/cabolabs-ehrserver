@@ -36,7 +36,7 @@
     <value>14f2914f-1e98-4d0c-a1a3-672f8ac5ed5a</value>
   </uid>
   <template_id>
-    <value>Problem List EN</value>
+    <value>problem_list.en.v1</value>
   </template_id>
   <concept>Problem List EN</concept>
   <definition>
@@ -696,7 +696,7 @@ If body site name is already identified in the parent archetype, then this data 
                   <items id="text">Body site name</items>
                 </term_definitions>
                 <term_definitions code="at0002">
-                  <items id="comment">If the identified body site has no laterality, this data element should not have a value. 
+                  <items id="comment">If the identified body site has no laterality, this data element should not have a value.
 If the 'Body site name' data element uses pre-coordinated terms that include laterality, then this data element is redundant.</items>
                   <items id="description">The side of the body on which the identified  body site is located.</items>
                   <items id="text">Laterality</items>
@@ -2282,7 +2282,7 @@ If the 'Body site name' data element uses pre-coordinated terms that include lat
         </term_definitions>
         <term_definitions code="at0012">
           <items id="comment">Coding of the name of the anatomical location with a terminology is preferred, where possible.
-Use this data element to record precoordinated anatomical locations. If the requirements for recording the anatomical location are determined at run-time by the application or require more complex modelling such as relative locations then use the CLUSTER.anatomical_location or CLUSTER.relative_location within the 'Structured anatomical location' SLOT in this archetype. Occurrences for this data element are unbounded to allow for clinical scenarios such as describing a rash in multiple locations but where all of the other attributes are identical. If the anatomical location is included in the Problem/diagnosis name via precoordinated codes, this data element becomes redundant. 
+Use this data element to record precoordinated anatomical locations. If the requirements for recording the anatomical location are determined at run-time by the application or require more complex modelling such as relative locations then use the CLUSTER.anatomical_location or CLUSTER.relative_location within the 'Structured anatomical location' SLOT in this archetype. Occurrences for this data element are unbounded to allow for clinical scenarios such as describing a rash in multiple locations but where all of the other attributes are identical. If the anatomical location is included in the Problem/diagnosis name via precoordinated codes, this data element becomes redundant.
 
 </items>
           <items id="description">Identification of a simple body site for the location of the problem or diagnosis.</items>

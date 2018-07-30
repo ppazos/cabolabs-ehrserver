@@ -38,7 +38,7 @@
   <template_id>
     <value>encuentro_diagnostico_codificado.es.v1</value>
   </template_id>
-  <concept>encuentro_diagnostico_codificado.es.v1</concept>
+  <concept>Encuentro</concept>
   <definition>
     <rm_type_name>COMPOSITION</rm_type_name>
     <occurrences>

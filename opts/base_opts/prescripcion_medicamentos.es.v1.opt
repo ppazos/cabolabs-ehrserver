@@ -38,7 +38,7 @@
   <template_id>
     <value>prescripcion_medicamentos.es.v1</value>
   </template_id>
-  <concept>prescripcion_medicamentos.es.v1</concept>
+  <concept>Prescripción de medicamentos</concept>
   <definition>
     <rm_type_name>COMPOSITION</rm_type_name>
     <occurrences>

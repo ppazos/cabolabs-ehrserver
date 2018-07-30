@@ -36,7 +36,7 @@
     <value>47c9f4f3-5a61-44f2-aad7-7279b87814a6</value>
   </uid>
   <template_id>
-    <value>Simple Encounter EN</value>
+    <value>simple_encounter.en.v1</value>
   </template_id>
   <concept>Simple Encounter</concept>
   <definition>
@@ -5990,7 +5990,7 @@
         </term_definitions>
         <term_definitions code="at0012">
           <items id="comment">Coding of the name of the anatomical location with a terminology is preferred, where possible.
-Use this data element to record precoordinated anatomical locations. If the requirements for recording the anatomical location are determined at run-time by the application or require more complex modelling such as relative locations then use the CLUSTER.anatomical_location or CLUSTER.relative_location within the 'Structured anatomical location' SLOT in this archetype. Occurrences for this data element are unbounded to allow for clinical scenarios such as describing a rash in multiple locations but where all of the other attributes are identical. If the anatomical location is included in the Problem/diagnosis name via precoordinated codes, this data element becomes redundant. 
+Use this data element to record precoordinated anatomical locations. If the requirements for recording the anatomical location are determined at run-time by the application or require more complex modelling such as relative locations then use the CLUSTER.anatomical_location or CLUSTER.relative_location within the 'Structured anatomical location' SLOT in this archetype. Occurrences for this data element are unbounded to allow for clinical scenarios such as describing a rash in multiple locations but where all of the other attributes are identical. If the anatomical location is included in the Problem/diagnosis name via precoordinated codes, this data element becomes redundant.
 
 </items>
           <items id="description">Identification of a simple body site for the location of the problem or diagnosis.</items>
@@ -6091,7 +6091,7 @@ If the anatomical location is included in the Problem/diagnosis name via precoor
       <value>openEHR-EHR-COMPOSITION.encounter.v1</value>
     </archetype_id>
     <template_id>
-      <value>Simple Encounter</value>
+      <value>simple_encounter.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Interaction, contact or care event between a subject of care and healthcare provider(s).</items>

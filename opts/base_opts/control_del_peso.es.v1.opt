@@ -38,7 +38,7 @@
   <template_id>
     <value>control_del_peso.es.v1</value>
   </template_id>
-  <concept>control_del_peso.es.v1</concept>
+  <concept>Control del peso</concept>
   <definition>
     <rm_type_name>COMPOSITION</rm_type_name>
     <occurrences>

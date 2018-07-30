@@ -38,7 +38,7 @@
   <template_id>
     <value>historial_obstetrico.es.v1</value>
   </template_id>
-  <concept>historial_obstetrico.es.v1</concept>
+  <concept>Historial obstétrico</concept>
   <definition>
     <rm_type_name>COMPOSITION</rm_type_name>
     <occurrences>
@@ -1031,7 +1031,7 @@
           <items id="text">Gravidez</items>
         </term_definitions>
         <term_definitions code="at0003">
-          <items id="comment">las terminaciones tardías del embarazo (después de 20 semanas de gestación) no están incluidos. 
+          <items id="comment">las terminaciones tardías del embarazo (después de 20 semanas de gestación) no están incluidos.
 
 Cuando se registran los Nacimientos a termino (T) y los nacimientos prematuros (P)' , este número debe ser igual a su suma . Nota : La paridad no es considerado como el mismo que el número de niños nacidos - por ejemplo, los gemelos se registraría como un evento de nacimiento.</items>
           <items id="description">Número de veces que una mujer ha dado a luz después de 20 semanas y 0 días de gestación</items>

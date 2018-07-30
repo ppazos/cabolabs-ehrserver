@@ -36,7 +36,7 @@
     <value>77e35fd9-6ad3-4e93-a8fd-3e8aecea0f4f</value>
   </uid>
   <template_id>
-    <value>Simple Lab Order EN</value>
+    <value>simple_lab_order.en.v1</value>
   </template_id>
   <concept>Simple Lab Order</concept>
   <definition>
@@ -1187,7 +1187,7 @@
       <value>openEHR-EHR-COMPOSITION.request.v1</value>
     </archetype_id>
     <template_id>
-      <value>Simple Lab Order</value>
+      <value>simple_lab_order.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Document sent from one treating healthcare provider or organisation to another, for the purpose of requesting advice, a service or transfer of care.</items>

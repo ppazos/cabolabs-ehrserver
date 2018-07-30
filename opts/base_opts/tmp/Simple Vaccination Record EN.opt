@@ -36,7 +36,7 @@
     <value>62eaeb34-fb59-4666-b608-eb02d8abc056</value>
   </uid>
   <template_id>
-    <value>Simple Vaccination Record EN</value>
+    <value>simple_vaccination_record.en.v1</value>
   </template_id>
   <concept>Simple Vaccination Record</concept>
   <definition>
@@ -4160,7 +4160,7 @@
                       <items id="text">Body site name</items>
                     </term_definitions>
                     <term_definitions code="at0002">
-                      <items id="comment">If the identified body site has no laterality, this data element should not have a value. 
+                      <items id="comment">If the identified body site has no laterality, this data element should not have a value.
 If the 'Body site name' data element uses pre-coordinated terms that include laterality, then this data element is redundant.</items>
                       <items id="description">The side of the body on which the identified  body site is located.</items>
                       <items id="text">Laterality</items>
@@ -4976,7 +4976,7 @@ Coding of the body site with a terminology is preferred, where possible.</items>
       <value>openEHR-EHR-COMPOSITION.vaccination_list.v1</value>
     </archetype_id>
     <template_id>
-      <value>Simple Vaccination Record</value>
+      <value>simple_vaccination_record.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">A persistent a list of vaccinations that have been administered to the subject over time, that may influence clinical decision-making and care provision.</items>
