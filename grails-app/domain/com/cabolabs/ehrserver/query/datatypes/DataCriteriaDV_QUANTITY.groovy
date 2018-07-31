@@ -85,13 +85,21 @@ class DataCriteriaDV_QUANTITY extends DataCriteria {
          def units = [:]
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
 
-         optMan.getNode(archetypeId, path, namespace).list.each { c_qty_item ->
+         // if the OPT doesn't define constraints for the quantity, the constraint will be
+         // an ObjectNode not a CDvQuantity, and ObjectNode doesn't have a .list property.
+         // In the case this has no further constraints, the type is C_COMPLEX_OBJECT.
+         def constraint = optMan.getNode(archetypeId, path, namespace)
 
-            // keep it as map to keep the same structure as the DV_CODED_TEXT
-            units[c_qty_item.units] = c_qty_item.units // mm[Hg] -> mm[Hg]
+         if (constraint && constraint.type == 'C_DV_QUANTITY')
+         {
+            constraint.list.each { c_qty_item ->
+
+               // keep it as map to keep the same structure as the DV_CODED_TEXT
+               units[c_qty_item.units] = c_qty_item.units // mm[Hg] -> mm[Hg]
+            }
+
+            if (units.size() > 0) spec[0].units.units = units
          }
-
-         if (units.size() > 0) spec[0].units.units = units
       }
 
       return spec
