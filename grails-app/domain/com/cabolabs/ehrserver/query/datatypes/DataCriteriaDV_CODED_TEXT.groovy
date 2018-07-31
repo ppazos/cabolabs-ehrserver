@@ -95,7 +95,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
           ]
         ],
         [
-          value: [contains: 'value']
+          value: [contains: 'value', eq: 'value']
         ]
       ]
 

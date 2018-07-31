@@ -1271,6 +1271,10 @@ resp.responseJSON.result.message +'</div>'
                     possible_values = conditions['codes'];
                     delete conditions['codes'];
                   break;
+                  case 'DV_ORDINAL':
+                    possible_values = conditions['codes'];
+                    delete conditions['codes'];
+                  break;
                   case 'DV_QUANTITY':
                     possible_values = conditions['units'];
                     delete conditions['units'];
@@ -1290,7 +1294,6 @@ resp.responseJSON.result.message +'</div>'
                 }
 
                 //console.log(datatype, possible_values, conditions);
-
                 //console.log('possible values', datatype, attr, possible_values);
                 //console.log('conditions', conditions);
                 // =======================================================================================================
@@ -1307,7 +1310,6 @@ resp.responseJSON.result.message +'</div>'
                   criteria += '<option value="'+ cond +'">'+ cond +'</option>';
                 }
                 criteria += '</select></div>';
-
 
 
                 // *******************************************************************************
@@ -1353,15 +1355,12 @@ resp.responseJSON.result.message +'</div>'
                 for (cond in conditions)
                 {
                   //console.log('cond', cond, 'conditions[cond]', conditions[cond]);
-
-
                   // starts with underscore is for internal use, avoid processing,
                   // used to pass list of codes to fill the condition value criteria
                   if (cond.startsWith('_'))
                   {
                      continue;
                   }
-
 
                   criteria += '<span class="criteria_value '+ attr +'" data-criteria="'+ global_criteria_id +'">';
 
@@ -1403,6 +1402,7 @@ resp.responseJSON.result.message +'</div>'
                     }
                     else // we have possible_values for this criteria
                     {
+                      console.log(datatype, conditions[cond]);
                       switch ( conditions[cond] )
                       {
                         case 'value':
@@ -1426,8 +1426,23 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '</div>';
                         break
                         case 'range':
-                          // this case deosnt happen for now...
-                          //criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
+                          // this case happens only for DV_ORDINAL, where the value is a number, and we show a list
+                          // of possible values then between min and max should be the list of values.
+                          criteria += '<select name="value" class="value min '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
+                          for (k in possible_values)
+                          {
+                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                          }
+                          criteria += '</select>';
+
+                          criteria += '..';
+
+                          criteria += '<select name="value" class="value max '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
+                          for (k in possible_values)
+                          {
+                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                          }
+                          criteria += '</select>';
                         break
                       }
                     }

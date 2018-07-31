@@ -23,6 +23,9 @@
 package com.cabolabs.ehrserver.query.datatypes
 
 import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.openehr.opt.manager.OptManager
+import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
+import org.springframework.web.context.request.RequestContextHolder
 
 class DataCriteriaDV_ORDINAL extends DataCriteria {
 
@@ -66,48 +69,80 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
        symbol_valueValue column: "dv_ordinal_value"
     }
 
-    /**
-     * Metadata that defines the types of criteria supported to search
-     * by conditions over DV_CODED_TEXT.
-     * @return
-     */
-    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
-    {
-       return [
-          [ // for the ordinal number
-             value: [
-                eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
-                lt:  'value',
-                gt:  'value',
-                neq: 'value',
-                le:  'value',
-                ge:  'value',
-                between: 'range'
-             ]
-          ],
-          [ // like dv text
-             symbol_value: [
-                contains:  'value', // ilike %value%
-                eq:  'value'
-             ]
-          ],
-          [ // like coded text
-             symbol_code: [
-                eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
-                in_list: 'list' // operand in_list can be applied to attribute code and the reference value is a list of values
-             ],
-             symbol_terminology_id: [
-                eq: 'value',
-                contains: 'value'
-             ]
-          ]
-       ]
-    }
+   /**
+    * Metadata that defines the types of criteria supported to search
+    * by conditions over DV_CODED_TEXT.
+    * @return
+    */
+   static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
+   {
+      def spec = [
+         [ // for the ordinal number
+            value: [
+               eq:  'value', // operands eq,lt,gt,... can be applied to attribute magnitude and the reference value is a single value
+               lt:  'value',
+               gt:  'value',
+               neq: 'value',
+               le:  'value',
+               ge:  'value',
+               between: 'range'
+            ]
+         ]
+         /*, // REMOVED the other criteria because it only make sense to query by the ordinal value and get the code, not query by the code.
+         [ // like dv text
+            symbol_value: [
+               contains:  'value', // ilike %value%
+               eq:  'value'
+            ]
+         ],
+         [ // like coded text
+            symbol_code: [
+               eq: 'value',    // operand eq can be applied to attribute code and the reference value is a single value
+               in_list: 'list', // operand in_list can be applied to attribute code and the reference value is a list of values
+               in_snomed_exp: 'snomed_exp'
+            ],
+            symbol_terminology_id: [
+               eq: 'value',
+               contains: 'value'
+            ]
+         ]
+         */
+      ]
 
-    static List attributes()
-    {
-       return ['value', 'symbol_value', 'symbol_code', 'symbol_terminology_id']
-    }
+      if (returnCodes)
+      {
+         def optMan = OptManager.getInstance()
+         def codes = [:]
+         def lang = RequestContextHolder.currentRequestAttributes().session.lang
+         def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
+         def constraint = optMan.getNode(archetypeId, path, namespace)
+
+         if (constraint.type == 'C_DV_ORDINAL')
+         {
+            constraint.list.each { cdvord_item ->
+
+               //println cdvord_item.value +" "+ cdvord_item.symbol.codeString +" "+ cdvord_item.symbol.terminologyId // int, CodePhrase
+               /*
+               codes[cdvord_item.value] = [
+                  code: cdvord_item.symbol.codeString,
+                  name: optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace),
+                  terminologyId: cdvord_item.symbol.terminologyId // instead of putting the terminology appart from the code, this needs both and value to be on the same structure, the GUI should handle this case for displaying
+               ]
+               */
+               codes[cdvord_item.value] = optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace)
+            }
+
+            spec[0].value.codes = codes
+         }
+      }
+
+      return spec
+   }
+
+   static List attributes()
+   {
+      return ['value', 'symbol_value', 'symbol_code', 'symbol_terminology_id']
+   }
 
    static List functions()
    {
