@@ -47,6 +47,9 @@ class OperationalTemplateIndex {
    boolean isDeleted = false
    boolean isActive = true
 
+   // sync
+   boolean master = true
+
    static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
 
@@ -92,5 +95,6 @@ class OperationalTemplateIndex {
 
    static mapping = {
       templateNodes cascade: "all-delete-orphan" // delete nodes when opti is deleted
+      master column:'sync_master'
    }
 }

@@ -38,40 +38,43 @@ class Ehr {
 
    // The id of the EHR system on which this EHR was created
    String systemId = "CABOLABS_EHR_SERVER"
-   
+
    // Emula un HIER_OBJECT_ID.root y su valor va a ser un UUID (java.util.UUID.randomUUID() as String)
    // que se asigna en el momento que se crea el EHR
    String uid = java.util.UUID.randomUUID() as String
-   
+
    // Emula timeCreated, se setea automaticamente por Grails en el momento de crear el EHR
    Date dateCreated = new Date()
-   
+
    // Emula EHR.ehr_status...<OBJECT_REF>...subject
    PatientProxy subject
-   
+
    // Root of the directory tree
    Folder directory
 
    // multitenancy
    String organizationUid
-   
+
    boolean deleted = false // logical delete
-   
-   
+
+   // sync
+   boolean master = true
+
    //List contributions = []
    //static hasMany = [contributions:Contribution]
-   
+
    static transients = ['compositions', 'contributions']
-   
+
    static constraints = {
       directory(nullable: true) // directory is optional
    }
-   
+
    static mapping = {
       //contributions cascade: 'all' //'save-update'
       organizationUid index: 'org_uid_idx'
+      master column:'sync_master'
    }
-   
+
    // For testing purposes
    def containsVersionedComposition(String uid)
    {
@@ -86,17 +89,17 @@ class Ehr {
       */
       VersionedComposition.countByUidAndEhr(uid, this) != 0
    }
-   
+
    def getCompositions()
    {
       VersionedComposition.findAllByEhr(this)
    }
-   
+
    def getContributions()
    {
       Contributions.findAllByEhr(this)
    }
-   
+
    String toString()
    {
       return "EHR ("+ this.uid +") of subject ("+ this.subject.value +")"

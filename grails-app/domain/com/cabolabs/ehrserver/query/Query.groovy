@@ -89,6 +89,9 @@ class Query {
    // partial HQL query cached for this composition Query
    String cachedHQLWhere
 
+   // sync
+   boolean master = true
+
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
@@ -245,6 +248,7 @@ class Query {
       select cascade: "all-delete-orphan" // cascade delete
       where cascade: "all-delete-orphan" // cascade delete
       organizationUid index: 'org_uid_idx'
+      master column:'sync_master'
    }
 
    def cacheHQLWhere()

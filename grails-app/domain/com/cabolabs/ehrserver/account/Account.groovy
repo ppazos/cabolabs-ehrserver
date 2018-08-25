@@ -9,6 +9,9 @@ class Account {
 
    User contact
 
+   // sync
+   boolean master = true
+
    List organizations = []
    static hasMany = [organizations: Organization]
 
@@ -19,7 +22,12 @@ class Account {
    long current_version_repo_size = 0
    long current_opt_repo_size = 0
 
+
    static constraints = {
+   }
+
+   static mapping = {
+      master column:'sync_master'
    }
 
    static transients = ['currentPlan', 'totalRepoSizeInKb', 'allPlans']

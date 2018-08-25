@@ -35,28 +35,32 @@ class Folder {
    archetype_id
    template_id
    */
-   
+
+   // sync
+   boolean master = true
+
    Folder parent
    List items = []
    static hasMany = [folders: Folder, items: String] // items is a list of UIDs of the VERSIONED_OBJECTS contained.
-   
+
    // EHR in which the Folder is contained
    // Only root nodes have EHRs, so ehr != null only if parent == null
    // TODO: add that to constraints
    Ehr ehr
    static belongsTo = [Ehr, Folder]
-   
+
    // multitenancy
    String organizationUid
-   
+
    static constraints = {
       parent(nullable: true)
       name(nullable: true, blank: false)
       ehr(nullable: true)
    }
-   
+
    static mapping = {
       items cascade: 'all-delete-orphan'
       organizationUid index: 'org_uid_idx'
+      master column:'sync_master'
    }
 }
