@@ -29,20 +29,60 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
 import com.cabolabs.security.User
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
-
+import grails.converters.*
 import grails.util.Holders
+import groovy.json.*
+import com.cabolabs.ehrserver.parsers.JsonService
 
 class ContributionController {
 
    def springSecurityService
    def configurationService
-   
+   def jsonService
+
    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
    def config = Holders.config.app
-   
+
+   // TODO: move to SyncMarshallers, maybe a service?
+   String toJSON(Contribution c)
+   {
+      def _commit = Commit.findByContributionUid(c.uid)
+      def file = new File(config.commit_logs.withTrailSeparator() +
+                          c.organizationUid.withTrailSeparator() +
+                          _commit.fileUid + '.xml')
+      def json = jsonService.xmlToJson(file.text)
+      def jsonSlurper = new JsonSlurper()
+      def parsed = jsonSlurper.parseText(json)
+
+      def jb = new JsonBuilder()
+      jb.contribution {
+         uid c.uid
+         organizationUid c.organizationUid
+         ehrUid c.ehr.uid
+
+         // TODO: audit
+
+         commit parsed // this way of injecting the commit json works!
+      }
+
+      return jb.toString()
+   }
+
    def index()
    {
+      def cs = Contribution.list()
+
+      /*
+      JSON.use('sync') {
+         // unwrapIfProxy to avoid javassist name
+         //render cs.collect{ GrailsHibernateUtil.unwrapIfProxy(it) } as XML
+         render cs as JSON
+      }
+      */
+
+      //render toJSON(cs[0]), contentType: "application/json"
+
       redirect(action: "list", params: params)
    }
 
@@ -52,11 +92,11 @@ class ContributionController {
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'
-     
+
       def list, org, orgs
       def c = Contribution.createCriteria()
       def us = User.findByUsername(springSecurityService.authentication.principal.username)
-      
+
       if (organizationUid)
       {
          if (Organization.countByUid(organizationUid) == 0)
@@ -74,22 +114,22 @@ class ContributionController {
             }
          }
       }
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          // for now admins can see contributions for all the orgs
-         
+
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
-           
+
             // for admins, if not organizationUid, display for all orgs
-            
+
             if (organizationUid)
             {
                ehr {
                  eq("organizationUid", organizationUid)
                }
             }
-            
+
             if (ehdUid)
             {
                ehr {
@@ -103,7 +143,7 @@ class ContributionController {
       else
       {
          org = session.organization
-         
+
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             if (!organizationUid)
             {
@@ -121,17 +161,17 @@ class ContributionController {
                }
             }
          }
-         
+
          orgs = us.organizations // for the org filter
       }
-     
+
       // =========================================================================
       // For charting
-      
+
       // Show 1 year by month
       def now = new Date()
       def oneyearbehind = now - 365
-      
+
       def data = Contribution.withCriteria {
           projections {
               count('id')
@@ -149,7 +189,7 @@ class ContributionController {
              between('timeCommitted', oneyearbehind, now)
           }
       }
-      
+
       //println data
       // =========================================================================
 

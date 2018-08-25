@@ -48,7 +48,7 @@ import com.cabolabs.ehrserver.ehr.*
 import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.openehr.opt.manager.OptManager
-
+import com.cabolabs.ehrserver.parsers.JsonService
 
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -62,6 +62,7 @@ class BootStrap {
    def configurationService
    def versionFSRepoService
    def commitLoggerService
+   def jsonService
 
    def defaultConfigurationItems()
    {
@@ -209,7 +210,96 @@ class BootStrap {
 
    def registerMarshallersSync()
    {
+      JSON.createNamedConfig('sync') {
+
+         it.registerObjectMarshaller(Date) {
+            return it?.format(Holders.config.app.l10n.db_datetime_format)
+         }
+
+         it.registerObjectMarshaller(AuditDetails) { audit ->
+            def a = [timeCommitted: audit.timeCommitted,
+                     committer: audit.committer, // DoctorProxy
+                     systemId: audit.systemId
+                    ]
+            // audit for contributions have changeType null, so we avoid to add it here if it is null
+            if (audit.changeType) a << [changeType: audit.changeType.toString()]
+            return a
+         }
+
+         it.registerObjectMarshaller(Contribution) { contribution ->
+
+            def commit = Commit.findByContributionUid(contribution.uid)
+            def file = new File(Holders.config.app.commit_logs.withTrailSeparator() +
+                                contribution.organizationUid.withTrailSeparator() +
+                                commit.fileUid + '.xml') // TODO: read json
+
+            // TODO
+            // if file is XML, do XML 2 JSON
+            // if already JSON, do nothing
+            // XML 2 JSON
+            def json = jsonService.xmlToJson(file.text)
+
+            return [uid: contribution.uid,
+                    organizationUid: contribution.organizationUid,
+                    ehrUid: contribution.ehr.uid,
+                    versions: json, // list of uids
+                    audit: contribution.audit // AuditDetails
+                   ]
+         }
+      }
+
       XML.createNamedConfig('sync') {
+
+         it.registerObjectMarshaller(Date) {
+            return it?.format(Holders.config.app.l10n.db_datetime_format)
+         }
+
+         // contributions, directory and compositions should be synced separately
+         it.registerObjectMarshaller(Ehr) { ehr, xml ->
+            xml.build {
+               systemId(ehr.systemId)
+               uid(ehr.uid)
+               dateCreated(ehr.dateCreated)
+               subjectUid(ehr.subject.value)
+               systemId(ehr.systemId)
+               organizationUid(ehr.organizationUid)
+               deleted(ehr.deleted)
+               master(ehr.master)
+            }
+         }
+
+         it.registerObjectMarshaller(Contribution) { contribution, xml ->
+
+            def version_files = []
+            contribution.versions.each { v ->
+               version_files << versionFSRepoService.getExistingVersionFile(contribution.organizationUid, v)
+            }
+
+            xml.build {
+              uid(contribution.uid)
+              organizationUid(contribution.organizationUid)
+              ehrUid(contribution.ehr.uid)
+
+              audit(contribution.audit) // AuditDetails
+
+               xml.startNode 'versions'
+                  version_files.each { vf ->
+                     //xml.convertAnother vf.text
+                     xml.chars vf.text
+                  }
+               xml.end()
+            }
+         }
+
+         it.registerObjectMarshaller(AuditDetails) { audit, xml ->
+            xml.build {
+              timeCommitted(audit.timeCommitted)
+              committer(audit.committer) // DoctorProxy
+              systemId(audit.systemId)
+              if (audit.changeType) changeType(audit.changeType.toString())
+            }
+         }
+
 
          /* sync account
          account
@@ -225,7 +315,7 @@ class BootStrap {
             xml.build {
                companyName(a.companyName)
                enabled(a.enabled)
-               master(a.enabled)
+               master(a.master)
                contact(a.contact) // user
                xml.startNode 'organizations'
 
@@ -665,15 +755,15 @@ class BootStrap {
                ]
      }
 
-     XML.registerObjectMarshaller(Ehr) { ehr, xml ->
-        xml.build {
-          uid(ehr.uid)
-          dateCreated(ehr.dateCreated)
-          subjectUid(ehr.subject.value)
-          systemId(ehr.systemId)
-          organizationUid(ehr.organizationUid)
-        }
-     }
+      XML.registerObjectMarshaller(Ehr) { ehr, xml ->
+         xml.build {
+            uid(ehr.uid)
+            dateCreated(ehr.dateCreated)
+            subjectUid(ehr.subject.value)
+            systemId(ehr.systemId)
+            organizationUid(ehr.organizationUid)
+         }
+      }
 
      /*
      XML.registerObjectMarshaller(new NameAwareMarshaller() {
