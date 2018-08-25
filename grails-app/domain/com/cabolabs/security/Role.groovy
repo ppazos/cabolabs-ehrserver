@@ -22,6 +22,8 @@
 
 package com.cabolabs.security
 
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
+
 class Role implements Serializable {
 
 	private static final long serialVersionUID = 1
@@ -29,7 +31,7 @@ class Role implements Serializable {
    static final String AM = 'ROLE_ACCOUNT_MANAGER'
    static final String OM = 'ROLE_ORG_MANAGER'
    static final String US = 'ROLE_USER'
-   
+
 	String authority
 
 	Role(String authority) {
@@ -44,6 +46,14 @@ class Role implements Serializable {
 
 	@Override
 	boolean equals(other) {
+      // instanceof GrailsDomainClass avoids errors for not having instanceOf(), a method of domain classes
+      if (!(other instanceof GrailsDomainClass))
+      {
+         return false
+      }
+
+println other + ' is grails domain in Role'
+      
 		is(other) || (other.instanceOf(Role) && other.authority == authority)
 	}
 
@@ -59,24 +69,24 @@ class Role implements Serializable {
 	static mapping = {
 		cache true
 	}
-   
+
    boolean higherThan (Object r)
    {
       //println this.authority +" higherThan "+ r.authority
       if (this.authority == r.authority) return true // we consider x higher than x in the role hierarchy
-      
+
       if (this.authority == AD) return true // admins is higher than anything if r is not admin (both admins is considered in the 1st case)
       if (r.authority == AD) return false // admin on r, higher than anything
-      
+
       if (this.authority == AM) return true // below admin, accmgt is higher, both accmgt is considered on case 1
       if (r.authority == AM) return false
-      
+
       if (this.authority == OM) return true // below admin, orgman is higher, both orgmans is considered on case 1
       if (r.authority == OM) return false
-      
+
       return true // all the other roles have the same power
    }
-   
+
    static List coreRoles()
    {
       [AD, AM, OM, US]

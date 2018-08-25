@@ -25,6 +25,8 @@ import grails.transaction.Transactional
 import com.cabolabs.security.*
 import com.cabolabs.util.DateParser
 import grails.util.Holders
+import grails.converters.*
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Transactional(readOnly = true)
 class AccountController {
@@ -40,6 +42,13 @@ class AccountController {
    {
       def accounts = Account.list()
       [accounts: accounts]
+
+      /* test account sync marshal
+      XML.use('sync') {
+         // unwrapIfProxy to avoid javassist name
+         render accounts.collect{ GrailsHibernateUtil.unwrapIfProxy(it) } as XML
+      }
+      */
    }
 
    def show(Long id)

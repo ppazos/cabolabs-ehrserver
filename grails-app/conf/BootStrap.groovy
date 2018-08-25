@@ -49,6 +49,9 @@ import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.openehr.opt.manager.OptManager
 
+
+//org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 class BootStrap {
 
    private static String PS = System.getProperty("file.separator")
@@ -200,6 +203,81 @@ class BootStrap {
          if (!org_opt_repo.canWrite())
          {
             throw new Exception("Can't write OPT repo for organization "+ org.uid +" check permissions")
+         }
+      }
+   }
+
+   def registerMarshallersSync()
+   {
+      XML.createNamedConfig('sync') {
+
+         /* sync account
+         account
+          - contact (User)
+          - organizations
+            - org1 (Organization)
+              - roles (UserRole)
+                - user (User)
+                - role (Role)
+         */
+         it.registerObjectMarshaller(Account) { a, xml ->
+
+            xml.build {
+               companyName(a.companyName)
+               enabled(a.enabled)
+               master(a.enabled)
+               contact(a.contact) // user
+               xml.startNode 'organizations'
+
+                  xml.convertAnother a.organizations
+
+               xml.end()
+               // current repo sizes are calculated
+            }
+         }
+
+         it.registerObjectMarshaller(User) { u, xml ->
+            xml.build {
+              username(u.username)
+              password(u.password) // hashed with salt
+              email(u.email)
+              isVirtual(u.isVirtual) // virtual for api keys
+              enabled(u.enabled)
+              accountExpired(u.accountExpired)
+              accountLocked(u.accountLocked)
+              passwordExpired(u.passwordExpired)
+            }
+         }
+
+         it.registerObjectMarshaller(Role) { r, xml ->
+            xml.build {
+              authority(r.authority)
+            }
+         }
+
+         it.registerObjectMarshaller(Organization) { o, xml ->
+
+            def usr = UserRole.findAllByOrganization(o)
+
+            xml.build {
+              uid(o.uid)
+              name(o.name)
+              number(o.number)
+
+              xml.startNode 'roles'
+
+                 xml.convertAnother usr
+
+              xml.end()
+            }
+         }
+
+         it.registerObjectMarshaller(UserRole) { ur, xml ->
+
+            xml.build {
+              user(ur.user)
+              role(ur.role)
+            }
          }
       }
    }
@@ -888,6 +966,7 @@ class BootStrap {
       extendClasses()
       repoChecks()
       registerMarshallers()
+      registerMarshallersSync()
 
       if (Environment.current != Environment.TEST)
       {

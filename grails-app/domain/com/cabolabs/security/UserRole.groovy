@@ -26,6 +26,8 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
 
 import org.apache.commons.lang.builder.HashCodeBuilder
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
+
 /**
  * A User plays a Role in an Organization.
  */
@@ -47,11 +49,20 @@ class UserRole implements Serializable {
 
 	@Override
 	boolean equals(other) {
+      // instanceof GrailsDomainClass avoids errors for not having instanceOf(), a method of domain classes
+      if (!(other instanceof GrailsDomainClass))
+      {
+         return false
+      }
+
+      println other + ' is grails domain in UserRole'
+
+
 		if (!other.instanceOf(UserRole)) {
 			return false
 		}
 
-		other.user?.id == user?.id && other.role?.id == role?.id && other.organization?.id == organization?.id 
+		other.user?.id == user?.id && other.role?.id == role?.id && other.organization?.id == organization?.id
 	}
 
 	@Override

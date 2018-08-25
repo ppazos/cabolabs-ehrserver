@@ -28,6 +28,7 @@ class Account {
 
    static mapping = {
       master column:'sync_master'
+      organizations lazy:false
    }
 
    static transients = ['currentPlan', 'totalRepoSizeInKb', 'allPlans']

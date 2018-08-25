@@ -2,6 +2,7 @@ package com.cabolabs.ehrserver.account
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+import grails.converters.*
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
@@ -9,12 +10,13 @@ import spock.lang.Specification
 @TestFor(Account)
 class AccountSpec extends Specification {
 
-    def setup() {
-    }
+   def setup() {
+   }
 
-    def cleanup() {
-    }
+   def cleanup() {
+   }
 
-    void "test something"() {
-    }
+   void "test account xml marshaller"() {
+
+   }
 }
