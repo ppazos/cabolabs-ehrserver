@@ -26,7 +26,11 @@ import com.cabolabs.security.*
 import com.cabolabs.util.DateParser
 import grails.util.Holders
 import grails.converters.*
+
+// test
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import com.cabolabs.ehrserver.sync.SyncMarshallersService
+import groovy.json.*
 
 @Transactional(readOnly = true)
 class AccountController {
@@ -35,13 +39,15 @@ class AccountController {
    def organizationService
    def config = Holders.config.app
 
+   def syncMarshallersService
+
    // Only admins can see the list of all the Accounts, each AccountManager
    // will see just his Account, other Roles won't have access to the Account.
    // Permissions are checked in the SecurityFilter.
    def index()
    {
       def accounts = Account.list()
-      [accounts: accounts]
+      //[accounts: accounts]
 
       /* test account sync marshal
       XML.use('sync') {
@@ -49,6 +55,10 @@ class AccountController {
          render accounts.collect{ GrailsHibernateUtil.unwrapIfProxy(it) } as XML
       }
       */
+
+      def jb = new JsonBuilder()
+      syncMarshallersService.toJSON(accounts, jb)
+      render jb.toString(), contentType: "application/json"
    }
 
    def show(Long id)

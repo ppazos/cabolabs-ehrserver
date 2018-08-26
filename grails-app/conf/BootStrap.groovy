@@ -257,7 +257,6 @@ class BootStrap {
          // contributions, directory and compositions should be synced separately
          it.registerObjectMarshaller(Ehr) { ehr, xml ->
             xml.build {
-               systemId(ehr.systemId)
                uid(ehr.uid)
                dateCreated(ehr.dateCreated)
                subjectUid(ehr.subject.value)
