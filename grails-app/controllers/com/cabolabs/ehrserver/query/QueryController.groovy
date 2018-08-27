@@ -42,6 +42,10 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 
+// test
+import com.cabolabs.ehrserver.sync.SyncMarshallersService
+import groovy.json.*
+
 class QueryController {
 
    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
@@ -51,13 +55,19 @@ class QueryController {
    def configurationService
    def querySnomedService
 
+   def syncMarshallersService
+
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
 
 
    def index()
    {
-      redirect(action: "list", params: params)
+      def jb = new JsonBuilder()
+      syncMarshallersService.toJSON(Query.list(), jb)
+      render jb.toString(), contentType: "application/json"
+
+      //redirect(action: "list", params: params)
    }
 
    def list(int offset, String sort, String order, String name, boolean isDeleted)

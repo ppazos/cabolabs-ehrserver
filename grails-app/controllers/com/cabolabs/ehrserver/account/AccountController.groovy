@@ -47,7 +47,7 @@ class AccountController {
    def index()
    {
       def accounts = Account.list()
-      //[accounts: accounts]
+      [accounts: accounts]
 
       /* test account sync marshal
       XML.use('sync') {
@@ -56,9 +56,11 @@ class AccountController {
       }
       */
 
+      /*
       def jb = new JsonBuilder()
       syncMarshallersService.toJSON(accounts, jb)
       render jb.toString(), contentType: "application/json"
+      */
    }
 
    def show(Long id)

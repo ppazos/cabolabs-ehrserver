@@ -1,3 +1,25 @@
+/*
+ * Copyright 2011-2017 CaboLabs Health Informatics
+ *
+ * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
+ *
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
+ *
+ * Any modifications to the provided source code can be stated below this notice.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.cabolabs.ehrserver.sync
 
 import grails.transaction.Transactional
@@ -9,6 +31,8 @@ import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.account.*
+import com.cabolabs.ehrserver.query.*
+import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.security.*
 
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -138,6 +162,229 @@ class SyncMarshallersService {
       assert jb
       jb { // doesnt add a name, it is added by the parent method
          authority(r.authority)
+      }
+   }
+
+   def toJSON(Query q, JsonBuilder jb)
+   {
+      assert jb
+      jb.query {
+         uid q.uid
+         name q.name
+         type q.type
+         isPublic q.isPublic
+         format q.format
+         templateId q.templateId
+         organizationUid q.organizationUid
+         queryGroup {
+            uid q.queryGroup.uid
+            name q.queryGroup.name
+            organizationUid q.queryGroup.organizationUid
+         }
+         group q.group
+         author(toJSON(q.author, jb)) // User
+         isPublic q.isPublic
+         isDeleted q.isDeleted
+         master q.master
+         select(toJSON(q.select, jb)) // List<DataGet>
+         where(toJSON(q.where, jb)) // List<DataCriteriaExpression>
+      }
+   }
+   def toJSON(DataGet dg, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         archetypeId dg.archetypeId
+         path dg.path
+         rmTypeName dg.rmTypeName
+         allowAnyArchetypeVersion dg.allowAnyArchetypeVersion
+      }
+   }
+   def toJSON(DataCriteriaExpression ce, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         left_assoc ce.left_assoc
+         right_assoc ce.right_assoc
+         criteria(toJSON(ce.criteria, jb))
+      }
+   }
+   def toJSON(DataCriteriaString dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
+         valueNegation dc.valueNegation
+      }
+   }
+   def toJSON(DataCriteriaLOCATABLE_REF dc, JsonBuilder jb)
+   {
+      jb {
+         locatable_ref_pathValue dc.locatable_ref_pathValue
+         locatable_ref_pathOperand dc.locatable_ref_pathOperand
+         locatable_ref_pathNegation dc.locatable_ref_pathNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_TEXT dc, JsonBuilder jb)
+   {
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
+         valueNegation dc.valueNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_QUANTITY dc, JsonBuilder jb)
+   {
+      jb {
+         magnitudeValue dc.magnitudeValue
+         unitsValue dc.unitsValue
+         magnitudeOperand dc.magnitudeOperand
+         unitsOperand dc.unitsOperand
+         magnitudeNegation dc.magnitudeNegation
+         unitsNegation dc.unitsNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_PROPORTION dc, JsonBuilder jb)
+   {
+      jb {
+         numeratorValue dc.numeratorValue
+         denominatorValue dc.denominatorValue
+         typeValue dc.typeValue
+         numeratorOperand dc.numeratorOperand
+         denominatorOperand dc.denominatorOperand
+         typeOperand dc.typeOperand
+         numeratorNegation dc.numeratorNegation
+         denominatorNegation dc.denominatorNegation
+         typeNegation dc.typeNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_PARSABLE dc, JsonBuilder jb)
+   {
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
+         formalismValue dc.formalismValue
+         formalismOperand dc.formalismOperand
+         valueNegation dc.valueNegation
+         formalismNegation dc.formalismNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_ORDINAL dc, JsonBuilder jb)
+   {
+      jb {
+         valueValue dc.valueValue
+         symbol_codeValue dc.symbol_codeValue
+         symbol_terminology_idValue dc.symbol_terminology_idValue
+         symbol_valueValue dc.symbol_valueValue
+         valueOperand dc.valueOperand
+         symbol_valueOperand dc.symbol_valueOperand
+         symbol_codeOperand dc.symbol_codeOperand
+         symbol_terminology_idOperand dc.symbol_terminology_idOperand
+         valueNegation dc.valueNegation
+         symbol_valueNegation dc.symbol_valueNegation
+         symbol_codeNegation dc.symbol_codeNegation
+         symbol_terminology_idNegation dc.symbol_terminology_idNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_MULTIMEDIA dc, JsonBuilder jb)
+   {
+      jb {
+         mediaTypeValue dc.mediaTypeValue
+         alternateTextValue dc.alternateTextValue
+         sizeValue dc.sizeValue
+         uriValue dc.uriValue
+         mediaTypeOperand dc.mediaTypeOperand
+         alternateTextOperand dc.alternateTextOperand
+         sizeOperand dc.sizeOperand
+         uriOperand dc.uriOperand
+         mediaTypeNegation dc.mediaTypeNegation
+         alternateTextNegation dc.alternateTextNegation
+         sizeNegation dc.sizeNegation
+         uriNegation dc.uriNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_IDENTIFIER dc, JsonBuilder jb)
+   {
+      jb {
+         identifierValue dc.identifierValue
+         typeValue dc.typeValue
+         issuerValue dc.issuerValue
+         assignerValue dc.assignerValue
+         identifierOperand dc.identifierOperand
+         typeOperand dc.typeOperand
+         issuerOperand dc.issuerOperand
+         assignerOperand dc.assignerOperand
+      }
+   }
+   def toJSON(DataCriteriaDV_DURATION dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         magnitudeValue dc.magnitudeValue
+         magnitudeOperand dc.magnitudeOperand
+         magnitudeNegation dc.magnitudeNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_DATE dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
+         age_in_yearsValue dc.age_in_yearsValue
+         age_in_yearsOperand dc.age_in_yearsOperand
+         age_in_monthsValue dc.age_in_monthsValue
+         age_in_monthsOperand dc.age_in_monthsOperand
+         valueNegation dc.valueNegation
+         age_in_yearsNegation dc.age_in_yearsNegation
+         age_in_monthsNegation dc.age_in_monthsNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_DATE_TIME dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
+         age_in_yearsValue dc.age_in_yearsValue
+         age_in_yearsOperand dc.age_in_yearsOperand
+         age_in_monthsValue dc.age_in_monthsValue
+         age_in_monthsOperand dc.age_in_monthsOperand
+         valueNegation dc.valueNegation
+         age_in_yearsNegation dc.age_in_yearsNegation
+         age_in_monthsNegation dc.age_in_monthsNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_COUNT dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         magnitudeValue dc.magnitudeValue
+         magnitudeOperand dc.magnitudeOperand
+         magnitudeNegation dc.magnitudeNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_CODED_TEXT dc, JsonBuilder jb)
+   {
+      assert jb
+      jb {
+         codeValue dc.codeValue
+         terminologyIdValue dc.terminologyIdValue
+         valueValue dc.valueValue
+         codeOperand dc.codeOperand
+         terminologyIdOperand dc.terminologyIdOperand
+         valueOperand dc.valueOperand
+         codeNegation dc.codeNegation
+         terminologyIdNegation dc.terminologyIdNegation
+         valueNegation dc.valueNegation
+      }
+   }
+   def toJSON(DataCriteriaDV_BOOLEAN dc, JsonBuilder jb)
+   {
+      jb {
+         valueValue dc.valueValue
+         valueOperand dc.valueOperand
       }
    }
 }
