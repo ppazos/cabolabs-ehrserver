@@ -32,6 +32,10 @@ import grails.converters.*
 import com.cabolabs.ehrserver.account.Plan
 import com.cabolabs.util.FileUtils
 
+// test
+import com.cabolabs.ehrserver.sync.SyncMarshallersService
+import groovy.json.*
+
 class OperationalTemplateController {
 
    def config = Holders.config.app
@@ -39,9 +43,15 @@ class OperationalTemplateController {
    def springSecurityService
    def configurationService
 
+   def syncMarshallersService
+
    def list(int offset, String sort, String order, String concept, Boolean deleted)
    {
-      println params
+      /*
+      def jb = new JsonBuilder()
+      syncMarshallersService.toJSON(OperationalTemplateIndex.list(), jb)
+      render jb.toString(), contentType: "application/json"
+      */
 
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
@@ -55,13 +65,13 @@ class OperationalTemplateController {
          list = OperationalTemplateIndex
                  .forOrg(org).likeConcept(concept).notDeleted.lastVersions
                  .list(max: max, offset: offset, sort: sort, order: order)
-     }
-     else
-     {
+      }
+      else
+      {
          list = OperationalTemplateIndex
                 .forOrg(org).likeConcept(concept).deleted.lastVersions
                 .list(max: max, offset: offset, sort: sort, order: order)
-     }
+      }
 
       [opts: list, total: list.totalCount]
    }

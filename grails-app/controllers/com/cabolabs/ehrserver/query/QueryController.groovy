@@ -63,11 +63,13 @@ class QueryController {
 
    def index()
    {
+      /*
       def jb = new JsonBuilder()
       syncMarshallersService.toJSON(Query.list(), jb)
       render jb.toString(), contentType: "application/json"
+      */
 
-      //redirect(action: "list", params: params)
+      redirect(action: "list", params: params)
    }
 
    def list(int offset, String sort, String order, String name, boolean isDeleted)

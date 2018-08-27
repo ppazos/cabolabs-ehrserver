@@ -31,22 +31,33 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 
+// test
+import com.cabolabs.ehrserver.sync.SyncMarshallersService
+import groovy.json.*
+
 @Transactional(readOnly = true)
 class FolderController {
 
    def springSecurityService
    def configurationService
-   
+   def syncMarshallersService
+
    static allowedMethods = [save: "POST", update: "PUT"]
-   
+
    def config = Holders.config.app
 
    def index()
    {
+      /*
+      def jb = new JsonBuilder()
+      syncMarshallersService.toJSON(Folder.list(), jb)
+      render jb.toString(), contentType: "application/json"
+      */
+
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      
+
       def list, count
-      
+
       // All folders for admins, filtered by org uid for other roles
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
@@ -58,11 +69,11 @@ class FolderController {
          // auth token used to login
          def auth = springSecurityService.authentication
          def org = Organization.findByNumber(auth.organization)
-         
+
          list = Folder.findAllByOrganizationUid(org.uid, params)
          count = Folder.countByOrganizationUid(org.uid)
       }
-      
+
       respond list, model:[total: count]
    }
 
@@ -98,11 +109,11 @@ class FolderController {
          def org = Organization.findByNumber(auth.organization)
          //println "org "+ org
          //println "org uid "+ org.uid
-         
+
          folderInstance.organizationUid = org.uid
       }
       */
-      
+
       if (folderInstance.ehr)
       {
          println "folder ehr "+ folderInstance.ehr
@@ -110,7 +121,7 @@ class FolderController {
          folderInstance.ehr.directory = folderInstance
          // root folder has the org uid of the ehr
          folderInstance.organizationUid = folderInstance.ehr.organizationUid
-         
+
          // saves the folder
          if (!folderInstance.ehr.save(flush:true)) println folderInstance.ehr.errors
       }
@@ -118,17 +129,17 @@ class FolderController {
       {
          println "folder tiene parent"
          folderInstance.organizationUid = folderInstance.parent.organizationUid
-         
+
          if (!folderInstance.save(flush:true))
          {
             respond folderInstance, view:'create'
             return
          }
       }
-      
-      
-      
-      
+
+
+
+
       request.withFormat {
          form multipartForm {
             flash.message = message(code: 'default.created.message', args: [message(code: 'folder.label', default: 'Folder'), folderInstance.id])
@@ -183,9 +194,9 @@ class FolderController {
          redirect (action:'show', id:folderInstance.id)
          return
       }
-      
+
       // TODO: this can be added on Folder.beforeDelete
-      
+
       // If the folder has children, just delete the folder and let
       // the children parent be the parent of the current folder.
       // This works because the root folder can't be deleted, so we
@@ -194,28 +205,28 @@ class FolderController {
       if (folderInstance.folders)
       {
          def parent = folderInstance.parent
-         
+
          parent.removeFromFolders(folderInstance) // deletes parent => folderInstance
          folderInstance.parent = null             // deletes folderInstnace => parent
-         
+
          folderInstance.folders.each { child ->
-            
+
             folderInstance.removeFromFolders(child) // deletes folder => child
             child.parent = parent                   // deletes child => folder
             parent.addToFolders(child)
          }
-         
+
          if (!parent.save(flush:true))
          {
             // TODO: handle this
             println parent.errors
          }
       }
-      
+
       // Physical delete!
       folderInstance.delete(flush:true)
 
-      
+
       flash.message = message(code: 'default.deleted.message', args: [message(code: 'Folder.label', default: 'Folder'), folderInstance.id])
       redirect action:"index", method:"GET"
    }
@@ -230,27 +241,27 @@ class FolderController {
          '*'{ render status: NOT_FOUND }
       }
    }
-   
+
    @Transactional
    def addItems(Long id)
    {
       println params
-      
+
       List vouids = params.list('versioned_object_uids')
-      
+
       println vouids
-      
+
       def folder = Folder.get(id)
-      
+
       vouids.each {
         if (!folder.items.contains(it)) // avoid adding the same item twice
         {
           folder.items.add(it) // addToItems dont work over simple type hasMany
         }
       }
-      
+
       if (!folder.save(flush:true)) println folder.errors
-      
+
       // FIXME
       render "ok"
    }

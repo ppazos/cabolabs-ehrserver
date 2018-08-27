@@ -34,6 +34,8 @@ import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.security.*
+import com.cabolabs.ehrserver.ehr.clinical_documents.*
+import com.cabolabs.ehrserver.openehr.directory.*
 
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -57,8 +59,17 @@ class SyncMarshallersService {
     */
    def toJSON(List l, JsonBuilder jb)
    {
+      println "List"
       assert jb // just in case we pass null on jb
-      jb( l.collect{ toJSON(GrailsHibernateUtil.unwrapIfProxy(it), jb) } )
+      if (l == null || l.size() == 0)
+      {
+         println "empty list"
+         jb([])
+      }
+      else
+      {
+         jb( l.collect{ toJSON(GrailsHibernateUtil.unwrapIfProxy(it), jb) } )
+      }
    }
 
    def toJSON(Contribution c, JsonBuilder jb)
@@ -176,10 +187,13 @@ class SyncMarshallersService {
          format q.format
          templateId q.templateId
          organizationUid q.organizationUid
-         queryGroup {
-            uid q.queryGroup.uid
-            name q.queryGroup.name
-            organizationUid q.queryGroup.organizationUid
+         if (q.queryGroup)
+         {
+            queryGroup {
+               uid q.queryGroup.uid
+               name q.queryGroup.name
+               organizationUid q.queryGroup.organizationUid
+            }
          }
          group q.group
          author(toJSON(q.author, jb)) // User
@@ -207,6 +221,7 @@ class SyncMarshallersService {
          left_assoc ce.left_assoc
          right_assoc ce.right_assoc
          criteria(toJSON(ce.criteria, jb))
+         criteria_class ce.criteria.getClass().getSimpleName() // need to know which specific class is the criteria to parse on the slave
       }
    }
    def toJSON(DataCriteriaString dc, JsonBuilder jb)
@@ -385,6 +400,65 @@ class SyncMarshallersService {
       jb {
          valueValue dc.valueValue
          valueOperand dc.valueOperand
+      }
+   }
+
+   def toJSON(EhrQuery eq, JsonBuilder jb)
+   {
+      jb.ehrquery {
+         uid eq.uid
+         name eq.name
+         description eq.description
+         master eq.master
+         queries(toJSON(eq.queries, jb))
+      }
+   }
+
+   def toJSON(OperationalTemplateIndex o, JsonBuilder jb)
+   {
+      def file = new File(config.opt_repo.withTrailSeparator() +
+                          o.organizationUid.withTrailSeparator() +
+                          o.fileUid +".opt")
+      def json = jsonService.xmlToJson(file.text)
+      def jsonSlurper = new JsonSlurper()
+      def parsed = jsonSlurper.parseText(json)
+
+      jb.template {
+         templateId o.templateId
+         concept o.concept
+         language o.language
+         uid o.uid
+         externalUid o.externalUid
+         archetypeId o.archetypeId
+         archetypeConcept o.archetypeConcept
+         organizationUid o.organizationUid
+         setId o.setId
+         versionNumber o.versionNumber
+         lastVersion o.lastVersion
+         dateCreated o.dateCreated
+         isActive o.isActive
+         master o.master
+         opt parsed // OPT File contents
+      }
+   }
+
+   def toJSON(Folder f, JsonBuilder jb)
+   {
+      println "Folder"
+      println f.folders
+
+      assert jb
+      jb.folder {
+         uid f.uid
+         name f.name
+         master f.master
+         folders (toJSON(f.folders ?: [], jb)) // List<Folder>
+         items f.items // List<String>
+         organizationUid f.organizationUid
+         if (f.ehr) // only root folders have ehr
+         {
+            ehrUid f.ehr.uid
+         }
       }
    }
 }

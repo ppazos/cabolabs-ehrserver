@@ -5,8 +5,14 @@ import grails.transaction.Transactional
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.converters.*
 
+// test
+import com.cabolabs.ehrserver.sync.SyncMarshallersService
+import groovy.json.*
+
 @Transactional(readOnly = true)
 class EhrQueryController {
+
+   def syncMarshallersService
 
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -14,8 +20,14 @@ class EhrQueryController {
    {
       params.max = Math.min(max ?: 10, 100)
       [list: EhrQuery.list(params), total: EhrQuery.count()]
+
+      /*
+      def jb = new JsonBuilder()
+      syncMarshallersService.toJSON(EhrQuery.list(params), jb)
+      render jb.toString(), contentType: "application/json"
+      */
    }
-   
+
    /*
    def test1(long id)
    {
@@ -29,7 +41,7 @@ class EhrQueryController {
       def res = eq.checkEhr(Ehr.get(2).uid) // same as 1 for ehr 2
       render ( [res] as JSON)
    }
-   
+
    def test2(long id)
    {
       def eq = EhrQuery.get(id)
@@ -37,7 +49,7 @@ class EhrQueryController {
       render ehrUids as JSON
    }
    */
-   
+
    def show(EhrQuery ehrQueryInstance)
    {
       respond ehrQueryInstance
@@ -122,14 +134,14 @@ class EhrQueryController {
          '*'{ render status: NO_CONTENT }
       }
    }
-   
+
    def execute(EhrQuery ehrQueryInstance)
    {
       if (ehrQueryInstance == null) {
          notFound()
          return
       }
-      
+
       def ehrUids = ehrQueryInstance.getEhrUids2(session.organization.uid)
       render (ehrUids as JSON)
    }
