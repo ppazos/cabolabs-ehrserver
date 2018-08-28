@@ -116,7 +116,6 @@ class FolderController {
 
       if (folderInstance.ehr)
       {
-         println "folder ehr "+ folderInstance.ehr
          //def ehr = ehr.Ehr.get(folderInstance.ehrUid)
          folderInstance.ehr.directory = folderInstance
          // root folder has the org uid of the ehr
@@ -127,18 +126,18 @@ class FolderController {
       }
       else // take the org uid from the parent
       {
-         println "folder tiene parent"
          folderInstance.organizationUid = folderInstance.parent.organizationUid
 
-         if (!folderInstance.save(flush:true))
+         // add reference from parent
+         folderInstance.parent.addToFolders(folderInstance)
+
+         // parent saves child in cascade
+         if (!folderInstance.parent.save(flush:true))
          {
             respond folderInstance, view:'create'
             return
          }
       }
-
-
-
 
       request.withFormat {
          form multipartForm {
