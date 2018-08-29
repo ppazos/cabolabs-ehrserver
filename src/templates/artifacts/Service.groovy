@@ -3,7 +3,8 @@
 @Transactional
 class @artifact.name@ {
 
-    def serviceMethod() {
-
-    }
+   def serviceMethod()
+   {
+      
+   }
 }
