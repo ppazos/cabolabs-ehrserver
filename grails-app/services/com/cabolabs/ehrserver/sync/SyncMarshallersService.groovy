@@ -59,11 +59,9 @@ class SyncMarshallersService {
     */
    def toJSON(List l, JsonBuilder jb)
    {
-      println "List"
       assert jb // just in case we pass null on jb
       if (l == null || l.size() == 0)
       {
-         println "empty list"
          jb([])
       }
       else
@@ -444,9 +442,6 @@ class SyncMarshallersService {
 
    def toJSON(Folder f, JsonBuilder jb)
    {
-      println "Folder"
-      println f.folders
-
       assert jb
       jb.folder {
          uid f.uid
