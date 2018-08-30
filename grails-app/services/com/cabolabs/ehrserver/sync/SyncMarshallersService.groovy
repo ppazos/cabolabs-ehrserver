@@ -136,6 +136,7 @@ class SyncMarshallersService {
    {
       assert jb
       jb { // doesnt add a name, it is added by the parent method
+         uid(u.uid)
          username(u.username)
          password(u.password) // hashed with salt
          email(u.email)
@@ -164,6 +165,7 @@ class SyncMarshallersService {
       jb { // doesnt add a name, it is added by the parent method
          user(toJSON(ur.user, jb)) // User
          role(toJSON(ur.role, jb)) // Role
+         organizationUid(ur.organization.uid)
       }
    }
    def toJSON(Role r, JsonBuilder jb)
@@ -185,6 +187,10 @@ class SyncMarshallersService {
          format q.format
          templateId q.templateId
          organizationUid q.organizationUid
+         group q.group
+         isDeleted q.isDeleted
+         master q.master
+
          if (q.queryGroup)
          {
             queryGroup {
@@ -193,11 +199,8 @@ class SyncMarshallersService {
                organizationUid q.queryGroup.organizationUid
             }
          }
-         group q.group
+
          author(toJSON(q.author, jb)) // User
-         isPublic q.isPublic
-         isDeleted q.isDeleted
-         master q.master
          select(toJSON(q.select, jb)) // List<DataGet>
          where(toJSON(q.where, jb)) // List<DataCriteriaExpression>
       }

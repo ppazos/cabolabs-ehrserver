@@ -16,6 +16,8 @@ import com.cabolabs.security.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.directory.*
 
+import java.text.SimpleDateFormat
+
 @Transactional
 class SyncParserService {
 
@@ -28,11 +30,12 @@ class SyncParserService {
    sync order:
 
    Account
-   Organization
-   EHR
-   OPT
-   Contribution
-
+   Organization (needs Account)
+   UserRole, User (needs Org)
+   EHR (needs Org)
+   OPT (needs Org)
+   Contribution (needs EHR and OPT for each Version in the Commit)
+   Query (needs User)
    */
 
    Contribution fromJSONContribution(JSONObject j)
@@ -49,7 +52,7 @@ class SyncParserService {
 
       // TODO: OPTs should be synced before commits referencing those templates
 
-      def ehr = Ehr.findByUid(j.ehrUid), // EHR should be synced before Contribution
+      def ehr = Ehr.findByUid(j.ehrUid) // EHR should be synced before Contribution
 
       // Process commit to create versions and compo indexes, later data indexing will generate dvs
       def jsonCommit = j.commit
@@ -75,7 +78,7 @@ class SyncParserService {
          systemId: j.systemId,
          uid: j.uid,
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
-         subject: new PatientProxy(value: j.subjectUid)
+         subject: new PatientProxy(value: j.subjectUid),
          organizationUid: j.organizationUid,
          deleted: j.deleted,
          master: false
@@ -86,7 +89,26 @@ class SyncParserService {
 
    Account fromJSONAccount(JSONObject j)
    {
+      def organizations = []
+      j.organizations.each{ org ->
+         organizations << fromJSONOrganization(org)
+      }
 
+      def contact = User.findByUid(j.contact.uid) // if already synced
+      if (!contact)
+      {
+         contact = fromJSONUser(j.contact)
+      }
+
+      def account = new Account(
+         companyName: j.companyName,
+         enabled: j.enabled,
+         contact: contact,
+         master: false,
+         organizations: organizations
+      )
+
+      return account
    }
 
    User fromJSONUser(JSONObject j)
@@ -94,26 +116,76 @@ class SyncParserService {
       // TODO: to be able to set the password from the sync, the beforeInsert encodePassword()
       // should be disabled since the pass is already encoded, maybe adding a flag.
       // like this https://stackoverflow.com/questions/33150455/gorm-temporarily-disable-beforeinsert-event
+      def user = new User(
+         avoidBeforeInsert: true, // do not encode pass, is already encoded
+         uid: j.uid,
+         username: j.username,
+         password: j.password, // already encoded
+         email: j.email,
+         isVirtual: j.isVirtual,
+         enabled: j.enabled,
+         accountExpired: j.accountExpired,
+         accountLocked: j.accountLocked,
+         passwordExpired: j.passwordExpired
+      )
+
+      return user
    }
 
    Organization fromJSONOrganization(JSONObject j)
    {
+      def org = new Organization(
+         uid: j.uid,
+         name: j.name,
+         number: j.number
+      )
 
+      // controller should parse the j.user_roles array to get the users of the org
+
+      return org
    }
 
+   /**
+    * called only if the UserRole for the user, org and role doesnt exists.
+    */
    UserRole fromJSONUserRole(JSONObject j)
    {
+      def user = User.findByUid(j.uid)
+      if (!user)
+      {
+         user = fromJSONUser(j.user)
+      }
 
+      // Roles are always on the DB since are created by bootstrap
+      def role = Role.findByAuthority(j.authority)
+
+      // Organization should be synced before user roles
+      def org = Organization.findByUid(j.organizationUid)
+
+      if (!org) throw new Exception("Organization not synced "+ j.organizationUid)
+
+      def ur = new UserRole(user, role, org)
+      return ur
    }
 
+   /*
    Role fromJSONRole(JSONObject r)
    {
 
    }
+   */
 
    Query fromJSONQuery(JSONObject q)
    {
+      // cant use the Query parser becuse the Query Builder structure has the tree
+      // on Query.where, not the list of DataCriteriaExpression as comes on the sync
+      // JSON object, se we need to parse that structure here.
+      //def query = Query.newInstance(q)
 
+      // TODO: author
+      // TODO: uid
+
+      //return query
    }
 
    DataGet fromJSONDataGet(JSONObject dg)

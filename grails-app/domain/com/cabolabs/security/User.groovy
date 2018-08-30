@@ -30,6 +30,8 @@ class User implements Serializable {
 
    transient springSecurityService
 
+   String uid = java.util.UUID.randomUUID() as String
+
    String username
    String password
    String email
@@ -38,16 +40,79 @@ class User implements Serializable {
    boolean accountExpired
    boolean accountLocked
    boolean passwordExpired
-   
+
    // This is set when the user is created from the backend and the password is not set.
    // The user will be disabled, and the system sends an email to the new user with a
    // link to the reset password action, including this token in the link.
    String resetPasswordToken
    Date resetPasswordTokenSet // for expiration
-   
+
    Date dateCreated
    Date lastUpdated
-   
+
+   // needed by sync to set the password already encoded
+   boolean avoidBeforeInsert = false
+
+
+   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account', 'avoidBeforeInsert']
+
+   static constraints = {
+      username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
+
+      // if user is disabled, password can be blank, is used to allow the user to reset the password
+      password nullable: true, validator: { val, obj ->
+
+          if (obj.enabled && !val) return false
+          return true
+      }
+
+      email blank: false, email: true, unique: true
+
+      resetPasswordToken nullable: true
+      resetPasswordTokenSet nullable: true
+
+      /*
+      organizations validator: { val, obj ->
+         //println "validator "+ val
+         if (!val || val.size() == 0)
+         {
+            // We set the error, if this returns false, grails adds another error.
+            obj.errors.rejectValue('organizations', 'user.organizations.empty')
+         }
+      }
+      */
+   }
+
+   static mapping = {
+      password column: '`password`'
+      //organizations lazy: false
+   }
+
+
+   def beforeInsert()
+   {
+      if (!avoidBeforeInsert)
+      {
+         if (this.password)
+         {
+            encodePassword()
+
+            if (this.enabled) this.resetPasswordToken = null
+         }
+      }
+   }
+
+   def beforeUpdate()
+   {
+      if (isDirty('password'))
+      {
+         encodePassword()
+      }
+
+      //if (this.password && this.enabled) this.resetPasswordToken = null
+   }
+
+
    User(String username, String password)
    {
       this()
@@ -73,7 +138,7 @@ class User implements Serializable {
       if (!this.id) return [] as Set
       UserRole.findAllByUser(this)*.role
    }
-   
+
    /**
     * returns the highest role assigned to the user.
     * ROLE_ADMIN > ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER > any other role
@@ -83,42 +148,22 @@ class User implements Serializable {
    {
       // custom logic to avoid many queries for using authoritiesContains
       def roles = UserRole.findAllByUserAndOrganization(this, org)*.role
-      
+
       def role = roles.find { it.authority == Role.AD }
       if (role) return role
-      
+
       role = roles.find { it.authority == Role.AM }
       if (role) return role
-      
+
       role = roles.find { it.authority == Role.OM }
       if (role) return role
-      
+
       return roles[0] // any other role
    }
-   
+
    boolean authoritiesContains(String role, Organization org)
    {
       return this.getAuthorities(org).find { it.authority == role } != null
-   }
-
-   def beforeInsert()
-   {
-      if (this.password)
-      {
-         encodePassword()
-         
-         if (this.enabled) this.resetPasswordToken = null
-      }
-   }
-
-   def beforeUpdate()
-   {
-      if (isDirty('password'))
-      {
-         encodePassword()
-      }
-      
-      //if (this.password && this.enabled) this.resetPasswordToken = null
    }
 
    protected void encodePassword()
@@ -126,47 +171,13 @@ class User implements Serializable {
       password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
    }
 
-   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account']
-
-   static constraints = {
-      username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
-      
-      // if user is disabled, password can be blank, is used to allow the user to reset the password
-      password nullable: true, validator: { val, obj ->
-      
-          if (obj.enabled && !val) return false
-          return true
-      }
-      
-      email blank: false, email: true, unique: true
-      
-      resetPasswordToken nullable: true
-      resetPasswordTokenSet nullable: true
-      
-      /*
-      organizations validator: { val, obj ->
-         //println "validator "+ val
-         if (!val || val.size() == 0)
-         {
-            // We set the error, if this returns false, grails adds another error.
-            obj.errors.rejectValue('organizations', 'user.organizations.empty')
-         }
-      }
-      */
-   }
-
-   static mapping = {
-      password column: '`password`'
-      //organizations lazy: false
-   }
-   
    def getOrganizations()
    {
-      UserRole.withNewSession { 
+      UserRole.withNewSession {
          UserRole.findAllByUser(this).organization
       }
    }
-   
+
    static List allForRole(authority)
    {
       def urs = UserRole.withCriteria {
@@ -176,34 +187,34 @@ class User implements Serializable {
       }
       return urs.user
    }
-   
+
    static List allForAccount(Account account)
    {
       def urs = UserRole.withCriteria{
         'in'('organization', account.organizations)
       }
-      
+
       urs.user
    }
-   
+
    Account getAccount()
    {
       // Just need one UserRole because all URs will be on the same Account
       def org = UserRole.findByUser(this).organization
       org.account
    }
-   
+
    def setPasswordToken()
    {
       this.resetPasswordToken = java.util.UUID.randomUUID() as String
       this.resetPasswordTokenSet = new Date()
    }
-   
+
    def getPasswordToken()
    {
       return this.resetPasswordToken
    }
-   
+
    def emptyPasswordToken()
    {
       this.resetPasswordToken = null
