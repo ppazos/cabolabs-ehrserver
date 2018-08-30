@@ -101,6 +101,7 @@ class SyncParserService {
       }
 
       def account = new Account(
+         uid: j.uid,
          companyName: j.companyName,
          enabled: j.enabled,
          contact: contact,

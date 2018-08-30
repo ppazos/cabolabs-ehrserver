@@ -125,6 +125,7 @@ class SyncMarshallersService {
    {
       assert jb
       jb.account {
+         uid a.uid
          companyName a.companyName
          enabled a.enabled
          contact (toJSON(a.contact, jb)) // User

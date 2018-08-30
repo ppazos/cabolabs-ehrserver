@@ -4,6 +4,8 @@ import com.cabolabs.security.*
 
 class Account {
 
+   String uid = java.util.UUID.randomUUID() as String
+
    String companyName
    boolean enabled = false
 
@@ -11,6 +13,8 @@ class Account {
 
    // sync
    boolean master = true
+   Date dateCreated
+   Date lastUpdated
 
    List organizations = []
    static hasMany = [organizations: Organization]

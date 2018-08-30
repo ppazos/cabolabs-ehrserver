@@ -49,6 +49,7 @@ import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.parsers.JsonService
+import com.cabolabs.ehrserver.sync.*
 
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -148,6 +149,11 @@ class BootStrap {
       String.metaClass.withTrailSeparator = {
          def PS = System.getProperty("file.separator")
          if (!delegate.endsWith(PS)) delegate += PS
+         return delegate
+      }
+      String.metaClass.withLeadSeparator = {
+         def PS = System.getProperty("file.separator")
+         if (!delegate.startsWith(PS)) delegate = PS + delegate
          return delegate
       }
    }
@@ -1056,6 +1062,18 @@ class BootStrap {
       repoChecks()
       registerMarshallers()
       registerMarshallersSync()
+
+      // TEST sync config
+      def sync1 = new SyncClusterConfig(
+         remoteServerName: 'test mirth',
+         remoteAPIKey: '1234345645677689',
+         remoteServerIP: 'localhost',
+         remoteServerPort: 4455,
+         remoteServerPath: '/',
+         isActive: true
+      )
+      sync1.save()
+      // --------------------------------------------------------------------
 
       if (Environment.current != Environment.TEST)
       {
