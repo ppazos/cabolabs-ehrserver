@@ -16,6 +16,8 @@ import com.cabolabs.security.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.directory.*
 
+import com.cabolabs.archetype.OperationalTemplateIndexer
+
 import java.text.SimpleDateFormat
 
 @Transactional
