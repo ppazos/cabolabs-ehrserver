@@ -262,7 +262,7 @@ class OrganizationController {
    }
 
    @Transactional
-   def generateApiKey(String uid, String systemId)
+   def generateApiKey(String uid, String systemId, String scope)
    {
       if (!uid)
       {
@@ -318,6 +318,7 @@ class OrganizationController {
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
+                              scope: scope,
                               token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number, org_uid: org.uid]))
 
          key.save(failOnError: true)

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%@ page import="com.cabolabs.ehrserver.account.ApiKey" %><!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="admin">
@@ -18,6 +18,7 @@
           <g:form action="generateApiKey" >
             <input type="hidden" name="uid" value="${params.uid}" />
             <fieldset class="form">
+
               <div class="form-group required">
                 <label for="systemId">
                   <g:message code="apikey.attr.systemId" />
@@ -25,6 +26,15 @@
                 </label>
                 <g:textField name="systemId" required="" class="form-control" />
               </div>
+
+              <div class="form-group required">
+                <label for="scope">
+                  <g:message code="apikey.attr.scope" />
+                  <span class="required-indicator">*</span>
+                </label>
+                <g:select from="${ApiKey.constraints.scope.inList}" name="scope" required="" class="form-control" />
+              </div>
+
               <div style="text-align:right;">
                 <g:submitButton name="doit" class="save btn btn-success btn-md" value="${message(code: 'default.button.create.label')}" />
               </div>

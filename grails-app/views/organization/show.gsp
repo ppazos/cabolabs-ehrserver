@@ -121,7 +121,7 @@
             console.log(first_day_next_month_of(ref_date).toUTCString());
             console.log(first_day_next_next_month_of(ref_date).toUTCString());
             */
-            
+
             $(function() {
 
               $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
@@ -185,27 +185,40 @@
         <g:set var="apikeys" value="${ApiKey.findAllByOrganization(organizationInstance)}" />
         <div class="table-responsive">
 	       <table class="table table-striped table-bordered table-hover">
-	         <tr>
-	           <th><g:message code="apikey.attr.systemId" /></th>
-	           <th><g:message code="apikey.attr.token" /></th>
-	           <th width="10%"></th>
-	         </tr>
 	         <g:each in="${apikeys}" var="key">
 	            <tr>
-	              <td>
-	                ${key.systemId}
-	              </td>
-	              <td>
-	                <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
-	              </td>
-	              <td>
+                <td>
+                  <table class="table table-bordered" style="margin-bottom:0;">
+                    <tr>
+                      <th width="50%"><g:message code="apikey.attr.systemId" /></th>
+         	            <th><g:message code="apikey.attr.scope" /></th>
+                    </tr>
+                    <tr>
+                      <td>
+      	                ${key.systemId}
+      	              </td>
+                      <td>
+                        ${key.scope}
+                      </td>
+                    </tr>
+                    <tr>
+         	            <th colspan="2"><g:message code="apikey.attr.token" /></th>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+      	                <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
+      	              </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="10%" align="center">
 	                <g:link action="deleteApiKey" id="${key.id}" class="delete">
 	                  <button type="button" class="btn btn-default btn-md">
 				           <span class="fa fa-times fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.remove" />
 				         </button>
 	                </g:link>
 	              </td>
-	            </tr>
+              </tr>
 	         </g:each>
 	       </table>
 	     </div>

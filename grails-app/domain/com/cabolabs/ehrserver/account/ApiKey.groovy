@@ -32,7 +32,10 @@ class ApiKey {
    Organization organization // the key belongs to this org
    String systemId // name or id of the external system that uses the apikey, used on version_uid.creating_system_id
 
+   String scope
+
    static constraints = {
       token(size:1..1023)
+      scope inList:['user', 'sync']
    }
 }
