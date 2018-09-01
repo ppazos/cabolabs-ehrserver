@@ -24,6 +24,8 @@ package com.cabolabs.ehrserver.api
 import com.cabolabs.ehrserver.sync.SyncParserService
 import grails.converters.*
 
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+
 /**
  * Controller that receives the sync operations
  */
@@ -38,13 +40,20 @@ class SyncController {
 
    def syncParserService
 
+
+   @SecuredStateless
    def syncAccount()
    {
+      println "syncAccount " //+ request.securityStatelessMap.extradata
+
       // TODO: check if already exists
       // TOOD: check if this is an update, that should be a PUT, OK result should be 200
+      //println request.JSON
 
       // account with contact user and list of organizations
       def account = syncParserService.fromJSONAccount(request.JSON.account)
+
+      if (!account) println "NULL!!!!"
 
       if (!account.save(flush:true))
       {
@@ -58,7 +67,18 @@ class SyncController {
 
    def syncEhr()
    {
+      println "syncEhr"
 
+      def ehr = syncParserService.fromJSONEhr(request.JSON.ehr)
+
+      if (!ehr.save(flush:true))
+      {
+         // TODO: handle error
+         println ehr.errors.allErrors
+      }
+
+      // TODO: structure for the response
+      render( status:201, text:[message: 'ehr synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
    def syncOpt()
