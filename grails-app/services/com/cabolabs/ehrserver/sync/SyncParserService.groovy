@@ -94,20 +94,27 @@ class SyncParserService {
          organizations << fromJSONOrganization(org)
       }
 
+      if (!organizations) println "no orgs"
       def contact = User.findByUid(j.contact.uid) // if already synced
       if (!contact)
       {
          contact = fromJSONUser(j.contact)
       }
+      if (!contact) println "no contact"
 
       def account = new Account(
          uid: j.uid,
          companyName: j.companyName,
          enabled: j.enabled,
          contact: contact,
-         master: false,
-         organizations: organizations
+         master: false
+         //,
+         //organizations: organizations
       )
+
+      organizations.each {
+         account.addToOrganizations(it)
+      }
 
       return account
    }
@@ -264,27 +271,62 @@ class SyncParserService {
 
    }
 
-   DataCriteriaDV_CODED_TEXT toJSONDataCriteriaDV_CODED_TEXT(JSONObject dg)
+   DataCriteriaDV_CODED_TEXT toJSONDataCriteriaDV_CODED_TEXT(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_BOOLEAN toJSONDataCriteriaDV_BOOLEAN(JSONObject dg)
+   DataCriteriaDV_BOOLEAN toJSONDataCriteriaDV_BOOLEAN(JSONObject j)
    {
 
    }
 
-   EhrQuery toJSONEhrQuery(JSONObject dg)
+   EhrQuery toJSONEhrQuery(JSONObject j)
    {
 
    }
 
-   OperationalTemplateIndex OperationalTemplateIndex(JSONObject dg)
+   OperationalTemplateIndex OperationalTemplateIndex(JSONObject j)
    {
+      def templateIndex = new OperationalTemplateIndex(
+         templateId: j.templateId,
+         concept: j.concept,
+         language: j.language,
+         uid: j.uid,
+         externalUid: j.externalUid,
+         archetypeId: j.archetypeId,
+         archetypeConcept: j.archetypeConcept,
+         organizationUid: j.organizationUid,
+         isActive: j.isActive,
+         master: false,
+         dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
+         setId: j.setId,
+         versionNumber: j.versionNumber,
+         lastVersion: j.lastVersion
+      )
 
+      def xml = j.opt
+
+      def opt_repo_org_path = config.opt_repo.withTrailSeparator() + j.organizationUid.withTrailSeparator()
+      def destination = opt_repo_org_path + opt.fileUid + '.opt'
+      File fileDest = new File( destination )
+      fileDest << xml
+
+      // Generates OPT and archetype item indexes just for the uploaded OPT
+      def indexer = new OperationalTemplateIndexer()
+      indexer.templateIndex = templateIndex // avoids creating another opt index internally and use the one created here
+      indexer.index(template, null, Organization.findByUid(j.organizationUid))
+
+      // load opt in manager cache
+      // TODO: just load the newly created/updated one
+      def optMan = OptManager.getInstance()
+      optMan.unloadAll(j.organizationUid)
+      optMan.loadAll(j.organizationUid)
+
+      return templateIndex
    }
 
-   Folder toJSONFolder(JSONObject dg)
+   Folder toJSONFolder(JSONObject j)
    {
 
    }
