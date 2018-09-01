@@ -53,6 +53,7 @@ class User implements Serializable {
    // needed by sync to set the password already encoded
    boolean avoidBeforeInsert = false
 
+   static belongsTo = [Account]
 
    static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account', 'avoidBeforeInsert']
 
