@@ -421,9 +421,12 @@ class SyncMarshallersService {
       def file = new File(config.opt_repo.withTrailSeparator() +
                           o.organizationUid.withTrailSeparator() +
                           o.fileUid +".opt")
+
+      /* will send the OPT as is in XML
       def json = jsonService.xmlToJson(file.text)
       def jsonSlurper = new JsonSlurper()
       def parsed = jsonSlurper.parseText(json)
+      */
 
       jb.template {
          templateId o.templateId
@@ -440,7 +443,7 @@ class SyncMarshallersService {
          dateCreated o.dateCreated
          isActive o.isActive
          master o.master
-         opt parsed // OPT File contents
+         opt file.text //parsed // OPT File contents
       }
    }
 
