@@ -10,5 +10,6 @@ class SyncClusterConfig {
    boolean isActive = false
 
    static constraints = {
+      remoteAPIKey(size:1..1023)
    }
 }
