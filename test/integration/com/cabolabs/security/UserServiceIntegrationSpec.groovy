@@ -64,10 +64,10 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
       org.delete(flush: true)
       */
+      // ur should be deleted first to avoid relational inconsistencies
+      UserRole.list()*.delete()
 
       Account.list()*.delete() // should delete the orgs
-
-      UserRole.list()*.delete()
       User.list()*.delete()
       Role.list()*.delete()
    }

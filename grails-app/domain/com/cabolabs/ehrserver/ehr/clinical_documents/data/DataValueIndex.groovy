@@ -37,6 +37,8 @@ class DataValueIndex {
 
    CompositionIndex owner
 
+   static belongsTo = [CompositionIndex]
+
    // TODO: ver si puedo sacarle las xpaths al xml
    //       y guardarlas, para un path de arquetipo
    //       pueden haber varias xpaths, esto permite

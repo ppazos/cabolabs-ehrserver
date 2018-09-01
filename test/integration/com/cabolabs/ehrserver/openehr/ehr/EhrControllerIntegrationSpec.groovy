@@ -96,22 +96,13 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
-   /*
-      def user = User.findByUsername("testadmin")
-      def role = Role.findByAuthority(Role.AD)
-      def org = Organization.findByUid(orgUid)
-
-      UserRole.remove(user, role, org)
-      user.delete(flush: true)
-      */
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(flush: true)
 
- //     org.delete(flush: true)
+      // ur should be deleted first to avoid relational inconsistencies
+      UserRole.list()*.delete()
 
       Account.list()*.delete() // should delete the orgs
-
-      UserRole.list()*.delete()
       User.list()*.delete()
       Role.list()*.delete()
    }

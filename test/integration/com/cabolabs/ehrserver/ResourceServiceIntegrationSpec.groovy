@@ -118,9 +118,10 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
 
       org.delete()
       */
-      Account.list()*.delete() // should delete the orgs
-
+      // ur should be deleted first to avoid relational inconsistencies
       UserRole.list()*.delete()
+
+      Account.list()*.delete() // should delete the orgs
       User.list()*.delete()
       Role.list()*.delete()
 

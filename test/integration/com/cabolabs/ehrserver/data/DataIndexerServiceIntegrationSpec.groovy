@@ -99,13 +99,26 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
 
    def cleanup()
    {
+      VersionedComposition.list()*.delete() // has one ehr, needs to be deleted before the EHR
+
+      // issue: contrib deletes version, compo index, and dvi belongs to compo indes but
+      // is not deleted, maybe because > 3 steps of cascading??? so dvi reference to compo
+      // index breaks a FK constraint, if we delete dvis here it solves the issue.
+      DataValueIndex.list()*.delete()
+
+      Contribution.list()*.delete()
+      //Version.list()*.delete() // belongs to contribution
+      //CompositionIndex.list()*.delete() // belongs to version
+      // DataValueIndex // belongs to CompositionIndex
+
+
       def ehr = Ehr.findByUid(ehrUid)
       ehr.delete(failOnError: true)
 
+      // ur should be deleted first to avoid relational inconsistencies
+      UserRole.list()*.delete()
 
       Account.list()*.delete() // should delete the orgs
-
-      UserRole.list()*.delete()
       User.list()*.delete()
       Role.list()*.delete()
 

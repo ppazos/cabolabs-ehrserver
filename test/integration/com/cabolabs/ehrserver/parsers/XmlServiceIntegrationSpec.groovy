@@ -94,10 +94,10 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       println VersionedComposition.count()
       println CompositionIndex.count()
       */
+      // ur should be deleted first to avoid relational inconsistencies
+      UserRole.list()*.delete()
 
       Account.list()*.delete() // should delete the orgs
-
-      UserRole.list()*.delete()
       User.list()*.delete()
       Role.list()*.delete()
    }
