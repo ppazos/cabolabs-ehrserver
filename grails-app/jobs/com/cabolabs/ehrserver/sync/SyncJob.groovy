@@ -29,6 +29,8 @@ import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.security.*
+import com.cabolabs.ehrserver.openehr.common.change_control.*
+import com.cabolabs.ehrserver.openehr.common.generic.*
 
 import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.JSON
@@ -245,6 +247,70 @@ class SyncJob {
                }
             }
          }
+
+
+         // sync contributions
+         def contributions = Contribution.findAllByMaster(true)
+
+         contributions.each { contribution ->
+
+            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Contribution', contribution.uid, remote)
+
+            if (logCount == 0)
+            {
+               def jb = new JsonBuilder()
+               syncMarshallersService.toJSON(contribution, jb)
+
+               // FIXME: ensure HTTPS!
+               def http = new HTTPBuilder('http://'+ remote.remoteServerIP +':'+ remote.remoteServerPort)
+               http.request(POST) {
+                  uri.path = remote.remoteServerPath // + 'syncContribution'
+                  uri.query = [:]
+                  send JSON, jb.toString()
+                  headers.Accept = 'application/json'
+                  headers.Authorization = 'Bearer '+ remote.remoteAPIKey
+
+                  response.success = { resp, json ->
+                     println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+                     //println resp.statusLine.statusCode // 200
+                     //println json.getClass() // class net.sf.json.JSONArray
+
+                     println json //.message
+                  }
+
+                  // FIXME: log correctly
+                  // FIXME: throw exception based on status like 429 Too Many Requests, etc.
+                  response.failure = { resp, reader ->
+                     println 'request failed'
+                     println resp
+                     println resp.statusLine
+                     println resp.status
+                     println reader.text
+
+                     error = true
+                  }
+               }
+
+               // create log to avoid syncing this resource again
+               if (!error)
+               {
+                  log = new SyncLog(resourceType:'Contribution', resourceUid:contribution.uid, remote: remote)
+                  if (!log.save())
+                  {
+                     println log.errors
+                     // TODO: handle errors or notify admins
+                  }
+               }
+               else
+               {
+                  error = false // reset error for next resource
+               }
+            }
+         }
+
+         // sync queries
+         // TODO
+
       }
    }
 }

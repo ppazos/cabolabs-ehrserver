@@ -40,7 +40,7 @@ class JsonService {
    /***
     * Función encargada de convertir a json un string en xml
     * @param contenidoXml: Texto xml a pasar a Json
-    * @rerturn texto enformato json que es devuelto por la función. 
+    * @rerturn texto enformato json que es devuelto por la función.
     ***/
    def xmlToJson(String contenidoXml)
    {
@@ -52,7 +52,7 @@ class JsonService {
          .autoPrimitive(true)
          .prettyPrint(true)
          .build()
-         
+
       try
       {
          /*
@@ -68,17 +68,17 @@ class JsonService {
           * Copy events from reader to writer.
           */
          writer.add(reader)
-         
+
          /*
           * Close reader/writer.
           */
          reader.close()
          writer.close()
-         
+
          return output.toString()
       }
       finally
-      {         
+      {
          /*
           * As per StAX specification, XMLEventReader/Writer.close() doesn't close
           * the underlying stream.
@@ -89,7 +89,7 @@ class JsonService {
          log.info("Sale de función xmlToJson")
       }
    }
-   
+
    // https://github.com/fandaqian/mogone-manager/blob/2184fd35c68285ddab4bcca271a6f5fe25d3e282/src/main/java/com/mogone/manager/util/StaxonUtils.java
    def json2xml(String json)
    {
@@ -107,8 +107,8 @@ class JsonService {
       }
       catch (Exception e)
       {
-         //e.printStackTrace()
-         log.error("JsonService couldn't parse JSON 1")
+         e.printStackTrace()
+         log.error("JsonService couldn't parse JSON 1 "+ e.getMessage())
       }
       finally
       {
@@ -123,7 +123,7 @@ class JsonService {
             log.error("JsonService couldn't parse JSON 2")
          }
       }
-      
+
       // TODO: remove using regex
       /*
       if (output.toString().length() >= 38) { //remove <?xml version="1.0" encoding="UTF-8"?>

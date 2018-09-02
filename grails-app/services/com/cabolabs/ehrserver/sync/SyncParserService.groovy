@@ -20,6 +20,8 @@ import com.cabolabs.archetype.OperationalTemplateIndexer
 
 import java.text.SimpleDateFormat
 
+import com.cabolabs.openehr.opt.manager.OptManager
+
 @Transactional
 class SyncParserService {
 
@@ -59,8 +61,17 @@ class SyncParserService {
       // Process commit to create versions and compo indexes, later data indexing will generate dvs
       def jsonCommit = j.commit
 
+      //println "commit class "+ jsonCommit.getClass() // JSONObject
+      //println jsonCommit.toString() // json string
+
+      def testfile = new File('./cucucu.json')
+      testfile << jsonCommit.toString()
+
       // copied from RestController.commit
-      def versionsXML = jsonService.json2xml(jsonCommit)
+      def versionsXML = jsonService.json2xml(jsonCommit.toString())
+
+println versionsXML
+
       def slurper = new XmlSlurper(false, false)
       def _parsedVersions = slurper.parseText(versionsXML)
       contribution = xmlService.processCommit(ehr, _parsedVersions, j.audit.system_id, new Date(), j.audit.committer.name)
@@ -185,7 +196,7 @@ class SyncParserService {
    }
    */
 
-   Query fromJSONQuery(JSONObject q)
+   Query fromJSONQuery(JSONObject j)
    {
       // cant use the Query parser becuse the Query Builder structure has the tree
       // on Query.where, not the list of DataCriteriaExpression as comes on the sync
@@ -198,77 +209,77 @@ class SyncParserService {
       //return query
    }
 
-   DataGet fromJSONDataGet(JSONObject dg)
+   DataGet fromJSONDataGet(JSONObject j)
    {
 
    }
 
-   DataCriteriaExpression toJSONDataCriteriaExpression(JSONObject dg)
+   DataCriteriaExpression toJSONDataCriteriaExpression(JSONObject j)
    {
 
    }
 
-   DataCriteriaString toJSONDataCriteriaString(JSONObject dg)
+   DataCriteriaString toJSONDataCriteriaString(JSONObject j)
    {
 
    }
 
-   DataCriteriaLOCATABLE_REF toJSONDataCriteriaLOCATABLE_REF(JSONObject dg)
+   DataCriteriaLOCATABLE_REF toJSONDataCriteriaLOCATABLE_REF(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_TEXT toJSONDataCriteriaDV_TEXT(JSONObject dg)
+   DataCriteriaDV_TEXT toJSONDataCriteriaDV_TEXT(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_QUANTITY toJSONDataCriteriaDV_QUANTITY(JSONObject dg)
+   DataCriteriaDV_QUANTITY toJSONDataCriteriaDV_QUANTITY(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_PROPORTION toJSONDataCriteriaDV_PROPORTION(JSONObject dg)
+   DataCriteriaDV_PROPORTION toJSONDataCriteriaDV_PROPORTION(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_PARSABLE toJSONDataCriteriaDV_PARSABLE(JSONObject dg)
+   DataCriteriaDV_PARSABLE toJSONDataCriteriaDV_PARSABLE(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_ORDINAL toJSONDataCriteriaDV_ORDINAL(JSONObject dg)
+   DataCriteriaDV_ORDINAL toJSONDataCriteriaDV_ORDINAL(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_MULTIMEDIA toJSONDataCriteriaDV_MULTIMEDIA(JSONObject dg)
+   DataCriteriaDV_MULTIMEDIA toJSONDataCriteriaDV_MULTIMEDIA(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_IDENTIFIER toJSONDataCriteriaDV_IDENTIFIER(JSONObject dg)
+   DataCriteriaDV_IDENTIFIER toJSONDataCriteriaDV_IDENTIFIER(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_DURATION toJSONDataCriteriaDV_DURATION(JSONObject dg)
+   DataCriteriaDV_DURATION toJSONDataCriteriaDV_DURATION(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_DATE toJSONDataCriteriaDV_DATE(JSONObject dg)
+   DataCriteriaDV_DATE toJSONDataCriteriaDV_DATE(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_DATE_TIME toJSONDataCriteriaDV_DATE_TIME(JSONObject dg)
+   DataCriteriaDV_DATE_TIME toJSONDataCriteriaDV_DATE_TIME(JSONObject j)
    {
 
    }
 
-   DataCriteriaDV_COUNT toJSONDataCriteriaDV_COUNT(JSONObject dg)
+   DataCriteriaDV_COUNT toJSONDataCriteriaDV_COUNT(JSONObject j)
    {
 
    }
@@ -288,7 +299,7 @@ class SyncParserService {
 
    }
 
-   OperationalTemplateIndex OperationalTemplateIndex(JSONObject j)
+   OperationalTemplateIndex toJSONOpt(JSONObject j)
    {
       def templateIndex = new OperationalTemplateIndex(
          templateId: j.templateId,
@@ -310,13 +321,16 @@ class SyncParserService {
       def xml = j.opt
 
       def opt_repo_org_path = config.opt_repo.withTrailSeparator() + j.organizationUid.withTrailSeparator()
-      def destination = opt_repo_org_path + opt.fileUid + '.opt'
+      def destination = opt_repo_org_path + templateIndex.fileUid + '.opt'
       File fileDest = new File( destination )
       fileDest << xml
 
       // Generates OPT and archetype item indexes just for the uploaded OPT
       def indexer = new OperationalTemplateIndexer()
       indexer.templateIndex = templateIndex // avoids creating another opt index internally and use the one created here
+
+      def slurper = new XmlSlurper(false, false)
+      def template = slurper.parseText(xml)
       indexer.index(template, null, Organization.findByUid(j.organizationUid))
 
       // load opt in manager cache

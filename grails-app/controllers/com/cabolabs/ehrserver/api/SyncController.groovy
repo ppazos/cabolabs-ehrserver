@@ -83,12 +83,34 @@ class SyncController {
 
    def syncOpt()
    {
+      println "syncOpt"
 
+      def optIndex = syncParserService.toJSONOpt(request.JSON.template)
+
+      if (!optIndex.save(flush:true))
+      {
+         // TODO: handle error
+         println optIndex.errors.allErrors
+      }
+
+      // TODO: structure for the response
+      render( status:201, text:[message: 'opt synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
    def syncContribution()
    {
+      println "syncContribution"
 
+      def contribution = syncParserService.fromJSONContribution(request.JSON.contribution)
+
+      if (!contribution.save(flush:true))
+      {
+         // TODO: handle error
+         println contribution.errors.allErrors
+      }
+
+      // TODO: structure for the response
+      render( status:201, text:[message: 'contribution synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
    def syncQuery()
