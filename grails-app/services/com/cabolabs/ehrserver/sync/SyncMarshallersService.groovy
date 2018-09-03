@@ -74,12 +74,25 @@ class SyncMarshallersService {
    {
       assert jb
       def _commit = Commit.findByContributionUid(c.uid)
+
+      String ext = '.xml'
+      if (_commit.contentType.contains('json')) ext = '.json'
+
       def file = new File(config.commit_logs.withTrailSeparator() +
                           c.organizationUid.withTrailSeparator() +
-                          _commit.fileUid + '.xml')
-      def json = jsonService.xmlToJson(file.text)
-      def jsonSlurper = new JsonSlurper()
-      def parsed = jsonSlurper.parseText(json)
+                          _commit.fileUid + ext)
+
+      def parsed
+      if (ext == '.xml')
+      {
+         def json = jsonService.xml2JsonV2(file.text) //xmlToJson(file.text)
+         def jsonSlurper = new JsonSlurper()
+         parsed = jsonSlurper.parseText(json)
+      }
+      else
+      {
+         parsed = file.text // already JSON
+      }
 
       jb.contribution {
          uid c.uid

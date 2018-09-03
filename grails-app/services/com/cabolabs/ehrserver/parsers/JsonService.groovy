@@ -35,6 +35,9 @@ import javax.xml.stream.XMLOutputFactory
 import de.odysseus.staxon.json.JsonXMLInputFactory
 import de.odysseus.staxon.xml.util.PrettyXMLEventWriter
 
+import groovy.json.JsonBuilder
+import groovy.util.slurpersupport.GPathResult
+
 class JsonService {
 
    /***
@@ -131,5 +134,45 @@ class JsonService {
       }
       */
       return output.toString()
+   }
+
+   String xml2JsonV2(String xmlString)
+   {
+      def xml = new XmlSlurper().parseText(xmlString)
+
+      // in/out param
+      def jsonModel = [:]
+
+      xml2JsonVersionRecursive(jsonModel, xml)
+
+      return new JsonBuilder(jsonModel).toPrettyString() //toString()
+   }
+
+   def xml2JsonVersionRecursive(Map jsonModel, GPathResult xml)
+   {
+      jsonModel[xml.name()] = [:]
+
+      xml.attributes().each {
+
+         // string, (name of the attr, can include namespace, e.g. for xs:type) like "@{http://www.w3.org/2001/XMLSchema-instance}type" : "HISTORY",
+         //println it.key.getClass()
+
+         //println it.value.getClass() // string, value of the attr
+
+         jsonModel[xml.name()]['@'+it.key] = it.value
+      }
+
+      xml.children().each {
+         //println it.name() +'/'+ it.getClass() +' '+ it.children().size()
+         if (it.children().size() == 0)
+            jsonModel[xml.name()][it.name()] = it.text() // TODO: allow date formatting and represent numbers without quotes (parse the string value).
+         else
+            xml2JsonVersionRecursive(jsonModel[xml.name()], it)
+      }
+   }
+
+   String json2XmlV2(String jsonString)
+   {
+      // TODO:
    }
 }
