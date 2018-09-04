@@ -6,9 +6,9 @@ import groovy.json.JsonSlurper
 class JsonServiceIntegrationSpec extends IntegrationSpec {
 
    def jsonService
-   
+
    private static String PS = System.getProperty("file.separator")
-   
+
    def setup()
    {
    }
@@ -22,14 +22,99 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
       setup:
          def path = 'test'+PS+'resources'+PS+'versions'+PS+'91cf9ded-e926-4848-aa3f-3257c1d89554_EMR_APP_1.xml'
          def xml = new File(path).text
-      
+
       when:
          def jsonString = jsonService.xmlToJson(xml)
          def jsonSlurper = new JsonSlurper()
          def json = jsonSlurper.parseText(jsonString)
-      
+
       then:
          assert jsonString != null
          assert json.version."@xsi:type" == "ORIGINAL_VERSION"
+   }
+
+   def "xml2JsonV2 test"()
+   {
+      when:
+         def xml = '''<root>
+            <child>one</child>
+            <child>two</child>
+            <other>ooops</other>
+            <complex>
+              <single>
+                <s1>1</s1>
+              </single>
+              <single>
+                <s1>2</s1>
+              </single>
+            </complex>
+         </root>'''
+
+         def json = jsonService.xml2JsonV2(xml)
+
+         println json
+
+      then:
+         assert json != null
+   }
+
+   def "xml2JsonV2 test 2"()
+   {
+      when:
+         def xml = '''<root>
+           <single>
+             <s1>1</s1>
+           </single>
+           <single>
+             <s1>2</s1>
+           </single>
+         </root>'''
+
+         def json = jsonService.xml2JsonV2(xml)
+
+         println json
+
+      then:
+         assert json != null
+   }
+
+   def "xml2JsonV2 test 3"()
+   {
+      when:
+         def xml = '''<root>
+           <single id="1">
+             <s1>1</s1>
+           </single>
+           <single id="2">
+             <s1>2</s1>
+           </single>
+         </root>'''
+
+         def json = jsonService.xml2JsonV2(xml)
+
+         println json
+
+      then:
+         assert json != null
+   }
+
+   def "xml2JsonV2 test 3"()
+   {
+      when:
+         def xml = '''<root>
+           <single id="1">
+             <s1 id="3">1</s1>
+           </single>
+           <single id="2">
+             <s1 id="4">2</s1>
+           </single>
+         </root>'''
+
+         def json = jsonService.xml2JsonV2(xml)
+
+         println json
+
+      then:
+         assert json != null
    }
 }

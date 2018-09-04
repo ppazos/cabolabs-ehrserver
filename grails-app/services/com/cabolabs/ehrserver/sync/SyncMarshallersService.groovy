@@ -88,6 +88,9 @@ class SyncMarshallersService {
          def json = jsonService.xml2JsonV2(file.text) //xmlToJson(file.text)
          def jsonSlurper = new JsonSlurper()
          parsed = jsonSlurper.parseText(json)
+
+         // test
+         //println jsonService.json2XmlV2(json)
       }
       else
       {

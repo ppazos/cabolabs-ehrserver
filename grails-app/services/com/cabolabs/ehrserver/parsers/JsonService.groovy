@@ -37,6 +37,10 @@ import de.odysseus.staxon.xml.util.PrettyXMLEventWriter
 
 import groovy.json.JsonBuilder
 import groovy.util.slurpersupport.GPathResult
+import groovy.json.JsonSlurper
+import groovy.xml.MarkupBuilder
+
+import groovy.util.slurpersupport.*
 
 class JsonService {
 
@@ -136,43 +140,164 @@ class JsonService {
       return output.toString()
    }
 
-   String xml2JsonV2(String xmlString)
+   String xml2JsonV2(String xmlString, boolean prettyPrint = false)
    {
-      def xml = new XmlSlurper().parseText(xmlString)
+      // 2nd arg false makes namespaces appear as attributes on the root
+      def xml = new XmlSlurper(false, false).parseText(xmlString)
+
+      // test
+      //def namespaceMap = xml.attributes().findAll { it.key.startsWith('xmlns') }
+      //println namespaceMap
 
       // in/out param
       def jsonModel = [:]
 
-      xml2JsonVersionRecursive(jsonModel, xml)
+      xml2JsonRecursive(jsonModel, xml)
 
       return new JsonBuilder(jsonModel).toPrettyString() //toString()
    }
 
-   def xml2JsonVersionRecursive(Map jsonModel, GPathResult xml)
+   def xml2JsonRecursive(Map jsonModel, GPathResult xml)
    {
-      jsonModel[xml.name()] = [:]
-
-      xml.attributes().each {
-
-         // string, (name of the attr, can include namespace, e.g. for xs:type) like "@{http://www.w3.org/2001/XMLSchema-instance}type" : "HISTORY",
-         //println it.key.getClass()
-
-         //println it.value.getClass() // string, value of the attr
-
-         jsonModel[xml.name()]['@'+it.key] = it.value
+      if (xml instanceof NodeChildren && xml.size() == 1)
+      {
+         xml = xml[0] // extracts NodeChild from NodeChildren when there is just one node
       }
 
+      // Only NodeChildren will support the index operator
+      if (xml instanceof NodeChild)
+      {
+         println 'single name '+ xml.name()
+
+         jsonModel[xml.name()] = [:]
+
+         xml.attributes().each {
+            jsonModel[xml.name()]['@'+it.key] = it.value
+         }
+
+         /*
+         for:
+         <root>
+            <child>one</child>
+            <child>two</child>
+            <other>ooops</other>
+         </root>
+
+         childNodeNameRepeatMap = [child:2, other:1]
+         */
+         def childNodeNameRepeatMap = xml.children()*.name().groupBy{it}.collectEntries{ [(it.key): it.value.size()] }
+
+         println childNodeNameRepeatMap
+
+         if (childNodeNameRepeatMap.size() == 0)
+         {
+            jsonModel[xml.name()]['$'] = xml.text()
+         }
+
+         childNodeNameRepeatMap.each { childName, repeat ->
+/*
+            if (xml."${childName}".size() == 0)
+               jsonModel[xml.name()][childName] = xml."${childName}".text() // TODO: allow date formatting and represent numbers without quotes (parse the string value).
+            else
+            */
+               xml2JsonRecursive(jsonModel[xml.name()], xml."${childName}") // xml.childName can have more than one occurrence
+         }
+      }
+      else
+      {
+         println "multiple name "+ xml.name()
+         jsonModel[xml.name()] = [] // multiple nodes
+
+         // xml is multiple for two or more children with the same name
+         xml.eachWithIndex { node, i ->
+
+            if (!jsonModel[xml.name()][i]) jsonModel[xml.name()][i] = [:]
+
+            node.attributes().each {
+               jsonModel[xml.name()][i]['@'+it.key] = it.value
+            }
+
+            def childNodeNameRepeatMap = node.children()*.name().groupBy{it}.collectEntries{ [(it.key): it.value.size()] }
+            println childNodeNameRepeatMap
+
+            /* this case, multiple child and single, generates a list: child: [1, 2]
+            <parent>
+             <child>1</child>
+             <child>2</child>
+            </parent>
+            */
+            if (childNodeNameRepeatMap.size() == 0)
+            {
+               println "multiple text node"
+               jsonModel[xml.name()][i]['$'] = node.text()
+            }
+
+            childNodeNameRepeatMap.eachWithIndex { childName, repeat, j ->
+
+               println "multiple complex node "+ childName
+               xml2JsonRecursive(jsonModel[xml.name()][i], node."${childName}") // xml.childName can have more than one occurrence
+            }
+         }
+      }
+
+      /*
       xml.children().each {
+         println it.name() +'/'+ it.size() +'/'+ it.children().size()
          //println it.name() +'/'+ it.getClass() +' '+ it.children().size()
          if (it.children().size() == 0)
             jsonModel[xml.name()][it.name()] = it.text() // TODO: allow date formatting and represent numbers without quotes (parse the string value).
          else
-            xml2JsonVersionRecursive(jsonModel[xml.name()], it)
+            xml2JsonRecursive(jsonModel[xml.name()], it)
       }
+      */
    }
 
-   String json2XmlV2(String jsonString)
+   String json2XmlV2(String jsonString, boolean prettyPrint = false)
    {
-      // TODO:
+      def jsonSlurper = new JsonSlurper()
+      def json = jsonSlurper.parseText(jsonString)
+
+      def writer = new StringWriter()
+      def xmlb = new MarkupBuilder(new IndentPrinter(new PrintWriter(writer), "", false))
+      xmlb.setDoubleQuotes(true)
+      // println json.getClass() // LAzyMap
+
+      /*
+      json.each {
+         //println it.key.getClass() // String
+         //println it.value.getClass() // LAzymap
+
+         println it.key +'/'+ it.value
+      }
+      */
+      json2XmlRecursive(json, xmlb)
+
+      return writer.toString()
+   }
+
+   def json2XmlRecursive(Map json, MarkupBuilder xmlb)
+   {
+      json.keySet().each { name ->
+
+         if (json[name] instanceof String) // text node
+         {
+            //println "single node "+ json
+            xmlb."${name}"(json[name])
+         }
+         else // complex node
+         {
+            //def attributes = json[name].findAll{ it.key.startsWith('@') }
+            def attributes = json[name].collectEntries { it.key.startsWith('@') ? [(it.key - '@'): it.value] : [:] }
+            def children = json[name].findAll{ !it.key.startsWith('@') }
+
+            //println "attributes "+ attributes
+            //println "children "+ children
+            //println "children class "+ children.getClass()
+
+            xmlb."${name}"(attributes) {
+               json2XmlRecursive(children,  xmlb)
+            }
+         }
+      }
    }
 }
