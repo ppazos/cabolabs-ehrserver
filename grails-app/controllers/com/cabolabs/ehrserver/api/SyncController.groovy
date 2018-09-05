@@ -25,6 +25,8 @@ import com.cabolabs.ehrserver.sync.SyncParserService
 import grails.converters.*
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.json.JsonSlurper
 
 /**
  * Controller that receives the sync operations
@@ -101,7 +103,18 @@ class SyncController {
    {
       println "syncContribution"
 
-      def contribution = syncParserService.fromJSONContribution(request.JSON.contribution)
+      // TODO: should catch validation errores and retrieve them to the client
+      //println request.JSON // changes the order of the objects!!!!
+      //def jo = new JSONObject(request.reader.text) // the issue is the JSONObject used by grails it is unordered!
+      //println jo
+
+      LinkedHashMap json = new JsonSlurper().parseText(request.reader.text)
+      def jo = new JSONObject(json)
+      println jo
+      println "-----------"
+
+
+      def contribution = syncParserService.fromJSONContribution(jo)
 
       if (!contribution.save(flush:true))
       {

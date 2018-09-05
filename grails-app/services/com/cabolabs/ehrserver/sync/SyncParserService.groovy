@@ -5,6 +5,7 @@ import com.cabolabs.ehrserver.parsers.JsonService
 import com.cabolabs.ehrserver.parsers.XmlService
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.json.JsonBuilder
 
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
@@ -44,6 +45,9 @@ class SyncParserService {
 
    Contribution fromJSONContribution(JSONObject j)
    {
+      // this is needed because the controller has problems with changed orders in the JSON
+      def jsonContribution = j.contribution
+
       // no need to make the biding, since XmlService already does that from the commit payload
       def contribution /* = new Contribution(
          uid: j.uid,
@@ -56,25 +60,29 @@ class SyncParserService {
 
       // TODO: OPTs should be synced before commits referencing those templates
 
-      def ehr = Ehr.findByUid(j.ehrUid) // EHR should be synced before Contribution
+      def ehr = Ehr.findByUid(jsonContribution.ehrUid) // EHR should be synced before Contribution
 
       // Process commit to create versions and compo indexes, later data indexing will generate dvs
-      def jsonCommit = j.commit
+      def jsonCommit = jsonContribution.commit
 
-      //println "commit class "+ jsonCommit.getClass() // JSONObject
+      //println "commit class "+ jsonCommit.getClass() // groovy.json.internal.LazyMap
       //println jsonCommit.toString() // json string
 
       def testfile = new File('./cucucu.json')
-      testfile << jsonCommit.toString()
+      testfile << new JsonBuilder(jsonCommit).toString() //jsonCommit.toString() // this is not valid JSON!
+
+      //println jsonCommit.toString() // not valid JSON
 
       // copied from RestController.commit
-      def versionsXML = jsonService.json2xml(jsonCommit.toString())
+      def versionsXML = jsonService.json2XmlV2(new JsonBuilder(jsonCommit).toString())
 
 println versionsXML
 
       def slurper = new XmlSlurper(false, false)
       def _parsedVersions = slurper.parseText(versionsXML)
-      contribution = xmlService.processCommit(ehr, _parsedVersions, j.audit.system_id, new Date(), j.audit.committer.name)
+
+      // can throw validation errors!
+      contribution = xmlService.processCommit(ehr, _parsedVersions, jsonContribution.audit.system_id, new Date(), jsonContribution.audit.committer.name)
       contribution.master = false
 
       return contribution

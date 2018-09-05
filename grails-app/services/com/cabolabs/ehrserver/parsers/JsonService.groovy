@@ -154,7 +154,10 @@ class JsonService {
 
       xml2JsonRecursive(jsonModel, xml)
 
-      return new JsonBuilder(jsonModel).toPrettyString() //toString()
+      if (prettyPrint)
+         return new JsonBuilder(jsonModel).toPrettyString()
+      else
+         return new JsonBuilder(jsonModel).toString()
    }
 
    def xml2JsonRecursive(Map jsonModel, GPathResult xml)
@@ -167,7 +170,7 @@ class JsonService {
       // Only NodeChildren will support the index operator
       if (xml instanceof NodeChild)
       {
-         println 'single name '+ xml.name()
+         //println 'single name '+ xml.name()
 
          jsonModel[xml.name()] = [:]
 
@@ -176,7 +179,7 @@ class JsonService {
          }
 
          /*
-         for:
+         for:jsonContribution
          <root>
             <child>one</child>
             <child>two</child>
@@ -187,7 +190,7 @@ class JsonService {
          */
          def childNodeNameRepeatMap = xml.children()*.name().groupBy{it}.collectEntries{ [(it.key): it.value.size()] }
 
-         println childNodeNameRepeatMap
+         //println childNodeNameRepeatMap
 
          if (childNodeNameRepeatMap.size() == 0)
          {
@@ -195,17 +198,17 @@ class JsonService {
          }
 
          childNodeNameRepeatMap.each { childName, repeat ->
-/*
+            /*
             if (xml."${childName}".size() == 0)
                jsonModel[xml.name()][childName] = xml."${childName}".text() // TODO: allow date formatting and represent numbers without quotes (parse the string value).
             else
             */
-               xml2JsonRecursive(jsonModel[xml.name()], xml."${childName}") // xml.childName can have more than one occurrence
+            xml2JsonRecursive(jsonModel[xml.name()], xml."${childName}") // xml.childName can have more than one occurrence
          }
       }
       else
       {
-         println "multiple name "+ xml.name()
+         //println "multiple name "+ xml.name()
          jsonModel[xml.name()] = [] // multiple nodes
 
          // xml is multiple for two or more children with the same name
@@ -218,7 +221,7 @@ class JsonService {
             }
 
             def childNodeNameRepeatMap = node.children()*.name().groupBy{it}.collectEntries{ [(it.key): it.value.size()] }
-            println childNodeNameRepeatMap
+            //println childNodeNameRepeatMap
 
             /* this case, multiple child and single, generates a list: child: [1, 2]
             <parent>
@@ -228,13 +231,13 @@ class JsonService {
             */
             if (childNodeNameRepeatMap.size() == 0)
             {
-               println "multiple text node"
+               //println "multiple text node"
                jsonModel[xml.name()][i]['$'] = node.text()
             }
 
             childNodeNameRepeatMap.eachWithIndex { childName, repeat, j ->
 
-               println "multiple complex node "+ childName
+               //println "multiple complex node "+ childName
                xml2JsonRecursive(jsonModel[xml.name()][i], node."${childName}") // xml.childName can have more than one occurrence
             }
          }
@@ -258,18 +261,17 @@ class JsonService {
       def json = jsonSlurper.parseText(jsonString)
 
       def writer = new StringWriter()
-      def xmlb = new MarkupBuilder(new IndentPrinter(new PrintWriter(writer), "", false))
+      def xmlb
+
+      if (prettyPrint)
+         xmlb = new MarkupBuilder(writer)
+      else
+         xmlb = new MarkupBuilder(new IndentPrinter(new PrintWriter(writer), "", false))
+
+
       xmlb.setDoubleQuotes(true)
       // println json.getClass() // LAzyMap
 
-      /*
-      json.each {
-         //println it.key.getClass() // String
-         //println it.value.getClass() // LAzymap
-
-         println it.key +'/'+ it.value
-      }
-      */
       json2XmlRecursive(json, xmlb)
 
       return writer.toString()
@@ -277,25 +279,51 @@ class JsonService {
 
    def json2XmlRecursive(Map json, MarkupBuilder xmlb)
    {
+      def textNode
+
       json.keySet().each { name ->
 
-         if (json[name] instanceof String) // text node
+         textNode = null
+
+         // lists in xml should generate many xml elements with the same name
+         // a : [ @id:1, @id:2 ] => <a id=1 /><a id=2/>
+         if (json[name] instanceof List)
          {
-            //println "single node "+ json
-            xmlb."${name}"(json[name])
+            json[name].each { item ->
+
+               textNode = null
+
+               def attributes = item.collectEntries { it.key.startsWith('@') ? [(it.key - '@'): it.value] : [:] }
+               def children = item.findAll{ !it.key.startsWith('@') && it.key != '$' }
+
+               if (!children) // text node
+               {
+                  textNode = item['$']
+                  xmlb."${name}"(attributes, textNode)
+               }
+               else
+               {
+                  xmlb."${name}"(attributes) {
+                     json2XmlRecursive(children,  xmlb)
+                  }
+               }
+            }
          }
-         else // complex node
+         else
          {
-            //def attributes = json[name].findAll{ it.key.startsWith('@') }
             def attributes = json[name].collectEntries { it.key.startsWith('@') ? [(it.key - '@'): it.value] : [:] }
-            def children = json[name].findAll{ !it.key.startsWith('@') }
+            def children = json[name].findAll{ !it.key.startsWith('@') && it.key != '$' }
 
-            //println "attributes "+ attributes
-            //println "children "+ children
-            //println "children class "+ children.getClass()
-
-            xmlb."${name}"(attributes) {
-               json2XmlRecursive(children,  xmlb)
+            if (!children) // text node
+            {
+               textNode = json[name]['$']
+               xmlb."${name}"(attributes, textNode)
+            }
+            else
+            {
+               xmlb."${name}"(attributes) {
+                  json2XmlRecursive(children,  xmlb)
+               }
             }
          }
       }

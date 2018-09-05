@@ -94,7 +94,9 @@ class SyncMarshallersService {
       }
       else
       {
-         parsed = file.text // already JSON
+         // files is already JSON
+         def jsonSlurper = new JsonSlurper()
+         parsed = jsonSlurper.parseText(file.text)
       }
 
       jb.contribution {

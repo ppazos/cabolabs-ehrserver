@@ -33,7 +33,7 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
          assert json.version."@xsi:type" == "ORIGINAL_VERSION"
    }
 
-   def "xml2JsonV2 test"()
+   def "xml2JsonV2 test 1"()
    {
       when:
          def xml = '''<root>
@@ -50,7 +50,7 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
             </complex>
          </root>'''
 
-         def json = jsonService.xml2JsonV2(xml)
+         def json = jsonService.xml2JsonV2(xml, true)
 
          println json
 
@@ -58,24 +58,89 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
          assert json != null
    }
 
+   def "json2XmlV2 test 1"()
+   {
+      when:
+         def json = '''{
+               "root":{
+                  "child":[
+                     {"$":"one"},
+                     {"$":"two"}
+                  ],
+                  "other":{
+                     "$":"ooops"
+                  },
+                  "complex":{
+                     "single":[
+                        {
+                           "s1":{
+                              "$":"1"
+                           }
+                        },
+                        {
+                           "s1":{
+                              "$":"2"
+                           }
+                        }
+                     ]
+                  }
+               }
+            }'''
+
+         def xml = jsonService.json2XmlV2(json, true)
+
+         println xml
+
+      then:
+         assert xml != null
+   }
+
    def "xml2JsonV2 test 2"()
    {
       when:
          def xml = '''<root>
-           <single>
-             <s1>1</s1>
-           </single>
-           <single>
-             <s1>2</s1>
-           </single>
-         </root>'''
+                       <single>
+                         <s1>1</s1>
+                       </single>
+                       <single>
+                         <s1>2</s1>
+                       </single>
+                     </root>'''
 
-         def json = jsonService.xml2JsonV2(xml)
+         def json = jsonService.xml2JsonV2(xml, true)
 
          println json
 
       then:
          assert json != null
+   }
+
+   def "json2XmlV2 test 2"()
+   {
+      when:
+         def json = '''{
+                  "root":{
+                     "single":[
+                        {
+                           "s1":{
+                              "$":"1"
+                           }
+                        },
+                        {
+                           "s1":{
+                              "$":"2"
+                           }
+                        }
+                     ]
+                  }
+               }'''
+
+         def xml = jsonService.json2XmlV2(json, true)
+
+         println xml
+
+      then:
+         assert xml != null
    }
 
    def "xml2JsonV2 test 3"()
@@ -90,7 +155,7 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
            </single>
          </root>'''
 
-         def json = jsonService.xml2JsonV2(xml)
+         def json = jsonService.xml2JsonV2(xml, true)
 
          println json
 
@@ -98,7 +163,37 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
          assert json != null
    }
 
-   def "xml2JsonV2 test 3"()
+   def "json2XmlV2 test 3"()
+   {
+      when:
+         def json = '''{
+                  "root":{
+                     "single":[
+                        {
+                           "@id":"1",
+                           "s1":{
+                              "$":"1"
+                           }
+                        },
+                        {
+                           "@id":"2",
+                           "s1":{
+                              "$":"2"
+                           }
+                        }
+                     ]
+                  }
+               }'''
+
+         def xml = jsonService.json2XmlV2(json, true)
+
+         println xml
+
+      then:
+         assert xml != null
+   }
+
+   def "xml2JsonV2 test 4"()
    {
       when:
          def xml = '''<root>
@@ -110,11 +205,42 @@ class JsonServiceIntegrationSpec extends IntegrationSpec {
            </single>
          </root>'''
 
-         def json = jsonService.xml2JsonV2(xml)
+         def json = jsonService.xml2JsonV2(xml, true)
 
          println json
 
       then:
          assert json != null
+   }
+
+   def "json2XmlV2 test 4"()
+   {
+      when:
+         def json = '''{
+            "root":{
+               "single":[
+                  {
+                     "@id":"1",
+                     "s1":{
+                        "@id":"3","$":"1"
+                     }
+                  },
+                  {
+                     "@id":"2",
+                     "s1":{
+                        "@id":"4",
+                        "$":"2"
+                     }
+                  }
+               ]
+            }
+         }'''
+
+         def xml = jsonService.json2XmlV2(json, true)
+
+         println xml
+
+      then:
+         assert xml != null
    }
 }
