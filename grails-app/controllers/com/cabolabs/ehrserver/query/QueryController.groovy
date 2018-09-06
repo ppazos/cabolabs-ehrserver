@@ -331,6 +331,7 @@ class QueryController {
     */
    def test(String type)
    {
+      /*
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
         params['ehrs'] = Ehr.list()
@@ -339,6 +340,13 @@ class QueryController {
       {
         params['ehrs'] = Ehr.findAllByOrganizationUid(session.organization.uid)
       }
+      */
+
+      // queries are always associated with an organization, so the ehrs for testing
+      // should be in the current org, even if the user is admin. This avoids an error
+      // when the query has a group and the group organization is not the same as the
+      // ehr organization, that is a check we do in the Query.getInstance
+      params['ehrs'] = Ehr.findAllByOrganizationUid(session.organization.uid)
 
       // ==================================================================
       // asegura que archetypeId, path, value y operand son siempre listas,
