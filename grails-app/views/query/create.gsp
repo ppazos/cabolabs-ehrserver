@@ -203,7 +203,7 @@
         },
         is_valid: function (criteria_1_id, criteria_2_id)
         {
-          return this.items.length == 1;
+          return this.items.length <= 1; // no criteria is also a valid criteria
         },
         remove_criteria: function (criteria_id) // removes complex or simple criteria on root, is complex, children are added to root
         {
@@ -551,10 +551,11 @@
             alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
             return;
           }
-        }
 
-        var criteria = criteria_builder.get_criteria_tree();
-        query.set_criteria(criteria);
+          // set criteria only for composition queries
+          var criteria = criteria_builder.get_criteria_tree();
+          query.set_criteria(criteria);
+        }
 
         query.set_query_group($('select[name=queryGroup]').val());
 
