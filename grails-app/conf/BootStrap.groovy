@@ -1064,7 +1064,10 @@ class BootStrap {
       registerMarshallers()
       registerMarshallersSync()
 
+
+      // --------------------------------------------------------------------
       // TEST sync config
+      /*
       def sync1 = new SyncClusterConfig(
          remoteServerName: 'test mirth',
          remoteAPIKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFwaWtleWtwZXdoZW95dXppZW1vaWlkYXh3cHNpd21rc2lvYW9xcmxnbXBwcnZwdWxidGt4bXZnIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQ1NiIsIm9yZ191aWQiOiJlOWQxMzI5NC1iY2U3LTQ0ZTctOTYzNS04ZTkwNmRhMGM5MTQifSwiaXNzdWVkX2F0IjoiMjAxOC0wOS0wMVQwMzowMTo1Ny42NDRaIn0=.zBXBgRlKBuYWFgYsTv7P706Qf3h6IMTjgF2jwk/LQVo=',
@@ -1074,7 +1077,9 @@ class BootStrap {
          isActive: true
       )
       sync1.save()
+      */
       // --------------------------------------------------------------------
+
 
       if (Environment.current != Environment.TEST)
       {
