@@ -74,6 +74,228 @@ class QueryController {
 
    def list(int offset, String sort, String order, String name, boolean isDeleted)
    {
+      /*
+      def q = """
+      SELECT ci
+      FROM CompositionIndex ci, DataValueIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.path = '/data[at0001]/origin' AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      """
+      */
+
+      def q, r
+
+      /*
+      // test query by relationship with the ehr: WORKS!
+      q = """
+      SELECT dvi
+      FROM DataValueIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin' AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      """
+
+      r = DataValueIndex.executeQuery(q)
+      println r.collect{ [it.id, it.owner.id, it.getClass(), it.value] }
+
+      // result is null if FROM DataValueIndex maybe because of it not having .value attr
+      // with DvDateTimeIndex returns the max date OK!
+      // BUT cant get the specific dvi without a subquery
+      q = """
+      SELECT max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin' AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+
+      // last pap test date per COMPO: WORKS!
+      q = """
+      SELECT dvi.owner.uid, max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin'
+      GROUP BY dvi.owner.uid
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+      */
+
+      /*
+      // same as efore but retrieving the whole CompoIndex: WORKS!
+      // BUT the date is inside each compo so is not the max for ALL compos
+      // FOR ALL COMPOS should group by EHR
+      q = """
+      SELECT dvi.owner, max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin'
+      GROUP BY dvi.owner
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+
+      // this filters the date before a given one then applies the max projection
+      // but we need to get the max then filter, WE NEED SUBQUERIES!
+      q = """
+      SELECT dvi.owner.ehrUid, max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin' AND
+            dvi.value < '2016-01-01 00:00:00'AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      GROUP BY dvi.owner.ehrUid
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+      */
+
+      // to FILTER the max value the HAVING works!
+      q = """
+      SELECT dvi.owner.ehrUid, max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin' AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      GROUP BY dvi.owner.ehrUid
+      HAVING max(dvi.value) < '2018-01-01 00:00:00'
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+
+
+/*
+      // THIS RETURNS EMPTY seems the having doesnt work comparing an agg with a column
+      // TODO: check what the SQL log shows
+      q = """
+      SELECT dvi.owner.ehrUid, dvi.value
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin' AND
+            dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+      GROUP BY dvi.owner.ehrUid
+      HAVING dvi.value = max(dvi.value)
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+*/
+
+      /*
+      // NOW WE WANT THE ci that belongs to the EHR and contains the DVI
+      // has duplicated results
+      q = """
+      SELECT ci
+      FROM CompositionIndex ci, DvDateTimeIndex dvi1
+      WHERE dvi1.owner = ci AND
+            (ci.ehrUid, dvi1.value) IN (
+               SELECT dvi.owner.ehrUid, max(dvi.value)
+               FROM DvDateTimeIndex dvi
+               WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+                     dvi.archetypePath = '/data[at0001]/origin' AND
+                     dvi.owner.ehrUid = '11111111-1111-1111-1111-111111111111'
+               GROUP BY dvi.owner.ehrUid
+               HAVING max(dvi.value) < '2018-01-01 00:00:00'
+            )
+      """
+      r = CompositionIndex.executeQuery(q)
+      println r
+      */
+
+      /*
+      // same as before but for all EHRs,
+      // has duplicated results
+      q = """
+      SELECT ci
+      FROM CompositionIndex ci, DvDateTimeIndex dvi1
+      WHERE dvi1.owner = ci AND
+            (ci.ehrUid, dvi1.value) IN (
+               SELECT dvi.owner.ehrUid, max(dvi.value)
+               FROM DvDateTimeIndex dvi
+               WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+                     dvi.archetypePath = '/data[at0001]/origin'
+               GROUP BY dvi.owner.ehrUid
+               HAVING max(dvi.value) < '2018-01-01 00:00:00'
+            )
+      """
+      r = CompositionIndex.executeQuery(q)
+      r.each {
+         println it.ehrUid +' '+ it.uid
+      }
+      println "------------------------"
+      */
+
+      // can add the filter by one EHR
+      //   ci.ehrUid = '11111111-1111-1111-1111-111111111111' AND
+      // >= all does the MAX(date)
+      println "QUERY 666 CORRECT!!!!"
+
+      q = """
+      SELECT ci
+      FROM CompositionIndex ci, DvDateTimeIndex dvi
+      WHERE
+         dvi.owner = ci AND
+         dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+         dvi.archetypePath = '/data[at0001]/origin' AND
+         dvi.value >= all (
+            SELECT dvi1.value
+            FROM DvDateTimeIndex dvi1
+            WHERE dvi1.owner.ehrUid = ci.ehrUid AND
+                  dvi1.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+                  dvi1.archetypePath = '/data[at0001]/origin'
+         )
+      """
+      r = CompositionIndex.executeQuery(q)
+      r.each {
+         println it.ehrUid +' '+ it.uid +' '+ it.id
+      }
+      println "------------------------"
+
+
+      /*
+      // another way: gets duplicated results!
+      // dvi1.owner.ehrUid = dvi2.owner.ehrUid  // SAME PARENT EHR = group
+      // dvi1.value > dvi2.value                // dvi1 is the max date
+      // archId and path                        // both dvis are for the same data point
+      // dvi1.value) < '2018-01-01 00:00:00'    // date criteria
+      // can add the ehrUid criteria also
+      q = """
+      SELECT dvi1.owner
+      FROM DvDateTimeIndex dvi1, DvDateTimeIndex dvi2
+      WHERE
+         dvi1.owner.ehrUid = dvi2.owner.ehrUid AND
+         dvi1.value > dvi2.value AND
+         dvi1.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+         dvi1.archetypePath = '/data[at0001]/origin' AND
+         dvi2.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+         dvi2.archetypePath = '/data[at0001]/origin' AND
+         dvi1.value < '2018-01-01 00:00:00'
+      """
+      r = CompositionIndex.executeQuery(q)
+      r.each {
+         println it.ehrUid +' '+ it.uid
+      }
+      */
+
+
+      /*
+      // last pap test date per EHR: WORKS!
+      q = """
+      SELECT dvi.owner.ehrUid, max(dvi.value)
+      FROM DvDateTimeIndex dvi
+      WHERE dvi.archetypeId = 'openEHR-EHR-OBSERVATION.pap_test_result.v1' AND
+            dvi.archetypePath = '/data[at0001]/origin'
+      GROUP BY dvi.owner.ehrUid
+      """
+      r = DataValueIndex.executeQuery(q)
+      println r
+      */
+
+      // ---------------------------------------------------
+
+
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
