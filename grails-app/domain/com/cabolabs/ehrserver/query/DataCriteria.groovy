@@ -193,7 +193,11 @@ class DataCriteria {
       def criteriaValueType // value, list, range ...
       def value, attr, negation
 
+      println "DataCriteria.toSQL "+ this.getClass()
+
       attributes_or_functions.each { attr_or_function ->
+
+         println "attr_or_function "+ attr_or_function
 
          if (this.functions().contains(attr_or_function))
          {
@@ -217,6 +221,8 @@ class DataCriteria {
                negation = this."$negationField"
 
             criteriaValueType = criteria_spec[attr][operand]
+
+            println "criteriaValueType "+ criteriaValueType
 
             // TODO: if value is string, add quotes, if boolean change it to the DB boolean value
             if (criteriaValueType == 'value')
