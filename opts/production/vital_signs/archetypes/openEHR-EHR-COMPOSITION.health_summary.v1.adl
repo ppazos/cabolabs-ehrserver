@@ -2,9 +2,20 @@
 	openEHR-EHR-COMPOSITION.health_summary.v1
 
 concept
-	[at0000]	-- Health summary
+	[at0000]	-- Resumen de salud
 language
 	original_language = <[ISO_639-1::en]>
+	translations = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["organisation"] = <"CaboLabs">
+				["name"] = <"Pablo Pazos">
+				["email"] = <"pablo.pazos@cabolabs.com">
+			>
+			accreditation = <"Ingeniero en Computación">
+		>
+	>
 description
 	original_author = <
 		["name"] = <"Heather Leslie">
@@ -13,6 +24,28 @@ description
 		["date"] = <"2015-10-01">
 	>
 	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Para registrar información del resumen de salud de una persona, representando un subconjunto de su historia clínica en un punto del tiempo.">
+			use = <"Utilizar como contenedor genérico de registros de resumen de la salud y bienestar de un paciente como una foto de su historia clínica en un punto de tiempo.
+
+El autor del resumen es usualmente un médico familiarizado con todos los aspectos relevantes de la salud del paciente, que es el contexto del resumen.
+
+El alcance del resumen puede variar entre contextos, yendo desde la revisión de todos los aspectos claves de la salud del paciente, hasta información focalizada en un aspecto específico de la salud del paciente.
+
+Los lectores objetivo para los resúmenes pueden variar según el propósito primario y foco del resumen, y pueden incluir:
+- cualquier proveedor de salud futuro
+- médicos que no cuentan con conocimiento sobre el individuo pero deben atender al paciente, cómo en la atención de emergencia o cuando el paciente está viajando;
+- médicos gestionando aspectos específicos de la salud del paciente, como diabetes o embarazo; y
+- los propiospacientes
+
+El contenido del resumen no tiene restricciones, para poder ser llenado con arquetipos de secciones o entradas apropiados para el propósito clínico dentro de una plantilla.
+
+Aunque el contenido no tiene restricciones, este arquetipo soporta consultas de datos simples por todos los resumenes que puedan estar contenidos en la historia clínica del paciente.">
+			keywords = <"resumen", "sinopsis", "revisión", "estado">
+			misuse = <"No utilizar pararregistrar detalles sobre una consulta clínica, procedimiento, prueba o evaluación única.">
+			copyright = <"© openEHR Foundation(en)">
+		>
 		["en"] = <
 			language = <[ISO_639-1::en]>
 			purpose = <"To record a summary of health information about an individual, representing a subset of their health record at a specified point in time.">
@@ -36,22 +69,15 @@ Even though clinical content is unconstrained, this archetype supports simple qu
 			copyright = <"© openEHR Foundation">
 		>
 	>
-	lifecycle_state = <"published">
+	lifecycle_state = <"Published">
 	other_contributors = <"Vebjoern Arntzen, Oslo university hospital, Norway", "Silje Ljosland Bakke, National ICT Norway, Norway (openEHR Editor)", "Sistine Barretto-Daniels, Ocean Informatics, Australia", "Lars Bitsch-Larsen, Haukeland University hospital, Norway", "Heather Grain, Llewelyn Grain Informatics, Australia", "Lars Karlsen, DIPS ASA, Norway", "Heather Leslie, Ocean Informatics, Australia (openEHR Editor)", "Yang Lu, University of Melbourne, Australia", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom (openEHR Editor)", "Andrej Orel, Marand d.o.o., Slovenia">
 	other_details = <
-		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.">
-		["custodian_organisation"] = <"openEHR Foundation">
 		["current_contact"] = <"Heather Leslie, Ocean Informatics, heather.leslie@oceaninformatics.com">
-		["original_namespace"] = <"org.openehr">
-		["original_publisher"] = <"openEHR Foundation">
-		["custodian_namespace"] = <"org.openehr">
-		["MD5-CAM-1.0.1"] = <"CA8006DBE4BA91910B594498AB651880">
-		["build_uid"] = <"dc6e362e-eaf7-43e0-aa3f-b7c02503f0dc">
-		["revision"] = <"1.0.0">
+		["MD5-CAM-1.0.1"] = <"91E01C817791767B4F195AB894BE8CF2">
 	>
 
 definition
-	COMPOSITION[at0000] matches {	-- Health summary
+	COMPOSITION[at0000] matches {	-- Resumen de salud
 		category matches {
 			DV_CODED_TEXT matches {
 				defining_code matches {[openehr::433]}
@@ -60,9 +86,9 @@ definition
 		context matches {
 			EVENT_CONTEXT matches {
 				other_context matches {
-					ITEM_TREE[at0001] matches {	-- Tree
+					ITEM_TREE[at0001] matches {	-- ARbol
 						items cardinality matches {0..*; unordered} matches {
-							allow_archetype CLUSTER[at0002] occurrences matches {0..*} matches {	-- Extension
+							allow_archetype CLUSTER[at0002] occurrences matches {0..*} matches {	-- Extensión
 								include
 									archetype_id/value matches {/.*/}
 							}
@@ -73,9 +99,25 @@ definition
 		}
 	}
 
-
 ontology
 	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Resumen de salud">
+					description = <"Documento general que contiene el resumen de información de salud de una persona.">
+				>
+				["at0001"] = <
+					text = <"ARbol">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					comment = <"*For example: local information requirements or additional metadata to align with FHIR or CIMI equivalents.(en)">
+					text = <"Extensión">
+					description = <"Información adicional requerida para capturar contenido local o alinear a otros modelos de referencia o formalismos">
+				>
+			>
+		>
 		["en"] = <
 			items = <
 				["at0000"] = <
@@ -87,9 +129,9 @@ ontology
 					description = <"@ internal @">
 				>
 				["at0002"] = <
+					comment = <"For example: local information requirements or additional metadata to align with FHIR or CIMI equivalents.">
 					text = <"Extension">
 					description = <"Additional information required to capture local content or to align with other reference models/formalisms.">
-					comment = <"For example: local information requirements or additional metadata to align with FHIR or CIMI equivalents.">
 				>
 			>
 		>
