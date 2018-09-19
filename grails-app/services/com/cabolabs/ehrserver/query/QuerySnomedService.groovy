@@ -10,8 +10,7 @@ import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 @Transactional
 class QuerySnomedService {
 
-   def api_key = '942645e3-a305-4d0d-9de1-145d65d8b2c4'
-   //def api_key = '22222222-2222-2222-2222-222222222222'
+   def api_key = System.getenv('EHRSERVER_SNQUERY_KEY')
 
    // always throws exceptions on failing cases!
    def getCodesFromExpression(String snomedExpr)
