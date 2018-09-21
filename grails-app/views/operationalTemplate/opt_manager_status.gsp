@@ -19,6 +19,7 @@
         padding-top: 5px;
         padding-bottom: 5px;
       }
+      /* colors darker/lighter https://www.hexcolortool.com/#7aadff */
       .COMPOSITION {
         background-color: #458cff;
       }
@@ -30,6 +31,9 @@
       }
       .OBSERVATION, .EVALUATION, .INSTRUCTION, .ACTION, .ADMIN_ENTRY {
         background-color: #7CAEFF;
+      }
+      .ACTIVITY {
+        background-color: #84B6FF;
       }
       .ITEM_TREE, .ITEM_LIST, .ITEM_TABLE, .ITEM_SINGLE {
         background-color: #8FBAFF;

@@ -21,20 +21,21 @@ class OptGuiTagLib {
       'INSTRUCTION':    'paper-plane',
       'ACTION':         'flash',
       'ADMIN_ENTRY':    'gear',
+      'ACTIVITY':        'dot-circle-o',
       'HISTORY':        'list-alt',
       'EVENT':          'calendar',
       'POINT_EVENT':    'calendar',
       'INTERVAL_EVENT': 'calendar',
-      'ITEM_TREE':     'sitemap',
-      'ITEM_TABLE':    'table',
-      'ITEM_LIST':     'list',
-      'ITEM_SINGLE':   'circle-o',
-      'CLUSTER':       'sitemap',
-      'ELEMENT':       'pencil',
-      'DV_DATE':       'calendar',
-      'DV_DATE_TIME':  'calendar',
-      'DV_TEXT':       'font',
-      'DV_CODED_TEXT': 'list-ul'
+      'ITEM_TREE':      'sitemap',
+      'ITEM_TABLE':     'table',
+      'ITEM_LIST':      'list',
+      'ITEM_SINGLE':    'circle-o',
+      'CLUSTER':        'sitemap',
+      'ELEMENT':        'pencil',
+      'DV_DATE':        'calendar',
+      'DV_DATE_TIME':   'calendar',
+      'DV_TEXT':        'font',
+      'DV_CODED_TEXT':  'list-ul'
     ]
 
     // attributes of the IM that are not in the OPT
@@ -56,6 +57,7 @@ class OptGuiTagLib {
     static typeIMAttributeNameEndsWith = [
       '/defining_code': 'Defining Code',
       '/value': 'Value',
+      '/name': 'Name',
       '/category': 'Category'
     ]
 
