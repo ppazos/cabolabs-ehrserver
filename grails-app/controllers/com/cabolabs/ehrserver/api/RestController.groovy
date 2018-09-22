@@ -1609,12 +1609,19 @@ class RestController {
 
       def result = cilist
 
-      // If no ehrUid was specified, the results will be for different ehrs
-      // we need to group those CompositionIndexes by EHR.
-      //if (!qehrId)
-      //{
+      // count queries do not return compos, so we cant group
+      if (!query.isCount)
+      {
+         // If no ehrUid was specified, the results will be for different ehrs
+         // we need to group those CompositionIndexes by EHR.
+         // Update, to have the same structure even for 1 EHR, we do the group on all cases
          result = cilist.groupBy { ci -> ci.ehrUid }
-      //}
+      }
+      else
+      {
+         result = [count: result[0]] // long
+      }
+
 
       // Muestra compositionIndex/list
       if (showUI)
@@ -2139,6 +2146,18 @@ class RestController {
       }
 
       def res = equery.checkEhr(ehrUid)
+
+      /*
+      println "ehrQurry dirty "+ equery.dirty
+      equery.queries.each { q ->
+         println "query dirty "+ q.dirty
+         q.where.each { exp ->
+            println "expression dirty "+ exp.dirty
+            println "expression criteria dirty "+ exp.criteria.dirty
+         }
+      }
+      */
+
       render ( [res] as JSON)
    }
 

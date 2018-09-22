@@ -152,7 +152,7 @@ class QueryController {
       r = DataValueIndex.executeQuery(q)
       println r
       */
-
+/*
       // to FILTER the max value the HAVING works!
       q = """
       SELECT dvi.owner.ehrUid, max(dvi.value)
@@ -165,7 +165,7 @@ class QueryController {
       """
       r = DataValueIndex.executeQuery(q)
       println r
-
+*/
 
 /*
       // THIS RETURNS EMPTY seems the having doesnt work comparing an agg with a column
@@ -230,6 +230,7 @@ class QueryController {
       // can add the filter by one EHR
       //   ci.ehrUid = '11111111-1111-1111-1111-111111111111' AND
       // >= all does the MAX(date)
+      /*
       println "QUERY 666 CORRECT!!!!"
 
       q = """
@@ -252,6 +253,7 @@ class QueryController {
          println it.ehrUid +' '+ it.uid +' '+ it.id
       }
       println "------------------------"
+      */
 
 
       /*
@@ -294,7 +296,6 @@ class QueryController {
       */
 
       // ---------------------------------------------------
-
 
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0

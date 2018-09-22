@@ -92,6 +92,9 @@ class Query {
    // sync
    boolean master = true
 
+   // test count compo queries
+   boolean isCount = false
+
    // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
    static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
    {
@@ -135,6 +138,7 @@ class Query {
       this.name       = json['name']
       this.type       = json['type']
       this.isPublic   = json['isPublic'] ?: false
+      this.isCount    = json['isCount'] ?: false
       this.format     = json['format'] ?: 'xml'
       this.templateId = json['template_id']
 
@@ -928,14 +932,14 @@ class Query {
 
    def executeComposition(String ehrUid, Date from, Date to,
                           String organizationUid, int max, int offset,
-                          String composerUid, String composerName, docount = false, grouByEhr = false)
+                          String composerUid, String composerName, docount = false, groupByEhr = false)
    {
       // Armado de la query
       String q
 
-      if (docount)
+      if (docount || (this.isCount && !groupByEhr)) // query counters need to count for groupByEhr even if the query isCount
          q = "SELECT COUNT(ci.id) FROM CompositionIndex ci "
-      else if (grouByEhr)
+      else if (groupByEhr)
          q = "SELECT ehr.uid, COUNT(ci.id) FROM Ehr ehr, CompositionIndex ci " // count will return 0 or 1 because max is limited to 1
       else
          q = "SELECT ci FROM CompositionIndex ci "
@@ -995,15 +999,13 @@ class Query {
       }
 
       // Just want to check if there is any result that complies with the criteria
-      if (grouByEhr)
+      if (groupByEhr)
       {
          q += ' AND ehr.uid = ci.ehrUid'
          q += ' GROUP BY ehr.uid'
       }
 
-
       println "HQL QUERY: \n" + q
-
 
       def cilist = CompositionIndex.executeQuery( q, [offset:offset, max:max, readOnly:true] )
       return cilist

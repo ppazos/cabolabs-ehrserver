@@ -412,6 +412,7 @@
         name: undefined,
         type: undefined,
         isPublic: false,
+        isCount: false,
         format: undefined,
         template_id: undefined,
         where: undefined, //[], // DataCriteria
@@ -432,6 +433,7 @@
         get_type:     function () { return this.type; }, // composition or datavalue
         set_public:   function () { this.isPublic = true; },
         set_private:  function () { this.isPublic = false; },
+        set_is_count: function (is_count) { this.isCount = is_count; },
         set_name:     function (name) { this.name = name; },
         get_name:     function () { return this.name; },
         set_format:   function (format) { this.format = format; },
@@ -585,7 +587,10 @@
         {
            query.set_format( $('select[name=composition_format]').val() );
            query.set_template_id( $('select[name=templateId]').val() );
+
+           query.set_is_count( $('input[name=isCount]').is(':checked') );
         }
+
 
         // We need these functions because the URLs are created on the server.
         var s_o_u = {
@@ -651,6 +656,8 @@
         query.set_query_group($('select[name=queryGroup]').val());
         query.set_format( $('select[name=composition_format]').val() );
         query.set_template_id( $('select[name=templateId]').val() );
+
+        query.set_is_count( $('input[name=isCount]').is(':checked') );
 
         qehrId = $('select[name=qehrId]').val();
         fromDate = $('input[name=fromDate]').val();
@@ -1761,7 +1768,7 @@ resp.responseJSON.result.message +'</div>'
           println 'query.set_type("'+ queryInstance.type +'");'
 
           if (queryInstance.isPublic)
-            println 'query.set_public();'
+            println 'query.set_public();' // FIXME is not checking the is public checkbox?
 
           println 'query.set_format("'+ queryInstance.format +'");'
           println 'query.set_group("'+ queryInstance.group +'");'
@@ -1776,6 +1783,12 @@ resp.responseJSON.result.message +'</div>'
              // generates the code to setup the criteria_builder state
              // then we need to render the criteria_builder state to update the GUI
              println g.query_criteria_edit(query: queryInstance)
+
+             if (queryInstance.isCount)
+             {
+               println 'query.set_is_count(true);'
+               println '$("input[name=isCount]").prop("checked", "true");'
+             }
           }
           else // datavalue
           {
@@ -2168,6 +2181,9 @@ resp.responseJSON.result.message +'</div>'
           <!-- Campos de queryByData -->
 
           <div id="query_composition" class="query_build">
+
+            <h2><g:message code="query.create.options"/></h2>
+            <label><input type="checkbox" name="isCount" value="true" /> <g:message code="query.create.isCount" default="Is count?" /></label>
 
             <h2><g:message code="query.create.criteria_builder"/></h2>
 
