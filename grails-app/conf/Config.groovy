@@ -169,30 +169,30 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
    // trace 'org.hibernate.type'
-    //debug 'org.hibernate.SQL'
+   //debug 'org.hibernate.SQL'
 
-    error  'org.codehaus.groovy.grails.web.pages',          // GSP
-           'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-           'org.codehaus.groovy.grails.commons',            // core / classloading
-           'org.codehaus.groovy.grails.plugins',            // plugins
-           'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-           'org.springframework'
+   error 'org.codehaus.groovy.grails.web.pages',          // GSP
+         'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+         'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+         'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+         'org.codehaus.groovy.grails.commons',            // core / classloading
+         'org.codehaus.groovy.grails.plugins',            // plugins
+         'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+         'org.springframework'
     //       'org.hibernate',
     //       'net.sf.ehcache.hibernate'
     //debug  'org.codehaus.groovy.grails.orm.hibernate.cfg'
-    info 'org.codehaus.groovy.grails.web.servlet'        // controllers
-    info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
+   info 'org.codehaus.groovy.grails.web.servlet'        // controllers
+   info 'grails.app.services.com.cabolabs.ehrserver.data.DataIndexerService'
 
-    // EHRServer logs
-    info 'com.cabolabs.security.AuthProvider'
-    info 'com.cabolabs.archetype.OperationalTemplateIndexer'
+   // EHRServer logs
+   info 'com.cabolabs.security.AuthProvider'
+   info 'com.cabolabs.archetype.OperationalTemplateIndexer'
 
-    info 'grails.app.jobs'
+   info 'grails.app.jobs'
 
-    // openEHR-OPT
-    warn 'com.cabolabs.openehr.opt.manager'
+   // openEHR-OPT
+   warn 'com.cabolabs.openehr.opt.manager'
 }
 
 app {

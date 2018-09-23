@@ -332,17 +332,20 @@ class Query {
             }
 
             // event can use startTime, persistent uses timeCommitted to filter by date
-            or {
-              and {
-                 eq('category', 'event')
-                 if (from) ge('startTime', from) // greater or equal
-                 if (to) le('startTime', to) // lower or equal
-              }
-              and {
-                eq('category', 'persistent')
-                if (from) ge('timeCommitted', from)
-                if (to) le('timeCommitted', to)
-              }
+            if (from || to)
+            {
+               or {
+                  and {
+                     eq('category', 'event')
+                     if (from) ge('startTime', from) // greater or equal
+                     if (to) le('startTime', to) // lower or equal
+                  }
+                  and {
+                     eq('category', 'persistent')
+                     if (from) ge('timeCommitted', from)
+                     if (to) le('timeCommitted', to)
+                  }
+               }
             }
 
             eq('lastVersion', true) // query only latest versions
@@ -686,13 +689,14 @@ class Query {
       def resGrouped = [:]
 
       // Estructura auxiliar para recorrer y armar la agrupacion en series.
+      // Cuidado que separa series distintas para distintos archIds aunque sean
+      // del mismo por allowAnyArchetypeVersion, esos deberian estar juntos.
       def cols = res.groupBy { dvi ->
          dvi.archetypeId + dvi.archetypePath +'<'+dvi.rmTypeName+'>'
       }
 
       String absPath // absolute path used to group
       Date dviDate
-      def tmp_arch_id
       def elems
 
       this.select.each { dataGet ->
@@ -704,13 +708,11 @@ class Query {
 
          if (dataGet.allowAnyArchetypeVersion)
          {
-            tmp_arch_id = dataGet.archetypeId +'.*'
             absPath = dataGet.archetypeId +'.*'+ dataGet.path +'<'+dataGet.rmTypeName+'>'
             dataidx = ArchetypeIndexItem.findByArchetypeIdLikeAndPath(dataGet.archetypeId+'%', dataGet.path)
          }
          else
          {
-            tmp_arch_id = dataGet.archetypeId
             absPath = dataGet.archetypeId + dataGet.path +'<'+dataGet.rmTypeName+'>' // type added to avoid collisions between alternatives that will have the same absolute path
             dataidx = ArchetypeIndexItem.findByArchetypeIdAndPath(dataGet.archetypeId, dataGet.path)
          }
@@ -726,8 +728,19 @@ class Query {
 
          //println "COLS to group by path "+ cols
 
-         if (tmp_arch_id.endsWith('.*'))
-            elems = cols.find { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.value
+         if (dataGet.allowAnyArchetypeVersion)
+         {
+            //elems = cols.find { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }.value
+
+            // should also add other possible series for matching groups in ols
+            // e.g. cols = [arch1.v1: [..], arch1.v2: [..]]
+            // here elems should be for both arch1.*
+
+            // findAll does the trick of matching for multiple versions
+            // *.value will get only the list of values for each key, resulting in a list of lists of elems
+            // flatteng returns a list of elems
+            elems = cols.findAll { it.key.replaceAll(/\.v(\d)*/, '.*') == absPath }*.value.flatten()
+         }
          else
             elems = cols[absPath]
 
