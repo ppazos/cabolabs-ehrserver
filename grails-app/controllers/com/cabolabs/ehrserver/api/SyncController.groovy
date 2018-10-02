@@ -67,7 +67,7 @@ class SyncController {
 
       def alog = new ActivityLog(
          username:        request.securityStatelessMap.username, // can be null
-         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         organizationUid: null, /* sync is for the system not for a specific org */
          action:          controllerName+':'+actionName,
          objectId:        account.id,
          objectUid:       account.uid,
@@ -102,7 +102,7 @@ class SyncController {
 
       def alog = new ActivityLog(
          username:        request.securityStatelessMap.username, // can be null
-         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         organizationUid: null, /* sync is for the system not for a specific org */
          action:          controllerName+':'+actionName,
          objectId:        ehr.id,
          objectUid:       ehr.uid,
@@ -136,7 +136,7 @@ class SyncController {
 
       def alog = new ActivityLog(
          username:        request.securityStatelessMap.username, // can be null
-         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         organizationUid: null, /* sync is for the system not for a specific org */
          action:          controllerName+':'+actionName,
          objectId:        optIndex.id,
          objectUid:       optIndex.uid,
@@ -181,7 +181,7 @@ class SyncController {
 
       def alog = new ActivityLog(
          username:        request.securityStatelessMap.username, // can be null
-         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         organizationUid: null, /* sync is for the system not for a specific org */
          action:          controllerName+':'+actionName,
          objectId:        contribution.id,
          objectUid:       contribution.uid,

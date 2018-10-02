@@ -209,6 +209,7 @@ class SyncMarshallersService {
          group q.group
          isDeleted q.isDeleted
          master q.master
+         lastUpdated q.lastUpdated
 
          if (q.queryGroup)
          {

@@ -91,6 +91,7 @@ class Query {
 
    // sync
    boolean master = true
+   Date lastUpdated
 
    // test count compo queries
    boolean isCount = false

@@ -1066,7 +1066,7 @@ class BootStrap {
 
 
       // --------------------------------------------------------------------
-      // TEST sync config
+      // TEST sync config using mirth as server
       /*
       def sync1 = new SyncClusterConfig(
          remoteServerName: 'test mirth',
