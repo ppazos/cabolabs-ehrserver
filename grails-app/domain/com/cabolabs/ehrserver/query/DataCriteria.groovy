@@ -180,6 +180,11 @@ class DataCriteria {
       // booleano false no devuelve listas de valores porque aca no las uso ej para coded text
       def specs = criteriaSpec(this.archetypeId, this.path, false)
 
+      if (this.spec == null)
+      {
+         throw new Exception("Criteria spec is null for "+ this.getClass())
+      }
+
       // TODO: we need to think another way of referencing the spec that is not by the index,
       // this difficults executing not stored queries, since the spec number should be set.
       def criteria_spec = specs[this.spec] // spec used Map
@@ -306,6 +311,8 @@ class DataCriteria {
             sql += ' AND '
          }
       }
+
+      //println "SQL Criteria '"+ sql +"'"
 
       sql = sql[0..-6] // removes the last AND
 
