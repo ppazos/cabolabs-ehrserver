@@ -73,7 +73,6 @@ class SyncJob {
                // TODO: move the sync logic to a service
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(account, jb)
-               //jb.toString()
 
                // FIXME: ensure HTTPS!
                def http = new HTTPBuilder('http://'+ remote.remoteServerIP +':'+ remote.remoteServerPort)
@@ -116,7 +115,7 @@ class SyncJob {
                // create log to avoid syncing this resource again
                if (!error)
                {
-                  log = new SyncLog(resourceType:'Account', resourceUid:account.uid, remote: remote)
+                  log = new SyncLog(resourceType:'Account', resourceUid:account.uid, resourceLastUpdated:account.lastUpdated, remote: remote)
                   if (!log.save())
                   {
                      println log.errors
@@ -175,7 +174,7 @@ class SyncJob {
                // create log to avoid syncing this resource again
                if (!error)
                {
-                  log = new SyncLog(resourceType:'Ehr', resourceUid:ehr.uid, remote: remote)
+                  log = new SyncLog(resourceType:'Ehr', resourceUid:ehr.uid, resourceLastUpdated:ehr.lastUpdated, remote: remote)
                   if (!log.save())
                   {
                      println log.errors
@@ -234,7 +233,7 @@ class SyncJob {
                // create log to avoid syncing this resource again
                if (!error)
                {
-                  log = new SyncLog(resourceType:'OperationalTemplateIndex', resourceUid:opt.uid, remote: remote)
+                  log = new SyncLog(resourceType:'OperationalTemplateIndex', resourceUid:opt.uid, resourceLastUpdated:opt.lastUpdated, remote: remote)
                   if (!log.save())
                   {
                      println log.errors

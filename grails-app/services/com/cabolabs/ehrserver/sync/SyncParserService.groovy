@@ -76,8 +76,6 @@ class SyncParserService {
       // copied from RestController.commit
       def versionsXML = jsonService.json2XmlV2(new JsonBuilder(jsonCommit).toString())
 
-println versionsXML
-
       def slurper = new XmlSlurper(false, false)
       def _parsedVersions = slurper.parseText(versionsXML)
 

@@ -59,6 +59,7 @@ class Ehr {
 
    // sync
    boolean master = true
+   Date lastUpdated
 
    //List contributions = []
    //static hasMany = [contributions:Contribution]
