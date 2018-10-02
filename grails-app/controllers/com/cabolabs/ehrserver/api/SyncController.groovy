@@ -28,6 +28,8 @@ import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import org.codehaus.groovy.grails.web.json.JSONObject
 import groovy.json.JsonSlurper
 
+import com.cabolabs.ehrserver.reporting.ActivityLog
+
 /**
  * Controller that receives the sync operations
  */
@@ -63,6 +65,25 @@ class SyncController {
          println account.errors.allErrors
       }
 
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         action:          controllerName+':'+actionName,
+         objectId:        account.id,
+         objectUid:       account.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+
+
       // TODO: structure for the response
       render( status:201, text:[message: 'account synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
@@ -79,6 +100,24 @@ class SyncController {
          println ehr.errors.allErrors
       }
 
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         action:          controllerName+':'+actionName,
+         objectId:        ehr.id,
+         objectUid:       ehr.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+
       // TODO: structure for the response
       render( status:201, text:[message: 'ehr synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
@@ -94,6 +133,24 @@ class SyncController {
          // TODO: handle error
          println optIndex.errors.allErrors
       }
+
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         action:          controllerName+':'+actionName,
+         objectId:        optIndex.id,
+         objectUid:       optIndex.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
 
       // TODO: structure for the response
       render( status:201, text:[message: 'opt synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
@@ -121,6 +178,24 @@ class SyncController {
          // TODO: handle error
          println contribution.errors.allErrors
       }
+
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: request.securityStatelessMap.extradata.org_uid,
+         action:          controllerName+':'+actionName,
+         objectId:        contribution.id,
+         objectUid:       contribution.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
 
       // TODO: structure for the response
       render( status:201, text:[message: 'contribution synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")

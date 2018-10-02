@@ -145,7 +145,7 @@ class CommitLoggerService {
         url: url,
         username: authUser,
         success: success,
-        activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null)
+        activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null) // FIXME: the log id can be overwritten by different threads
       )
 
       if (!commit.validate()) println commit.errors
