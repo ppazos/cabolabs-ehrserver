@@ -6,7 +6,6 @@ import com.cabolabs.ehrserver.parsers.XmlService
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONObject
 import groovy.json.JsonBuilder
-
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
@@ -65,7 +64,7 @@ class SyncParserService {
       // Process commit to create versions and compo indexes, later data indexing will generate dvs
       def jsonCommit = jsonContribution.commit
 
-      //println "commit class "+ jsonCommit.getClass() // groovy.json.internal.LazyMap
+      //println "commit class "+ jsonCommit.getClass() // groovy.json.internal.Map
       //println jsonCommit.toString() // json string
 
       def testfile = new File('./cucucu.json')
@@ -202,102 +201,142 @@ class SyncParserService {
    }
    */
 
+   /*
+    * PRE: orgs and users should be synced before
+    */
    Query fromJSONQuery(JSONObject j)
    {
-      // cant use the Query parser becuse the Query Builder structure has the tree
-      // on Query.where, not the list of DataCriteriaExpression as comes on the sync
-      // JSON object, se we need to parse that structure here.
-      //def query = Query.newInstance(q)
+      def jq = j.query
 
-      // TODO: author
-      // TODO: uid
+      // Check query group
+      def qg
+      if (jq.queryGroup)
+      {
+         qg = QueryGroup.findByUid(jq.queryGroup.uid)
+         if (!qg)
+         {
+            qg = new QueryGroup(jq.queryGroup) // TODO: Check if the binding is done correctly
+         }
+      }
 
-      //return query
+      def author = User.findByUid(jq.author.uid)
+
+      def q = new Query(
+         uid: jq.uid,
+         name: jq.name,
+         type: jq.type,
+         isPublic: jq.isPublic,
+         isCount: jq.isCount,
+         format: jq.format,
+         templateId: jq.templateId,
+         organizationUid: jq.organizationUid,
+         group: jq.group,
+         isDeleted: jq.isDeleted,
+         queryGroup: qg,
+         author: author,
+         master: false
+      )
+
+      jq.select.each { dget ->
+         q.addToSelect( fromJSONDataGet(dget) )
+      }
+
+      jq.where.each { cexpr ->
+         q.addToWhere( toJSONDataCriteriaExpression(cexpr) )
+      }
+
+      return q
    }
 
-   DataGet fromJSONDataGet(JSONObject j)
+   DataGet fromJSONDataGet(Map j)
    {
-
+      new DataGet(j)
    }
 
-   DataCriteriaExpression toJSONDataCriteriaExpression(JSONObject j)
+   DataCriteriaExpression toJSONDataCriteriaExpression(Map j)
    {
-
+      def toJSONDataCriteria = 'toJSON' + j.criteria_class
+      def expr = new DataCriteriaExpression(
+         left_assoc: j.left_assoc,
+         right_assoc: j.right_assoc,
+         criteria: "$toJSONDataCriteria"(j.criteria)
+      )
+      return expr
    }
 
-   DataCriteriaString toJSONDataCriteriaString(JSONObject j)
+   DataCriteriaString toJSONDataCriteriaString(Map j)
    {
-
+      new DataCriteriaString(j)
    }
 
-   DataCriteriaLOCATABLE_REF toJSONDataCriteriaLOCATABLE_REF(JSONObject j)
+   DataCriteriaLOCATABLE_REF toJSONDataCriteriaLOCATABLE_REF(Map j)
    {
-
+      new DataCriteriaLOCATABLE_REF(j)
    }
 
-   DataCriteriaDV_TEXT toJSONDataCriteriaDV_TEXT(JSONObject j)
+   DataCriteriaDV_TEXT toJSONDataCriteriaDV_TEXT(Map j)
    {
-
+      new DataCriteriaDV_TEXT(j)
    }
 
-   DataCriteriaDV_QUANTITY toJSONDataCriteriaDV_QUANTITY(JSONObject j)
+   DataCriteriaDV_QUANTITY toJSONDataCriteriaDV_QUANTITY(Map j)
    {
-
+      new DataCriteriaDV_QUANTITY(j)
    }
 
-   DataCriteriaDV_PROPORTION toJSONDataCriteriaDV_PROPORTION(JSONObject j)
+   DataCriteriaDV_PROPORTION toJSONDataCriteriaDV_PROPORTION(Map j)
    {
-
+      new DataCriteriaDV_PROPORTION(j)
    }
 
-   DataCriteriaDV_PARSABLE toJSONDataCriteriaDV_PARSABLE(JSONObject j)
+   DataCriteriaDV_PARSABLE toJSONDataCriteriaDV_PARSABLE(Map j)
    {
-
+      new DataCriteriaDV_PARSABLE(j)
    }
 
-   DataCriteriaDV_ORDINAL toJSONDataCriteriaDV_ORDINAL(JSONObject j)
+   DataCriteriaDV_ORDINAL toJSONDataCriteriaDV_ORDINAL(Map j)
    {
-
+      new DataCriteriaDV_ORDINAL(j)
    }
 
-   DataCriteriaDV_MULTIMEDIA toJSONDataCriteriaDV_MULTIMEDIA(JSONObject j)
+   DataCriteriaDV_MULTIMEDIA toJSONDataCriteriaDV_MULTIMEDIA(Map j)
    {
-
+      new DataCriteriaDV_MULTIMEDIA(j)
    }
 
-   DataCriteriaDV_IDENTIFIER toJSONDataCriteriaDV_IDENTIFIER(JSONObject j)
+   DataCriteriaDV_IDENTIFIER toJSONDataCriteriaDV_IDENTIFIER(Map j)
    {
-
+      new DataCriteriaDV_IDENTIFIER(j)
    }
 
-   DataCriteriaDV_DURATION toJSONDataCriteriaDV_DURATION(JSONObject j)
+   DataCriteriaDV_DURATION toJSONDataCriteriaDV_DURATION(Map j)
    {
-
+      new DataCriteriaDV_DURATION(j)
    }
 
-   DataCriteriaDV_DATE toJSONDataCriteriaDV_DATE(JSONObject j)
+   DataCriteriaDV_DATE toJSONDataCriteriaDV_DATE(Map j)
    {
-
+      new DataCriteriaDV_DATE(j)
    }
 
-   DataCriteriaDV_DATE_TIME toJSONDataCriteriaDV_DATE_TIME(JSONObject j)
+   DataCriteriaDV_DATE_TIME toJSONDataCriteriaDV_DATE_TIME(Map j)
    {
-
+      new DataCriteriaDV_DATE_TIME(j)
    }
 
-   DataCriteriaDV_COUNT toJSONDataCriteriaDV_COUNT(JSONObject j)
+   DataCriteriaDV_COUNT toJSONDataCriteriaDV_COUNT(Map j)
    {
-
+      new DataCriteriaDV_COUNT(j)
    }
 
-   DataCriteriaDV_CODED_TEXT toJSONDataCriteriaDV_CODED_TEXT(JSONObject j)
+   DataCriteriaDV_CODED_TEXT toJSONDataCriteriaDV_CODED_TEXT(Map j)
    {
-
+      new DataCriteriaDV_CODED_TEXT(j)
    }
 
-   DataCriteriaDV_BOOLEAN toJSONDataCriteriaDV_BOOLEAN(JSONObject j)
+   DataCriteriaDV_BOOLEAN toJSONDataCriteriaDV_BOOLEAN(Map j)
    {
-
+      new DataCriteriaDV_BOOLEAN(j)
    }
 
    EhrQuery toJSONEhrQuery(JSONObject j)

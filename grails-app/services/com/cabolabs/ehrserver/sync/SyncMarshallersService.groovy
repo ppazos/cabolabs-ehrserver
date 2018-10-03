@@ -210,6 +210,7 @@ class SyncMarshallersService {
          isDeleted q.isDeleted
          master q.master
          lastUpdated q.lastUpdated
+         isCount q.isCount
 
          if (q.queryGroup)
          {
@@ -249,6 +250,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
          valueNegation dc.valueNegation
@@ -257,6 +265,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaLOCATABLE_REF dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          locatable_ref_pathValue dc.locatable_ref_pathValue
          locatable_ref_pathOperand dc.locatable_ref_pathOperand
          locatable_ref_pathNegation dc.locatable_ref_pathNegation
@@ -265,6 +280,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_TEXT dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
          valueNegation dc.valueNegation
@@ -273,6 +295,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_QUANTITY dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          magnitudeValue dc.magnitudeValue
          unitsValue dc.unitsValue
          magnitudeOperand dc.magnitudeOperand
@@ -284,6 +313,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_PROPORTION dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          numeratorValue dc.numeratorValue
          denominatorValue dc.denominatorValue
          typeValue dc.typeValue
@@ -298,6 +334,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_PARSABLE dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
          formalismValue dc.formalismValue
@@ -309,6 +352,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_ORDINAL dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          symbol_codeValue dc.symbol_codeValue
          symbol_terminology_idValue dc.symbol_terminology_idValue
@@ -326,6 +376,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_MULTIMEDIA dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          mediaTypeValue dc.mediaTypeValue
          alternateTextValue dc.alternateTextValue
          sizeValue dc.sizeValue
@@ -343,6 +400,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_IDENTIFIER dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          identifierValue dc.identifierValue
          typeValue dc.typeValue
          issuerValue dc.issuerValue
@@ -357,6 +421,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          magnitudeValue dc.magnitudeValue
          magnitudeOperand dc.magnitudeOperand
          magnitudeNegation dc.magnitudeNegation
@@ -366,6 +437,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
          age_in_yearsValue dc.age_in_yearsValue
@@ -381,6 +459,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
          age_in_yearsValue dc.age_in_yearsValue
@@ -396,6 +481,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          magnitudeValue dc.magnitudeValue
          magnitudeOperand dc.magnitudeOperand
          magnitudeNegation dc.magnitudeNegation
@@ -405,6 +497,13 @@ class SyncMarshallersService {
    {
       assert jb
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+
          codeValue dc.codeValue
          terminologyIdValue dc.terminologyIdValue
          valueValue dc.valueValue
@@ -419,6 +518,13 @@ class SyncMarshallersService {
    def toJSON(DataCriteriaDV_BOOLEAN dc, JsonBuilder jb)
    {
       jb {
+         archetypeId dc.archetypeId
+         path dc.path
+         allowAnyArchetypeVersion dc.allowAnyArchetypeVersion
+         rmTypeName dc.rmTypeName
+         spec dc.spec
+         alias dc.alias
+         
          valueValue dc.valueValue
          valueOperand dc.valueOperand
       }

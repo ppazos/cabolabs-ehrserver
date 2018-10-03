@@ -29,6 +29,8 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import groovy.json.JsonSlurper
 
 import com.cabolabs.ehrserver.reporting.ActivityLog
+import com.cabolabs.ehrserver.ResourceService
+import com.cabolabs.security.*
 
 /**
  * Controller that receives the sync operations
@@ -43,6 +45,7 @@ class SyncController {
                            ]
 
    def syncParserService
+   def resourceService
 
 
    @SecuredStateless
@@ -201,8 +204,53 @@ class SyncController {
       render( status:201, text:[message: 'contribution synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
+   @SecuredStateless
    def syncQuery()
    {
+      LinkedHashMap json = new JsonSlurper().parseText(request.reader.text)
+      def jo = new JSONObject(json)
+      println jo
+      println "-----------"
 
+      def query = syncParserService.fromJSONQuery(jo)
+
+      if (!query.save(flush:true))
+      {
+         // TODO: handle error
+         println query.errors.allErrors
+      }
+      else
+      {
+         if (!query.isPublic)
+         {
+            resourceService.shareQuery(query, Organization.findByUid(query.organizationUid))
+         }
+      }
+
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: null, /* sync is for the system not for a specific org */
+         action:          controllerName+':'+actionName,
+         objectId:        query.id,
+         objectUid:       query.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+
+      // TODO: structure for the response
+      render( status:201, text:[message: 'query synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
+   }
+
+   def syncQuery2()
+   {
+      render "xxx2"
    }
 }

@@ -31,6 +31,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.security.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
+import com.cabolabs.ehrserver.query.*
 
 import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.JSON
@@ -41,7 +42,7 @@ class SyncJob {
    def concurrent = false
 
    static triggers = {
-      simple repeatInterval: 20000l, startDelay: 240000l // execute job once in 5 seconds
+      simple repeatInterval: 20000l, startDelay: 60000l // execute job once in 5 seconds
    }
 
    def syncMarshallersService
