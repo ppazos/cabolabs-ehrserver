@@ -98,7 +98,7 @@ class AccountController {
     * Creates the account manager user, the account, the organization, and the user role.
     */
    @Transactional
-   def save(Account account, String username, String email, String organization, Long plan_id)
+   def save(Account account, String username, String email, String organization, Long plan_id, int duration)
    {
       if (!account)
       {
@@ -139,15 +139,6 @@ class AccountController {
       // saves the account
       def org = organizationService.create(account, organization, false)
 
-      /*
-      if (!org.validate())
-      {
-         println org.errors
-         flash.message = message(code:'account.organization.validate.error')
-         render (view: 'create', model: [account: account, organization: org])
-         return
-      }
-      */
 
       // THESE SHOULD BE IN THE organizationService.create
 
@@ -162,7 +153,7 @@ class AccountController {
       try
       {
          def plan = Plan.get(plan_id)
-         def assoc = plan.associate(account, new Date(), 365, PlanAssociation.states.ACTIVE) // 3rd param is duration in days
+         def assoc = plan.associate(account, new Date(), duration, PlanAssociation.states.ACTIVE) // 3rd param is duration in days
       }
       catch (Exception e)
       {

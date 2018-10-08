@@ -34,6 +34,7 @@
      <label for="organization"><g:message code="organization.attr.name" default="Organization name" /><span class="required-indicator">*</span></label>
      <g:textField name="organization" required="" value="${organization?.name ?: params.organization}" class="form-control" />
    </div>
+
 </g:if>
 
 <g:if test="${actionName=='edit' || actionName=='update'}">
@@ -136,11 +137,13 @@
   <h2><g:message code="account.create.assign_plan" default="Assign plan" /></h2>
 
   <div class="form-group">
-    <label for="plan_id"><g:message code="account.edit.assign_plan" default="Assign plan" /></label>
-    <g:select from="${Plan.list()}" name="plan_id"
-              optionKey="id" optionValue="name"
-              noSelection="${['':'']}"
-              value="${params.int('plan_id')}"
-              class="form-control"></g:select>
+    <label for="plan_id"><g:message code="account.edit.assign_plan" default="Assign plan" /><span class="required-indicator">*</span></label>
+    <g:select from="${Plan.list()}" name="plan_id" optionKey="id" optionValue="name" noSelection="${['':'']}"
+              required="true" value="${params.int('plan_id')}" class="form-control"></g:select>
+  </div>
+
+  <div class="form-group required">
+    <label for="email"><g:message code="plan.duration" default="Duration" /><span class="required-indicator">*</span></label>
+    <g:select from="[30, 60, 120, 180, 365]" name="duration" required="true" value="${365}" class="form-control"></g:select>
   </div>
 </g:else>
