@@ -53,7 +53,7 @@
                 <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
                   <g:if test="${role.authority != 'ROLE_ADMIN'}">
                     <td>
-                      <g:if test="${(roleOrg.value.contains(role))}"><%-- dont show if I cant assing the role --%>
+                      <g:if test="${roleOrg.value*.authority.contains(role.authority)}"><%-- dont show if I cant assing the role --%>
                         <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" />
                       </g:if>
                     </td>
@@ -61,9 +61,8 @@
                 </sec:ifNotGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                   <td>
-                    <g:if test="${(roleOrg.value.contains(role))}"><%-- dont show if I cant assing the role --%>
-                      <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" />
-                    </g:if>
+                    <%-- admins can assign any role --%>
+                    <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" />
                   </td>
                 </sec:ifAnyGranted>
               </g:each>
