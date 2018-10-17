@@ -1648,6 +1648,9 @@ class RestController {
          return
       }
 
+      // ===============================================================================
+      // Retrieve Data
+
 
       // FIXME: hay que armar bien el XML: declaracion de xml solo al
       //        inicio y namespaces en el root.
@@ -1665,56 +1668,13 @@ class RestController {
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
       def vf
-      //if (!qehrId) // group by ehrUid
-      //{
-         result.each { ehrUid, compoIndexes ->
 
-             out += '<ehr uid="'+ ehrUid +'">'
+      result.each { ehrUid, compoIndexes ->
 
-             // idem else, TODO refactor
-             compoIndexes.each { compoIndex ->
+         out += '<ehr uid="'+ ehrUid +'">'
 
-                // FIXME: verificar que esta en disco, sino esta hay un problema
-                //        de sincronizacion entre la base y el FS, se debe omitir
-                //        el resultado y hacer un log con prioridad alta para ver
-                //        cual fue el error.
-
-                // adds the version, not just the composition
-                version = compoIndex.getParent()
-
-                try
-                {
-                   vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                   buff = vf.getText()
-                }
-                catch (VersionRepoNotAccessibleException e)
-                {
-                   log.warning e.message
-                   return // continue with next compoIndex
-                }
-                catch (FileNotFoundException e)
-                {
-                   log.warning e.message
-                   return // continue with next compoIndex
-                }
-
-                buff = buff.replaceFirst('<\\?xml version="1.0" encoding="UTF-8"\\?>', '')
-                buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
-                buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
-
-                /**
-                 * Composition queda:
-                 *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-                 */
-
-                out += buff + "\n"
-             }
-             out += '</ehr>'
-         }
-      //}
-      //else
-      //{
-      //   result.each { compoIndex ->
+         // idem else, TODO refactor
+         compoIndexes.each { compoIndex ->
 
             // FIXME: verificar que esta en disco, sino esta hay un problema
             //        de sincronizacion entre la base y el FS, se debe omitir
@@ -1744,16 +1704,15 @@ class RestController {
             buff = buff.replaceFirst('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
             buff = buff.replaceFirst('xmlns="http://schemas.openehr.org/v1"', '')
 
-            /**
-             * Composition queda:
-             *   <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
-             */
+            // Composition queda:
+            // <data archetype_node_id="openEHR-EHR-COMPOSITION.encounter.v1" xsi:type="COMPOSITION">
 
             out += buff + "\n"
-      //   }
-      //}
-      out += '</list>'
+         }
+         out += '</ehr>'
+      }
 
+      out += '</list>'
 
       if (format == 'json')
          render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
