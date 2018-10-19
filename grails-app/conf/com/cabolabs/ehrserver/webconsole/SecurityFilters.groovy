@@ -447,6 +447,60 @@ class SecurityFilters {
          */
       }
 
+      sync_api(controller:'sync', action:'syncAccount|syncEhr|syncOpt|syncContribution|syncQuery') {
+         before = {
+            // correct scope?
+            def scope = request.securityStatelessMap.extradata.scope
+            if (scope != 'sync')
+            {
+               render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
+                  result {
+                     type('AR')                         // application reject
+                     message(
+                        messageSource.getMessage('sync.error.invalidToken', null, getRequestLocale(request))
+                     )
+                     code('EHR_SERVER::API::ERRORS::9901') // sys::service::concept::code
+                  }
+               }
+               return false
+            }
+
+            // token doesnt exists?
+            def username = request.securityStatelessMap.username
+            if (User.countByUsername(username) == 0)
+            {
+               if (username.startsWith("apikey"))
+               {
+                  def result = apiResponsesService.feedback(
+                     messageSource.getMessage('sync.error.token.apiKeyExpired', null, getRequestLocale(request)),
+                     'AR', '987657', params.format)
+
+                  switch (params.format?.toLowerCase())
+                  {
+                     case 'xml':
+                        render(status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                     break
+                     case 'json':
+                        response.status = 400
+                        render(text:result, contentType:"application/json", encoding:"UTF-8")
+                     break
+                     default:
+                        render(status:400, text:result, contentType:"text/xml", encoding:"UTF-8")
+                  }
+
+                   // TODO: should create activity log and admin notification
+                  return false
+               }
+               else
+               {
+                  // this should not be a case, all keys should be for apikeys users...
+               }
+            }
+
+            return true
+         }
+      }
+
       // account management is only for admins
       // index is included because admins can see all the accounts
       // each account manager will see just his account (next filter) // THIS MIGHT NOT BE NEEDED since Accounts don't have much data to show

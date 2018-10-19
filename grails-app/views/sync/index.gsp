@@ -35,12 +35,16 @@
             <thead>
              <tr>
                <th><g:message code="sync.attr.systemId" /></th>
+               <th><g:message code="sync.attr.token" /></th>
              </tr>
             </thead>
             <tbody>
               <g:each in="${keys}" status="i" var="key">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td>${key.systemId}</td>
+                  <td>
+                    <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
+                  </td>
                 </tr>
               </g:each>
             </tbody>
