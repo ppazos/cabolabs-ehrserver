@@ -31,6 +31,7 @@ import groovy.json.JsonSlurper
 import com.cabolabs.ehrserver.reporting.ActivityLog
 import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.security.*
+import com.cabolabs.ehrserver.account.ApiKey
 
 /**
  * Controller that receives the sync operations
@@ -46,7 +47,61 @@ class SyncController {
 
    def syncParserService
    def resourceService
+   def statelessTokenProvider
 
+   /**
+    Web Console action to list sync API Tokens.
+    */
+    // TODO: enable only for admins
+   def index()
+   {
+      def keys = ApiKey.findAllByScope('sync')
+      [keys: keys]
+   }
+
+   /**
+    Just shows the view.
+    */
+    // TODO: enable only for admins
+   def create()
+   {
+
+   }
+
+   // TODO: refactor
+   // TODO: enable only for admins
+   // similar to OrganizationController.generateApiKey
+   def save(String systemId)
+   {
+      if (!systemId)
+      {
+         flash.message = message(code: 'synccontroller.save.error.systemIdIsRequired')
+         return
+      }
+
+      // This user has no organizations
+      // TODO: check if that is posible
+      def virtualUser = new User(username: 'apikey'+String.random(50),
+                                 password: String.uuid(),
+                                 email: String.random(50) + '@apikey.com',
+                                 isVirtual: true,
+                                 enabled: true)
+
+      virtualUser.save(failOnError: true)
+
+      // this user is associated with a key that has scope sync that is global
+      // so it can't be associated with an org, and UserRole requires an org
+      //UserRole.create(virtualUser, Role.findByAuthority(Role.US), org, true)
+
+      def key = new ApiKey(user: virtualUser,
+                           systemId: systemId,
+                           scope: 'sync',
+                           token: statelessTokenProvider.generateToken(virtualUser.username, null, [scope: 'sync']))
+
+      key.save(failOnError: true)
+
+      redirect action:'index'
+   }
 
    @SecuredStateless
    def syncAccount()
@@ -91,6 +146,7 @@ class SyncController {
       render( status:201, text:[message: 'account synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
+   @SecuredStateless
    def syncEhr()
    {
       println "syncEhr"
@@ -125,6 +181,7 @@ class SyncController {
       render( status:201, text:[message: 'ehr synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
+   @SecuredStateless
    def syncOpt()
    {
       println "syncOpt"
@@ -159,6 +216,7 @@ class SyncController {
       render( status:201, text:[message: 'opt synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 
+   @SecuredStateless
    def syncContribution()
    {
       println "syncContribution"
@@ -247,10 +305,5 @@ class SyncController {
 
       // TODO: structure for the response
       render( status:201, text:[message: 'query synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
-   }
-
-   def syncQuery2()
-   {
-      render "xxx2"
    }
 }

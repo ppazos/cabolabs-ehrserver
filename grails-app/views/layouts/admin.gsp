@@ -234,6 +234,9 @@
                   <li id="menu-accounts">
                     <g:link controller="account" action="index" class="${(controllerName=='account')?'active':''}"><i class="fa fa-fw fa-id-card"></i> <g:message code="desktop.accounts" /></g:link>
                   </li>
+                  <li id="menu-sync">
+                    <g:link controller="sync" action="index" class="${(controllerName=='sync')?'active':''}"><i class="fa fa-fw fa-refresh"></i> <g:message code="desktop.sync" /></g:link>
+                  </li>
                 </sec:ifAnyGranted>
                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                   <li id="menu-organizations">

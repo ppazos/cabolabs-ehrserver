@@ -893,7 +893,12 @@ class BootStrap {
          '/simpleCaptcha/**',
          '/j_spring_security_logout',
          '/api/**', // REST security is handled by stateless security plugin
-         '/sync/**', // SYNC security is handled by stateless security plugin
+         '/sync/syncAccount',
+         '/sync/syncEhr',
+         '/sync/syncOpt',
+         '/sync/syncContribution',
+         '/sync/syncQuery',
+         '/sync/syncEhr',
          '/ehr/showCompositionUI', // will be added as a rest service via url mapping
          '/user/profile',
          '/mgt/**' // management api
@@ -934,6 +939,10 @@ class BootStrap {
         new RequestMap(url: '/account/show/**',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
         new RequestMap(url: '/plan/**',                      configAttribute: 'ROLE_ADMIN').save()
+
+        new RequestMap(url: '/sync/index',                   configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/sync/create',                  configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/sync/save',                    configAttribute: 'ROLE_ADMIN').save()
 
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()

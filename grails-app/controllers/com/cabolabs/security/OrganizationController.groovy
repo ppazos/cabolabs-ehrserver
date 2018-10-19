@@ -262,7 +262,7 @@ class OrganizationController {
    }
 
    @Transactional
-   def generateApiKey(String uid, String systemId, String scope)
+   def generateApiKey(String uid, String systemId)
    {
       if (!uid)
       {
@@ -270,6 +270,8 @@ class OrganizationController {
          redirect action: 'index'
          return
       }
+
+      // TODO: systemId is also required
 
       def org = Organization.findByUid(uid)
       if (!org)
@@ -318,7 +320,6 @@ class OrganizationController {
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
-                              scope: scope,
                               token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number, org_uid: org.uid]))
 
          key.save(failOnError: true)
