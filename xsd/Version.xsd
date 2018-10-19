@@ -67,7 +67,7 @@
           <xs:complexContent>
                <xs:extension base="VERSION">
                     <xs:sequence>
-                       <!-- relaxed schema 0..1 uid -->
+                         <!-- relaxed schema 0..1 uid to allow commits without UID -->
                          <xs:element name="uid" type="OBJECT_VERSION_ID" minOccurs="0" maxOccurs="1"/>
                          <xs:element name="data" type="xs:anyType" minOccurs="0" maxOccurs="1"/>
                          <xs:element name="preceding_version_uid" type="OBJECT_VERSION_ID" minOccurs="0" maxOccurs="1"/>
