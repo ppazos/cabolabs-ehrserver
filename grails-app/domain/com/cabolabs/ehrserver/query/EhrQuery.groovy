@@ -22,6 +22,7 @@ class EhrQuery {
 
    // sync
    boolean master = true
+   Date lastUpdated
 
    List queries = []
    static hasMany = [queries: Query]
