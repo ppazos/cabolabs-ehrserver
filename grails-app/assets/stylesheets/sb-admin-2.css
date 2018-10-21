@@ -365,3 +365,39 @@ div.btn-toolbar {
 .btn-toolbar>a {
   margin-left: 5px;
 }
+
+/* add checkbox style https://stackoverflow.com/questions/44279398/customize-bootstrap-checkboxes */
+.checkbox .cr {
+  position: relative;
+  display: block; /*inline-block;*/
+  border: 1px solid #a9a9a9;
+  border-radius: .25em;
+  width: 1.3em;
+  height: 1.3em;
+  /*float: left;*/
+  /*margin-right: .5em;*/
+}
+.checkbox .cr .cr-icon {
+  position: absolute;
+  font-size: .8em;
+  line-height: 0;
+  top: 50%;
+  left: 15%;
+}
+.checkbox label {
+  padding-left: 0;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.checkbox input[type="checkbox"] {
+  display: none;
+}
+.checkbox input[type="checkbox"]+.cr>.cr-icon {
+  opacity: 0;
+}
+.checkbox input[type="checkbox"]:checked+.cr>.cr-icon {
+  opacity: 1;
+}
+.checkbox input[type="checkbox"]:disabled+.cr {
+  opacity: .5;
+}

@@ -21,7 +21,7 @@
  */
 package com.cabolabs.ehrserver.api
 
-import com.cabolabs.ehrserver.sync.SyncParserService
+import com.cabolabs.ehrserver.sync.*
 import grails.converters.*
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
@@ -56,13 +56,15 @@ class SyncController {
    def index()
    {
       def keys = ApiKey.findAllByScope('sync')
-      [keys: keys]
+      def remotes = SyncClusterConfig.list()
+
+      println remotes
+      [keys: keys, remotes: remotes]
    }
 
    /**
     Just shows the view.
     */
-    // TODO: enable only for admins
    def create()
    {
 
@@ -101,6 +103,40 @@ class SyncController {
       key.save(failOnError: true)
 
       redirect action:'index'
+   }
+
+   /**
+    Just shows the view.
+    */
+   def createRemote()
+   {
+
+   }
+
+   def saveRemote()
+   {
+      println params
+      render "saveRemote TODO"
+
+      /*
+      [remoteAPIKey:sdfgsdfggsdgfsdf, remoteServerPort:5436,
+      remoteServerName:sdfgs, remoteServerPath:/fhdfghd,
+      remoteServerIP:345345, doit:Create, isActive:on, _isActive:,
+      controller:sync, action:saveRemote]
+
+      */
+      /// TBD
+      /*
+      def sync1 = new SyncClusterConfig(
+         remoteServerName: 'test mirth',
+         remoteAPIKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFwaWtleWtwZXdoZW95dXppZW1vaWlkYXh3cHNpd21rc2lvYW9xcmxnbXBwcnZwdWxidGt4bXZnIiwiZXh0cmFkYXRhIjp7Im9yZ2FuaXphdGlvbiI6IjEyMzQ1NiIsIm9yZ191aWQiOiJlOWQxMzI5NC1iY2U3LTQ0ZTctOTYzNS04ZTkwNmRhMGM5MTQifSwiaXNzdWVkX2F0IjoiMjAxOC0wOS0wMVQwMzowMTo1Ny42NDRaIn0=.zBXBgRlKBuYWFgYsTv7P706Qf3h6IMTjgF2jwk/LQVo=',
+         remoteServerIP: 'localhost',
+         remoteServerPort: 4455,
+         remoteServerPath: '/',
+         isActive: true
+      )
+      sync1.save()
+      */
    }
 
    @SecuredStateless
@@ -305,5 +341,44 @@ class SyncController {
 
       // TODO: structure for the response
       render( status:201, text:[message: 'query synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
+   }
+
+
+   @SecuredStateless
+   def syncEhrQuery()
+   {
+      LinkedHashMap json = new JsonSlurper().parseText(request.reader.text)
+      def jo = new JSONObject(json)
+      println jo
+      println "-----------"
+
+      def equery = syncParserService.toJSONEhrQuery(jo)
+
+      if (!equery.save(flush:true))
+      {
+         // TODO: handle error
+         println equery.errors.allErrors
+      }
+
+      def alog = new ActivityLog(
+         username:        request.securityStatelessMap.username, // can be null
+         organizationUid: null, /* sync is for the system not for a specific org */
+         action:          controllerName+':'+actionName,
+         objectId:        equery.id,
+         objectUid:       equery.uid,
+         remoteAddr:      request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURI:      request.forwardURI,
+         matchedURI:      request.requestURI,
+         sessionId:       session.id)
+
+
+      // TODO: file log failure
+      if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
+
+      // TODO: structure for the response
+      render( status:201, text:[message: 'ehr query synced OK'] as JSON, contentType:"application/json", encoding:"UTF-8")
    }
 }

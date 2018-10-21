@@ -28,7 +28,7 @@ class Folder {
 
    // Attributes from LOCATABLE
    String name
-   String uid = (java.util.UUID.randomUUID() as String)
+   String uid = java.util.UUID.randomUUID() as String
    /* This will be enabled when we support archetyped Folders.
    path
    archetype_node_id
@@ -38,6 +38,7 @@ class Folder {
 
    // sync
    boolean master = true
+   Date lastUpdated
 
    Folder parent
    List items = []
