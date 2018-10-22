@@ -113,10 +113,11 @@ class SyncController {
 
    }
 
-   def saveRemote()
+   def saveRemote(String remoteAPIKey, String remoteServerName, int remoteServerPort,
+                  String remoteServerPath, String remoteServerIP, boolean isActive)
    {
       println params
-      render "saveRemote TODO"
+      //render "saveRemote TODO"
 
       /*
       [remoteAPIKey:sdfgsdfggsdgfsdf, remoteServerPort:5436,
@@ -137,6 +138,14 @@ class SyncController {
       )
       sync1.save()
       */
+
+      def sync = new SyncClusterConfig(params)
+      if (!sync.save())
+      {
+         println "errors: "+ sync.errors.allErrors
+      }
+
+      redirect action:'index'
    }
 
    @SecuredStateless

@@ -1091,6 +1091,7 @@ class BootStrap {
       sync1.save()
       */
 
+
       // --------------------------------------------------------------------
 
 
@@ -1188,7 +1189,7 @@ gr_account.save(failOnError:true, flush:true)
 
          generateTemplateIndexes()
 
-
+/*
          // Sample EHRs for testing purposes
          if (Ehr.count() == 0)
          {
@@ -1216,7 +1217,7 @@ gr_account.save(failOnError:true, flush:true)
               if (!ehr.save()) println ehr.errors
             }
          }
-
+*/
 
          // Create plans
          def test_plan

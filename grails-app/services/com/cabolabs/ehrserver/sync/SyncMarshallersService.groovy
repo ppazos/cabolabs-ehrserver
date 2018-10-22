@@ -66,6 +66,20 @@ class SyncMarshallersService {
       }
       else
       {
+         // do not sync admin
+         if (l[0] instanceof UserRole)
+         {
+            def adm_user_role = l.find { it.user.username == 'admin' }
+            l.remove(adm_user_role)
+         }
+
+         // do not sync default org
+         if (l[0] instanceof Organization)
+         {
+            def default_org = l.find { it.id == 1 } // TODO: we need to put a key name to the default org instead of using the id here
+            l.remove(default_org)
+         }
+
          jb( l.collect{ toJSON(GrailsHibernateUtil.unwrapIfProxy(it), jb) } )
       }
    }
@@ -524,7 +538,7 @@ class SyncMarshallersService {
          rmTypeName dc.rmTypeName
          spec dc.spec
          alias dc.alias
-         
+
          valueValue dc.valueValue
          valueOperand dc.valueOperand
       }

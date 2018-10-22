@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package com.cabolabs.ehrserver.sync
 
 import grails.transaction.Transactional
@@ -89,8 +89,8 @@ class SyncParserService {
       //println "commit class "+ jsonCommit.getClass() // groovy.json.internal.Map
       //println jsonCommit.toString() // json string
 
-      def testfile = new File('./cucucu.json')
-      testfile << new JsonBuilder(jsonCommit).toString() //jsonCommit.toString() // this is not valid JSON!
+      //def testfile = new File('./cucucu.json')
+      //testfile << new JsonBuilder(jsonCommit).toString() //jsonCommit.toString() // this is not valid JSON!
 
       //println jsonCommit.toString() // not valid JSON
 
@@ -241,7 +241,20 @@ class SyncParserService {
          }
       }
 
+      // FIXME: this will fail if user is admin, since admin is not synced,
+      // will be null when get by uid
       def author = User.findByUid(jq.author.uid)
+
+      // if admin is the author, because admins are not synced, it wont find it by uid
+      // so we need to check for username, and we consider the admin to be the same
+      // across the sync cluster.
+      if (!author)
+      {
+         if (jq.author.username == 'admin')
+         {
+            author = User.findByUsername('admin')
+         }
+      }
 
       def q = new Query(
          uid: jq.uid,

@@ -49,6 +49,9 @@ class UserRole implements Serializable {
 
 	@Override
 	boolean equals(other) {
+      /*
+      println "UserRole other is GrailsDomainClass "+ (other instanceof GrailsDomainClass) +' is '+ other.getClass()
+
       // instanceof GrailsDomainClass avoids errors for not having instanceOf(), a method of domain classes
       if (!(other instanceof GrailsDomainClass))
       {
@@ -61,6 +64,7 @@ class UserRole implements Serializable {
 		if (!other.instanceOf(UserRole)) {
 			return false
 		}
+      */
 
 		other.user?.id == user?.id && other.role?.id == role?.id && other.organization?.id == organization?.id
 	}
