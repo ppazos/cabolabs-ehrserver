@@ -980,7 +980,7 @@ class BootStrap {
    {
       if (Account.count() == 0)
       {
-         def account = new Account(contact: contact, enabled: true, companyName: 'CaboLabs')
+         def account = new Account(contact: contact, enabled: true, companyName: 'Default Account')
          organizations.each { org ->
             account.addToOrganizations(org)
          }
@@ -996,7 +996,7 @@ class BootStrap {
          println "Creating default organization"
 
          // Default organization
-         organizations << new Organization(name: 'EHRServer', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
+         organizations << new Organization(name: 'Default Organization', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
 
          // the account will save the orgs
 
@@ -1074,7 +1074,9 @@ class BootStrap {
       extendClasses()
       repoChecks()
       registerMarshallers()
-      registerMarshallersSync()
+
+      // Sync Marshallers are all in services, current Bootstrap marshallers are not used.
+      //registerMarshallersSync()
 
 
       // --------------------------------------------------------------------
@@ -1143,33 +1145,34 @@ gr_account.save(failOnError:true, flush:true)
          createRoles()
 
 
-         def accManUser // used below to create the Account
+         //def accManUser // used below to create the Account
          def adminUser, orgManUser, user
          if (User.count() == 0)
          {
-           println "Creating default users"
+            println "Creating default users"
 
-           adminUser = new User(username: 'admin', email: 'pablo.pazos@cabolabs.com', password: 'admin', enabled: true)
-           adminUser.save(failOnError: true,  flush: true)
+            adminUser = new User(username: 'admin', email: 'admin@cabolabs.com', password: 'admin', enabled: true)
+            adminUser.save(failOnError: true,  flush: true)
 
-           accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
-           accManUser.save(failOnError: true,  flush: true)
+            //accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
+            //accManUser.save(failOnError: true,  flush: true)
 
-           orgManUser = new User(username: 'orgman', email: 'pablo.swp+orgman@gmail.com', password: 'orgman', enabled: true)
-           orgManUser.save(failOnError: true,  flush: true)
+            orgManUser = new User(username: 'orgman', email: 'orgman@cabolabs.com', password: 'orgman', enabled: true)
+            orgManUser.save(failOnError: true,  flush: true)
 
-           user = new User(username: 'user', email: 'pablo.swp+user@gmail.com', password: 'user', enabled: true)
-           user.save(failOnError: true,  flush: true)
+            user = new User(username: 'user', email: 'user@cabolabs.com', password: 'user', enabled: true)
+            user.save(failOnError: true,  flush: true)
          }
          else
          {
-            accManUser = User.allForRole(Role.AM).get(0)
-            assert accManUser != null
+            //accManUser = User.allForRole(Role.AM).get(0)
+            //assert accManUser != null
          }
 
 
          // saves the organizations!
-         def account = defaultAccount(accManUser, organizations)
+         //def account = defaultAccount(accManUser, organizations)
+         def account = defaultAccount(adminUser, organizations) // admin will be the accman of the default org
 
 
          // Assign Roles for Users under Org 0, needs the org to be saved
@@ -1177,7 +1180,8 @@ gr_account.save(failOnError:true, flush:true)
          {
             // Associate roles
             UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), organizations[0], true )
-            UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
+            UserRole.create( adminUser,  (Role.findByAuthority(Role.AM)), organizations[0], true ) // admin will be the accman of the default org
+            //UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
             UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
             UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
          }
