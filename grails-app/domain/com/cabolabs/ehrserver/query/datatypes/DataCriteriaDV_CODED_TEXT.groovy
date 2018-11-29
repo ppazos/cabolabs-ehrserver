@@ -26,6 +26,7 @@ import com.cabolabs.ehrserver.query.DataCriteria
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import org.springframework.web.context.request.RequestContextHolder
+import com.cabolabs.openehr.terminology.TerminologyParser
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
@@ -121,6 +122,34 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
             constraint.codeList.each { code ->
 
               codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+            }
+         }
+         else
+         {
+            // nodes is a list of CCodePhrase if any are found
+            def nodes = optMan.getNodesByDataPath(archetypeId, path + '/defining_code', namespace)
+            if (nodes)
+            {
+               // to get terms from the openehr terminology
+               def terminology = TerminologyParser.getInstance()
+
+               nodes.each { ccodephrase ->
+                  if (ccodephrase.terminologyIdName == 'local')
+                  {
+                     ccodephrase.codeList.each { code ->
+                        codes[code] = optMan.getText(archetypeId, code, lang, namespace)
+                     }
+                  }
+                  else if (ccodephrase.terminologyIdName == 'openehr')
+                  {
+                     // resolve against terminology!!!
+
+                     // using TerminologyParser from openEHR-OPT
+                     ccodephrase.codeList.each { code ->
+                        codes[code] = terminology.getRubric(lang, code)
+                     }
+                  }
+               }
             }
          }
 

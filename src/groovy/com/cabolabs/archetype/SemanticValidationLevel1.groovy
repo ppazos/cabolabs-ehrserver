@@ -320,6 +320,9 @@ class SemanticValidationLevel1 {
       //def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
       def opt = optMan.getOpt(templateId, this.namespace)
 
+      // test
+      opt.nodes.sort{ it.key }.each { p, o -> println p }
+
       traverseCompoNodes(compo, templateId, '/', archetypeId, '/', 'COMPOSITION', opt, compoIndex)
    }
 
@@ -350,6 +353,8 @@ class SemanticValidationLevel1 {
       println "----------"
       */
       //println 'opt.getNode '+ opt.getNode(templatePath)
+
+
 
       // check the node is defined by the OPT
       if (!continue_with_children_attrs.contains(node.name()) &&

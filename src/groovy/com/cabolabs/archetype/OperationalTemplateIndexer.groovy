@@ -95,6 +95,13 @@ class OperationalTemplateIndexer {
      ]
    ]
 
+   /* classes that are not LOCATABLE, so don't have node_id in the path */
+   def pathables = [
+     'EVENT_CONTEXT',
+     'ISM_TRANSITION',
+     'INSTRUCTION_DETAILS'
+   ]
+
    // Some attributes should not be indexed since are not used for querying
    def avoid_indexing = [
      'COMPOSITION': [
@@ -557,11 +564,11 @@ class OperationalTemplateIndexer {
    // indexingDatavalue flag to mark the index of a datavalue through the process, and avoid adding nodeIds on case of true.
    def indexObject (GPathResult node, String parentPath, String archetypePath, GPathResult parent, boolean indexingDatavalue)
    {
-      if (!node) throw new Exception("Nodo vacio")
+      if (!node) throw new Exception("Empty node while indexing OPT")
 
       if (node.rm_type_name.text().startsWith('DV_INTERVAL'))
       {
-         println "DV_INTERVAL indexes not yet supported"
+         println "DV_INTERVAL indexes not supported yet"
          return
       }
 
@@ -633,16 +640,24 @@ class OperationalTemplateIndexer {
       }
       else
       {
-         if (path != '/' && !node.node_id.isEmpty() && node.node_id.text() != '')
+         // for pathables, do not add the node id to the path
+         if (!pathables.contains(node.rm_type_name.text()))
          {
-            path += '['+ node.node_id.text() + ']'
-
-            // Avoid adding nodeIds for datavalue attributes https://github.com/ppazos/cabolabs-ehrserver/issues/471
-            if (!indexingDatavalue)
+            if (path != '/' && !node.node_id.isEmpty() && node.node_id.text() != '')
             {
-               archetypePath += '['+ node.node_id.text() + ']'
-               //println "!indexingDatavalue, add nodeId to path "+ archetypePath
+               path += '['+ node.node_id.text() + ']'
+
+               // Avoid adding nodeIds for datavalue attributes https://github.com/ppazos/cabolabs-ehrserver/issues/471
+               if (!indexingDatavalue)
+               {
+                  archetypePath += '['+ node.node_id.text() + ']'
+                  //println "!indexingDatavalue, add nodeId to path "+ archetypePath
+               }
             }
+         }
+         else
+         {
+            println "PATHABLE DETECTED "+ node.rm_type_name.text() +" PATH IS "+ path
          }
       }
 
@@ -658,6 +673,22 @@ class OperationalTemplateIndexer {
          //this.paths << path
          //println " > index: "+ path +' '+ node.rm_type_name.text()
 
+         def type = node.rm_type_name.text() // DV_BOOLEAN
+
+
+         // WARNING: this considers the nodes with the same path have the same structure
+         //          if some node has a different structure, thus more sub-paths, this
+         //          will index only the first occurrence and might leave out those extra
+         //          paths of the sibling. This case has low probability of happening.
+
+         // avoid indexing if already exists
+         // happens for pathables like ISM_TRANSITION, that we have many nodes in the OPT
+         // but when indexed result on the same arch/path since we remove the node_ids
+         def already_indexed = indexes.find { it instanceof ArchetypeIndexItem && it.archetypeId == parent.archetype_id.value.text() && it.path == archetypePath && it.rmTypeName == type}
+
+         if (already_indexed) return
+
+
          // --------------------------------------------------------
          // Find node name
          def nodeId = node.node_id.text()
@@ -670,33 +701,44 @@ class OperationalTemplateIndexer {
 //         if (!nodeId)
 //         {
             // .parent es attributes 'value', .parent.parent es children 'ELEMENT'
-            nodeId = node.parent().parent().node_id.text()
+            def parent_object = node.parent().parent()
+            nodeId = parent_object.node_id.text()
             addParentAttrName = true
 //         }
 
-         /* reference structure:
-          * <term_definitions code="at0000">
-              <items id="text">Tobacco Use Summary</items>
-              <items id="description">Summary or persisting information about tobacco use or consumption.</items>
-            </term_definitions>
-          */
-//         term = this.currentRoot.term_definitions.find { it.@code.text() == nodeId } // <term_definitions code="at0000">
 
-         /*
-         term = parent.term_definitions.find { it.@code.text() == nodeId } // <term_definitions code="at0000">
-         description = term.items.find { it.@id.text() == "text" }.text() // <items id="text">Tobacco Use Summary</items>
-         */
-
-         description = getText(parent, nodeId)
-
-         if (addParentAttrName)
+         // pathables should not use their node_id
+         if (pathables.contains(parent_object.rm_type_name.text()))
          {
             def parentAttrName = node.parent().rm_attribute_name.text()
+            description = parent_object.rm_type_name.text() + '.' + parentAttrName
+         }
+         else
+         {
+            /* reference structure:
+            * <term_definitions code="at0000">
+            <items id="text">Tobacco Use Summary</items>
+            <items id="description">Summary or persisting information about tobacco use or consumption.</items>
+            </term_definitions>
+            */
+            // term = this.currentRoot.term_definitions.find { it.@code.text() == nodeId } // <term_definitions code="at0000">
 
-            // Avoids to add .value to at the ELEMENT.value indexes, for those we want to show just the parent ELEMENT name
-            if (parentAttrName != 'value')
+            /*
+            term = parent.term_definitions.find { it.@code.text() == nodeId } // <term_definitions code="at0000">
+            description = term.items.find { it.@id.text() == "text" }.text() // <items id="text">Tobacco Use Summary</items>
+            */
+
+            description = getText(parent, nodeId)
+
+            if (addParentAttrName)
             {
-               description += '.'+ parentAttrName // node.parent() is a C_ATTRIBUTE
+               def parentAttrName = node.parent().rm_attribute_name.text()
+
+               // Avoids to add .value to at the ELEMENT.value indexes, for those we want to show just the parent ELEMENT name
+               if (parentAttrName != 'value')
+               {
+                  description += '.'+ parentAttrName // node.parent() is a C_ATTRIBUTE
+               }
             }
          }
 
@@ -711,7 +753,7 @@ class OperationalTemplateIndexer {
                 <rm_type_name>DV_BOOLEAN</rm_type_name>
           */
 
-         def type = node.rm_type_name.text() // DV_BOOLEAN
+
          def archIndexIndex = new ArchetypeIndexItem(
            archetypeId: parent.archetype_id.value.text(),
            path: archetypePath, // +"/value",
