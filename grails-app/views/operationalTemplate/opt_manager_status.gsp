@@ -4,9 +4,9 @@
     <meta name="layout" content="admin">
     <title><g:message code="opt.opt_man_list.title" /></title>
     <style>
-    .btn-toolbar .btn-group { /* fix for confirmation buttons style */
-      float: none;
-    }
+      .btn-toolbar .btn-group { /* fix for confirmation buttons style */
+        float: none;
+      }
       .align-label {
         padding: .375em .75em; /* fixes vertical alignment of label for inline form */
       }
@@ -32,7 +32,7 @@
       .OBSERVATION, .EVALUATION, .INSTRUCTION, .ACTION, .ADMIN_ENTRY {
         background-color: #7CAEFF;
       }
-      .ACTIVITY {
+      .ACTIVITY, .ISM_TRANSITION {
         background-color: #84B6FF;
       }
       .ITEM_TREE, .ITEM_LIST, .ITEM_TABLE, .ITEM_SINGLE {

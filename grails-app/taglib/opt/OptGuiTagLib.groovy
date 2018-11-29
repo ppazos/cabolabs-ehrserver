@@ -131,6 +131,10 @@ class OptGuiTagLib {
 
        // paths
        row([], {
+          $/<label class="col-sm-2 control-label">Data Path</label>
+           <div class="col-sm-10">${o.dataPath}</div>/$
+       })
+       row([], {
           $/<label class="col-sm-2 control-label">Local Path</label>
            <div class="col-sm-10">${o.path}</div>/$
        })
