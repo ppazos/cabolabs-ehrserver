@@ -308,7 +308,7 @@ class RestController {
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
          commitLoggerService.log(request, null, false, null, session, params)
-         renderError(message(code:'query.execute.error.user_cant_access_ehr'), '4764', 403)
+         renderError(message(code:'rest.error.user_cant_access_ehr'), '4764', 403)
          return
       }
 
