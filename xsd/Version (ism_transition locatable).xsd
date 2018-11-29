@@ -232,11 +232,15 @@
           </xs:sequence>
    </xs:complexType>
    <xs:complexType name="ISM_TRANSITION">
-      <xs:sequence>
-         <xs:element name="current_state" type="DV_CODED_TEXT"/>
-         <xs:element name="transition" type="DV_CODED_TEXT" minOccurs="0"/>
-         <xs:element name="careflow_step" type="DV_CODED_TEXT" minOccurs="0"/>
-      </xs:sequence>
+      <xs:complexContent>
+         <xs:extension base="LOCATABLE">
+            <xs:sequence>
+               <xs:element name="current_state" type="DV_CODED_TEXT"/>
+               <xs:element name="transition" type="DV_CODED_TEXT" minOccurs="0"/>
+               <xs:element name="careflow_step" type="DV_CODED_TEXT" minOccurs="0"/>
+            </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
    </xs:complexType>
    <xs:complexType name="LOCATABLE" abstract="true">
           <xs:sequence>
