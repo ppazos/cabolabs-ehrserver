@@ -51,6 +51,8 @@ import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.parsers.JsonService
 import com.cabolabs.ehrserver.sync.*
 
+import com.cabolabs.openehr.terminology.TerminologyParser
+
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class BootStrap {
@@ -1094,6 +1096,13 @@ class BootStrap {
       */
 
 
+      // Loading openEHR Terminologies
+      def terminology = TerminologyParser.getInstance()
+      Holders.config.app.terminologies.each { term ->
+         terminology.parseTerms(new File(term))
+      }
+
+
       // --------------------------------------------------------------------
 
 
@@ -1193,7 +1202,7 @@ gr_account.save(failOnError:true, flush:true)
 
          generateTemplateIndexes()
 
-/*
+         /*
          // Sample EHRs for testing purposes
          if (Ehr.count() == 0)
          {
@@ -1221,7 +1230,7 @@ gr_account.save(failOnError:true, flush:true)
               if (!ehr.save()) println ehr.errors
             }
          }
-*/
+         */
 
          // Create plans
          def test_plan
