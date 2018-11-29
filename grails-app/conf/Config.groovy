@@ -200,6 +200,11 @@ app {
    version_xsd = "xsd"+ PS +"Version.xsd"
    xslt = "xsd"+ PS +"openEHR_RMtoHTML.xsl"
    opt_xsd = "xsd"+ PS +"OperationalTemplate.xsd"
+   terminologies = [
+     "terminology"+ PS +"openehr_terminology_en.xml",
+     "terminology"+ PS +"openehr_terminology_es.xml",
+     "terminology"+ PS +"openehr_terminology_pt.xml"
+   ]
 
    security {
       min_password_length = 6
