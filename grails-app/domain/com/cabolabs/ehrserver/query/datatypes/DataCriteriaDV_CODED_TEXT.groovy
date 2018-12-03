@@ -116,6 +116,8 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          // but if the OPT doesn't have a DV_CODED_TEXT, the path will return a null node.
          // https://github.com/ppazos/cabolabs-ehrserver/issues/528
 
+         def terminologyId = 'local'
+
          def constraint = optMan.getNode(archetypeId, path + '/defining_code', namespace)
          if (constraint && constraint.type == 'C_CODE_PHRASE') // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
          {
@@ -148,6 +150,8 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                      ccodephrase.codeList.each { code ->
                         codes[code] = terminology.getRubric(lang, code)
                      }
+
+                     terminologyId = 'openehr'
                   }
                }
             }
@@ -170,7 +174,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          if (codes.size() > 0)
          {
            spec[0].code.codes = codes
-           spec[0].terminologyId.codes = ['local': 'local'] // if the terms are defined in the archetype, the terminology is local
+
+           // if the terms are defined in the archetype, the terminology is 'local' or 'openehr'
+           spec[0].terminologyId.codes = [(terminologyId): terminologyId]
          }
          else if (path.endsWith('/null_flavour')) // show valid null flavour codes
          {

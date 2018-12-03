@@ -83,6 +83,8 @@ class SyncParserService {
 
       def ehr = Ehr.findByUid(jsonContribution.ehrUid) // EHR should be synced before Contribution
 
+      // TODO: should check the EHR exists (was synced)
+
       // Process commit to create versions and compo indexes, later data indexing will generate dvs
       def jsonCommit = jsonContribution.commit
 
@@ -114,6 +116,7 @@ class SyncParserService {
 
    Ehr fromJSONEhr(JSONObject j)
    {
+      // FIXME: should check the orgUid exists!
       def ehr = new Ehr(
          systemId: j.systemId,
          uid: j.uid,
