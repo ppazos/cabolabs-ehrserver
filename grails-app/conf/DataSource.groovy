@@ -41,13 +41,13 @@ environments {
         dataSource {
            dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
            //logSql = true
-           String host = "localhost"
-           String port = 3306
-           String dbName = "ehrserver"
-           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+           String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
+           String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
+           String dbName = System.getenv('EHRSERVER_DB_NAME')
+           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
-           username = 'root'
-           password = 'toor'
+           username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
+           password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')
         }
     }
     test {
@@ -56,7 +56,7 @@ environments {
             String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
-            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+            url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
             username = 'root'
             password = ''
@@ -130,7 +130,7 @@ environments {
            String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
            String dbName = System.getenv('EHRSERVER_APP_NAME')
 
-           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
            username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
            password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')

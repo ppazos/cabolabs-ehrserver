@@ -1,12 +1,19 @@
 # Using Docker
 
 ## Build Image
-docker build -t ehrserver .
+docker build -t ehr-server .
 
+## Run MySQL Container
+docker run --name ehr-db -e MYSQL_ROOT_PASSWORD=ehr -e MYSQL_DATABASE=ehr -e MYSQL_USER=ehr -e MYSQL_PASSWORD=ehr -d mysql:5
 
-## Run Server on port 8090
-docker run -p "8090:8090" ehrserver 
-
+## Run EHRServer Container on port 8090
+docker run --name ehr-server --link ehr-db:mysql -p "8090:8090" -e EHRSERVER_REST_SECRET=ehr -d ehr-server
 
 ## Run Tests
-docker run ehrserver grails test-app -integration
+docker run --name ehr-server-test --link ehr-db:mysql grails test-app -integration
+
+
+-e EHRSERVER_MYSQL_DB_HOST=ehr-db -e EHRSERVER_DB_NAME=ehr -e EHRSERVER_MYSQL_DB_USERNAME=ehr -e EHRSERVER_MYSQL_DB_PASSWORD=ehr
+
+
+docker run --name ehr-server --link ehr-db:mysql -p "8090:8090" -e EHRSERVER_REST_SECRET=ehr -e EHRSERVER_MYSQL_DB_HOST=ehr-db -e EHRSERVER_MYSQL_DB_PORT=3306 -e EHRSERVER_DB_NAME=ehr -e EHRSERVER_MYSQL_DB_USERNAME=ehr -e EHRSERVER_MYSQL_DB_PASSWORD=ehr -d ehr-server grails -Dgrails.env=local_prod -Dserver.port=8090 -Duser.timezone=UTC run-app

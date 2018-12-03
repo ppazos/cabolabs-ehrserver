@@ -1,0 +1,19 @@
+######################
+# Project Specific
+######################
+.git
+
+# ignore all markdown files (md) beside all README*.md other than README-secret.md
+*.md
+!README*.md
+README-secret.md
+
+######################
+# OS crud
+######################
+Thumbs.db
+Desktop.ini
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
