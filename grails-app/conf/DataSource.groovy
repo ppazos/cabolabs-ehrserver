@@ -39,20 +39,20 @@ hibernate {
 environments {
     development {
         dataSource {
-           dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate'
-           logSql = true
-           String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
+           dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
+           //logSql = true
+           String host = "localhost"
            String port = 3306
-           String dbName = System.getenv('EHRSERVER_DB_NAME')
-           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
+           String dbName = "ehrserver"
+           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
-           username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
-           password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')
+           username = 'root'
+           password = 'toor'
         }
     }
     test {
         dataSource {
-            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
+            dbCreate = "update"
             String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
@@ -68,6 +68,7 @@ environments {
            /* For testing prod on localhost
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+
            driverClassName = 'com.mysql.jdbc.Driver'
            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
            */
@@ -120,7 +121,7 @@ environments {
     local_prod {
        dataSource {
 
-           dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
+           dbCreate = "update"
 
            // ===========================================================
            // Config for EHRSERVER ======================================
@@ -129,7 +130,7 @@ environments {
            String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
            String dbName = System.getenv('EHRSERVER_APP_NAME')
 
-           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
+           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
            username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
            password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')
