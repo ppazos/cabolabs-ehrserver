@@ -56,7 +56,7 @@ environments {
             String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
-            url = "jdbc:mysql://$host:$port/$dbName // ?useTimezone=true&serverTimezone=UTC
+            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
             username = 'root'
             password = ''
