@@ -39,10 +39,10 @@ hibernate {
 environments {
     development {
         dataSource {
-           dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
-           //logSql = true
+           dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate'
+           logSql = true
            String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
-           String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
+           String port = 3306
            String dbName = System.getenv('EHRSERVER_DB_NAME')
            url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
@@ -52,14 +52,14 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "update"
-            String host = "localhost"
+            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
+            String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
             String port = 3306
             String dbName = "ehrservertest"
             url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
             username = 'root'
-            password = ''
+            password = 'thisistherootpassword'
         }
     }
     production {
@@ -68,7 +68,6 @@ environments {
            /* For testing prod on localhost
            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
-
            driverClassName = 'com.mysql.jdbc.Driver'
            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
            */
@@ -121,7 +120,7 @@ environments {
     local_prod {
        dataSource {
 
-           dbCreate = "update"
+           dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
 
            // ===========================================================
            // Config for EHRSERVER ======================================
