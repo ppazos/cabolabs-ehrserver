@@ -53,13 +53,13 @@ environments {
     test {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
-            String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
+            String host = "localhost"
             String port = 3306
             String dbName = "ehrservertest"
-            url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
+            url = "jdbc:mysql://$host:$port/$dbName // ?useTimezone=true&serverTimezone=UTC
 
             username = 'root'
-            password = 'thisistherootpassword'
+            password = ''
         }
     }
     production {
