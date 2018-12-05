@@ -85,6 +85,13 @@ class SemanticValidationLevel1 {
      ELEMENT       : ['name', 'value', 'archetype_details', 'uid']
    ]
 
+   /* classes that are not LOCATABLE, so don't have node_id in the path */
+   def pathables = [
+     'EVENT_CONTEXT',
+     'ISM_TRANSITION',
+     'INSTRUCTION_DETAILS'
+   ]
+
 
    // attrs that should be avoided, but children should be processed
    // COMPO.context doesn't have an AII, but it's children do
@@ -328,6 +335,7 @@ class SemanticValidationLevel1 {
 
    /**
     * paths are for the parent, current node paths are calculated internally
+    * templatePath is the data path in the template, constructed from a data instance, is not the template path from the OPT!
     */
    def traverseCompoNodes(GPathResult node, String templateId, String templatePath,
                           String archetypeId, String archetypePath, String nodeRMType,
@@ -342,7 +350,7 @@ class SemanticValidationLevel1 {
       // ISSUE: AIIs doesnt have intermediate structures, HISTORY, ITEM_TREE, etc. need to ask on
       // the OPT form OPTMAN! and this will be quicker since is memory instead of db queries
 
-/*
+      /*
       // namespace is in securityStatelessMap because this is executed from the RestController.commit
       //def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
       def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
@@ -355,10 +363,14 @@ class SemanticValidationLevel1 {
       //println 'opt.getNode '+ opt.getNode(templatePath)
 
 
+      // FIXME: here getNode is given a template data path, not a template path defined in the OPT,
+      //        and checks against OPT defined paths, not template data paths, we need to calculate
+      //        template data paths on the OPT to make the correct check.
+
 
       // check the node is defined by the OPT
       if (!continue_with_children_attrs.contains(node.name()) &&
-          opt.getNode(templatePath) == null) // in memory verification!
+          !opt.existsNodeByTemplateDataPath(templatePath)) // in memory verification!
       {
          if (!errors[compoIndex]) errors[compoIndex] = []
          errors[compoIndex] << 'Found a node ('+ templatePath +') that is not defined in the template "'+ templateId +'"' // TODO: i18n
@@ -396,6 +408,7 @@ class SemanticValidationLevel1 {
 
    /**
     * Function from DataIndexerService, TODO: refactor.
+    * These paths are data paths since are calculated from composition instances.
     */
    private Map getChildPathsAndRootArchetype(node, templatePath, archetypePath, archetypeId)
    {
@@ -411,31 +424,31 @@ class SemanticValidationLevel1 {
       }
       else if (!node.'@archetype_node_id'.isEmpty()) // Si tiene archetype_node_id
       {
-        // Para que los hijos de la raiz no empiecen con //
-        if (templatePath == '/') templatePath = ''
-        if (archetypePath == '/') archetypePath = ''
+         // Para que los hijos de la raiz no empiecen con //
+         if (templatePath == '/') templatePath = ''
+         if (archetypePath == '/') archetypePath = ''
 
-        // Si es un nodo atNNNN
-        if (node.'@archetype_node_id'.text().startsWith('at'))
-        {
-          outTemplatePath = templatePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
-          outArchetypePath = archetypePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
-        }
-        else // Si es un archetypeId
-        {
-          outTemplatePath = templatePath + '/' + node.name() + '[archetype_id='+ node.'@archetype_node_id'.text() +']'
-          outArchetypePath = '/' // This node is an archetype root because it has an archetypeId
-          archetypeId = node.'@archetype_node_id'.text()
-        }
+         // Si es un nodo atNNNN
+         if (node.'@archetype_node_id'.text().startsWith('at'))
+         {
+            outTemplatePath = templatePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
+            outArchetypePath = archetypePath + '/' + node.name() + '[' + node.'@archetype_node_id'.text() + ']'
+         }
+         else // Si es un archetypeId
+         {
+            outTemplatePath = templatePath + '/' + node.name() + '[archetype_id='+ node.'@archetype_node_id'.text() +']'
+            outArchetypePath = '/' // This node is an archetype root because it has an archetypeId
+            archetypeId = node.'@archetype_node_id'.text()
+         }
       }
       else // No tiene archetype_node_id
       {
-        // Para que los hijos de la raiz no empiecen con //
-        if (templatePath == '/') templatePath = ''
-        if (archetypePath == '/') archetypePath = ''
+         // Para que los hijos de la raiz no empiecen con //
+         if (templatePath == '/') templatePath = ''
+         if (archetypePath == '/') archetypePath = ''
 
-        outTemplatePath = templatePath + '/' + node.name()
-        outArchetypePath = archetypePath + '/' + node.name()
+         outTemplatePath = templatePath + '/' + node.name()
+         outArchetypePath = archetypePath + '/' + node.name()
       }
 
       return [templatePath: outTemplatePath, archetypePath: outArchetypePath, rootArchetype: archetypeId]
