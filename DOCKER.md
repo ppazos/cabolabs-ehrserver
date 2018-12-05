@@ -23,9 +23,11 @@
     -p "8090:8090" \
     -e EHRSERVER_REST_SECRET=ehr \
     -e EHRSERVER_MYSQL_DB_HOST=ehr-db \
+    -e EHRSERVER_MYSQL_DB_PORT=3306 \
     -e EHRSERVER_DB_NAME=ehr \
     -e EHRSERVER_MYSQL_DB_USERNAME=ehr \
     -e EHRSERVER_MYSQL_DB_PASSWORD=ehr \
+    -e EHRSERVER_REST_SECRET=ehr \
     -d \
     ehr-server
 
@@ -38,9 +40,10 @@
     -e EHRSERVER_REST_SECRET=ehr \
     -e EHRSERVER_MYSQL_DB_HOST=ehr-db \
     -e EHRSERVER_MYSQL_DB_PORT=3306 \
-    -e EHRSERVER_DB_NAME=ehr \
+    -e EHRSERVER_APP_NAME=ehr \
     -e EHRSERVER_MYSQL_DB_USERNAME=ehr \
     -e EHRSERVER_MYSQL_DB_PASSWORD=ehr \
+    -e EHRSERVER_REST_SECRET=ehr \
     -d \
     ehr-server grails -Dgrails.env=local_prod -Dserver.port=8090 -Duser.timezone=UTC run-app
 

@@ -8,7 +8,8 @@ jdk:
 services:
   - mysql
 
-# env:
+env:
+  - EHRSERVER_REST_SECRET=ehr
 #   - GRAILS_VERSION=2.5.6
 
 # before_install:
