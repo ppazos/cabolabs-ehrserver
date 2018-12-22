@@ -16,8 +16,7 @@ FROM grails-base
 WORKDIR /app
 COPY . .
 
-RUN grails refresh-dependencies
-# RUN grails dependency-report
+RUN grails dependency-report
 
 CMD ["grails", "-Dserver.port=8090", "run-app"]
 

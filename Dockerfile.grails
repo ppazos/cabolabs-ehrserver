@@ -1,0 +1,18 @@
+FROM java:8-jdk
+
+# gvm requires curl and unzip
+RUN apt-get update && apt-get install -yqq --no-install-recommends wget tar curl unzip
+
+# Install sdkman
+RUN curl -s http://get.sdkman.io | bash
+
+# Set version for grails / gradle
+ENV GRAILS_VERSION 2.5.6
+ENV GRADLE_VERSION 3.5.1
+
+# Install grails / gradle with sdkman
+RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh \
+&& sdk install grails $GRAILS_VERSION && sdk install gradle $GRADLE_VERSION"
+
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
