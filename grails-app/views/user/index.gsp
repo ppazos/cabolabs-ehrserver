@@ -76,6 +76,7 @@
             <table class="table table-striped table-bordered table-hover">
               <thead>
                 <tr>
+                  <g:sortableColumn property="role" title="${message(code: 'user.attr.role', default: 'Role')}" />
                   <g:sortableColumn property="username" title="${message(code: 'user.attr.username', default: 'Username')}" />
                   <g:sortableColumn property="accountExpired" title="${message(code: 'user.attr.account_expired', default: 'Account Expired')}" />
                   <g:sortableColumn property="accountLocked" title="${message(code: 'user.attr.account_locked', default: 'Account Locked')}" />
@@ -87,6 +88,9 @@
                 <g:each in="${orgUserRoles.value}" status="i" var="userRole">
                   <g:set var="userInstance" value="${userRole.user}" />
                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                    <td>
+                      ${userRole.role.authority}
+                    </td>
                     <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
                     <td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
                     <td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
