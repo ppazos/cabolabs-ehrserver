@@ -43,40 +43,26 @@
                         <th><g:message code="user.account.label" default="Accounts" /></th>
                         <th><g:message code="user.organizations.label" default="Organizations" /></th>
                         <g:each in="${Role.list()}" var="role">
-                          <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
-                            <g:if test="${role.authority != 'ROLE_ADMIN'}">
-                              <th>${role.authority}</th>
-                            </g:if>
-                          </sec:ifNotGranted>
-                          <sec:ifAnyGranted roles="ROLE_ADMIN">
-                            <th>${role.authority}</th>
-                          </sec:ifAnyGranted>
+                          <th>${role.authority}</th>
                         </g:each>
                       </tr>
                     </thead>
                     <tbody>
                       <g:each in="${roles}" status="i" var="roleOrg">
+
                         <g:set var="org" value="${roleOrg.key}" />
+                        <g:set var="rolesICanAssign" value="${roleOrg.value*.authority}" />
+
                         <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                           <td><g:link controller="account" action="show" id="${org.account.id}">${org.account.companyName}</g:link></td>
                           <td><g:link controller="organization" action="show" id="${org.uid}">${org.name}</g:link></td>
+
                           <g:each in="${Role.list()}" var="role">
-                            <sec:ifNotGranted roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
-                              <g:if test="${role.authority != 'ROLE_ADMIN'}">
-                                <td>
-                                  <g:if test="${(roleOrg.value.contains(role))}"><%-- dont show if I cant assing the role --%>
-                                    <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} disabled="true" />
-                                  </g:if>
-                                </td>
+                            <td>
+                              <g:if test="${(rolesICanAssign.contains(role.authority))}"><%-- dont show if I cant assing the role --%>
+                                <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role.authority == role.authority && it.organization == org })?'checked="true"':''} disabled="true" />
                               </g:if>
-                            </sec:ifNotGranted>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                              <td>
-                                <g:if test="${(roleOrg.value.contains(role))}"><%-- dont show if I cant assing the role --%>
-                                  <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} disabled="true" />
-                                </g:if>
-                              </td>
-                            </sec:ifAnyGranted>
+                            </td>
                           </g:each>
                         </tr>
                       </g:each>
