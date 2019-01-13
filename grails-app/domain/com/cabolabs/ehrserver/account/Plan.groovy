@@ -66,7 +66,8 @@ class Plan {
     */
 
    static constraints = {
-      period( inList: periods.values() as List)
+      period(inList: periods.values() as List)
+      name(unique: true)
    }
 
    /**

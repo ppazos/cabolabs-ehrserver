@@ -56,6 +56,7 @@ class SyncMarshallersService {
 
    /*
     * Converts any list to JSON, the items are converted by the correspondent method.
+    * Note: the default organization and the admin role are not synced since those should exist by default in the remote
     */
    def toJSON(List l, JsonBuilder jb)
    {
@@ -163,6 +164,27 @@ class SyncMarshallersService {
          contact (toJSON(a.contact, jb)) // User
          master a.master
          organizations (toJSON(a.organizations, jb)) // List<Organization>
+         plans(toJSON(a.allPlans, jb))
+      }
+   }
+   def toJSON(PlanAssociation pa, JsonBuilder jb)
+   {
+      jb.plan_association {
+         from  pa.from
+         to    pa.to
+         state pa.state
+         plan(toJSON(pa.plan, jb))
+      }
+   }
+   def toJSON(Plan p, JsonBuilder jb)
+   {
+      jb { // the name is set by plan association marshaller
+         name                            p.name
+         period                          p.period
+         repo_total_size_in_kb           p.repo_total_size_in_kb
+         max_opts_per_organization       p.max_opts_per_organization
+         max_organizations               p.max_organizations
+         max_api_tokens_per_organization p.max_api_tokens_per_organization
       }
    }
    def toJSON(User u, JsonBuilder jb)

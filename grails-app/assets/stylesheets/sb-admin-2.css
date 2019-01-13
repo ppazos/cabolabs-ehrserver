@@ -338,6 +338,16 @@ div.btn-toolbar {
   border: 1px solid #d9534f;
   background-color: #f2dede;
 }
+.error ul {
+ padding: 0;
+}
+.error li {
+ list-style: none;
+ background: #f2dede;
+ text-indent: 0.2em;
+ margin-top: 1em;
+ padding: 0.5em;
+}
 
 /** Adds vertical space between colums collapsed as rows for responsive **/
 /** src https://coderwall.com/p/0jezca/vertical-spacing-for-bootstrap-columns **/

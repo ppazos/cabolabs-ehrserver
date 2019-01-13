@@ -95,6 +95,7 @@ class SyncController {
       // so it can't be associated with an org, and UserRole requires an org
       //UserRole.create(virtualUser, Role.findByAuthority(Role.US), org, true)
 
+      // https://github.com/kaleidos/grails-security-stateless/blob/master/src/groovy/net/kaleidos/grails/plugin/security/stateless/token/JwtStatelessTokenProvider.groovy#L30
       def key = new ApiKey(user: virtualUser,
                            systemId: systemId,
                            scope: 'sync',
@@ -156,9 +157,11 @@ class SyncController {
       // TODO: check if already exists
       // TOOD: check if this is an update, that should be a PUT, OK result should be 200
       //println request.JSON
+      // TODO: transaction!
 
       // account with contact user and list of organizations
-      def account = syncParserService.fromJSONAccount(request.JSON.account)
+      def json = request.JSON.account
+      def account = syncParserService.fromJSONAccount(json)
 
       if (!account) println "NULL!!!!"
 
@@ -166,6 +169,22 @@ class SyncController {
       {
          // TODO: handle error
          println account.errors.allErrors
+      }
+
+      def plan_associations = syncParserService.fromJSONPlanAssociations(json.plans, account)
+
+      plan_associations.each { plan_assoc ->
+         // plan is not saved in cascade by plan assoc
+         if (!plan_assoc.plan.save())
+         {
+            // TODO: handle errors
+            println plan_assoc.plan.errors.allErrors
+         }
+         if (!plan_assoc.save())
+         {
+            // TODO: handle errors
+            println plan_assoc.errors.allErrors
+         }
       }
 
       def alog = new ActivityLog(

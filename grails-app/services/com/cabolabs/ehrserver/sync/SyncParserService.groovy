@@ -27,6 +27,7 @@ import com.cabolabs.ehrserver.parsers.JsonService
 import com.cabolabs.ehrserver.parsers.XmlService
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.web.json.JSONArray
 import groovy.json.JsonBuilder
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
@@ -160,6 +161,45 @@ class SyncParserService {
       }
 
       return account
+   }
+
+   // Receivesthe json part of account.plan_assoiation
+   List fromJSONPlanAssociations(JSONArray j, Account a)
+   {
+      def plan_assocs = []
+      def plan_assoc
+      j.each { jplan_assoc ->
+
+         plan_assoc = new PlanAssociation(
+            account: a,
+            from: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(jplan_assoc.plan_association.from),
+            to: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(jplan_assoc.plan_association.to),
+            state: jplan_assoc.plan_association.state
+         )
+
+         def plan
+         if (Plan.countByName(jplan_assoc.plan_association.plan.name) == 0)
+         {
+            plan = new Plan(
+               name:                            jplan_assoc.plan_association.plan.name,
+               period:                          jplan_assoc.plan_association.plan.period,
+               repo_total_size_in_kb:           jplan_assoc.plan_association.plan.repo_total_size_in_kb,
+               max_opts_per_organization:       jplan_assoc.plan_association.plan.max_opts_per_organization,
+               max_organizations:               jplan_assoc.plan_association.plan.max_organizations,
+               max_api_tokens_per_organization: jplan_assoc.plan_association.plan.max_api_tokens_per_organization
+            )
+         }
+         else
+         {
+            plan = Plan.findByName(jplan_assoc.plan_association.plan.name)
+         }
+
+         plan_assoc.plan = plan
+
+         plan_assocs << plan_assoc
+      }
+
+      return plan_assocs
    }
 
    User fromJSONUser(JSONObject j)

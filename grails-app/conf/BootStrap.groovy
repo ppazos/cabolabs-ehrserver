@@ -1096,6 +1096,7 @@ class BootStrap {
       */
 
 
+
       // Loading openEHR Terminologies
       def terminology = TerminologyParser.getInstance()
       Holders.config.app.terminologies.each { term ->
