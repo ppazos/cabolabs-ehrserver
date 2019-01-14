@@ -36,7 +36,7 @@
     <value>2767d08c-b65c-4746-962a-59a7ec19bb5b</value>
   </uid>
   <template_id>
-    <value>Referral</value>
+    <value>referral.en.v1</value>
   </template_id>
   <concept>Referral</concept>
   <definition>
@@ -2691,7 +2691,7 @@
           <items id="text">Service requested</items>
         </term_definitions>
         <term_definitions code="at0127">
-          <items id="description">The status of the request for service as indicated by the requester. 
+          <items id="description">The status of the request for service as indicated by the requester.
 Status is used to denote whether this is the initial request, or a follow-up request to change or provide supplementary information.</items>
           <items id="text">Request status</items>
         </term_definitions>
@@ -2747,7 +2747,7 @@ Status is used to denote whether this is the initial request, or a follow-up req
       <value>openEHR-EHR-COMPOSITION.referral.v1</value>
     </archetype_id>
     <template_id>
-      <value>Referral</value>
+      <value>referral.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">A document expressing all information required to make a request for provision of a specified service by another healthcare provider or organisation.</items>

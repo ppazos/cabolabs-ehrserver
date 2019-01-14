@@ -36,7 +36,7 @@
     <value>4d0546d8-dda0-45d3-8062-fc67c7c5f0b6</value>
   </uid>
   <template_id>
-    <value>Test all datatypes</value>
+    <value>test_all_datatypes.es.v1</value>
   </template_id>
   <concept>Test all datatypes</concept>
   <definition>
@@ -1759,7 +1759,7 @@
       <value>openEHR-EHR-COMPOSITION.test_all_datatypes.v1</value>
     </archetype_id>
     <template_id>
-      <value>Test all datatypes</value>
+      <value>test_all_datatypes.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">composition root</items>

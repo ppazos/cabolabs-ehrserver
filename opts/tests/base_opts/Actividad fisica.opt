@@ -36,7 +36,7 @@
     <value>3915464d-434c-4592-a1ae-a8b1de242861</value>
   </uid>
   <template_id>
-    <value>Actividad fisica</value>
+    <value>actividad_fisica.es.v1</value>
   </template_id>
   <concept>Actividad fisica</concept>
   <definition>
@@ -593,7 +593,7 @@
       <value>openEHR-EHR-COMPOSITION.actividad_fisica.v1</value>
     </archetype_id>
     <template_id>
-      <value>Actividad fisica</value>
+      <value>actividad_fisica.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

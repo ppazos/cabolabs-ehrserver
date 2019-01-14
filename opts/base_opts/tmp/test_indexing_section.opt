@@ -36,7 +36,7 @@
     <value>706bf93d-303e-4699-b147-79b605bf0977</value>
   </uid>
   <template_id>
-    <value>test_indexing_section</value>
+    <value>test_indexing_section.en.v1</value>
   </template_id>
   <concept>test_indexing_section</concept>
   <definition>
@@ -1654,7 +1654,7 @@
       <value>openEHR-EHR-COMPOSITION.test_indexing_section.v1</value>
     </archetype_id>
     <template_id>
-      <value>test_indexing_section</value>
+      <value>test_indexing_section.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*</items>

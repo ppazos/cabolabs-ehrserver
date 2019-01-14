@@ -37,7 +37,7 @@
     <value>cdbd8d8b-7c51-4508-883a-262dd11fdda1</value>
   </uid>
   <template_id>
-    <value>Vital Signs</value>
+    <value>vital_signs.en.v1</value>
   </template_id>
   <concept>Vital Signs</concept>
   <definition>
@@ -2916,7 +2916,7 @@
       <value>openEHR-EHR-COMPOSITION.signos.v1</value>
     </archetype_id>
     <template_id>
-      <value>Vital Signs</value>
+      <value>vital_signs.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*unknown(es)</items>

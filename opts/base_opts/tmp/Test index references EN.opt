@@ -36,7 +36,7 @@
     <value>c51011b9-0e62-4187-a36b-6706da1ddcc5</value>
   </uid>
   <template_id>
-    <value>Test index references EN</value>
+    <value>test_index_references.en.v1</value>
   </template_id>
   <concept>Test index references EN</concept>
   <definition>
@@ -293,7 +293,7 @@
       <value>openEHR-EHR-COMPOSITION.test_index_references.v1</value>
     </archetype_id>
     <template_id>
-      <value>Test index references EN</value>
+      <value>test_index_references.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*</items>

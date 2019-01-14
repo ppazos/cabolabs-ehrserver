@@ -36,7 +36,7 @@
     <value>b0e6c6a3-b876-4a7e-9b61-38eaacd09840</value>
   </uid>
   <template_id>
-    <value>Review invalid</value>
+    <value>review_invalid.es.v1</value>
   </template_id>
   <concept>Review</concept>
   <definition>
@@ -1082,7 +1082,7 @@
       <value>openEHR-EHR-COMPOSITION.review.v1</value>
     </archetype_id>
     <template_id>
-      <value>Review invalid</value>
+      <value>review_invalid.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Composition for the recording of the details of a formal review of a subject's clinical situation or any specific aspect of their clinical care.</items>

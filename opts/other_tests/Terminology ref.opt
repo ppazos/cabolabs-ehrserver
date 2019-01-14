@@ -36,7 +36,7 @@
     <value>30502d1e-797e-4296-9776-2040b3ee6caa</value>
   </uid>
   <template_id>
-    <value>Terminology ref</value>
+    <value>terminology_ref.es.v1</value>
   </template_id>
   <concept>Terminology ref</concept>
   <definition>
@@ -317,7 +317,7 @@
       <value>openEHR-EHR-COMPOSITION.terminology_ref_compo.v1</value>
     </archetype_id>
     <template_id>
-      <value>Terminology ref</value>
+      <value>terminology_ref.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

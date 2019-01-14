@@ -36,7 +36,7 @@
     <value>0c17e6a0-f14d-4dfc-96b2-3d531ba1891a</value>
   </uid>
   <template_id>
-    <value>test_index_interval_event</value>
+    <value>test_index_interval_event.en.v1</value>
   </template_id>
   <concept>test_index_interval_event</concept>
   <definition>
@@ -399,7 +399,7 @@
       <value>openEHR-EHR-COMPOSITION.test_index_interval_event.v1</value>
     </archetype_id>
     <template_id>
-      <value>test_index_interval_event</value>
+      <value>test_index_interval_event.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*</items>

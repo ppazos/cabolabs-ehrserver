@@ -36,7 +36,7 @@
     <value>0b57ed2a-0e6d-4ccf-b4f0-95dc0447024e</value>
   </uid>
   <template_id>
-    <value>Orden de laboratorio</value>
+    <value>orden_de_laboratorio.es.v1</value>
   </template_id>
   <concept>Orden de laboratorio</concept>
   <definition>
@@ -1266,7 +1266,7 @@
       <value>openEHR-EHR-COMPOSITION.lab_test_request.v1</value>
     </archetype_id>
     <template_id>
-      <value>Orden de laboratorio</value>
+      <value>orden_de_laboratorio.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Documento de solicitud de estudios de laboratorio</items>

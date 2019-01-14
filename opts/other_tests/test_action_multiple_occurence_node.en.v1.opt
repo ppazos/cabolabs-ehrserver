@@ -36,7 +36,7 @@
     <value>2c13dfac-ad5f-4cf6-b699-d143107d76cd</value>
   </uid>
   <template_id>
-    <value>test action multiple occurence node EN</value>
+    <value>test_action_multiple_occurence_node.en.v1</value>
   </template_id>
   <concept>test action multiple occurence node EN</concept>
   <definition>
@@ -406,7 +406,7 @@
       <value>openEHR-EHR-COMPOSITION.test_action_multiple_occurence_node.v1</value>
     </archetype_id>
     <template_id>
-      <value>test action multiple occurence node EN</value>
+      <value>test_action_multiple_occurence_node.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*</items>

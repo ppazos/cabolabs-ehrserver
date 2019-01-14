@@ -36,7 +36,7 @@
     <value>69463c85-b73b-470c-ba4e-5a181f9888c1</value>
   </uid>
   <template_id>
-    <value>test_index_admin_entry_EN</value>
+    <value>test_index_admin_entry.en.v1</value>
   </template_id>
   <concept>test_index_admin_entry_EN</concept>
   <definition>
@@ -301,7 +301,7 @@
       <value>openEHR-EHR-COMPOSITION.test_index_admin_entry.v1</value>
     </archetype_id>
     <template_id>
-      <value>test_index_admin_entry_EN</value>
+      <value>test_index_admin_entry.en.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">*</items>

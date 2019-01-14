@@ -36,7 +36,7 @@
     <value>0dfeecab-9455-4915-b80b-dced53e51c8d</value>
   </uid>
   <template_id>
-    <value>compo that uses BP 1</value>
+    <value>compo_that_uses_BP_1.es.v1</value>
   </template_id>
   <concept>compo that uses BP 1</concept>
   <definition>
@@ -2284,7 +2284,7 @@
       <value>openEHR-EHR-COMPOSITION.compo_that_uses_bp_1.v1</value>
     </archetype_id>
     <template_id>
-      <value>compo that uses BP 1</value>
+      <value>compo_that_uses_BP_1.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

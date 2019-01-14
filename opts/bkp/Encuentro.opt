@@ -36,7 +36,7 @@
     <value>01f55286-f1df-4dc1-8955-c858be23f025</value>
   </uid>
   <template_id>
-    <value>Encuentro</value>
+    <value>encuentro.es.v1</value>
   </template_id>
   <concept>Encuentro</concept>
   <definition>
@@ -2195,7 +2195,7 @@
       <value>openEHR-EHR-COMPOSITION.encounter.v1</value>
     </archetype_id>
     <template_id>
-      <value>Encuentro</value>
+      <value>encuentro.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Interacción, contacto o evento de cuidado entre un paciente y un proveedor de salud.</items>

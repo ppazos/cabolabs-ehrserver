@@ -36,7 +36,7 @@
     <value>4528d25f-7e88-437f-abea-98d0897f8aa4</value>
   </uid>
   <template_id>
-    <value>Registro itserver</value>
+    <value>registro_itserver.es.v1</value>
   </template_id>
   <concept>Registro itserver</concept>
   <definition>
@@ -6474,7 +6474,7 @@
       <value>openEHR-EHR-COMPOSITION.registro_itserver.v1</value>
     </archetype_id>
     <template_id>
-      <value>Registro itserver</value>
+      <value>registro_itserver.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>

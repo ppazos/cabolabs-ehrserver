@@ -36,7 +36,7 @@
     <value>dff09517-f458-4ee1-b753-f579b6100afd</value>
   </uid>
   <template_id>
-    <value>LabResults1</value>
+    <value>lab_results.es.v1</value>
   </template_id>
   <concept>LabResults1</concept>
   <definition>
@@ -2226,7 +2226,7 @@ This archetype also acts as the parent for specialisations appropriate for more 
           <items id="text">Specimen detail</items>
         </term_definitions>
         <term_definitions code="at0068">
-          <items id="description">The identifier given to the laboratory test result of a pathology 
+          <items id="description">The identifier given to the laboratory test result of a pathology
 investigation.</items>
           <items id="text">Laboratory test result identifier</items>
         </term_definitions>
@@ -2241,7 +2241,7 @@ investigation.</items>
         <term_definitions code="at0075">
           <items id="comment">The date and time related to the results status is
 useful for version control and cumulative results for the report.</items>
-          <items id="description">The date and/or time that the result was issued for the recorded 
+          <items id="description">The date and/or time that the result was issued for the recorded
 ‘test status’. </items>
           <items id="text">Datetime result issued</items>
         </term_definitions>
@@ -4399,7 +4399,7 @@ This archetype also acts as the parent for specialisations appropriate for more 
           <items id="text">Specimen detail</items>
         </term_definitions>
         <term_definitions code="at0068">
-          <items id="description">The identifier given to the laboratory test result of a pathology 
+          <items id="description">The identifier given to the laboratory test result of a pathology
 investigation.</items>
           <items id="text">Laboratory test result identifier</items>
         </term_definitions>
@@ -4414,7 +4414,7 @@ investigation.</items>
         <term_definitions code="at0075">
           <items id="comment">The date and time related to the results status is
 useful for version control and cumulative results for the report.</items>
-          <items id="description">The date and/or time that the result was issued for the recorded 
+          <items id="description">The date and/or time that the result was issued for the recorded
 ‘test status’. </items>
           <items id="text">Datetime result issued</items>
         </term_definitions>
@@ -4530,7 +4530,7 @@ useful for version control and cumulative results for the report.</items>
       <value>openEHR-EHR-COMPOSITION.report-result.v1</value>
     </archetype_id>
     <template_id>
-      <value>LabResults1</value>
+      <value>lab_results.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">Document to communicate information to others, commonly in response to a request from another party.</items>

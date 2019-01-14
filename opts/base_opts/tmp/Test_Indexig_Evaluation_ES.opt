@@ -36,9 +36,9 @@
     <value>c1638be9-d693-43d1-82e5-19a6f0d93aa2</value>
   </uid>
   <template_id>
-    <value>Test_Indexig_Evaluation</value>
+    <value>test_indexing_evaluation.es.v1</value>
   </template_id>
-  <concept>Test_Indexig_Evaluation</concept>
+  <concept>Test_Indexing_Evaluation</concept>
   <definition>
     <rm_type_name>COMPOSITION</rm_type_name>
     <occurrences>
@@ -369,7 +369,7 @@
       <value>openEHR-EHR-COMPOSITION.test_indexing_evaluation.v1</value>
     </archetype_id>
     <template_id>
-      <value>Test_Indexig_Evaluation</value>
+      <value>test_indexing_evaluation.es.v1</value>
     </template_id>
     <term_definitions code="at0000">
       <items id="description">unknown</items>
