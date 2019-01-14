@@ -198,7 +198,7 @@ class EhrControllerIntegrationSpec extends IntegrationSpec {
    {
       when:
          controller.request.method = "GET"
-         controller.params.id = 1
+         controller.params.id = Ehr.findByUid(ehrUid).id
          controller.ehrContributions() // result and modelAndView is null because it renders a template not a view...
 
       then:

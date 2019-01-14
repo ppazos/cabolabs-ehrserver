@@ -83,20 +83,11 @@ class StatsControllerIntegrationSpec extends IntegrationSpec {
          controller.request.securityStatelessMap = [username: 'testaccman', extradata:[organization:'123456', org_uid:orgUid]]
 
       when:
-         def model = controller.userAccountStats(username)
+         def model = controller.organizationAccountStats(orgUid)
 
       then:
          //println controller.response.text
-         controller.response.json.organizations.keySet()[0] == orgUid
-         controller.response.status == status
-
-      where:
-         username = 'testaccman'
-         status = 200
-         /* cant test other cases because the filter mock doesnt inject the springsecurityservice and the test fails because of that
-         ''       | 400
-         'orgman' | 400
-         'accman' | 200
-         */
+         controller.response.json != null
+         controller.response.status == 200
    }
 }
