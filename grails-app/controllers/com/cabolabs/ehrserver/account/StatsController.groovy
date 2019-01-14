@@ -47,10 +47,17 @@ class StatsController {
     * @return
     */
    @SecuredStateless
-   def userAccountStats(String username)
+   def organizationAccountStats(String uid)
    {
-      def accmgt = User.findByUsername(username)
-      def organizations = accmgt.organizations
+      //def accmgt = User.findByUsername(username)
+      //def organizations = accmgt.organizations
+      def org = Organization.findByUid(uid)
+
+      if (!org)
+      {
+         render(status:404, "Organization not found")
+         return
+      }
 
       // For now the period is just the current month, variable period later.
       long from = firstDayOfCurrentMonth()
@@ -58,16 +65,15 @@ class StatsController {
       def dfrom = new Date(from)
       def dto   = new Date(to)
 
-      def stats = [from: from, to: to, organizations: [:]]
-      organizations.each { org ->
-
-         stats.organizations[org.uid] =
-            [
-              transactions: Contribution.byOrgInPeriod(org.uid, dfrom, dto).count(),
-              documents: Version.byOrgInPeriod(org.uid, dfrom, dto).count(),
-              size: versionFSRepoService.getRepoSizeInBytesBetween(org.uid, dfrom, dto)
-            ]
-      }
+      def stats = [
+         from: from, /* TODO: from and to are rendered as timestamps, should be JSON dates in 8601 */
+         to: to,
+         stats: [
+            transactions: Contribution.byOrgInPeriod(org.uid, dfrom, dto).count(),
+            documents: Version.byOrgInPeriod(org.uid, dfrom, dto).count(),
+            size: versionFSRepoService.getRepoSizeInBytesBetween(org.uid, dfrom, dto)
+         ]
+      ]
 
       // TODO: support XML by withFormat
       render stats as JSON
