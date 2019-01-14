@@ -48,17 +48,17 @@ class EhrController {
    def springSecurityService
    def compositionService
    def configurationService
-   
-   // Para acceder a las opciones de localizacion 
+
+   // Para acceder a las opciones de localizacion
    def config = Holders.config.app
-   
-   
+
+
    def index() {
       redirect(action: "list", params: params)
    }
-   
+
    /**
-    * 
+    *
     * @param max
     * @param offset
     * @param uid filter of partial uid
@@ -70,10 +70,10 @@ class EhrController {
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       def list
       def c = Ehr.createCriteria()
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          /*
@@ -121,10 +121,10 @@ class EhrController {
                like('uid', '%'+uid+'%')
             }
          }
-         
+
          /*
           * Form the docs: http://docs.grails.org/2.5.3/ref/Domain%20Classes/createCriteria.html
-          * 
+          *
           * Because that query includes pagination parameters (max and offset), this will return
           * a PagedResultList which has a getTotalCount() method to return the total number of
           * matching records for pagination. Two queries are still run, but they are run for
@@ -133,11 +133,11 @@ class EhrController {
           * So we can do subjects.totalCount
           */
       }
-      
+
       [list: list, total: list.totalCount]
    }
-                   
-   
+
+
    def show(String uid)
    {
       if (!uid)
@@ -146,18 +146,18 @@ class EhrController {
          redirect(url:request.getHeader('referer'))
          return
       }
-      
-      def ehr = Ehr.findByUid(uid)      
+
+      def ehr = Ehr.findByUid(uid)
       if (!ehr)
       {
          flash.message = message(code:'ehr.show.ehrDoesntExistsForUid', args:[uid])
          redirect(url:request.getHeader('referer'))
          return
       }
-      
+
       render(view:'show', model:[ehr: ehr])
    }
-   
+
    /**
     * Auxiliar de show para mostrar las contributiosn y sus
     * compositions en una tabla y poder filtrarlas.
@@ -166,8 +166,21 @@ class EhrController {
    def ehrContributions(long id, String fromDate, String toDate, String qarchetypeId)
    {
       def contribs
+
+      if (!id)
+      {
+         render(status: 404, text: 'EHR id is required')
+         return
+      }
+
       def ehr = Ehr.get(id) // TODO: use UID
-      
+
+      if (!ehr)
+      {
+         render(status: 404, text: "EHR doesn't exists")
+         return
+      }
+
       // parse de dates
       Date qFromDate
       Date qToDate
@@ -175,9 +188,9 @@ class EhrController {
       if (toDate) qToDate = Date.parse(config.l10n.date_format, toDate)
 
       contribs = Contribution.withCriteria {
-         
+
          eq('ehr', ehr)
-         
+
          // Busca por atributos de CompositionIndex
          // Puede no venir ningun criterio y se deberia devolver
          // todas las contribs del ehr, TODO: paginacion!
@@ -187,25 +200,25 @@ class EhrController {
                data {
                   if (qarchetypeId)
                      eq('archetypeId', qarchetypeId)
-                  
+
                   if (qFromDate)
                      ge('startTime', qFromDate)
-                     
+
                   if (qToDate)
                      le('startTime', qToDate)
                }
             }
          }
       }
-      
-      render(template:'ehrContributions', model:[contributions:contribs]) 
+
+      render(template:'ehrContributions', model:[contributions:contribs])
    }
-   
+
    def create()
    {
       return [ehr: new Ehr()]
    }
-   
+
    @Transactional
    def save(Ehr ehr)
    {
@@ -216,7 +229,7 @@ class EhrController {
          return
       }
       //println ehr.subject.value // it's binded
-      
+
       // Check if there is an EHR for the same subject UID
       def c = Ehr.createCriteria()
       def existing_ehr = c.get {
@@ -224,15 +237,15 @@ class EhrController {
             eq('value', ehr.subject.value)
          }
       }
-      
+
       if (existing_ehr)
       {
          flash.message = message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[ehr.subject.value, existing_ehr.uid])
          redirect action: 'create'
          return
       }
-      
-      
+
+
       if (!ehr.save(flush:true))
       {
          flash.message = message(code:'ehr.save.error')
@@ -243,9 +256,9 @@ class EhrController {
       flash.message = message(code:'ehr.save.ok', args:[ehr.uid])
       redirect action:'list'
    }
-   
+
    /**
-    * 
+    *
     * @param uid composition identifier
     * @return composition as HTML
     */
@@ -253,8 +266,8 @@ class EhrController {
    {
       return [compositionHtml: compositionService.compositionAsHtml(uid)]
    }
-   
-   
+
+
    /**
     * @param uid composition identifier
     * @return composition as XML
@@ -263,7 +276,7 @@ class EhrController {
    {
       render(text: compositionService.compositionAsXml(uid), contentType: "text/xml", encoding:"UTF-8")
    }
-   
+
    def delete(String uid)
    {
       if (!uid)
@@ -272,7 +285,7 @@ class EhrController {
          redirect(url:request.getHeader('referer'))
          return
       }
-      
+
       def ehr = Ehr.findByUid(uid)
       if (!ehr)
       {
@@ -280,11 +293,11 @@ class EhrController {
          redirect(url:request.getHeader('referer'))
          return
       }
-      
+
       ehr.deleted = true
-      
+
       ehr.save(failOnError: true)
-      
+
       flash.message = message(code:'ehr.delete.deletedOk')
       redirect action: 'list'
    }
