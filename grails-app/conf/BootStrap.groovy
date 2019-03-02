@@ -948,6 +948,8 @@ class BootStrap {
         new RequestMap(url: '/sync/save',                    configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/sync/createRemote',            configAttribute: 'ROLE_ADMIN').save()
         new RequestMap(url: '/sync/saveRemote',              configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/sync/editRemote/**',           configAttribute: 'ROLE_ADMIN').save()
+        new RequestMap(url: '/sync/updateRemote/**',         configAttribute: 'ROLE_ADMIN').save()
 
         // the rest of the operations should be open and security is checked inside the action
         new RequestMap(url: '/user/index',                   configAttribute: 'ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER').save()
@@ -1094,7 +1096,6 @@ class BootStrap {
       )
       sync1.save()
       */
-
 
 
       // Loading openEHR Terminologies

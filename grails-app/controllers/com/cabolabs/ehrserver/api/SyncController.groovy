@@ -146,7 +146,40 @@ class SyncController {
          println "errors: "+ sync.errors.allErrors
       }
 
-      redirect action:'index'
+      flash.message = "Remote created"
+      redirect action: 'index'
+   }
+
+   def editRemote(Long id)
+   {
+      def remote = SyncClusterConfig.get(id)
+      if (!remote)
+      {
+         flash.message = "Remote doesn't exists"
+         redirect action: 'index'
+         return
+      }
+
+      render view: 'editRemote', model: [remote: remote]
+   }
+
+   def updateRemote(Long id)
+   {
+      def remote = SyncClusterConfig.get(id)
+      if (!remote)
+      {
+         flash.message = "Remote doesn't exists"
+         redirect action: 'index'
+         return
+      }
+      remote.properties = params
+      if (!remote.save())
+      {
+         println "errors: "+ remote.errors.allErrors
+      }
+
+      flash.message = "Remote updated"
+      redirect action: 'index'
    }
 
    @SecuredStateless

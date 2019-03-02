@@ -78,15 +78,13 @@
 
     <div class="row row-grid">
       <div class="col-lg-12">
-        <g:if test="${flash.message}">
-          <div class="alert alert-info" role="alert">${flash.message}</div>
-        </g:if>
         <div class="table-responsive">
           <table class="table table-striped table-bordered table-hover">
             <thead>
              <tr>
                <th><g:message code="remote.attr.remoteServerName" /></th>
                <th><g:message code="remote.attr.isActive" /></th>
+               <th></th>
              </tr>
             </thead>
             <tbody>
@@ -94,6 +92,13 @@
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td>${remote.remoteServerName}</td>
                   <td>${remote.isActive}</td>
+                  <td class="text-right">
+                    <g:link action="editRemote" id="${remote.id}">
+                      <button type="button" class="btn btn-primary btn-md">
+                        <span class="fa fa-pencil" aria-hidden="true"></span>
+                      </button>
+                    </g:link>
+                  </td>
                 </tr>
               </g:each>
             </tbody>
