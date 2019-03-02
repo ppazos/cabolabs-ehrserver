@@ -59,6 +59,7 @@ class SyncJob {
       int logCount = 0
       boolean error = false
       def log
+      def lastLogForResource
 
       remotes.each { remote ->
 
@@ -67,11 +68,24 @@ class SyncJob {
 
          accounts.each { account ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Account', account.uid, remote)
+            // TODO: instead of getting all the accounts then checking for updates since last sync,
+            //       we should get only the accounts from the last update, those that are "dirty"
+            //       for a remote, this way if we have 1M accounts, we don't need to check for every
+            //       single account. To hae a dirty flag per remote, we might need a new class,
+            //       so when a resource is updated, for each remote, we create a record of a dirty flag
+            //       for that resource and remote. On the sync, we need to check for the dirty flags
+            //       instead of the accounts directly. This is an optiomization for v2 maybe.
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'Account')
+               eq('resourceUid', account.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
             // no logs => sync this account
-            // TODO: there are logs but the resource was updated (lastUpdated) since the log.dateCreated => sync
-            if (logCount == 0)
+            // there are logs, the resource was updated (lastUpdated) since the log.resourceLastUpdated => sync
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < account.lastUpdated)
             {
                // TODO: move the sync logic to a service
                def jb = new JsonBuilder()
@@ -145,9 +159,15 @@ class SyncJob {
 
          ehrs.each { ehr ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Ehr', ehr.uid, remote)
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'Ehr')
+               eq('resourceUid', ehr.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
-            if (logCount == 0)
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < ehr.lastUpdated)
             {
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(ehr, jb)
@@ -212,9 +232,15 @@ class SyncJob {
 
          opts.each { opt ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('OperationalTemplateIndex', opt.uid, remote)
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'OperationalTemplateIndex')
+               eq('resourceUid', opt.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
-            if (logCount == 0)
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < opt.lastUpdated)
             {
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(opt, jb)
@@ -279,6 +305,7 @@ class SyncJob {
 
          contributions.each { contribution ->
 
+            // CONTRIBUTIONS don't check for last update since can't be updated
             logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Contribution', contribution.uid, remote)
 
             if (logCount == 0)
@@ -346,9 +373,15 @@ class SyncJob {
 
          queries.each { query ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Query', query.uid, remote)
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'Query')
+               eq('resourceUid', query.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
-            if (logCount == 0)
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < query.lastUpdated)
             {
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(query, jb)
@@ -413,9 +446,15 @@ class SyncJob {
          def ehrqueries = EhrQuery.findAllByMaster(true)
          ehrqueries.each { equery ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('EhrQuery', equery.uid, remote)
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'EhrQuery')
+               eq('resourceUid', equery.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
-            if (logCount == 0)
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < equery.lastUpdated)
             {
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(equery, jb)
@@ -480,9 +519,15 @@ class SyncJob {
 
          folders.each { folder ->
 
-            logCount = SyncLog.countByResourceTypeAndResourceUidAndRemote('Folder', folder.uid, remote)
+            lastLogForResource = SyncLog.withCriteria {
+               eq('resourceType', 'Folder')
+               eq('resourceUid', folder.uid)
+               eq('remote', remote)
+               order('resourceLastUpdated', 'desc')
+               maxResults(1)
+            }
 
-            if (logCount == 0)
+            if (!lastLogForResource || lastLogForResource[0].resourceLastUpdated < folder.lastUpdated)
             {
                def jb = new JsonBuilder()
                syncMarshallersService.toJSON(folder, jb)
