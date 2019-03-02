@@ -10,7 +10,17 @@ The EHRServer is a general purpose clinical data repository with a REST API and 
 development time, increase data quality and enable interoperability for clinical
 and health/wellness related information systems.
 
-Can be used as the main [clinical data repository](https://cloudehrserver.com/learn/use_case_health_and_wellness_apps) of your system or app, as a
+
+### EHRServer Components
+
+<div align="center">
+<img src="https://yuml.me/diagram/scruffy/class/[QUERY%20BUILDER]--%3E[EHR%20BASE],[WEB%20CONSOLE]--%3E[QUERY%20BUILDER],[REST%20API]--%3E[EHR%20BASE],[REST%20API]--%3E[QUERY%20BUILDER],[QUERY%20BUILDER]--%3E[SNOMED%20QUERY],[WEB%20CONSOLE]--%3E[EHR%20BASE]" />
+</div>
+
+
+### Uses Cases
+
+The EHRServer be used as the main [clinical data repository](https://cloudehrserver.com/learn/use_case_health_and_wellness_apps) of your system or app, as a
 [shared repository/integrated patient EHR](https://cloudehrserver.com/learn/use_case_shared_health_recods) between many systems, as a
 [secondary/backup](https://cloudehrserver.com/learn/use_case_backup_and_query_database) repository, as a
 [wearable/monitoring device backend](https://cloudehrserver.com/learn/use_case_monitoring_and_wearables), as a
