@@ -104,7 +104,7 @@ class SyncParserService {
       def _parsedVersions = slurper.parseText(versionsXML)
 
       // can throw validation errors!
-      contribution = xmlService.processCommit(ehr, _parsedVersions, jsonContribution.audit.system_id, new Date(), jsonContribution.audit.committer.name)
+      contribution = xmlService.processCommit(ehr, _parsedVersions, new Date(), jsonContribution.audit.committer.name)
       contribution.master = false
 
       return contribution

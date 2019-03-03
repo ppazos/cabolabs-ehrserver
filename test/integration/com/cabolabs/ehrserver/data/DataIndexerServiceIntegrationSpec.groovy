@@ -150,7 +150,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions = slurper.parseText(versionsXML)
 
          assert CompositionIndex.count() == 0
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save() // contrib -> versions -> compoIndex
          assert CompositionIndex.count() == 1
          assert CompositionIndex.countByDataIndexed(false) == 1 // there is 1 compoIndex and should not be indexed

@@ -116,7 +116,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
 
       when: "does the commit"
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -154,7 +154,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -186,7 +186,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -219,7 +219,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions = slurper.parseText(versionsXML)
 
       when:
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -259,7 +259,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -290,7 +290,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -321,7 +321,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -353,11 +353,11 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // ok first time
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
          // second should throw an exception
-         contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -401,7 +401,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          def parsedVersions2 = slurper.parseText(versionsXML2)
 
       when:
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'EMR_APP', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
 
@@ -409,7 +409,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          // to assign it to the second version.preceding_version_uid
          parsedVersions2.version[0].preceding_version_uid.value = contribution.versions[0].uid
 
-         contribution = xmlService.processCommit(ehr, parsedVersions2, 'EMR_APP', new Date(), 'House, MD.')
+         contribution = xmlService.processCommit(ehr, parsedVersions2, new Date(), 'House, MD.')
          contribution.save()
       then:
          //notThrown Exception // this shouldn't throw any exceptions
@@ -448,7 +448,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
@@ -488,7 +488,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
       then:
          Exception e = thrown() // TODO: use specific exception type
@@ -521,7 +521,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       when:
          // should throw an exception
-         def contribution = xmlService.processCommit(ehr, parsedVersions, 'CaboLabs EMR', new Date(), 'House, MD.')
+         def contribution = xmlService.processCommit(ehr, parsedVersions, new Date(), 'House, MD.')
          contribution.save()
 
       then:
