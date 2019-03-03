@@ -76,7 +76,7 @@ class XmlService {
    def CATEGORY_EVENT = "433"
    def CATEGORY_PERSISTENT = "431"
 
-   def processCommit(Ehr ehr, GPathResult versions, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+   def processCommit(Ehr ehr, GPathResult versions, Date auditTimeCommitted, String auditCommitter)
    {
       // Validate versions
       // Throw javax.xml.bind.ValidationException if there are a validation error
@@ -107,8 +107,11 @@ class XmlService {
 
       checkVersions(versions)
 
+      // FIXME: check that all versions.commit_audit.system_id are the same
+
       // Parse contribution once, since it is the same for all versions
       //  - create the contrib and associated it with the ehr
+      String auditSystemId = versions.version[0].commit_audit.system_id.text()
       def contribution = parseCurrentContribution(versions.version[0], ehr, auditSystemId, auditTimeCommitted, auditCommitter)
 
       // For each version committed
@@ -121,7 +124,7 @@ class XmlService {
       //    - change the last version status on previous version
       //    - update the trunk version id on the previous version
       //  Associate the version with the contribution
-      def parsedVersionsMap = parseVersions(ehr, versions, auditTimeCommitted, auditSystemId, contribution)
+      def parsedVersionsMap = parseVersions(ehr, versions, auditTimeCommitted, contribution)
 
       // just checking :)
       assert contribution.versions != null
@@ -528,7 +531,7 @@ class XmlService {
       </version>
     </version>
    */
-   def parseVersions(Ehr ehr, GPathResult versionsXML, Date auditTimeCommitted, String auditSystemId, Contribution contribution)
+   def parseVersions(Ehr ehr, GPathResult versionsXML, Date auditTimeCommitted, Contribution contribution)
    {
       // Because checkVersions was executed before we know all versions have
       // - change_type creation and no preceding_version_uid, or,
@@ -543,9 +546,11 @@ class XmlService {
       def dataOut = [:]
 
       def parsedVersion
+      String auditSystemId
       for (int i = 0; i <versionsXML.version.size(); i++)
       {
          parsedVersion = versionsXML.version[i]
+         auditSystemId = parsedVersion.commit_audit.system_id.text()
 
          // Parse AuditDetails from Version.commit_audit
          commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
@@ -862,8 +867,8 @@ class XmlService {
       return compoIndex
    }
 
-   private Contribution parseCurrentContribution(GPathResult version, Ehr ehr,
-                                         String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+   private Contribution parseCurrentContribution(
+      GPathResult version, Ehr ehr, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
    {
       // This instance of XmlService process one contribution at a time
       // But each version on the version list has a reference to the same contribution,
