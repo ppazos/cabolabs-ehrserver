@@ -42,7 +42,9 @@ class EhrQuery {
 
    /**
     * returns true if the EHR complies with the criteria of the EhrQuery, false otherwise.
+    * MOVED to the rest controller.
     */
+    /*
    boolean checkEhr(String ehrUid)
    {
       println "ehr check"
@@ -58,10 +60,12 @@ class EhrQuery {
       // the count should be > 0 on all results to return true
       return matching_compo_index_counts.flatten().every { it > 0 }
    }
+   */
 
    /**
-    * Get max EHR uids that complies with the criteria of the EhrQuery.
+    * Get EHR uids that complies with the criteria of the EhrQuery.
     */
+    /*
    def getEhrUids(String organizationUid)
    {
       // Result is a set of matching EHR uids
@@ -119,6 +123,7 @@ class EhrQuery {
 
       return ehrUids
    }
+   */
 
    def getEhrUids2(String organizationUid)
    {
@@ -129,7 +134,6 @@ class EhrQuery {
 
          tasks << task {
             def res
-            println "task "+ query.name
             Query.withTransaction {
                res = query.executeComposition(null, null, null, organizationUid, max, 0, null, null, false, true)
             }

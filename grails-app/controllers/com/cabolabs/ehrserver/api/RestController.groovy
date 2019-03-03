@@ -2089,7 +2089,18 @@ class RestController {
          return
       }
 
-      def res = equery.checkEhr(ehrUid)
+      // TODO: move to service checkEhr
+      def matching_compo_index_counts = []
+      equery.queries.each { query ->
+
+         matching_compo_index_counts << query.executeComposition(ehrUid, null, null, null, 1, 0, null, null, true)
+      }
+
+      //println matching_compo_index_counts // [[1], [0]]
+      //println matching_compo_index_counts.flatten() // [1, 0]
+
+      // the count should be > 0 on all results to return true
+      def res = matching_compo_index_counts.flatten().every { it > 0 }
 
       /*
       println "ehrQurry dirty "+ equery.dirty
@@ -2123,7 +2134,7 @@ class RestController {
       }
 
       def orgUid = request.securityStatelessMap.extradata.org_uid
-      def ehrUids = equery.getEhrUids(orgUid)
+      def ehrUids = equery.getEhrUids2(orgUid)
       render (ehrUids as JSON)
    }
 

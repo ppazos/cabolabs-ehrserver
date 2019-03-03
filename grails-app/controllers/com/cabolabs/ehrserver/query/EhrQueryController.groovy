@@ -28,28 +28,6 @@ class EhrQueryController {
       */
    }
 
-   /*
-   def test1(long id)
-   {
-      def eq = EhrQuery.get(id)
-      def res = eq.checkEhr(Ehr.get(1).uid)
-      render ([res] as JSON)
-   }
-   def test11(long id)
-   {
-      def eq = EhrQuery.get(id)
-      def res = eq.checkEhr(Ehr.get(2).uid) // same as 1 for ehr 2
-      render ( [res] as JSON)
-   }
-
-   def test2(long id)
-   {
-      def eq = EhrQuery.get(id)
-      def ehrUids = eq.getEhrUids(session.organization.uid)
-      render ehrUids as JSON
-   }
-   */
-
    def show(EhrQuery ehrQueryInstance)
    {
       respond ehrQueryInstance
