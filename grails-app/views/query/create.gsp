@@ -2102,8 +2102,7 @@ resp.responseJSON.result.message +'</div>'
                 </td>
                 <td>
                   <g:select name="queryGroup" from="${queryGroups}" value="${queryInstance?.queryGroup}"
-                            optionKey="uid" optionValue="name"
-                            noSelection="['': '']" class="form-control input-sm" />
+                            optionKey="uid" optionValue="name" class="form-control input-sm" />
                 </td>
               </tr>
               <sec:ifAnyGranted roles="ROLE_ADMIN">

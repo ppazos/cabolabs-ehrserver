@@ -2,6 +2,7 @@ package com.cabolabs.security
 
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.account.*
+import com.cabolabs.ehrserver.query.QueryGroup
 import grails.util.Holders
 
 @Transactional
@@ -16,6 +17,9 @@ class OrganizationService {
       def org = new Organization(name: name)
       account.addToOrganizations(org)
       account.save(flush: true, failOnError: true)
+
+      // Create default QueryGroup per organization, see https://github.com/ppazos/cabolabs-ehrserver/issues/982
+      new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save()
 
       // create repos
 

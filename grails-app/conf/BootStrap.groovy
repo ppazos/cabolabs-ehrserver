@@ -1004,6 +1004,11 @@ class BootStrap {
 
          // the account will save the orgs
 
+         // Create default QueryGroup per organization, see https://github.com/ppazos/cabolabs-ehrserver/issues/982
+         organizations.each { org ->
+            new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save()
+         }
+
       }
       else organizations = Organization.list()
 
