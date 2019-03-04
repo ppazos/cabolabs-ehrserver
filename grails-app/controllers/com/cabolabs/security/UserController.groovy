@@ -598,7 +598,9 @@ class UserController {
                // the user is creating the organization, it should be manager also, because is the first, is account manager
                UserRole.create( u, (Role.findByAuthority(Role.AM)), o, true )
 
-               // No default plan is set yet!!!
+               // Associate test_plan by default
+               def test_plan = Plan.findByName('Testing')
+               test_plan.associate(account, new Date().clearTime())
             }
             catch (ValidationException e)
             {
@@ -609,7 +611,7 @@ class UserController {
             }
 
             // FIXME: avoid saving stuff if the captcha is incorrect
-            // WHY not checking this before the instances are created?
+            // WHY not checking this before the instances are created? because validation errors are returned
             if (!captchaValid) status.setRollbackOnly()
 
          } // transaction
