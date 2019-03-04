@@ -444,9 +444,6 @@ class OperationalTemplateController {
          return
       }
 
-      def indexer = new OperationalTemplateIndexer()
-      indexer._event_deactivate(opt)
-
       // show should be for the latest version
       def c = OperationalTemplateIndex.createCriteria()
       def latest_version_uid = c.list {
@@ -456,6 +453,18 @@ class OperationalTemplateController {
             property('uid')
          }
       }
+
+      // Check there is no pending compo to be indexed before deactivating, see https://github.com/ppazos/cabolabs-ehrserver/issues/944
+      def count = CompositionIndex.countByDataIndexedAndTemplateIdAndOrganizationUid(false, opt.templateId, session.organization.uid)
+      if (count > 0)
+      {
+         flash.message = message(code:"opt.common.error.templateCantBeDeactivatedIndexingPending")
+         redirect action:'show', params: [uid:latest_version_uid]
+         return
+      }
+
+      def indexer = new OperationalTemplateIndexer()
+      indexer._event_deactivate(opt)
 
       redirect action:'show', params: [uid:latest_version_uid]
    }
