@@ -129,7 +129,9 @@
       // globals
       var session_lang = "${session.lang}"; // needed by query_test_and_execution.js
       var get_concepts_url = '${createLink(controller:"query", action:"getConcepts")}';
-      var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getArchetypesInTemplate")}';
+      //var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getArchetypesInTemplate")}';
+      //var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getTemplateJson")}';
+      var get_archetypes_in_template_url = '${createLink(controller:"query", action:"getArchetypesInTemplate2")}';
       var current_criteria_spec; // set by getCriteriaSpec
 
       <%-- Another way to get current locale ${org.springframework.context.i18n.LocaleContextHolder.locale.language} --%>

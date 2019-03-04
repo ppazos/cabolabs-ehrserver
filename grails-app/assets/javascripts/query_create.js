@@ -36,6 +36,8 @@ var templateid_select = document.getElementById('view_template_id');
 
 templateid_select.onchange = function (ev) {
 
+  get_archetypes_in_template( $(this).val(), get_archetypes_in_template_callback );
+  /*
   get_archetypes_in_template( $(this).val(), function(aiis) {
 
     console.log(aiis);
@@ -78,7 +80,31 @@ templateid_select.onchange = function (ev) {
       }
     });
   });
+  */
 };
+
+var get_archetypes_in_template_callback = function(tree)
+{
+   var level = 0;
+   var select = document.getElementById('view_archetype_id'); // view_archetype_id
+   select.innerHTML = ''; // removes current archids
+
+   get_archetypes_in_template_recursive(tree, level, select)
+}
+var get_archetypes_in_template_recursive = function(tree, level, select)
+{
+   console.log(tree);
+   for (var arch in tree)
+   {
+      option = document.createElement("option");
+      option.value = arch;
+      option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '|_ ' : '') + tree[arch].name + ' ('+ arch +')';
+      select.add(option);
+
+      get_archetypes_in_template_recursive(tree[arch].children, level+1, select)
+   }
+}
+
 
 // ====================================================
 // /Concepts and filters module
