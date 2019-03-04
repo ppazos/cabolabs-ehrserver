@@ -173,18 +173,13 @@ class OperationalTemplateController {
             render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
             return
          }
-
          // /PROCESS FILE
 
          // ROOT VALIDATION
-
          // Parse to get the template id
          def slurper = new XmlSlurper(false, false)
          def template = slurper.parseText(xml)
 
-         // check existing by OPT uid or templateId
-         def opt_uid = template.uid.value.text()
-         def opt_template_id = template.template_id.value.text()
          def root_rm_type = template.definition.rm_type_name.text()
 
          if (root_rm_type != 'COMPOSITION')
@@ -195,18 +190,27 @@ class OperationalTemplateController {
             render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
             return
          }
-
          // /ROOT VALIDATION
+
+         // COMPO.content should be present (is optional in the RM and doesn't make sense to upload such OPT)
+         if (!template.definition.attributes.find{ it.rm_attribute_name.text() == 'content' })
+         {
+            res = [status:'error', message:'The COMPOSITION should have a non empty definition', errors: []]
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+            return
+         }
+         // /COMPO.content
 
 
          def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
 
-
          // OPT VERSIONING
-
          def setId, versionNumber
 
+         // check existing by OPT uid or templateId
          // Check uniqueness of the OPT inside the org
+         def opt_uid = template.uid.value.text()
+         def opt_template_id = template.template_id.value.text()
          def alternatives = OperationalTemplateIndex.forOrg(session.organization)
                                             .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
                                             .lastVersions
@@ -216,7 +220,6 @@ class OperationalTemplateController {
             if (!versionOfTemplateUid) // user needs to resolve revision
             {
                // start the new versioning process for OPTs
-
                res = [status:'resolve_duplicate', message:'Found some templates that might be the same or older versions of the one you try to upload. Choose one of the alternatives to upload a new version of that OPT or if it is a new OPT, change the the UID of the OPT you want to update.', alternatives: alternatives]
                render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
                return
