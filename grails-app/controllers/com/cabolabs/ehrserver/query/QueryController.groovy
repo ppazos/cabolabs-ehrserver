@@ -728,7 +728,16 @@ class QueryController {
          getReferencedArchetypesRecursive(obj, parent_tree)
       }
    }
-
+   def getArchetypePaths2(String template_id, String archetypeId, boolean datatypesOnly)
+   {
+      def optMan = OptManager.getInstance()
+      def opt = optMan.getOpt(template_id, session.organization.uid)
+      def obj = opt.findRoot(archetypeId)
+      def toJson = new JsonSerializer()
+      toJson.serialize(obj)
+      def json = toJson.get()
+      render json, contentType: "application/json"
+   }
 
    def getArchetypesInTemplate(String template_id)
    {

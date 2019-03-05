@@ -93,7 +93,7 @@ var get_archetypes_in_template_callback = function(tree)
 }
 var get_archetypes_in_template_recursive = function(tree, level, select)
 {
-   console.log(tree);
+   //console.log(tree);
    for (var arch in tree)
    {
       option = document.createElement("option");
