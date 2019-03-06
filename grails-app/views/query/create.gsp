@@ -112,7 +112,8 @@
       }
 
       .datavalue {
-        background: lime;
+        /*background: lime;*/
+        font-weight: bold;
       }
     </style>
 
@@ -1193,8 +1194,10 @@ resp.responseJSON.result.message +'</div>'
           (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+
           didx.name[session_lang] +' ('+ didx.rmTypeName + ')</option>'
           */
-          '<option value="'+ obj.path +'" data-type="'+ obj.rm_type_name +'" '+ (is_dv(obj.rm_type_name) ? 'class="datavalue"' : '') +'>'+
-            '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '|_ ' : '') + obj.path +'</option>'
+          '<option value="'+ obj.path +'" data-type="'+ obj.rm_type_name +'" '+
+                   (is_dv(obj.rm_type_name) ? 'class="datavalue"' : '') +
+                   'data-name="'+ obj.text +'">'+
+            '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '|_ ' : '') + obj.text +' ('+ obj.rm_type_name +')</option>'
         );
 
         // avoid further processing for DVs since the criteria includes those fields, there is no need to select a subpath of a DV
