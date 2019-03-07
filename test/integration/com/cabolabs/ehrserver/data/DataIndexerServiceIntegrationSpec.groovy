@@ -93,7 +93,7 @@ class DataIndexerServiceIntegrationSpec extends IntegrationSpec {
       // OPT loading
       def optMan = com.cabolabs.openehr.opt.manager.OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
       optMan.unloadAll(orgUid)
-      optMan.loadAll(orgUid)
+      optMan.loadAll(orgUid, true)
       // /Load test OPTs
    }
 

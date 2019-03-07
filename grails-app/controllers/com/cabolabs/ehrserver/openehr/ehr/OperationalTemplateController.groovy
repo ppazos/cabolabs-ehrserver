@@ -88,7 +88,7 @@ class OperationalTemplateController {
       // load opt in manager cache
       def optMan = OptManager.getInstance()
       optMan.unloadAll(session.organization.uid)
-      optMan.loadAll(session.organization.uid)
+      optMan.loadAll(session.organization.uid, true)
 
       println "loaded opts: " + optMan.getLoadedOpts(session.organization.uid)
 
@@ -307,7 +307,7 @@ class OperationalTemplateController {
          // TODO: just load the newly created/updated one
          def optMan = OptManager.getInstance()
          optMan.unloadAll(session.organization.uid)
-         optMan.loadAll(session.organization.uid)
+         optMan.loadAll(session.organization.uid, true)
 
          res = [status:'ok', message:'OPT added to the organization', opt: opt]
 
@@ -495,7 +495,7 @@ class OperationalTemplateController {
          // TODO: just unload the deleted OPT
          def optMan = OptManager.getInstance()
          optMan.unloadAll(session.organization.uid)
-         optMan.loadAll(session.organization.uid)
+         optMan.loadAll(session.organization.uid, true)
       }
 
 

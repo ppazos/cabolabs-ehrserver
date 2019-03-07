@@ -36,6 +36,17 @@ var templateid_select = document.getElementById('view_template_id');
 
 templateid_select.onchange = function (ev) {
 
+  if ($(this).val() == '')
+  {
+     var select = document.getElementById('view_archetype_id'); // view_archetype_id
+     select.innerHTML = ''; // removes current archids
+     select = document.getElementById('view_archetype_path'); // view_archetype_id
+     select.innerHTML = ''; // removes current archids
+     // clean the current criteria if the user defined it for another archetype/path
+     $('#composition_criteria_builder').empty();
+     return;
+  }
+
   get_archetypes_in_template( $(this).val(), get_archetypes_in_template_callback );
   /*
   get_archetypes_in_template( $(this).val(), function(aiis) {
@@ -96,10 +107,19 @@ var get_archetypes_in_template_recursive = function(tree, level, select)
    //console.log(tree);
    for (var arch in tree)
    {
+
       option = document.createElement("option");
       option.value = arch;
-      option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '|_ ' : '') + tree[arch].name + ' ('+ arch +')';
+      option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + tree[arch].name + ' ('+ arch +')';
       select.add(option);
+
+
+/*
+      var option = '<option value='+ arch +'>'+
+      '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '&#x2514; ' : '') + tree[arch].name + ' ('+ arch +')'+
+      '</option>';
+      select.append(option);
+*/
 
       get_archetypes_in_template_recursive(tree[arch].children, level+1, select)
    }

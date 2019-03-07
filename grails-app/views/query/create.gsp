@@ -1195,9 +1195,9 @@ resp.responseJSON.result.message +'</div>'
           didx.name[session_lang] +' ('+ didx.rmTypeName + ')</option>'
           */
           '<option value="'+ obj.path +'" data-type="'+ obj.rm_type_name +'" '+
-                   (is_dv(obj.rm_type_name) ? 'class="datavalue"' : '') +
+                   (is_dv(obj.rm_type_name) ? 'class="datavalue '+ (obj.path.endsWith('/null_flavour')?'null_flavour':'') +'"' : (obj.path.endsWith('/null_flavour')?'class="null_flavour"':'')) +
                    'data-name="'+ obj.text +'">'+
-            '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '|_ ' : '') + obj.text +' ('+ obj.rm_type_name +')</option>'
+            '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + obj.text +' ('+ obj.rm_type_name +')</option>'
         );
 
         // avoid further processing for DVs since the criteria includes those fields, there is no need to select a subpath of a DV
@@ -2045,6 +2045,9 @@ resp.responseJSON.result.message +'</div>'
 
           var archetype_id = $(this).val(); // arquetipo seleccionado
           var template_id  = $('#view_template_id').val();
+
+          if (template_id == "") return;
+
           get_and_render_archetype_paths(template_id, archetype_id);
 
         }); // click en select view_archetype_id

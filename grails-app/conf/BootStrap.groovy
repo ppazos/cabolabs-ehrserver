@@ -1311,7 +1311,7 @@ gr_account.save(failOnError:true, flush:true)
       // On test, this should be done after creating the orgs
       def orgs = Organization.list()
       orgs.each { org ->
-         optMan.loadAll(org.uid)
+         optMan.loadAll(org.uid, true)
       }
 
 

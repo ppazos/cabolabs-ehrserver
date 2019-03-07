@@ -473,7 +473,7 @@ class SyncParserService {
       // TODO: just load the newly created/updated one
       def optMan = OptManager.getInstance()
       optMan.unloadAll(j.organizationUid)
-      optMan.loadAll(j.organizationUid)
+      optMan.loadAll(j.organizationUid, true)
 
       return templateIndex
    }

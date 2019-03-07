@@ -76,7 +76,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
       // Need the OPTs cached for semantic validation when testing XmlService
       // Repo path was set on Bootstrap so no need to pass it here
       def optMan = OptManager.getInstance()
-      optMan.loadAll(org.uid)
+      optMan.loadAll(org.uid, true)
 
       createEHR()
    }
