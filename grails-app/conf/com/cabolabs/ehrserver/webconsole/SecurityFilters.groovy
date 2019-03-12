@@ -1014,6 +1014,7 @@ class SecurityFilters {
 
                      response.status = 404
 
+                     // FIXME: this line is not used since it sets result and error is used
                      // JSONP
                      if (params.callback) result = "${params.callback}( ${result} )"
                      render(text: error as JSON, contentType:"application/json", encoding:"UTF-8")
