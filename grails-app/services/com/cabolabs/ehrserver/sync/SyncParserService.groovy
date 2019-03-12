@@ -139,7 +139,11 @@ class SyncParserService {
       }
 
       if (!organizations) println "no orgs"
-      def contact = User.findByUid(j.contact.uid) // if already synced
+
+      // if already synced, using email instead of uid because uids generated on
+      // different systems, e.g. for the admin, are different, but the email is
+      // unique accross systems
+      def contact = User.findByEmail(j.contact.email)
       if (!contact)
       {
          contact = fromJSONUser(j.contact)
@@ -152,8 +156,6 @@ class SyncParserService {
          enabled: j.enabled,
          contact: contact,
          master: false
-         //,
-         //organizations: organizations
       )
 
       organizations.each {

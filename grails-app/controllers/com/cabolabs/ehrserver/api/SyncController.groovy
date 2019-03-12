@@ -202,6 +202,9 @@ class SyncController {
       {
          // TODO: handle error
          println account.errors.allErrors
+
+         render(status:400, text: account.errors.allErrors as JSON, contentType:"application/json", encoding:"UTF-8")
+         return
       }
 
       def plan_associations = syncParserService.fromJSONPlanAssociations(json.plans, account)
