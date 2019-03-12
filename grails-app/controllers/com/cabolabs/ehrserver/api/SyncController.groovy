@@ -372,6 +372,14 @@ class SyncController {
 
       def query = syncParserService.fromJSONQuery(jo)
 
+      // group is not saved in cascade so needs to be saved here
+      if (query.queryGroup)
+      {
+         if (!query.queryGroup.save())
+         {
+            println query.queryGroup.errors.allErrors
+         }
+      }
       if (!query.save(flush:true))
       {
          // TODO: handle error
