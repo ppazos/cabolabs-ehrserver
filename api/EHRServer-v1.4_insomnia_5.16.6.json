@@ -1,15 +1,15 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2019-03-03T06:19:58.489Z",
+	"__export_date": "2019-03-21T23:08:53.503Z",
 	"__export_source": "insomnia.desktop.app:v5.16.6",
 	"resources": [
 		{
 			"_id": "wrk_731dc22ad3f14626becf12a0e3f62269",
 			"created": 1523686987899,
 			"description": "",
-			"modified": 1523686987899,
-			"name": "EHRServer v1.3",
+			"modified": 1553209698838,
+			"name": "EHRServer v1.4",
 			"parentId": null,
 			"_type": "workspace"
 		},
@@ -38,7 +38,7 @@
 					"domain": "192.168.1.105",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "3234515730141694",
+					"id": "6241322890177847",
 					"key": "JSESSIONID",
 					"lastAccessed": "2017-10-20T07:48:25.714Z",
 					"path": "/ehr/",
@@ -49,7 +49,7 @@
 					"domain": "192.168.1.104",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "3827270519319932",
+					"id": "7679676934494131",
 					"key": "JSESSIONID",
 					"lastAccessed": "2017-11-02T00:33:30.408Z",
 					"path": "/",
@@ -60,7 +60,7 @@
 					"domain": "192.168.1.106",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "3109121018230925",
+					"id": "04363913607310721",
 					"key": "JSESSIONID",
 					"lastAccessed": "2017-12-22T03:18:12.225Z",
 					"path": "/ehr/",
@@ -71,7 +71,7 @@
 					"domain": "192.168.1.109",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "168934734919435",
+					"id": "472656811815543",
 					"key": "JSESSIONID",
 					"lastAccessed": "2018-02-18T17:52:39.111Z",
 					"path": "/ehr/",
@@ -82,18 +82,18 @@
 					"domain": "localhost",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "18710098386349827",
+					"id": "4867455905959197",
 					"key": "JSESSIONID",
-					"lastAccessed": "2019-03-03T06:16:16.595Z",
+					"lastAccessed": "2019-03-12T04:41:01.342Z",
 					"path": "/ehr/",
-					"value": "22D4D52278345927D71FB9D8B96451CB"
+					"value": "CB9DE9AE69F92B099F5330E204E9A57F"
 				},
 				{
 					"creation": "2018-03-09T00:39:23.885Z",
 					"domain": "server001.cloudehrserver.com",
 					"hostOnly": true,
 					"httpOnly": true,
-					"id": "40593802442798266",
+					"id": "9151557861965025",
 					"key": "JSESSIONID",
 					"lastAccessed": "2018-12-06T21:18:35.368Z",
 					"path": "/",
@@ -101,7 +101,7 @@
 				}
 			],
 			"created": 1523686987910,
-			"modified": 1551593776597,
+			"modified": 1552365661344,
 			"name": "Default Jar",
 			"parentId": "wrk_731dc22ad3f14626becf12a0e3f62269",
 			"_type": "cookie_jar"
@@ -2919,7 +2919,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1507162929111.6406,
 			"method": "GET",
-			"modified": 1539233519365,
+			"modified": 1551596258305,
 			"name": "ehr query checker",
 			"parameters": [
 				{
@@ -2931,7 +2931,7 @@
 					"disabled": false,
 					"id": "pair_a21acbb63b174e13b8702ff842abf52e",
 					"name": "ehrQueryUid",
-					"value": "{% response 'body', 'req_76229d7d712a4c03b6e90051c72ab5c4', '$[2].uid' %}"
+					"value": "{% response 'body', 'req_76229d7d712a4c03b6e90051c72ab5c4', '$[0].uid' %}"
 				},
 				{
 					"id": "pair_576612d7c4734de2bbf02a81f7619eec",
