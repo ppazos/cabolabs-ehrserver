@@ -109,10 +109,12 @@ Thanks for your support!
 
 # Try it
 
+
 <div align="center">
 [![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/CaboLabs/EHRServer)
 </div>
+
 
 ## Want to try EHRServer?
 
