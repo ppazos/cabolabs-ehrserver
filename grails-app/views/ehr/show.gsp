@@ -39,7 +39,9 @@
     <!-- xmlToString -->
     <asset:javascript src="xml_utils.js" />
 
-    <asset:javascript src="highcharts/highcharts.js" />
+    <!--<asset:javascript src="highcharts/highcharts.js" />-->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/timeline.js"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {

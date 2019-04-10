@@ -4,16 +4,16 @@
 in: contributions
 
 =========================================================
-          
+
 Muestra tabla: con rowspan por los datos de la contribution,
 y muestra todas las compositions de la contrib:
 
 |-------------------------------------------------------------
-|                               |                            | 
+|                               |                            |
 |    contrib time committed     |          committer         |
 |                               |                            |
 |-------------------------------------------------------------
-| |--------------------------------------------------------| | 
+| |--------------------------------------------------------| |
 | | version uid 1 | creation date 1 | type 1 | change type | |
 | | version uid 1 | creation date 1 | type 1 | change type | |
 | |--------------------------------------------------------| |
@@ -38,26 +38,26 @@ y muestra todas las compositions de la contrib:
 
     <script type="text/javascript">
     $(document).ready(function() { // same code as versionedComposition show, TODO: refactor
-    
+
       $('.showCompo').on('click', function(e) {
-        
+
         e.preventDefault();
-          
+
         iframe = $('iframe', '#html_modal');
         iframe[0].src = this.href;
-          
+
         $('#html_modal').modal();
       });
-      
+
       $('#html_modal').on('hidden.bs.modal', function (event) {
         iframe = $('iframe', '#html_modal');
         iframe[0].src = '';
       });
-      
+
       $('.compoXml').on('click', function(e) {
-        
+
         e.preventDefault();
-        
+
         $.ajax({
           url: this.href,
           dataType: 'xml',
@@ -67,13 +67,13 @@ y muestra todas las compositions de la contrib:
             $('#xml').addClass('xml');
             $('#xml').text(formatXml( xmlToString(xml) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-            
+
             $('#xml_modal').modal();
           }
         });
-        
+
       });
-      
+
       $('#xml_modal').on('hidden.bs.modal', function (event) {
         $('#xml').text('');
       });
@@ -88,7 +88,7 @@ y muestra todas las compositions de la contrib:
         </div>
       </div>
     </div>
-    
+
     <div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -104,11 +104,20 @@ y muestra todas las compositions de la contrib:
 //$(document).ready(function() {
 
    var series = [];
-   var serie = { name: '${message(code:"contribution.list.title")}', data: [] };
+   var serie = { /*name: '${message(code:"contribution.list.title")}',*/
+                 dataLabels: {
+                   allowOverlap: false,
+                   format: '<span style="color:{point.color}">● </span><span style="font-weight: bold;" > ' +
+                          '{point.x:%Y-%m-%e %H:%M:%S}</span><br/>{point.label}'
+                 },
+                 marker: {
+                   symbol: 'circle'
+                 },
+                 data: [] };
 
    <%
    contributions.each { contrib ->
-      
+
       def d = contrib.audit.timeCommitted
       def jsd = 'Date.UTC('+
       (d.year + 1900)    +', '+
@@ -118,23 +127,25 @@ y muestra todas las compositions de la contrib:
       d.minutes +', '+
       d.seconds +
       ')'
-      
-      def point = '['+ jsd +', 1]'
+
+      //def point = '['+ jsd +', 1]'
+      // TODO: add how many creations, modifications and deletions are in the contrib
+      def point = "{x: ${jsd}, label: 'ID: ${contrib.uid}<br/>Committer: ${contrib.audit.committer.name}', name: 'ID: ${contrib.uid}<br/>Committer: ${contrib.audit.committer.name}', description: ''}"
       println 'serie.data.push('+ point +');'
-      
-      
+
+
       println "console.log('"+ d +"');"
    }
    %>
 
    series.push(serie);
-   
+
 
    // Charting timeline for contributions
    var chart = new Highcharts.Chart({
      chart: {
         renderTo: 'contributionsChartContainer',
-        type: 'scatter',
+        type: 'timeline',
         zoomType: 'x' // lo deja hacer zoom en el eje x, y o ambos: xy
      },
      rangeSelector : {
@@ -145,6 +156,7 @@ y muestra todas las compositions de la contrib:
      },
      xAxis: {
         type: 'datetime',
+        visible: false,
         /*
         dateTimeLabelFormats: { // don't display the dummy year
           millisecond: '%H:%M:%S.%L',
@@ -157,16 +169,24 @@ y muestra todas las compositions de la contrib:
             year: '%Y'
         },
         */
+        /*
         title: {
           text: null
         }
+        */
      },
      yAxis: {
-        title: {
-          text: '${message(code:"contribution.list.title")}'
-        },
-        allowDecimals: false, // no decimals on y, just integers
+        gridLineWidth: 1,
+        title: null,
+        labels: {
+          enabled: false
+        }
+        //allowDecimals: false, // no decimals on y, just integers
      },
+     legend: {
+       enabled: false
+     },
+     /*
      tooltip: {
        //headerFormat: '<b>{series.name}</b><br>',
        //pointFormat: '{point.x: %Y}',
@@ -176,6 +196,8 @@ y muestra todas las compositions de la contrib:
        },
        shared: true
      },
+     */
+     /*
      plotOptions: {
         scatter:  {
            marker: {
@@ -196,8 +218,9 @@ y muestra todas las compositions de la contrib:
            }
         }
      },
+     */
      series: series
    });
-   
+
 //});
 </script>
