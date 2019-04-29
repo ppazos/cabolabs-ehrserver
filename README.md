@@ -85,8 +85,9 @@ Mobile friendly user interface, adapts to small screens.
 ## Support the project!
 
 One way of supporting this project and our vision for building a completely open
-platform for health information systems, it through community donations.
-This will be used to pay for servers and development tools we use, also to maintain the website updated and be able to create new guides, and keep all open.
+e-health platform, is through community donations.
+This is used for servers, dev tools, pay for dev time, maintain the website,
+updated documentation and guides.
 
 * [10 USD](https://www.paypal.me/cabolabs/10)
 * [20 USD](https://www.paypal.me/cabolabs/20)
