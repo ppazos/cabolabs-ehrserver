@@ -29,24 +29,24 @@ import com.cabolabs.security.UserRole
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  */
 class NotificationJob {
-   
+
    def concurrent = false
-   
+
    static triggers = {
       simple repeatInterval: 600000l // execute job once in 10 minutes
    }
-   
+
    /**
     * Creates Notification statuses for non sent ontifications.
     */
    def execute()
    {
       //println "NotificationJob"
-      
+
       Notification.findAllBySent(false).each { notificationInstance ->
-      
+
          //println "send notification "+ notificationInstance.id
-       
+
          def statuses = []
          if (!notificationInstance.forUser)
          {
@@ -67,7 +67,7 @@ class NotificationJob {
             {
                users = User.list()
             }
-            
+
             users.each { user ->
                statuses << new NotificationStatus(user:user, notification:notificationInstance)
             }
@@ -80,7 +80,7 @@ class NotificationJob {
          statuses.each { status ->
             status.save(failOnError: true)
          }
-          
+
          notificationInstance.sent = true
          notificationInstance.save(failOnError: true)
       }

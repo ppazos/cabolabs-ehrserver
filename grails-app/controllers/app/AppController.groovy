@@ -33,12 +33,15 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 import com.cabolabs.security.User
 import com.cabolabs.security.UserRole
+import com.cabolabs.ehrserver.notification.Notification
+import com.cabolabs.ehrserver.reporting.ActivityLog
 
 class AppController {
 
    def springSecurityService
    def versionFSRepoService
-   
+   def remoteNotificationsService
+
    // shows main dashboard
    def index()
    {
@@ -51,26 +54,23 @@ class AppController {
          count_contributions = Contribution.count()
          count_queries = Query.count()
          count_users = User.count()
-         
+
          def orgs = Organization.list()
-         
+
          orgs.each { __org ->
             version_repo_sizes << [(__org): versionFSRepoService.getRepoSizeInBytes(__org.uid)]
          }
-         
+
          // sort by usage, decreasing
          version_repo_sizes = version_repo_sizes.sort { -it.value }
       }
       else
       {
-         //def auth = springSecurityService.authentication
-         //def org = Organization.findByNumber(auth.organization)
          def org = session.organization
-         
+
          count_ehrs = Ehr.countByOrganizationUid(org.uid)
          count_contributions = Contribution.countByOrganizationUid(org.uid)
-         
-         
+
          def shares = QueryShare.findAllByOrganization(org)
          def c = Query.createCriteria()
          count_queries = c.count() {
@@ -86,7 +86,7 @@ class AppController {
                eq('isPublic', true)
             }
          }
-         
+
          def ur = UserRole.createCriteria()
          def urs = ur.list() {
             createAlias('user','user')
@@ -96,19 +96,40 @@ class AppController {
             eq('organization', org)
          }
          count_users = urs.unique().size()
-         
+
          version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
       }
-      
+
+      // ----------------------------------------------------------------------------------------------------------
+      // Check for remote notifications
+      // This is here because right after the login, the user goes to the dashboard.
+
+      def loggedInUser = springSecurityService.currentUser
+
+      // Get date of the last read of remote notifications by the current user, null if no reads were done
+      // This avoids reading the same notifications twice by the same user
+      def lastALogs = ActivityLog.findAllByActionAndUsername('remote_notifications', loggedInUser.username, [max: 1, sort: 'timestamp', order:'desc'])
+      def from
+      if (lastALogs.size() > 0) from = lastALogs[0].timestamp
+
+      def notifications = remoteNotificationsService.getNotifications('ehrserver', session.lang, from)
+
+      notifications.each { notification ->
+         new Notification(name:'remote', language:session.lang, text:notification.nt, forUser:loggedInUser.id).save()
+      }
+
+      // Mark current read of the remote notifications
+      new ActivityLog(username: loggedInUser.username, action: 'remote_notifications', sessionId: session.id.toString()).save()
+
       [
-         count_ehrs:count_ehrs, 
-         count_contributions:count_contributions, 
+         count_ehrs:count_ehrs,
+         count_contributions:count_contributions,
          count_queries: count_queries,
          version_repo_sizes: version_repo_sizes,
          count_users: count_users
       ]
    }
-   
+
    def get_started()
    {
       []
