@@ -44,7 +44,7 @@ class SyncJob {
    def concurrent = false
 
    static triggers = {
-      simple repeatInterval: 20000l, startDelay: 60000l // execute job once in 5 seconds
+      simple repeatInterval: 600000l, startDelay: 60000l
    }
 
    def syncMarshallersService
