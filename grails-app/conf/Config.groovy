@@ -129,6 +129,11 @@ environments {
       commit_logs = System.getenv('EHRSERVER_WORKING_FOLDER') + "commits" + PS
       opt_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "opts" + PS
       allow_web_user_register = System.getenv('EHRSERVER_ALLOW_WEB_USER_REGISTER') ?: false
+      terminologies = [
+        System.getenv('EHRSERVER_WORKING_FOLDER') + "terminology"+ PS +"openehr_terminology_en.xml",
+        System.getenv('EHRSERVER_WORKING_FOLDER') + "terminology"+ PS +"openehr_terminology_es.xml",
+        System.getenv('EHRSERVER_WORKING_FOLDER') + "terminology"+ PS +"openehr_terminology_pt.xml"
+      ]
     }
   }
   local_prod { // use to run locally without https or root context /
