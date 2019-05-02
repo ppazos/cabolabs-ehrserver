@@ -82,7 +82,7 @@ class PlanAssociationStateUpdateJob {
                // contact before closing the plan. TODO.
                //active_plan_assoc.state = PlanAssociation.states.CLOSED
 
-               def message = "The account "${account.companyName}" has an active plan that ends today but no new plan was assigned.<br/><br/>Need to contact ${account.contact.email} to verify a plan extension, upgrade or closing the account."
+               def message = "The account '${account.companyName}' has an active plan that ends today but no new plan was assigned.<br/><br/>Need to contact ${account.contact.email} to verify a plan extension, upgrade or closing the account."
                def admins = User.allForRole('ROLE_ADMIN')
                def title = 'Account plan expiration'
                admins.each { admin ->
