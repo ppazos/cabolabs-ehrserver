@@ -9,7 +9,7 @@ class PlanAssociationStateUpdateJob {
    def grailsApplication
 
    static triggers = {
-     simple repeatInterval: 60000l, startDelay: 240000l // runs each 12 hours 1000*60*60*12 = 43200000l
+     simple repeatInterval: 43200000l, startDelay: 240000l // runs each 12 hours 1000*60*60*12 = 43200000l
    }
 
    def execute() {
@@ -46,8 +46,8 @@ class PlanAssociationStateUpdateJob {
             return // continues with next account
          }
 
-         // current active plan ended?
-         if (active_plan_assoc.to < today)
+         // current active plan ended yesterday?
+         if (active_plan_assoc.to in (today-1)..today)
          {
             //println "active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
 
@@ -82,6 +82,8 @@ class PlanAssociationStateUpdateJob {
                // contact before closing the plan. TODO.
                //active_plan_assoc.state = PlanAssociation.states.CLOSED
 
+               // FIXME: there is no check of this notification being sent, could be sent more than once for the same account
+               //        could mark this with an activity log
                def message = "The account '${account.companyName}' has an active plan that ends today but no new plan was assigned.<br/><br/>Need to contact ${account.contact.email} to verify a plan extension, upgrade or closing the account."
                def admins = User.allForRole('ROLE_ADMIN')
                def title = 'Account plan expiration'
