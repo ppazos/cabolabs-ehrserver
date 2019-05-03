@@ -43,7 +43,7 @@ body {
 .navbar-top-links li:last-child {
   margin-right: 15px;
 }
-.navbar-top-links li a {
+.navbar-top-links > li > a {
   padding: 15px;
   min-height: 50px;
 }
@@ -53,7 +53,7 @@ body {
 .navbar-top-links .dropdown-menu li:last-child {
   margin-right: 0;
 }
-.navbar-top-links .dropdown-menu li a {
+.navbar-top-links .dropdown-menu > li > a {
   padding: 3px 20px;
   min-height: 0;
 }
