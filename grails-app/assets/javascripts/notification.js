@@ -5,7 +5,7 @@ function notification_get( get_not_url, dismiss_url, forSection )
       .done(function(data) {
         //console.log(data);
 
-        var new_nts_count = data.filter(sts => sts.status == 'new').length;
+        var new_nts_count = data.filter(function(sts) { return sts.status == 'new'; }).length;
 
         if (new_nts_count > 0)
         {
