@@ -2081,6 +2081,12 @@ class RestController {
          return
       }
 
+      if (!ehrUid)
+      {
+         renderError("ehrUid is required", '9456', 404)
+         return
+      }
+
       def equery = EhrQuery.findByUid(ehrQueryUid)
 
       if (!equery)

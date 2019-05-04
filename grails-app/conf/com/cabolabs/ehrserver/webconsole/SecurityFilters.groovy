@@ -387,16 +387,13 @@ class SecurityFilters {
                   clientIp:        request.getHeader("Client-IP"), // can be null
                   xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
                   referer:         request.getHeader('referer'), // can be null
-                  requestURI:      request.forwardURI,
-                  matchedURI:      request.requestURI,
+                  requestURL:      request.requestURL,
+                  matchedURI:      request.forwardURI,
                   sessionId:       session.id)
 
 
                // TODO: file log failure
                if (!alog.save()) println "activity log is not saving "+ alog.errors.toString()
-
-               // experiment to link commit log to this activityLog
-               session.activity_log_id = alog.id
             }
 
 

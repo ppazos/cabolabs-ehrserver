@@ -88,7 +88,7 @@ class SyncMarshallersService {
    def toJSON(Contribution c, JsonBuilder jb)
    {
       assert jb
-      def _commit = Commit.findByContributionUid(c.uid)
+      def _commit = CommitLog.findByClazzAndObjectUid('Contribution', c.uid)
 
       String ext = '.xml'
       if (_commit.contentType.contains('json')) ext = '.json'

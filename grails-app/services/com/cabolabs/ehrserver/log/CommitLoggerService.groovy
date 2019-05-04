@@ -22,7 +22,7 @@
 
 package com.cabolabs.ehrserver.log
 
-import com.cabolabs.ehrserver.openehr.common.change_control.Commit
+import com.cabolabs.ehrserver.openehr.common.change_control.CommitLog
 import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
@@ -66,7 +66,6 @@ class CommitLoggerService {
    def log(HttpServletRequest request, String contributionUid, boolean success, String content, session, params)
    {
       // http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html
-      def clientIP = request.remoteAddr
       def clientLocale = request.locale
       def isSecure = request.isSecure() // it uses https?
       //def params = request.parameterMap.collectEntries{ [(it.key): it.value[0]] } // params is a map of lists, we need a map of strings
@@ -74,7 +73,6 @@ class CommitLoggerService {
       def contentLength = request.contentLength
       def encoding = request.characterEncoding
       def cookies = request.cookies
-      def url = request.requestURL
 
       // Stateless username
       def authUser = request.securityStatelessMap.username
@@ -134,18 +132,27 @@ class CommitLoggerService {
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created
 
-      def commit = new Commit(
-        ehrUid: params.ehrUid,
-        contributionUid: contributionUid, // can be null if !success
-        ip: clientIP,
-        locale: clientLocale,
-        params: params,
-        contentType: contentType,
-        contentLength: contentLength,
-        url: url,
-        username: authUser,
-        success: success,
-        activityLog: ((session.activity_log_id) ? ActivityLog.get(session.activity_log_id) : null) // FIXME: the log id can be overwritten by different threads
+      def commit = new CommitLog(
+         ehrUid: params.ehrUid,
+         locale: clientLocale,
+         params: params,
+         contentType: contentType,
+         contentLength: contentLength,
+         success: success,
+
+         username: authUser,
+
+         action: params.controller +':'+params.action,
+         objectClazz: 'Contribution',
+         objectUid: contributionUid, // can be null if !success
+
+         remoteAddr: request.remoteAddr,
+         clientIp:        request.getHeader("Client-IP"), // can be null
+         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
+         referer:         request.getHeader('referer'), // can be null
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
+         sessionId: session.id.toString()
       )
 
       if (!commit.validate()) println commit.errors

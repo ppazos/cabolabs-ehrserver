@@ -4,7 +4,7 @@ import grails.test.spock.IntegrationSpec
 import groovy.util.slurpersupport.GPathResult
 
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import com.cabolabs.ehrserver.openehr.common.change_control.Commit
+import com.cabolabs.ehrserver.openehr.common.change_control.CommitLog
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
@@ -125,7 +125,7 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
          assert Version.count() == 1
          assert VersionedComposition.count() == 1
          assert CompositionIndex.count() == 1
-         //println "commits "+ Commit.count() // 0, Commit is not used...
+         //println "commits "+ CommitLog.count() // 0, Commit is not used...
 
 
       cleanup:

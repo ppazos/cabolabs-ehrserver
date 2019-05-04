@@ -236,7 +236,7 @@ class BootStrap {
 
          it.registerObjectMarshaller(Contribution) { contribution ->
 
-            def commit = Commit.findByContributionUid(contribution.uid)
+            def commit = CommitLog.findClazzAndByObjectUid('Contribution', contribution.uid)
             def file = new File(Holders.config.app.commit_logs.withTrailSeparator() +
                                 contribution.organizationUid.withTrailSeparator() +
                                 commit.fileUid + '.xml') // TODO: read json
@@ -1343,7 +1343,7 @@ gr_account.save(failOnError:true, flush:true)
       }
 
 
-      def commitsss = Commit.list()
+      def commitsss = CommitLog.list()
       commitsss.each {
          if (!it.fileUid)
          {

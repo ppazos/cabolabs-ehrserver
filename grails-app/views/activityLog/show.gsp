@@ -13,11 +13,11 @@
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-      
+
 	     <g:if test="${flash.message}">
 	       <div class="alert alert-info" role="alert">${flash.message}</div>
 	     </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -61,12 +61,12 @@
               <td><g:fieldValue bean="${activityLogInstance}" field="referer" /></td>
             </tr>
             <tr>
-              <th><g:message code="activityLog.requestURI.label" default="requestURI" /></th>
-              <td><g:fieldValue bean="${activityLogInstance}" field="requestURI" /></td>
+              <th><g:message code="activityLog.requestURL.label" default="URL" /></th>
+              <td><g:fieldValue bean="${activityLogInstance}" field="requestURL" /></td>
             </tr>
           </tbody>
         </table>
-      
+
       </div>
     </div>
   </body>

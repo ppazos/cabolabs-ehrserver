@@ -187,19 +187,17 @@ class UrlMappings {
          controller: 'rest',
          action: 'getTemplate'
       )
-
-      // TODO: fancy restful urls
-      "/api/v1/getEhrQueries"(
+      "/api/v1/multiqueries"(
          method: 'GET',
          controller: 'rest',
          action: 'getEhrQueries'
       )
-      "/api/v1/ehrChecker"(
+      "/api/v1/multiqueries/${ehrQueryUid}/ehrcheck/${ehrUid}"(
          method: 'GET',
          controller: 'rest',
          action: 'ehrChecker'
       )
-      "/api/v1/getMatchingEhrs"(
+      "/api/v1/multiqueries/${ehrQueryUid}/ehrs"(
          method: 'GET',
          controller: 'rest',
          action: 'getMatchingEhrs'

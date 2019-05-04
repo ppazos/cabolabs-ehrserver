@@ -4,7 +4,7 @@
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  * at CaboLabs Health Informatics (www.cabolabs.com).
  *
- * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI, 
+ * You can't remove this notice from the source code, you can't remove the "Powered by CaboLabs" from the UI,
  * you can't remove this notice from the window that appears then the "Powered by CaboLabs" link is clicked.
  *
  * Any modifications to the provided source code can be stated below this notice.
@@ -30,18 +30,20 @@ class ActivityLog {
    String username
    String organizationUid // used to login
    String action
+   String objectClazz
    Long objectId    // when using db ids (we try to avoid this case)
    String objectUid // most ids will be uids
    String remoteAddr
    String clientIp
    String xForwardedFor
    String referer
-   String requestURI // received url - /ehr/logs
+   String requestURL // received url - /ehr/logs
    String matchedURI // internal matched url - /ehr/grails/activityLog/index.dispatch
    String sessionId // java session id, allows alog grouping
-   
+
    static constraints = {
       username nullable: true
+      objectClazz nullable: true
       objectId nullable: true
       objectUid nullable: true
       organizationUid nullable: true
@@ -49,10 +51,10 @@ class ActivityLog {
       clientIp nullable: true
       xForwardedFor nullable: true
       referer nullable: true
-      requestURI nullable: true
+      requestURL nullable: true
       matchedURI nullable: true
    }
-   
+
    static mapping = {
      organizationUid index: 'org_uid_idx'
    }

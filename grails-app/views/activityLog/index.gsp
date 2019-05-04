@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.Commit" %>
+<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.CommitLog" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -27,7 +27,7 @@
                 <tr>
                   <g:sortableColumn property="timestamp" mapping="logs" title="${message(code: 'activityLog.timestamp.label', default: 'Timestamp')}" />
                   <g:sortableColumn property="username" mapping="logs" title="${message(code: 'activityLog.username.label', default: 'Username')}" />
-                  <g:sortableColumn property="objectId" mapping="logs" title="${message(code: 'activityLog.objectId.label', default: 'Object Id')}" />
+                  <g:sortableColumn property="requestURL" mapping="logs" title="${message(code: 'activityLog.requestURL.label', default: 'URL')}" />
                   <g:sortableColumn property="action" mapping="logs" title="${message(code: 'activityLog.action.label', default: 'Action')}" />
                   <g:sortableColumn property="remoteAddr" mapping="logs" title="${message(code: 'activityLog.remoteAddr.label', default: 'Address')}" />
                 </tr>
@@ -37,12 +37,12 @@
                    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                      <td><g:link controller="logs" action="show" id="${activityLogInstance.id}"><g:formatDate date="${activityLogInstance.timestamp}" /></g:link></td>
                      <td>${fieldValue(bean: activityLogInstance, field: "username")}</td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "objectId")}</td>
+                     <td>${fieldValue(bean: activityLogInstance, field: "requestURL")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "remoteAddr")}</td>
                    </tr>
-                   <g:set var="commit" value="${Commit.findByActivityLog(activityLogInstance)}" />
-                   <g:if test="${commit}">
+                   <g:if test="${activityLogInstance instanceof CommitLog}">
+                     <g:set var="commit" value="${activityLogInstance}" />
                      <tr>
                        <td colspan="5" style="padding:0;">
                          <table class="table" style="margin:0;">
@@ -55,7 +55,7 @@
                            </tr>
                            <tr>
                              <td>${commit.ehrUid}</td>
-                             <td>${commit.contributionUid}</td>
+                             <td>${commit.objectUid}</td>
                              <td>${commit.contentType}</td>
                              <td>${commit.locale}</td>
                              <td>${commit.success}</td>

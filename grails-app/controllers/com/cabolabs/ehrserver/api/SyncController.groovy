@@ -233,8 +233,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
@@ -269,8 +269,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
@@ -304,8 +304,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
@@ -350,8 +350,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
@@ -403,8 +403,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
@@ -442,8 +442,8 @@ class SyncController {
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
-         requestURI:      request.forwardURI,
-         matchedURI:      request.requestURI,
+         requestURL:      request.requestURL,
+         matchedURI:      request.forwardURI,
          sessionId:       session.id)
 
 
