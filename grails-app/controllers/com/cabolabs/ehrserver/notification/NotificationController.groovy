@@ -31,19 +31,19 @@ class NotificationController {
 
    def springSecurityService
    def configurationService
-   
+
    def config = Holders.config.app
-   
+
    def index(int offset, String sort, String order)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       [notificationInstanceList: Notification.list(max: max, offset: offset, sort: sort, order: order), total: Notification.count()]
    }
-   
+
    def create()
    {
       def users
@@ -64,7 +64,7 @@ class NotificationController {
       }
       [notificationInstance: new Notification(), users: users]
    }
-   
+
    def save(Notification notificationInstance)
    {
       try
@@ -80,19 +80,22 @@ class NotificationController {
 
       redirect action: 'show', id: notificationInstance.id
    }
-   
+
    def show(Notification notificationInstance)
    {
       [notificationInstance: notificationInstance, statuses: NotificationStatus.findAllByNotification(notificationInstance)]
    }
-   
+
    def newNotifications(String forSection, String forOrganization, Long forUser)
    {
       def loggedInUser = springSecurityService.currentUser
-      def notifications = Notification.newNotifications(forSection, session.organization.uid, loggedInUser.id, session.lang)
+
+      // List<NotificationStatus>
+      def notifications = Notification.lastNotifications(forSection, session.organization.uid, loggedInUser.id, session.lang)
+      notifications = notifications.collect{ [status: it.status, notification: [text: it.notification.text, dateCreated: it.notification.dateCreated, id: it.notification.id]] }
       render (contentType: "application/json", text: notifications as JSON, encoding:"UTF-8")
    }
-   
+
    def dismiss(Notification notification)
    {
       def loggedInUser = springSecurityService.currentUser

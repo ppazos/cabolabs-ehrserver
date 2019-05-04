@@ -28,22 +28,66 @@ class Notification {
    String language // language of the text
    String text
    String kind = 'web'
-   
+
    String forSection // ehrs, contributions, versions, directory, queries, templates, users, roles, organizations, notifications
    String forOrganization
    Long forUser // user.id
-   
+
    Date dateCreated
-   
+
    boolean sent = false // used by the job that creates the notification statuses
-   
+
    static constraints = {
       forSection nullable: true
       forOrganization nullable: true
       forUser nullable: true
       kind inList: ['web', 'email']
    }
-   
+
+   static lastNotifications(String forSection, String forOrganization, Long forUser, String lang, int last = 15)
+   {
+      def c = NotificationStatus.createCriteria()
+      def list = c.list {
+         notification {
+           eq('language', lang)
+         }
+         if (forUser)
+         {
+            user {
+               eq('id', forUser)
+            }
+         }
+         if (forOrganization) // forOrganization alwas comes, but it should match also when it is null on the notification
+         {
+            or {
+               notification {
+                  eq('forOrganization', forOrganization)
+               }
+               notification {
+                  isNull('forOrganization')
+               }
+            }
+         }
+         if (forSection) // forSection always comes, but if should match also when it is null on the notification
+         {
+            or {
+               notification {
+                  eq('forSection', forSection)
+               }
+               notification {
+                  isNull('forSection')
+               }
+            }
+         }
+         maxResults(last)
+         notification {
+            order("dateCreated", "desc")
+         }
+      }
+
+      return list
+   }
+
    static newNotifications(String forSection, String forOrganization, Long forUser, String lang)
    {
       def c = NotificationStatus.createCriteria()
@@ -81,7 +125,7 @@ class Notification {
             }
          }
       }
-      
-      return list.notification
+
+      return list //.notification
    }
 }

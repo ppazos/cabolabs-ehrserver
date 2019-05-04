@@ -33,7 +33,7 @@ class NotificationJob {
    def concurrent = false
 
    static triggers = {
-      simple repeatInterval: 600000l // execute job once in 10 minutes
+      simple repeatInterval: 60000l, startDelay: 120000l // execute job once in 10 minutes
    }
 
    /**

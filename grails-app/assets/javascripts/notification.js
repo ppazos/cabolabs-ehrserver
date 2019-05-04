@@ -5,26 +5,28 @@ function notification_get( get_not_url, dismiss_url, forSection )
       .done(function(data) {
         //console.log(data);
 
-        if (data.length > 0)
+        var new_nts_count = data.filter(sts => sts.status == 'new').length;
+
+        if (new_nts_count > 0)
         {
-           $('#top-notifications-menu > a').append('<span class="badge badge-notification">'+ data.length +'</span>');
+           $('#top-notifications-menu > a').append('<span class="badge badge-notification">'+ new_nts_count +'</span>');
         }
 
         notifications = '';
-        $.each( data, function( i, notif ) {
+        $.each( data, function( i, nstatus ) {
 
            // TODO: add  class="dismissed" to the LIs of notifications that were dismissed
-          $('#top-notifications-menu .drop-content').append('<li><div class="col-md-11">'+ notif.text +'<br/><span class="text-muted">'+ notif.dateCreated +'</span></div><div class="col-md-1 text-right"><a href="#" class="dismiss" data-id="'+ notif.id +'"><i class="fa fa-dot-circle-o"></i></a></div></li>');
-
-          //notifications += '<div class="alert alert-info alert-dismissible global" role="alert" data-id="'+ notif.id +'"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+ notif.text +'</div>';
+           if (nstatus.status == 'new')
+             $('#top-notifications-menu .drop-content').append('<li><div class="col-md-11">'+ nstatus.notification.text +'<br/><span class="text-muted">'+ nstatus.notification.dateCreated +'</span></div><div class="col-md-1 text-right"><a href="#" class="dismiss" data-id="'+ nstatus.notification.id +'"><i class="fa fa-dot-circle-o"></i></a></div></li>');
+           else
+             $('#top-notifications-menu .drop-content').append('<li class="dismissed"><div class="col-md-11">'+ nstatus.notification.text +'<br/><span class="text-muted">'+ nstatus.notification.dateCreated +'</span></div></li>');
         });
 
-        //$('body').append('<div class="global_alert_container">'+ notifications +'</div>');
 
         $('.dismiss').on('click', function (evn) {
-           console.log('id', $(this).data('id'));
-           // TODO: dismiss with the new notifications on the menu
+           //console.log('id', $(this).data('id'));
 
+           // dismiss with the new notifications on the menu
            var notif_dom = $(this).closest('li');
 
            $.get( dismiss_url, { id: $(this).data('id') }, 'json')
@@ -33,21 +35,6 @@ function notification_get( get_not_url, dismiss_url, forSection )
              // TODO: update the DOM adding the dismissed class to the LI
              console.log(notif_dom);
              notif_dom.addClass('dismissed');
-           })
-           .fail(function() {
-             //alert( "error" );
-           })
-           .always(function() {
-             //alert( "finished" );
-           });
-        });
-
-        $('.alert').on('close.bs.alert', function (evn) {
-           console.log($(evn.target).data('id'));
-
-           $.get( dismiss_url, { id: $(evn.target).data('id') }, 'json')
-           .done(function(data) {
-             console.log(data);
            })
            .fail(function() {
              //alert( "error" );
