@@ -102,6 +102,8 @@ class EhrController {
          def us = User.findByUsername(un)
          def orgs = us.organizations
 
+         // FIXME: this should really list the ehrs for the current org
+
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             eq('deleted', false)
             //eq ('organizationUid', org.uid) // same org as used for login

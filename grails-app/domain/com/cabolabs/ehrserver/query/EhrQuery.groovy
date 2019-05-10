@@ -27,6 +27,8 @@ class EhrQuery {
    List queries = []
    static hasMany = [queries: Query]
 
+   String organizationUid
+
    static constraints = {
       description nullable: true
       queries minSize: 1, validator: {val, obj ->

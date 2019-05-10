@@ -68,12 +68,6 @@ class QueryController {
 
    def index()
    {
-      /*
-      def jb = new JsonBuilder()
-      syncMarshallersService.toJSON(Query.list(), jb)
-      render jb.toString(), contentType: "application/json"
-      */
-
       redirect(action: "list", params: params)
    }
 
