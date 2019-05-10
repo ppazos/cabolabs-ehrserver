@@ -1,1 +1,0 @@
-grails test-app unit: --stacktrace
