@@ -19,7 +19,7 @@
   <label for="queries" class="control-label">
     <g:message code="ehrquery.attr.queries" default="Queries" />
   </label>
-  <g:set var="queries" value="${com.cabolabs.ehrserver.query.Query.findAllByType('composition')}" />
+  <g:set var="queries" value="${com.cabolabs.ehrserver.query.Query.findAllByTypeAndOrganizationUid('composition', session.organization.uid)}" />
   <g:select name="queries"
             from="${queries}"
             multiple="multiple"
@@ -31,6 +31,3 @@
     <span class="help-block"><g:message code="ehrquery.create.noCompoQueries" /></span>
   </g:if>
 </div>
-
-
-
