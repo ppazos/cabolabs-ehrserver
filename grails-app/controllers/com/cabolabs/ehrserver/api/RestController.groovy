@@ -106,6 +106,12 @@ class RestController {
       'ehrCreate': '13'
    ]
 
+   /* open action for monitoring the server status */
+   def echo()
+   {
+      render "echo"
+   }
+
    // TODO: I18N
    // FIXME: move logic to service
    def login()
