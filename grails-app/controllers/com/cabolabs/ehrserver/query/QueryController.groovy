@@ -885,9 +885,9 @@ class QueryController {
    // query group list
    def groups()
    {
-      def groups = QueryGroup.findAllByOrganizationUid(session.organization.uid)
-
-      render view: '/queryGroup/index', model: [groups: groups]
+      def groups = QueryGroup.findAllByOrganizationUid(session.organization.uid, params)
+      def total = QueryGroup.countByOrganizationUid(session.organization.uid)
+      render view: '/queryGroup/index', model: [groups: groups, total: total]
    }
 
    // query group create

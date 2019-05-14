@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
@@ -48,6 +48,7 @@
             </tbody>
           </table>
         </div>
+        <g:paginator total="${total}" args="${params}" />
       </div>
     </div>
   </body>
