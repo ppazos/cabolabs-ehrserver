@@ -74,6 +74,13 @@ class UrlMappings {
          action = 'index'
       }
 
+      /* action for external monitoring */
+      "/api/v1/echo"(
+         method: 'Get',
+         controller: 'rest',
+         action: 'echo'
+      )
+
       "/api/v1/login"(
          method: 'POST',
          controller: 'rest',
