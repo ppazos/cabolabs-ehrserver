@@ -202,15 +202,6 @@
                 <!-- end notify title -->
                 <!-- notify content -->
                 <div class="drop-content">
-                  <!--
-                	<li>
-                		<div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="http://placehold.it/45x45" alt=""></div></div>
-                		<div class="col-md-9 col-sm-9 col-xs-9 pd-l0"><a href="">Ahmet</a> yorumladı. <a href="">Çicek bahçeleri...</a> <a href="" class="rIcon"><i class="fa fa-dot-circle-o"></i></a>
-                		<hr>
-                		<p class="time">Şimdi</p>
-                		</div>
-                	</li>
-                  -->
                 </div>
                 <div class="notify-drop-footer text-center">
                 	<!--<a href=""><i class="fa fa-eye"></i> View all notifications</a>-->

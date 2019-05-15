@@ -126,6 +126,6 @@ class Notification {
          }
       }
 
-      return list //.notification
+      return list
    }
 }

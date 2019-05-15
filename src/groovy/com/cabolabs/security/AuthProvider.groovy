@@ -29,7 +29,7 @@ import com.cabolabs.ehrserver.account.Account
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
-import org.springframework.aop.aspectj.RuntimeTestWalker.ThisInstanceOfResidueTestVisitor
+//import org.springframework.aop.aspectj.RuntimeTestWalker.ThisInstanceOfResidueTestVisitor
 import org.springframework.context.ApplicationEventPublisherAware
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.authentication.LockedException
@@ -50,23 +50,23 @@ class AuthProvider implements AuthenticationProvider
     //def passwordEncoder // should be injected! but is not... I might need to configure something in the resources.groovy file.
     def passwordEncoder // = new BCryptPasswordEncoder(10) // wont do the config for now, FIXME: this should consider the current encoder config, if we change it, this should change.
     //passwordEncoder(BCryptPasswordEncoder, conf.password.bcrypt.logrounds) // 10
-    
+
     def userService = Holders.grailsApplication.mainContext.getBean('userService')
-    
+
     def log = Logger.getLogger('com.cabolabs.security.AuthProvider')
-    
+
     Authentication authenticate(Authentication auth) throws AuthenticationException
     {
         Assert.isInstanceOf(UserPassOrgAuthToken.class, auth, "Only UserPassOrgAuthToken is supported")
-                        
+
         UserPassOrgAuthToken authentication = (UserPassOrgAuthToken) auth
-          
-        // userDetailsService no se inyecta porque no hay bean 
+
+        // userDetailsService no se inyecta porque no hay bean
         //def userDetails = userDetailsService.loadUserByUsername(auth.principal)
         //userDetails have the following properties like username, isEnabled..etc
-        
+
         //println userDetails
-        
+
         /*
         def user = User.findByUsername(auth.principal);
         if(userDetails != null && user.token == auth.credentials)
@@ -76,25 +76,25 @@ class AuthProvider implements AuthenticationProvider
             return auth;
         }
         */
-        
+
         return doAuthentication(authentication)
     }
-    
+
     @Override
     boolean supports(Class authentication)
     {
         return UserPassOrgAuthToken.class.isAssignableFrom(authentication)
     }
-    
+
     // our custom authorization logic
     def doAuthentication(UserPassOrgAuthToken auth)
     {
        def username = auth.principal
        def password = auth.credentials // plain text entered by the user
        def organization_number = auth.organization
-       
+
        def user
-       User.withNewSession { 
+       User.withNewSession {
           user = User.findByUsername(username)
        }
        if (user == null)
@@ -102,14 +102,14 @@ class AuthProvider implements AuthenticationProvider
           log.info("No matching account")
           throw new UsernameNotFoundException("No matching account")
        }
-       
+
        // Status checks
        if (!user.enabled)
        {
           log.info("User account disabled")
           throw new DisabledException("User account disabled")
        }
-       
+
        Account.withNewSession {
           if (!user.account.enabled)
           {
@@ -117,48 +117,48 @@ class AuthProvider implements AuthenticationProvider
              throw new DisabledException("Company account disabled")
           }
        }
-       
+
        if (user.accountExpired)
        {
           log.info("Account expired")
           throw new AccountExpiredException("Account expired")
        }
-       
+
        if (user.accountLocked)
        {
           log.info("Account locked")
           throw new LockedException("Account locked")
        }
-       
+
        // Check password
        assert this.passwordEncoder != null
-       
+
        if (!passwordEncoder.isPasswordValid(user.password, password, null))
        {
           log.info("Authentication failed - invalid password")
           throw new BadCredentialsException("Authentication failed")
        }
-       
+
        if (!organization_number) // null or empty
        {
           log.info("Authentication failed - organization number not provided")
           throw new BadCredentialsException("Authentication failed - organization number not provided")
        }
-       
+
        // Check organization
        Organization org
        Organization.withNewSession {
           org = Organization.findByNumber(organization_number)
        }
-       
+
        if (org == null)
        {
           log.info("Authentication failed - organization doesnt exists")
           throw new BadCredentialsException("Authentication failed")
        }
-       
+
        //println 'user orgs '+ user.organizations
-       
+
        if (!user.organizations.find{ it.uid == org.uid })
        {
           log.info("Authentication failed - user not associated with existing organization")
@@ -178,11 +178,11 @@ class AuthProvider implements AuthenticationProvider
                                         !user.accountLocked,
                                         userService.getUserAuthorities(user, org),
                                         user.id)
-       
+
        // The userDetails.authorities is not over our User is over the SpringSecurity User, so it doesnt require an org.
        // http://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/core/userdetails/User.html
        auth = new UserPassOrgAuthToken(userDetails, password, organization_number, userDetails.authorities)
-       
+
        return auth
     }
 }
