@@ -18,16 +18,16 @@ class QuerySnomedService {
       def res = []
       def error = false
       def status
-      def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
+      def http = new HTTPBuilder('https://snquery.veratech.es')
 
       try
       {
          http.request( POST ) {
-            uri.path = '/SnomedQuery/ws/JSONQuery'
+            uri.path = '/ws/JSONQuery'
             uri.query = [cache: 'true']
             send URLENC, [query: snomedExpr]
             headers.Accept = 'application/json'
-            headers.Authorization = 'Bearer '+ api_key // FIXME: get from config
+            headers.Authorization = 'Bearer '+ api_key
 
             response.success = { resp, json ->
                println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
@@ -79,31 +79,38 @@ class QuerySnomedService {
 
    def validateExpression(String snomedExpr)
    {
-      def valid = true
+      def valid = false
 
-      def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
+      def http = new HTTPBuilder('https://snquery.veratech.es')
 
-      http.request( POST ) {
-         uri.path = '/SnomedQuery/ws/validate'
-         uri.query = [cache: 'true']
-         send URLENC, [query: snomedExpr]
-         headers.Accept = 'application/json'
-         headers.Authorization = 'Bearer '+ api_key // FIXME: get from config
+      try
+      {
+         http.request( POST ) {
+            uri.path = '/ws/validate'
+            uri.query = [cache: 'true']
+            send URLENC, [query: snomedExpr]
+            headers.Accept = 'application/json'
+            headers.Authorization = 'Bearer '+ api_key // FIXME: get from config
 
-         response.success = { resp, json ->
-            println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
-            valid = json[0] // [true] / [false]
+            response.success = { resp, json ->
+               println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+               valid = json[0] // [true] / [false]
+            }
+
+            response.failure = { resp, reader ->
+               println 'request failed'
+               println resp
+               println resp.statusLine
+               println resp.status
+               println reader.text
+
+               valid = false
+            }
          }
-
-         response.failure = { resp, reader ->
-            println 'request failed'
-            println resp
-            println resp.statusLine
-            println resp.status
-            println reader.text
-
-            valid = false
-         }
+      }
+      catch (Exception e)
+      {
+         throw new QuerySnomedServiceException('querySnomedService.error.connectionError', e)
       }
 
       return valid
