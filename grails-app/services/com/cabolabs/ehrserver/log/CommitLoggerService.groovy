@@ -26,7 +26,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.CommitLog
 import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
-import com.cabolabs.ehrserver.reporting.ActivityLog
 
 @Transactional
 class CommitLoggerService {

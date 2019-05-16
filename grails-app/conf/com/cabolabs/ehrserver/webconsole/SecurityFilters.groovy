@@ -760,8 +760,6 @@ class SecurityFilters {
             }
             else
             {
-               println "is private"
-
                // if the user is the author, let it pass, the check below is only for non authors
 
                // the login org should be in the currently shared orgs of the query

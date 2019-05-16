@@ -71,6 +71,7 @@ class RestController {
    def compositionService
    def versionFSRepoService
    def commitLoggerService
+   def logService
    def notificationService
    def apiResponsesService
    def queryService
@@ -204,6 +205,7 @@ class RestController {
       }
       catch (Exception e)
       {
+         logService.error(request, session, params, e)
          renderError(e.message, 'e01.0001', 401)
       }
    }
@@ -374,6 +376,7 @@ class RestController {
          }
          catch (Exception e)
          {
+            logService.error(request, session, params, e)
             // if the JSON fails to convert to XML, parsedVersions will be empty
             // if _parsedVersions is empty, the error is reported below
          }
@@ -387,6 +390,7 @@ class RestController {
          }
          catch (org.xml.sax.SAXParseException sex) // checks malformed XML
          {
+            logService.error(request, session, params, e)
             commitLoggerService.log(request, null, false, null, session, params)
             renderError(message(code:'rest.commit.error.invalidXML'), '50111', 400, [], sex)
             return
@@ -461,11 +465,9 @@ class RestController {
       {
          // throws exceptions for any error
          contribution = xmlService.processCommit(ehr, _parsedVersions, new Date(), auditCommitter)
-         if (!contribution.save())
-         {
-            // FIXME: log and notification! an admin should review this situation
-            println contribution.errors
-         }
+
+         // if there is a problem, it will be catched and logged as an ErrorLog
+         contribution.save(failOnError:true)
 
          /* **
           * The time_committed attribute in both the Contribution and Version audits
@@ -498,6 +500,7 @@ class RestController {
       }
       catch (CommitWrongChangeTypeException e)
       {
+         logService.error(request, session, params, e)
          commitLoggerService.log(request, null, false, content, session, params)
 
          def detailedErrors = []
@@ -514,6 +517,7 @@ class RestController {
       }
       catch (XmlValidationException | XmlSemanticValidationExceptionLevel1 e) // xsd validation errors
       {
+         logService.error(request, session, params, e)
          // TODO: the XML validation errors might need to be adapted to the JSON commit because line numbers might not match.
          commitLoggerService.log(request, null, false, content, session, params)
 
@@ -531,6 +535,7 @@ class RestController {
       }
       catch (UndeclaredThrowableException e)
       {
+         logService.error(request, session, params, e)
          commitLoggerService.log(request, null, false, content, session, params)
 
          // http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/UndeclaredThrowableException.html
@@ -539,9 +544,7 @@ class RestController {
       }
       catch (RuntimeException | Exception e)
       {
-         println "e message " + e.message
-         log.error( e.message +" "+ e.getClass().getSimpleName() ) // FIXME: the error might be more specific, see which errors we can have.
-
+         logService.error(request, session, params, e)
          commitLoggerService.log(request, null, false, content, session, params)
          renderError(g.message(code:'rest.commit.error.cantProcessCompositions', args:[e.message]), '468', 400, [], e)
          return
@@ -621,11 +624,13 @@ class RestController {
       }
       catch (FileNotFoundException e)
       {
+         logService.error(request, session, params, e)
          renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500) // this should not happen :)
          return
       }
       catch (Exception e)
       {
+         logService.error(request, session, params, e)
          renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '415', 404)
          return
       }
@@ -693,6 +698,7 @@ class RestController {
          }
          catch (Exception e)
          {
+            logService.error(request, session, params, e)
             status.setRollbackOnly()
             error = true
          }
@@ -792,6 +798,7 @@ class RestController {
       }
       catch (Exception e)
       {
+         logService.error(request, session, params, e)
          renderError(message(code:'ehr.createEhr.saveError'), '159', 400, [], e)
          return
       }
@@ -1110,11 +1117,13 @@ class RestController {
       }
       catch (QuerySnomedServiceException e)
       {
+         logService.error(request, session, params, e)
          renderError(message(code:e.message), "4801", 424)
          return
       }
       catch (Exception e)
       {
+         logService.error(request, session, params, e)
          renderError(e.message, "4802", 424)
          return
       }
@@ -1219,12 +1228,12 @@ class RestController {
                   }
                   catch (VersionRepoNotAccessibleException e)
                   {
-                     log.warning e.message
+                     logService.error(request, session, params, e)
                      return // continue with next compoIndex
                   }
                   catch (FileNotFoundException e)
                   {
-                     log.warning e.message
+                     logService.error(request, session, params, e)
                      return // continue with next compoIndex
                   }
 
@@ -1588,11 +1597,13 @@ class RestController {
       }
       catch (QuerySnomedServiceException e)
       {
+         logService.error(request, session, params, e)
          renderError(message(code:e.message), "4801", 424)
          return
       }
       catch (Exception e)
       {
+         logService.error(request, session, params, e)
          renderError(e.message, "4802", 424)
          return
       }
@@ -1682,12 +1693,12 @@ class RestController {
             }
             catch (VersionRepoNotAccessibleException e)
             {
-               log.warning e.message
+               logService.error(request, session, params, e)
                return // continue with next compoIndex
             }
             catch (FileNotFoundException e)
             {
-               log.warning e.message
+               logService.error(request, session, params, e)
                return // continue with next compoIndex
             }
 

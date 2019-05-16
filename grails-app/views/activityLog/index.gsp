@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.CommitLog" %>
+<%@ page import="com.cabolabs.ehrserver.reporting.*" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.CommitLog" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -23,7 +23,7 @@
           <h2><g:message code="activityLog.attr.sessionId" /> ${sessionId}</h2>
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
-               <thead>
+              <thead>
                 <tr>
                   <g:sortableColumn property="timestamp" mapping="logs" title="${message(code: 'activityLog.timestamp.label', default: 'Timestamp')}" />
                   <g:sortableColumn property="username" mapping="logs" title="${message(code: 'activityLog.username.label', default: 'Username')}" />
@@ -31,46 +31,59 @@
                   <g:sortableColumn property="action" mapping="logs" title="${message(code: 'activityLog.action.label', default: 'Action')}" />
                   <g:sortableColumn property="remoteAddr" mapping="logs" title="${message(code: 'activityLog.remoteAddr.label', default: 'Address')}" />
                 </tr>
-               </thead>
-               <tbody>
-                 <g:each in="${e.value}" status="i" var="activityLogInstance">
-                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+              </thead>
+              <tbody>
+                <g:each in="${e.value}" status="i" var="activityLogInstance">
+                  <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                      <td><g:link controller="logs" action="show" id="${activityLogInstance.id}"><g:formatDate date="${activityLogInstance.timestamp}" /></g:link></td>
                      <td>${fieldValue(bean: activityLogInstance, field: "username")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "requestURL")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
                      <td>${fieldValue(bean: activityLogInstance, field: "remoteAddr")}</td>
                    </tr>
-                   <g:if test="${activityLogInstance instanceof CommitLog}">
-                     <g:set var="commit" value="${activityLogInstance}" />
+                  <g:if test="${activityLogInstance instanceof CommitLog}">
                      <tr>
                        <td colspan="5" style="padding:0;">
-                         <table class="table" style="margin:0;">
+                         <table class="table table-bordered" style="margin:0;">
                            <tr>
                              <th>EHR</th>
                              <th>Contribution</th>
                              <th>Type</th>
-                             <th>Language</th>
+                             <th>Locale</th>
                              <th>Successful commit?</th>
                            </tr>
                            <tr>
-                             <td>${commit.ehrUid}</td>
-                             <td>${commit.objectUid}</td>
-                             <td>${commit.contentType}</td>
-                             <td>${commit.locale}</td>
-                             <td>${commit.success}</td>
+                             <td>${activityLogInstance.ehrUid}</td>
+                             <td>${activityLogInstance.objectUid}</td>
+                             <td>${activityLogInstance.contentType}</td>
+                             <td>${activityLogInstance.locale}</td>
+                             <td>${activityLogInstance.success}</td>
                            </tr>
                          </table>
                        </td>
                      </tr>
-                   </g:if>
-                 </g:each>
-               </tbody>
+                  </g:if>
+                  <g:elseif test="${activityLogInstance instanceof ErrorLog}">
+                    <tr>
+                      <td colspan="5" style="padding:0;">
+                        <table class="table table-bordered" style="margin:0;">
+                         <tr class="danger">
+                           <th>Message</th>
+                           <th>Trace</th>
+                         </tr>
+                         <tr class="danger">
+                           <td>${activityLogInstance.message}</td>
+                           <td><pre>${activityLogInstance.trace}</pre></td>
+                         </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </g:elseif>
+                </g:each>
+              </tbody>
             </table>
           </div>
         </g:each>
-
-
         <g:paginator total="${activityLogInstanceCount}" args="${params}" />
       </div>
     </div>

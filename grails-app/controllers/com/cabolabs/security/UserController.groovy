@@ -45,6 +45,7 @@ class UserController {
    def springSecurityService
    def configurationService
    def organizationService
+   def logService
 
    //def userService
    def config = Holders.config.app
@@ -736,8 +737,7 @@ class UserController {
          }
          catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
          {
-            log.error e.message
-
+            logService.error(request, session, params, e)
             flash.message = message(code:"user.forgotPassword.errorSendingEmail")
             return
          }
@@ -778,8 +778,7 @@ class UserController {
       }
       catch (Exception e) // FIXME: should rollback the user update if the email fails or retry the email send
       {
-         log.error e.message
-
+         logService.error(request, session, params, e)
          flash.message = message(code:"user.forgotPassword.errorSendingEmail")
          redirect(action:'show', id:params.id)
          return

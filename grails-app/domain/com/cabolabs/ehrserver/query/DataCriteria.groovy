@@ -271,24 +271,10 @@ class DataCriteria {
                // if is on the database, we can do a JOIN or EXISTS subq instead of IN.
                def conceptids = []
 
-//               try
-//               {
-                  // will throw exceptions on any fail case, this should make the whole .toSQL to fail, since the result wouldn't be valid
-                  // the exception should reach the top level to return the error to the user on GUI or API, so no catch here!
-                  conceptids = querySnomedService.getCodesFromExpression(value[0])
-//               }
-//               catch (e)
-//               {
-//                  println e.message
-//                  println e
-                  // FIXME: if there is an error resolving the snomed expression,
-                  //        the whole getSQL should fail and the error should reach
-                  //        the upper level to show a friendly message to the user,
-                  //        like server not available or max requests reached.
-                  //        On a server down situation 'e' will be java.net.UnknownHostException
-//               }
+               // will throw exceptions on any fail case, this should make the whole .toSQL to fail, since the result wouldn't be valid
+               // the exception should reach the top level to return the error to the user on GUI or API, so no catch here!
+               conceptids = querySnomedService.getCodesFromExpression(value[0])
 
-               //println conceptids
                // be prepared for communication errors to avoid generating invalid HQL
                if (conceptids.size() > 0)
                {

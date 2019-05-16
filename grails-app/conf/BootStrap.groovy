@@ -158,6 +158,34 @@ class BootStrap {
          if (!delegate.startsWith(PS)) delegate = PS + delegate
          return delegate
       }
+
+      // get the stack trace as string from an exception
+      // can also get the first X lines of the trace
+      Throwable.metaClass.traceString = { lines ->
+         StringWriter ewriter = new StringWriter()
+         PrintWriter printWriter = new PrintWriter( ewriter )
+         org.codehaus.groovy.runtime.StackTraceUtils.sanitize(delegate).printStackTrace(printWriter)
+         printWriter.flush()
+
+         def trace = ewriter.toString().normalize()
+
+         // return just the first X lines of the trace
+         if (lines)
+         {
+            if (lines <= 0) lines = 1
+
+            // find the last end of line for the number of lines requested
+            def i = 0
+            (1..lines).each {
+               i = trace.indexOf("\n", i)
+               i++
+            }
+
+            trace = trace.substring(0, i)
+         }
+
+         return trace
+      }
    }
 
    def repoChecks()

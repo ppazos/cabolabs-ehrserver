@@ -37,6 +37,8 @@ class AccountController {
 
    def notificationService
    def organizationService
+   def logService
+   
    def config = Holders.config.app
 
    def syncMarshallersService
@@ -158,7 +160,7 @@ class AccountController {
       catch (Exception e)
       {
          // If this fails, the controller doesnt rollback, need to move this to a service!
-         log.error( e.message )
+         logService.error(request, session, params, e)
          flash.message = message(code:'account.save.errorAssigningPlan')
          render (view: 'create')
          return
@@ -241,7 +243,7 @@ class AccountController {
             }
             catch (Exception e)
             {
-               log.error( e.message )
+               logService.error(request, session, params, e)
                flash.message = message(code:'account.update.invalidPlanDateStart')
                render (view: 'edit', model: [account: account])
                return
@@ -269,7 +271,7 @@ class AccountController {
             }
             catch (Exception e)
             {
-               log.error( e.message )
+               logService.error(request, session, params, e)
                flash.message = message(code:'account.update.invalidPlanDateEnd')
                render (view: 'edit', model: [account: account])
                return
@@ -306,7 +308,7 @@ class AccountController {
          }
          catch (Exception e)
          {
-            log.error( e.message )
+            logService.error(request, session, params, e)
             flash.message = message(code:'account.update.errorAssigningPlan')
             render (view: 'edit', model: [account: account])
             return
