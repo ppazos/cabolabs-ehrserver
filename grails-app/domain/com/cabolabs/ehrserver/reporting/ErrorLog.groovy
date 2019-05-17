@@ -6,7 +6,8 @@ class ErrorLog extends ActivityLog {
    String trace
 
    static constraints = {
-      trace(maxSize: 4096)
+      trace(maxSize: 4096, nullable: true)
+      message(nullable: true)
    }
 
    /*
