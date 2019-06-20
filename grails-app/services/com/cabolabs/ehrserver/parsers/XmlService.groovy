@@ -670,8 +670,10 @@ class XmlService {
    {
       def change_type_code = version.commit_audit.change_type.defining_code.code_string.text()
 
+      // FIXME: this assumes the COMPOSITION.composer is PARTY_IDENTIFIED, and could be any PARTY_PROXY, even the patient! (PARTY_SELF)
+
       // Parse AuditDetails from Version.commit_audit
-      return new AuditDetails(
+      def audit = new AuditDetails(
          systemId:      version.commit_audit.system_id.text(),
 
          /*
@@ -688,9 +690,23 @@ class XmlService {
          changeType:    ChangeType.fromValue(change_type_code as short),
          committer: new DoctorProxy(
             name: version.commit_audit.committer.name.text()
-            // TODO: id
          )
       )
+
+      if (!version.commit_audit.committer.external_ref.isEmpty())
+      {
+         audit.committer.value =     version.commit_audit.committer.external_ref.id.value.text()
+         audit.committer.id_type =   version.commit_audit.committer.external_ref.id.'@xsi:type'.text()
+         audit.committer.namespace = version.commit_audit.committer.external_ref.namespace.text()
+         audit.committer.type =      version.commit_audit.committer.external_ref.type.text()
+
+         if (audit.committer.id_type == 'GENERIC_ID')
+         {
+            audit.committer.scheme = version.commit_audit.committer.external_ref.id.scheme.text()
+         }
+      }
+
+      return audit
    }
 
    private CompositionIndex parseCompositionIndex(GPathResult version, Ehr ehr, Date auditTimeCommitted)
@@ -784,6 +800,8 @@ class XmlService {
          compoUid = version.data.uid.value.text() // takes the existing compo uid
       }
 
+      // FIXME: this assumes the COMPOSITION.composer is PARTY_IDENTIFIED, and could be any PARTY_PROXY, even the patient! (PARTY_SELF)
+
       /* // TODO: when we support device created data, type should be taken from the XML, and the class might not be DoctorProxy but Actor.
        <composer xsi:type="PARTY_IDENTIFIED">
          <external_ref>
@@ -797,9 +815,21 @@ class XmlService {
        </composer>
       */
       def composer = new DoctorProxy(
-         value: version.data.composer.external_ref.id.value.text(),
-         name: version.data.composer.name.text()
+         name: version.data.composer.name.text() // FIXME: name is optional!
       )
+
+      if (!version.data.composer.external_ref.isEmpty())
+      {
+         composer.value =     version.data.composer.external_ref.id.value.text()
+         composer.id_type =   version.data.composer.external_ref.id.'@xsi:type'.text()
+         composer.namespace = version.data.composer.external_ref.namespace.text()
+         composer.type =      version.data.composer.external_ref.type.text()
+
+         if (composer.id_type == 'GENERIC_ID')
+         {
+            composer.scheme = version.data.composer.external_ref.id.scheme.text()
+         }
+      }
 
       /*
        * <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.signos.v1">
