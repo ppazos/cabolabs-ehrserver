@@ -433,7 +433,7 @@ class Query {
                resHeaders[absPath]['attrs'] = DataCriteriaDV_QUANTITY.attributes() // ['magnitude', 'units']
             break
             case 'DV_CODED_TEXT':
-               resHeaders[absPath]['attrs'] = DataCriteriaDV_CODED_TEXT.attributes() // ['value', 'code']
+               resHeaders[absPath]['attrs'] = DataCriteriaDV_CODED_TEXT.attributes() // ['value', 'code', 'terminologyId']
             break
             case 'DV_ORDINAL':
                resHeaders[absPath]['attrs'] = DataCriteriaDV_ORDINAL.attributes() // ['value', 'symbol_value', 'symbol_code']
@@ -589,6 +589,7 @@ class Query {
                   case 'DV_CODED_TEXT':
                      elem['value'] = dvi.value
                      elem['code'] = dvi.code
+                     elem['terminology_id'] = dvi.terminologyId
                   break
                   case 'DV_TEXT':
                      elem['value'] = dvi.value
@@ -769,6 +770,7 @@ class Query {
                case 'DV_CODED_TEXT':
                   resGrouped[absPath]['serie'] << [code:         dvi.code,
                                                    value:        dvi.value,
+                                                   terminology_id: dvi.terminologyId,
                                                    date:         dviDate,
                                                    instanceTemplatePath: dvi.templateId + dvi.instanceTemplatePath]
                break
