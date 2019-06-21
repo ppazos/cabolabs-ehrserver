@@ -1163,6 +1163,19 @@ class DataIndexerService {
         <size>345345</size>
       </value>
       */
+
+      String media_type = node.media_type.code_string.text()
+
+      // media comes already encoded like image/jpeg;base64, decode to save with
+      // removing the base64 from the media type, we consider the client doesn't
+      // re-encode for the XML or JSON, so we always decode and get the correct
+      // data if: 1. data is encoded for XML or JSON transfer, or 2. data is
+      // already encoded, and just update the media type
+      if (media_type.toLowerCase().endsWith('base64'))
+      {
+         media_type -= ';base64'
+      }
+
       indexes <<  new DvMultimediaIndex(
         templateId:    templateId,
         archetypeId:   paths.rootArchetype,
@@ -1172,8 +1185,8 @@ class DataIndexerService {
         alternateText: node.alternate_text.text(),
         data:          node.data.text().decodeBase64(), // byte[]
         uri:           node.uri.value.text(),
-        mediaType:     node.media_type.code_string.text(), // don't save the terminology, it will always be IANA.
-        size:          new Integer( node.size.text() ),
+        mediaType:     media_type, // is a CODE_PHRASE but we don't save the terminology, it will always be IANA.
+        size:          new Integer( node.size.text() ), // should be the size of the original decoded data, we trust the source
         rmTypeName:   'DV_MULTIMEDIA',
         instanceTemplatePath: paths.instanceTemplatePath
       )
