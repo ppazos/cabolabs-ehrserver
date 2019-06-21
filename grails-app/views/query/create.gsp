@@ -1452,7 +1452,7 @@ resp.responseJSON.result.message +'</div>'
                   }
                   else
                   {
-                    if (possible_values == undefined)
+                    if (possible_values == undefined || Object.keys(possible_values).length == 0)
                     {
                       // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
                       switch ( conditions[cond] )
@@ -1471,17 +1471,19 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
                         break
                       }
+                      // TODO: add feedback to the user telling there are no values defined in the OPT for this node,
+                      //       maybe is an incomplete archetype in use and they need to go back to fix it.
                     }
                     else // we have possible_values for this criteria
                     {
-                      console.log(datatype, conditions[cond]);
+                      console.log(datatype, conditions[cond], possible_values);
                       switch ( conditions[cond] )
                       {
                         case 'value':
                           criteria += '<select name="value" class="value '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
                           for (k in possible_values)
                           {
-                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                            criteria += '<option value="'+ k +'">'+ k +') '+ possible_values[k] +'</option>';
                           }
                           criteria += '</select>';
                         break
@@ -1501,18 +1503,18 @@ resp.responseJSON.result.message +'</div>'
                           // this case happens only for DV_ORDINAL, where the value is a number, and we show a list
                           // of possible values then between min and max should be the list of values.
                           criteria += '<select name="value" class="value min '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
-                          for (k in possible_values)
+                          for (ord in possible_values)
                           {
-                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                            criteria += '<option value="'+ ord +'">'+ ord +') '+ possible_values[ord] +'</option>';
                           }
                           criteria += '</select>';
 
                           criteria += '..';
 
                           criteria += '<select name="value" class="value max '+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'">';
-                          for (k in possible_values)
+                          for (ord in possible_values)
                           {
-                            criteria += '<option value="'+ k +'">'+ possible_values[k] +'</option>';
+                            criteria += '<option value="'+ ord +'">'+ ord +') '+ possible_values[ord] +'</option>';
                           }
                           criteria += '</select>';
                         break
