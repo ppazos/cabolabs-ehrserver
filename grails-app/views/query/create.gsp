@@ -2068,6 +2068,7 @@ resp.responseJSON.result.message +'</div>'
           else
           {
             alert('Select a simple type node to define the criteria');
+            option.attr('selected', false); // avoids selecting a non-datavalue option
           }
 
         }); // click en select view_archetype_path
