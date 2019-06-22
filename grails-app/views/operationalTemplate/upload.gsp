@@ -121,6 +121,9 @@
 
         //console.log('done', data);
 
+        // clean validation errors
+        $('#validation_errors').empty();
+
         if (data.status == "ok")
         {
           $('body').prepend(
@@ -135,7 +138,7 @@
             '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
             data.message +'</div>'
           );
-          // display data.errors
+          // clean and display data.errors
           row = $('#validation_errors').addClass('row');
 
           col1 = $('<div class="col-md-4" />');
