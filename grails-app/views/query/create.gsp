@@ -1337,6 +1337,7 @@ resp.responseJSON.result.message +'</div>'
                 // If this has possible values from the template or another source like MM.mediaTypes is a constraint.
                 // After getting the values, the attribute is removed to avoid processing it as a condition.
                 var possible_values;
+                var criteria_constraints;
                 switch (datatype)
                 {
                   case 'DV_CODED_TEXT':
@@ -1362,6 +1363,10 @@ resp.responseJSON.result.message +'</div>'
                   case 'DV_BOOLEAN':
                     possible_values = conditions['values'];
                     delete conditions['values'];
+                  break;
+                  case 'DV_DURATION':
+                     criteria_constraints = conditions['criteria_constraints'];
+                     delete conditions['criteria_constraints'];
                   break;
                 }
 
@@ -1454,11 +1459,24 @@ resp.responseJSON.result.message +'</div>'
                   {
                     if (possible_values == undefined || Object.keys(possible_values).length == 0)
                     {
+                      // First try to use constraints from the OPT to limit the possible values on the criteria
+                      var input_constraints = '';
+                      if (criteria_constraints)
+                      {
+                        if (input_type == 'number') // this is used for DV_DURATION range constraints
+                        {
+                          if (criteria_constraints.min != null)
+                            input_constraints += 'min="'+ criteria_constraints.min +'"';
+                          if (criteria_constraints.max != null)
+                            input_constraints += 'max="'+ criteria_constraints.max +'"';
+                        }
+                      }
+
                       // TODO: add controls depending on the cardinality of value, list should allow any number of values to be set on the UI
                       switch ( conditions[cond] )
                       {
                         case 'value':
-                          criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="value" class="value'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" '+ input_constraints +' />';
                         break
                         case 'list':
                           criteria += '<span class="help-block">${message(code:"query.create.criteria.inlist.hint")}</span>';
@@ -1468,7 +1486,7 @@ resp.responseJSON.result.message +'</div>'
                           criteria += '</div>';
                         break
                         case 'range':
-                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" />';
+                          criteria += '<input type="'+ input_type +'" name="range" class="value min'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" '+ input_constraints +' />..<input type="'+ input_type +'" name="range" class="value max'+ ((i==0)?' selected':'') +' '+ attr +' form-control input-sm '+ class_type +'" '+ input_constraints +' />';
                         break
                       }
                       // TODO: add feedback to the user telling there are no values defined in the OPT for this node,

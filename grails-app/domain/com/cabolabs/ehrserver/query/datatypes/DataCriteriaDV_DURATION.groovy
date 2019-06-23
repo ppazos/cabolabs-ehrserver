@@ -23,6 +23,10 @@
 package com.cabolabs.ehrserver.query.datatypes
 
 import com.cabolabs.ehrserver.query.DataCriteria
+import com.cabolabs.openehr.opt.manager.OptManager
+import org.springframework.web.context.request.RequestContextHolder
+import com.cabolabs.openehr.opt.model.primitive.CDuration
+
 
 class DataCriteriaDV_DURATION extends DataCriteria {
 
@@ -57,6 +61,37 @@ class DataCriteriaDV_DURATION extends DataCriteria {
     */
    static List criteriaSpec(String archetypeId, String path, boolean returnCodes = true)
    {
+      def optMan = OptManager.getInstance()
+      def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
+      def constraint = optMan.getNode(archetypeId, path, namespace) // ObjectNode
+      /*
+      println constraint.type
+      println constraint.attributes.find{ it.rmAttributeName == 'value'}
+      println constraint.attributes.find{ it.rmAttributeName == 'value'}.children // PrimitiveObjectNode
+      println constraint.attributes.find{ it.rmAttributeName == 'value'}.children.type // C_PRIMITIVE_OBJECT
+      println constraint.attributes.find{ it.rmAttributeName == 'value'}.children[0].item //
+      println constraint.attributes.find{ it.rmAttributeName == 'value'}.children[0].item.range //
+      */
+
+      def criteria_constraints = [min: null, max: null]
+      if (constraint)
+      {
+         // PrimitiveObjectNode
+         def c_duration_value = constraint.attributes.find{ it.rmAttributeName == 'value'}?.children?.getAt(0)
+         if (c_duration_value)
+         {
+            assert c_duration_value.item instanceof CDuration
+            if (c_duration_value.item.range)
+            {
+               if (!c_duration_value.item.range.lowerUnbounded)
+                  criteria_constraints.min = c_duration_value.item.range.lower.seconds() // lower instanceof Duration
+
+               if (!c_duration_value.item.range.upperUnbounded)
+                  criteria_constraints.max = c_duration_value.item.range.upper.seconds()
+            }
+         }
+      }
+
       return [
         [
           magnitude: [
@@ -66,7 +101,8 @@ class DataCriteriaDV_DURATION extends DataCriteria {
             neq: 'value',
             le:  'value',
             ge:  'value',
-            between: 'range' // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
+            between: 'range', // operand between can be applied to attribute magnitude and the reference value is a list of 2 values: min, max
+            criteria_constraints: criteria_constraints
           ]
         ]
       ]
