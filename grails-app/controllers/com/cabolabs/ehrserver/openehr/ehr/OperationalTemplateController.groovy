@@ -324,6 +324,12 @@ class OperationalTemplateController {
          redirect action:'list'
          return
       }
+      if (!opt.lastVersion)
+      {
+         flash.message = message(code:"opt.common.error.templateNotLastVersion")
+         redirect action:'list'
+         return
+      }
 
       def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
 
