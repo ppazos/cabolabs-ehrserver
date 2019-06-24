@@ -2064,9 +2064,16 @@ class RestController {
 
       def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
       File opt_file = new File( src )
-      def opt_xml = opt_file.getText()
-
-      render(text: opt_xml, contentType:"text/xml", encoding:"UTF-8")
+      def opt_out = opt_file.getText()
+      if (format == 'json')
+      {
+         opt_out = jsonService.xmlToJson(opt_out)
+         render(text: opt_out, contentType:"application/json", encoding:"UTF-8")
+      }
+      else
+      {
+         render(text: opt_out, contentType:"text/xml", encoding:"UTF-8")
+      }
    }
 
    @SecuredStateless
