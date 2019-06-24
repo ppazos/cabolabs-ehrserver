@@ -44,22 +44,14 @@ class EhrQueryController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
 
-      def list
       def c = EhrQuery.createCriteria()
 
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         list = c.list (max: max, offset: offset, sort: sort, order: order) {
-         }
-      }
-      else
-      {
-         list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            eq('organizationUid', session.organization.uid)
-         }
+      // filders by org even if the user is admin because it is confusing for demos
+      // to have EhrQueries that depend on queries that are not in the current org
+      def list = c.list (max: max, offset: offset, sort: sort, order: order) {
+         eq('organizationUid', session.organization.uid)
       }
 
-      //[list: EhrQuery.list(params), total: EhrQuery.count()]
       [list: list, total: list.totalCount]
    }
 
