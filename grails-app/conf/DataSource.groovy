@@ -44,10 +44,10 @@ environments {
            String host = "localhost"
            String port = 3306
            String dbName = "ehrserver"
-           url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
+           url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
            username = 'root'
-           password = 'toor'
+           password = 'Temporal$123'
         }
     }
     test {
