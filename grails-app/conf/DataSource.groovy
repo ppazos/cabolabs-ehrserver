@@ -45,7 +45,7 @@ environments {
 			String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
 			String dbName = System.getenv('EHRSERVER_DB_NAME')
 
-           	url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
+           	url = "jdbc:mysql://$host:$port/$dbName?useSSL=false&allowPublicKeyRetrieval=true" // ?useTimezone=true&serverTimezone=UTC
 
            	username = System.getenv('EHRSERVER_MYSQL_DB_USERNAME')
             password = System.getenv('EHRSERVER_MYSQL_DB_PASSWORD')

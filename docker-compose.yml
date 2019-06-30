@@ -1,0 +1,39 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ehrserver
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+  ehrserver:
+    build: .
+    container_name: ehserver
+    ports:
+      - "8090:8090"
+    volumes:
+      - .:/app
+    depends_on: 
+      - db
+    environment:
+      EHRSERVER_MYSQL_DB_HOST: "db"
+      EHRSERVER_MYSQL_DB_PORT: 3306
+      EHRSERVER_DB_NAME: ehrserver
+      EHRSERVER_MYSQL_DB_USERNAME: root
+      EHRSERVER_MYSQL_DB_PASSWORD: password
+      EHRSERVER_MYSQL_DB_BEHAVIOUR: create-drop
+      EHRSERVER_REST_SECRET: 6067dba9-1417-41c5-b1af-92208c77ce77
+      EHRSERVER_SNQUERY_KEY: 22222222-2222-2222-2222-222222222222
+      EHRSERVER_EMAIL_FROM: no-reply@doc.com
+      EHRSERVER_EMAIL_HOST: smtp.seserver.net
+      EHRSERVER_EMAIL_PORT: 587
+      EHRSERVER_EMAIL_USER: youruser
+      EHRSERVER_EMAIL_PASS: yourpassword
+      EHRSERVER_ALLOW_WEB_USER_REGISTER: "true"
+  
