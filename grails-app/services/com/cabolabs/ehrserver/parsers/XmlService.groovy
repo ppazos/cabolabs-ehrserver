@@ -111,8 +111,9 @@ class XmlService {
 
       // Parse contribution once, since it is the same for all versions
       //  - create the contrib and associated it with the ehr
+      String contributionId = versions.version[0].contribution.id.value.text()
       String auditSystemId = versions.version[0].commit_audit.system_id.text()
-      def contribution = parseCurrentContribution(versions.version[0], ehr, auditSystemId, auditTimeCommitted, auditCommitter)
+      def contribution = parseCurrentContribution(contributionId, ehr, auditSystemId, auditTimeCommitted, auditCommitter)
 
       // For each version committed
       //  Parse compo index
@@ -898,7 +899,7 @@ class XmlService {
    }
 
    private Contribution parseCurrentContribution(
-      GPathResult version, Ehr ehr, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+      String contributionId, Ehr ehr, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
    {
       // This instance of XmlService process one contribution at a time
       // But each version on the version list has a reference to the same contribution,
@@ -913,7 +914,7 @@ class XmlService {
       // 2.a. If there is a contribution with the same id, get that from the DB to set into the Version instance
       // 2.b. If not, create a new contribution and save it
 
-      def contributionId = version.contribution.id.value.text()
+
       if (!contributionId)
       {
          throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')
