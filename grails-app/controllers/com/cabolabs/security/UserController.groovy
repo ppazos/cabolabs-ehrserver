@@ -185,8 +185,46 @@ class UserController {
             render(text: result, contentType:"text/xml", encoding:"UTF-8")
          }
          json {
-
             def result = data as JSON
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
+   }
+
+   @SecuredStateless
+   def get_users()
+   {
+      // user from token
+      def _username = request.securityStatelessMap.username
+      def _user = User.findByUsername(_username)
+
+      // org from token
+      def org_uid = request.securityStatelessMap.extradata.org_uid
+      def org = Organization.findByUid(org_uid)
+
+      def c = UserRole.createCriteria()
+
+      def l = c.list() {
+         eq('organization', org)
+      }
+
+      // user_roles with lower or equal role than the current user, and is not virtual
+      // the unique avoids to return the same user twice
+      def user_roles = l.findAll { _user.getHigherAuthority(org).higherThan(it.role) && !it.user.isVirtual }.unique { it.user.id }
+      def user_data = user_roles.collect {
+         [
+            username: it.user.username,
+            email: it.user.email
+         ]
+      }
+
+      withFormat {
+         xml {
+            def result = user_data as XML
+            render(text: result, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            def result = user_data as JSON
             render(text: result, contentType:"application/json", encoding:"UTF-8")
          }
       }
