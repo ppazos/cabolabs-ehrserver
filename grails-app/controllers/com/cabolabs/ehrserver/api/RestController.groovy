@@ -1624,16 +1624,13 @@ class RestController {
          result = [count: result[0]] // long
       }
 
-
       // Muestra compositionIndex/list
       if (showUI)
       {
-          // FIXME: hay que ver el tema del paginado
+          // TODO: pagination
           render(template:'/compositionIndex/listTable',
                  model:[
-                    compositionIndexInstanceList:  result,
-                    //compositionIndexInstanceTotal: cilist.size(),
-                    groupedByEhr: (!qehrId)
+                    ehr_compositionIndexInstanceList:  result
                  ],
                  contentType: "text/html")
           return

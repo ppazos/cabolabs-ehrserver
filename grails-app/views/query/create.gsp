@@ -670,7 +670,7 @@
         fromDate = $('input[name=fromDate]').val();
         toDate = $('input[name=toDate]').val();
         retrieveData = $('select[name=retrieveData]').val();
-        showUI = $('select[name=showUI]').val();
+        showUI = $('input[name=showUI]:checked').val();
         format = $('select[name=composition_format]').val();
         composerUid = $('select[name=composerUid]').val();
         composerName = $('input[name=composerName]').val();
@@ -700,16 +700,17 @@
         .done(function( res ) {
 
            //console.log("queryCompositions result", res);
-
+           $('#results').empty();
+           $('#chartContainer').empty();
            var code = $('#code');
            // reset code class or highlight
            code.removeClass('xml json');
+           code.empty();
+           code.hide();
 
            // Si devuelve HTML
-           if ($('select[name=showUI]').val()=='true')
+           if ($('input[name=showUI]:checked').val()=='true')
            {
-             //console.log('UI');
-
              $('#results').html( res );
              $('#results').show('slow');
            }
@@ -2359,10 +2360,22 @@ resp.responseJSON.result.message +'</div>'
                    </span>
                  </td>
                  <td>
+                   <%--
                    <select name="showUI" class="form-control input-sm">
                      <option value="false" selected="selected"><g:message code="default.no" /></option>
                      <option value="true"><g:message code="default.yes" /></option>
                    </select>
+                   --%>
+
+                   <div class="btn-group" data-toggle="buttons">
+                     <label class="btn btn-default active">
+                        <input type="radio" name="showUI" value="false" checked="checked" /> <g:message code="default.no" />
+                     </label>
+                     <label class="btn btn-default">
+                        <input type="radio" name="showUI" value="true" /> <g:message code="default.yes" />
+                     </label>
+                   </div>
+
                  </td>
                 </tr>
                 <tr>
