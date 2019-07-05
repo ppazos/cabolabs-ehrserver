@@ -2020,11 +2020,11 @@ class RestController {
 
       if (!format || format == 'xml')
       {
-         render(text: _user.organizations as XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: _user.organizations.unique { it.id } as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         render(text: _user.organizations as JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: _user.organizations.unique { it.id } as JSON, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
