@@ -350,6 +350,7 @@ class Query {
             }
 
             eq('lastVersion', true) // query only latest versions
+            eq('isDeleted', false) // query not deleted versions
          }
       }
 
@@ -879,11 +880,11 @@ class Query {
             // case insensitive comparison for name
             filters.append("lower(doc.name) LIKE '%").append(composerName.toLowerCase()).append("%' AND ")
          }
-         filters.append("ci.lastVersion=true AND ") // Query only latest versions
+         filters.append("ci.lastVersion=true AND ci.isDeleted=false AND ") // Query only latest versions that are not deleted
       }
       else
       {
-         filters.append("WHERE ci.lastVersion=true AND ") // Query only latest versions
+         filters.append("WHERE ci.lastVersion=true AND ci.isDeleted=false AND ") // Query only latest versions that are not deleted
       }
 
 

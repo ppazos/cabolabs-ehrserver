@@ -36,6 +36,7 @@ import com.cabolabs.ehrserver.exceptions.CommitContributionReferenceException
 import com.cabolabs.ehrserver.exceptions.CommitNotSupportedChangeTypeException
 import com.cabolabs.ehrserver.exceptions.CommitRequiredValueNotPresentException
 import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
+import com.cabolabs.ehrserver.exceptions.CommitWrongLifecycleStateException
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 import com.cabolabs.ehrserver.exceptions.XmlValidationException
 import com.cabolabs.ehrserver.exceptions.XmlSemanticValidationExceptionLevel1
@@ -401,7 +402,7 @@ class XmlService {
                //assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
 
             break
-            case ChangeType.DELETED:
+            case ChangeType.DELETED: // TODO: this is the same code as modification, can be refactored!
 
                // check if version.lifecycleState is "523" (deleted)
 
@@ -419,6 +420,9 @@ class XmlService {
                {
                   throw new CommitWrongChangeTypeException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
                }
+
+               // Set this composition as deleted
+               version.data.isDeleted = true
 
             break
             default:
@@ -597,6 +601,8 @@ class XmlService {
          // the change type should be "modification", if not, CommitWrongChangeTypeException
          // If everything is OK, the version UID should be checked: it should be the same as the compo index for the ehrid and archetype checked above.
 
+         // TODO: there is an open discussion about supporting multiple persistent
+         //       instances with the same OPT in the same EHR, right now we support one.
          if (compoIndex.category == "persistent")
          {
             existingPersistentCompo = CompositionIndex.findByCategoryAndArchetypeIdAndEhrUid(compoIndex.category, compoIndex.archetypeId, compoIndex.ehrUid)
@@ -635,8 +641,27 @@ class XmlService {
             // create new version for event compo
             if (commitAudit.changeType != ChangeType.CREATION)
             {
-               // same code as versioning a persistent compo, TODO: refactor
+               // Consistency checks for lifecycle_state
                lastVersion = Version.findByUid(preceding_version_uid)
+
+               switch (lastVersion.lifecycleState)
+               {
+                  case '532': // complete
+                     // new version can't be incomplete if current is complete
+                     if (version.lifecycleState == '553')
+                     {
+                        throw new CommitWrongLifecycleStateException("Can't modify a complete version with an incomplete one")
+                     }
+                  break
+                  case '553': // incomplete
+                     // nothing to do, if the current version is incomplete, it accepts any lifecycle state
+                  break
+                  case '523': // deleted
+                     // if current is deleted, can't be updated any more
+                     // TODO: need to define the undelete use case, still not clear on the specs
+                     throw new CommitWrongLifecycleStateException("Can't modify a deleted version")
+                  break
+               }
 
                previousLastVersion = lastVersion
                previousLastVersion.data.lastVersion = false
