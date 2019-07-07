@@ -551,14 +551,22 @@ class XmlService {
       def dataOut = [:]
 
       def parsedVersion
-      String auditSystemId
+      String auditSystemId = contribution.audit.systemId
       for (int i = 0; i <versionsXML.version.size(); i++)
       {
          parsedVersion = versionsXML.version[i]
-         auditSystemId = parsedVersion.commit_audit.system_id.text()
+
+
+         // uses the systemId that comes in the first version, assures the client
+         // can't send different systemId in the audits, so the systemId on the
+         // rest of the versions is overriden by the first one, that is also used
+         // to create the contribution.audit, this is set outside the for
+         //
+         //auditSystemId = parsedVersion.commit_audit.system_id.text()
+
 
          // Parse AuditDetails from Version.commit_audit
-         commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
+         commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted, auditSystemId)
          compoIndex = parseCompositionIndex(parsedVersion, ehr, auditTimeCommitted)
 
          // version.uid is assigned by the server
@@ -675,8 +683,15 @@ class XmlService {
          // delete uid if present from the client
          parsedVersion.uid.replaceNode {}
 
+         // in case this was overriden, update the XML
+         parsedVersion.commit_audit.system_id = auditSystemId
+
+         // commit time overriden by server
+         parsedVersion.commit_audit.time_committed = auditTimeCommitted.format(Holders.config.app.l10n.ext_datetime_utcformat_point)
+
          // append sibling after commit_audit adds version.uid
          parsedVersion.commit_audit.replaceNode { commit_audit ->
+
             mkp.yield(commit_audit)
             uid {
                value(version.uid)
@@ -692,15 +707,17 @@ class XmlService {
    }
 
 
-   private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted)
+   private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted, String auditSystemId)
    {
       def change_type_code = version.commit_audit.change_type.defining_code.code_string.text()
 
       // FIXME: this assumes the COMPOSITION.composer is PARTY_IDENTIFIED, and could be any PARTY_PROXY, even the patient! (PARTY_SELF)
 
       // Parse AuditDetails from Version.commit_audit
+      // The system id is overriden by the first version system id to assure all
+      // are equal if multiple versions come in the same contribution
       def audit = new AuditDetails(
-         systemId:      version.commit_audit.system_id.text(),
+         systemId:      auditSystemId, //version.commit_audit.system_id.text(),
 
          /*
           * version.commit_audit.time_committed is overriden by the server
