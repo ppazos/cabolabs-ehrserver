@@ -32,7 +32,39 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
    {
       def user = User.findByUsername("testadmin")
 
-      def q = new Query(name:'query', type:'datavalue',
+      def json =  [
+         query: [
+            name: [en:'my query'],
+            type: 'datavalue',
+            format: 'json',
+            group: 'path',
+            uid: queryUid,
+            author: user,
+            organizationUid: orgUid,
+            select: [
+             [
+                archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                path: '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value',
+                rmTypeName:  'DV_QUANTITY',
+                allowAnyArchetypeVersion: false
+             ],
+             [
+                archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                path: '/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value',
+                rmTypeName:  'DV_QUANTITY',
+                allowAnyArchetypeVersion: false
+             ]
+            ]
+         ]
+      ]
+
+      def q = Query.newInstance(json.query)
+
+      println q.name
+
+      /*
+      def q = new Query(name: [('en'): 'query'],
+                        type:'datavalue',
                         isPublic:true, format:'json',
                         group:'path', uid: queryUid,
                         author: user,
@@ -48,6 +80,7 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
                      rmTypeName:  'DV_QUANTITY',
                      allowAnyArchetypeVersion: false)
       ]
+      */
 
       q.save(failOnError: true)
    }

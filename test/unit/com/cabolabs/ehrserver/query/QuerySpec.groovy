@@ -17,7 +17,7 @@ class QuerySpec extends Specification {
     def setup()
     {
        def q = new Query(
-          name:'my query',
+          name:['en':'my query'],
           type:'composition'
        )
        q.save(failOnError:true)
@@ -31,36 +31,36 @@ class QuerySpec extends Specification {
     {
        when:
           def q = Query.get(1)
-          
+
           def dg = new DataGet(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data')
           q.addToSelect(dg)
-          
+
           dg = new DataGet(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data/event')
           q.addToSelect(dg)
-          
+
           dg = new DataGet(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data/event/data')
           q.addToSelect(dg)
-          
+
           q.save(failOnError:true)
-          
+
           DataGet.list().each { println it.path }
-       
+
        then:
           q.select.size() == 3
           DataGet.count() == 3
     }
-    
+
     void "add datacriteria to query"()
     {
        when:
           def q = Query.get(1)
-          
+
           def dc = new DataCriteriaDV_QUANTITY(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data',
@@ -72,7 +72,7 @@ class QuerySpec extends Specification {
              unitsValue: 'mm[Hg]',
              unitsOperand: 'eq')
           q.addToWhere(dc)
-          
+
           dc = new DataCriteriaDV_QUANTITY(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data/event',
@@ -84,7 +84,7 @@ class QuerySpec extends Specification {
              unitsValue: 'mm[Hg]',
              unitsOperand: 'eq')
           q.addToWhere(dc)
-          
+
           dc = new DataCriteriaDV_QUANTITY(
              archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
              path:'/data/event/data',
@@ -96,12 +96,12 @@ class QuerySpec extends Specification {
              unitsValue: 'mm[Hg]',
              unitsOperand: 'eq')
           q.addToWhere(dc)
-          
+
 
           q.save(failOnError:true)
-          
+
           DataCriteria.list().each { println it.magnitudeValue }
-       
+
        then:
           q.where.size() == 3
           DataCriteria.count() == 3

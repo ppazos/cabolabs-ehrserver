@@ -13,9 +13,9 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 class QueryControllerTests {
 
     def populateValidParams(params) {
-       
+
         assert params != null
-        
+
         controller.request.JSON = [
            query: [
               name: 'my query',
@@ -57,7 +57,7 @@ class QueryControllerTests {
 
     void testSave() {
         controller.request.method = "POST"
-        
+
         // TODO: test invalid save
         //controller.save()
         //assert model.id != null
@@ -71,12 +71,12 @@ class QueryControllerTests {
 
         //assert response.redirectedUrl == '/query/show/1'
         //assert controller.flash.message != null
-        
+
         // returns json
         //response.text == '{"book":"Great"}'
         println response.text
         response.json.name == 'my query'
-        
+
         assert Query.count() == 1
     }
 
@@ -87,7 +87,7 @@ class QueryControllerTests {
         assert response.redirectedUrl == '/query/list'
 
         populateValidParams(params)
-        //def query = new Query(params)
+
         def query = Query.newInstance(controller.request.JSON.query)
 
         assert query.save() != null
@@ -99,7 +99,7 @@ class QueryControllerTests {
         assert model.queryInstance == query
     }
 
-    
+
     /* TODO /** TODO https://github.com/ppazos/cabolabs-ehrserver/issues/71
     void testEdit() {
         controller.edit()
@@ -164,7 +164,7 @@ class QueryControllerTests {
         assert flash.message != null
     }
     */
-    
+
     void testDelete() {
         controller.request.method = "POST"
         controller.delete()
@@ -174,7 +174,7 @@ class QueryControllerTests {
         response.reset()
 
         populateValidParams(params)
-        // def query = new Query(params)
+        
         def query = Query.newInstance(controller.request.JSON.query)
 
         assert query.save() != null

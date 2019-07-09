@@ -236,7 +236,7 @@ class Query {
    static constraints = {
 
       // para guardar la query debe tener nombre
-      name(nullable:false, blank:false)
+      //name(nullable:false, blank:false)
 
       // No creo que le guste null en inList, le pongo ''
       group(inList:['none', 'composition', 'path'])
