@@ -69,7 +69,7 @@
             </tr>
             <tr>
               <th><g:message code="query.show.name.attr" /></th>
-              <td><g:fieldValue bean="${queryInstance}" field="name"/></td>
+              <td>${queryInstance.name[session.lang]}</td>
             </tr>
             <tr>
               <th><g:message code="query.show.type.attr" /></th>
@@ -183,7 +183,7 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
          url: '${createLink(controller:"query", action:"export")}',
          data: {uid: '${queryInstance?.uid}', format: 'json'},
          success: function(data, textStatus) {
-            console.log(data);
+            //console.log(data);
             $('#json').addClass('json');
             $('#json').text(JSON.stringify(data, undefined, 2));
             $('#json').each(function(i, e) { hljs.highlightBlock(e); });
@@ -197,7 +197,7 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
          url: '${createLink(controller:"query", action:"export")}',
          data: {uid: '${queryInstance?.uid}', format: 'xml'},
          success: function(data, textStatus) {
-            console.log(data);
+            //console.log(data);
             $('#xml').addClass('xml');
             $('#xml').text(formatXml( xmlToString(data) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });

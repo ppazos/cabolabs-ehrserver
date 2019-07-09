@@ -219,6 +219,8 @@ app {
 
       locale = 'en' // FIXME: this will depend on the organization
 
+      available_locales = ['es', 'en']
+
       // general
       decimal_symbol = ',' // separa numero enteros de la fraccion decimal
       decimal_digits = 2   // digitos luego de decimal_symbol

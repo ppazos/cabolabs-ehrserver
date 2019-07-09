@@ -13,21 +13,21 @@
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
     <g:javascript library="jquery" plugin="jquery" />
-    
+
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    
+
     <!-- MetisMenu CSS -->
     <asset:link rel="stylesheet" href="metisMenu.min.css" type="text/css" />
     <asset:javascript src="metisMenu.min.js" />
-    
+
     <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
-    
+
     <!-- Custom CSS -->
     <asset:link rel="stylesheet" href="sb-admin-2.css" type="text/css" />
     <asset:javascript src="sb-admin-2.js" />
-   
+
     <style type='text/css' media='screen'>
 	  #login {
 	    margin: 15px 0px;
@@ -96,7 +96,7 @@
 	  #login .inner .chk {
 	    height: 12px;
 	  }
-     
+
      .navbar-header img {
        max-height: 30px;
      }
@@ -133,23 +133,28 @@
         -->
 	     <a href="https://www.cabolabs.com" class="navbar-brand" target="_blank"><asset:image src="EHRServer_alpha_72_horizontal.png" class="img-responsive" /></a>
 	   </div>
-	
+
 	   <g:set var="locale" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}" />
       <ul class="nav navbar-top-links navbar-right">
+        <g:each in="${grailsApplication.config.app.l10n.available_locales}" var="lang">
+          <li>
+            <g:link action="auth" params="[lang:lang]" class="${(locale.language == lang)?'active':''}">${lang}</g:link>
+          </li>
+        </g:each>
+        <%--
         <li>
           <g:link action="auth" params="[lang:'es']" class="${(locale.language == 'es')?'active':''}">ES</g:link>
         </li>
         <li>
           <g:link action="auth" params="[lang:'en']" class="${(locale.language == 'en')?'active':''}">EN</g:link>
         </li>
-        <!--
         <li>
           <g:link action="auth" params="[lang:'pt']" class="${(locale.language == 'pt')?'active':''}">PT</g:link>
         </li>
-        -->
+        --%>
       </ul>
 	 </nav>
-  
+
     <div class="container">
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
@@ -161,7 +166,7 @@
               <g:if test='${flash.message}'>
                 <div class='login_message'>${flash.message}</div><br/>
               </g:if>
-              
+
               <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
                 <fieldset>
                   <div class="form-group">
@@ -190,17 +195,17 @@
                     </label>
                   </div>
                   --%>
-                  
+
                   <input type='submit' id="submit" class="btn btn-lg btn-success btn-block" value='${message(code: "springSecurity.login.button")}'/>
-                  
+
                   <div class="form-group" style="margin:0; padding:15px 0 15px 0; text-align:center;">
                     <g:link controller="user" action="forgotPassword">
                       <g:message code="springSecurity.login.forgotPassword.label"/>
                     </g:link>
                   </div>
-                  
+
                 </fieldset>
-                
+
                 <g:if test="${grailsApplication.config.app.allow_web_user_register.toBoolean()}">
                   <fieldset>
                     <div class="form-group" style="margin:0; padding-top:15px; text-align:center; border-top:1px solid #ccc;">
@@ -220,7 +225,7 @@
     <script type='text/javascript'>
     (function() {
       document.forms['loginForm'].elements['j_username'].focus();
-      
+
       $('#help-organization-btn').on('click', function (e) {
         $('#help-organization').fadeToggle('slow');
       });

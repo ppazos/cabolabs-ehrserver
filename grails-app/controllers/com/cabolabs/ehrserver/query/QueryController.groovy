@@ -151,7 +151,7 @@ class QueryController {
       r = DataValueIndex.executeQuery(q)
       println r
       */
-/*
+      /*
       // to FILTER the max value the HAVING works!
       q = """
       SELECT dvi.owner.ehrUid, max(dvi.value)
@@ -164,9 +164,9 @@ class QueryController {
       """
       r = DataValueIndex.executeQuery(q)
       println r
-*/
+      */
 
-/*
+      /*
       // THIS RETURNS EMPTY seems the having doesnt work comparing an agg with a column
       // TODO: check what the SQL log shows
       q = """
@@ -180,7 +180,7 @@ class QueryController {
       """
       r = DataValueIndex.executeQuery(q)
       println r
-*/
+      */
 
       /*
       // NOW WE WANT THE ci that belongs to the EHR and contains the DVI

@@ -50,8 +50,8 @@ class Query {
 
    String uid = java.util.UUID.randomUUID() as String
 
-   // Describe lo que hace la query
-   String name
+   //String name
+   Map name // lang => name (i18n)
 
    // queryByData (composition) o queryData (datavalue)
    // lo que los diferencia es el resultado: composiciones o datos asociados a paths

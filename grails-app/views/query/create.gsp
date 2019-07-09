@@ -416,7 +416,7 @@
       var query = {
         id: undefined, // used for edit/update
         id_gen: 0,
-        name: undefined,
+        name: {},
         type: undefined,
         isPublic: false,
         isCount: false,
@@ -441,8 +441,9 @@
         set_public:   function () { this.isPublic = true; },
         set_private:  function () { this.isPublic = false; },
         set_is_count: function (is_count) { this.isCount = is_count; },
-        set_name:     function (name) { this.name = name; },
-        get_name:     function () { return this.name; },
+        add_name:     function(lang, name) { this.name[lang] = name; },
+        get_name:     function (lang) { return this.name[lang]; },
+        has_name:     function () { return !jQuery.isEmptyObject(this.name); },
         set_format:   function (format) { this.format = format; },
         set_query_group: function (query_group) { this.queryGroup = query_group; },
         set_group:    function (group) { this.group = group; },
@@ -545,9 +546,20 @@
         // does validation first
         if (action != 'save' && action != 'update') throw "Action is not save or update";
 
-        query.set_name($('input[name=name]').val());
+        // handles i18n names
+        //console.log($('input.query_name'));
+        $('input.query_name').each(function(){
+          //query_name_input.attr('name') // name.lang
+          query_name_input = $(this);
+          //console.log(query_name_input);
+          var lang = query_name_input.data('lang'); // the lang of the field
+          var name = query_name_input.val();
+          if (name != '') query.add_name(lang, name);
+        });
 
-        if (!query.get_name())
+        //console.log(query.name, query.has_name(), query.get_name('es'));
+
+        if (!query.has_name())
         {
            alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}'); // TODO: bootstrap alerts
            return;
@@ -659,7 +671,15 @@
         query.set_criteria(criteria);
 
         // query management
-        query.set_name($('input[name=name]').val());
+
+        // handles i18n names
+        $('input.query_name').each(function(){
+          query_name_input = $(this);
+          var lang = query_name_input.data('lang'); // the lang of the field
+          var name = query_name_input.val();
+          if (name != '') query.add_name(lang, name);
+        });
+
         query.set_query_group($('select[name=queryGroup]').val());
         query.set_format( $('select[name=composition_format]').val() );
         query.set_template_id( $('select[name=templateId]').val() );
@@ -775,7 +795,15 @@ resp.responseJSON.result.message +'</div>'
         //console.log('test datavalue query');
 
         // query management
-        query.set_name($('input[name=name]').val());
+
+        // handles i18n names
+        $('input.query_name').each(function(){
+          query_name_input = $(this);
+          var lang = query_name_input.data('lang'); // the lang of the field
+          var name = query_name_input.val();
+          if (name != '') query.add_name(lang, name);
+        });
+
         query.set_query_group($('select[name=queryGroup]').val());
         query.set_format($('select[name=format]').val());
         query.set_group($('select[name=group]').val()); // for datavalue query
@@ -1848,7 +1876,12 @@ resp.responseJSON.result.message +'</div>'
           println '$("select[name=queryGroup]").val("'+ queryInstance.queryGroup?.uid +'");'
 
           println 'query.set_id("'+ queryInstance.id +'");'
-          println 'query.set_name("'+ queryInstance.name +'");'
+
+          // name is a i18n map lang->value
+          queryInstance.name.each { lang, value ->
+            if (value != '') println 'query.add_name("'+ lang +'", "'+ value +'");'
+          };
+
           println 'query.set_query_group("'+ queryInstance.queryGroup?.uid +'");'
           println 'query.set_type("'+ queryInstance.type +'");'
 
@@ -2172,7 +2205,16 @@ resp.responseJSON.result.message +'</div>'
                   <label for="name"><g:message code="query.show.name.attr" default="Name" /> *</label>
                 </td>
                 <td>
-                  <g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />
+                  <%--<g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />--%>
+
+                  <g:each in="${grailsApplication.config.app.l10n.available_locales}" var="lang">
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <span class="input-group-text">${lang}</span>
+                      </div>
+                      <input type="text" class="form-control input-sm query_name" name="name.${lang}" data-lang="${lang}" value="${queryInstance?.name?.get(lang)}" />
+                    </div>
+                  </g:each>
                 </td>
               </tr>
               <tr>
