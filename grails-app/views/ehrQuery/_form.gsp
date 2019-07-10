@@ -5,7 +5,16 @@
     <g:message code="ehrquery.attr.name" default="Name" />
     <span class="required-indicator">*</span>
   </label>
-  <g:textField name="name" required="" value="${ehrQueryInstance?.name}" class="form-control"/>
+  <%--<g:textField name="name" required="" value="${ehrQueryInstance?.name}" class="form-control"/>--%>
+
+  <g:each in="${grailsApplication.config.app.l10n.available_locales}" var="lang">
+    <div class="input-group">
+      <div class="input-group-addon">
+        <span class="input-group-text">${lang}</span>
+      </div>
+      <input type="text" class="form-control query_name" name="name.${lang}" data-lang="${lang}" value="${ehrQueryInstance?.name?.get(lang)}" />
+    </div>
+  </g:each>
 </div>
 
 <div class="form-group ${hasErrors(bean: ehrQueryInstance, field: 'description', 'error')} ">
@@ -25,7 +34,7 @@
             multiple="multiple"
             optionKey="id" size="5"
             value="${ehrQueryInstance?.queries*.id}"
-            optionValue="${{it.name +' ('+ it.uid +')'}}"
+            optionValue="${{it.name.get(session.lang) +' ('+ it.uid +')'}}"
             class="form-control"/>
   <g:if test="${queries.size() == 0}">
     <span class="help-block"><g:message code="ehrquery.create.noCompoQueries" /></span>

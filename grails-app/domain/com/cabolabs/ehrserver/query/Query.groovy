@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2019 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -40,8 +40,6 @@ import com.cabolabs.util.QueryUtils
  * Parametros n2 de la query:
  *  - valores para cada DataCriteria (el tipo del valor depende del tipo del RM en DataCriteria.path)
  *
- * @author pab
- *
  * TODO: crear un servicio que devuelva la definicion de una consulta
  *       con nombres, tipos y obligatoriedad de parametros.
  *
@@ -49,8 +47,6 @@ import com.cabolabs.util.QueryUtils
 class Query {
 
    String uid = java.util.UUID.randomUUID() as String
-
-   //String name
    Map name // lang => name (i18n)
 
    // queryByData (composition) o queryData (datavalue)

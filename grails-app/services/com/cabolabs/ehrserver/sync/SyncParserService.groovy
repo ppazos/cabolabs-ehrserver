@@ -423,7 +423,7 @@ class SyncParserService {
    {
       def eq = new EhrQuery(
          uid: j.uid,
-         name: j.name,
+         name: j.name, // TODO: check this is parsed correctly, is a map now
          description: j.description,
          master: false
       )
