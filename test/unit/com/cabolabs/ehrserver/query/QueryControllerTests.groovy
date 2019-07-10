@@ -24,11 +24,11 @@ class QueryControllerTests {
               group: 'path',
               select: [
                 [
-                  archetype_id: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                  archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
                   path: '/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value'
                 ],
                [
-                  archetype_id: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
+                  archetypeId: 'openEHR-EHR-OBSERVATION.blood_pressure.v1',
                   path: '/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value'
                 ]
               ]
@@ -174,7 +174,7 @@ class QueryControllerTests {
         response.reset()
 
         populateValidParams(params)
-        
+
         def query = Query.newInstance(controller.request.JSON.query)
 
         assert query.save() != null

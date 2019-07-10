@@ -60,8 +60,6 @@ class ResourceServiceIntegrationSpec extends IntegrationSpec {
 
       def q = Query.newInstance(json.query)
 
-      println q.name
-
       /*
       def q = new Query(name: [('en'): 'query'],
                         type:'datavalue',
