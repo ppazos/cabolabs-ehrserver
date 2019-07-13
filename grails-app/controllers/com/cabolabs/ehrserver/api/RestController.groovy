@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2019 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -75,6 +75,7 @@ class RestController {
    def notificationService
    def apiResponsesService
    def queryService
+   def configurationService
 
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -639,7 +640,7 @@ class RestController {
    @SecuredStateless
    def ehrList(String format, int max, int offset)
    {
-      if (!max) max = 30
+      if (!max) max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
 
       def _ehrs = Ehr.findAllByOrganizationUid(request.securityStatelessMap.extradata.org_uid, [max: max, offset: offset, readOnly: true])
@@ -2030,17 +2031,21 @@ class RestController {
    }
 
    @SecuredStateless
-   def templates(String format)
+   def templates(String format, int max, int offset)
    {
-      def opts = OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(request.securityStatelessMap.extradata.org_uid, true)
+      if (!max) max = configurationService.getValue('ehrserver.console.lists.max_items')
+      if (!offset) offset = 0
+
+      def opts = OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(request.securityStatelessMap.extradata.org_uid, true, [max: max, offset: offset, readOnly: true])
+      def res = new PaginatedResults(listName:'templates', list:opts, max:max, offset:offset)
 
       if (!format || format == 'xml')
       {
-         render(text: opts as XML, contentType:"text/xml", encoding:"UTF-8")
+         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
       }
       else if (format == 'json')
       {
-         render(text: opts as JSON, contentType:"application/json", encoding:"UTF-8")
+         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
       else
       {
