@@ -28,56 +28,57 @@ import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 /**
  * Modela una instancia de indice a nivel de documento (nivel 1).
  * Permite realizar busquedas de documentos sobre una estructura plana (mas rapido que usar datos estructurados).
- * 
+ *
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
  *
  */
 class CompositionIndex {
 
    String uid         // uid de la composition
-   
+
    String category    // event o persistent
-   
+
    Date startTime     // composition.context (solo para compositions event)
    Date endTime
    Date timeCommitted // copy from AuditDetails.timeCommitted to facilitate queries
    String location    // context.location (TODO: should be indexed as StringIndex to allow querying criteria)
-   
+
    String subjectId   // references an EHR.subject.uid, simplifies querying
-   
+
    String ehrUid      // uid del ehr del subjectId
-   
+
    String templateId  // se usa como "tipo de documento", es un arquetipo de COMPOSITION
    String archetypeId // archetype that defines the "definition" part of the template
-   
+
    boolean dataIndexed = false // true cuando se crean los indices de DataValue para la composition
-   boolean lastVersion = true // copy of the latestVersion attribute of the parent Version to avoid the use of old data in queries
-   
+   boolean lastVersion = true
+   boolean isDeleted = false // true when a new version is committed with change_type=deleted (stored in the version also as lifecycleState=523)
+
    // multitenancy, copy of ehr.organizationUid
    String organizationUid
-   
+
    DoctorProxy composer
-   
+
    // information about the XML composition, as received from the client, to check consitency
    long byteSize
    String hash
-   
+
    // TODO: name (de Locatable) para busqueda like %
-   
+
    def getParent()
    {
       return Version.findByData(this)
    }
-   
+
    static belongsTo = [Version]
-   
+
    static constraints = {
       category(inList:['event','persistent'])
       startTime(nullable:true) // persistent no tienen context.startTime
       endTime(nullable:true)
       location(nullable:true)
    }
-   
+
    static mapping = {
      startTime index: 'start_time_idx'
      timeCommitted index: 'time_committed_idx'
@@ -85,6 +86,6 @@ class CompositionIndex {
      lastVersion index: 'last_version_idx'
      ehrUid index: 'ehr_uid_idx'
    }
-   
+
    static transients = ['parent']
 }

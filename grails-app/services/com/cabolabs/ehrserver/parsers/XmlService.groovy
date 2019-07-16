@@ -36,6 +36,7 @@ import com.cabolabs.ehrserver.exceptions.CommitContributionReferenceException
 import com.cabolabs.ehrserver.exceptions.CommitNotSupportedChangeTypeException
 import com.cabolabs.ehrserver.exceptions.CommitRequiredValueNotPresentException
 import com.cabolabs.ehrserver.exceptions.CommitWrongChangeTypeException
+import com.cabolabs.ehrserver.exceptions.CommitWrongLifecycleStateException
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 import com.cabolabs.ehrserver.exceptions.XmlValidationException
 import com.cabolabs.ehrserver.exceptions.XmlSemanticValidationExceptionLevel1
@@ -111,8 +112,9 @@ class XmlService {
 
       // Parse contribution once, since it is the same for all versions
       //  - create the contrib and associated it with the ehr
+      String contributionId = versions.version[0].contribution.id.value.text()
       String auditSystemId = versions.version[0].commit_audit.system_id.text()
-      def contribution = parseCurrentContribution(versions.version[0], ehr, auditSystemId, auditTimeCommitted, auditCommitter)
+      def contribution = parseCurrentContribution(contributionId, ehr, auditSystemId, auditTimeCommitted, auditCommitter)
 
       // For each version committed
       //  Parse compo index
@@ -400,7 +402,7 @@ class XmlService {
                //assert ehr.containsVersionedComposition(version.objectId) : "El EHR ya deberia contener el versioned object con uid "+ version.objectId +" porque el tipo de cambio es "+version.commitAudit.changeType
 
             break
-            case ChangeType.DELETED:
+            case ChangeType.DELETED: // TODO: this is the same code as modification, can be refactored!
 
                // check if version.lifecycleState is "523" (deleted)
 
@@ -418,6 +420,9 @@ class XmlService {
                {
                   throw new CommitWrongChangeTypeException("A change type ${version.commitAudit.changeType} was received, but there are no previous versions with id ${version.objectId}")
                }
+
+               // Set this composition as deleted
+               version.data.isDeleted = true
 
             break
             default:
@@ -546,14 +551,22 @@ class XmlService {
       def dataOut = [:]
 
       def parsedVersion
-      String auditSystemId
+      String auditSystemId = contribution.audit.systemId
       for (int i = 0; i <versionsXML.version.size(); i++)
       {
          parsedVersion = versionsXML.version[i]
-         auditSystemId = parsedVersion.commit_audit.system_id.text()
+
+
+         // uses the systemId that comes in the first version, assures the client
+         // can't send different systemId in the audits, so the systemId on the
+         // rest of the versions is overriden by the first one, that is also used
+         // to create the contribution.audit, this is set outside the for
+         //
+         //auditSystemId = parsedVersion.commit_audit.system_id.text()
+
 
          // Parse AuditDetails from Version.commit_audit
-         commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted)
+         commitAudit = parseVersionCommitAudit(parsedVersion, auditTimeCommitted, auditSystemId)
          compoIndex = parseCompositionIndex(parsedVersion, ehr, auditTimeCommitted)
 
          // version.uid is assigned by the server
@@ -596,6 +609,8 @@ class XmlService {
          // the change type should be "modification", if not, CommitWrongChangeTypeException
          // If everything is OK, the version UID should be checked: it should be the same as the compo index for the ehrid and archetype checked above.
 
+         // TODO: there is an open discussion about supporting multiple persistent
+         //       instances with the same OPT in the same EHR, right now we support one.
          if (compoIndex.category == "persistent")
          {
             existingPersistentCompo = CompositionIndex.findByCategoryAndArchetypeIdAndEhrUid(compoIndex.category, compoIndex.archetypeId, compoIndex.ehrUid)
@@ -634,8 +649,27 @@ class XmlService {
             // create new version for event compo
             if (commitAudit.changeType != ChangeType.CREATION)
             {
-               // same code as versioning a persistent compo, TODO: refactor
+               // Consistency checks for lifecycle_state
                lastVersion = Version.findByUid(preceding_version_uid)
+
+               switch (lastVersion.lifecycleState)
+               {
+                  case '532': // complete
+                     // new version can't be incomplete if current is complete
+                     if (version.lifecycleState == '553')
+                     {
+                        throw new CommitWrongLifecycleStateException("Can't modify a complete version with an incomplete one")
+                     }
+                  break
+                  case '553': // incomplete
+                     // nothing to do, if the current version is incomplete, it accepts any lifecycle state
+                  break
+                  case '523': // deleted
+                     // if current is deleted, can't be updated any more
+                     // TODO: need to define the undelete use case, still not clear on the specs
+                     throw new CommitWrongLifecycleStateException("Can't modify a deleted version")
+                  break
+               }
 
                previousLastVersion = lastVersion
                previousLastVersion.data.lastVersion = false
@@ -649,8 +683,15 @@ class XmlService {
          // delete uid if present from the client
          parsedVersion.uid.replaceNode {}
 
+         // in case this was overriden, update the XML
+         parsedVersion.commit_audit.system_id = auditSystemId
+
+         // commit time overriden by server
+         parsedVersion.commit_audit.time_committed = auditTimeCommitted.format(Holders.config.app.l10n.ext_datetime_utcformat_point)
+
          // append sibling after commit_audit adds version.uid
          parsedVersion.commit_audit.replaceNode { commit_audit ->
+
             mkp.yield(commit_audit)
             uid {
                value(version.uid)
@@ -666,15 +707,17 @@ class XmlService {
    }
 
 
-   private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted)
+   private AuditDetails parseVersionCommitAudit(GPathResult version, Date auditTimeCommitted, String auditSystemId)
    {
       def change_type_code = version.commit_audit.change_type.defining_code.code_string.text()
 
       // FIXME: this assumes the COMPOSITION.composer is PARTY_IDENTIFIED, and could be any PARTY_PROXY, even the patient! (PARTY_SELF)
 
       // Parse AuditDetails from Version.commit_audit
+      // The system id is overriden by the first version system id to assure all
+      // are equal if multiple versions come in the same contribution
       def audit = new AuditDetails(
-         systemId:      version.commit_audit.system_id.text(),
+         systemId:      auditSystemId, //version.commit_audit.system_id.text(),
 
          /*
           * version.commit_audit.time_committed is overriden by the server
@@ -898,7 +941,7 @@ class XmlService {
    }
 
    private Contribution parseCurrentContribution(
-      GPathResult version, Ehr ehr, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
+      String contributionId, Ehr ehr, String auditSystemId, Date auditTimeCommitted, String auditCommitter)
    {
       // This instance of XmlService process one contribution at a time
       // But each version on the version list has a reference to the same contribution,
@@ -913,7 +956,7 @@ class XmlService {
       // 2.a. If there is a contribution with the same id, get that from the DB to set into the Version instance
       // 2.b. If not, create a new contribution and save it
 
-      def contributionId = version.contribution.id.value.text()
+
       if (!contributionId)
       {
          throw new CommitRequiredValueNotPresentException('version.contribution.id.value should not be empty')

@@ -91,6 +91,11 @@ class UrlMappings {
          controller: 'rest',
          action: 'organizations'
       )
+      "/api/v1/users"(
+         method: 'GET',
+         controller: 'user',
+         action: 'get_users'
+      )
       "/api/v1/users/$username"(
          method: 'GET',
          controller: 'user',

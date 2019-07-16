@@ -303,7 +303,7 @@ class SyncParserService {
 
       def q = new Query(
          uid: jq.uid,
-         name: jq.name,
+         name: jq.name, // TODO: test if this binds OK since it should be a map now
          type: jq.type,
          isPublic: jq.isPublic,
          isCount: jq.isCount,
@@ -423,7 +423,7 @@ class SyncParserService {
    {
       def eq = new EhrQuery(
          uid: j.uid,
-         name: j.name,
+         name: j.name, // TODO: check this is parsed correctly, is a map now
          description: j.description,
          master: false
       )

@@ -570,7 +570,7 @@ class SyncMarshallersService {
    {
       jb.ehrquery {
          uid eq.uid
-         name eq.name
+         name eq.name // TODO: check the marshall works, this is a map now
          description eq.description
          master eq.master
          queries(toJSON(eq.queries, jb))

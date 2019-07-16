@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2019 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -40,8 +40,6 @@ import com.cabolabs.util.QueryUtils
  * Parametros n2 de la query:
  *  - valores para cada DataCriteria (el tipo del valor depende del tipo del RM en DataCriteria.path)
  *
- * @author pab
- *
  * TODO: crear un servicio que devuelva la definicion de una consulta
  *       con nombres, tipos y obligatoriedad de parametros.
  *
@@ -49,9 +47,7 @@ import com.cabolabs.util.QueryUtils
 class Query {
 
    String uid = java.util.UUID.randomUUID() as String
-
-   // Describe lo que hace la query
-   String name
+   Map name // lang => name (i18n)
 
    // queryByData (composition) o queryData (datavalue)
    // lo que los diferencia es el resultado: composiciones o datos asociados a paths
@@ -236,7 +232,7 @@ class Query {
    static constraints = {
 
       // para guardar la query debe tener nombre
-      name(nullable:false, blank:false)
+      //name(nullable:false, blank:false)
 
       // No creo que le guste null en inList, le pongo ''
       group(inList:['none', 'composition', 'path'])
@@ -350,6 +346,7 @@ class Query {
             }
 
             eq('lastVersion', true) // query only latest versions
+            eq('isDeleted', false) // query not deleted versions
          }
       }
 
@@ -879,11 +876,11 @@ class Query {
             // case insensitive comparison for name
             filters.append("lower(doc.name) LIKE '%").append(composerName.toLowerCase()).append("%' AND ")
          }
-         filters.append("ci.lastVersion=true AND ") // Query only latest versions
+         filters.append("ci.lastVersion=true AND ci.isDeleted=false AND ") // Query only latest versions that are not deleted
       }
       else
       {
-         filters.append("WHERE ci.lastVersion=true AND ") // Query only latest versions
+         filters.append("WHERE ci.lastVersion=true AND ci.isDeleted=false AND ") // Query only latest versions that are not deleted
       }
 
 

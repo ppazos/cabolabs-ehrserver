@@ -34,7 +34,7 @@
     </style>
     <asset:javascript src="xml_utils.js" /><!-- xmlToString -->
     <g:javascript>
-      
+
       /**
        * FIXME: formRemote no me deja hacer validacion e impedir el submit, necesito usar el jQuery Form Plugin y listo.
        */
@@ -46,7 +46,7 @@
          return false;
          */
       };
-      
+
       /**
        * Handler success para consulta por ajax de remoteForm.
        */
@@ -54,20 +54,20 @@
 	   {
          console.log(data);
 	      // Si devuelve HTML
-	      if ($('select[name=showUI]').val()=='true')
+	      if ($('input[name=showUI]:checked').val()=='true')
 	      {
 	        $('#findCompositionsSuccess').html( data );
 	      }
 	      else // Si devuelve el XML
 	      {
 	        $('#findCompositionsSuccess').empty();
-	      
+
 	        // el append devuelve la DIV no el PRE, chidren tiene el PRE
 	        var pre = $('#findCompositionsSuccess').append('<pre></pre>').children()[0];
 	        $(pre).text( formatXml( xmlToString(data) ) );
 	      }
 	   };
-	   
+
 	   /**
        * Handler failure para consulta por ajax de remoteForm.
        * FIXME: verificar el nombre de los parametros (no es data).
@@ -76,71 +76,71 @@
 	   {
          console.log(XMLHttpRequest, textStatus, errorThrown);
          alert("error: " + errorThrown);
-         
+
 	      //$('#findCompositionsFailure').text( xmlToString(data) );
       };
-      
-      
-      
+
+
+
 	   $(document).ready(function() {
-    
+
         /**
          * Clic en un arquetipo de la lista de arquetipos (select[sarchetypeId])
          * Lista las paths del arquetipo en select[spath]
          */
         $('select[name=sarchetypeId]').change(function() {
-        
+
           var archetypeId = $(this).val(); // arquetipo seleccionado
-		    
+
           $.ajax({
 				  url: '${createLink(controller:"query", action:"getIndexDefinitions")}',
 				  data: {archetypeId: archetypeId},
 				  dataType: 'json',
 				  success: function(data, textStatus) {
-				  
+
 				    // didx:
 				    //   archetypeId: "openEHR-EHR-COMPOSITION.encounter.v1"
 					 //   name: "value"
 					 //   path: "/content/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value"
 					 //   rmTypeName: "DV_QUANTITY"
-					 
-					 
+
+
 		          // Saca las options que haya
 		          $('select[name=spath]').empty();
-		          
-		          
+
+
 		          // Agrega las options con las paths del arquetipo seleccionado
 		          $('select[name=spath]').append('<option value="">Seleccione una path</option>');
-		          
+
 		          $(data).each(function(i, didx) {
-		          
+
 		            op = '<option value="'+didx.path+'">';
 		            op += didx.path +' {'+ ((didx.name != null) ? didx.name +': ' : '') + didx.rmTypeName + '}';
 		            op += '</option>';
-		            
+
 		            $('select[name=spath]').append(op);
 		          });
 
 				  },
 				  error: function(XMLHttpRequest, textStatus, errorThrown) {
-                
+
                 console.log(textStatus, errorThrown);
               }
           });
         }); // click en select sarchetypeId
-        
-        
+
+
 
         /**
          * Clic en [+]
          * Agregar una condicion al criterio de busqueda.
          */
         $('#addCriteria').click( function(e) {
-        
+
           e.preventDefault();
-          
+
           // TODO: verificar que todo tiene valor seleccionado
-          
+
           if ( $('select[name=sarchetypeId]').val() == null )
           {
             alert('seleccione un arquetipo');
@@ -161,8 +161,8 @@
             alert('ingrese un valor');
             return;
           }
-          
-          
+
+
           $('#criteria').append(
             '<tr>'+
             '<td>'+ $('select[name=sarchetypeId]').val() +'</td>'+
@@ -179,22 +179,22 @@
             '</tr>'
           );
         });
-        
-        
+
+
         /**
          * Clic en [-]
          * Elimina un criterio de la lista de criterios de busqueda.
          */
         $(document).on("click", "#removeCriteria", function(e) {
-        
+
           e.preventDefault();
-          
+
           // parent es la td y parent.parent es la TR a eliminar
           //console.log($(e.target).parent().parent());
           //
           $(e.target).parent().parent().remove();
         });
-        
+
       });
     </g:javascript>
   </head>
@@ -204,7 +204,7 @@
       <g:if test="${flash.message}">
         <div class="alert alert-info" role="alert">${flash.message}</div>
       </g:if>
-      
+
       <table>
         <tr>
           <th>attribute</th>
@@ -215,7 +215,7 @@
           <td>
             <%-- Necesito este model para listar los arquetipos para los que hay indices --%>
             <g:set var="dataIndexes" value="${ehr.clinical_documents.IndexDefinition.list()}" />
-      
+
 	         <g:select name="sarchetypeId" size="3"
 	                   from="${dataIndexes.archetypeId.unique()}"
 	                   noSelection="['':'Elija arquetipo']" />
@@ -268,9 +268,9 @@
 		});
 		return false
       --%>
-      
+
       <div class="content_padding">
-      
+
 	     <h2>Criteria</h2>
 	     <g:formRemote name="myForm"
 	                  on404="alert('not found!')"
@@ -278,9 +278,9 @@
 	                  before="findCompositionsBefore()"
 	                  onSuccess="findCompositionsSuccess(data, textStatus)"
 	                  onFailure="findCompositionsFailure(XMLHttpRequest, textStatus, errorThrown)">
-	        
+
 	        Indices de nivel 1:<br/><br/>
-	        
+
 	        <table>
 	          <tr>
 	            <td>UID</td>
@@ -294,7 +294,7 @@
 	              <!-- FIXME: busco los arquetipos de composition en los indices porque
                         el EHRServer aun no tiene repositorio de arquetipos. Cuando lo
                         tenga, esta operacion deberia usar el ArchetypeManager. -->
-                        
+
 		           <!-- solo arquetipos de composition -->
 			        <g:select name="qarchetypeId" size="5"
 			                  from="${ehr.clinical_documents.CompositionIndex.withCriteria{ projections{distinct "archetypeId"}} }" />
@@ -319,10 +319,14 @@
 	          <tr>
 	            <td>show UI?</td>
 	            <td>
-	              <select name="showUI" size="2">
-	                <option value="false" selected="selected">no</option>
-	                <option value="true">yes</option>
-	              </select>
+                 <div class="btn-group" data-toggle="buttons">
+                   <label class="btn btn-default active">
+                      <input type="radio" name="showUI" value="false" checked="checked" /> <g:message code="default.no" />
+                   </label>
+                   <label class="btn btn-default">
+                      <input type="radio" name="showUI" value="true" /> <g:message code="default.yes" />
+                   </label>
+                 </div>
 	            </td>
 	          </tr>
 	          <tr>
@@ -332,7 +336,7 @@
                </td>
              </tr>
 	        </table>
-	        
+
 	        <table id="criteria">
 	          <tr>
 	            <th>archetypeId</th>
@@ -342,19 +346,19 @@
 	            <th></th>
 	          </tr>
 	        </table>
-	        
+
 	        <div class="actions">
 	          <input type="submit" value="Find" />
 	          <g:submitToRemote value="Save query" url="[action:'saveQueryByData']" />
 	        </div>
 	      </g:formRemote>
-      
+
       </div>
-      
+
       <h2>Result</h2>
       <!-- <textarea id="findCompositionsSuccess" class="out"></textarea> -->
       <div id="findCompositionsSuccess" class="out"></div>
-      
+
     </div>
   </body>
 </html>

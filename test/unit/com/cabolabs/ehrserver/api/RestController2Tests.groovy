@@ -37,37 +37,37 @@ class RestController2Tests {
 
    private static String PS = System.getProperty("file.separator")
    private static String patientUid = 'a86ac702-980a-478c-8f16-927fd4a5e9ae'
-   
+
    // grailsApplication is injected by the controller test mixin
    // http://stackoverflow.com/questions/18614893/how-to-access-grailsapplication-and-applicationcontext-in-functional-tests
    def config = grailsApplication.config.app //Holders.config.app
-   
+
    void setUp()
 	{
       println "setUp"
-      
+
       controller.xmlService = new XmlService()
       controller.xmlService.xmlValidationService = new XmlValidationService()
-      
+
       // Sample organizations
       def hospital = new Organization(name: 'Hospital de Clinicas', number: '1234')
       def clinic = new Organization(name: 'Clinica del Tratamiento del Dolor', number: '6666')
       def practice = new Organization(name: 'Cirugia Estetica', number: '5555')
-      
+
       hospital.save(failOnError:true, flush:true)
       clinic.save(failOnError:true, flush:true)
       practice.save(failOnError:true, flush:true)
-      
-      
-	   
-	  
-	  
+
+
+
+
+
 	  // Crea EHRs para los pacientes de prueba
 	  // Idem EhrController.createEhr
 	  def ehr
      /* FIXME: create EHRs
 	  persons.eachWithIndex { p, i ->
-	  
+
 	    if (p.role == 'pat')
 		 {
 			ehr = new Ehr(
@@ -76,17 +76,17 @@ class RestController2Tests {
 			   ),
             organizationUid: p.organizationUid
 		    )
-         
+
           if (!ehr.save()) println ehr.errors
 		 }
 	  }
 	  */
-     
-     
+
+
      // Setup queries for testing
-     
+
      def compositionQuery = new Query(
-        name: "test query composition",
+        name:  ['en': "test query composition"],
         type: "composition",
         where: [])
      if (!compositionQuery.save()) println compositionQuery.errors
@@ -96,7 +96,7 @@ class RestController2Tests {
 	{
       // Tear down logic here
       def version_repo = new File(config.version_repo)
-      
+
       version_repo.eachFile {
          it.delete()
       }
@@ -106,39 +106,39 @@ class RestController2Tests {
 	{
 	    // EHRs creados en el setUp
 	    assert Ehr.count() == 5
-	
-	
+
+
 	    // sin format devuelve XML por defecto
 		controller.ehrList()
-		
+
 		assert controller.response.contentType == "text/xml;charset=UTF-8"
-		
+
 		// pretty print del XML
-		// Se puede cambiar la opcion en Config: 
+		// Se puede cambiar la opcion en Config:
 		// test {
 	    //   grails.converters.default.pretty.print = true
 	    // }
 		println groovy.xml.XmlUtil.serialize( controller.response.text )
 		//println controller.response.text
-		
+
 		// ehrs debe tener 5 tags ehr
 		// con .text es solo el texto, con .xml es el xml :)
 		assert controller.response.xml.ehrs.ehr.size() == 5
 		response.reset()
-		
-		
-		// para que withFormat considere el param format> controller.request.format = 'json' 
+
+
+		// para que withFormat considere el param format> controller.request.format = 'json'
 		// http://grails.1312388.n4.nabble.com/withFormat-tests-in-ControllerUnitTestCase-td3343763.html
 		params.format = 'json'
 		controller.ehrList()
 		assert controller.response.contentType == 'application/json;charset=UTF-8'
 		println controller.response.text
-		
+
 		// json es un array y debe tener 5 objetos
 		assert controller.response.json.ehrs.size() == 5
 		response.reset()
-		
-		
+
+
 		// Debe tirar error en XML porque no es un formato recocnocido
 		params.format = 'text'
 		controller.ehrList()
@@ -152,15 +152,15 @@ class RestController2Tests {
        */
 		assert controller.response.xml.code.text() == "error"
 		response.reset()
-		
-		
+
+
 		// Prueba paginacion con max=3
 		params.format = 'xml'
 		params.max = 3
 		controller.ehrList()
 		assert controller.response.xml.ehrs.ehr.size() == 3
 		response.reset()
-		
+
 		// Prueba paginacion con offset=3 debe devolver 2 ehrs porque hay 5
 		params.format = 'xml'
 		params.offset = 3
@@ -168,14 +168,14 @@ class RestController2Tests {
 		assert controller.response.xml.ehrs.ehr.size() == 2
 		response.reset()
     }
-   
-   
+
+
    void testCommitHugeCompo()
    {
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
       def opt = new File( "opts" + PS + "tests" + PS + "RIPPLE - Conformance Test template.opt" )
       oti.index(opt)
-      
+
       request.method = 'POST'
       request.contentType = 'text/xml'
       request.xml = $/<?xml version="1.0" encoding="UTF-8" ?>
@@ -1345,22 +1345,22 @@ class RestController2Tests {
   </lifecycle_state>
 </version>
 </versions>/$
-      
+
       println "========= COMMIT ========="
-      
+
       params.ehrUid = Ehr.get(1).uid
       params.auditSystemId = "TEST_SYSTEM_ID"
       params.auditCommitter = "Mr. Committer"
       controller.commit()
-      
+
       println "========= FIN COMMIT ========="
-      
+
       println controller.response.contentAsString
-      
+
       def resp = new XmlSlurper().parseText( controller.response.contentAsString )
-      
+
       assert resp.type.code.text() == "AA" // Application Reject
-      
+
       println resp.message.text()
    }
 }
