@@ -10,4 +10,4 @@ ADD . /app
 WORKDIR /app
 
 EXPOSE 8090
-CMD ["grails", "-Dserver.port=8090", "run-app"]
+CMD ["grails", "prod", "-Dserver.port=8090", "run-app"]
