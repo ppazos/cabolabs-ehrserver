@@ -122,7 +122,7 @@ environments {
   production { // use on server prod environment, https, root = /
     grails.logging.jul.usebridge = false
     //grails.dbconsole.enabled = true // this is for testing in prod
-    grails.serverURL = "https://" + System.getenv('EHRSERVER_APP_DNS') //"https://cabolabs-ehrserver.com/ehr" // comment this if testing prod on localhost
+    //grails.serverURL = "http://" + System.getenv('EHRSERVER_APP_DNS') //"https://cabolabs-ehrserver.com/ehr" // comment this if testing prod on localhost
     grails.app.context = '/' // use domain.com/ instead of domain.com/ehr
     app {
       version_repo = System.getenv('EHRSERVER_WORKING_FOLDER') + "versions" + PS
