@@ -39,7 +39,7 @@ hibernate {
 environments {
     development {
         dataSource {
-           dbCreate = "create-drop" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
+           dbCreate = "update" //"update" // one of 'create', 'create-drop', 'update', 'validate', ''
            //logSql = true
            String host = "localhost"
            String port = 3306
