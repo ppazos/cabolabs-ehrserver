@@ -49,7 +49,7 @@ class PlanAssociationStateUpdateJob {
          // current active plan ended yesterday?
          // can't rely on this, if the app was down we miss to deactivate plans on the next run
          //if (active_plan_assoc.to in (today-1)..today)
-         if (active_plan_assoc.to > today) // this will catch all plans that should be inactive
+         if (active_plan_assoc.to < today) // this will catch all plans that should be inactive
          {
             //println "active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
 
@@ -59,15 +59,18 @@ class PlanAssociationStateUpdateJob {
 
             if (inactive_plan_assoc)
             {
+               println "Inactive plan detected"
                // if should start today! if not we have <current active> pediod_of_time <new inactive>
                // and there shouldn't be gaps between active and future inactive plans,
                // TODO: need to add a check for that on the account edit.
                if (today < inactive_plan_assoc.from)
                {
+                  println "Inactive plan is in the future"
                   log.error('inactive plan start date is set in the future and current active plan ends today')
                }
                else
                {
+                  println "Inactive plan becomes active"
                   active_plan_assoc.state = PlanAssociation.states.CLOSED
                   inactive_plan_assoc.state = PlanAssociation.states.ACTIVE
 
@@ -82,11 +85,11 @@ class PlanAssociationStateUpdateJob {
 
                // For now we don't close the current plan automatically, we'll need to send some notifications to the account
                // contact before closing the plan. TODO.
-               //active_plan_assoc.state = PlanAssociation.states.CLOSED
+               active_plan_assoc.state = PlanAssociation.states.CLOSED
 
                // FIXME: there is no check of this notification being sent, could be sent more than once for the same account
                //        could mark this with an activity log
-               def message = "The account '${account.companyName}' has an active plan that ends today but no new plan was assigned.<br/><br/>Need to contact ${account.contact.email} to verify a plan extension, upgrade or closing the account."
+               def message = "The account '${account.companyName}' has an active plan that expired on ${active_plan_assoc.to} but no new plan was assigned.<br/><br/>Need to contact ${account.contact.email} to verify a plan extension, upgrade or closing the account."
                def admins = User.allForRole('ROLE_ADMIN')
                def title = 'Account plan expiration'
                admins.each { admin ->

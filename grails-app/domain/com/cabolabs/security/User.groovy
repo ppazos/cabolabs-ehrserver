@@ -186,7 +186,7 @@ class User implements Serializable {
             eq('authority', authority)
          }
       }
-      return urs.user
+      return urs.user.unique(true) {it.id}
    }
 
    static List allForAccount(Account account)
@@ -195,7 +195,7 @@ class User implements Serializable {
         'in'('organization', account.organizations)
       }
 
-      urs.user
+      urs.user.unique(true) {it.id}
    }
 
    Account getAccount()
