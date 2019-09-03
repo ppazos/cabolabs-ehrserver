@@ -47,7 +47,9 @@ class PlanAssociationStateUpdateJob {
          }
 
          // current active plan ended yesterday?
-         if (active_plan_assoc.to in (today-1)..today)
+         // can't rely on this, if the app was down we miss to deactivate plans on the next run
+         //if (active_plan_assoc.to in (today-1)..today)
+         if (active_plan_assoc.to > today) // this will catch all plans that should be inactive
          {
             //println "active_plan_assoc.to < today "+ active_plan_assoc.to +" < "+ today
 
