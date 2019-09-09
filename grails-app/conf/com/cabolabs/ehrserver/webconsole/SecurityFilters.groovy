@@ -140,6 +140,13 @@ class SecurityFilters {
       all(controller:'*', action:'*') {
          before = {
 
+            // Make session available in the session if comes from REST
+            // TODO: with this we can change all request.securityStatelessMap.extradata.org_uid for sesison.organization.uid
+            if (!session.organization && request.securityStatelessMap)
+            {
+               session.organization = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
+            }
+
             /**
              * Lang check
              *
