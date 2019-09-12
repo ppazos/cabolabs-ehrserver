@@ -16,3 +16,6 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APPLICATION_NAME:$DEPLOYMENT_GROUP_NAME
+      - printf '[{"name":"%s","imageUri":"%s"}]' $APPLICATION_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APPLICATION_NAME:$DEPLOYMENT_GROUP_NAME > taskdefinition.json 
+artifacts:
+  files: taskdefinition.json
