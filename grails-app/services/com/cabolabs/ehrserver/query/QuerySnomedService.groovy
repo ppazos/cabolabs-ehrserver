@@ -4,7 +4,7 @@ import grails.transaction.Transactional
 
 import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.URLENC
-import static groovyx.net.http.Method.POST
+import static groovyx.net.http.Method.GET
 import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 
 @Transactional
@@ -18,26 +18,24 @@ class QuerySnomedService {
       def res = []
       def error = false
       def status
-      def http = new HTTPBuilder('https://snquery.veratech.es')
+      def http = new HTTPBuilder(System.getenv('TERMINOLOGY_HOST'))
 
       try
       {
-         http.request( POST ) {
-            uri.path = '/ws/JSONQuery'
-            uri.query = [cache: 'true']
-            send URLENC, [query: snomedExpr]
+         http.request( GET ) {
+            uri.path = '/MAIN/concepts'
+            uri.query = [ecl: snomedExpr]
             headers.Accept = 'application/json'
-            headers.Authorization = 'Bearer '+ api_key
 
             response.success = { resp, json ->
-               println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+               println "GET Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
                //println resp.statusLine.statusCode // 200
                //println json.getClass() // class net.sf.json.JSONArray
 
                json.each { item ->
                   //println item.idconcept +' '+ item.concept
 
-                  res << item.idconcept
+                  res << item.conceptId
                }
             }
 
