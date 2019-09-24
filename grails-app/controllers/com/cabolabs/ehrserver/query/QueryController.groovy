@@ -880,6 +880,17 @@ class QueryController {
       }
    }
 
+   def snomed()
+   {
+
+   }
+
+   def executeSnomed(String ecl, String term)
+   {
+      
+      render ("{success: true}" as JSON)
+   }
+
    // TOOD: move to query group controller
 
    // query group list

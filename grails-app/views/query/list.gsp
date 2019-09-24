@@ -21,6 +21,11 @@
     <div class="row row-grid">
       <div class="col-md-12">
         <div class="btn-toolbar" role="toolbar">
+			<g:link action="snomed" title="snomed">
+				<button type="button" class="btn btn-default btn-md">
+					<g:message code="query.snomed.title" />
+				</button>
+			</g:link>
           <button type="button" class="btn btn-default btn-md filter" data-toggle="collapse" href="#collapse-filter">
             <span class="fa fa-filter" aria-hidden="true"></span>
           </button>
@@ -28,7 +33,8 @@
           <g:link action="groups" title="groups">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-sitemap" aria-hidden="true"></span>
-            </button></g:link>
+            </button>
+		</g:link>
 
           <g:link action="create">
             <button type="button" class="btn btn-primary btn-md">
