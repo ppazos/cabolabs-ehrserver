@@ -11,8 +11,10 @@
          <xs:element name="description" type="RESOURCE_DESCRIPTION" minOccurs="0"/>
          <xs:element name="uid" type="HIER_OBJECT_ID" minOccurs="0"/>
          <xs:element name="template_id" type="TEMPLATE_ID"/>
-         <xs:element type="xs:string" name="concept"/>
+         <xs:element name="concept" type="xs:string"/>
          <xs:element name="definition" type="C_ARCHETYPE_ROOT"/>
+		 <xs:element name="ontology" type="ARCHETYPE_ONTOLOGY" minOccurs="0"/>
+		 <xs:element name="component_ontologies" type="ARCHETYPE_ONTOLOGY" minOccurs="0" maxOccurs="unbounded"/>
          <xs:element name="view" minOccurs="0">
             <xs:complexType>
                <xs:sequence>
@@ -640,6 +642,7 @@
 			      <xs:element name="constraint_bindings" type="ConstraintBindingSet" minOccurs="0"
                      maxOccurs="unbounded"/>
 		    </xs:sequence>
+			<xs:attribute name="archetype_id" type="xs:string"/>
 	  </xs:complexType>
    <xs:complexType name="CodeDefinitionSet">
 		    <xs:sequence>
