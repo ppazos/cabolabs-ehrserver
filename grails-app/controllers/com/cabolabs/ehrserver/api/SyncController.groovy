@@ -25,7 +25,7 @@ import com.cabolabs.ehrserver.sync.*
 import grails.converters.*
 
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONObject
 import groovy.json.JsonSlurper
 
 import com.cabolabs.ehrserver.reporting.ActivityLog

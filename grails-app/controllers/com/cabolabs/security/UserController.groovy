@@ -25,8 +25,6 @@ package com.cabolabs.security
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.validation.ValidationException
-import grails.plugin.springsecurity.SpringSecurityUtils
-
 import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
 import grails.converters.*
 import grails.util.Holders
@@ -42,7 +40,7 @@ class UserController {
    def apiResponsesService
    def simpleCaptchaService
    def notificationService
-   def springSecurityService
+   def authService
    def configurationService
    def organizationService
    def logService
@@ -60,7 +58,7 @@ class UserController {
       // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
    }
 
-   def index(int offset, String sort, String order, String username, String organizationUid)
+   def index(int offset, String sort, String order, String email, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
@@ -70,14 +68,14 @@ class UserController {
       def list, count
       def c = UserRole.createCriteria()
 
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
             user {
                eq('isVirtual', false)
-               if (username)
+               if (email)
                {
-                  like('username', '%'+username+'%')
+                  like('email', '%'+email+'%')
                }
             }
             if (organizationUid)
@@ -94,15 +92,15 @@ class UserController {
       else
       {
          // current user lists only users from the current org
-         def loggedInUser = springSecurityService.currentUser
+         def loggedInUser = authService.loggedInUser
          def org = session.organization // with this in the criteria makes the unit test fail.
 
          def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
             eq('organization', org)
-            if (username)
+            if (email)
             {
                user {
-                  like('username', '%'+username+'%')
+                  like('email', '%'+email+'%')
                }
             }
          }
@@ -126,7 +124,7 @@ class UserController {
       def _user = User.findByUsername(_username)
 
       // user I want to access
-      def u = User.findByUsername(username)
+      def u = User.findByEmail(username)
       if (!username || !u)
       {
          withFormat {
@@ -141,7 +139,7 @@ class UserController {
       }
 
       def allowed
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          allowed = true
       }
@@ -151,7 +149,7 @@ class UserController {
          allowed = (
             ( u.organizations.count{ it.uid == org_uid } == 1 ) && // organization of the logged user match one of the organizations of the requested user
             (
-               u.username == _username || // user want to access self profile
+               u.email == _username || // user want to access self profile
                ( // org managers can see users with lees power than them
                   (_user.authoritiesContains(Role.OM, org) || _user.authoritiesContains(Role.AM, org)) &&
                    _user.getHigherAuthority(org).higherThan( u.getHigherAuthority(org) )
@@ -174,7 +172,6 @@ class UserController {
       }
 
       def data = [
-         username: u.username,
          email: u.email,
          organizations: u.organizations
       ]
@@ -196,7 +193,7 @@ class UserController {
    {
       // user from token
       def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
+      def _user = User.findByEmail(_username)
 
       // org from token
       def org_uid = request.securityStatelessMap.extradata.org_uid
@@ -213,7 +210,6 @@ class UserController {
       def user_roles = l.findAll { _user.getHigherAuthority(org).higherThan(it.role) && !it.user.isVirtual }.unique { it.user.id }
       def user_data = user_roles.collect {
          [
-            username: it.user.username,
             email: it.user.email
          ]
       }
@@ -242,14 +238,14 @@ class UserController {
       def userRoles = UserRole.findAllByUser(userInstance)
 
       // Admins can access all users
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          respond userInstance, [model: [roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]]
          return
       }
       else
       {
-         def loggedInUser = springSecurityService.currentUser
+         def loggedInUser = authService.loggedInUser
 
          // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
 
@@ -280,7 +276,7 @@ class UserController {
       def rolesPerOrgICanAssing = [:] // org -> roles
 
       // Admins can assign all roles to all orgs
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          def organizations = Organization.list()
          def roles = Role.list()
@@ -292,7 +288,7 @@ class UserController {
       {
          // roles the current user can assign
          def roles
-         def loggedInUser = springSecurityService.currentUser
+         def loggedInUser = authService.loggedInUser
          def userRoles = UserRole.findAllByUser(loggedInUser) // orgs the user can access and his role on each
 
          userRoles.each { userRole ->
@@ -321,14 +317,14 @@ class UserController {
    private organizationsICanAssign()
    {
       def organizations
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          organizations = Organization.list()
       }
       else
       {
          // non admins can only manage users for the current org
-         organizations = [session.organization] //springSecurityService.currentUser.organizations
+         organizations = [session.organization] //authService.loggedInUser.organizations
       }
 
       return organizations
@@ -388,7 +384,7 @@ class UserController {
          return
       }
 
-      def loggedInUser = springSecurityService.currentUser
+      def loggedInUser = authService.loggedInUser
       def orguids, org, roles
       def _rolesICanAssign = rolesICanAssign()
 
@@ -430,7 +426,7 @@ class UserController {
       }
 
       // Admins can access all users
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          respond userInstance, [model: [roles: rolesICanAssign(),
                                         organizations: organizationsICanAssign(),
@@ -439,7 +435,7 @@ class UserController {
       }
       else
       {
-         def loggedInUser = springSecurityService.currentUser
+         def loggedInUser = authService.loggedInUser
 
          // this condition checks 1. I have a role on the same org as the userInstance, 2. I have a higher role on that org
 
@@ -468,7 +464,7 @@ class UserController {
          return
       }
 
-      def loggedInUser = springSecurityService.currentUser
+      def loggedInUser = authService.loggedInUser
 
       // current user can't block it's own account
       // we keep the flags as before the edit, loading from db
@@ -487,7 +483,7 @@ class UserController {
 
       // User should have one org assigned, if not we lose tack of the user and can't be managed.
       def userRoles
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // admins manage user roles on any org
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN")) // admins manage user roles on any org
       {
          userRoles = UserRole.findAllByUser(userInstance)
       }
@@ -607,7 +603,6 @@ class UserController {
          boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
 
          def u = new User(
-            username: params.username,
             email: params.email,
             enabled: false
          )

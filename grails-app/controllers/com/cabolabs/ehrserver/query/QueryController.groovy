@@ -26,22 +26,16 @@ import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.data.DataValues
-
 import org.springframework.dao.DataIntegrityViolationException
-
-import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import grails.util.Holders
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import grails.converters.*
-
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
-
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
-
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.openehr.opt.serializer.JsonSerializer
 import com.cabolabs.openehr.opt.model.ObjectNode
@@ -55,7 +49,7 @@ class QueryController {
 
    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE"]
 
-   def springSecurityService
+   def authService
    def resourceService
    def configurationService
    def querySnomedService
@@ -355,14 +349,14 @@ class QueryController {
     */
    def save(String name, String type, String format, String group)
    {
-      //println request.JSON // org.codehaus.groovy.grails.web.json.JSONObject
+      //println request.JSON // org.grails.web.json.JSONObject
       //println request.JSON.query.getClass()
       request.JSON.query.organizationUid = session.organization.uid
       def query = Query.newInstance(request.JSON.query)
 
 
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
-      def user = springSecurityService.getCurrentUser()
+      def user = authService.loggedInUser()
       query.author = user
       //query.cacheHQLWhere()
 
@@ -554,7 +548,7 @@ class QueryController {
    def test(String type)
    {
       /*
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
         params['ehrs'] = Ehr.list()
       }

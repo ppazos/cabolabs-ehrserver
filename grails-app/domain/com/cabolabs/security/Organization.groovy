@@ -34,6 +34,8 @@ class Organization {
    Date dateCreated
    Date lastUpdated
 
+   Account account
+
    static constraints = {
       number nullable: true, unique: true
       preferredLanguage nullable: true
@@ -73,6 +75,6 @@ class Organization {
    // this is needed so the map with key org used in UserController.update to assign roles works OK.
    @Override
    public int hashCode() {
-      this.id.intValue()
+      this.uid.hashCode()
    }
 }

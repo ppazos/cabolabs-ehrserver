@@ -33,11 +33,12 @@ import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.query.datatypes.*
-import com.cabolabs.security.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.directory.*
+import com.cabolabs.security.User
 
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+//import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.core.support.proxy.DefaultProxyHandler
 
 /*
  * usage:
@@ -67,21 +68,7 @@ class SyncMarshallersService {
       }
       else
       {
-         // do not sync admin
-         if (l[0] instanceof UserRole)
-         {
-            def adm_user_role = l.find { it.user.username == 'admin' }
-            l.remove(adm_user_role)
-         }
-
-         // do not sync default org
-         if (l[0] instanceof Organization)
-         {
-            def default_org = l.find { it.id == 1 } // TODO: we need to put a key name to the default org instead of using the id here
-            l.remove(default_org)
-         }
-
-         jb( l.collect{ toJSON(GrailsHibernateUtil.unwrapIfProxy(it), jb) } )
+         jb( l.collect{ toJSON(new DefaultProxyHandler().unwrapIfProxy(it), jb) } )
       }
    }
 
@@ -93,9 +80,7 @@ class SyncMarshallersService {
       String ext = '.xml'
       if (_commit.contentType.contains('json')) ext = '.json'
 
-      def file = new File(config.commit_logs.withTrailSeparator() +
-                          c.organizationUid.withTrailSeparator() +
-                          _commit.fileUid + ext)
+      def file = new File(config.commit_logs.withTrailSeparator() + _commit.fileUid + ext)
 
       def parsed
       if (ext == '.xml')
@@ -116,7 +101,6 @@ class SyncMarshallersService {
 
       jb.contribution {
          uid c.uid
-         organizationUid c.organizationUid
          ehrUid c.ehr.uid
 
          audit( toJSON(c.audit, jb) )
@@ -148,88 +132,26 @@ class SyncMarshallersService {
          dateCreated e.dateCreated
          subjectUid e.subject.value
          systemId e.systemId
-         organizationUid e.organizationUid
          deleted e.deleted
          master e.master
       }
    }
 
-   def toJSON(Account a, JsonBuilder jb)
-   {
-      assert jb
-      jb.account {
-         uid a.uid
-         companyName a.companyName
-         enabled a.enabled
-         contact (toJSON(a.contact, jb)) // User
-         master a.master
-         organizations (toJSON(a.organizations, jb)) // List<Organization>
-         plans(toJSON(a.allPlans, jb))
-      }
-   }
-   def toJSON(PlanAssociation pa, JsonBuilder jb)
-   {
-      jb.plan_association {
-         from  pa.from
-         to    pa.to
-         state pa.state
-         plan(toJSON(pa.plan, jb))
-      }
-   }
-   def toJSON(Plan p, JsonBuilder jb)
-   {
-      jb { // the name is set by plan association marshaller
-         name                            p.name
-         period                          p.period
-         repo_total_size_in_kb           p.repo_total_size_in_kb
-         max_opts_per_organization       p.max_opts_per_organization
-         max_organizations               p.max_organizations
-         max_api_tokens_per_organization p.max_api_tokens_per_organization
-      }
-   }
    def toJSON(User u, JsonBuilder jb)
    {
       assert jb
       jb { // doesnt add a name, it is added by the parent method
          uid(u.uid)
-         username(u.username)
+         role(u.role)
          password(u.password) // hashed with salt
          email(u.email)
-         isVirtual(u.isVirtual) // virtual for api keys
          enabled(u.enabled)
          accountExpired(u.accountExpired)
          accountLocked(u.accountLocked)
          passwordExpired(u.passwordExpired)
       }
    }
-   def toJSON(Organization o, JsonBuilder jb)
-   {
-      assert jb
-      def usr = UserRole.findAllByOrganization(o)
 
-      jb { // doesnt add a name, it is added by the parent method
-         uid(o.uid)
-         name(o.name)
-         number(o.number)
-         user_roles (toJSON(usr, jb)) // List<UserRole>
-      }
-   }
-   def toJSON(UserRole ur, JsonBuilder jb)
-   {
-      assert jb
-      jb { // doesnt add a name, it is added by the parent method
-         user(toJSON(ur.user, jb)) // User
-         role(toJSON(ur.role, jb)) // Role
-         organizationUid(ur.organization.uid)
-      }
-   }
-   def toJSON(Role r, JsonBuilder jb)
-   {
-      assert jb
-      jb { // doesnt add a name, it is added by the parent method
-         authority(r.authority)
-      }
-   }
 
    def toJSON(Query q, JsonBuilder jb)
    {
@@ -238,10 +160,8 @@ class SyncMarshallersService {
          uid q.uid
          name q.name
          type q.type
-         isPublic q.isPublic
          format q.format
          templateId q.templateId
-         organizationUid q.organizationUid
          group q.group
          isDeleted q.isDeleted
          master q.master
@@ -253,11 +173,10 @@ class SyncMarshallersService {
             queryGroup {
                uid q.queryGroup.uid
                name q.queryGroup.name
-               organizationUid q.queryGroup.organizationUid
             }
          }
 
-         author(toJSON(q.author, jb)) // User
+         //author(toJSON(q.author, jb)) // User// FIXME: sprinc sec was removed
          select(toJSON(q.select, jb)) // List<DataGet>
          where(toJSON(q.where, jb)) // List<DataCriteriaExpression>
       }
@@ -570,7 +489,7 @@ class SyncMarshallersService {
    {
       jb.ehrquery {
          uid eq.uid
-         name eq.name // TODO: check the marshall works, this is a map now
+         name eq.name
          description eq.description
          master eq.master
          queries(toJSON(eq.queries, jb))
@@ -579,9 +498,7 @@ class SyncMarshallersService {
 
    def toJSON(OperationalTemplateIndex o, JsonBuilder jb)
    {
-      def file = new File(config.opt_repo.withTrailSeparator() +
-                          o.organizationUid.withTrailSeparator() +
-                          o.fileUid +".opt")
+      def file = new File(config.opt_repo.withTrailSeparator() + o.fileUid +".opt")
 
       /* will send the OPT as is in XML
       def json = jsonService.xmlToJson(file.text)
@@ -597,7 +514,6 @@ class SyncMarshallersService {
          externalUid o.externalUid
          archetypeId o.archetypeId
          archetypeConcept o.archetypeConcept
-         organizationUid o.organizationUid
          setId o.setId
          versionNumber o.versionNumber
          lastVersion o.lastVersion
@@ -617,7 +533,6 @@ class SyncMarshallersService {
          master f.master
          folders (toJSON(f.folders ?: [], jb)) // List<Folder>
          items f.items // List<String>
-         organizationUid f.organizationUid
          if (f.ehr) // only root folders have ehr
          {
             ehrUid f.ehr.uid

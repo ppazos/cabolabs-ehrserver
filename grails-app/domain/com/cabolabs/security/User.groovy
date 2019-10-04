@@ -24,15 +24,14 @@ package com.cabolabs.security
 
 import com.cabolabs.ehrserver.account.Account
 
+ // simple auth plugin
+import com.cabolabs.security.PasswordUtils
+
 class User implements Serializable {
 
    private static final long serialVersionUID = 1
 
-   transient springSecurityService
-
-   String uid = java.util.UUID.randomUUID() as String
-
-   String username
+   String id
    String password
    String email
    boolean isVirtual = false // virtual users for ApiKey
@@ -55,10 +54,9 @@ class User implements Serializable {
 
    static belongsTo = [Account]
 
-   static transients = ['springSecurityService', 'passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account', 'avoidBeforeInsert']
+   static transients = ['passwordToken', 'authorities', 'higherAuthority', 'organizations', 'account', 'avoidBeforeInsert']
 
    static constraints = {
-      username blank: false, unique: true, matches:'^[A-Za-z\\d\\.\\-_]*$' // https://github.com/ppazos/cabolabs-ehrserver/issues/460
 
       // if user is disabled, password can be blank, is used to allow the user to reset the password
       password nullable: true, validator: { val, obj ->
@@ -85,8 +83,8 @@ class User implements Serializable {
    }
 
    static mapping = {
-      password column: '`password`'
-      //organizations lazy: false
+      password column: 'auth_key'
+      id generator:'uuid2'
    }
 
 
@@ -114,30 +112,30 @@ class User implements Serializable {
    }
 
 
-   User(String username, String password)
+   User(String email, String password)
    {
       this()
-      this.username = username
+      this.email = email
       this.password = password
    }
 
    @Override
    int hashCode()
    {
-      username?.hashCode() ?: 0
+      email?.hashCode() ?: 0
    }
 
    @Override
    String toString()
    {
-      username
+      email
    }
 
    Set<Role> getAuthorities(Organization org)
    {
       // Avoids error of finding by a non saved instance.
       if (!this.id) return [] as Set
-      UserRole.findAllByUser(this)*.role
+      UserRole.findAllByUserAndOrganization(this, org)*.role
    }
 
    /**
@@ -169,7 +167,7 @@ class User implements Serializable {
 
    protected void encodePassword()
    {
-      password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+      password = PasswordUtils.encodePassword(password)
    }
 
    def getOrganizations()
@@ -177,6 +175,11 @@ class User implements Serializable {
       UserRole.withNewSession {
          UserRole.findAllByUser(this).organization
       }
+   }
+
+   def getFirstOrganization()
+   {
+      UserRole.findByUser(this).organization
    }
 
    static List allForRole(authority)

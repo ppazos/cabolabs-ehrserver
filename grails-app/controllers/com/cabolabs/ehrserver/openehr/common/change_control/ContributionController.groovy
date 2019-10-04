@@ -23,22 +23,17 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import org.springframework.dao.DataIntegrityViolationException
-
-import grails.plugin.springsecurity.SpringSecurityUtils
-
 import com.cabolabs.security.Organization
 import com.cabolabs.security.User
-
 import grails.converters.*
 import grails.util.Holders
 import groovy.json.*
 import com.cabolabs.ehrserver.parsers.JsonService
-
 import com.cabolabs.ehrserver.sync.SyncMarshallersService
 
 class ContributionController {
 
-   def springSecurityService
+   def authService
    def configurationService
    def jsonService
    def syncMarshallersService
@@ -68,7 +63,7 @@ class ContributionController {
 
       def list, org, orgs
       def c = Contribution.createCriteria()
-      def us = User.findByUsername(springSecurityService.authentication.principal.username)
+      def us = authService.loggedInUser
 
       if (organizationUid)
       {
@@ -80,7 +75,7 @@ class ContributionController {
          else
          {
             // Have access to organizationUid?
-            if (!us.organizations.uid.contains(organizationUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+            if (!us.organizations.uid.contains(organizationUid) && !authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
             {
                flash.message = "contribution.list.feedback.cantAccessOrgShowingForCurrentOrg"
                organizationUid = null
@@ -88,7 +83,7 @@ class ContributionController {
          }
       }
 
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          // for now admins can see contributions for all the orgs
 
@@ -154,7 +149,7 @@ class ContributionController {
           {
              eq('organizationUid', organizationUid)
           }
-          else if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")) // or filter by current org for non admins
+          else if (!authService.loggedInUserHasAnyRole("ROLE_ADMIN")) // or filter by current org for non admins
           {
              eq('organizationUid', org.uid)
           }

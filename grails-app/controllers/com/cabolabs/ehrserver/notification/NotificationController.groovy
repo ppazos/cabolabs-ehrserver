@@ -24,12 +24,11 @@ package com.cabolabs.ehrserver.notification
 import grails.converters.*
 import grails.util.Holders
 import com.cabolabs.security.*
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.validation.ValidationException
 
 class NotificationController {
 
-   def springSecurityService
+   def authService
    def configurationService
 
    def config = Holders.config.app
@@ -47,14 +46,13 @@ class NotificationController {
    def create()
    {
       def users
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          users = User.list()
       }
       else
       {
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         def org = session.organization
          def c = User.createCriteria()
          users = c.list (max: max, offset: offset, sort: sort, order: order) {
             organizations {
@@ -88,7 +86,7 @@ class NotificationController {
 
    def newNotifications(String forSection, String forOrganization, Long forUser)
    {
-      def loggedInUser = springSecurityService.currentUser
+      def loggedInUser = authService.loggedInUser
 
       // List<NotificationStatus>
       def notifications = Notification.lastNotifications(forSection, session.organization.uid, loggedInUser.id, session.lang)
@@ -98,7 +96,7 @@ class NotificationController {
 
    def dismiss(Notification notification)
    {
-      def loggedInUser = springSecurityService.currentUser
+      def loggedInUser = authService.loggedInUser
       def status = NotificationStatus.findByNotificationAndUser(notification, loggedInUser)
       status.status = 'dismissed'
       status.save(failOnError: true)

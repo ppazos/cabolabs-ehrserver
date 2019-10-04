@@ -6,7 +6,7 @@ import com.cabolabs.openehr.opt.model.*
 class OptGuiTagLib {
 
     //static defaultEncodeAs = [taglib:'html']
-    //static defaultEncodeAs = [taglib:'raw']
+//    static defaultEncodeAs = [taglib:'raw']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
     // icon for each IM type
@@ -35,8 +35,7 @@ class OptGuiTagLib {
       'DV_DATE':        'calendar',
       'DV_DATE_TIME':   'calendar',
       'DV_TEXT':        'font',
-      'DV_CODED_TEXT':  'list-ul',
-      'CODE_PHRASE':    'list-ul'
+      'DV_CODED_TEXT':  'list-ul'
     ]
 
     // attributes of the IM that are not in the OPT

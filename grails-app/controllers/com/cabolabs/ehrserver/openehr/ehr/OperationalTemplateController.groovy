@@ -26,7 +26,6 @@ import grails.util.Holders
 import groovy.xml.MarkupBuilder
 import net.pempek.unicode.UnicodeBOMInputStream
 import com.cabolabs.openehr.opt.manager.OptManager
-import com.cabolabs.archetype.OperationalTemplateIndexer
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import grails.converters.*
 import com.cabolabs.ehrserver.account.Plan
@@ -40,8 +39,9 @@ class OperationalTemplateController {
 
    def config = Holders.config.app
    def xmlValidationService
-   def springSecurityService
+   def authService
    def configurationService
+   def operationalTemplateIndexerService
 
    def syncMarshallersService
 
@@ -82,8 +82,7 @@ class OperationalTemplateController {
     */
    def generate()
    {
-      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      ti.indexAll(session.organization)
+      operationalTemplateIndexerService.indexAll(session.organization)
 
       // load opt in manager cache
       def optMan = OptManager.getInstance()
@@ -109,7 +108,7 @@ class OperationalTemplateController {
          def errors = []
          def res
 
-         def user = springSecurityService.getCurrentUser()
+         def user = authService.loggedInUser()
 
          // Repo size check and max opt check max_opts_per_organization
          def account = user.account
@@ -250,8 +249,7 @@ class OperationalTemplateController {
                old_version.lastVersion = false
                //old_version.save() // the deactivation already saves
 
-               def indexer = new OperationalTemplateIndexer()
-               indexer._event_deactivate(old_version)
+               operationalTemplateIndexerService._event_deactivate(old_version)
 
                // data for new version
                setId = old_version.setId
@@ -271,10 +269,9 @@ class OperationalTemplateController {
 
 
          // Will index the opt nodes, and help deleting existing ones when updating
-         def indexer = new OperationalTemplateIndexer()
 
          // saves OperationalTemplateIndex to the DB
-         def opt = indexer.createOptIndex(template, session.organization)
+         def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization)
 
          // Prepare file
          def destination = opt_repo_org_path + opt.fileUid + '.opt'
@@ -299,8 +296,8 @@ class OperationalTemplateController {
          }
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
-         indexer.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         indexer.index(template, null, session.organization)
+         operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
+         operationalTemplateIndexerService.index(template, null, session.organization)
 
 
          // load opt in manager cache
@@ -424,8 +421,7 @@ class OperationalTemplateController {
          return
       }
 
-      def indexer = new OperationalTemplateIndexer()
-      indexer._event_activate(opt)
+      operationalTemplateIndexerService._event_activate(opt)
 
       // show should be for the latest version
       def c = OperationalTemplateIndex.createCriteria()
@@ -469,8 +465,7 @@ class OperationalTemplateController {
          return
       }
 
-      def indexer = new OperationalTemplateIndexer()
-      indexer._event_deactivate(opt)
+      operationalTemplateIndexerService._event_deactivate(opt)
 
       redirect action:'show', params: [uid:latest_version_uid]
    }
@@ -480,7 +475,6 @@ class OperationalTemplateController {
     */
    def empty_trash()
    {
-      def ti = new OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
       opts.each { opt ->
 
@@ -491,10 +485,10 @@ class OperationalTemplateController {
          if (!moved) println "NOT MOVED!"
 
          // deletes OPT and references from DB
-         ti.deleteOptReferences(opt, true)
+         operationalTemplateIndexerService.deleteOptReferences(opt, true)
+
          /*
-         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         ti.indexAll(session.organization)
+         operationalTemplateIndexerService.indexAll(session.organization)
          */
 
          // load opt in manager cache

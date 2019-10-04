@@ -1,0 +1,224 @@
+---
+server:
+   port: 8090
+
+---
+languages:
+   - en
+   - es
+   - pt
+
+---
+stateless:
+   secretKey: 50e56ace-6b30-44c0-8012-3529a79e3773
+   expirationTime: 1440 # expiration time in minutes
+
+---
+app:
+   opt_repo_namespace: 4d6fe9fc-9dc9-4225-97a4-f4c86001d754
+   version_repo: versions
+   commit_logs: commits
+   opt_repo: opts
+   allow_web_user_register: false
+   list_max: 20
+   version_xsd: xsd/Version.xsd
+   xslt: xsd/openEHR_RMtoHTML.xsl
+   opt_xsd: xsd/OperationalTemplate.xsd
+   terminologies:
+      - terminology/openehr_terminology_en.xml
+      - terminology/openehr_terminology_es.xml
+      - terminology/openehr_terminology_pt.xml
+   security:
+      min_password_length: 6
+   l10n:
+      locale: en
+      decimal_symbol: ',' # separation between integer numbers and decimal numbers
+      decimal_digits: 2   # format for digits after decimal point
+      digit_grouping: '.' # digit grouper for big numbers ej. 1.000.000
+      display_leading_zeros: true # if false, 0,7 is formatted to ,7
+
+      # // formatos de fechas
+      # // ==================
+      # //  - ref: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+      # //
+      # // h hora 1-12
+      # // H hora 0-23
+      # // a marcador AM/PM
+      # // m minutis
+      # // S milisegundos
+      # // Z zona horaria (RFC 822)
+      #
+      # // formatos para procesamiento de fechas
+      # // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
+      datetime_format: "yyyyMMdd'T'HHmmss,SSSX"
+      date_format: "yyyyMMdd"
+      time_format: "HHmmss"
+
+      # Extended formats supported by openEHR --------------------------------------------------------------
+      # 2015-12-02T17:41:56.809Z
+      ext_datetime_format: "yyyy-MM-dd'T'HH:mm:ss,SSSX" # contains timezone e.g. -0300
+      ext_datetime_format_point: "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+      # If the time is in UTC, add a Z directly after the time without a space. Z is the zone
+      # designator for the zero UTC offset. "09:30 UTC" is therefore represented as "09:30Z" or "0930Z".
+      ext_datetime_utcformat: "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
+      ext_datetime_utcformat_point: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+      # ----------------------------------------------------------------------------------------------------
+
+      # Dates without seconds fraction
+      datetime_format_nof: "yyyyMMdd'T'HHmmssX"
+      ext_datetime_format_nof: "yyyy-MM-dd'T'HH:mm:ssX"
+      ext_datetime_utcformat_nof: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+
+      # formatos para mostrar las fechas al usuario
+      display_datetime_format: "yyyy/MM/dd HH:mm:ss (X)"
+      display_date_format: "yyyy/MM/dd"
+      display_time_format: "HH:mm:ss"
+
+      db_datetime_format: "yyyy-MM-dd HH:mm:ss" # mysql no soporta fragment o timezone, otros dbms si
+      db_date_format: "yyyy-MM-dd"
+      db_time_format: "HH:mm:ss"
+
+---
+grails:
+    mail:
+       host: ${EHRSERVER_EMAIL_HOST}
+       port: ${EHRSERVER_EMAIL_PORT}
+       username: ${EHRSERVER_EMAIL_USER}
+       password: ${EHRSERVER_EMAIL_PASS}
+       default:
+           from: ${EHRSERVER_EMAIL_FROM}
+
+---
+grails:
+    profile: web
+    codegen:
+        defaultPackage: ehrserver2
+    gorm:
+        reactor:
+            # Whether to translate GORM events into Reactor events
+            # Disabled by default for performance reasons
+            events: false
+info:
+    app:
+        name: 'cabolabs-ehrserver'
+        version: '2.0.alpha'
+        grailsVersion: '3.3.10'
+spring:
+    main:
+        banner-mode: "off"
+    groovy:
+        template:
+            check-template-location: false
+
+# Spring Actuator Endpoints are Disabled by Default
+endpoints:
+    enabled: false
+    jmx:
+        enabled: true
+
+---
+grails:
+    mime:
+        disable:
+            accept:
+                header:
+                    userAgents:
+                        - Gecko
+                        - WebKit
+                        - Presto
+                        - Trident
+        types:
+            all: '*/*'
+            atom: application/atom+xml
+            css: text/css
+            csv: text/csv
+            form: application/x-www-form-urlencoded
+            html:
+              - text/html
+              - application/xhtml+xml
+            js: text/javascript
+            json:
+              - application/json
+              - text/json
+            multipartForm: multipart/form-data
+            pdf: application/pdf
+            rss: application/rss+xml
+            text: text/plain
+            hal:
+              - application/hal+json
+              - application/hal+xml
+            xml:
+              - text/xml
+              - application/xml
+    urlmapping:
+        cache:
+            maxsize: 1000
+    controllers:
+        defaultScope: singleton
+    converters:
+        encoding: UTF-8
+    views:
+        default:
+            codec: html
+        gsp:
+            encoding: UTF-8
+            htmlcodec: xml
+            codecs:
+                expression: html
+                scriptlets: html
+                taglib: none
+                staticparts: none
+    exceptionresolver:
+        params:
+            exclude:
+                - password
+                - pass
+                - email
+endpoints:
+    jmx:
+        unique-names: true
+
+---
+hibernate:
+    cache:
+        queries: false
+        use_second_level_cache: false
+        use_query_cache: false
+dataSource:
+    pooled: true
+    jmxExport: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: toor
+
+environments:
+    development:
+        dataSource:
+            dbCreate: create-drop
+            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC
+    test:
+        dataSource:
+            dbCreate: update
+            url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC
+    production:
+        dataSource:
+            dbCreate: none
+            url: jdbc:mysql://localhost:3306/ehrserver2_prod?useTimezone=true&serverTimezone=UTC
+            properties:
+                jmxEnabled: true
+                initialSize: 5
+                maxActive: 50
+                minIdle: 5
+                maxIdle: 25
+                maxWait: 10000
+                maxAge: 600000
+                timeBetweenEvictionRunsMillis: 5000
+                minEvictableIdleTimeMillis: 60000
+                validationQuery: SELECT 1
+                validationQueryTimeout: 3
+                validationInterval: 15000
+                testOnBorrow: true
+                testWhileIdle: true
+                testOnReturn: false
+                jdbcInterceptors: ConnectionState
+                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED

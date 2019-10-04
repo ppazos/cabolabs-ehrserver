@@ -1,0 +1,6 @@
+#Fri, 04 Oct 2019 17:32:39 -0300
+
+info.app.version=2.0.alpha
+info.app.name=cabolabs-ehrserver
+grails.env=production
+info.app.grailsVersion=3.3.10

@@ -26,8 +26,8 @@ import grails.transaction.Transactional
 import com.cabolabs.ehrserver.parsers.JsonService
 import com.cabolabs.ehrserver.parsers.XmlService
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.json.JSONObject
-import org.codehaus.groovy.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
 import groovy.json.JsonBuilder
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
@@ -35,15 +35,11 @@ import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.query.datatypes.*
-import com.cabolabs.security.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.directory.*
-
-import com.cabolabs.archetype.OperationalTemplateIndexer
-
 import java.text.SimpleDateFormat
-
 import com.cabolabs.openehr.opt.manager.OptManager
+import com.cabolabs.security.User
 
 @Transactional
 class SyncParserService {
@@ -52,13 +48,11 @@ class SyncParserService {
 
    def jsonService
    def xmlService
+   def operationalTemplateIndexerService
 
    /*
    sync order:
-
-   Account
-   Organization (needs Account)
-   UserRole, User (needs Org)
+   User
    EHR (needs Org)
    OPT (needs Org)
    Contribution (needs EHR and OPT for each Version in the Commit)
@@ -73,7 +67,6 @@ class SyncParserService {
       // no need to make the biding, since XmlService already does that from the commit payload
       def contribution /* = new Contribution(
          uid: j.uid,
-         organizationUid: j.organizationUid,
          audit: fromJSONAuditDetails(j.audit),
          ehr: Ehr.findByUid(j.ehrUid), // EHR should be synced before Contribution
          master: false
@@ -117,91 +110,16 @@ class SyncParserService {
 
    Ehr fromJSONEhr(JSONObject j)
    {
-      // FIXME: should check the orgUid exists!
       def ehr = new Ehr(
          systemId: j.systemId,
          uid: j.uid,
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
          subject: new PatientProxy(value: j.subjectUid),
-         organizationUid: j.organizationUid,
          deleted: j.deleted,
          master: false
       )
 
       return ehr
-   }
-
-   Account fromJSONAccount(JSONObject j)
-   {
-      def organizations = []
-      j.organizations.each{ org ->
-         organizations << fromJSONOrganization(org)
-      }
-
-      if (!organizations) println "no orgs"
-
-      // if already synced, using email instead of uid because uids generated on
-      // different systems, e.g. for the admin, are different, but the email is
-      // unique accross systems
-      def contact = User.findByEmail(j.contact.email)
-      if (!contact)
-      {
-         contact = fromJSONUser(j.contact)
-      }
-      if (!contact) println "no contact"
-
-      def account = new Account(
-         uid: j.uid,
-         companyName: j.companyName,
-         enabled: j.enabled,
-         contact: contact,
-         master: false
-      )
-
-      organizations.each {
-         account.addToOrganizations(it)
-      }
-
-      return account
-   }
-
-   // Receivesthe json part of account.plan_assoiation
-   List fromJSONPlanAssociations(JSONArray j, Account a)
-   {
-      def plan_assocs = []
-      def plan_assoc
-      j.each { jplan_assoc ->
-
-         plan_assoc = new PlanAssociation(
-            account: a,
-            from: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(jplan_assoc.plan_association.from),
-            to: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(jplan_assoc.plan_association.to),
-            state: jplan_assoc.plan_association.state
-         )
-
-         def plan
-         if (Plan.countByName(jplan_assoc.plan_association.plan.name) == 0)
-         {
-            plan = new Plan(
-               name:                            jplan_assoc.plan_association.plan.name,
-               period:                          jplan_assoc.plan_association.plan.period,
-               repo_total_size_in_kb:           jplan_assoc.plan_association.plan.repo_total_size_in_kb,
-               max_opts_per_organization:       jplan_assoc.plan_association.plan.max_opts_per_organization,
-               max_organizations:               jplan_assoc.plan_association.plan.max_organizations,
-               max_api_tokens_per_organization: jplan_assoc.plan_association.plan.max_api_tokens_per_organization
-            )
-         }
-         else
-         {
-            plan = Plan.findByName(jplan_assoc.plan_association.plan.name)
-         }
-
-         plan_assoc.plan = plan
-
-         plan_assocs << plan_assoc
-      }
-
-      return plan_assocs
    }
 
    User fromJSONUser(JSONObject j)
@@ -212,10 +130,9 @@ class SyncParserService {
       def user = new User(
          avoidBeforeInsert: true, // do not encode pass, is already encoded
          uid: j.uid,
-         username: j.username,
+         role: j.role,
          password: j.password, // already encoded
          email: j.email,
-         isVirtual: j.isVirtual,
          enabled: j.enabled,
          accountExpired: j.accountExpired,
          accountLocked: j.accountLocked,
@@ -224,49 +141,6 @@ class SyncParserService {
 
       return user
    }
-
-   Organization fromJSONOrganization(JSONObject j)
-   {
-      def org = new Organization(
-         uid: j.uid,
-         name: j.name,
-         number: j.number
-      )
-
-      // controller should parse the j.user_roles array to get the users of the org
-
-      return org
-   }
-
-   /**
-    * called only if the UserRole for the user, org and role doesnt exists.
-    */
-   UserRole fromJSONUserRole(JSONObject j)
-   {
-      def user = User.findByUid(j.uid)
-      if (!user)
-      {
-         user = fromJSONUser(j.user)
-      }
-
-      // Roles are always on the DB since are created by bootstrap
-      def role = Role.findByAuthority(j.authority)
-
-      // Organization should be synced before user roles
-      def org = Organization.findByUid(j.organizationUid)
-
-      if (!org) throw new Exception("Organization not synced "+ j.organizationUid)
-
-      def ur = new UserRole(user, role, org)
-      return ur
-   }
-
-   /*
-   Role fromJSONRole(JSONObject r)
-   {
-
-   }
-   */
 
    /*
     * PRE: orgs and users should be synced before
@@ -286,8 +160,10 @@ class SyncParserService {
          }
       }
 
+      // FIXME: sprinc sec was removed
       // FIXME: this will fail if user is admin, since admin is not synced,
       // will be null when get by uid
+      /*
       def author = User.findByUid(jq.author.uid)
 
       // if admin is the author, because admins are not synced, it wont find it by uid
@@ -300,16 +176,16 @@ class SyncParserService {
             author = User.findByUsername('admin')
          }
       }
+      */
+      def author
 
       def q = new Query(
          uid: jq.uid,
-         name: jq.name, // TODO: test if this binds OK since it should be a map now
+         name: jq.name,
          type: jq.type,
-         isPublic: jq.isPublic,
          isCount: jq.isCount,
          format: jq.format,
          templateId: jq.templateId,
-         organizationUid: jq.organizationUid,
          group: jq.group,
          isDeleted: jq.isDeleted,
          queryGroup: qg,
@@ -423,7 +299,7 @@ class SyncParserService {
    {
       def eq = new EhrQuery(
          uid: j.uid,
-         name: j.name, // TODO: check this is parsed correctly, is a map now
+         name: j.name,
          description: j.description,
          master: false
       )
@@ -447,7 +323,6 @@ class SyncParserService {
          externalUid: j.externalUid,
          archetypeId: j.archetypeId,
          archetypeConcept: j.archetypeConcept,
-         organizationUid: j.organizationUid,
          isActive: j.isActive,
          master: false,
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
@@ -458,18 +333,17 @@ class SyncParserService {
 
       def xml = j.opt
 
-      def opt_repo_org_path = config.opt_repo.withTrailSeparator() + j.organizationUid.withTrailSeparator()
+      def opt_repo_org_path = config.opt_repo.withTrailSeparator()
       def destination = opt_repo_org_path + templateIndex.fileUid + '.opt'
       File fileDest = new File( destination )
       fileDest << xml
 
       // Generates OPT and archetype item indexes just for the uploaded OPT
-      def indexer = new OperationalTemplateIndexer()
-      indexer.templateIndex = templateIndex // avoids creating another opt index internally and use the one created here
+      operationalTemplateIndexerService.templateIndex = templateIndex // avoids creating another opt index internally and use the one created here
 
       def slurper = new XmlSlurper(false, false)
       def template = slurper.parseText(xml)
-      indexer.index(template, null, Organization.findByUid(j.organizationUid))
+      operationalTemplateIndexerService.index(template, null)
 
       // load opt in manager cache
       // TODO: just load the newly created/updated one
@@ -486,7 +360,6 @@ class SyncParserService {
          uid: j.uid,
          name: j.name,
          master: false,
-         organizationUid: j.organizationUid,
          items: j.items // List<String>
       )
 

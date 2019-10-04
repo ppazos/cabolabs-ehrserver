@@ -30,12 +30,11 @@ import grails.util.Holders
 class RequestMapController {
 
    def configurationService
-   def springSecurityService
-   
+
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
    def config = Holders.config.app
-   
+
    def index() {
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
       respond RequestMap.list(params), model:[requestMapInstanceCount: RequestMap.count()]
@@ -49,7 +48,7 @@ class RequestMapController {
    {
       def roles = (Role.list() - Role.findByAuthority(Role.US)).authority
       roles << 'IS_AUTHENTICATED_ANONYMOUSLY'
-   
+
       respond new RequestMap(params), model: [roles: roles]
    }
 
@@ -66,9 +65,9 @@ class RequestMapController {
       }
 
       requestMapInstance.save flush:true
-      
+
       // 5.6.1 https://grails-plugins.github.io/grails-spring-security-core/latest/#requestmapInstances
-      springSecurityService.clearCachedRequestmaps()
+      //springSecurityService.clearCachedRequestmaps()
 
       request.withFormat {
          form multipartForm {
@@ -99,9 +98,9 @@ class RequestMapController {
       }
 
       requestMapInstance.save flush:true
-      
+
       // 5.6.1 https://grails-plugins.github.io/grails-spring-security-core/latest/#requestmapInstances
-      springSecurityService.clearCachedRequestmaps()
+      //springSecurityService.clearCachedRequestmaps()
 
       request.withFormat {
          form multipartForm {

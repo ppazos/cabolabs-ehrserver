@@ -24,13 +24,8 @@ package ehr
 
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Role
-import com.cabolabs.security.Organization
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 class EhrTagLib {
-
-   def springSecurityService
 
    def hasEhr = { attrs, body ->
 
@@ -102,122 +97,5 @@ class EhrTagLib {
       html += '</div></div>' // /folder_folders, /folder
 
       return html
-   }
-
-
-   /**
-    * Renders a select with the organizations of the current logged user.
-    * This is used in the query test UID to filter by organizationUid.
-    */
-   def selectWithCurrentUserOrganizations = { attrs, body ->
-
-      def loggedInUser = springSecurityService.currentUser
-      if(loggedInUser)
-      {
-         def args = [:]
-
-         // admins will see every org
-         if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
-         {
-            args.from = Organization.list()
-         }
-         else
-         {
-            args.from = loggedInUser.organizations
-         }
-
-         args.optionKey = 'uid'
-         args.optionValue = {it.name +' '+ it.uid} //'name'
-         args.noSelection = ['':message(code:'defaut.select.selectOne')] // TODO: i18n
-         args.class = attrs.class ?: '' // allows set style from outside
-
-         if (attrs.multiple)
-         {
-            args.multiple = 'true'
-            args.size = 5
-         }
-
-         // add the rest of the attrs to the select args, name, value, class, etc
-         args += attrs
-
-         out << g.select(args) // name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value
-      }
-   }
-
-   // FIXME: the roles I can assign are per organization!
-   /**
-    * Admins can assign any role.
-    * OrgAdmins can assig OrgAdmins and OrgStaff.
-    */
-   def selectWithRolesICanAssign = { attrs, body ->
-
-      def loggedInUser = springSecurityService.currentUser
-      if(loggedInUser)
-      {
-         def roles = Role.list() // all the roles!
-
-         def args = [:]
-         args.name = attrs.name
-         args.from = roles.authority
-         args.class = attrs.class ?: '' // allows set style from outside
-
-         if (attrs.user_values)
-         {
-            // used for the edit, roles are saved in the user, we get them from there
-            args.value = attrs.user_values
-         }
-         else
-         {
-            // values from params, used when the create fails, ex. when no organization is selected, because the roles are not saved to the user when that happens
-            args.value = attrs.value
-         }
-
-         if (attrs.multiple)
-         {
-            args.multiple = 'true'
-            args.size = 5
-         }
-
-         // Check the higest role not containes!
-         def hrole = loggedInUser.getHigherAuthority(session.organization)
-
-         if (hrole.authority != Role.AD)
-         {
-            args.from.removeElement(Role.AD)
-            if (hrole.authority != Role.AM)
-            {
-               args.from.removeElement(Role.AM)
-
-               // If user is not admin or account mgt, is org man because user cant login on the console.
-            }
-         }
-
-         out << g.select(args)
-      }
-   }
-
-   def canEditUser = { attrs, body ->
-
-      if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN"))
-      {
-         out << body()
-      }
-      else
-      {
-         def userInstance = attrs.userInstance // user to edit
-         def userHigherRole = userInstance.getHigherAuthority(session.organization)
-
-         def loggedInUser = springSecurityService.currentUser
-         if(loggedInUser)
-         {
-            def role = loggedInUser.getHigherAuthority(session.organization)
-
-            // if the logged user has a role higher than the highest role of the user, he can edit it.
-            if (role.higherThan(userHigherRole))
-            {
-               out << body()
-            }
-         }
-      }
    }
 }

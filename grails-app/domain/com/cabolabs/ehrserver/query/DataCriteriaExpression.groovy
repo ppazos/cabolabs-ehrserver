@@ -47,8 +47,8 @@ class DataCriteriaExpression {
    // TODO: move logic to com.cabolabs.util.QueryUtils
 
    // sets the parents of each node, that is needed for the algorithm to get the expression from the tree
-   private static def prepareCriteriaTree(org.codehaus.groovy.grails.web.json.JSONObject criteria,
-                                          org.codehaus.groovy.grails.web.json.JSONObject parent = null)
+   private static def prepareCriteriaTree(org.grails.web.json.JSONObject criteria,
+                                          org.grails.web.json.JSONObject parent = null)
    {
       if (parent) // criteria is not root
       {
@@ -67,7 +67,7 @@ class DataCriteriaExpression {
    // a list of DataCriteriaExpression, that is the associative expression
    // to be stored in the database as the binary tree for the complex
    // boolean expression in Query.where
-   static List treeToExpression(org.codehaus.groovy.grails.web.json.JSONObject criteria)
+   static List treeToExpression(org.grails.web.json.JSONObject criteria)
    {
       //println criteria.toString()
       prepareCriteriaTree(criteria) // sets all node.parent
@@ -183,7 +183,7 @@ class DataCriteriaExpression {
 
 
    // returns the expression, just with the simple criterias on it
-   private static List getInitialExpression(org.codehaus.groovy.grails.web.json.JSONObject criteria)
+   private static List getInitialExpression(org.grails.web.json.JSONObject criteria)
    {
       List leaves = []
       if (criteria._type != 'COND') // is complex

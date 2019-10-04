@@ -23,41 +23,35 @@
 package com.cabolabs.ehrserver.api
 
 import java.text.SimpleDateFormat
-import com.cabolabs.ehrserver.query.*
+import groovy.util.slurpersupport.GPathResult
+import java.lang.reflect.UndeclaredThrowableException
+import javax.xml.bind.ValidationException
+import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
+import com.cabolabs.util.DateParser
+import grails.transaction.Transactional
+import grails.util.Environment
+import grails.util.Holders
+import grails.converters.*
+
+import com.cabolabs.ehrserver.account.Plan
 import com.cabolabs.ehrserver.api.structures.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.DataValueIndex
+import com.cabolabs.ehrserver.exceptions.*
+import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
-import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.*
-import com.cabolabs.ehrserver.notification.Notification
-import groovy.util.slurpersupport.GPathResult
-import java.lang.reflect.UndeclaredThrowableException
-import javax.xml.bind.ValidationException
-import net.kaleidos.grails.plugin.security.stateless.annotation.SecuredStateless
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.authentication.LockedException
-import org.springframework.security.authentication.DisabledException
-import org.springframework.security.authentication.AccountExpiredException
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.AuthenticationProvider
-import com.cabolabs.ehrserver.account.Plan
-import grails.plugin.springsecurity.authentication.encoding.BCryptPasswordEncoder // passwordEncoder
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
-import com.cabolabs.util.DateParser
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
-import com.cabolabs.ehrserver.exceptions.*
-import grails.transaction.Transactional
-import grails.util.Environment
-import grails.util.Holders
-import grails.converters.*
+import com.cabolabs.security.*
+
 
 /**
  * @author Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com>
@@ -84,8 +78,6 @@ class RestController {
 
    // test stateless security
    def statelessTokenProvider
-   //def userService
-   def passwordEncoder = Holders.grailsApplication.mainContext.getBean('passwordEncoder')
 
    // This is used to generate controlled error codes.
    // See: https://github.com/ppazos/cabolabs-ehrserver/wiki/API-error-codes-and-messages
@@ -115,7 +107,8 @@ class RestController {
    }
 
    // TODO: I18N
-   // FIXME: move logic to service
+   // moved to RestAuthController
+   /*
    def login()
    {
       // https://github.com/ppazos/cabolabs-ehrserver/blob/rest_security/src/groovy/com/cabolabs/security/AuthFilter.groovy
@@ -160,9 +153,7 @@ class RestController {
          }
 
          // Check password
-         //assert this.passwordEncoder != null
-
-         if (!passwordEncoder.isPasswordValid(user.password, password, null))
+         if (!PasswordUtils.isPasswordValid(user.password, password, null))
          {
             throw new BadCredentialsException("Authentication failed")
          }
@@ -210,6 +201,7 @@ class RestController {
          renderError(e.message, 'e01.0001', 401)
       }
    }
+   */
 
 
    private void renderError(String msg, String errorCode, int status)

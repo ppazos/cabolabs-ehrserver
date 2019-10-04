@@ -25,7 +25,7 @@ package com.cabolabs.ehrserver.ehr
  * Generates a structure of folders templates with names that can be used to generate
  * many structures of concrete folders from the same folder template, to populate an
  * initial EHR.directory with that folder structure.
- * 
+ *
  * This class acts as the container of the structure, like a root. The name is to display
  * on the list of FolderTemplates. The structure is defined by the items.
  */
@@ -34,7 +34,7 @@ class FolderTemplate {
    String name
    String description
    String organizationUid
-   
+
    List folders = []
    static hasMany = [folders: FolderTemplateItem]
 
@@ -45,24 +45,24 @@ class FolderTemplate {
    static mapping = {
      organizationUid index: 'org_uid_idx'
    }
-   
-   static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+
+   static def newInstance(org.grails.web.json.JSONObject json)
    {
       def ftpl = new FolderTemplate()
-      
+
       ftpl.updateInstance(json)
-      
+
       return ftpl
    }
-   
-   def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+
+   def updateInstance(org.grails.web.json.JSONObject json)
    {
       this.name            = json['name']
       this.description     = json['description']
       this.organizationUid = json['organizationUid']
-      
+
       def traverse_item // needs to be declared before defined to work recursively
-      
+
       traverse_item = { json_item ->
          def item = new FolderTemplateItem(name: json_item['name'])
          json_item['folders'].each { child ->
@@ -71,7 +71,7 @@ class FolderTemplate {
          }
          return item
       }
-      
+
       this.folders.clear()
       json['folders'].each {
          println it

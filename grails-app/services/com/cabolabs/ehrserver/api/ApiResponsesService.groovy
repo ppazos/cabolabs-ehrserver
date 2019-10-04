@@ -8,24 +8,24 @@ import grails.util.Environment
 
 @Transactional
 class ApiResponsesService {
-   
+
    def grailsApplication
-   
+
    def feedback(message, type, code, format)
    {
       if (!format) format = 'json'
       format = format.toLowerCase()
-      
+
       if (format == 'json') return feedback_json(message, type, code)
       if (format == 'xml') return feedback_xml(message, type, code)
       return feedback_json(message, type, code) // default
    }
-   
+
    def feedback_json(message, type, code)
    {
       return feedback_json(message, type, code, [])
    }
-   
+
    def feedback_json(message, type, code, details)
    {
       def feedback = [
@@ -35,10 +35,10 @@ class ApiResponsesService {
             code: 'EHRSERVER::API::RESPONSE_CODES::'+ code
          ]
       ]
-      
+
       if (details)
       {
-         def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+         def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
          feedback.result.details = []
          details.each {
             if (it instanceof String)
@@ -51,10 +51,10 @@ class ApiResponsesService {
             }
          }
       }
-      
+
       return feedback as JSON
    }
-   
+
    def feedback_json(message, type, code, details, exception)
    {
       def feedback = [
@@ -64,10 +64,10 @@ class ApiResponsesService {
             code: 'EHRSERVER::API::RESPONSE_CODES::'+ code
          ]
       ]
-      
+
       if (details)
       {
-         def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+         def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
          feedback.result.details = []
          details.each { // TODO: add this to XML feedback
             if (it instanceof String)
@@ -80,7 +80,7 @@ class ApiResponsesService {
             }
          }
       }
-      
+
       if (exception && Environment.current == Environment.DEVELOPMENT)
       {
          StringWriter ewriter = new StringWriter()
@@ -90,15 +90,15 @@ class ApiResponsesService {
          String _trace = ewriter.toString()
          feedback.result.trace = _trace
       }
-      
+
       return feedback as JSON
    }
-   
+
    def feedback_xml(message, type, code)
    {
       return feedback_xml(message, type, code, [])
    }
-   
+
    def feedback_xml(message, type, code, details)
    {
       def writer = new StringWriter()
@@ -121,7 +121,7 @@ class ApiResponsesService {
 
       return feedback
    }
-   
+
    def feedback_xml(message, type, code, details, exception)
    {
       def writer = new StringWriter()
@@ -145,7 +145,7 @@ class ApiResponsesService {
             org.codehaus.groovy.runtime.StackTraceUtils.sanitize(exception).printStackTrace(printWriter)
             printWriter.flush()
             String _trace = ewriter.toString()
-            
+
             trace( _trace )
          }
       }

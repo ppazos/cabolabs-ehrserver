@@ -87,7 +87,7 @@ class DataCriteriaDV_PROPORTION extends DataCriteria {
                 // for this attribute values are known, for attributes of coded text
                 // or ordinal we can lookup the OPT to see if a value list constraint
                 // is defined, and grab the values from there.
-                eq_one: DvProportionIndex.constraints.type.inList
+                eq_one: DvProportionIndex.constrainedProperties.type.inList
             ]
          ]
       ]

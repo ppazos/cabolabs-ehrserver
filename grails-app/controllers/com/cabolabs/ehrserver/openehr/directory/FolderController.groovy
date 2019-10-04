@@ -28,7 +28,6 @@ import grails.transaction.Transactional
 import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 
 // test
@@ -38,7 +37,7 @@ import groovy.json.*
 @Transactional(readOnly = true)
 class FolderController {
 
-   def springSecurityService
+   def authService
    def configurationService
    def syncMarshallersService
 
@@ -59,17 +58,14 @@ class FolderController {
       def list, count
 
       // All folders for admins, filtered by org uid for other roles
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          list = Folder.list(params)
          count = Folder.count()
       }
       else
       {
-         // auth token used to login
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
-
+         def org = Organization.findByNumber(session.organization)
          list = Folder.findAllByOrganizationUid(org.uid, params)
          count = Folder.countByOrganizationUid(org.uid)
       }
@@ -85,7 +81,7 @@ class FolderController {
    def create()
    {
       // Filter ehrs by the ehrs that don't have a root folder and are ehrs the user can see by it's org uids
-      def user = springSecurityService.getCurrentUser()
+      def user = authService.loggedInUser()
       def ehrs = Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
       respond new Folder(params), model: [ehrs: ehrs]
    }
@@ -102,11 +98,9 @@ class FolderController {
       /*
       // FIXME: the org uid of the folder should be the same as the owning ehr...
       // admins can select the org uid, for other roles is the org used to login
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (!authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
-         // auth token used to login
-         def auth = springSecurityService.authentication
-         def org = Organization.findByNumber(auth.organization)
+         def org = Organization.findByNumber(session.organization)
          //println "org "+ org
          //println "org uid "+ org.uid
 

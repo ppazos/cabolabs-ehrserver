@@ -33,19 +33,19 @@ class PlanAssociation {
      SUSPENDED: 3,
      CLOSED: 4
    ]
-   
+
    //String organizationUid
    Account account
    Date from
    Date to
    Plan plan
    int state = states.INACTIVE
-   
+
    static constraints = {
       to ( nullable: true )
-      state( inList: states.values() as List)
+      state( inList: PlanAssociation.states.values() as List)
    }
-   
+
    static mapping = {
      from column: "pa_from" // avoid using reserved word FROM
      to column: "pa_to" // avoid using reserved word TO in MySQL

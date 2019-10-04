@@ -21,12 +21,12 @@
  */
 package com.cabolabs.ehrserver.ehr
 
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.converters.*
 
 class FolderTemplateController {
 
    def configurationService
+   def authService
 
    def index(int offset, String sort, String order)
    {
@@ -34,11 +34,11 @@ class FolderTemplateController {
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       def list
       def c = FolderTemplate.createCriteria()
-      
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
          }
@@ -49,29 +49,29 @@ class FolderTemplateController {
             eq('organizationUid', session.organization.uid)
          }
       }
-      
+
       [list: list, total: list.totalCount]
    }
-   
+
    def show(FolderTemplate folderTemplate)
    {
       def tree = folderTemplate as JSON
       render(view:'show', model:[folderTemplate: folderTemplate, foldersTree: tree])
    }
-   
+
    def create()
    {
       def folderTemplate = new FolderTemplate()
       def tree = folderTemplate as JSON
       render(view:'create', model:[folderTemplate: folderTemplate, foldersTree: tree])
    }
-   
+
    // AJAX/JSON
    def save()
    {
       request.JSON.folderTemplate.organizationUid = session.organization.uid
       def folderTemplate = FolderTemplate.newInstance(request.JSON.folderTemplate)
-      
+
       if (!folderTemplate.save(flush:true))
       {
          println folderTemplate.errors.allErrors
@@ -81,11 +81,11 @@ class FolderTemplateController {
       // TODO: check errors and generate messages
       render(text:([status:"ok", message:"Created", ref:g.createLink(action:'show', id:folderTemplate.id)] as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
    }
-   
+
    def edit()
    {
    }
-   
+
    def update()
    {
    }

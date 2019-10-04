@@ -23,28 +23,17 @@
 package com.cabolabs.security
 
 import grails.transaction.Transactional
-import org.springframework.security.core.authority.AuthorityUtils
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional
 class UserService {
 
    def notificationService
-   def springSecurityService
-   
+
+   // FIXME: change for email, but no other functions are using this, maybe it could be removed
    def getByUsername(String username)
    {
-      def u = User.findByUsername(username) // can be null
-      
+      def u ///= User.findByUsername(username) // can be null // // FIXME: sprinc sec was removed
+
       return u
-   }
-    
-   def getUserAuthorities(User user, Organization org)
-   {
-      def aus = user.getAuthorities(org) // Set<Role>
-      def authstr = aus.authority // List<String> with role names
-      
-      // http://docs.spring.io/autorepo/docs/spring-security/3.2.1.RELEASE/apidocs/org/springframework/security/core/authority/AuthorityUtils.html
-      return AuthorityUtils.createAuthorityList(authstr as String[]) // List<GrantedAuthority>
    }
 }

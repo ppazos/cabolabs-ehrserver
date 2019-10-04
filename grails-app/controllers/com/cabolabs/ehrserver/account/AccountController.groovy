@@ -28,7 +28,7 @@ import grails.util.Holders
 import grails.converters.*
 
 // test
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import com.cabolabs.ehrserver.sync.SyncMarshallersService
 import groovy.json.*
 
@@ -38,7 +38,7 @@ class AccountController {
    def notificationService
    def organizationService
    def logService
-   
+
    def config = Holders.config.app
 
    def syncMarshallersService

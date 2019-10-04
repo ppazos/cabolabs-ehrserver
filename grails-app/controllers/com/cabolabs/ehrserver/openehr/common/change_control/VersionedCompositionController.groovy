@@ -23,11 +23,8 @@
 package com.cabolabs.ehrserver.openehr.common.change_control
 
 import static org.springframework.http.HttpStatus.*
-
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
-
 import grails.transaction.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import com.cabolabs.security.Organization
 import com.cabolabs.security.User
 import grails.util.Holders
@@ -35,22 +32,22 @@ import grails.util.Holders
 @Transactional(readOnly = true)
 class VersionedCompositionController {
 
-   def springSecurityService
+   def authService
    def configurationService
-   
+
    def config = Holders.config.app
-   
+
    def index(int offset, String sort, String order, String ehdUid, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
-      
+
       def list, orgs
       def c = VersionedComposition.createCriteria()
-      def us = User.findByUsername(springSecurityService.authentication.principal.username)
-          
+      def us = authService.loggedInUser
+
       if (organizationUid)
       {
          if (Organization.countByUid(organizationUid) == 0)
@@ -61,28 +58,28 @@ class VersionedCompositionController {
          else
          {
             // Have access to organizationUid?
-            
-            if (!us.organizations.uid.contains(organizationUid) && !SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+
+            if (!us.organizations.uid.contains(organizationUid) && !authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
             {
                flash.message = "versionedComposition.index.feedback.cantAccessOrgShowingForCurrentOrg"
                organizationUid = null
             }
          }
       }
-      
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
-            
+
             // for admins, if not organizationUid, display for all orgs
-            
+
             if (organizationUid)
             {
                ehr {
                  eq("organizationUid", organizationUid)
                }
             }
-            
+
             if (ehdUid)
             {
                ehr {
@@ -90,13 +87,13 @@ class VersionedCompositionController {
                }
             }
          }
-         
+
          orgs = Organization.list() // for the org filter
       }
       else
       {
          def org = session.organization
-         
+
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             ehr {
                if (!organizationUid)
@@ -108,17 +105,17 @@ class VersionedCompositionController {
                {
                   eq("organizationUid", organizationUid)
                }
-               
+
                if (ehdUid)
                {
                   like('uid', '%'+ehdUid+'%')
                }
             }
          }
-         
+
          orgs = us.organizations // for the org filter
       }
-      
+
       respond list, model:[versionedCompositionInstanceCount: list.totalCount, organizations: orgs]
    }
 

@@ -1,1 +1,0 @@
-h:\putty\pscp -i "C:\Documents and Settings\pab\.ssh\default.ppk" "C:\Documents and Settings\pab\My Documents\GitHub\cabolabs-ehrserver\target\ROOT.war" 555167ba5973ca0a3d000113@cabolabs-ehrserver.rhcloud.com:app-root/dependencies/jbossews/webapps

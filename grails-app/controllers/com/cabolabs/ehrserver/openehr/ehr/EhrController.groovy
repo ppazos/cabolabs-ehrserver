@@ -25,27 +25,19 @@ package com.cabolabs.ehrserver.openehr.ehr
 import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
 //import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvTextIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvCodedTextIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvDateTimeIndex
-import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvQuantityIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.*
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import grails.util.Holders
-
-import grails.plugin.springsecurity.SpringSecurityUtils
-
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Organization
-import com.cabolabs.security.User
+import com.cabolabs.security.*
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
-
 import grails.transaction.Transactional
 
 class EhrController {
 
-   def springSecurityService
+   def authService
    def compositionService
    def configurationService
 
@@ -74,7 +66,7 @@ class EhrController {
       def list
       def c = Ehr.createCriteria()
 
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          /*
           * if the criteria is empty, does the same as .list (works as expected)
@@ -95,11 +87,7 @@ class EhrController {
       }
       else
       {
-         // auth token used to login
-         def auth = springSecurityService.authentication
-         //def org = Organization.findByNumber(auth.organization)
-         def un = auth.principal.username
-         def us = User.findByUsername(un)
+         def us = authService.loggedInUser
          def orgs = us.organizations
 
          // FIXME: this should really list the ehrs for the current org

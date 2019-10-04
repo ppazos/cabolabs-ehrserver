@@ -25,26 +25,26 @@ package com.cabolabs.ehrserver.reporting
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.util.Holders
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional(readOnly = true)
 class ActivityLogController {
 
    def configurationService
-   
+   def authService
+
    def config = Holders.config.app
-   
+
    def index(int offset, String sort, String order)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'
-      
+
       def c = ActivityLog.createCriteria()
       def list
-      
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
          }
@@ -55,9 +55,9 @@ class ActivityLogController {
             eq('organizationUid', session.organization.uid)
          }
       }
-      
+
       //respond list, model:[activityLogInstanceCount: list.totalCount]
-      
+
       render view:'index', model : [activityLogInstanceList: list.groupBy{it.sessionId}, activityLogInstanceCount: list.totalCount]
    }
 
@@ -65,7 +65,7 @@ class ActivityLogController {
    {
       // admins can access all logs
       // filter by current org! because it is accessed by id
-      if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
+      if (!authService.loggedInUserHasAnyRole("ROLE_ADMIN") &&
           (!activityLogInstance || activityLogInstance.organizationUid != session.organization.uid))
       {
          flash.message = message(code:'activityLog.show.cantAccessLog')

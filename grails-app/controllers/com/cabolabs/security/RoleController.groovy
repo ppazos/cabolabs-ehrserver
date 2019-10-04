@@ -30,14 +30,14 @@ import grails.util.Holders
 class RoleController {
 
    def configurationService
-   
+
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
    def config = Holders.config.app
-   
+
    def index() {
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      respond Role.list(params), model:[roleInstanceCount: Role.count()]
+      return [roleInstanceList: Role.list(params), roleInstanceCount: Role.count()]
    }
 
    def show(Role roleInstance) {
@@ -89,7 +89,7 @@ class RoleController {
          notFound()
          return
       }
-      
+
       // can't edit core roles
       if (Role.coreRoles().contains(roleInstance.authority))
       {

@@ -24,9 +24,6 @@ package com.cabolabs.security
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
-
-//http://grails-plugins.github.io/grails-spring-security-core/guide/single.html#springSecurityUtils
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
@@ -34,7 +31,7 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 @Transactional(readOnly = true)
 class OrganizationController {
 
-   def springSecurityService
+   def authService
    def statelessTokenProvider
    def configurationService
    def organizationService
@@ -53,7 +50,7 @@ class OrganizationController {
       def list
       def c = Organization.createCriteria()
 
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
             if (name)
@@ -68,7 +65,7 @@ class OrganizationController {
       }
       else
       {
-         def user = springSecurityService.loadCurrentUser()
+         def user = authService.loggedInUser()
          def orgs = user.organizations
 
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
@@ -91,7 +88,7 @@ class OrganizationController {
    def show()
    {
       def plan_max_tokens
-      def user = springSecurityService.loadCurrentUser()
+      def user = authService.loggedInUser()
       def account = user.account
       def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
@@ -105,7 +102,7 @@ class OrganizationController {
    def create()
    {
       def accounts = []
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          accounts = Account.list()
       }
@@ -113,7 +110,7 @@ class OrganizationController {
       {
          // This limit is checked for non-admins because with admins we don't know which account will be selected, so the max orgs is not available
          // Checks organization creation plan limits
-         def user = springSecurityService.loadCurrentUser()
+         def user = authService.loggedInUser()
          def account = user.account
          def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
          if (plan_assoc)
@@ -143,9 +140,9 @@ class OrganizationController {
    def save(String name, Boolean assign, Long account_id)
    {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/847
-      def user = springSecurityService.loadCurrentUser()
+      def user = authService.loggedInUser()
       def account
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          account = Account.get(account_id)
       }
@@ -157,7 +154,7 @@ class OrganizationController {
       if (!account)
       {
          def accounts = []
-         if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+         if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
          {
             accounts = Account.list()
          }
@@ -185,7 +182,7 @@ class OrganizationController {
       def organizationInstance = organizationService.create(account, name)
 
       def accman_associated = false // prevents associating the accman twice if the current user is accman
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
          // assign org to admin only if admin choose to
          if (assign)
@@ -282,7 +279,7 @@ class OrganizationController {
       }
 
       // Checks api key creation plan limits
-      def user = springSecurityService.loadCurrentUser()
+      def user = authService.loggedInUser()
       def account = user.account
       def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)

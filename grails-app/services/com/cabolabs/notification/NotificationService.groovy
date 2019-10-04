@@ -43,19 +43,18 @@ class NotificationService {
    {
       def user = messageData[0]
       def token = user.passwordToken
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
-      def url //= g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
-      def organizationNumbers = user.organizations*.number
+      def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
+      def url
       def title, preview, salute, message, actions, closing, bye
 
       if (userRegistered)
       {
          title   = g.message(code:'notificationService.userRegistered.title')
          preview = g.message(code:'notificationService.userRegistered.preview')
-         salute  = g.message(code:'notificationService.userRegistered.salute', args:[user.username])
-         message = g.message(code:'notificationService.userRegistered.message', args:[user.username, organizationNumbers[0]])
+         salute  = g.message(code:'notificationService.userRegistered.salute', args:[user.email])
+         message = g.message(code:'notificationService.userRegistered.message', args:[user.email])
 
-         url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+         url     = g.createLink(controller:'auth', action:'resetPassword', absolute:true, params:[token:token])
          actions = g.message(code:'notificationService.userRegistered.actions', args:[url])
 
          closing = g.message(code:'notificationService.userRegistered.closing')
@@ -63,30 +62,13 @@ class NotificationService {
       }
       else
       {
-         // Need to tell the user on which orgs they can login to the web console and on which
-         // ones only login via the API (highest role is User)
-         def role
-         def login_on_web_console = [:]
-         user.organizations.each { org ->
-
-            role = user.getHigherAuthority(org)
-            login_on_web_console[org.number] = (role.authority != Role.US)
-         }
-
-         def access_table = '<table width="100%" border="1"><tr><th>'+ g.message(code:'notificationService.userCreated.organizationNumber') +'</th><th>'+ g.message(code:'notificationService.userCreated.webConsoleAccess') +'</th></tr>'
-         login_on_web_console.each { orgnum, login_web ->
-            access_table += "<tr><td>$orgnum</td><td>$login_web</td></tr>"
-         }
-         access_table += '</table>'
-
          title   = g.message(code:'notificationService.userCreated.title')
          preview = g.message(code:'notificationService.userCreated.preview')
-         salute  = g.message(code:'notificationService.userCreated.salute', args:[user.username])
-         message = g.message(code:'notificationService.userCreated.message', args:[user.username, organizationNumbers.toString(), access_table])
+         salute  = g.message(code:'notificationService.userCreated.salute', args:[user.email])
+         message = g.message(code:'notificationService.userCreated.message', args:[user.email])
          message = message.replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"') // the table in the args is converted to XML entities. the email needs the tags.
-         //message += access_table
 
-         url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+         url     = g.createLink(controller:'auth', action:'resetPassword', absolute:true, params:[token:token])
          actions = g.message(code:'notificationService.userCreated.actions', args:[url])
 
          closing = g.message(code:'notificationService.userCreated.closing')
@@ -100,7 +82,7 @@ class NotificationService {
    {
       def user = messageData[0]
       def token = user.passwordToken
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib');
+      def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib');
       def url
       def title, preview, salute, message, actions, closing, bye
 
@@ -109,41 +91,13 @@ class NotificationService {
       salute  = g.message(code:'notificationService.forgot.salute')
       message = g.message(code:'notificationService.forgot.message', args:[user.email])
 
-      url     = g.createLink(controller:'user', action:'resetPassword', absolute:true, params:[token:token])
+      url     = g.createLink(controller:'auth', action:'resetPassword', absolute:true, params:[token:token])
       actions = g.message(code:'notificationService.forgot.actions', args:[url])
 
       closing = g.message(code:'notificationService.forgot.closing')
       bye     = g.message(code:'notificationService.forgot.bye')
 
       this.sendMail(recipient, title, preview, salute, message, actions, closing, bye)
-   }
-
-   /**
-    * When an organization is created, we notify the ACCMAN of the Account containing the Organization so he has access to it.
-    * messageData contains the account and the new organization
-    */
-   def sendNewOrganizationAssociatedEmail(Map messageData)
-   {
-      def account = messageData['account']
-      def accman = account.contact
-      def organization = messageData['organization']
-
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
-
-      def title, preview, salute, message, url, actions, closing, bye
-
-      title   = g.message(code:'notificationService.organizationAssociated.title')
-      preview = g.message(code:'notificationService.organizationAssociated.preview')
-      salute  = g.message(code:'notificationService.organizationAssociated.salute', args:[accman.username])
-      message = g.message(code:'notificationService.organizationAssociated.message', args:[organization.number])
-
-      url     = g.createLink(controller:'login', absolute:true)
-      actions = g.message(code:'notificationService.organizationAssociated.actions', args:[url])
-
-      closing = g.message(code:'notificationService.organizationAssociated.closing')
-      bye     = g.message(code:'notificationService.organizationAssociated.bye')
-
-      this.sendMail(accman.email, title, preview, salute, message, actions, closing, bye)
    }
 
    def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!',

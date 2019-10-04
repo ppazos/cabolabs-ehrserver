@@ -32,7 +32,6 @@ import com.cabolabs.ehrserver.account.Account
 /**
  * Operations related to the file system based version repo.
  * @author Pablo Pazos <pablo.pazos@cabolabs.com>
- *
  */
 class VersionFSRepoService {
 

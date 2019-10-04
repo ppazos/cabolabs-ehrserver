@@ -1,7 +1,7 @@
 package com.cabolabs.ehrserver.query
 
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONObject
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
@@ -16,7 +16,7 @@ class QueryService {
     * json contains the query and query parameters that are used from the
     * query builder when testing the query and might be used by a service.
     */
-   def executedNotStoredCompositionQuery(JSONObject json, String orgUid)
+   def executedNotStoredCompositionQuery(JSONObject json)
    {
       def result = [:]
       result['result'] = []
@@ -32,9 +32,8 @@ class QueryService {
       String composerUid   = json.composerUid
       String composerName  = json.composerName
 
-      def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+      def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
 
-      String organizationUid
       if (qehrId)
       {
          def ehr = Ehr.findByUid(qehrId)
@@ -45,13 +44,6 @@ class QueryService {
                                status: 404]
             return result
          }
-
-         organizationUid = ehr.organizationUid
-      }
-      else
-      {
-         // use the orguid of the org used to login
-         organizationUid = orgUid
       }
 
 
@@ -93,10 +85,9 @@ class QueryService {
       }
 
       def json_query = json.query
-      json_query.organizationUid = organizationUid
       def query = Query.newInstance(json_query)
 
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid, max, offset, composerUid, composerName)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, max, offset, composerUid, composerName)
 
       result['result'] = cilist
 
@@ -107,7 +98,7 @@ class QueryService {
     * result can be list or map, map is when qehrid is null and the results are grouped by EHR.
     * qehrid can be null.
     */
-   String retrieveDataFromCompositionQueryResult(Object result, String qehrId, String orgUid)
+   String retrieveDataFromCompositionQueryResult(Object result, String qehrId)
    {
       // TODO: use string builder append instead of +
       // FIXME: hay que armar bien el XML: declaracion de xml solo al
@@ -145,7 +136,7 @@ class QueryService {
 
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(orgUid, version)
+                   vf = versionFSRepoService.getExistingVersionFile(version)
                    buff = vf.getText()
                 }
                 catch (VersionRepoNotAccessibleException e)
@@ -187,7 +178,7 @@ class QueryService {
 
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(orgUid, version)
+               vf = versionFSRepoService.getExistingVersionFile(version)
                buff = vf.getText()
             }
             catch (VersionRepoNotAccessibleException e)

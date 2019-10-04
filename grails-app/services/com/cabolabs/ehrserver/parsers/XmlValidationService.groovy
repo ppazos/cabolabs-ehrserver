@@ -37,6 +37,7 @@ import org.xml.sax.SAXParseException
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 
+
 class XmlValidationService {
 
    def errors = []

@@ -25,7 +25,6 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import grails.converters.*
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 // test
 import groovy.json.*
@@ -101,7 +100,6 @@ class EhrQueryController {
    def update(EhrQuery ehrQueryInstance)
    {
       // TODO: check the query belongs to the current org
-      println params
       if (ehrQueryInstance == null) {
          notFound()
          return

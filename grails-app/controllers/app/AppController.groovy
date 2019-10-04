@@ -22,116 +22,55 @@
 
 package app
 
-import com.cabolabs.ehrserver.openehr.ehr.Ehr
-import com.cabolabs.security.Organization
-import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.query.Query
-import com.cabolabs.ehrserver.query.QueryShare
-
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
-import grails.plugin.springsecurity.SpringSecurityUtils
-
-import com.cabolabs.security.User
-import com.cabolabs.security.UserRole
-import com.cabolabs.ehrserver.notification.Notification
-import com.cabolabs.ehrserver.reporting.ActivityLog
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.security.*
 
 class AppController {
 
-   def springSecurityService
    def versionFSRepoService
-   def remoteNotificationsService
 
-   // shows main dashboard
+   // dashboard
    def index()
    {
-      // Count EHRs
-      def count_ehrs, count_contributions, count_queries, count_users
+      def count_ehrs, count_contributions, count_queries, count_users, version_repo_size, opt_count
       def version_repo_sizes = [:] // org => versio repo size
-      if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
-      {
-         count_ehrs = Ehr.count()
-         count_contributions = Contribution.count()
-         count_queries = Query.count()
-         count_users = User.count()
 
-         def orgs = Organization.list()
+      count_ehrs = Ehr.count()
+      count_contributions = Contribution.count()
+      count_users = User.count()
+      opt_count = OperationalTemplateIndex.count()
+      count_queries = Query.count()
 
-         orgs.each { __org ->
-            version_repo_sizes << [(__org): versionFSRepoService.getRepoSizeInBytes(__org.uid)]
-         }
-
-         // sort by usage, decreasing
-         version_repo_sizes = version_repo_sizes.sort { -it.value }
-      }
-      else
-      {
-         def org = session.organization
-
-         count_ehrs = Ehr.countByOrganizationUid(org.uid)
-         count_contributions = Contribution.countByOrganizationUid(org.uid)
-
-         def shares = QueryShare.findAllByOrganization(org)
-         def c = Query.createCriteria()
-         count_queries = c.count() {
-            if (shares)
-            {
-               or {
-                  eq('isPublic', true)
-                  'in'('id', shares.query.id)
-               }
-            }
-            else
-            {
-               eq('isPublic', true)
-            }
-         }
-
-         def ur = UserRole.createCriteria()
-         def urs = ur.list() {
-            createAlias('user','user')
-            projections {
-               property("user.id", "user.id")
-            }
-            eq('organization', org)
-         }
-         count_users = urs.unique().size()
-
-         version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
+      def orgs = Organization.list()
+      orgs.each { __org ->
+         version_repo_sizes << [(__org): versionFSRepoService.getRepoSizeInBytes(__org.uid)]
       }
 
-      // ----------------------------------------------------------------------------------------------------------
-      // Check for remote notifications
-      // This is here because right after the login, the user goes to the dashboard.
+      // sort by usage, decreasing
+      version_repo_sizes = version_repo_sizes.sort { -it.value }
 
-      def loggedInUser = springSecurityService.currentUser
+      //version_repo_size = versionFSRepoService.getRepoSizeInBytes()
 
-      // Get date of the last read of remote notifications by the current user, null if no reads were done
-      // This avoids reading the same notifications twice by the same user
-      def lastALogs = ActivityLog.findAllByActionAndUsername('remote_notifications', loggedInUser.username, [max: 1, sort: 'timestamp', order:'desc'])
-      def from
-      if (lastALogs.size() > 0) from = lastALogs[0].timestamp
+      // ---------------------------------------------
+      // TODO: check for remote notifications
+      // ---------------------------------------------
 
-      def notifications = remoteNotificationsService.getNotifications('ehrserver', session.lang, from)
-
-      notifications.each { notification ->
-         new Notification(name:'remote', language:session.lang, text:notification.nt, forUser:loggedInUser.id).save()
-      }
-
-      // Mark current read of the remote notifications
-      new ActivityLog(username: loggedInUser.username, action: 'remote_notifications', sessionId: session.id.toString()).save()
-
-      [
+      return [
          count_ehrs:count_ehrs,
          count_contributions:count_contributions,
          count_queries: count_queries,
          version_repo_sizes: version_repo_sizes,
-         count_users: count_users
+         count_users: count_users,
+         opt_count: opt_count
       ]
    }
 
    def get_started()
    {
-      []
+      render view:'get_started'
    }
 }

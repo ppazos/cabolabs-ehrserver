@@ -22,7 +22,7 @@
 
 package com.cabolabs.security
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import grails.core.GrailsDomainClass
 
 class Role implements Serializable {
 
@@ -53,7 +53,7 @@ class Role implements Serializable {
       }
 
 println other + ' is grails domain in Role'
-      
+
 		is(other) || (other.instanceOf(Role) && other.authority == authority)
 	}
 

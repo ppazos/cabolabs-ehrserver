@@ -92,8 +92,8 @@ class Query {
    // test count compo queries
    boolean isCount = false
 
-   // org.codehaus.groovy.grails.web.json.JSONObject implementa Map
-   static def newInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   // org.grails.web.json.JSONObject implementa Map
+   static def newInstance(org.grails.web.json.JSONObject json)
    {
       //println "Query.construct JSON: "+ json.toString()
       /*
@@ -130,7 +130,7 @@ class Query {
    /**
     * For edit/update.
     */
-   def updateInstance(org.codehaus.groovy.grails.web.json.JSONObject json)
+   def updateInstance(org.grails.web.json.JSONObject json)
    {
       this.name       = json['name']
       this.type       = json['type']

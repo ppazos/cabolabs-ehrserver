@@ -44,7 +44,7 @@ class Notification {
       kind inList: ['web', 'email']
    }
 
-   static lastNotifications(String forSection, String forOrganization, Long forUser, String lang, int last = 15)
+   static lastNotifications(String forSection, String forOrganization, String forUser, String lang, int last = 15)
    {
       def c = NotificationStatus.createCriteria()
       def list = c.list {
@@ -88,7 +88,7 @@ class Notification {
       return list
    }
 
-   static newNotifications(String forSection, String forOrganization, Long forUser, String lang)
+   static newNotifications(String forSection, String forOrganization, String forUser, String lang)
    {
       def c = NotificationStatus.createCriteria()
       def list = c.list {

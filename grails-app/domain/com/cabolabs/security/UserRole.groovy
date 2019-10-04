@@ -26,7 +26,7 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
 
 import org.apache.commons.lang.builder.HashCodeBuilder
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+//import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
 /**
  * A User plays a Role in an Organization.
@@ -79,15 +79,15 @@ class UserRole implements Serializable {
 	}
 
    // FIXME: this can return a List becuase the same user can have the same role in two orgs
-	static UserRole get(long userId, long roleId) {
+	static UserRole get(String userId, long roleId) {
 		criteriaFor(userId, roleId).get()
 	}
 
-	static boolean exists(long userId, long roleId, long orgId) {
+	static boolean exists(String userId, long roleId, long orgId) {
 		criteriaFor(userId, roleId, orgId).count()
 	}
 
-	private static DetachedCriteria criteriaFor(long userId, long roleId, long orgId) {
+	private static DetachedCriteria criteriaFor(String userId, long roleId, long orgId) {
 		UserRole.where {
 			user == User.load(userId) &&
 			role == Role.load(roleId)

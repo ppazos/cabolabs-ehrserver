@@ -36,8 +36,6 @@ import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
-import com.cabolabs.security.User
-import com.cabolabs.security.Organization
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 
@@ -51,7 +49,7 @@ class DataIndexerService {
    {
       // created indexes will be loaded here
       def indexes = []
-      def version, versionFile, versionXml, parsedVersion, compoParsed, org
+      def version, versionFile, versionXml, parsedVersion, compoParsed
 
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
@@ -62,8 +60,7 @@ class DataIndexerService {
       def parser = new XmlSlurper(false, false)
       // parser.setErrorHandler( { message = it.message } as ErrorHandler ) // https://github.com/groovy/groovy-core/blob/master/subprojects/groovy-xml/src/test/groovy/groovy/xml/XmlUtilTest.groovy
 
-      org = Organization.findByUid(compoIndex.organizationUid)
-      if (OperationalTemplateIndex.forOrg(org).countByTemplateId(compoIndex.templateId) == 0)
+      if (OperationalTemplateIndex.countByTemplateId(compoIndex.templateId) == 0)
       {
          // TODO: send a notification to the org managers and add a dsimissable notification for them (TBD)
          log.warn "The committed composition ${compoIndex.uid} references a template '${compoIndex.templateId}' that is not loaded. Indexing is avoided until the template is loaded."
@@ -77,7 +74,7 @@ class DataIndexerService {
 
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
+         versionFile = versionFSRepoService.getExistingVersionFile(version)
       }
       catch (VersionRepoNotAccessibleException e)
       {
@@ -135,11 +132,11 @@ class DataIndexerService {
          {
             new DataValueIndexLog(index: didx, message: 'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath +' TID: '+ compoIndex.templateId +' COMPOSER: '+ compoIndex.composer?.name).save()
 
-            def admins = User.allForRole('ROLE_ADMIN')
+            def admins = User.findAllByRole('admin')
             admins.each{ admin ->
                new Notification(
                   name:     'There is no ArchetypeIndexItem for the DataValueIndex',
-                  language: 'en', /* TODO: lang should be the preferred by the org 0 of the admin */
+                  language: 'en', // TODO: lang should be the preferred by the org 0 of the admin
                   text:     'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath,
                   forUser:  admin.id).save()
             }
