@@ -887,8 +887,8 @@ class QueryController {
 
    def executeSnomed(String ecl, String term)
    {
-      
-      render ("{success: true}" as JSON)
+      def concepts = querySnomedService.getConcepts(ecl, term)
+	  render(text: concepts, contentType: "application/json")
    }
 
    // TOOD: move to query group controller

@@ -46,12 +46,18 @@
 						e.preventDefault();
 
 						button = $(this);
-						let ecl = $('#ecl').val;
-						let term = $('#term').value();
-						console.log(ecl);
-
+						let ecl = $('#ecl').val().trim();
+						let term = $('#term').val().trim();
+						
+						icon = $('span', this);
+						icon.addClass('fa-spin');
+						
 						let url = 'executeSnomed?'
 
+						if(ecl !== '')
+							url+='ecl='+ecl+'&';
+						if(term !== '')
+							url+='term='+term+'&';
 						
 
 						$.ajax({
@@ -59,10 +65,15 @@
 							url,
 							dataType: 'json'
 						})
-						.done(function( res ) {							
+						.done(function( res ) {	
+							$("#json").html(JSON.stringify(res,null,2));
+							$('#json').each(function(i, e) { hljs.highlightBlock(e); });
+							icon.removeClass('fa-spin');
 						})
 						.fail(function(resp,status,status_msg) {
+							console.log('fail');
 							console.log(resp);
+							icon.removeClass('fa-spin');
 						});
 					});
 				</script>
@@ -75,12 +86,6 @@
 					<code id="json" class="json">
 					</code>
 				</pre>
-				<script type="text/javascript">
-					$('#json').addClass('xml');
-					// The first replace removes the new lines and empty spaces of indentation
-					// The second escapes single quotes that might appear in the text of the XML that breaks the javascript
-					$('#json').each(function(i, e) { hljs.highlightBlock(e); });
-				</script>
 			</div>
 		</div>
 	</body>
