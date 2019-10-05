@@ -33,6 +33,9 @@ class BootStrap {
       log.info "creating configuration items"
       createConfig()
 
+      log.info "creating plans"
+      createPlans()
+
       log.info "creating roles"
       createRoles()
 
@@ -56,6 +59,50 @@ class BootStrap {
       registerXMLMarshallers()
    }
    def destroy = {
+   }
+
+   def createPlans()
+   {
+      if (Plan.count() == 0)
+      {
+         // Create plans
+         def plans = [
+            new Plan(
+              name:                            "Basic",
+              max_organizations:               1,
+              max_opts_per_organization:       5,
+              max_api_tokens_per_organization: 5,
+              repo_total_size_in_kb:           2.5*1000*1000, // 2.5 GB in kB (kB are 1000 B, KB or KiB are 1024 bytes)
+              period:                          Plan.periods.MONTHLY
+            ),
+            new Plan(
+              name:                            "Standard",
+              max_organizations:               3,
+              max_opts_per_organization:       10,
+              max_api_tokens_per_organization: 20,
+              repo_total_size_in_kb:           7.5*1000*1000,
+              period:                          Plan.periods.MONTHLY
+            ),
+            new Plan(
+              name:                           "Enterprise",
+              max_organizations:               10,
+              max_opts_per_organization:       25,
+              max_api_tokens_per_organization: 999,
+              repo_total_size_in_kb:           15*1000*1000,
+              period:                          Plan.periods.MONTHLY
+            ),
+            new Plan(
+              name:                            "Testing",
+              max_organizations:               5,
+              max_opts_per_organization:       20,
+              max_api_tokens_per_organization: 3,
+              repo_total_size_in_kb:           200000, // low for testing! (1MB in kB = 1000 kB)
+              period:                          Plan.periods.MONTHLY
+            )
+         ]
+
+         plans*.save(failOnError: true, flush: true)
+      }
    }
 
    def registerJSONMarshallers()
@@ -457,19 +504,22 @@ class BootStrap {
    def setupTemplates()
    {
       // for the default organization
-      def org = Organization.get(1)
-
-      // needs to run first so files are copied into the namespace folder
-      if (OperationalTemplateIndex.count() == 0)
-      {
-         operationalTemplateIndexerService.setupBaseOpts(org.uid)
-         operationalTemplateIndexerService.indexAll(org.uid)
-      }
+      def orgs = Organization.list()
 
       // in memory cache, loads files located in the namespace folder
       def optRepo = grailsApplication.config.getProperty('app.opt_repo')
       def optMan = OptManager.getInstance(optRepo.withTrailSeparator())
-      optMan.loadAll(org.uid)
+      orgs.each { org ->
+
+         // needs to run first so files are copied into the namespace folder
+         if (OperationalTemplateIndex.countByOrganizationUid(org.uid) == 0)
+         {
+            operationalTemplateIndexerService.setupBaseOpts(org.uid)
+            operationalTemplateIndexerService.indexAll(org.uid)
+         }
+
+         optMan.loadAll(org.uid)
+      }
    }
 
    def defaultOrganizations()
@@ -487,11 +537,21 @@ class BootStrap {
             new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save(flush:true)
          }
 
+
+         // Default account
          def account = new Account(contact: User.findByEmail('admin@cabolabs.com'), enabled: true, companyName: 'Default Account')
          organizations.each { org ->
             account.addToOrganizations(org)
          }
          account.save(failOnError:true, flush:true)
+
+
+         // Assign plan
+         def test_plan = Plan.findByName('Testing')
+         if (!PlanAssociation.findByAccount(account))
+         {
+            test_plan.associate(account, new Date().clearTime())
+         }
       }
       else organizations = Organization.list()
 

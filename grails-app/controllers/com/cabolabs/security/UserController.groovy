@@ -53,11 +53,6 @@ class UserController {
       session.organization = org
    }
 
-   def login()
-   {
-      // http://stackoverflow.com/questions/32621369/customize-login-in-grails-spring-security-plugin
-   }
-
    def index(int offset, String sort, String order, String email, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')

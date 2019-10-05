@@ -33,12 +33,12 @@ class PlanController {
    def configurationService
 
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-   
+
    def config = Holders.config.app
 
    def index() {
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      respond Plan.list(params), model:[planInstanceCount: Plan.count()]
+      return [planInstanceList: Plan.list(params), planInstanceCount: Plan.count()]
    }
 
    def show(Plan planInstance) {

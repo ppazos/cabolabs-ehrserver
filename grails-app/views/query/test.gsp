@@ -96,9 +96,9 @@
                 <g:select name="organizationUid" from="${Organization.list()}"
                           optionKey="uid" optionValue="name" class="form-control input-sm" />
               </g:userHasAnyRole>
-              <g:userDoestHaveRole roles="ROLE_ADMIN">
+              <g:userDoesntHaveRole role="ROLE_ADMIN">
                 <g:selectWithCurrentUserOrganizations name="organizationUid" class="form-control input-sm" />
-              </g:userDoestHaveRole>
+              </g:userDoesntHaveRole>
             </td>
           </tr>
           --%>

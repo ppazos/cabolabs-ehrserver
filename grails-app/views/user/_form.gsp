@@ -27,11 +27,11 @@
             <th><g:message code="user.account.label" default="Accounts" /></th>
             <th><g:message code="user.organizations.label" default="Organizations" /></th>
             <g:each in="${Role.list()}" var="role">
-              <g:userDoestHaveRole roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
+              <g:userDoesntHaveRole role="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
                 <g:if test="${role.authority != 'ROLE_ADMIN'}">
                   <th>${role.authority}</th>
                 </g:if>
-              </g:userDoestHaveRole>
+              </g:userDoesntHaveRole>
               <g:userHasAnyRole roles="ROLE_ADMIN">
                 <th>${role.authority}</th>
               </g:userHasAnyRole>
@@ -45,7 +45,7 @@
               <td>${org.account.companyName}</td>
               <td>${org.name}</td>
               <g:each in="${Role.list()}" var="role">
-                <g:userDoestHaveRole roles="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
+                <g:userDoesntHaveRole role="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
                   <g:if test="${role.authority != 'ROLE_ADMIN'}">
                     <td>
                       <g:if test="${roleOrg.value*.authority.contains(role.authority)}"><%-- dont show if I cant assing the role --%>
@@ -53,7 +53,7 @@
                       </g:if>
                     </td>
                   </g:if>
-                </g:userDoestHaveRole>
+                </g:userDoesntHaveRole>
                 <g:userHasAnyRole roles="ROLE_ADMIN">
                   <td>
                     <%-- admins can assign any role --%>

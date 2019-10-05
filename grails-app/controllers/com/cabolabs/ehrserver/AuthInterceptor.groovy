@@ -43,7 +43,7 @@ class AuthInterceptor {
 
    boolean before() {
 
-      println "AUTH INTERCEPTOR"
+      //println "AUTH INTERCEPTOR"
 
       // if SecuredStateless, the session check should not apply
       if (isSecuredStateless(controllerName, actionName, grailsApplication))
@@ -55,13 +55,13 @@ class AuthInterceptor {
          return true
       }
 
-      println "AuthInterceptor: c: ${controllerName}, a: ${actionName}"
+      //println "AuthInterceptor: c: ${controllerName}, a: ${actionName}"
 
       // Not logged in? Go to the login page
       def sessman = SessionManager.instance
       if (!sessman.hasSession(session.id.toString()))
       {
-         println "redirects to auth"
+         //println "redirects to auth"
          redirect controller: 'auth', action: 'login'
          return false
       }

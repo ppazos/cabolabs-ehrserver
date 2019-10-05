@@ -53,8 +53,8 @@ class ActivityLogInterceptor {
       }
       // Still username could be null if not logged in
 
-println "activity log interceptor"
-println session
+      // println "activity log interceptor"
+      // println session
 
       def alog = new ActivityLog(
                   username:        username, // can be null

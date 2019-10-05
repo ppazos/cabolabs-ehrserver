@@ -31,7 +31,7 @@ class User implements Serializable {
 
    private static final long serialVersionUID = 1
 
-   String id
+   String uid = java.util.UUID.randomUUID() as String
    String password
    String email
    boolean isVirtual = false // virtual users for ApiKey
@@ -84,7 +84,7 @@ class User implements Serializable {
 
    static mapping = {
       password column: 'auth_key'
-      id generator:'uuid2'
+      //id generator:'uuid2'
    }
 
 

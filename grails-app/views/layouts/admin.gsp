@@ -324,7 +324,7 @@
                   </li>
                 </g:userHasAnyRole>
               </ul>
-              <div align="center" id="app_version">EHRServer v<g:meta name="app.version"/></div>
+              <div align="center" id="app_version">EHRServer v${grailsApplication.metadata["info.app.version"]}</div>
               <div align="center" id="powby">
                 <a href="#" data-toggle="modal" data-target="#license_notice">Powered by CaboLabs</a>
               </div>

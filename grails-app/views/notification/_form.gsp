@@ -41,9 +41,9 @@
               optionKey="uid" optionValue="name" class="form-control"
               noSelection="${['': message(code:'defaut.select.selectOne')]}" />
   </g:userHasAnyRole>
-  <g:userDoestHaveRole roles="ROLE_ADMIN">
+  <g:userDoesntHaveRole role="ROLE_ADMIN">
     <g:selectWithCurrentUserOrganizations name="forOrganization" class="form-control" />
-  </g:userDoestHaveRole>
+  </g:userDoesntHaveRole>
 </div>
 
 <div class="form-group ${hasErrors(bean: notificationInstance, field: 'forUser', 'error')} ">

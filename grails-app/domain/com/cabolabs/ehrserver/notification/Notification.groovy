@@ -31,7 +31,7 @@ class Notification {
 
    String forSection // ehrs, contributions, versions, directory, queries, templates, users, roles, organizations, notifications
    String forOrganization
-   Long forUser // user.id
+   String forUser // user.uid
 
    Date dateCreated
 
@@ -54,7 +54,7 @@ class Notification {
          if (forUser)
          {
             user {
-               eq('id', forUser)
+               eq('uid', forUser)
             }
          }
          if (forOrganization) // forOrganization alwas comes, but it should match also when it is null on the notification
@@ -99,7 +99,7 @@ class Notification {
          if (forUser)
          {
             user {
-               eq('id', forUser)
+               eq('uid', forUser)
             }
          }
          if (forOrganization) // forOrganization alwas comes, but it should match also when it is null on the notification

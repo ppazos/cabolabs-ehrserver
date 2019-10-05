@@ -68,7 +68,7 @@ class AuthTagLib {
       if (has_role) out << body()
    }
 
-   def userDoestHaveRole = { attrs, body ->
+   def userDoesntHaveRole = { attrs, body ->
 
       if (!attrs.role) throw new Exception('roles attribute is required')
 

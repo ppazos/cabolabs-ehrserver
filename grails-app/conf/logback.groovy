@@ -36,6 +36,6 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
 root(ERROR, ['STDOUT'])
 
 // new
-logger("ehrserverng.BootStrap", INFO) //, ['STDOUT'], false)
+logger("ehrserver2.BootStrap", INFO) //, ['STDOUT'], false)
 logger("com.cabolabs.security.stateless", DEBUG)
 logger("com.cabolabs.ehrserver.i18n", DEBUG)
