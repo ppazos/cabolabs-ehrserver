@@ -26,6 +26,8 @@ import com.cabolabs.security.*
 
 class AuthTagLib {
 
+   def authService
+
    def loggedUserAttribute = { attr, body ->
 
       def sessman = SessionManager.instance
@@ -51,21 +53,23 @@ class AuthTagLib {
 
       if (!attrs.roles) throw new Exception('roles attribute is required')
 
-      def _roles = attrs.roles.split(",")
+      if (authService.loggedInUserHasAnyRole(attrs.roles)) out << body()
 
-      def sessman = SessionManager.instance
-      def sess = sessman.getSession(session.id.toString())
-      def user_roles = sess.payload.user.getAuthorities(session.organization)
-      def has_role = false
-      user_roles.each { role ->
-         if (_roles.contains(role.authority))
-         {
-            has_role = true
-            return
-         }
-      }
-
-      if (has_role) out << body()
+      // def _roles = attrs.roles.split(",")
+      //
+      // def sessman = SessionManager.instance
+      // def sess = sessman.getSession(session.id.toString())
+      // def user_roles = sess.payload.user.getAuthorities(session.organization)
+      // def has_role = false
+      // user_roles.each { role ->
+      //    if (_roles.contains(role.authority))
+      //    {
+      //       has_role = true
+      //       return
+      //    }
+      // }
+      //
+      // if (has_role) out << body()
    }
 
    def userDoesntHaveRole = { attrs, body ->

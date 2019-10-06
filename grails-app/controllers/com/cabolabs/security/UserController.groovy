@@ -235,8 +235,7 @@ class UserController {
       // Admins can access all users
       if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
-         respond userInstance, [model: [roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]]
-         return
+         return [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]
       }
       else
       {
@@ -258,8 +257,7 @@ class UserController {
             return
          }
 
-         respond userInstance, [model: [roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]]
-         return
+         return [userInstance: userInstance, roles: rolesICanAssign(), organizations: organizationsICanAssign(), userRoles: userRoles]
       }
    }
 
@@ -333,7 +331,7 @@ class UserController {
       // organizations the current user can assign
       def organizations = organizationsICanAssign()
 
-      respond new User(params), [model: [roles: roles, organizations: organizations]]
+      return [userInstance: new User(params), roles: roles, organizations: organizations]
    }
 
    @Transactional
@@ -423,9 +421,10 @@ class UserController {
       // Admins can access all users
       if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
-         respond userInstance, [model: [roles: rolesICanAssign(),
-                                        organizations: organizationsICanAssign(),
-                                        userRoles: UserRole.findAllByUser(userInstance)]]
+         return [userInstance: userInstance,
+                 roles: rolesICanAssign(),
+                 organizations: organizationsICanAssign(),
+                 userRoles: UserRole.findAllByUser(userInstance)]
          return
       }
       else
@@ -443,9 +442,10 @@ class UserController {
             return
          }
 
-         respond userInstance, [model: [roles: rolesICanAssign(),
-                                        organizations: organizationsICanAssign(),
-                                        userRoles: UserRole.findAllByUserAndOrganization(userInstance, session.organization)]]
+         return [userInstance: userInstance,
+                 roles: rolesICanAssign(),
+                 organizations: organizationsICanAssign(),
+                 userRoles: UserRole.findAllByUserAndOrganization(userInstance, session.organization)]
          return
       }
    }

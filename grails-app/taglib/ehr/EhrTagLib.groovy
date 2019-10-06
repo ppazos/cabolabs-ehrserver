@@ -27,6 +27,8 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 class EhrTagLib {
 
+   def authService
+
    def hasEhr = { attrs, body ->
 
       if (!attrs.patientUID) throw new Exception("patientUID es obligatorio")
@@ -97,5 +99,30 @@ class EhrTagLib {
       html += '</div></div>' // /folder_folders, /folder
 
       return html
+   }
+
+   def canEditUser = { attrs, body ->
+
+      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
+      {
+         out << body()
+      }
+      else
+      {
+         def userInstance = attrs.userInstance // user to edit
+         def userHigherRole = userInstance.getHigherAuthority(session.organization)
+
+         def loggedInUser = springSecurityService.currentUser
+         if(loggedInUser)
+         {
+            def role = loggedInUser.getHigherAuthority(session.organization)
+
+            // if the logged user has a role higher than the highest role of the user, he can edit it.
+            if (role.higherThan(userHigherRole))
+            {
+               out << body()
+            }
+         }
+      }
    }
 }

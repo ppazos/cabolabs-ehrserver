@@ -49,7 +49,7 @@
                   <g:if test="${role.authority != 'ROLE_ADMIN'}">
                     <td>
                       <g:if test="${roleOrg.value*.authority.contains(role.authority)}"><%-- dont show if I cant assing the role --%>
-                        <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" />
+                        <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role.authority == role.authority && it.organization == org })?'checked="true"':''} value="${role.authority}" />
                       </g:if>
                     </td>
                   </g:if>
@@ -57,7 +57,7 @@
                 <g:userHasAnyRole roles="ROLE_ADMIN">
                   <td>
                     <%-- admins can assign any role --%>
-                    <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role == role && it.organization == org })?'checked="true"':''} value="${role.authority}" />
+                    <input type="checkbox" name="${org.uid}" ${(userRoles?.find{ it.role.authority == role.authority && it.organization == org })?'checked="true"':''} value="${role.authority}" />
                   </td>
                 </g:userHasAnyRole>
               </g:each>

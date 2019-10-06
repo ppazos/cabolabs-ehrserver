@@ -41,6 +41,7 @@
 
 # "temporary" build files
 /build
+*.class
 
 # other
 *.iws

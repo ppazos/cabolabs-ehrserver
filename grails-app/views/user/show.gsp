@@ -26,10 +26,6 @@
         <table class="table">
           <tbody>
             <tr>
-              <th><g:message code="user.attr.username" default="Username" /></th>
-              <td><g:fieldValue bean="${userInstance}" field="username"/></td>
-            </tr>
-            <tr>
               <th><g:message code="user.attr.email" default="Email" /></th>
               <td><g:fieldValue bean="${userInstance}" field="email"/></td>
             </tr>
