@@ -9,7 +9,7 @@ class AuthInterceptor {
 
    public AuthInterceptor()
    {
-      matchAll().excludes(controller:'auth') // excludes the open actions (not login auth and not stateless secured)
+      matchAll().excludes(controller:'auth').excludes(controller:'restAuth')
       /*.excludes(controller:'rest')
 
                 .excludes(controller:'restAuth')*/
@@ -50,6 +50,8 @@ class AuthInterceptor {
       {
          // Make session available in the session if comes from REST
          // TODO: with this we can change all request.securityStatelessMap.extradata.org_uid for sesison.organization.uid
+
+         // ISSUE: if the stateless interceptor is not executed before this one, the request.securityStatelessMap is not set
          session.organization = Organization.findByUid(request.securityStatelessMap.extradata.org_uid)
 
          return true

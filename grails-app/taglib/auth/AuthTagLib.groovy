@@ -32,7 +32,8 @@ class AuthTagLib {
 
       def sessman = SessionManager.instance
       def sess = sessman.getSession(session.id.toString())
-      out << sess.payload.user[attr.field]
+      if (sess) // not logged in?
+         out << sess.payload.user[attr.field]
    }
 
    def ifLoggedIn = { attrs, body ->

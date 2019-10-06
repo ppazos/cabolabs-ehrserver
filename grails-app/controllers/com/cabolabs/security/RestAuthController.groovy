@@ -9,7 +9,7 @@ class RestAuthController {
    // with this, the AuthInterceptor is executed even if the controller is excluded from the matches
    //static allowedMethods = [auth:['POST']]
 
-   def auth(String email, String password)
+   def auth(String email, String password, String organization)
    {
       if (request.method != 'POST')
       {
@@ -19,9 +19,9 @@ class RestAuthController {
       }
 
 
-      if (!email || !password)
+      if (!email || !password || !organization)
       {
-         renderError('incomplete credentials', 'e01.0001', 400)
+         renderError('incomplete credentials, email, password and organization are required', 'e01.0001', 400, [], null)
          return
       }
 
@@ -39,18 +39,30 @@ class RestAuthController {
          return
       }
 
+      def org = Organization.findByNumber(organization)
+
+      if (!org)
+      {
+         renderError('auth failed', 'e01.0001', 401, [], null)
+         return
+      }
+
+      if (!user.organizations.find{ it.uid == org.uid })
+      {
+         renderError('auth failed', 'e01.0001', 401, [], null)
+         return
+      }
+
       // TODO: put the server id/name in the payload
-      def token = statelessTokenProvider.generateToken(email, null, [:])
+      def _token = statelessTokenProvider.generateToken(email, null, [org_uid:org.uid])
 
       withFormat {
          json {
-            render (['token': token] as JSON)
+            render (['token': _token] as JSON)
          }
          xml {
             render(contentType:"text/xml", encoding:"UTF-8") {
-               //result {
-                  token(token)
-               //}
+               token(_token)
             }
          }
       }
