@@ -10,8 +10,16 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+# from https://www.deps.co/guides/travis-ci-latest-java/
+matrix:
+  include:
+    - jdk: openjdk9
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+
 jdk:
-  - openjdk11
+  - openjdk9
 
 services:
   - mysql
