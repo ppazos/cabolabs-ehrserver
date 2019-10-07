@@ -20,6 +20,9 @@ class UrlMappings {
          action: 'auth'
       )
 
+
+      // REST TEMPLATE
+
       "/rest/v1/templates"(
          controller: 'rest',
          action: 'templates'
@@ -29,7 +32,11 @@ class UrlMappings {
          action: 'getTemplate'
       )
 
+
+      // REST EHR
+
       "/rest/v1/ehrs"(
+         method: 'GET',
          controller: 'rest',
          action: 'ehrList'
       )
@@ -49,6 +56,10 @@ class UrlMappings {
          controller: 'rest',
          action: 'ehrCreate'
       )
+
+
+      // REST COMPOSITIONS
+
       "/rest/v1/compositions"(
          method: 'GET',
          controller: 'rest',
@@ -58,17 +69,23 @@ class UrlMappings {
          controller: 'rest',
          action: 'getComposition'
       )
+      "/rest/v1/ehrs/$ehrUid/compositions"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'commit'
+      )
+
+
+      // REST CONTRIBUTION
 
       // /contributions?ehrUid to GET /ehrs/{ehdUid}/contributions
       "/rest/v1/ehrs/$ehrUid/contributions"(
          controller: 'rest',
          action: 'contributions'
       )
-      "/rest/v1/ehrs/$ehrUid/compositions"(
-         method: 'POST',
-         controller: 'rest',
-         action: 'commit'
-      )
+
+
+      // REST QUERY
 
       // execute given query (not stored)
       "/rest/v1/query/composition/execute"(
@@ -91,14 +108,6 @@ class UrlMappings {
          controller: 'rest',
          action: 'query'
       )
-
-      // management API
-      "/mgt/v1/stats"(
-         controller: 'stats',
-         action: 'stats'
-      )
-
-
       "/rest/v1/multiqueries"(
          method: 'GET',
          controller: 'rest',
@@ -115,9 +124,17 @@ class UrlMappings {
          action: 'getMatchingEhrs'
       )
 
+
       "/rest/**"(
          controller: 'rest',
          action: 'notFound'
+      )
+
+
+      // management API
+      "/mgt/v1/stats"(
+         controller: 'stats',
+         action: 'stats'
       )
 
       /**

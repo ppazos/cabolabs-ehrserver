@@ -15,7 +15,6 @@ stateless:
 
 ---
 app:
-   opt_repo_namespace: 4d6fe9fc-9dc9-4225-97a4-f4c86001d754
    version_repo: versions
    commit_logs: commits
    opt_repo: opts

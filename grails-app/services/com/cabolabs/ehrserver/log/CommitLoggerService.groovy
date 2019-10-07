@@ -26,7 +26,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.CommitLog
 import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
-import com.cabolabs.ehrserver.reporting.ActivityLog
 
 @Transactional
 class CommitLoggerService {
@@ -35,7 +34,6 @@ class CommitLoggerService {
 
    /*
     * Operations for the whole version repo.
-    * FIXME: These functions are defined in the VersionFSRepoService, remove from here and use those
     */
    private boolean canWriteRepo()
    {
@@ -47,6 +45,18 @@ class CommitLoggerService {
       return new File(config.commit_logs).exists()
    }
 
+   /*
+    * Operations for the version repo per organization.
+    */
+   private boolean canWriteRepoOrg(String orguid)
+   {
+      return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
+   }
+
+   private boolean repoExistsOrg(String orguid)
+   {
+      return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+   }
 
    /**
     * If the content (xml or json) was read from the request, we won't be able to read it again,
@@ -54,7 +64,6 @@ class CommitLoggerService {
     */
    def log(HttpServletRequest request, String contributionUid, boolean success, String content, session, params)
    {
-      println "COMMIT LOG PARAMS "+ params
       // http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServletRequest.html
       def clientLocale = request.locale
       def isSecure = request.isSecure() // it uses https?
@@ -63,7 +72,6 @@ class CommitLoggerService {
       def contentLength = request.contentLength
       def encoding = request.characterEncoding
       def cookies = request.cookies
-
 
       // Stateless username
       def authUser = request.securityStatelessMap.username
@@ -123,9 +131,6 @@ class CommitLoggerService {
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created
 
-      println "REQUEST URL "+ request.requestURL // complete URL
-      println "REQUEST METHOD "+ request.method // POST
-
       def commit = new CommitLog(
          ehrUid: params.ehrUid,
          locale: clientLocale,
@@ -136,7 +141,7 @@ class CommitLoggerService {
 
          username: authUser,
 
-         action: params.controller +':'+ params.action,
+         action: params.controller +':'+params.action,
          objectClazz: 'Contribution',
          objectUid: contributionUid, // can be null if !success
 
@@ -155,11 +160,22 @@ class CommitLoggerService {
 
       if (logContent)
       {
+         String orguid = request.securityStatelessMap.extradata.org_uid
+
+         // TODO: The orguid folder is created just the first time,
+         // it might be better to create it whe nthe organization is created.
+         if (!repoExistsOrg(orguid))
+         {
+            // Creates the orguid subfolder
+            new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
+         }
+
          // save the json or xml to the commit log
          def ext = '.xml'
          if (contentType == 'application/json') ext = '.json'
 
          def commitLog = new File(config.commit_logs.withTrailSeparator() +
+                                  orguid.withTrailSeparator() +
                                   commit.fileUid + ext)
          commitLog << logContent
       }

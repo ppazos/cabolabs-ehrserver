@@ -49,7 +49,7 @@ class StatsController {
    @SecuredStateless
    def organizationAccountStats(String uid)
    {
-      //def accmgt = User.findByUsername(username)
+      //def accmgt = User.findByEmail(username)
       //def organizations = accmgt.organizations
       def org = Organization.findByUid(uid)
 

@@ -173,7 +173,7 @@ class SyncParserService {
       {
          if (jq.author.username == 'admin')
          {
-            author = User.findByUsername('admin')
+            author = User.findByEmail('admin')
          }
       }
       */

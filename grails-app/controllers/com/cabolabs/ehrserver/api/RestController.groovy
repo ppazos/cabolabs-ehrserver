@@ -106,104 +106,6 @@ class RestController {
       render "echo"
    }
 
-   // TODO: I18N
-   // moved to RestAuthController
-   /*
-   def login()
-   {
-      // https://github.com/ppazos/cabolabs-ehrserver/blob/rest_security/src/groovy/com/cabolabs/security/AuthFilter.groovy
-      // TODO check JSON payload for params...
-      String username = params.username
-      String password = params.password
-      String organization_number = params.organization
-
-      try
-      {
-         if (!username || !password || !organization_number)
-         {
-            throw new BadCredentialsException("username, password and organization are required, at least one is empty")
-         }
-
-         def user = User.findByUsername(username)
-         if (user == null)
-         {
-            throw new UsernameNotFoundException("No matching account")
-         }
-
-         // Status checks
-         if (!user.enabled)
-         {
-            throw new DisabledException("Account disabled")
-         }
-
-         if (!user.account.enabled)
-         {
-            log.info("Company account disabled")
-            throw new DisabledException("Company account disabled")
-         }
-
-         if (user.accountExpired)
-         {
-            throw new AccountExpiredException("Account expired")
-         }
-
-         if (user.accountLocked)
-         {
-            throw new LockedException("Account locked")
-         }
-
-         // Check password
-         if (!PasswordUtils.isPasswordValid(user.password, password, null))
-         {
-            throw new BadCredentialsException("Authentication failed")
-         }
-
-         if (!organization_number) // null or empty
-         {
-            throw new BadCredentialsException("Authentication failed - organization number not provided")
-         }
-
-         // Check organization
-         Organization org = Organization.findByNumber(organization_number)
-
-         if (org == null)
-         {
-            throw new BadCredentialsException("Authentication failed")
-         }
-
-         if (!user.organizations.find{ it.uid == org.uid })
-         {
-            throw new BadCredentialsException("Authentication failed - check the organization number")
-         }
-
-         // TODO: refresh token
-
-         def _token = statelessTokenProvider.generateToken(username, null, [organization: organization_number, org_uid: org.uid])
-
-         withFormat {
-            json {
-               render (['token': _token] as JSON)
-            }
-            xml {
-               render(contentType:"text/xml", encoding:"UTF-8") {
-                  result {
-                     token(_token)
-                     //type('AA')                         // application reject
-                     //code('EHR_SERVER::API::ERRORS::0066') // sys::service::concept::code
-                  }
-               }
-            }
-         }
-      }
-      catch (Exception e)
-      {
-         logService.error(request, session, params, e)
-         renderError(e.message, 'e01.0001', 401)
-      }
-   }
-   */
-
-
    private void renderError(String msg, String errorCode, int status)
    {
       renderError(msg, errorCode, status, [], null)
@@ -290,7 +192,7 @@ class RestController {
 
       // check permissions of the logged user over the ehr
       def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
+      def _user = User.findByEmail(_username)
       if (!_user.organizations.uid.contains(ehr.organizationUid))
       {
          commitLoggerService.log(request, null, false, null, session, params)
@@ -1860,7 +1762,7 @@ class RestController {
 
       // check permissions of the logged user over the compo (cindex.organizationUid)
       def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
+      def _user = User.findByEmail(_username)
       if (!_user.organizations.uid.contains(cindex.organizationUid))
       {
          renderError(message(code:'query.execute.error.user_cant_access_composition'), '479', 403)
@@ -1894,7 +1796,7 @@ class RestController {
     * @return
     */
    @SecuredStateless
-   def findCompositions(String ehrUid, String subjectId,
+   def listCompositions(String ehrUid, String subjectId,
                         String fromDate, String toDate,
                         String archetypeId, String category,
                         String format, int max, int offset)
@@ -1914,7 +1816,7 @@ class RestController {
       // mandatory parameters not present so it is 400 Bad Request
       if (!ehrUid && !subjectId)
       {
-         renderError(message(code:'rest.error.findCompositions.subjectIdOrEhrUidRequire'), '403', 400)
+         renderError(message(code:'rest.error.listCompositions.subjectIdOrEhrUidRequire'), '403', 400)
          return
       }
 
@@ -2006,7 +1908,7 @@ class RestController {
    def organizations(String format)
    {
       def _username = request.securityStatelessMap.username
-      def _user = User.findByUsername(_username)
+      def _user = User.findByEmail(_username)
 
       if (!format || format == 'xml')
       {

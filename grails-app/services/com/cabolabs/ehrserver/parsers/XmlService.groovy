@@ -83,7 +83,7 @@ class XmlService {
       //  - errors will be saved into validationErrors
       validateVersionsSyntactic(versions)
 
-      def semVal = new SemanticValidationLevel1(config.opt_repo_namespace)
+      def semVal = new SemanticValidationLevel1(ehr.organizationUid)
       semVal.validateVersions(versions)
       if (semVal.errors.size() > 0)
       {
@@ -451,7 +451,7 @@ class XmlService {
             //println "XML version.uid "+ versionXML.uid.value // null because XMLSlurper doesn't evalaute the XML after adding the uid to the XML
 
             version = contribution.versions.find { it.uid == version_uid}
-            file = versionFSRepoService.getNonExistingVersionFile(version )
+            file = versionFSRepoService.getNonExistingVersionFile(ehr.organizationUid, version)
          }
          catch (VersionRepoNotAccessibleException e)
          {
@@ -880,6 +880,7 @@ class XmlService {
          location:      location,  // optional for event, null for persistent
          subjectId:     ehr.subject.value,
          ehrUid:        ehr.uid,
+         organizationUid: ehr.organizationUid,
          archetypeId:   version.data.@archetype_node_id.text(),
          templateId:    version.data.archetype_details.template_id.value.text(),
          composer:      composer,
@@ -927,6 +928,7 @@ class XmlService {
       currentContribution = new Contribution(
          uid: contributionId,
          ehr: ehr,
+         organizationUid: ehr.organizationUid,
          audit: new AuditDetails(
             systemId:      auditSystemId,
 

@@ -324,6 +324,7 @@ class SemanticValidationLevel1 {
       log.info (templateId+' '+archetypeId)
 
       def optMan = OptManager.getInstance(Holders.config.app.opt_repo.withTrailSeparator())
+      println "-------------- VALIDATE COMPOSITION NAMESPACE "+ this.namespace
       def opt = optMan.getOpt(templateId, this.namespace)
 
       // test

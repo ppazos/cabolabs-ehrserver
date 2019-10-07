@@ -13,7 +13,8 @@ class AuthService implements ServletAttributes {
    {
       def sessman = SessionManager.instance
       def sess = sessman.getSession(session.id.toString())
-      sess.payload.user
+      if (sess) return sess.payload.user
+      return null
    }
 
    def isLoggedIn()

@@ -45,7 +45,6 @@ class UserController {
    def organizationService
    def logService
 
-   //def userService
    def config = Holders.config.app
 
    def set_org_for_tests(org)
@@ -116,7 +115,7 @@ class UserController {
       def _username = request.securityStatelessMap.username
       def org_uid = request.securityStatelessMap.extradata.org_uid
       def org = Organization.findByUid(org_uid)
-      def _user = User.findByUsername(_username)
+      def _user = User.findByEmail(_username)
 
       // user I want to access
       def u = User.findByEmail(username)
