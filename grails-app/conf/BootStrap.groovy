@@ -1012,7 +1012,7 @@ class BootStrap {
    {
       if (Account.count() == 0)
       {
-         def account = new Account(contact: contact, enabled: true, companyName: 'Default Account')
+         def account = new Account(contact: contact, enabled: true, companyName: System.getenv('EHRSERVER_COMPANY_NAME'))
          organizations.each { org ->
             account.addToOrganizations(org)
          }
@@ -1028,7 +1028,7 @@ class BootStrap {
          println "Creating default organization"
 
          // Default organization
-         organizations << new Organization(name: 'Default Organization', number: '123456', uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
+         organizations << new Organization(name: System.getenv('EHRSERVER_ORGANIZATION_NAME'), number: System.getenv('EHRSERVER_ORGANIZATION_NUMBER'), uid:'e9d13294-bce7-44e7-9635-8e906da0c914')
 
          // the account will save the orgs
 
@@ -1188,24 +1188,23 @@ gr_account.save(failOnError:true, flush:true)
 
          createRoles()
 
-
          //def accManUser // used below to create the Account
          def adminUser, orgManUser, user
          if (User.count() == 0)
          {
             println "Creating default users"
 
-            adminUser = new User(username: 'admin', email: 'admin@cabolabs.com', password: 'admin', enabled: true)
+            adminUser = new User(username: System.getenv('EHRSERVER_ADMIN_USERNAME'), email: System.getenv('EHRSERVER_ADMIN_EMAIL'), password: System.getenv('EHRSERVER_ADMIN_PASSWORD'), enabled: true)
             adminUser.save(failOnError: true,  flush: true)
 
             //accManUser = new User(username: 'accman', email: 'pablo.swp+accman@gmail.com', password: 'accman', enabled: true)
             //accManUser.save(failOnError: true,  flush: true)
 
-            orgManUser = new User(username: 'orgman', email: 'orgman@cabolabs.com', password: 'orgman', enabled: true)
-            orgManUser.save(failOnError: true,  flush: true)
+            //orgManUser = new User(username: 'orgman', email: 'orgman@cabolabs.com', password: 'orgman', enabled: true)
+            //orgManUser.save(failOnError: true,  flush: true)
 
-            user = new User(username: 'user', email: 'user@cabolabs.com', password: 'user', enabled: true)
-            user.save(failOnError: true,  flush: true)
+            //user = new User(username: 'user', email: 'user@cabolabs.com', password: 'user', enabled: true)
+            //user.save(failOnError: true,  flush: true)
          }
          else
          {
@@ -1226,8 +1225,8 @@ gr_account.save(failOnError:true, flush:true)
             UserRole.create( adminUser,  (Role.findByAuthority(Role.AD)), organizations[0], true )
             UserRole.create( adminUser,  (Role.findByAuthority(Role.AM)), organizations[0], true ) // admin will be the accman of the default org
             //UserRole.create( accManUser, (Role.findByAuthority(Role.AM)), organizations[0], true )
-            UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
-            UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
+            //UserRole.create( orgManUser, (Role.findByAuthority(Role.OM)), organizations[0], true )
+            //UserRole.create( user,       (Role.findByAuthority(Role.US)), organizations[0], true )
          }
 
 
@@ -1293,8 +1292,8 @@ gr_account.save(failOnError:true, flush:true)
                ),
                new Plan(
                  name:                           "Enterprise",
-                 max_organizations:               10,
-                 max_opts_per_organization:       25,
+                 max_organizations:               99,
+                 max_opts_per_organization:       99,
                  max_api_tokens_per_organization: 999,
                  repo_total_size_in_kb:           15*1000*1000,
                  period:                          Plan.periods.MONTHLY
@@ -1311,7 +1310,7 @@ gr_account.save(failOnError:true, flush:true)
 
             plans*.save(failOnError: true)
 
-            test_plan = plans[3]
+            test_plan = plans[2]
          }
          else
          {
