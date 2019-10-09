@@ -33,23 +33,24 @@ Array.prototype.unique = function() {
 
 // filters behavior
 var templateid_select = document.getElementById('view_template_id');
+if (templateid_select)
+{
+  templateid_select.onchange = function (ev) {
 
-templateid_select.onchange = function (ev) {
+    if ($(this).val() == '')
+    {
+      var select = document.getElementById('view_archetype_id'); // view_archetype_id
+      select.innerHTML = ''; // removes current archids
+      select = document.getElementById('view_archetype_path'); // view_archetype_id
+      select.innerHTML = ''; // removes current archids
+      // clean the current criteria if the user defined it for another archetype/path
+      $('#composition_criteria_builder').empty();
+      return;
+    }
 
-  if ($(this).val() == '')
-  {
-     var select = document.getElementById('view_archetype_id'); // view_archetype_id
-     select.innerHTML = ''; // removes current archids
-     select = document.getElementById('view_archetype_path'); // view_archetype_id
-     select.innerHTML = ''; // removes current archids
-     // clean the current criteria if the user defined it for another archetype/path
-     $('#composition_criteria_builder').empty();
-     return;
-  }
-
-  get_archetypes_in_template( $(this).val(), get_archetypes_in_template_callback );
-  /*
-  get_archetypes_in_template( $(this).val(), function(aiis) {
+    get_archetypes_in_template( $(this).val(), get_archetypes_in_template_callback );
+    /*
+    get_archetypes_in_template( $(this).val(), function(aiis) {
 
     console.log(aiis);
 
@@ -69,30 +70,31 @@ templateid_select.onchange = function (ev) {
     archetypeids = '';
     aiis.forEach( function(aii) {
 
-      option = document.createElement("option");
-      option.value = aii.archetypeId;
-      option.text = aii.name[session_lang] +' ('+ aii.archetypeId +')';
+    option = document.createElement("option");
+    option.value = aii.archetypeId;
+    option.text = aii.name[session_lang] +' ('+ aii.archetypeId +')';
 
 
-      // to be used on the archetype id filter matching
-      aii.parentOpts.forEach( function(opt)
-      {
-        archetypeids += opt.archetypeId+'|';
-      });
-      option.setAttribute('data-archetypeid', archetypeids);
-
-
-      select.add(option);
-
-      // to fill filter by compo archetype id
-      if (aii.rmTypeName == 'COMPOSITION')
-      {
-        archetypes.push(aii.archetypeId);
-      }
-    });
+    // to be used on the archetype id filter matching
+    aii.parentOpts.forEach( function(opt)
+    {
+    archetypeids += opt.archetypeId+'|';
   });
-  */
+  option.setAttribute('data-archetypeid', archetypeids);
+
+
+  select.add(option);
+
+  // to fill filter by compo archetype id
+  if (aii.rmTypeName == 'COMPOSITION')
+  {
+  archetypes.push(aii.archetypeId);
+}
+});
+});
+*/
 };
+}
 
 var get_archetypes_in_template_callback = function(tree)
 {

@@ -331,7 +331,7 @@ class XmlService {
                   // should version the latest version
                   if (!version.data.lastVersion)
                   {
-                     errors[i] = ["A change was committed for the version ${preceding_version_uid} that is not the latest version of the composition, please use the checkout service to get the latest version uid"]
+                     errors[i] = ["A change was committed for the version ${preceding_version_uid} that is not the latest version of the composition, try to get the composition again to get the latest version uid"]
                   }
                }
             }

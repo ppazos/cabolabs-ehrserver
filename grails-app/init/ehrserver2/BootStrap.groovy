@@ -232,6 +232,28 @@ class BootStrap {
                ]
       }
 
+      JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
+        return [templateId:  opt.templateId,
+                concept:     opt.concept,
+                language:    opt.language,
+                uid:         opt.uid,
+                externalUid: opt.externalUid,
+                archetypeId: opt.archetypeId,
+                archetypeConcept: opt.archetypeConcept,
+                organizationUid:  opt.organizationUid,
+                setID:       opt.setId,
+                versionNumber: opt.versionNumber]
+      }
+
+
+      JSON.registerObjectMarshaller(Organization) { o ->
+        return [uid: o.uid,
+                name: o.name,
+                number: o.number
+               ]
+      }
+
+
    }
 
    def registerXMLMarshallers()
@@ -447,18 +469,18 @@ class BootStrap {
           value(doctor.value)
           name(doctor.name)
         }
-     }
+      }
 
-     XML.registerObjectMarshaller(AuditDetails) { audit, xml ->
+      XML.registerObjectMarshaller(AuditDetails) { audit, xml ->
         xml.build {
           timeCommitted(audit.timeCommitted)
           committer(audit.committer) // DoctorProxy
           systemId(audit.systemId)
           if (audit.changeType) changeType(audit.changeType.toString())
         }
-     }
+      }
 
-     XML.registerObjectMarshaller(Contribution) { contribution, xml ->
+      XML.registerObjectMarshaller(Contribution) { contribution, xml ->
         xml.build {
           uid(contribution.uid)
           ehrUid(contribution.ehr.uid)
@@ -493,6 +515,29 @@ class BootStrap {
            xml.end()
         }
         xml.end()
+      }
+
+      XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
+        xml.build {
+          templateId(opt.templateId)
+          concept(opt.concept)
+          language(opt.language)
+          uid(opt.uid)
+          externalUid(opt.externalUid)
+          archetypeId(opt.archetypeId)
+          archetypeConcept(opt.archetypeConcept)
+          organizationUid(opt.organizationUid)
+          setId(opt.setId)
+          versionNumber(opt.versionNumber)
+        }
+      }
+
+      XML.registerObjectMarshaller(Organization) { o, xml ->
+        xml.build {
+          uid(o.uid)
+          name(o.name)
+          number(o.number)
+        }
       }
    }
 

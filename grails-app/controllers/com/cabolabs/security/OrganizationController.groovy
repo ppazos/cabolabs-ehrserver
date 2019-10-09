@@ -65,7 +65,7 @@ class OrganizationController {
       }
       else
       {
-         def user = authService.loggedInUser()
+         def user = authService.loggedInUser
          def orgs = user.organizations
 
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
@@ -88,7 +88,7 @@ class OrganizationController {
    def show()
    {
       def plan_max_tokens
-      def user = authService.loggedInUser()
+      def user = authService.loggedInUser
       def account = user.account
       def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)
@@ -110,7 +110,7 @@ class OrganizationController {
       {
          // This limit is checked for non-admins because with admins we don't know which account will be selected, so the max orgs is not available
          // Checks organization creation plan limits
-         def user = authService.loggedInUser()
+         def user = authService.loggedInUser
          def account = user.account
          def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
          if (plan_assoc)
@@ -140,7 +140,7 @@ class OrganizationController {
    def save(String name, Boolean assign, Long account_id)
    {
       // https://github.com/ppazos/cabolabs-ehrserver/issues/847
-      def user = authService.loggedInUser()
+      def user = authService.loggedInUser
       def account
       if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
@@ -279,7 +279,7 @@ class OrganizationController {
       }
 
       // Checks api key creation plan limits
-      def user = authService.loggedInUser()
+      def user = authService.loggedInUser
       def account = user.account
       def plan_assoc = Plan.associatedNow(account) // can be null in dev env, on this case, no constraints apply to org creation
       if (plan_assoc)

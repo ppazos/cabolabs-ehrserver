@@ -190,10 +190,6 @@ class UrlMappings {
          controller: 'rest',
          action: 'queryList'
       )
-      "/api/v1/ehrs/$ehrUid/compositions/$compositionUid/checkout"(
-         controller: 'rest',
-         action: 'checkout'
-      )
       */
 
       "/$controller/$action?/$id?(.$format)?"{

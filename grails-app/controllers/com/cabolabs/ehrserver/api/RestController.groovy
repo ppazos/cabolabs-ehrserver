@@ -87,7 +87,6 @@ class RestController {
    static Map endpoint_codes = [
       'login': '01',         // POST /login
       'commit': '02',        // POST /commit
-      'checkout': '03',      // GET /checkout
       'ehrList': '04',       // GET /ehrs
       'ehrForSubject': '05', // GET /ehrs/subjectUid/$subjectUid
       'ehrGet': '06',        // GET /ehrs/ehrUid/$ehrUid
@@ -446,90 +445,6 @@ class RestController {
       }
    } // commit
 
-
-   /**
-    * Enpoint for checking out the last version of a composition in order to create a new one.
-    * The query services don't allow versioning the retrieved compositions because don't include
-    * the version id that is necessary to create a new version of a composition.
-    *
-    * @param ehrUid
-    * @param compositionUid
-    * @return
-    */
-   @SecuredStateless
-   def checkout(String ehrUid, String compositionUid, String format)
-   {
-      if (!ehrUid)
-      {
-         renderError(message(code:'rest.commit.error.ehrUidIsRequired'), '411', 400)
-         return
-      }
-
-      if (!compositionUid)
-      {
-         renderError(message(code:'rest.commit.error.compositionUidIsRequired'), '411', 400)
-         return
-      }
-
-      def c = Ehr.createCriteria()
-      def _ehr = c.get {
-         eq ('uid', ehrUid)
-      }
-
-      if (!_ehr)
-      {
-         renderError(message(code:'rest.error.ehr_doesnt_exists', args:[ehrUid]), "478", 404)
-         return
-      }
-
-      // Check if the org used to login is the org of the requested ehr
-      // organization number used on the API login
-
-      if (_ehr.organizationUid != request.securityStatelessMap.extradata.org_uid)
-      {
-         renderError(message(code:'rest.error.cant_access_ehr', args:[ehrUid]), "483", 401)
-         return
-      }
-
-      def ci = CompositionIndex.findByUid(compositionUid)
-
-      if (!ci)
-      {
-         renderError(message(code:'rest.commit.error.versionDoesntExists'), '412', 404)
-         return
-      }
-
-      // only the latest version can be checked out
-      if (!ci.lastVersion)
-      {
-         renderError(message(code:'rest.commit.error.versionIsNotTheLatest'), '416', 400)
-         return
-      }
-
-      try
-      {
-         withFormat {
-            json {
-               render(text: compositionService.compositionAsJson(compositionUid), contentType:"application/json", encoding:"UTF-8")
-            }
-            xml {
-               render(text: compositionService.compositionAsXml(compositionUid), contentType:"text/xml", encoding:"UTF-8")
-            }
-         }
-      }
-      catch (FileNotFoundException e)
-      {
-         logService.error(request, session, params, e)
-         renderError(message(code:'rest.commit.error.versionDataNotFound'), '415', 500) // this should not happen :)
-         return
-      }
-      catch (Exception e)
-      {
-         logService.error(request, session, params, e)
-         renderError(message(code:'rest.error.getComposition.compoDoesntExists'), '415', 404)
-         return
-      }
-   }
 
    @SecuredStateless
    def ehrList(String format, int max, int offset)

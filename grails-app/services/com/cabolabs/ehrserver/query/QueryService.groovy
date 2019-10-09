@@ -136,7 +136,7 @@ class QueryService {
 
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(version)
+                   vf = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
                    buff = vf.getText()
                 }
                 catch (VersionRepoNotAccessibleException e)
@@ -178,7 +178,7 @@ class QueryService {
 
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(version)
+               vf = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
                buff = vf.getText()
             }
             catch (VersionRepoNotAccessibleException e)

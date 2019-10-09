@@ -74,7 +74,7 @@ class DataIndexerService {
 
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(version)
+         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
       }
       catch (VersionRepoNotAccessibleException e)
       {

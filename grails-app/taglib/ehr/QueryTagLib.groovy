@@ -63,6 +63,7 @@ class QueryTagLib {
          }
          else // simple criteria
          {
+            println tree.value.archetypeId +" "+ tree.value.path
             div(class:'table-responsive') {
                table(class:'table table-striped table-bordered table-hover') {
                   tr {

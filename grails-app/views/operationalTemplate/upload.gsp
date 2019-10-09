@@ -113,7 +113,7 @@
         files: $(":file", this),
         iframe: true
       })
-      .complete(function(data) {
+      .always(function(data) {
 
         console.log('complete', data);
       })

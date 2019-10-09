@@ -81,7 +81,7 @@ class FolderController {
    def create()
    {
       // Filter ehrs by the ehrs that don't have a root folder and are ehrs the user can see by it's org uids
-      def user = authService.loggedInUser()
+      def user = authService.loggedInUser
       def ehrs = Ehr.findAllByDirectoryIsNullAndOrganizationUidInList(user.organizations.uid)
       respond new Folder(params), model: [ehrs: ehrs]
    }

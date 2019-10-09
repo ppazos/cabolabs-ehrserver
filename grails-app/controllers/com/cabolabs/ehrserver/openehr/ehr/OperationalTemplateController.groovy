@@ -82,7 +82,7 @@ class OperationalTemplateController {
     */
    def generate()
    {
-      operationalTemplateIndexerService.indexAll(session.organization)
+      operationalTemplateIndexerService.indexAll(session.organization.uid)
 
       // load opt in manager cache
       def optMan = OptManager.getInstance()
@@ -108,7 +108,7 @@ class OperationalTemplateController {
          def errors = []
          def res
 
-         def user = authService.loggedInUser()
+         def user = authService.loggedInUser
 
          // Repo size check and max opt check max_opts_per_organization
          def account = user.account
@@ -297,7 +297,7 @@ class OperationalTemplateController {
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         operationalTemplateIndexerService.index(template, null, session.organization)
+         operationalTemplateIndexerService.index(template, null, session.organization.uid)
 
 
          // load opt in manager cache

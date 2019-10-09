@@ -356,7 +356,7 @@ class QueryController {
 
 
       // https://github.com/ppazos/cabolabs-ehrserver/issues/340
-      def user = authService.loggedInUser()
+      def user = authService.loggedInUser
       query.author = user
       //query.cacheHQLWhere()
 

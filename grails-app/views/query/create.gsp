@@ -2207,7 +2207,7 @@ resp.responseJSON.result.message +'</div>'
                 <td>
                   <%--<g:textField name="name" required="" value="${queryInstance?.name}" class="form-control input-sm" />--%>
 
-                  <g:each in="${grailsApplication.config.app.l10n.available_locales}" var="lang">
+                  <g:each in="${grailsApplication.config.languages}" var="lang">
                     <div class="input-group">
                       <div class="input-group-addon">
                         <span class="input-group-text">${lang}</span>
@@ -2275,41 +2275,40 @@ resp.responseJSON.result.message +'</div>'
                       </span>
                     </td>
                     <td>
-                      <%--
-                      <select id="view_template_id" class="form-control" size="10">
-                        <option value=""><g:message code="query.create.templates.select_template" /></option>
-                      </select>
-                      --%>
-                      <g:select name="view_template_id"
-                                size="10"
-                                from="${templateIndexes}"
-                                noSelection="['':message(code:"query.create.templates.select_template")]"
-                                optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
-                                optionKey="templateId"
-                                class="form-control withsize"/>
+                      <g:if test="${templateIndexes}">
+                        <g:select name="view_template_id" size="10" from="${templateIndexes}"
+                          noSelection="['':message(code:"query.create.templates.select_template")]"
+                          optionValue="${{it.templateId +' (v'+ it.versionNumber +')'}}"
+                          optionKey="templateId" class="form-control withsize"/>
+                      </g:if>
+                      <g:else>
+                        <g:message code="query.create.noTemplatesForOrganizationAndLanguage" />
+                      </g:else>
                     </td>
                   </tr>
-                  <tr>
-                    <td>
-                      <g:message code="query.create.concept" />
-                    </td>
-                    <td>
-                      <select id="view_archetype_id" name="view_archetype_id" size="10" class="form-control withsize"></select>
-                      <label><input type="checkbox" name="allow_any_archetype_version" /> <g:message code="query.create.allowAnyArchetypeVersion" /></label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><g:message code="query.create.datapoint" /></td>
-                    <td>
-                      <%-- Se setean las options al elegir un arquetipo --%>
-                      <select name="view_archetype_path" id="view_archetype_path" size="10" class="form-control withsize">
-                        <option><g:message code="query.create.please_select_datapoint" /></option>
-                      </select>
-                      <div>
-                        <label><input type="checkbox" name="display_null_flavour" /> <g:message code="query.create.label.displayNullFlavours" /></label>
-                      </div>
-                    </td>
-                  </tr>
+                  <g:if test="${templateIndexes}">
+                    <tr>
+                      <td>
+                        <g:message code="query.create.concept" />
+                      </td>
+                      <td>
+                        <select id="view_archetype_id" name="view_archetype_id" size="10" class="form-control withsize"></select>
+                        <label><input type="checkbox" name="allow_any_archetype_version" /> <g:message code="query.create.allowAnyArchetypeVersion" /></label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><g:message code="query.create.datapoint" /></td>
+                      <td>
+                        <%-- Se setean las options al elegir un arquetipo --%>
+                        <select name="view_archetype_path" id="view_archetype_path" size="10" class="form-control withsize">
+                          <option><g:message code="query.create.please_select_datapoint" /></option>
+                        </select>
+                        <div>
+                          <label><input type="checkbox" name="display_null_flavour" /> <g:message code="query.create.label.displayNullFlavours" /></label>
+                        </div>
+                      </td>
+                    </tr>
+                  </g:if>
                </table>
              </div>
           </div>
