@@ -197,15 +197,15 @@ class BootStrap {
 
       if (!commits_repo.exists())
       {
-         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
+         commits_repo.mkdir()
       }
       if (!versions_repo.exists())
       {
-         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
+         versions_repo.mkdir()
       }
       if (!opt_repo.exists())
       {
-         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
+         opt_repo.mkdir()
       }
 
       Organization.list().each { org ->
@@ -213,7 +213,7 @@ class BootStrap {
          // version repos per existing org
          if (!versionFSRepoService.repoExistsOrg(org.uid))
          {
-            throw new Exception("Version repo doesn't for organization "+ org.uid)
+             new File(Holders.config.app.version_repo.withTrailSeparator() + org.uid).mkdir()
          }
          if (!versionFSRepoService.canWriteRepoOrg(org.uid))
          {
@@ -223,7 +223,7 @@ class BootStrap {
          // commit log repos per existing org
          if (!commitLoggerService.repoExistsOrg(org.uid))
          {
-            throw new Exception("Commit log repo doesn't for organization "+ org.uid)
+             new File(Holders.config.app.commit_logs.withTrailSeparator() + org.uid).mkdir()
          }
          if (!commitLoggerService.canWriteRepoOrg(org.uid))
          {

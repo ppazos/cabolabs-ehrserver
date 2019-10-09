@@ -74,7 +74,7 @@ environments {
            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
            */
 
-            dbCreate = "update"
+            dbCreate = System.getenv('EHRSERVER_MYSQL_DB_BEHAVIOUR')
 
             String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
             String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')

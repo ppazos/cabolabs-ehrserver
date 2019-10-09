@@ -225,10 +225,6 @@ class OperationalTemplateIndexer {
       def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
       def base_repo = new File( base_path )
 
-      if (!base_repo.exists()) throw new Exception("No existe "+ base_path)
-      if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
-      if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
-
       def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
 
       // repo namespace exists for org?
@@ -244,19 +240,24 @@ class OperationalTemplateIndexer {
       {
          def xmlValidationService = new XmlValidationService()
          def dest, opt_contents
-         base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
 
-            opt_contents = FileUtils.removeBOM(file.text.bytes)
+         if (base_repo.exists()) {
+            if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
+            if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
+            base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
 
-            if (!xmlValidationService.validateOPT(opt_contents))
-            {
-               println "Invalid OPT file "+ file.name +" "+ xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-               return // avoid copying not valid OPT file
+               opt_contents = FileUtils.removeBOM(file.text.bytes)
+
+               if (!xmlValidationService.validateOPT(opt_contents))
+               {
+                  println "Invalid OPT file "+ file.name +" "+ xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+                  return // avoid copying not valid OPT file
+               }
+
+               dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
+               //java.nio.file.Files.copy(file.toPath(), dest.toPath())
+               dest <<  opt_contents
             }
-
-            dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
-            //java.nio.file.Files.copy(file.toPath(), dest.toPath())
-            dest <<  opt_contents
          }
       }
    }
