@@ -42,6 +42,7 @@
 # "temporary" build files
 /build
 *.class
+.gradle
 
 # other
 *.iws

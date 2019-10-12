@@ -16,7 +16,7 @@ appender('STDOUT', ConsoleAppender) {
         pattern =
                 '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' + // Date
                         '%clr(%5p) ' + // Log level
-                        '%clr(---){faint} %clr([%15.15t]){faint} ' + // Thread
+                        //'%clr(---){faint} %clr([%15.15t]){faint} ' + // Thread
                         '%clr(%-40.40logger{39}){cyan} %clr(:){faint} ' + // Logger
                         '%m%n%wex' // Message
     }
@@ -40,3 +40,4 @@ logger("ehrserver2.BootStrap", INFO) //, ['STDOUT'], false)
 logger("com.cabolabs.security.stateless", DEBUG)
 logger("com.cabolabs.ehrserver.i18n", DEBUG)
 logger("com.cabolabs.ehrserver.indexing", INFO)
+logger("com.cabolabs.ehrserver.account", INFO)
