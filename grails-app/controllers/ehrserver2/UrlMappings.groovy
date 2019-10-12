@@ -85,6 +85,28 @@ class UrlMappings {
       )
 
 
+      "/rest/v1/organizations"(
+         method: 'GET',
+         controller: 'rest',
+         action: 'organizations'
+      )
+      "/rest/v1/users"(
+         method: 'GET',
+         controller: 'user',
+         action: 'get_users'
+      )
+      "/rest/v1/users/$username"(
+         method: 'GET',
+         controller: 'user',
+         action: 'profile'
+      )
+      "/rest/v1/users"(
+         method: 'POST',
+         controller: 'rest',
+         action: 'userRegister'
+      )
+
+
       // REST QUERY
 
       // execute given query (not stored)

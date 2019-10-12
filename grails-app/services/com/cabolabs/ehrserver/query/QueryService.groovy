@@ -16,7 +16,7 @@ class QueryService {
     * json contains the query and query parameters that are used from the
     * query builder when testing the query and might be used by a service.
     */
-   def executedNotStoredCompositionQuery(JSONObject json)
+   def executedNotStoredCompositionQuery(JSONObject json, String organizationUid)
    {
       def result = [:]
       result['result'] = []
@@ -87,7 +87,8 @@ class QueryService {
       def json_query = json.query
       def query = Query.newInstance(json_query)
 
-      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, max, offset, composerUid, composerName)
+      def cilist = query.executeComposition(qehrId, qFromDate, qToDate, organizationUid,
+                                            max, offset, composerUid, composerName)
 
       result['result'] = cilist
 

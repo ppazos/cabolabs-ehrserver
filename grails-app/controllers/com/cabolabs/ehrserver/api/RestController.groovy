@@ -477,16 +477,15 @@ class RestController {
     * @return
     */
    @SecuredStateless
-   def userRegister(String username, String email)
+   def userRegister(String email)
    {
-      if (!username || !email)
+      if (!email)
       {
-         renderError(message(code:'rest.userRegister.error.usernameAndEmail.required'), '999', 400)
+         renderError(message(code:'rest.userRegister.error.email.required'), '999', 400)
          return
       }
 
       def u = new User(
-         username: params.username,
          email: params.email,
          enabled: false
       )
@@ -521,7 +520,6 @@ class RestController {
       }
 
       def data = [
-         username: u.username,
          email: u.email,
          organizations: u.organizations
       ]

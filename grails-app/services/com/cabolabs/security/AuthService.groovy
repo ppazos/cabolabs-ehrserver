@@ -24,15 +24,23 @@ class AuthService implements ServletAttributes {
       sess != null
    }
 
+   // Checks if the logged in user has any of the roles
    def loggedInUserHasAnyRole(String roles)
+   {
+      def sessman = SessionManager.instance
+      def sess = sessman.getSession(session.id.toString())
+
+      return userHasAnyRole(sess.payload.user, roles)
+   }
+
+   // Checks if a given user has any of the roles
+   def userHasAnyRole(User user, String roles)
    {
       if (!roles) throw new Exception('roles param is required')
 
       def _roles = roles.split(",")
 
-      def sessman = SessionManager.instance
-      def sess = sessman.getSession(session.id.toString())
-      def user_roles = sess.payload.user.getAuthorities(session.organization)
+      def user_roles = user.getAuthorities(session.organization)
       def has_role = false
       user_roles.each { role ->
          if (_roles.contains(role.authority))

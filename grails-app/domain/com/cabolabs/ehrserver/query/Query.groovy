@@ -945,7 +945,8 @@ class Query {
 
    def executeComposition(String ehrUid, Date from, Date to,
                           String organizationUid, int max, int offset,
-                          String composerUid, String composerName, docount = false, groupByEhr = false)
+                          String composerUid, String composerName,
+                          boolean docount = false, boolean groupByEhr = false)
    {
       // Armado de la query
       String q

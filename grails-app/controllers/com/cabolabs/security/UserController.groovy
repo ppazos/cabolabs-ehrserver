@@ -113,9 +113,10 @@ class UserController {
    {
       // username and organization number used on the API login
       def _username = request.securityStatelessMap.username
+      def _user = User.findByEmail(_username)
       def org_uid = request.securityStatelessMap.extradata.org_uid
       def org = Organization.findByUid(org_uid)
-      def _user = User.findByEmail(_username)
+
 
       // user I want to access
       def u = User.findByEmail(username)
@@ -133,7 +134,7 @@ class UserController {
       }
 
       def allowed
-      if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
+      if (authService.userHasAnyRole(_user, "ROLE_ADMIN"))
       {
          allowed = true
       }
