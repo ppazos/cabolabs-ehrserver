@@ -44,11 +44,6 @@ class EhrController {
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
 
-
-   def index() {
-      redirect(action: "list", params: params)
-   }
-
    /**
     *
     * @param max
@@ -56,7 +51,7 @@ class EhrController {
     * @param uid filter of partial uid
     * @return
     */
-   def list(int max, int offset, String sort, String order, String uid, String organizationUid)
+   def index(int max, int offset, String sort, String order, String uid, String organizationUid)
    {
       max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
@@ -244,7 +239,7 @@ class EhrController {
       }
 
       flash.message = message(code:'ehr.save.ok', args:[ehr.uid])
-      redirect action:'list'
+      redirect action:'index'
    }
 
    /**
@@ -289,6 +284,6 @@ class EhrController {
       ehr.save(failOnError: true)
 
       flash.message = message(code:'ehr.delete.deletedOk')
-      redirect action: 'list'
+      redirect action: 'index'
    }
 }

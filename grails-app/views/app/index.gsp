@@ -149,7 +149,7 @@
               </div>
             </div>
           </div>
-          <g:link controller="ehr" action="list">
+          <g:link controller="ehr" action="index">
             <div class="panel-footer">
               <span class="pull-left"><g:message code="desktop.view_details" /></span>
               <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -262,7 +262,7 @@
                 <div class="col-xs-9 text-right">
                   <!-- TODO: create taglib to display kB or MB -->
                   <div class="huge">${((org_repo_size.value/1000) < 1000) ? (org_repo_size.value/1000).setScale(2,0).toString() + ' kB' : (org_repo_size.value/(1000*1000)).setScale(1,0).toString() + ' MB'}</div>
-                  <div><g:link controller="organization" action="show" id="${org_repo_size.key.uid}">${org_repo_size.key.name}</g:link></div>
+                  <div><g:link controller="organization" action="show" params="[uid: org_repo_size.key.uid]">${org_repo_size.key.name}</g:link></div>
                 </div>
               </div>
             </div>

@@ -100,6 +100,34 @@ class NotificationService {
       this.sendMail(recipient, title, preview, salute, message, actions, closing, bye)
    }
 
+   /**
+    * When an organization is created, we notify the ACCMAN of the Account containing the Organization so he has access to it.
+    * messageData contains the account and the new organization
+    */
+   def sendNewOrganizationAssociatedEmail(Map messageData)
+   {
+      def account = messageData['account']
+      def accman = account.contact
+      def organization = messageData['organization']
+
+      def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
+
+      def title, preview, salute, message, url, actions, closing, bye
+
+      title   = g.message(code:'notificationService.organizationAssociated.title')
+      preview = g.message(code:'notificationService.organizationAssociated.preview')
+      salute  = g.message(code:'notificationService.organizationAssociated.salute', args:[accman.email])
+      message = g.message(code:'notificationService.organizationAssociated.message', args:[organization.number])
+
+      url     = g.createLink(controller:'login', absolute:true)
+      actions = g.message(code:'notificationService.organizationAssociated.actions', args:[url])
+
+      closing = g.message(code:'notificationService.organizationAssociated.closing')
+      bye     = g.message(code:'notificationService.organizationAssociated.bye')
+
+      this.sendMail(accman.email, title, preview, salute, message, actions, closing, bye)
+   }
+
    def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!',
                 String preview,
                 String salute,

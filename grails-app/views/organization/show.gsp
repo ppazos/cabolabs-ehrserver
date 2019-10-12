@@ -34,7 +34,7 @@
             </tr>
             <tr>
               <th><g:message code="organization.ehrs.label" default="EHRS" /></th>
-              <td>(${ehr_count}) <g:link controller="ehr" action="list" params="[organizationUid:organizationInstance.uid]"><g:message code="common.action.display" /></g:link></td>
+              <td>(${ehr_count}) <g:link controller="ehr" action="index" params="[organizationUid:organizationInstance.uid]"><g:message code="common.action.display" /></g:link></td>
             </tr>
             <tr>
               <th><g:message code="organization.users.label" default="Users" /></th>
@@ -58,7 +58,7 @@
     </div>
     <div class="row">
       <div class="col-lg-12 stats">
-        <g:include controller="stats" action="organization" params="[uid: organizationInstance.uid]" />
+        <g:include controller="stats" action="organization" params="[uid: params.uid]" />
       </div>
     </div>
     <div class="row">

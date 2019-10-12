@@ -171,9 +171,9 @@ class SyncParserService {
       // across the sync cluster.
       if (!author)
       {
-         if (jq.author.username == 'admin')
+         if (jq.author.email == 'admin@cabolabs.com')
          {
-            author = User.findByEmail('admin')
+            author = User.findByEmail('admin@cabolabs.com')
          }
       }
       */

@@ -24,6 +24,7 @@ package ehr
 
 import com.cabolabs.ehrserver.openehr.directory.Folder
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
+import com.cabolabs.security.Organization
 
 class EhrTagLib {
 
@@ -125,4 +126,44 @@ class EhrTagLib {
          }
       }
    }
+
+   def selectWithCurrentUserOrganizations = { attrs, body ->
+
+      def loggedInUser = authService.loggedInUser
+      if(loggedInUser)
+      {
+         def args = [:]
+
+         // admins will see every org
+         if (authService.userHasAnyRole(loggedInUser, "ROLE_ADMIN"))
+         {
+            args.from = Organization.list()
+         }
+         else
+         {
+            args.from = loggedInUser.organizations
+         }
+
+         args.optionKey = 'uid'
+         args.optionValue = 'name' //{it.name +' '+ it.uid} //'name'
+
+         if (attrs.addEmpty)
+            args.noSelection = ['':message(code:'defaut.select.selectOne')] // TODO: i18n
+            
+         args.class = attrs.class ?: '' // allows set style from outside
+         args.value = session.organization.uid
+
+         if (attrs.multiple)
+         {
+            args.multiple = 'true'
+            args.size = 5
+         }
+
+         // add the rest of the attrs to the select args, name, value, class, etc
+         args += attrs
+
+         out << g.select(args) // name:attrs.name, from:orgs, optionKey:'uid', optionValue:'name', value:attrs.value
+      }
+   }
+
 }

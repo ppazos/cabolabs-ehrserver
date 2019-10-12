@@ -181,37 +181,38 @@
         </div>
 
         <!-- TOP MENU -->
-          <ul class="nav navbar-top-links navbar-right">
-           <li style="padding-right:15px;">
-             <g:link controller="user" action="show" id="${g.loggedUserAttribute(field:'id')}" style="padding: 0; display: inline;">${g.loggedUserAttribute(field:'email')}</g:link>
-             &commat;
-             <g:link controller="account" action="show" id="${session.account.id}" style="padding: 0; display: inline;">${session.account.companyName}</g:link>
-             :
-             <g:link controller="organization" action="show" id="${session.organization.uid}" style="padding: 0; display: inline;">${session.organization.name}</g:link>
-           </li>
-           <li class="dropdown" id="top-notifications-menu">
-             <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-bell fa-fw"></i></a>
-             <ul class="dropdown-menu notify-drop">
-                <div class="notify-drop-title">
-                	<div class="row">
-                		<div class="col-md-6 col-sm-6 col-xs-6">Notifications</div>
-                		<div class="col-md-6 col-sm-6 col-xs-6 text-right"><a href="" class="rIcon allRead" data-tooltip="tooltip" data-placement="bottom" title="Dismiss all"><i class="fa fa-dot-circle-o"></i></a></div>
-                	</div>
+        <ul class="nav navbar-top-links navbar-right">
+          <li style="padding-right:15px;">
+            <g:link controller="user" action="show" id="${g.loggedUserAttribute(field:'id')}" style="padding: 0; display: inline;">${g.loggedUserAttribute(field:'email')}</g:link>
+            &commat;
+            <g:link controller="account" action="show" id="${session.account.id}" style="padding: 0; display: inline;">${session.account.companyName}</g:link>
+            :
+            <%--<g:link controller="organization" action="show" id="${session.organization.uid}" style="padding: 0; display: inline;">${session.organization.name}</g:link>--%>
+            <g:selectWithCurrentUserOrganizations name="current_organization" class="form-control" style="width:200px; display: inline" />
+          </li>
+          <li class="dropdown" id="top-notifications-menu">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-bell fa-fw"></i></a>
+            <ul class="dropdown-menu notify-drop">
+              <div class="notify-drop-title">
+                <div class="row">
+                	<div class="col-md-6 col-sm-6 col-xs-6">Notifications</div>
+                	<div class="col-md-6 col-sm-6 col-xs-6 text-right"><a href="" class="rIcon allRead" data-tooltip="tooltip" data-placement="bottom" title="Dismiss all"><i class="fa fa-dot-circle-o"></i></a></div>
                 </div>
-                <!-- end notify title -->
-                <!-- notify content -->
-                <div class="drop-content">
-                </div>
-                <div class="notify-drop-footer text-center">
-                	<!--<a href=""><i class="fa fa-eye"></i> View all notifications</a>-->
-                </div>
-              </ul>
-           </li>
-           <li class="dropdown" id="top-user-menu">
-             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-               <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
-             </a>
-             <ul class="dropdown-menu dropdown-user">
+              </div>
+              <!-- end notify title -->
+              <!-- notify content -->
+              <div class="drop-content">
+              </div>
+              <div class="notify-drop-footer text-center">
+                <!--<a href=""><i class="fa fa-eye"></i> View all notifications</a>-->
+              </div>
+            </ul>
+          </li>
+          <li class="dropdown" id="top-user-menu">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
                <!--
                <li>
                  <a href="#" onclick="alert('not available yet')"><i class="fa fa-user fa-fw"></i> User Profile</a>
@@ -228,108 +229,112 @@
                <li>
                  <g:link controller="auth" action="logout"><i class="fa fa-sign-out"></i> <g:message code="layout.action.logout" /></g:link>
                </li>
-             </ul>
-             <!-- /.dropdown-user -->
-           </li>
-           <!-- /.dropdown -->
-          </ul>
+            </ul>
+            <!-- /.dropdown-user -->
+          </li>
+          <!-- /.dropdown -->
+        </ul>
 
-          <script>
+        <script>
           /* avoids closing the notifications drop down menu on click */
           $(document).on('click', '#top-notifications-menu .dropdown-menu', function (e) {
             e.stopPropagation();
           });
-          </script>
+          $('select[name=current_organization]').on('change', function(e) {
+            console.log($(this).val(), '${g.createLink(controller:"app", action:"change_org")}');
+            location.href = '${g.createLink(controller:"app", action:"change_org")}?uid='+ $(this).val();
+          });
+        </script>
 
-          <!-- LEFT MENU -->
-          <div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-              <ul class="nav" id="side-menu">
+        <!-- LEFT MENU -->
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+              <li>
+                <g:link controller="app" action="get_started" class="${(controllerName=='app' && actionName=='get_started')?'active':''}"><i class="fa fa-fw fa-info"></i> <g:message code="desktop.guide" /></g:link>
+              </li>
+              <li class="menu_vertical_separator">
+                <g:link controller="app" action="index" class="${(controllerName=='app' && actionName=='index')?'active':''}"><i class="fa fa-fw fa-dashboard"></i> <g:message code="desktop.dashboard" /></g:link>
+              </li>
+              <g:userHasAnyRole roles="ROLE_ADMIN">
+                <li id="menu-plan">
+                  <g:link controller="plan" action="index" class="${(controllerName=='plan')?'active':''}"><i class="fa fa-fw fa-cog"></i> <g:message code="desktop.plans" /></g:link>
+                </li>
+                <li id="menu-accounts">
+                  <g:link controller="account" action="index" class="${(controllerName=='account')?'active':''}"><i class="fa fa-fw fa-id-card"></i> <g:message code="desktop.accounts" /></g:link>
+                </li>
+                <li id="menu-sync">
+                  <g:link controller="sync" action="index" class="${(controllerName=='sync')?'active':''}"><i class="fa fa-fw fa-refresh"></i> <g:message code="desktop.sync" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                <li id="menu-organizations">
+                  <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-fw fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                 <li>
-                  <g:link controller="app" action="get_started" class="${(controllerName=='app' && actionName=='get_started')?'active':''}"><i class="fa fa-fw fa-info"></i> <g:message code="desktop.guide" /></g:link>
+                  <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-fw fa-user"></i> <g:message code="desktop.user" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN">
+                <li>
+                  <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-fw fa-check-square"></i> <g:message code="desktop.role" /></g:link>
                 </li>
                 <li class="menu_vertical_separator">
-                  <g:link controller="app" action="index" class="${(controllerName=='app' && actionName=='index')?'active':''}"><i class="fa fa-fw fa-dashboard"></i> <g:message code="desktop.dashboard" /></g:link>
+                  <g:link controller="requestMap" action="index" class="${(controllerName=='requestMap')?'active':''}"><i class="fa fa-fw fa-shield"></i> <g:message code="desktop.accesscontrol" /></g:link>
                 </li>
-                <g:userHasAnyRole roles="ROLE_ADMIN">
-                  <li id="menu-plan">
-                    <g:link controller="plan" action="index" class="${(controllerName=='plan')?'active':''}"><i class="fa fa-fw fa-cog"></i> <g:message code="desktop.plans" /></g:link>
-                  </li>
-                  <li id="menu-accounts">
-                    <g:link controller="account" action="index" class="${(controllerName=='account')?'active':''}"><i class="fa fa-fw fa-id-card"></i> <g:message code="desktop.accounts" /></g:link>
-                  </li>
-                  <li id="menu-sync">
-                    <g:link controller="sync" action="index" class="${(controllerName=='sync')?'active':''}"><i class="fa fa-fw fa-refresh"></i> <g:message code="desktop.sync" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li id="menu-organizations">
-                    <g:link controller="organization" action="index" class="${(controllerName=='organization')?'active':''}"><i class="fa fa-fw fa-sitemap"></i> <g:message code="desktop.organization" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
-                    <g:link controller="user" action="index" class="${(controllerName=='user')?'active':''}"><i class="fa fa-fw fa-user"></i> <g:message code="desktop.user" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN">
-                  <li>
-                    <g:link controller="role" action="index" class="${(controllerName=='role')?'active':''}"><i class="fa fa-fw fa-check-square"></i> <g:message code="desktop.role" /></g:link>
-                  </li>
-                  <li class="menu_vertical_separator">
-                    <g:link controller="requestMap" action="index" class="${(controllerName=='requestMap')?'active':''}"><i class="fa fa-fw fa-shield"></i> <g:message code="desktop.accesscontrol" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li id="menu-ehrs">
-                    <g:link controller="ehr" action="list" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-fw fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
-                  </li>
-                  <li id="menu-contributions">
-                    <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-fw fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
-                  </li>
-                  <li>
-                    <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="fa fa-fw fa-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
-                  </li>
-                  <li class="menu_vertical_separator">
-                    <g:link controller="folderTemplate" action="index" class="${(controllerName=='folderTemplate')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.folderTemplates" /></g:link>
-                    <%--
-                    <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
-                    --%>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li id="menu-queries">
-                    <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.queries" /></g:link>
-                  </li>
-                  <li class="menu_vertical_separator">
-                    <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li id="menu-templates">
-                    <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-fw fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN">
-                  <li class="menu_vertical_separator">
-                    <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-fw fa-database "></i> <g:message code="desktop.data" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-                <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
-                  <li>
-                    <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-fw fa-bell"></i> <g:message code="desktop.notification" /></g:link>
-                  </li>
-                  <li class="menu_vertical_separator">
-                    <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-fw fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
-                  </li>
-                </g:userHasAnyRole>
-              </ul>
-              <div align="center" id="app_version">EHRServer v${grailsApplication.metadata["info.app.version"]}</div>
-              <div align="center" id="powby">
-                <a href="#" data-toggle="modal" data-target="#license_notice">Powered by CaboLabs</a>
-              </div>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                <li id="menu-ehrs">
+                  <g:link controller="ehr" action="index" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-fw fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
+                </li>
+                <li id="menu-contributions">
+                  <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-fw fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
+                </li>
+                <li>
+                  <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="fa fa-fw fa-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
+                </li>
+                <li class="menu_vertical_separator">
+                  <g:link controller="folderTemplate" action="index" class="${(controllerName=='folderTemplate')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.folderTemplates" /></g:link>
+                  <%--
+                  <g:link controller="folder" action="index" class="${(controllerName=='folder')?'active':''}"><i class="fa fa-fw fa-folder-open"></i> <g:message code="desktop.directory" /></g:link>
+                  --%>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                <li id="menu-queries">
+                  <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.queries" /></g:link>
+                </li>
+                <li class="menu_vertical_separator">
+                  <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                <li id="menu-templates">
+                  <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-fw fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN">
+                <li class="menu_vertical_separator">
+                  <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-fw fa-database "></i> <g:message code="desktop.data" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
+                <li>
+                  <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-fw fa-bell"></i> <g:message code="desktop.notification" /></g:link>
+                </li>
+                <li class="menu_vertical_separator">
+                  <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-fw fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
+                </li>
+              </g:userHasAnyRole>
+            </ul>
+            <div align="center" id="app_version">EHRServer v${grailsApplication.metadata["info.app.version"]}</div>
+            <div align="center" id="powby">
+              <a href="#" data-toggle="modal" data-target="#license_notice">Powered by CaboLabs</a>
             </div>
           </div>
+        </div>
       </nav>
 
       <div id="page-wrapper">

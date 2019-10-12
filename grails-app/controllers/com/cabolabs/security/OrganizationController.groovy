@@ -28,7 +28,7 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
-@Transactional(readOnly = true)
+@Transactional
 class OrganizationController {
 
    def authService
@@ -85,7 +85,7 @@ class OrganizationController {
    }
 
    // organizationInstance comes from the security filter on params
-   def show()
+   def show(String uid)
    {
       def plan_max_tokens
       def user = authService.loggedInUser
@@ -96,7 +96,9 @@ class OrganizationController {
          plan_max_tokens = plan_assoc.plan.max_api_tokens_per_organization
       }
 
-      [organizationInstance: params.organizationInstance, ehr_count: Ehr.countByOrganizationUid(params.organizationInstance.uid), plan_max_tokens: plan_max_tokens]
+      [organizationInstance: Organization.findByUid(uid),
+       ehr_count: Ehr.countByOrganizationUid(uid),
+       plan_max_tokens: plan_max_tokens]
    }
 
    def create()
@@ -210,7 +212,7 @@ class OrganizationController {
 
 
       flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.id])
-      redirect action:'show', params:[uid:organizationInstance.uid]
+      redirect action:'show', id:organizationInstance.uid
    }
 
 
@@ -235,7 +237,7 @@ class OrganizationController {
 
       organizationInstance.save flush:true
 
-      redirect action:'show', params:[uid:uid]
+      redirect action:'show', id:uid
    }
 
    @Transactional
@@ -290,7 +292,7 @@ class OrganizationController {
          if (apikey_count == plan_max_tokens)
          {
             flash.message = message(code:"organization.create.cantCreateNewApiKey.maxTokensLimit")
-            redirect action:'show', params:[uid: uid]
+            redirect action:'show', id: uid
             return
          }
       }
@@ -303,7 +305,7 @@ class OrganizationController {
             return
          }
 
-         def virtualUser = new User(username: 'apikey'+String.random(50),
+         def virtualUser = new User(//username: 'apikey'+String.random(50),
                                     password: String.uuid(),
                                     email: String.random(50) + '@apikey.com',
                                     isVirtual: true,
@@ -317,11 +319,11 @@ class OrganizationController {
          def key = new ApiKey(organization: org,
                               user: virtualUser,
                               systemId: systemId,
-                              token: statelessTokenProvider.generateToken(virtualUser.username, null, [organization: org.number, org_uid: org.uid]))
+                              token: statelessTokenProvider.generateToken(virtualUser.email, null, [organization: org.number, org_uid: org.uid]))
 
          key.save(failOnError: true)
 
-         redirect action:'show', params:[uid:org.uid]
+         redirect action:'show', id:org.uid
       }
    }
 
@@ -341,7 +343,7 @@ class OrganizationController {
       key.delete()
       keyUser.delete()
 
-      redirect action: 'show', params: [uid: key.organization.uid]
+      redirect action: 'show', id: key.organization.uid
    }
 
    protected void notFound()

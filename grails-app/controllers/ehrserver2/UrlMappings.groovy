@@ -135,12 +135,12 @@ class UrlMappings {
          controller: 'rest',
          action: 'getEhrQueries'
       )
-      "/rest/v1/multiqueries/${ehrQueryUid}/ehrcheck/${ehrUid}"(
+      "/rest/v1/multiqueries/$ehrQueryUid/ehrcheck/$ehrUid"(
          method: 'GET',
          controller: 'rest',
          action: 'ehrChecker'
       )
-      "/rest/v1/multiqueries/${ehrQueryUid}/ehrs"(
+      "/rest/v1/multiqueries/$ehrQueryUid/ehrs"(
          method: 'GET',
          controller: 'rest',
          action: 'getMatchingEhrs'
@@ -173,6 +173,12 @@ class UrlMappings {
          action = 'index'
          deleted = true
       }
+
+      "/organization/show/$uid"(
+         method: 'GET',
+         controller: 'organization',
+         action: 'show'
+      )
 
       "/logs/show/$id" {
          controller = 'activityLog'

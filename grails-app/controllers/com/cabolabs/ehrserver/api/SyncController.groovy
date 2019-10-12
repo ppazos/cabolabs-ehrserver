@@ -83,7 +83,7 @@ class SyncController {
 
       // This user has no organizations
       // TODO: check if that is posible
-      def virtualUser = new User(username: 'apikey'+String.random(50),
+      def virtualUser = new User(//username: 'apikey'+String.random(50),
                                  password: String.uuid(),
                                  email: String.random(50) + '@apikey.com',
                                  isVirtual: true,

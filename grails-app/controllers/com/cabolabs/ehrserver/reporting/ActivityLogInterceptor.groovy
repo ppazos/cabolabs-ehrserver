@@ -56,11 +56,15 @@ class ActivityLogInterceptor {
       // println "activity log interceptor"
       // println session
 
+      // only long ids are valid, sometimes we use uids in urls
+      def the_id = params.id
+      if (params.id instanceof String) the_id = null
+
       def alog = new ActivityLog(
                   username:        username, // can be null
                   organizationUid: session.organization?.uid,
                   action:          '('+ when +')'+controllerName+':'+actionName,
-                  objectId:        params.id, // can be null
+                  objectId:        the_id, // can be null
                   objectUid:       params.uid, // can be null
                   remoteAddr:      request.remoteAddr,
                   clientIp:        request.getHeader("Client-IP"), // can be null

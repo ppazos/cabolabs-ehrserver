@@ -73,4 +73,12 @@ class AppController {
    {
       render view:'get_started'
    }
+
+   def change_org(String uid)
+   {
+      def org = Organization.findByUid(uid)
+      session.organization = org
+      // reload the same page
+      redirect(uri: request.getHeader('referer') )
+   }
 }

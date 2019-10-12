@@ -26,9 +26,9 @@ class MessagingController {
       def title, preview, salute, message, actions, closing, bye
 
       title   = g.message(code:'notificationService.feedback.title', args:[about])
-      preview = g.message(code:'notificationService.feedback.preview', args:[loggedInUser.username])
+      preview = g.message(code:'notificationService.feedback.preview', args:[loggedInUser.email])
       salute  = g.message(code:'notificationService.feedback.salute')
-      message = g.message(code:'notificationService.feedback.message', args:[loggedInUser.username, about, text, server_url, ci.value])
+      message = g.message(code:'notificationService.feedback.message', args:[loggedInUser.email, about, text, server_url, ci.value])
       actions = g.message(code:'notificationService.feedback.actions')
       closing = g.message(code:'notificationService.feedback.closing')
       bye     = g.message(code:'notificationService.feedback.bye')
