@@ -37,7 +37,7 @@
 		          <g:sortableColumn property="forSection" title="${message(code: 'notification.forSection.label', default: 'For Section')}" />
 		          <g:sortableColumn property="forOrganization" title="${message(code: 'notification.forOrganization.label', default: 'For Organization')}" />
 		          <g:sortableColumn property="forUser" title="${message(code: 'notification.forUser.label', default: 'For User')}" />
-		          <g:sortableColumn property="dateCreated" title="${message(code: 'notification.dateCreated.label', default: 'Date Created')}" />
+		          <g:sortableColumn property="timestamp" title="${message(code: 'notification.timestamp.label', default: 'Date')}" />
 		          <g:sortableColumn property="language" title="${message(code: 'notification.language.label', default: 'Language')}" />
 		        </tr>
 		      </thead>

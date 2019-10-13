@@ -33,7 +33,7 @@ class Notification {
    String forOrganization
    String forUser // user.uid
 
-   Date dateCreated
+   Date timestamp = new Date()
 
    boolean sent = false // used by the job that creates the notification statuses
 
@@ -53,8 +53,14 @@ class Notification {
          }
          if (forUser)
          {
-            user {
-               eq('uid', forUser)
+            or
+            {
+               user {
+                  eq('uid', forUser)
+               }
+               notification {
+                  isNull('forUser')
+               }
             }
          }
          if (forOrganization) // forOrganization alwas comes, but it should match also when it is null on the notification
@@ -81,7 +87,7 @@ class Notification {
          }
          maxResults(last)
          notification {
-            order("dateCreated", "desc")
+            order("timestamp", "desc")
          }
       }
 
@@ -98,8 +104,14 @@ class Notification {
          }
          if (forUser)
          {
-            user {
-               eq('uid', forUser)
+            or
+            {
+               user {
+                  eq('uid', forUser)
+               }
+               notification {
+                  isNull('forUser')
+               }
             }
          }
          if (forOrganization) // forOrganization alwas comes, but it should match also when it is null on the notification

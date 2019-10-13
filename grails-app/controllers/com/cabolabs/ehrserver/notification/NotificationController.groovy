@@ -90,7 +90,7 @@ class NotificationController {
 
       // List<NotificationStatus>
       def notifications = Notification.lastNotifications(forSection, session.organization.uid, loggedInUser.uid, session.lang)
-      notifications = notifications.collect{ [status: it.status, notification: [text: it.notification.text, dateCreated: it.notification.dateCreated, id: it.notification.id]] }
+      notifications = notifications.collect{ [status: it.status, notification: [text: it.notification.text, timestamp: it.notification.timestamp, id: it.notification.id]] }
       render (contentType: "application/json", text: notifications as JSON, encoding:"UTF-8")
    }
 

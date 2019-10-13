@@ -62,7 +62,13 @@ class AuthController {
          def notifications = remoteNotificationsService.getNotifications('ehrserver', session.lang, from)
 
          notifications.each { notification ->
-            new Notification(name:'remote', language:session.lang, text:notification.nt, forUser:User.findByEmail(email).id).save()
+            new Notification(
+               name: 'remote',
+               language: session.lang,
+               text: notification.nt,
+               forUser: User.findByEmail(email).id,
+               timestamp: Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", notification.ts)
+            ).save()
          }
 
          // Mark current read of the remote notifications
