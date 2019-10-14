@@ -99,7 +99,7 @@ class SyncController {
       def key = new ApiKey(user: virtualUser,
                            systemId: systemId,
                            scope: 'sync',
-                           token: statelessTokenProvider.generateToken(virtualUser.username, null, [scope: 'sync']))
+                           token: statelessTokenProvider.generateToken(virtualUser.email, null, [scope: 'sync']))
 
       key.save(failOnError: true)
 

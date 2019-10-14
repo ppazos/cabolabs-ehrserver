@@ -35,7 +35,7 @@ import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.query.datatypes.*
 import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.directory.*
-import com.cabolabs.security.User
+import com.cabolabs.security.*
 
 //import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.core.support.proxy.DefaultProxyHandler
@@ -137,18 +137,80 @@ class SyncMarshallersService {
       }
    }
 
+   def toJSON(Account a, JsonBuilder jb)
+   {
+      assert jb
+      jb.account {
+         uid a.uid
+         companyName a.companyName
+         enabled a.enabled
+         contact (toJSON(a.contact, jb)) // User
+         master a.master
+         organizations (toJSON(a.organizations, jb)) // List<Organization>
+         plans(toJSON(a.allPlans, jb))
+      }
+   }
+   def toJSON(PlanAssociation pa, JsonBuilder jb)
+   {
+      jb.plan_association {
+         from  pa.from
+         to    pa.to
+         state pa.state
+         plan(toJSON(pa.plan, jb))
+      }
+   }
+   def toJSON(Plan p, JsonBuilder jb)
+   {
+      jb { // the name is set by plan association marshaller
+         name                            p.name
+         period                          p.period
+         repo_total_size_in_kb           p.repo_total_size_in_kb
+         max_opts_per_organization       p.max_opts_per_organization
+         max_organizations               p.max_organizations
+         max_api_tokens_per_organization p.max_api_tokens_per_organization
+      }
+   }
    def toJSON(User u, JsonBuilder jb)
    {
       assert jb
       jb { // doesnt add a name, it is added by the parent method
          uid(u.uid)
-         role(u.role)
+         //role(u.role)
          password(u.password) // hashed with salt
          email(u.email)
          enabled(u.enabled)
          accountExpired(u.accountExpired)
          accountLocked(u.accountLocked)
          passwordExpired(u.passwordExpired)
+      }
+   }
+
+   def toJSON(Organization o, JsonBuilder jb)
+   {
+      assert jb
+      def usr = UserRole.findAllByOrganization(o)
+
+      jb { // doesnt add a name, it is added by the parent method
+         uid(o.uid)
+         name(o.name)
+         number(o.number)
+         user_roles (toJSON(usr, jb)) // List<UserRole>
+      }
+   }
+   def toJSON(UserRole ur, JsonBuilder jb)
+   {
+      assert jb
+      jb { // doesnt add a name, it is added by the parent method
+         user(toJSON(ur.user, jb)) // User
+         role(toJSON(ur.role, jb)) // Role
+         organizationUid(ur.organization.uid)
+      }
+   }
+   def toJSON(Role r, JsonBuilder jb)
+   {
+      assert jb
+      jb { // doesnt add a name, it is added by the parent method
+         authority(r.authority)
       }
    }
 
