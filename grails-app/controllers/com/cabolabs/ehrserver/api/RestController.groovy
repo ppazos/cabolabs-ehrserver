@@ -383,6 +383,12 @@ class RestController {
             versions: contribution.versions
          )
 
+
+         // Update account repo size
+         account.current_version_repo_size = versionFSRepoService.getRepoSizeInBytesAccount(account)
+         account.save(flush: true, failOnError: true)
+
+
          withFormat {
             xml {
                render( status:201, text:result as XML, contentType:"text/xml", encoding:"UTF-8")

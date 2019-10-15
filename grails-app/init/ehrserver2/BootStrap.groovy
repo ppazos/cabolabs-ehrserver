@@ -20,6 +20,9 @@ class BootStrap {
 
    def configurationService
    def operationalTemplateIndexerService
+   def OPTService
+   def versionFSRepoService
+   
    GrailsApplication grailsApplication
 
    def init = { servletContext ->
@@ -57,8 +60,21 @@ class BootStrap {
       log.info "registering JSON marshallers"
       registerJSONMarshallers()
       registerXMLMarshallers()
+
+      log.info "calculating initial accounts repo size"
+      calculateRepoSizes()
    }
    def destroy = {
+   }
+
+   def calculateRepoSizes()
+   {
+      Account.list().each { account ->
+
+         account.current_opt_repo_size = OPTService.getRepoSizeInBytesAccount(account)
+         account.current_version_repo_size = versionFSRepoService.getRepoSizeInBytesAccount(account)
+         account.save(flush: true, failOnError: true)
+      }
    }
 
    def createPlans()

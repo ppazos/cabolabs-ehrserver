@@ -42,7 +42,7 @@ class OperationalTemplateController {
    def authService
    def configurationService
    def operationalTemplateIndexerService
-
+   def OPTService
    def syncMarshallersService
 
    def list(int offset, String sort, String order, String concept, Boolean deleted)
@@ -305,6 +305,12 @@ class OperationalTemplateController {
          def optMan = OptManager.getInstance()
          optMan.unloadAll(session.organization.uid)
          optMan.loadAll(session.organization.uid, true)
+
+
+         // Recalculate OPT repo size for the account
+         account.current_opt_repo_size = OPTService.getRepoSizeInBytesAccount(account)
+         account.save(flush: true, failOnError: true)
+
 
          res = [status:'ok', message:'OPT added to the organization', opt: opt]
 
