@@ -60,8 +60,8 @@ class RestController {
 
    static allowedMethods = [login: "POST", commit: "POST", contributions: "GET", ehrCreate: "POST", userRegister: "POST"]
 
-   def xmlService // Utilizado por commit
-   def jsonService // Query composition with format = json
+   def xmlService
+   def jsonService
    def compositionService
    def versionFSRepoService
    def commitLoggerService
@@ -71,7 +71,7 @@ class RestController {
    def queryService
    def configurationService
 
-   // Para acceder a las opciones de localizacion
+   // access localization options
    def config = Holders.config.app
    def formatter = new SimpleDateFormat( config.l10n.datetime_format )
    def formatterDate = new SimpleDateFormat( config.l10n.date_format )
@@ -145,10 +145,6 @@ class RestController {
             // http://stackoverflow.com/questions/10726318/easy-way-to-render-json-with-http-status-code-in-grails
             response.status = status
             render(text: result, contentType:"application/json", encoding:"UTF-8")
-         }
-         '*' {
-            result = apiResponsesService.feedback_xml(msg, type, errorCode, detailedErrors, ex)
-            render( status:status, text:result, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
@@ -461,16 +457,17 @@ class RestController {
       def _ehrs = Ehr.findAllByOrganizationUid(request.securityStatelessMap.extradata.org_uid, [max: max, offset: offset, readOnly: true])
       def res = new PaginatedResults(listName:'ehrs', list:_ehrs, max:max, offset:offset)
 
-      if (!format || format == "xml")
-      {
-         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = res as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
+
+      withFormat {
+         xml {
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            def result = res as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -498,7 +495,7 @@ class RestController {
       u.setPasswordToken()
 
       def error = false
-      User.withTransaction{ status ->
+      User.withTransaction { status ->
 
          try
          {
@@ -617,16 +614,16 @@ class RestController {
          return
       }
 
-      if (!format || format == "xml")
-      {
-         render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8", status: 201)
-      }
-      else if (format == "json")
-      {
-         def result = ehr as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8", status: 201)
+      withFormat {
+         xml {
+            render(text: ehr as XML, contentType:"text/xml", encoding:"UTF-8", status: 201)
+         }
+         json {
+            def result = ehr as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8", status: 201)
+         }
       }
    }
 
@@ -664,19 +661,16 @@ class RestController {
          return
       }
 
-      // ===========================================================================
-      // 3. Discusion por formato de salida
-      //
-      if (!format || format == "xml")
-      {
-         render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = _ehr as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            def result = _ehr as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -710,19 +704,16 @@ class RestController {
          return
       }
 
-      // ===========================================================================
-      // 2. Discusion por formato de salida
-      //
-      if (!format || format == "xml")
-      {
-         render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = _ehr as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: _ehr as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            def result = _ehr as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -748,16 +739,16 @@ class RestController {
          return
       }
 
-      if (!format || format == "xml")
-      {
-         render(text: query as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == "json")
-      {
-         def result = query as JSON
-         // JSONP
-         if (params.callback) result = "${params.callback}( ${result} )"
-         render(text: result, contentType:"application/json", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: query as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            def result = query as JSON
+            // JSONP
+            if (params.callback) result = "${params.callback}( ${result} )"
+            render(text: result, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -806,9 +797,6 @@ class RestController {
             // JSONP
             if (params.callback) result = "${params.callback}( ${result} )"
             render(text: result, contentType:"application/json", encoding:"UTF-8")
-         }
-         '*' {
-            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
          }
       }
    }
@@ -993,10 +981,14 @@ class RestController {
 
             paginated_res.timing = end_time - start_time
 
-            if (format == 'json')
-               render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-            else
-               render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            withFormat {
+               xml {
+                  render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+               }
+               json {
+                  render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+               }
+            }
             return
          }
 
@@ -1109,16 +1101,19 @@ class RestController {
          out += '<timing>'+ (end_time - start_time) +' ms</timing>'
          out += '</list>'
 
-         if (format == 'json')
-            render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
-         else
-            render(text: out, contentType:"text/xml", encoding:"UTF-8")
+         withFormat {
+            xml {
+               render(text: out, contentType:"text/xml", encoding:"UTF-8")
+            }
+            json {
+               render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+            }
+         }
 
       } // /type = composition
       else
       {
          // type = datavalue
-
          def paginated_res = new PaginatedResults(listName:'results', max:max, offset:offset)
 
          // we need a map to return the timing...
@@ -1133,14 +1128,13 @@ class RestController {
 
          paginated_res.timing = end_time - start_time
 
-         // Format
-         if (!format || format == 'xml')
-         {
-            render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
-         }
-         else if (format == 'json')
-         {
-            render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         withFormat {
+            xml {
+               render(text:(paginated_res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            }
+            json {
+               render(text:(paginated_res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+            }
          }
       }
    } // query
@@ -1165,14 +1159,14 @@ class RestController {
    // Not stateless secured because is for internal use from web
    def queryData()
    {
-      String qehrId = request.JSON.qehrId
-      String fromDate = request.JSON.fromDate
-      String toDate = request.JSON.toDate
+      String qehrId       = request.JSON.qehrId
+      String fromDate     = request.JSON.fromDate
+      String toDate       = request.JSON.toDate
       String qarchetypeId = request.JSON.qarchetypeId
-      String format = request.JSON.format
-      String group = request.JSON.group
+      String format       = request.JSON.format
+      String group        = request.JSON.group
 
-      String composerUid = request.JSON.composerUid
+      String composerUid  = request.JSON.composerUid
       String composerName = request.JSON.composerName
 
       String organizationUid
@@ -1230,18 +1224,13 @@ class RestController {
       def res = query.executeDatavalue(qehrId, qFromDate, qToDate, group, organizationUid, composerUid, composerName)
 
 
-      // Format
-      if (!format || format == 'xml')
-      {
-         render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text:(res as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text:(res as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         }
       }
       return
    }
@@ -1299,10 +1288,14 @@ class RestController {
       // Do not retrieve data
       if (!retrieveData)
       {
-         if (format == 'json')
-            render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-         else
-            render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         withFormat {
+            xml {
+               render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            }
+            json {
+               render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+            }
+         }
          return
       }
 
@@ -1310,11 +1303,14 @@ class RestController {
       // Retrieve data
       String data = queryService.retrieveDataFromCompositionQueryResult(result, qehrId, request.securityStatelessMap.extradata.org_uid)
 
-      if (format == 'json')
-         render(text: jsonService.xmlToJson(data), contentType:"application/json", encoding:"UTF-8")
-      else
-         render(text: data, contentType:"text/xml", encoding:"UTF-8")
-
+      withFormat {
+         xml {
+            render(text: data, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: jsonService.xmlToJson(data), contentType:"application/json", encoding:"UTF-8")
+         }
+      }
       return
    }
 
@@ -1330,15 +1326,15 @@ class RestController {
       // all params come in the JSON object from the UI
       // all are strings
       boolean retrieveData = request.JSON.retrieveData.toBoolean() // http://mrhaki.blogspot.com/2009/11/groovy-goodness-convert-string-to.html
-      boolean showUI = request.JSON.showUI.toBoolean()
-      String qehrId = request.JSON.qehrId
-      String fromDate = request.JSON.fromDate
-      String toDate = request.JSON.toDate
-      String qarchetypeId = request.JSON.qarchetypeId
-      String format = request.JSON.format
+      boolean showUI       = request.JSON.showUI.toBoolean()
+      String qehrId        = request.JSON.qehrId
+      String fromDate      = request.JSON.fromDate
+      String toDate        = request.JSON.toDate
+      String qarchetypeId  = request.JSON.qarchetypeId
+      String format        = request.JSON.format
 
-      String composerUid = request.JSON.composerUid
-      String composerName = request.JSON.composerName
+      String composerUid   = request.JSON.composerUid
+      String composerName  = request.JSON.composerName
 
       /*
        println request.JSON.retrieveData.getClass().getSimpleName()
@@ -1454,10 +1450,14 @@ class RestController {
       // compositions que se apuntan por el index
       if (!retrieveData)
       {
-         if (format == 'json')
-            render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-         else
-            render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         withFormat {
+            xml {
+               render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+            }
+            json {
+               render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+            }
+         }
          return
       }
 
@@ -1527,10 +1527,14 @@ class RestController {
 
       out += '</list>'
 
-      if (format == 'json')
-         render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
-      else
-         render(text: out, contentType:"text/xml", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: out, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: jsonService.xmlToJson(out), contentType:"application/json", encoding:"UTF-8")
+         }
+      }
    }
 
 
@@ -1646,18 +1650,13 @@ class RestController {
          ]
       ]
 
-
-      if (!format || format == 'xml')
-      {
-         render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         render(status: 400, text:'<error>formato no soportado $format</error>', contentType:"text/xml", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text:(result as grails.converters.XML), contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text:(result as grails.converters.JSON), contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -1816,10 +1815,14 @@ class RestController {
 
       def res = new PaginatedResults(listName:'result', list:idxs, max:max, offset:offset)
 
-      if (!format || format == 'xml')
-         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      else if (format == 'json')
-         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
+      }
    }
 
 
@@ -1829,17 +1832,13 @@ class RestController {
       def _username = request.securityStatelessMap.username
       def _user = User.findByEmail(_username)
 
-      if (!format || format == 'xml')
-      {
-         render(text: _user.organizations.unique { it.id } as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         render(text: _user.organizations.unique { it.id } as JSON, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderError("Format $format not supported", '44325', 400)
+      withFormat {
+         xml {
+            render(text: _user.organizations.unique { it.id } as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: _user.organizations.unique { it.id } as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -1852,17 +1851,13 @@ class RestController {
       def opts = OperationalTemplateIndex.findAllByOrganizationUidAndLastVersion(request.securityStatelessMap.extradata.org_uid, true, [max: max, offset: offset, readOnly: true])
       def res = new PaginatedResults(listName:'templates', list:opts, max:max, offset:offset)
 
-      if (!format || format == 'xml')
-      {
-         render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         renderError("Format $format not supported", '44325', 400)
+      withFormat {
+         xml {
+            render(text: res as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -1880,14 +1875,15 @@ class RestController {
       def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
       File opt_file = new File( src )
       def opt_out = opt_file.getText()
-      if (format == 'json')
-      {
-         opt_out = jsonService.xmlToJson(opt_out)
-         render(text: opt_out, contentType:"application/json", encoding:"UTF-8")
-      }
-      else
-      {
-         render(text: opt_out, contentType:"text/xml", encoding:"UTF-8")
+
+      withFormat {
+         xml {
+            render(text: opt_out, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            opt_out = jsonService.xmlToJson(opt_out)
+            render(text: opt_out, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
@@ -1901,13 +1897,13 @@ class RestController {
          data << [uid: it.uid, name: it.name, description: it.description]
       }
 
-      if (!format || format == 'xml')
-      {
-         render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
-      }
-      else if (format == 'json')
-      {
-         render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+      withFormat {
+         xml {
+            render(text: data as XML, contentType:"text/xml", encoding:"UTF-8")
+         }
+         json {
+            render(text: data as JSON, contentType:"application/json", encoding:"UTF-8")
+         }
       }
    }
 
