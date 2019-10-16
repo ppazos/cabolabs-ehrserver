@@ -114,12 +114,26 @@ class SyncParserService {
          systemId: j.systemId,
          uid: j.uid,
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
-         subject: new PatientProxy(value: j.subjectUid),
+         subject: fromJSONPartySelf(j.subject),
+         organizationUid: j.organizationUid,
          deleted: j.deleted,
          master: false
       )
 
       return ehr
+   }
+
+   PartySelf fromJSONPartySelf(JSONObject j)
+   {
+      def partySelf = new PartySelf(
+         value: j.value,
+         type: j.type,
+         namespace: j.namespace,
+         idType: j.idType,
+         scheme: j.scheme
+      )
+
+      return partySelf
    }
 
    User fromJSONUser(JSONObject j)

@@ -22,7 +22,7 @@
 
 package com.cabolabs.ehrserver.openehr.ehr
 
-import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PartySelf
 //import com.cabolabs.ehrserver.openehr.demographic.Person
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.data.*

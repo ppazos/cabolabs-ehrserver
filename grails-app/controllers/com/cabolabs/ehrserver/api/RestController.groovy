@@ -42,7 +42,7 @@ import com.cabolabs.ehrserver.exceptions.*
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
-import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PartySelf
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
@@ -550,29 +550,26 @@ class RestController {
    @SecuredStateless
    def ehrCreate(String uid, String subjectUid, String format)
    {
-      if (!subjectUid)
-      {
-         renderError(message(code:'rest.ehrCreate.error.subjectUid.required'), '9990', 400)
-         return
-      }
-
-      if (!(subjectUid ==~ /([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/))
+      if (subjectUid && !(subjectUid ==~ /([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/))
       {
          renderError(message(code:'rest.ehrCreate.error.subjectUid.invalidUUID'), '9991', 400)
          return
       }
 
       // Check if there is an EHR for the same subject UID
-      def c = Ehr.createCriteria()
-      def existing_ehr = c.get {
-         subject {
-            eq('value', subjectUid)
-         }
-      }
-      if (existing_ehr)
+      if (subjectUid)
       {
-         renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[subjectUid, existing_ehr.uid]), '998', 400)
-         return
+         def c = Ehr.createCriteria()
+         def existing_ehr = c.get {
+            subject {
+               eq('value', subjectUid)
+            }
+         }
+         if (existing_ehr)
+         {
+            renderError(message(code:'ehr.createEhr.patientAlreadyHasEhr', args:[subjectUid, existing_ehr.uid]), '998', 400)
+            return
+         }
       }
 
       // Check if the uid is unique
@@ -593,9 +590,10 @@ class RestController {
       }
 
       // Create the new EHR
+      // FIXME: need to pass more params to create the right id type
       def ehr = new Ehr(
          organizationUid: request.securityStatelessMap.extradata.org_uid,
-         subject: new PatientProxy(value: subjectUid)
+         subject: (subjectUid ? new PartySelf(value: subjectUid, idType: 'HIER_OBJECT_ID') : null)
       )
 
       if (uid)

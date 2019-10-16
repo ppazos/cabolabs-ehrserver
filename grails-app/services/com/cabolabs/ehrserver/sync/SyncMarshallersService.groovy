@@ -130,10 +130,24 @@ class SyncMarshallersService {
       jb.ehr {
          uid e.uid
          dateCreated e.dateCreated
-         subjectUid e.subject.value
+         subject (toJSON(e.subject, jb)) // PartySelf
          systemId e.systemId
          deleted e.deleted
          master e.master
+      }
+   }
+
+   def toJSON(PartySelf p, JsonBuilder jb)
+   {
+      jb {
+         namespace p.namespace
+         type p.type
+         value p.value
+         idType p.idType
+         if (p.idType == 'GENERIC_ID')
+         {
+            scheme p.scheme
+         }
       }
    }
 

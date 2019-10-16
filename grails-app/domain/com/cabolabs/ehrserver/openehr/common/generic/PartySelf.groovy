@@ -22,35 +22,38 @@
 
 package com.cabolabs.ehrserver.openehr.common.generic
 
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAccessType
+
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 
 /**
  * Emula a common.generic.PARTY_SELF que hereda de PARTY_PROXY.
- * 
+ *
  * @author Pablo Pazos Gutierrez <pablo@openehr.org.es>
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-class PatientProxy {
+class PartySelf {
 
-   // Emula PARTY_PROXY.external_ref.namespace
-   // La referencia (id) es valida localmente
+   // Fields from PARTY_SELF.external_ref: PARTY_REF
    String namespace = "local"
-   
-   // Emula PARTY_PROXY.external_ref.type
-   // References to an exteral PERSON record
    String type = "PERSON"
-   
-   // Identificador confiable del paciente (no es su cedula, documento o pasaporte), es asignado por el sistema al crear el paciente
-   // Emula PARTY_PROXY.external_ref.id<OBJECT_ID>.value
-   // Que a su vez emula un HIER_OBJECT_ID.root y su valor va a ser un UUID (java.util.UUID.randomUUID() as String)
+
+   // PARTY_SELF.external_ref.id.value
    String value
-   
+
+   // PARTY_SELF.external_ref.id.scheme, when id is GENERIC_ID
+   String scheme
+
+   String idType
+
+   // all nullable because the external_ref is optional in PartySelf
    static constraints = {
+      namespace nullable: true
+      type nullable: true
+      value nullable: true
+      scheme nullable: true
+      idType nullable: true, inList: ['HIER_OBJECT_ID', 'GENERIC_ID']
    }
-   
+
    // Para que salve en cascada al crear el Ehr
    // http://grails.org/doc/latest/guide/GORM.html#manyToOneAndOneToOne
    static belongsTo = [Ehr]

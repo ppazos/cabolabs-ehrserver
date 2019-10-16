@@ -28,7 +28,7 @@ import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import com.cabolabs.ehrserver.openehr.common.generic.ChangeType
 import com.cabolabs.ehrserver.openehr.common.generic.DoctorProxy
-import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PartySelf
 import groovy.util.slurpersupport.GPathResult
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
 import com.cabolabs.ehrserver.exceptions.CommitCantCreateNewVersionException

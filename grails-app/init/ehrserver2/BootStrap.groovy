@@ -22,7 +22,7 @@ class BootStrap {
    def operationalTemplateIndexerService
    def OPTService
    def versionFSRepoService
-   
+
    GrailsApplication grailsApplication
 
    def init = { servletContext ->
@@ -126,7 +126,7 @@ class BootStrap {
       JSON.registerObjectMarshaller(Ehr) { ehr ->
         return [uid: ehr.uid,
                 dateCreated: ehr.dateCreated,
-                subjectUid: ehr.subject.value,
+                subjectUid: ehr?.subject?.value,
                 systemId: ehr.systemId]
       }
 
@@ -278,7 +278,7 @@ class BootStrap {
          xml.build {
             uid(ehr.uid)
             dateCreated(ehr.dateCreated)
-            subjectUid(ehr.subject.value)
+            subjectUid(ehr?.subject?.value)
             systemId(ehr.systemId)
          }
       }

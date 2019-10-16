@@ -22,7 +22,7 @@
 
 package com.cabolabs.ehrserver.openehr.ehr
 
-import com.cabolabs.ehrserver.openehr.common.generic.PatientProxy
+import com.cabolabs.ehrserver.openehr.common.generic.PartySelf
 import com.cabolabs.ehrserver.openehr.common.change_control.VersionedComposition
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.directory.Folder
@@ -47,7 +47,7 @@ class Ehr {
    Date dateCreated = new Date()
 
    // Emula EHR.ehr_status...<OBJECT_REF>...subject
-   PatientProxy subject
+   PartySelf subject
 
    // Root of the directory tree
    Folder directory
@@ -67,7 +67,8 @@ class Ehr {
    static transients = ['compositions', 'contributions']
 
    static constraints = {
-      directory(nullable: true) // directory is optional
+      directory nullable: true
+      subject nullable: true
    }
 
    static mapping = {
