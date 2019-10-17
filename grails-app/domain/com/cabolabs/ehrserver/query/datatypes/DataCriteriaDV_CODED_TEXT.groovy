@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2019 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -27,6 +27,7 @@ import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import org.springframework.web.context.request.RequestContextHolder
 import com.cabolabs.openehr.terminology.TerminologyParser
+import com.cabolabs.ehrserver.conf.TerminologyId
 
 class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
@@ -119,6 +120,10 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          def terminologyId = 'local'
 
          def constraint = optMan.getNode(archetypeId, path + '/defining_code', namespace)
+         //println constraint
+         //println constraint.reference // ac0001
+         //println constraint.terminologyIdName
+         //println constraint.terminologyRef
          if (constraint && constraint.type == 'C_CODE_PHRASE') // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
          {
             constraint.codeList.each { code ->
@@ -221,16 +226,25 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          }
          else
          {
-           // https://github.com/ppazos/cabolabs-ehrserver/issues/154
-           def idef = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, path)
-           if (idef && idef.terminologyRef)
-           {
-             // terminology:WHO?subset=ATC&amp;language=en-GB
-             // WHO
-             def terminology = idef.terminologyRef.split('\\?')[0].split(':')[1]
+            // https://github.com/ppazos/cabolabs-ehrserver/issues/154
+            def idef = ArchetypeIndexItem.findByArchetypeIdAndPath(archetypeId, path)
+            if (idef && idef.terminologyRef)
+            {
+               // terminology:WHO?subset=ATC&amp;language=en-GB
+               // WHO
+               def terminology = idef.terminologyRef.split('\\?')[0].split(':')[1]
 
-             spec[0].terminologyId.codes = [(terminology): terminology]
-           }
+               spec[0].terminologyId.codes = [(terminology): terminology]
+            }
+            else // there are no terminologies in the OPT, get available ones
+            {
+               // TODO: get terminologies from DB
+               //spec[0].terminologyId.codes = ['SNOMED-CT': 'SNOMED-CT', 'LOINC': 'LOINC', 'ICD10': 'ICD10']
+               spec[0].terminologyId.codes = [:]
+               TerminologyId.list().name.each { name ->
+                  spec[0].terminologyId.codes << [(name): name]
+               }
+            }
          }
       }
 

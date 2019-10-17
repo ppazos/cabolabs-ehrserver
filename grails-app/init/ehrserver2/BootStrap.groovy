@@ -1,6 +1,5 @@
 package ehrserver2
 
-import com.cabolabs.ehrserver.conf.ConfigurationItem
 import com.cabolabs.security.*
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.openehr.opt.manager.OptManager
@@ -8,6 +7,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.*
 import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
+import com.cabolabs.ehrserver.conf.*
 
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.api.structures.*
@@ -63,8 +63,19 @@ class BootStrap {
 
       log.info "calculating initial accounts repo size"
       calculateRepoSizes()
+
+      log.info "creating terminology ids"
+      createTerminologyIds()
    }
    def destroy = {
+   }
+
+   def createTerminologyIds()
+   {
+      def terminologies = ['SNOMED-CT', 'ICD-10', 'LOINC', 'RxNorm', 'RadLex', 'UCUM', 'HCPCS', 'CPT']
+      terminologies.each { name ->
+         new TerminologyId(name: name).save(flush: true)
+      }
    }
 
    def calculateRepoSizes()
