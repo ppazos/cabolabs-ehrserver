@@ -13,13 +13,13 @@ cache:
 # from https://www.deps.co/guides/travis-ci-latest-java/
 matrix:
   include:
-    - jdk: openjdk9
+    - jdk: openjdk8
       before_install:
         - rm "${JAVA_HOME}/lib/security/cacerts"
         - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
 
 jdk:
-  - openjdk9
+  - openjdk8
 
 services:
   - mysql
