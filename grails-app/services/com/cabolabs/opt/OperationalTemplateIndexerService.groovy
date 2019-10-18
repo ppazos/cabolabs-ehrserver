@@ -160,11 +160,13 @@ class OperationalTemplateIndexerService {
 
    /**
     * @param template parsed Opt to be indexed
+    * @param org current organization
+    * @param templateId standardized templateId for internal use: concept.es.v1
     * @return
     */
-   def createOptIndex(GPathResult template, Organization org)
+   def createOptIndex(GPathResult template, Organization org, String templateId)
    {
-      def templateId = template.template_id.value.text()
+      def externalTemplateId = template.template_id.value.text()
       def concept = template.concept.text()
       def uid = template.uid.value.text()
 
@@ -173,6 +175,7 @@ class OperationalTemplateIndexerService {
 
       def templateIndex = new OperationalTemplateIndex(
          templateId: templateId,
+         externalTemplateId: externalTemplateId,
          concept: concept,
          language: getTemplateLanguage(template),
          externalUid: uid,
@@ -359,7 +362,7 @@ class OperationalTemplateIndexerService {
    {
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
-      def opts = OperationalTemplateIndex.matchExternalUidOrTemplateId(opt_uid, opt_template_id).list()
+      def opts = OperationalTemplateIndex.matchExternalUidOrExternalTemplateId(opt_uid, opt_template_id).list()
 
       if (opts.size() != 0)
       {
@@ -380,7 +383,17 @@ class OperationalTemplateIndexerService {
       this.template = template
 
       // Create opt index
-      def templateId = this.template.template_id.value.text()
+      def externalTemplateId = this.template.template_id.value.text()
+
+      // Standardize the templateId to concept.es.v1
+      def templateId = externalTemplateId
+      if (!templateId.isTemplateId())
+      {
+         def concept = templateId.toSnakeCase()
+         def lang = template.language.code_string.text()
+         templateId = concept +'.'+ lang +'.v1'
+      }
+
       def concept = this.template.concept.text()
       def language = getTemplateLanguage(template)
       def uid = this.template.uid.value.text()
@@ -393,6 +406,7 @@ class OperationalTemplateIndexerService {
       {
          this.templateIndex = new OperationalTemplateIndex(
             templateId: templateId,
+            externalTemplateId: externalTemplateId,
             concept: concept,
             language: language,
             externalUid: uid,

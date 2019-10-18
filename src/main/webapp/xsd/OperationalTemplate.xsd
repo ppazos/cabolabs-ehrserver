@@ -49,7 +49,7 @@
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
-    
+
     <xs:complexType name="C_CODE_REFERENCE">
       <xs:complexContent>
         <xs:extension base="C_CODE_PHRASE">
@@ -173,8 +173,8 @@
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
-    
-    
+
+
    <xs:element name="archetype" type="ARCHETYPE"/>
    <xs:simpleType name="OPERATOR_KIND">
 		    <xs:restriction base="xs:integer">
@@ -1024,7 +1024,8 @@
 	  </xs:complexType>
    <xs:complexType name="OBJECT_ID" abstract="true">
 		    <xs:sequence>
-			      <xs:element name="value" type="xs:token"/>
+			      <!--<xs:element name="value" type="xs:token"/>-->
+               <xs:element name="value" type="NotEmptyToken"/>
 		    </xs:sequence>
 	  </xs:complexType>
    <xs:complexType name="UID_BASED_ID" abstract="true">
@@ -1057,13 +1058,14 @@
 		    </xs:complexContent>
 	  </xs:complexType>
    <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/917 -->
-   <!--
+
    <xs:complexType name="TEMPLATE_ID">
 		    <xs:complexContent>
 			      <xs:extension base="OBJECT_ID"/>
 		    </xs:complexContent>
 	  </xs:complexType>
-   -->
+   <!-- 2019-10-17 going back to the non constrained format because the
+                   template_id format will be checked and fixed in code
    <xs:complexType name="TEMPLATE_ID">
 		    <xs:complexContent>
 			      <xs:restriction base="OBJECT_ID">
@@ -1073,6 +1075,7 @@
 			      </xs:restriction>
 		    </xs:complexContent>
 	  </xs:complexType>
+   -->
 
    <xs:complexType name="TERMINOLOGY_ID">
 		    <xs:complexContent>

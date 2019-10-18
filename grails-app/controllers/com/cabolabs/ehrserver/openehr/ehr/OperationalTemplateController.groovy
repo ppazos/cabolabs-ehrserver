@@ -110,6 +110,7 @@ class OperationalTemplateController {
 
          def user = authService.loggedInUser
 
+         // TODO: move to a plan check interceptor
          // Repo size check and max opt check max_opts_per_organization
          def account = user.account
          def plan_assoc = Plan.associatedNow(account) // can be null on dev envs, size check is not done on that case.
@@ -166,7 +167,7 @@ class OperationalTemplateController {
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))
          {
-            errors = xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
+            errors = xmlValidationService.getErrors()
 
             res = [status:'error', message:'XML validation errors', errors: errors]
             render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
@@ -211,7 +212,7 @@ class OperationalTemplateController {
          def opt_uid = template.uid.value.text()
          def opt_template_id = template.template_id.value.text()
          def alternatives = OperationalTemplateIndex.forOrg(session.organization)
-                                            .matchExternalUidOrTemplateId(opt_uid, opt_template_id)
+                                            .matchExternalUidOrExternalTemplateId(opt_uid, opt_template_id)
                                             .lastVersions
                                             .list()
          if (alternatives.size() > 0)
@@ -267,11 +268,19 @@ class OperationalTemplateController {
             }
          }
 
+         // !has aaa.es.v1 format?
+         def external_template_id = opt_template_id
+         if (!opt_template_id.isTemplateId())
+         {
+            def concept = opt_template_id.toSnakeCase()
+            def lang = template.language.code_string.text()
+            opt_template_id = concept +'.'+ lang +'.v1'
+         }
 
          // Will index the opt nodes, and help deleting existing ones when updating
 
          // saves OperationalTemplateIndex to the DB
-         def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization)
+         def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization, opt_template_id)
 
          // Prepare file
          def destination = opt_repo_org_path + opt.fileUid + '.opt'

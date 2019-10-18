@@ -331,6 +331,7 @@ class SyncParserService {
    {
       def templateIndex = new OperationalTemplateIndex(
          templateId: j.templateId,
+         externalTemplateId: j.externalTemplateId,
          concept: j.concept,
          language: j.language,
          uid: j.uid,

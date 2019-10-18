@@ -24,11 +24,12 @@ package com.cabolabs.ehrserver.ehr.clinical_documents
 
 class OperationalTemplateIndex {
 
-   String templateId
+   String templateId       // formatted template id
    String concept          // Concept name of the OPT
    String language         // en formato 'en', antes era ISO_639-1::en pero https://github.com/ppazos/cabolabs-ehrserver/issues/878
    String uid = java.util.UUID.randomUUID() as String
-   String externalUid     // from the OPT file
+   String externalUid      // from the OPT file
+   String externalTemplateId // from the OPT file
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
 
@@ -76,10 +77,10 @@ class OperationalTemplateIndex {
 
          eq('lastVersion', true)
       }
-      matchExternalUidOrTemplateId { externalUid, templateId ->
+      matchExternalUidOrExternalTemplateId { externalUid, templateId ->
          or {
             eq('externalUid', externalUid)
-            eq('templateId', templateId)
+            eq('externalTemplateId', templateId)
          }
       }
       notDeleted {

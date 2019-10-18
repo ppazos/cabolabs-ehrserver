@@ -644,7 +644,7 @@ class XmlService {
             }
          }
 
-         // Server sets the XML with the new version uid.
+         // Set the XML with the new version uid.
 
          // delete uid if present from the client
          parsedVersion.uid.replaceNode {}

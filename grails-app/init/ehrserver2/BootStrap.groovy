@@ -741,6 +741,15 @@ class BootStrap {
          return delegate
       }
 
+      // String has the format aaaa.es.v1?
+      String.metaClass.isTemplateId = {
+         return (delegate ==~ /([a-z]+(_[a-z]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)/)
+      }
+
+      String.metaClass.toSnakeCase = {
+         delegate.replaceAll(/\s([A-Z])/, /$1/).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').replaceAll( /^_/, '' ).toLowerCase()
+      }
+
       // get the stack trace as string from an exception
       // can also get the first X lines of the trace
       Throwable.metaClass.traceString = { lines ->
