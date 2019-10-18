@@ -20,26 +20,26 @@ EHRServer was designer for developers by developers. You don't need to be an ope
 
 Quick look at what is happening in the EHRServer.
 
-![](guide/v1.4_screenshot.jpg)
+![](docs/images/v1.4_screenshot.jpg)
 
 ## Template Manager
 
 Manage clinical document definitions from the Template Manager, defining what data could be stored and queried.
 
-![](guide/v1.4_screenshot_template_manager.jpg)
+![](docs/images/v1.4_screenshot_template_manager.jpg)
 
 ## Query Builder
 
 Very simple point and click query creation in seconds, no programming needed.
 
-![](guide/v1.4_screenshot_query_builder.jpg)
+![](docs/images/v1.4_screenshot_query_builder.jpg)
 
 ## Manage it on the go
 
 Mobile friendly user interface, adapts to small screens.
 
 <div align="center">
-<img src="guide/v1.4_screenshot_responsive.png" width="300" />
+<img src="docs/images/v1.4_screenshot_responsive.png" width="300" />
 </div>
 
 # EHRServer Architecture (simplified)
@@ -112,7 +112,7 @@ Thanks for your support!
 
 
 <div align="center">
- 
+
 [![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver)
 
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/CaboLabs/EHRServer)
