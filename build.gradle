@@ -2,6 +2,7 @@ buildscript {
    repositories {
       mavenLocal()
       maven { url "https://repo.grails.org/grails/core" }
+      maven { url 'https://jitpack.io' }
    }
    dependencies {
       classpath "org.grails:grails-gradle-plugin:$grailsVersion"
@@ -10,7 +11,7 @@ buildscript {
    }
 }
 
-version "2.0.alpha"
+version "2.1.alpha"
 group "ehrserver2"
 
 apply plugin:"eclipse"
@@ -23,6 +24,7 @@ apply plugin:"org.grails.grails-gsp"
 repositories {
    mavenLocal()
    maven { url "https://repo.grails.org/grails/core" }
+   maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -71,8 +73,10 @@ dependencies {
 
    compile 'org.grails.plugins:ajax-tags:1.0.0'
 
-   compile "grails.simple.auth:grails-simple-auth:0.1" // local
-   compile "grails.security.stateless.ng:grails-security-stateless-ng:0.1" // local
+   //compile "grails.simple.auth:grails-simple-auth:0.1" // local
+   compile "com.github.ppazos:grails-simple-auth:v0.2"
+   //compile "grails.security.stateless.ng:grails-security-stateless-ng:0.1" // local
+   compile "com.github.ppazos:grails-security-stateless-ng:v0.1"
 }
 
 bootRun {
