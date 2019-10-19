@@ -15,6 +15,7 @@ import com.cabolabs.ehrserver.api.structures.*
 import grails.core.GrailsApplication
 import grails.util.Holders
 import grails.converters.*
+import  groovy.json.StringEscapeUtils
 
 class BootStrap {
 
@@ -229,34 +230,36 @@ class BootStrap {
       }
 
       JSON.registerObjectMarshaller(User) { u ->
-        return [
-               //username: u.username,
-                email: u.email
-               ]
+         return [
+            email: u.email
+         ]
       }
 
       JSON.registerObjectMarshaller(DoctorProxy) { doctor ->
-        return [namespace: doctor.namespace,
-                type: doctor.type,
-                value: doctor.value,
-                name: doctor.name]
+         return [
+            namespace: doctor.namespace,
+            type: doctor.type,
+            value: doctor.value,
+            name: doctor.name
+         ]
       }
 
       JSON.registerObjectMarshaller(AuditDetails) { audit ->
-        def a = [timeCommitted: audit.timeCommitted,
+         def a = [timeCommitted: audit.timeCommitted,
                  committer: audit.committer, // DoctorProxy
                  systemId: audit.systemId]
-        // audit for contributions have changeType null, so we avoid to add it here if it is null
-        if (audit.changeType) a << [changeType: audit.changeType.toString()]
-        return a
+         // audit for contributions have changeType null, so we avoid to add it here if it is null
+         if (audit.changeType) a << [changeType: audit.changeType.toString()]
+         return a
       }
 
       JSON.registerObjectMarshaller(Contribution) { contribution ->
-        return [uid: contribution.uid,
-                ehrUid: contribution.ehr.uid,
-                versions: contribution.versions.uid, // list of uids
-                audit: contribution.audit // AuditDetails
-               ]
+         return [
+            uid: contribution.uid,
+            ehrUid: contribution.ehr.uid,
+            versions: contribution.versions.uid, // list of uids
+            audit: contribution.audit // AuditDetails
+         ]
       }
 
       JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
@@ -748,6 +751,11 @@ class BootStrap {
 
       String.metaClass.toSnakeCase = {
          delegate.replaceAll(/\s([A-Z])/, /$1/).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').replaceAll( /^_/, '' ).toLowerCase()
+      }
+
+      // Escapes quotes in strings for displaying via JS
+      String.metaClass.escapeJS = {
+         StringEscapeUtils.escapeJavaScript(delegate)
       }
 
       // get the stack trace as string from an exception

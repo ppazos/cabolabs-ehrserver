@@ -979,26 +979,38 @@ resp.responseJSON.result.message +'</div>'
         // inputs or selects with values
         var criteria_fields = $(':input.value.selected', fieldset);
         var complete = true;
+        var criteria_add_error;
 
-        if ( criteria_fields.length == 0 ) // case when no criteria spec is selected
+        if (criteria_fields.length == 0) // case when no criteria spec is selected
         {
-          alert('${g.message(code:"query.create.selectCriteria")}');
+          criteria_add_error = "${raw(g.message(code:"query.create.selectCriteria").escapeJS())}";
           return false;
         }
         else // case when criteria spec is selected and maybe some values are not filled in
         {
-          $.each( criteria_fields, function (index, value_input) {
+          $.each(criteria_fields, function (index, value_input) {
 
-            if ( [null, undefined, ""].includes( $(value_input).val() ) )
+            $value_input = $(value_input);
+            if ([null, undefined, ""].includes($value_input.val()))
             {
-              complete = false;
+              console.log($value_input, $value_input.attr('type'));
+              // criteria value is a number input but value is empty or is not a number (.val gets null when the number input has charaters)
+              if ($value_input.is('input') && $value_input.attr('type') == 'number')
+              {
+                criteria_add_error = "${raw(g.message(code:"query.create.numberFieldIsEmptyOrHasInvalidNumber").escapeJS())}";
+                return false;
+              }
+
+              // criteria incomplete
+              criteria_add_error = "${raw(g.message(code:"query.create.fillCriteria").escapeJS())}";
               return false; // breaks each
             }
           });
         }
-        if (!complete)
+
+        if (criteria_add_error)
         {
-          alert('${g.message(code:"query.create.fillCriteria")}');
+          alert(criteria_add_error);
           return false;
         }
         // =======================================================================================
