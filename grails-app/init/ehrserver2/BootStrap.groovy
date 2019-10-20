@@ -17,6 +17,8 @@ import grails.util.Holders
 import grails.converters.*
 import  groovy.json.StringEscapeUtils
 
+import java.text.Normalizer
+
 class BootStrap {
 
    def configurationService
@@ -750,7 +752,16 @@ class BootStrap {
       }
 
       String.metaClass.toSnakeCase = {
-         delegate.replaceAll(/\s([A-Z])/, /$1/).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').replaceAll( /^_/, '' ).toLowerCase()
+         def n = delegate
+          .trim()                                // remove spaces
+          .replaceAll(/\s([A-Z])/, /$1/)         // space + uppercase char => uppercase char
+          .replaceAll( /([A-Z])/, /_$1/ )        // uppercase char => underscore + uppercase char
+          .replaceAll(/\s+/, '_')                // spaces => underscore
+          .replaceAll( /^_/, '' )                // remove underscore from char[0]
+          .toLowerCase()                         // all lowercase
+
+         // removes accents
+         n = Normalizer.normalize(n, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
       }
 
       // Escapes quotes in strings for displaying via JS
