@@ -487,20 +487,18 @@ class BootStrap {
       }
 
       XML.registerObjectMarshaller(User) { u, xml ->
-        xml.build {
-          //username(u.username)
-          email(u.email)
-
-        }
+         xml.build {
+            email(u.email)
+         }
       }
 
       XML.registerObjectMarshaller(DoctorProxy) { doctor, xml ->
-        xml.build {
-          namespace(doctor.namespace)
-          type(doctor.type)
-          value(doctor.value)
-          name(doctor.name)
-        }
+         xml.build {
+            namespace(doctor.namespace)
+            type(doctor.type)
+            value(doctor.value)
+            name(doctor.name)
+         }
       }
 
       XML.registerObjectMarshaller(AuditDetails) { audit, xml ->

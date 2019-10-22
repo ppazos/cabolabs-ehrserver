@@ -6,9 +6,10 @@ import com.cabolabs.ehrserver.notification.Notification
 
 class AuthController {
 
-   static defaultAction = "auth"
+   static defaultAction = "login"
 
    def remoteNotificationsService
+   def notificationService
 
    def login() {}
 
@@ -86,7 +87,7 @@ class AuthController {
          return
       }
 
-      flash.message = 'wrong credentials'
+      flash.message = 'wrong credentials' // FIXME: i18n
       render view: 'login'
    }
 
@@ -133,7 +134,7 @@ class AuthController {
          }
 
 
-         user.password = PasswordUtils.encodePassword(newPassword)
+         user.password = newPassword //PasswordUtils.encodePassword(newPassword)
          user.enabled = true
          user.emptyPasswordToken()
          user.save(flush:true)
@@ -158,8 +159,10 @@ class AuthController {
 
          // generates a password reset token, used in the email notification
          user.setPasswordToken()
-         user.save(flush:true)
-
+         user.save(flush: true, failOnError: true)
+         println user.resetPasswordToken
+         println user.email
+         println user.id
          try
          {
             notificationService.sendForgotPasswordEmail( user.email, [user] )
@@ -174,7 +177,7 @@ class AuthController {
 
 
          flash.message = message(code:"user.forgotPassword.passResetSend")
-         redirect controller:'login', action:'auth'
+         redirect action:'login'
          return
       }
       // display the forgotPassword view

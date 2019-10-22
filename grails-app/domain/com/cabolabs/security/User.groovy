@@ -96,7 +96,10 @@ class User implements Serializable {
          {
             encodePassword()
 
-            if (this.enabled) this.resetPasswordToken = null
+            if (this.enabled)
+            {
+               this.resetPasswordToken = null
+            }
          }
       }
    }
@@ -167,7 +170,7 @@ class User implements Serializable {
 
    protected void encodePassword()
    {
-      password = PasswordUtils.encodePassword(password)
+      setPassword PasswordUtils.encodePassword(password)
    }
 
    def getOrganizations()
@@ -210,18 +213,18 @@ class User implements Serializable {
 
    def setPasswordToken()
    {
-      this.resetPasswordToken = java.util.UUID.randomUUID() as String
-      this.resetPasswordTokenSet = new Date()
+      setResetPasswordToken (java.util.UUID.randomUUID() as String)
+      setResetPasswordTokenSet new Date()
    }
 
    def getPasswordToken()
    {
-      return this.resetPasswordToken
+      return resetPasswordToken
    }
 
    def emptyPasswordToken()
    {
-      this.resetPasswordToken = null
-      this.resetPasswordTokenSet = null
+      setResetPasswordToken null
+      setResetPasswordTokenSet null
    }
 }

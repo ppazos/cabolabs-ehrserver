@@ -178,7 +178,7 @@
                   <input type="submit" id="submit" class="btn btn-lg btn-success btn-block" value="${message(code:'auth.login.button')}"/>
 
                   <div class="form-group" style="margin:0; padding:15px 0 15px 0; text-align:center;">
-                    <g:link controller="user" action="forgotPassword">
+                    <g:link controller="auth" action="forgotPassword">
                       <g:message code="auth.login.forgotPassword.label"/>
                     </g:link>
                   </div>

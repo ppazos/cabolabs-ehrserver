@@ -689,6 +689,7 @@ class UserController {
 
 
    // token comes always and is required for reset
+   /* moved to auth controller
    def resetPassword(String token, String newPassword, String confirmNewPassword)
    {
       // GET: display reset view
@@ -741,7 +742,9 @@ class UserController {
          return
       }
    }
+   */
 
+   /* moved to auth controller
    def forgotPassword(String email)
    {
       if (request.post)
@@ -777,11 +780,12 @@ class UserController {
       }
       // display the forgotPassword view
    }
-
+   */
 
    // same as forgotPassword but it can be triggered by an admin / org manager
    // from the user/show to let users reset their password even if they forgot
    // the email used to register.
+   /* moved to auth controller
    def resetPasswordRequest(String email)
    {
       def user = User.findByEmail(email)
@@ -817,6 +821,7 @@ class UserController {
       redirect(action:'show', id:params.id)
       return
    }
+   */
 
 
    protected void notFound() {
