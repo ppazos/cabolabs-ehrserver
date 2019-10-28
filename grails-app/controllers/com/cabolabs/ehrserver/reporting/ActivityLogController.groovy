@@ -72,7 +72,7 @@ class ActivityLogController {
          redirect action:'index'
          return
       }
-      respond activityLogInstance
+      [activityLogInstance: activityLogInstance]
    }
 
    protected void notFound() {

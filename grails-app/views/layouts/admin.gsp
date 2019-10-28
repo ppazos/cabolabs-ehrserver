@@ -323,7 +323,7 @@
                   <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-fw fa-bell"></i> <g:message code="desktop.notification" /></g:link>
                 </li>
                 <li class="menu_vertical_separator">
-                  <g:link controller="logs" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-fw fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
+                  <g:link controller="logs" action="index" class="${(controllerName=='logs')?'active':''}"><i class="fa fa-fw fa-tasks"></i> <g:message code="desktop.logs" /></g:link>
                 </li>
               </g:userHasAnyRole>
             </ul>

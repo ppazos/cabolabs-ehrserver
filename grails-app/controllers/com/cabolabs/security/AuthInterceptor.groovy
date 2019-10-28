@@ -90,6 +90,7 @@ class AuthInterceptor {
 
       if (rm.configAttribute == 'OPEN_ACCESS')
       {
+         println "open access"
          return true
       }
 

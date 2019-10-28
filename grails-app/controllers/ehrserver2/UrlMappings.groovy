@@ -184,7 +184,7 @@ class UrlMappings {
          controller = 'activityLog'
          action = 'show'
       }
-      name logs: "/logs" {
+      "/logs/index" {
          controller = 'activityLog'
          action = 'index'
       }

@@ -11,7 +11,7 @@
         <h1><g:message code="datavalueindex.index.title" /></h1>
       </div>
     </div>
-    
+
     <div class="row row-grid">
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
@@ -19,7 +19,7 @@
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-refresh fa-fw" aria-hidden="true"></span> <g:message code="datavalueindex.index.reindex" />
             </button></g:link>
-          <g:link controller="compositionIndex" action="list">
+          <g:link controller="compositionIndex" action="index">
             <button type="button" class="btn btn-default btn-md">
               <span class="fa fa-list-alt fa-fw" aria-hidden="true"></span> <g:message code="compositionIndex.list.title" />
             </button></g:link>

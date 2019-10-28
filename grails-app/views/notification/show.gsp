@@ -13,11 +13,11 @@
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-        
+
         <g:if test="${flash.message}">
           <div class="alert alert-info" role="alert">${flash.message}</div>
         </g:if>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -57,8 +57,8 @@
               </td>
             </tr>
             <tr>
-              <th><g:message code="notification.list.attr.dateCreated" /></th>
-              <td><g:formatDate date="${notificationInstance?.dateCreated}" /></td>
+              <th><g:message code="notification.list.attr.timestamp" /></th>
+              <td><g:formatDate date="${notificationInstance?.timestamp}" /></td>
             </tr>
           </tbody>
         </table>
@@ -81,7 +81,7 @@
              </tbody>
             </table>
          </div>
-         
+
         <%--
         <g:form url="[resource:notificationInstance, action:'delete']" method="DELETE">
           <fieldset class="buttons">

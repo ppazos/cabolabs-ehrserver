@@ -48,7 +48,7 @@
 		            <td>${fieldValue(bean: notificationInstance, field: "forSection")}</td>
 		            <td>${fieldValue(bean: notificationInstance, field: "forOrganization")}</td>
 		            <td>${fieldValue(bean: notificationInstance, field: "forUser")}</td>
-		            <td><g:formatDate date="${notificationInstance.dateCreated}" /></td>
+		            <td><g:formatDate date="${notificationInstance.timestamp}" /></td>
 		            <td>${fieldValue(bean: notificationInstance, field: "language")}</td>
 		          </tr>
               </g:each>

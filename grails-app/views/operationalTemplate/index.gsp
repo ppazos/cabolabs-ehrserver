@@ -40,10 +40,12 @@
               <span class="fa fa-filter" aria-hidden="true"></span>
             </button>
 
-            <g:link action="generate">
-              <button type="button" class="btn btn-default btn-md">
-                <span class="fa fa-refresh" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
-              </button></g:link>
+            <g:userHasAnyRole roles="ROLE_ADMIN">
+              <g:link action="generate">
+                <button type="button" class="btn btn-default btn-md">
+                  <span class="fa fa-refresh" aria-hidden="true"></span> <g:message code="operationalTemplate.generate.label" />
+                </button></g:link>
+            </g:userHasAnyRole>
 
             <g:link action="upload" title="upload operational template">
               <button type="button" class="btn btn-primary btn-md">

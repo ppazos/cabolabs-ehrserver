@@ -81,7 +81,8 @@ class BootStrap {
    def createRequestMaps()
    {
       def open = [
-        '/error'
+        '/error',
+        '/favicon'
       ]
 
       open.each { url ->
@@ -98,19 +99,25 @@ class BootStrap {
       new RequestMap(url: '/plan/save', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/plan/update/.*', configAttribute: 'ROLE_ADMIN').save()
 
-      new RequestMap(url: '/account/index', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/account/show/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/account/create', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/account/edit/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/account/save', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/account/update/.*', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/index', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/create', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/save', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/account/update/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/.*', configAttribute: 'ROLE_ADMIN').save()
 
-      new RequestMap(url: '/sync/index', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/sync/show/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/sync/create', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/sync/edit/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/sync/save', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/sync/update/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/stats/accountRepoUsage/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/stats/accountTemplatesLoaded/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      // new RequestMap(url: '/sync/index', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/create', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/createRemote', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/save', configAttribute: 'ROLE_ADMIN').save()
+      // new RequestMap(url: '/sync/update/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/.*', configAttribute: 'ROLE_ADMIN').save()
 
       new RequestMap(url: '/organization/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/organization/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
@@ -174,6 +181,8 @@ class BootStrap {
       new RequestMap(url: '/operationalTemplate/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/trash', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/generate', configAttribute: 'ROLE_ADMIN').save()
 
       new RequestMap(url: '/notification/index', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/notification/show/.*', configAttribute: 'ROLE_ADMIN').save()
@@ -182,6 +191,16 @@ class BootStrap {
       new RequestMap(url: '/notification/save', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/notification/update/.*', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/notification/newNotifications', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/logs/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/dataValueIndex/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/folderTemplate/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/messaging/feedback', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/compositionIndex/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
    }
 
    def createTerminologyIds()

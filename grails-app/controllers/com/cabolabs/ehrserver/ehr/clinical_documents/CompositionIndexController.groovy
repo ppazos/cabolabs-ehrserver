@@ -29,15 +29,10 @@ import grails.util.Holders
 class CompositionIndexController {
 
    def configurationService
-   
-   def config = Holders.config.app
-   
-   def index()
-   {
-      redirect(action: "list", params: params)
-   }
 
-   def list()
+   def config = Holders.config.app
+
+   def index()
    {
       // this is only accessable by admins
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
@@ -50,7 +45,7 @@ class CompositionIndexController {
       if (!compositionIndexInstance)
       {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'compositionIndex.label', default: 'CompositionIndex'), id])
-         redirect(action: "list")
+         redirect(action: "index")
          return
       }
 
