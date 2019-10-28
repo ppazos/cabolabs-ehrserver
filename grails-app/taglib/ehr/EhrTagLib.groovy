@@ -113,7 +113,7 @@ class EhrTagLib {
          def userInstance = attrs.userInstance // user to edit
          def userHigherRole = userInstance.getHigherAuthority(session.organization)
 
-         def loggedInUser = springSecurityService.currentUser
+         def loggedInUser = authService.loggedInUser
          if(loggedInUser)
          {
             def role = loggedInUser.getHigherAuthority(session.organization)
@@ -149,7 +149,7 @@ class EhrTagLib {
 
          if (attrs.addEmpty)
             args.noSelection = ['':message(code:'defaut.select.selectOne')] // TODO: i18n
-            
+
          args.class = attrs.class ?: '' // allows set style from outside
          args.value = session.organization.uid
 

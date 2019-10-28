@@ -105,7 +105,7 @@
         <div class="panel panel-default">
           <div class="panel-body">
 
-            <g:form class="form filter" action="list">
+            <g:form class="form filter" action="index">
               <input type="hidden" name="sort" value="${params.sort}" />
               <input type="hidden" name="order" value="${params.order}" />
               <div class="form-group">

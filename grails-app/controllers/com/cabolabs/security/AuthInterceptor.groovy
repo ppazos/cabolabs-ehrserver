@@ -6,12 +6,13 @@ class AuthInterceptor {
 
    int order = HIGHEST_PRECEDENCE + 100
 
+   def authService
+
    public AuthInterceptor()
    {
-      matchAll().excludes(controller:'auth').excludes(controller:'restAuth')
-      /*.excludes(controller:'rest')
-
-                .excludes(controller:'restAuth')*/
+      matchAll()
+         .excludes(controller:'auth')
+         .excludes(controller:'restAuth')
 
    }
 
@@ -65,6 +66,38 @@ class AuthInterceptor {
          //println "redirects to auth"
          redirect controller: 'auth', action: 'login'
          return false
+      }
+
+      // Check access to current section by user role
+      def path = request.requestURI
+
+      // TODO: move to an on-memory singleton
+      // TODO: check request method
+      def rms = RequestMap.list() //findByUrl(path)
+      def rm = rms.find {
+         path.matches(it.url) // current path matches reges in RequestMap.url?
+      }
+
+      if (!rm)
+      {
+         println "${path} doesnt match any RequestMap URL"
+         //println rms.url
+         render view: "/noPermissions.gsp"
+         return false // all URLs are closed by default!
+      }
+
+      println "${path} matches ${rm.url}"
+
+      if (rm.configAttribute == 'OPEN_ACCESS')
+      {
+         return true
+      }
+
+      // verify role
+      if (!authService.loggedInUserHasAnyRole(rm.configAttribute))
+      {
+         render view: "/noPermissions.gsp"
+         return false // all URLs are closed by default!
       }
 
       true

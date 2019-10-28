@@ -45,7 +45,7 @@ class OperationalTemplateController {
    def OPTService
    def syncMarshallersService
 
-   def list(int offset, String sort, String order, String concept, Boolean deleted)
+   def index(int offset, String sort, String order, String concept, Boolean deleted)
    {
       /*
       def jb = new JsonBuilder()

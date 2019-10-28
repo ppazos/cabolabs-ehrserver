@@ -37,7 +37,7 @@ class RequestMapController {
 
    def index() {
       params.max = configurationService.getValue('ehrserver.console.lists.max_items')
-      respond RequestMap.list(params), model:[requestMapInstanceCount: RequestMap.count()]
+      [requestMapInstanceList: RequestMap.list(params), requestMapInstanceCount: RequestMap.count()]
    }
 
    def show(RequestMap requestMapInstance) {

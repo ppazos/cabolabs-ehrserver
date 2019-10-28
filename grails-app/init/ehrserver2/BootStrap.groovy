@@ -17,6 +17,8 @@ import grails.util.Holders
 import grails.converters.*
 import  groovy.json.StringEscapeUtils
 
+import com.cabolabs.security.RequestMap
+
 import java.text.Normalizer
 
 class BootStrap {
@@ -69,8 +71,117 @@ class BootStrap {
 
       log.info "creating terminology ids"
       createTerminologyIds()
+
+      log.info "creating request maps"
+      createRequestMaps()
    }
    def destroy = {
+   }
+
+   def createRequestMaps()
+   {
+      def open = [
+        '/error'
+      ]
+
+      open.each { url ->
+         new RequestMap(url: url, configAttribute: 'OPEN_ACCESS').save()
+      }
+
+      new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/app/get_started', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/plan/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/plan/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/plan/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/plan/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/plan/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/plan/update/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/account/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/account/update/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/sync/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/sync/update/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/organization/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/user/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/user/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/user/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/user/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/user/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/role/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/role/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/role/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/role/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/role/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/role/update/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/requestMap/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/requestMap/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/requestMap/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/requestMap/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/requestMap/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/requestMap/update/.*', configAttribute: 'ROLE_ADMIN').save()
+
+      new RequestMap(url: '/ehr/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehr/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehr/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehr/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehr/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehr/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/contribution/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/contribution/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/versionedComposition/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/versionedComposition/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/query/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/groups', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/ehrQuery/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehrQuery/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehrQuery/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehrQuery/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehrQuery/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/ehrQuery/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/operationalTemplate/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/create', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
+      new RequestMap(url: '/notification/index', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/show/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/create', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/edit/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/save', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/update/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/newNotifications', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
    }
 
    def createTerminologyIds()

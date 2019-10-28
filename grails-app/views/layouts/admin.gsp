@@ -290,7 +290,7 @@
                   <g:link controller="ehr" action="index" class="${(controllerName=='ehr')?'active':''}"><i class="fa fa-fw fa-book"></i> <g:message code="desktop.ehrs" /></g:link>
                 </li>
                 <li id="menu-contributions">
-                  <g:link controller="contribution" action="list" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-fw fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
+                  <g:link controller="contribution" action="index" class="${(controllerName=='contribution')?'active':''}"><i class="fa fa-fw fa-arrows-v"></i> <g:message code="desktop.contributions" /></g:link>
                 </li>
                 <li>
                   <g:link controller="versionedComposition" action="index" class="${(controllerName=='versionedComposition')?'active':''}"><i class="fa fa-fw fa-file"></i> <g:message code="desktop.versionedCompositions" /></g:link>
@@ -304,7 +304,7 @@
               </g:userHasAnyRole>
               <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                 <li id="menu-queries">
-                  <g:link controller="query" action="list" class="${(controllerName=='query')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.queries" /></g:link>
+                  <g:link controller="query" action="index" class="${(controllerName=='query')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.queries" /></g:link>
                 </li>
                 <li class="menu_vertical_separator">
                   <g:link controller="ehrQuery" action="index" class="${(controllerName=='ehrQuery')?'active':''}"><i class="fa fa-fw fa-search"></i> <g:message code="desktop.ehrqueries" /></g:link>
@@ -312,15 +312,13 @@
               </g:userHasAnyRole>
               <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                 <li id="menu-templates">
-                  <g:link controller="operationalTemplate" action="list" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-fw fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
+                  <g:link controller="operationalTemplate" action="index" class="${(controllerName=='operationalTemplate')?'active':''}"><i class="fa fa-fw fa-cubes"></i> <g:message code="desktop.templates" /></g:link>
                 </li>
               </g:userHasAnyRole>
               <g:userHasAnyRole roles="ROLE_ADMIN">
                 <li class="menu_vertical_separator">
                   <g:link controller="dataValueIndex" action="index" class="${(controllerName=='dataValueIndex')?'active':''}"><i class="fa fa-fw fa-database "></i> <g:message code="desktop.data" /></g:link>
                 </li>
-              </g:userHasAnyRole>
-              <g:userHasAnyRole roles="ROLE_ADMIN,ROLE_ORG_MANAGER,ROLE_ACCOUNT_MANAGER">
                 <li>
                   <g:link controller="notification" action="index" class="${(controllerName=='notification')?'active':''}"><i class="fa fa-fw fa-bell"></i> <g:message code="desktop.notification" /></g:link>
                 </li>

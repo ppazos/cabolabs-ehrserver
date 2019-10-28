@@ -160,9 +160,6 @@ class AuthController {
          // generates a password reset token, used in the email notification
          user.setPasswordToken()
          user.save(flush: true, failOnError: true)
-         println user.resetPasswordToken
-         println user.email
-         println user.id
          try
          {
             notificationService.sendForgotPasswordEmail( user.email, [user] )

@@ -42,19 +42,7 @@ class ContributionController {
 
    def config = Holders.config.app
 
-   def index()
-   {
-      /*
-      def cs = Contribution.list()
-      def jb = new JsonBuilder()
-      syncMarshallersService.toJSON(cs, jb)
-      render jb.toString(), contentType: "application/json"
-      */
-
-      redirect(action: "list", params: params)
-   }
-
-   def list(int offset, String sort, String order, String ehdUid, String organizationUid)
+   def index(int offset, String sort, String order, String ehdUid, String organizationUid)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
@@ -171,7 +159,7 @@ class ContributionController {
       def contributionInstance = Contribution.get(id)
       if (!contributionInstance) {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'contribution.label', default: 'Contribution'), id])
-         redirect(action: "list")
+         redirect(action: "index")
          return
       }
 

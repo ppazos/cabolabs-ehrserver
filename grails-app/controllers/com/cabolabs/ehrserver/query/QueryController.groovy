@@ -62,11 +62,6 @@ class QueryController {
 
    def index()
    {
-      redirect(action: "list", params: params)
-   }
-
-   def list(int offset, String sort, String order, String name, boolean isDeleted)
-   {
       /*
       def q = """
       SELECT ci
@@ -291,22 +286,22 @@ class QueryController {
       // ---------------------------------------------------
 
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
-      if (!offset) offset = 0
-      if (!sort) sort = 'id'
-      if (!order) order = 'asc'
-      if (isDeleted == null) isDeleted = false
+      if (!params.offset) params.offset = 0
+      if (!params.sort) params.sort = 'id'
+      if (!params.order) params.order = 'asc'
+      if (params.isDeleted == null) params.isDeleted = false
 
-      def list
       def org = session.organization
       def shares = QueryShare.findAllByOrganization(org)
       def c = Query.createCriteria()
 
       // Same for admins and other users since private queries should not be accessed even by admins
-      list = c.list (max: max, offset: offset, sort: sort, order: order) {
-         if (name)
-         {
-            like('name', '%'+name+'%')
-         }
+      def list = c.list(max: max, offset: params.offset) {
+         // FIXME: the filter by name wont work since we modified the name to be a map
+         // if (params.name)
+         // {
+         //    like('name', '%'+params.name+'%')
+         // }
          if (shares)
          {
             or {
@@ -319,8 +314,15 @@ class QueryController {
             eq('isPublic', true)
          }
 
-         eq('isDeleted', isDeleted)
+         eq('isDeleted', params.isDeleted)
+
+         order(params.sort, params.order)
+         // firstResult(params.offset)
+         // maxResults(max)
       }
+
+      println list
+      println list.totalCount
 
       [queryInstanceList: list.groupBy{it.queryGroup}, queryInstanceTotal: list.totalCount]
    }
@@ -399,7 +401,7 @@ class QueryController {
       if (!queryInstance)
       {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), params.uid])
-         redirect(action: "list")
+         redirect(action: "index")
          return
       }
 
@@ -599,7 +601,7 @@ class QueryController {
       if (!uid)
       {
          flash.message = 'query.execute.error.queryUidMandatory'
-         redirect(action:'list')
+         redirect(action:'index')
          return
       }
 
@@ -608,7 +610,7 @@ class QueryController {
       {
          flash.message = 'query.execute.error.queryDoesntExists'
          flash.args = [uid]
-         redirect(action:'list')
+         redirect(action:'index')
          return
       }
 
@@ -620,7 +622,7 @@ class QueryController {
       if (!uid)
       {
          flash.message = 'query.execute.error.queryUidMandatory'
-         redirect(action:'list')
+         redirect(action:'index')
          return
       }
 
@@ -629,7 +631,7 @@ class QueryController {
       if (!queryInstance)
       {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), uid])
-         redirect(action: "list")
+         redirect(action: "index")
          return
       }
 
@@ -642,7 +644,7 @@ class QueryController {
       if (!uid)
       {
          flash.message = 'query.execute.error.queryUidMandatory'
-         redirect(action:'list')
+         redirect(action:'index')
          return
       }
 
@@ -651,7 +653,7 @@ class QueryController {
       if (!queryInstance)
       {
          flash.message = message(code: 'default.not.found.message', args: [message(code: 'query.label', default: 'Query'), uid])
-         redirect(action: "list")
+         redirect(action: "index")
          return
       }
 
@@ -661,7 +663,7 @@ class QueryController {
          queryInstance.isDeleted = true
          queryInstance.save(flush: true)
          flash.message = message(code: 'default.deleted.message', args: [message(code: 'query.label', default: 'Query'), uid])
-         redirect(action: "list")
+         redirect(action: "index")
       }
       catch (DataIntegrityViolationException e)
       {
@@ -853,7 +855,7 @@ class QueryController {
       if (!uid)
       {
          flash.message = 'query.execute.error.queryUidMandatory'
-         redirect(action:'list')
+         redirect(action:'index')
          return
       }
 
