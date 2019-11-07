@@ -82,7 +82,7 @@ class SemanticValidationLevel1 {
      ITEM_TABLE    : ['name', 'archetype_details', 'uid'],
      ITEM_TREE     : ['name', 'archetype_details', 'uid'],
      CLUSTER       : ['name', 'archetype_details', 'uid'],
-     ELEMENT       : ['name', 'value', 'archetype_details', 'uid']
+     ELEMENT       : ['name', 'value', 'archetype_details', 'uid', 'null_flavour']
    ]
 
    /* classes that are not LOCATABLE, so don't have node_id in the path */
