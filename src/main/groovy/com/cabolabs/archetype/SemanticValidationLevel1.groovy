@@ -82,7 +82,7 @@ class SemanticValidationLevel1 {
      ITEM_TABLE    : ['name', 'archetype_details', 'uid'],
      ITEM_TREE     : ['name', 'archetype_details', 'uid'],
      CLUSTER       : ['name', 'archetype_details', 'uid'],
-     ELEMENT       : ['name', 'value', 'archetype_details', 'uid']
+     ELEMENT       : ['name', 'value', 'archetype_details', 'uid', 'null_flavour']
    ]
 
    /* classes that are not LOCATABLE, so don't have node_id in the path */
@@ -380,6 +380,7 @@ class SemanticValidationLevel1 {
             paths = getChildPathsAndRootArchetype(it, templatePath, archetypePath, archetypeId)
 
             //println paths.rootArchetype + paths.archetypePath
+            //println nodeRMType
 
             // nodes that are DV are avoided because their attributes don't have AIIs
             if (!avoid_procesing_attrs[nodeRMType].contains(it.name()))
