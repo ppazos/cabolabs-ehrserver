@@ -173,6 +173,9 @@ class UrlMappings {
          action = 'index'
          deleted = true
       }
+      "/operationalTemplate/show" {
+         id = params.uid
+      }
 
       "/organization/show/$uid"(
          method: 'GET',
