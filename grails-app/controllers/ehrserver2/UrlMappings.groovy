@@ -179,6 +179,16 @@ class UrlMappings {
          controller: 'organization',
          action: 'show'
       )
+      "/organization/edit/$uid"(
+         method: 'GET',
+         controller: 'organization',
+         action: 'edit'
+      )
+      "/organization/update/$uid"(
+         method: 'PUT',
+         controller: 'organization',
+         action: 'update'
+      )
 
       "/logs/show/$id" {
          controller = 'activityLog'
