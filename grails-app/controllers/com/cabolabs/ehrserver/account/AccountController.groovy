@@ -32,7 +32,7 @@ import grails.converters.*
 import com.cabolabs.ehrserver.sync.SyncMarshallersService
 import groovy.json.*
 
-@Transactional(readOnly = true)
+@Transactional
 class AccountController {
 
    def notificationService

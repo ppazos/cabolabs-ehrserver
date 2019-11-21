@@ -216,15 +216,17 @@ class OrganizationController {
    }
 
 
-   def edit()
+   def edit(String uid)
    {
-      [organizationInstance: params.organizationInstance]
+      def organizationInstance = Organization.findByUid(uid)
+      [organizationInstance:  organizationInstance]
    }
 
 
    @Transactional
    def update(String uid, Long version)
    {
+     println params
       def organizationInstance = Organization.findByUid(uid)
       organizationInstance.properties = params
       organizationInstance.validate()

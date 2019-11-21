@@ -27,7 +27,7 @@ import grails.util.Holders
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
-@Transactional(readOnly = true)
+@Transactional
 class PlanController {
 
    def configurationService
@@ -42,11 +42,11 @@ class PlanController {
    }
 
    def show(Plan planInstance) {
-      respond planInstance
+      render view:'show', model: [planInstance:planInstance]
    }
 
    def create() {
-      respond new Plan(params)
+      render view:'create', model: [planInstance:new Plan(params)]
    }
 
    @Transactional
@@ -73,7 +73,7 @@ class PlanController {
    }
 
    def edit(Plan planInstance) {
-      respond planInstance
+      render view:'edit', model:[planInstance:planInstance]
    }
 
    @Transactional
