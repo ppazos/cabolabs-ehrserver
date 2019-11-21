@@ -124,7 +124,7 @@
               <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td>
-                    <g:link action="show" params="[uid:templateInstance.uid]" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                    <g:link action="show" id="${templateInstance.uid}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
                   </td>
                   <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
                   <td>${fieldValue(bean: templateInstance, field: "language")}</td>

@@ -20,7 +20,6 @@ class UrlMappings {
          action: 'auth'
       )
 
-
       // REST TEMPLATE
 
       "/rest/v1/templates"(
@@ -31,7 +30,6 @@ class UrlMappings {
          controller: 'rest',
          action: 'getTemplate'
       )
-
 
       // REST EHR
 
@@ -106,7 +104,6 @@ class UrlMappings {
          action: 'userRegister'
       )
 
-
       // REST QUERY
 
       // execute given query (not stored)
@@ -146,7 +143,6 @@ class UrlMappings {
          action: 'getMatchingEhrs'
       )
 
-
       "/rest/**"(
          controller: 'rest',
          action: 'notFound'
@@ -173,8 +169,10 @@ class UrlMappings {
          action = 'index'
          deleted = true
       }
-      "/operationalTemplate/show" {
-         id = params.uid
+      "/operationalTemplate/show/$uid" {
+         controller = 'operationalTemplate'
+         action = 'show'
+         id = uid
       }
 
       "/organization/show/$uid"(
