@@ -17,26 +17,26 @@
     <asset:javascript src="xml_utils.js" />
     <script type="text/javascript">
     $(document).ready(function() { // same code as versionedComposition show, TODO: refactor
-    
+
       $('.showCompo').on('click', function(e) {
-        
+
         e.preventDefault();
-          
+
         iframe = $('iframe', '#html_modal');
         iframe[0].src = this.href;
-          
+
         $('#html_modal').modal();
       });
-      
+
       $('#html_modal').on('hidden.bs.modal', function (event) {
         iframe = $('iframe', '#html_modal');
         iframe[0].src = '';
       });
-      
+
       $('.compoXml').on('click', function(e) {
-        
+
         e.preventDefault();
-        
+
         $.ajax({
           url: this.href,
           dataType: 'xml',
@@ -46,13 +46,13 @@
             $('#xml').addClass('xml');
             $('#xml').text(formatXml( xmlToString(xml) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-            
+
             $('#xml_modal').modal();
           }
         });
-        
+
       });
-      
+
       $('#xml_modal').on('hidden.bs.modal', function (event) {
         $('#xml').text('');
       });
@@ -67,11 +67,11 @@
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
-      
+
        <g:if test="${flash.message}">
          <div class="alert alert-info" role="alert">${flash.message}</div>
        </g:if>
-         
+
         <table class="table">
           <tbody>
             <tr>
@@ -84,9 +84,9 @@
             </tr>
           </tbody>
         </table>
-         
+
         <h2><g:message code="contribution.audit.title" /></h2>
-        
+
         <table class="table">
           <tbody>
             <tr>
@@ -103,9 +103,9 @@
             </tr>
           </tbody>
         </table>
-        
+
        <h2><g:message code="contribution.versions.title" /></h2>
-       
+
         <table class="table">
           <tbody>
             <tr>
@@ -127,14 +127,14 @@
                  <th></th>
                </tr>
                <g:each in="${contributionInstance.versions}" var="version">
-                 <g:render template="../version/versionRow" model="[version:version]"/>
+                 <g:render template="/version/versionRow" model="[version:version]"/>
                </g:each>
              </table>
            </div>
         </g:if>
       </div>
     </div>
-    
+
     <div class="modal fade" id="xml_modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -144,7 +144,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">

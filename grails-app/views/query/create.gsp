@@ -620,10 +620,10 @@
                contentType : 'application/json',
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
-             .done(function( data ) {
+             .done(function( data ) { // redirect to show
                //console.log(data);
                //alert(JSON.stringify(data));
-               location.href = '${createLink("action": "show")}?uid='+ data.uid;
+               location.href = '${createLink("action": "show")}/'+ data.uid;
              });
            },
            update_query: function() {
@@ -633,9 +633,9 @@
                contentType : 'application/json',
                data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
              })
-             .done(function( data ) {
+             .done(function( data ) { // redirect to show
                //console.log(data);
-               location.href = '${createLink("action": "show")}?uid='+ data.uid;
+               location.href = '${createLink("action": "show")}/'+ data.uid;
              })
              .fail(function(resp,status,status_msg) {
 

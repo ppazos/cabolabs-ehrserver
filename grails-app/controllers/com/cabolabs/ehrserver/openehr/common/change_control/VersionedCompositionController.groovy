@@ -116,13 +116,13 @@ class VersionedCompositionController {
          orgs = us.organizations // for the org filter
       }
 
-      respond list, model:[versionedCompositionInstanceCount: list.totalCount, organizations: orgs]
+      [versionedCompositionInstanceList: list, versionedCompositionInstanceCount: list.totalCount, organizations: orgs]
    }
 
    def show(String uid)
    {
       def versionedCompositionInstance = VersionedComposition.findByUid(uid)
-      respond versionedCompositionInstance
+      [versionedCompositionInstance: versionedCompositionInstance]
    }
 
    protected void notFound() {

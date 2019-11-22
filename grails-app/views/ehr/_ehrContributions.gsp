@@ -30,7 +30,7 @@ y muestra todas las compositions de la contrib:
 	      <th><g:message code="contribution.attr.timeCommitted" /></th>
 	      <th><g:message code="contribution.attr.committer" /></th>
 	    </tr>
-	    <g:render template="../contribution/contributionRow" model="[contribution:contribution]"/>
+	    <g:render template="/contribution/contributionRow" model="[contribution:contribution]"/>
 	  </table>
   </div>
 </g:each>

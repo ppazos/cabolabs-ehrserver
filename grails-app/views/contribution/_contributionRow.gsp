@@ -15,7 +15,7 @@
         <th></th>
       </tr>
       <g:each in="${contribution.versions}" var="version">
-        <g:render template="../version/versionRow" model="[version:version]"/>
+        <g:render template="/version/versionRow" model="[version:version]"/>
       </g:each>
     </table>
   </td>

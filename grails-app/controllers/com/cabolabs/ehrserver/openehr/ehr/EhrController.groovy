@@ -249,7 +249,8 @@ class EhrController {
     */
    def showCompositionUI(String uid)
    {
-      return [compositionHtml: compositionService.compositionAsHtml(uid)]
+      //return [compositionHtml: compositionService.compositionAsHtml(uid)]
+      render(text: compositionService.compositionAsHtml(uid), contentType: "text/html", encoding:"UTF-8")
    }
 
 

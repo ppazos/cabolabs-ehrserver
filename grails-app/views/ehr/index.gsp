@@ -79,7 +79,7 @@
             <tbody>
               <g:each in="${list}" status="i" var="ehrInstance">
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                  <td><g:link action="show" params="[uid:ehrInstance.uid]">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
+                  <td><g:link action="show" id="${ehrInstance.uid}">${fieldValue(bean: ehrInstance, field: "uid")}</g:link></td>
                   <td>${fieldValue(bean: ehrInstance, field: "dateCreated")}</td>
                   <td>${ehrInstance.subject.value}</td>
                   <td><g:link controller="organization" action="show" params="[uid:ehrInstance.organizationUid]">${fieldValue(bean: ehrInstance, field: "organizationUid")}</g:link></td>

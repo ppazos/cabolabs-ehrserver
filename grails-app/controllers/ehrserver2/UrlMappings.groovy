@@ -191,6 +191,44 @@ class UrlMappings {
          action: 'update'
       )
 
+      "/ehr/show/$uid"(
+         method: 'GET',
+         controller: 'ehr',
+         action: 'show'
+      )
+      "/ehr/showComposition/$uid"(
+         method: 'GET',
+         controller: 'ehr',
+         action: 'showComposition'
+      )
+      "/ehr/showCompositionUI/$uid"(
+         method: 'GET',
+         controller: 'ehr',
+         action: 'showCompositionUI'
+      )
+
+      "/versionedComposition/show/$uid"(
+         method: 'GET',
+         controller: 'versionedComposition',
+         action: 'show'
+      )
+
+      "/query/show/$uid"(
+         method: 'GET',
+         controller: 'query',
+         action: 'show'
+      )
+      "/query/edit/$uid"(
+         method: 'GET',
+         controller: 'query',
+         action: 'edit'
+      )
+      "/query/export/$uid"(
+         method: 'GET',
+         controller: 'query',
+         action: 'export'
+      )
+
       "/logs/show/$id" {
          controller = 'activityLog'
          action = 'show'

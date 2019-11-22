@@ -394,9 +394,9 @@ class QueryController {
       render query as JSON
    }
 
-   def edit ()
+   def edit (String uid)
    {
-      def queryInstance = params.query // set on filter
+      def queryInstance = Query.findByUid(uid)
 
       if (!queryInstance)
       {

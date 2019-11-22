@@ -160,18 +160,18 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <g:if test="${!queryInstance.isPublic || queryInstance.organizationUid == session.organization.uid}">
-            <g:link action="edit" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
+            <g:link action="edit" id="${queryInstance?.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.edit" /></button></g:link>
           </g:if>
           <g:else>
             <g:message code="query.show.cantEditQueryHelp" args="[Organization.findByUid(queryInstance.organizationUid).name]" />
           </g:else>
 
           <g:if test="${!queryInstance.isPublic}">
-            <g:link controller="resource" action="shareQuery" params="[uid:queryInstance?.uid]"><button type="button" class="btn btn-default btn-md"><span class="fa fa-share fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>
+            <g:link controller="resource" action="shareQuery" id="${queryInstance?.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-share fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.share" /></button></g:link>
           </g:if>
 
-          <g:form method="DELETE" action="delete" style="display:inline">
-            <input type="hidden" name="uid" value="${queryInstance.uid}" />
+          <g:form method="DELETE" action="delete" id="${queryInstance.uid}" style="display:inline">
+            <!-- <input type="hidden" name="uid" value="${queryInstance.uid}" /> -->
             <button class="btn btn-default btn-md" name="delete" onclick="return confirm('${message(code:'query.execute.action.deleteConfirmation')}');"><span class="fa fa-trash-o fa-fw" aria-hidden="true"></span> <g:message code="query.execute.action.delete" /></button>
           </g:form>
         </div>
@@ -180,8 +180,8 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
 
     <script type="text/javascript">
       $.ajax({
-         url: '${createLink(controller:"query", action:"export")}',
-         data: {uid: '${queryInstance?.uid}', format: 'json'},
+         url: '${createLink(controller:"query", action:"export", id:"${queryInstance?.uid}")}',
+         data: {format: 'json'},
          success: function(data, textStatus) {
             //console.log(data);
             $('#json').addClass('json');
@@ -194,8 +194,8 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
          }
       });
       $.ajax({
-         url: '${createLink(controller:"query", action:"export")}',
-         data: {uid: '${queryInstance?.uid}', format: 'xml'},
+         url: '${createLink(controller:"query", action:"export", id:"${queryInstance?.uid}")}',
+         data: {format: 'xml'},
          success: function(data, textStatus) {
             //console.log(data);
             $('#xml').addClass('xml');

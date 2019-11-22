@@ -17,26 +17,26 @@
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
-    
+
       $('.showCompo').on('click', function(e) {
-        
+
         e.preventDefault();
-          
+
         iframe = $('iframe', '#html_modal');
         iframe[0].src = this.href;
-          
+
         $('#html_modal').modal();
       });
-      
+
       $('#html_modal').on('hidden.bs.modal', function (event) {
         iframe = $('iframe', '#html_modal');
         iframe[0].src = '';
       });
-      
+
       $('.compoXml').on('click', function(e) {
-        
+
         e.preventDefault();
-        
+
         $.ajax({
           url: this.href,
           dataType: 'xml',
@@ -46,13 +46,13 @@
             $('#xml').addClass('xml');
             $('#xml').text(formatXml( xmlToString(xml) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-            
+
             $('#xml_modal').modal();
           }
         });
-        
+
       });
-      
+
       $('#xml_modal').on('hidden.bs.modal', function (event) {
         $('#xml').text('');
       });
@@ -104,13 +104,13 @@
             </tr>
             <g:each in="${versionedCompositionInstance.allVersions}" var="version">
               <%-- ${version.uid}<br/> --%><!-- TODO: version row template + diff -->
-              <g:render template="../version/versionRow" model="[version:version]"/>
+              <g:render template="/version/versionRow" model="[version:version]"/>
             </g:each>
           </table>
         </div>
       </div>
     </div>
-    
+
     <div class="modal fade" id="xml_modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -132,7 +132,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -142,6 +142,6 @@
         </div>
       </div>
     </div>
-   
+
   </body>
 </html>
