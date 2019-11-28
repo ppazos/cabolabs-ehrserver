@@ -568,7 +568,7 @@ class QueryController {
       // should be in the current org, even if the user is admin. This avoids an error
       // when the query has a group and the group organization is not the same as the
       // ehr organization, that is a check we do in the Query.getInstance
-      params['ehrs'] = Ehr.findAllByOrganizationUid(session.organization.uid)
+      params['ehrs'] = Ehr.findAllByOrganizationUid(session.organization.uid, [max:10])
 
       // ==================================================================
       // asegura que archetypeId, path, value y operand son siempre listas,
