@@ -43,6 +43,7 @@
 /build
 *.class
 .gradle
+/.gradle/*
 
 # other
 *.iws
