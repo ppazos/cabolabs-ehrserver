@@ -93,7 +93,7 @@ class VersionFSRepoService {
       def c = Version.createCriteria()
       def orgversions = c.list () {
          projections {
-            property('fileUid') // we want just the file uid to get the files
+            property('fileLocation') // we want just the file location to get the file
          }
          contribution {
             eq('organizationUid', orguid)
@@ -102,8 +102,9 @@ class VersionFSRepoService {
 
       // if we add the size to the version on the DB we don't need to process the file system
       def v, size = 0
-      orgversions.each { fileUid ->
-         v = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + fileUid +'.xml')
+      orgversions.each { fileLocation ->
+         //v = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + fileUid +'.xml')
+         v = new File(fileLocation)
 
          if (filter.call(v))
          {
@@ -150,7 +151,7 @@ class VersionFSRepoService {
     * Note: the exception is declared to avoid groovy wrap it in an UndeclaredThrowableException
     * ref http://stackoverflow.com/questions/19987720/exception-thrown-from-service-not-being-caught-in-controller
     */
-   def getExistingVersionFile(String orguid, Version version) throws FileNotFoundException, VersionRepoNotAccessibleException
+   def getExistingVersionContents(String orguid, Version version)
    {
       if (!repoExists() || !canWriteRepo())
       {
@@ -162,12 +163,14 @@ class VersionFSRepoService {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo.withTrailSeparator() + orguid}")
       }
 
-      def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
+      //def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
+      def f = new File(version.fileLocation)
       if (!f.exists())
       {
          throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
       }
-      return f
+      
+      return f.text
    }
 
    /**
@@ -175,7 +178,7 @@ class VersionFSRepoService {
     * @param version_uid
     * @return
     */
-   def getNonExistingVersionFile(String orguid, Version version) throws FileAlreadyExistsException, VersionRepoNotAccessibleException
+   def createNewVersionFile(String orguid, Version version, String contents)
    {
       if (!repoExists() || !canWriteRepo())
       {
@@ -190,11 +193,22 @@ class VersionFSRepoService {
          new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
       }
 
-      def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
+      def f = new File(newVersionFileLocation(orguid))
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")
       }
-      return f
+
+      // FIXME: check if the XML has the namespace declarations of the root node from the commit
+      // FIXME: this is XML only, if we want to store the JSON versions we need to check
+      //        the content type of the commit also, this will be required for implementing
+      //        the openEHR API where XML to JSON transformations are not direct
+      file << groovy.xml.XmlUtil.serialize( contents )
+   }
+
+   def newVersionFileLocation(String orguid)
+   {
+      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
+      return config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.xml'
    }
 }

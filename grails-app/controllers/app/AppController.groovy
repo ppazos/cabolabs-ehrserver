@@ -36,6 +36,12 @@ import com.cabolabs.security.UserRole
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.reporting.ActivityLog
 
+// test S3
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+
 class AppController {
 
    def springSecurityService
@@ -45,6 +51,58 @@ class AppController {
    // shows main dashboard
    def index()
    {
+      // test S3
+      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                               "${grailsApplication.config.aws.accessKey}",
+                                               "${grailsApplication.config.aws.secretKey}")
+
+      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+         .withRegion("${grailsApplication.config.aws.region}")
+         .build()
+
+      // List buckets
+      // def buckets = s3.listBuckets()
+      // println "Your Amazon S3 buckets are:"
+      // buckets.each { b ->
+      //    println "* " + b.getName()
+      // }
+
+      // List objects
+      def result = s3.listObjectsV2(grailsApplication.config.aws.bucket)
+      def objects = result.getObjectSummaries()
+      objects.each { os ->
+         println "* " + os.getKey() +" "+ os.getSize()
+      }
+
+      if (s3.doesObjectExist(grailsApplication.config.aws.bucket, 'versions/'))
+         println "versions exist"
+      else
+         println "versions doesnt exist"
+
+
+      // test create object
+      def putObjectResult = s3.putObject(
+         grailsApplication.config.aws.bucket,
+         grailsApplication.config.aws.folders.version_repo + "test/" + '3453435434.xml',
+         'test content'
+      )
+
+      if (s3.doesObjectExist(
+            grailsApplication.config.aws.bucket,
+            grailsApplication.config.aws.folders.version_repo + "test/" + '3453435434.xml'))
+         println "objecgt exists"
+      else
+         println "object doesnt exist"
+
+
+
+      // String fileName = 'commits' //Save this for future reference.
+      // File file = {{FILE}}
+      // s3.putObject(bucketName, fileName, file)
+
+      // /test S3
+
       // Count EHRs
       def count_ehrs, count_contributions, count_queries, count_users
       def version_repo_sizes = [:] // org => versio repo size

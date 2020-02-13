@@ -333,18 +333,19 @@ class OperationalTemplateIndexer {
       opt.isActive = true
       opt.save(failOnError: true)
 
-      def opt_file = OPTService.getOPTFile(opt.fileUid, opt.organizationUid)
+      def opt_xml = OPTService.getOPTContents(opt)
       def org = Organization.findByUid(opt.organizationUid)
 
-      def template_xml = FileUtils.removeBOM(opt_file.getBytes())
+      def clean_opt_xml = FileUtils.removeBOM(opt_xml.getBytes())
       def slurper = new XmlSlurper(false, false)
-      def template_xml_parsed = slurper.parseText(template_xml)
+      def template_xml_parsed = slurper.parseText(clean_opt_xml)
 
       this.templateIndex = opt
       index(template_xml_parsed, null, org)
       this.templateIndex = null
    }
 
+   // reindex existing files in the OPT repo of the organization
    def indexAll(Organization org)
    {
       def path = config.opt_repo
@@ -427,7 +428,7 @@ class OperationalTemplateIndexer {
             organizationUid: org.uid
          )
 
-         if (file_uid) this.templateIndex.fileUid = file_uid
+         if (file_uid) this.templateIndex.fileLocation = OPTService.newOPTFileLocation(org.uid, file_uid)
 
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors

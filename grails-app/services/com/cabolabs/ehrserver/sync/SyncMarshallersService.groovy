@@ -579,9 +579,7 @@ class SyncMarshallersService {
 
    def toJSON(OperationalTemplateIndex o, JsonBuilder jb)
    {
-      def file = new File(config.opt_repo.withTrailSeparator() +
-                          o.organizationUid.withTrailSeparator() +
-                          o.fileUid +".opt")
+      def file = new File(opt.fileLocation)
 
       /* will send the OPT as is in XML
       def json = jsonService.xmlToJson(file.text)

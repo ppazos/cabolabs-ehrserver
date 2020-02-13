@@ -76,6 +76,7 @@ class RestController {
    def apiResponsesService
    def queryService
    def configurationService
+   def OPTService
 
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -1204,7 +1205,6 @@ class RestController {
          def version
          String buff
          String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-         def vf
          //if (!ehrUid) // group by ehrUid
          //{
             res.each { _ehrUid, compoIndexes ->
@@ -1224,8 +1224,7 @@ class RestController {
 
                   try
                   {
-                     vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                     buff = vf.getText()
+                     buff = versionFSRepoService.getExistingVersionContents(organizationUid, version)
                   }
                   catch (VersionRepoNotAccessibleException e)
                   {
@@ -1267,8 +1266,7 @@ class RestController {
 
                try
                {
-                  vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                  buff = vf.getText()
+                  buff = versionFSRepoService.getExistingVersionContents(organizationUid, version)
                }
                catch (VersionRepoNotAccessibleException e)
                {
@@ -1667,7 +1665,6 @@ class RestController {
       def version
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-      def vf
 
       result.each { ehrUid, compoIndexes ->
 
@@ -1686,8 +1683,7 @@ class RestController {
 
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-               buff = vf.getText()
+               buff = versionFSRepoService.getExistingVersionContents(organizationUid, version)
             }
             catch (VersionRepoNotAccessibleException e)
             {
@@ -2064,9 +2060,10 @@ class RestController {
          return
       }
 
-      def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
-      File opt_file = new File( src )
-      def opt_out = opt_file.getText()
+      // def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
+      // File opt_file = new File( src )
+      // def opt_out = opt_file.getText()
+      def opt_out = OPTService.getOPTContents(opt)
       if (format == 'json')
       {
          opt_out = jsonService.xmlToJson(opt_out)

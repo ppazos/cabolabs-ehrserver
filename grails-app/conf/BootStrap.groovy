@@ -307,7 +307,7 @@ class BootStrap {
 
             def version_files = []
             contribution.versions.each { v ->
-               version_files << versionFSRepoService.getExistingVersionFile(contribution.organizationUid, v)
+               version_contents << versionFSRepoService.getExistingVersionContents(contribution.organizationUid, v)
             }
 
             xml.build {
@@ -318,9 +318,9 @@ class BootStrap {
               audit(contribution.audit) // AuditDetails
 
                xml.startNode 'versions'
-                  version_files.each { vf ->
+                  version_files.each { vc ->
                      //xml.convertAnother vf.text
-                     xml.chars vf.text
+                     xml.chars vc
                   }
                xml.end()
             }

@@ -455,8 +455,8 @@ class XmlService {
          {
             //println "XML version.uid "+ versionXML.uid.value // null because XMLSlurper doesn't evalaute the XML after adding the uid to the XML
 
-            version = contribution.versions.find { it.uid == version_uid}
-            file = versionFSRepoService.getNonExistingVersionFile( ehr.organizationUid, version )
+            version = contribution.versions.find { it.uid == version_uid }
+            file = versionFSRepoService.createNewVersionFile(ehr.organizationUid, version, versionXML)
          }
          catch (VersionRepoNotAccessibleException e)
          {
@@ -466,9 +466,6 @@ class XmlService {
          {
             throw new RuntimeException("Unable to save composition from commit, file ${path} already exists. Maybe you committed the same version twice?", e)
          }
-
-         // FIXME: check if the XML has the namespace declarations of the root node from the commit
-         file << groovy.xml.XmlUtil.serialize( versionXML )
       }
    }
 

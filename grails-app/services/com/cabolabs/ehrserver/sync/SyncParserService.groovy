@@ -453,14 +453,12 @@ class SyncParserService {
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
          setId: j.setId,
          versionNumber: j.versionNumber,
-         lastVersion: j.lastVersion
+         lastVersion: j.lastVersion,
+         fileLocation: j.fileLocation
       )
 
       def xml = j.opt
-
-      def opt_repo_org_path = config.opt_repo.withTrailSeparator() + j.organizationUid.withTrailSeparator()
-      def destination = opt_repo_org_path + templateIndex.fileUid + '.opt'
-      File fileDest = new File( destination )
+      File fileDest = new File(j.fileLocation)
       fileDest << xml
 
       // Generates OPT and archetype item indexes just for the uploaded OPT

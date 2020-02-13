@@ -51,7 +51,7 @@ class DataIndexerService {
    {
       // created indexes will be loaded here
       def indexes = []
-      def version, versionFile, versionXml, parsedVersion, compoParsed, org
+      def version, versionXml, parsedVersion, compoParsed, org
 
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
@@ -77,7 +77,7 @@ class DataIndexerService {
 
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
+         versionXml = versionFSRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
       }
       catch (VersionRepoNotAccessibleException e)
       {
@@ -90,7 +90,6 @@ class DataIndexerService {
          return // Continue with next compoIdx
       }
 
-      versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
 
       //       error from error handler?

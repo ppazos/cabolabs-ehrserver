@@ -42,6 +42,7 @@ class OperationalTemplateController {
    def xmlValidationService
    def springSecurityService
    def configurationService
+   def OPTService
 
    def syncMarshallersService
 
@@ -201,9 +202,6 @@ class OperationalTemplateController {
          }
          // /COMPO.content
 
-
-         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
-
          // OPT VERSIONING
          def setId, versionNumber
 
@@ -258,8 +256,7 @@ class OperationalTemplateController {
                versionNumber = old_version.versionNumber + 1
 
                // move old version outside the OPT repo
-               def old_version_file = new File( opt_repo_org_path + old_version.fileUid + '.opt' )
-               old_version_file.renameTo( new File( opt_repo_org_path + 'older_versions'.withTrailSeparator() + old_version_file.name ) )
+               OPTService.moveOldVersion(old_version)
 
                // create new version
                // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
@@ -277,8 +274,8 @@ class OperationalTemplateController {
          def opt = indexer.createOptIndex(template, session.organization)
 
          // Prepare file
-         def destination = opt_repo_org_path + opt.fileUid + '.opt'
-         File fileDest = new File( destination )
+         def destination = OPTService.newOPTFileLocation(session.organization.uid)
+         File fileDest = new File(destination)
          fileDest << xml
 
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
@@ -331,12 +328,12 @@ class OperationalTemplateController {
          return
       }
 
-      def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
+      def opt_xml = OPTService.getOPTContents(opt)
 
       // get all versions of the OPT, including last (current opt uid)
       def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])
 
-      [opt_xml: opt_file.getText(), opt: opt, versions: versions]
+      [opt_xml: opt_xml, opt: opt, versions: versions]
    }
 
    def items(String uid, String sort, String order)
@@ -480,6 +477,7 @@ class OperationalTemplateController {
     */
    def empty_trash()
    {
+      /*
       def ti = new OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
       opts.each { opt ->
@@ -492,10 +490,6 @@ class OperationalTemplateController {
 
          // deletes OPT and references from DB
          ti.deleteOptReferences(opt, true)
-         /*
-         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-         ti.indexAll(session.organization)
-         */
 
          // load opt in manager cache
          // TODO: just unload the deleted OPT
@@ -503,6 +497,8 @@ class OperationalTemplateController {
          optMan.unloadAll(session.organization.uid)
          optMan.loadAll(session.organization.uid, true)
       }
+      */
+      OPTService.emptyTrash(session.organization)
 
 
       flash.message = message(code:"opt.trash.emptied")

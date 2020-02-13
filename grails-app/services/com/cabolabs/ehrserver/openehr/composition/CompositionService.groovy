@@ -40,44 +40,42 @@ class CompositionService {
    def config = Holders.config.app
    def jsonService
    def versionFSRepoService
-   
+
    def compositionAsXml(String uid)
    {
       if (!uid)
       {
          throw new Exception("uid is mandatory")
       }
-      
+
       def compoIndex = CompositionIndex.findByUid(uid)
-      
+
       if (!compoIndex)
       {
          throw new Exception("Composition doesn't exists")
       }
-      
+
       def version = compoIndex.getParent()
-      
-      // Throws FileNotFoundException
-      def versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
-      
-      def xml = versionFile.getText()
-      
+
+      // TODO: Throws FileNotFoundException
+      def xml = versionFSRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
+
       return xml
    }
-   
+
    def compositionAsJson(String uid)
    {
       def xml = compositionAsXml(uid)
-      
+
       def json = jsonService.xmlToJson(xml)
-      
+
       return json
    }
-   
+
    def compositionAsHtml(String uid)
    {
       def xml = compositionAsXml(uid)
-      
+
       // Transform to HTML
       def xslt = new File(config.xslt)
       def xslt_content
@@ -89,18 +87,18 @@ class CompositionService {
       {
          xslt_content = xslt.text
       }
-      
+
       // Create transformer
       def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new StringReader(xslt_content)))
-      
+
       def html = new StringWriter()
-      
+
       // Perform transformation
       transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(html))
-      
+
       return html.toString()
    }
-   
+
    /*
    private void toHtml(GPathResult n, MarkupBuilder builder, String classPath)
    {
@@ -111,7 +109,7 @@ class CompositionService {
       // TODO: class por tipo del RM.
       //
       // necesito consultar el arquetipo para poder hacerlo o puedo consultar los ArchetypeIndexItem (temporal)
-      
+
       if (n.children().isEmpty())
       {
          builder.div( class:'single_value', n.text() )
