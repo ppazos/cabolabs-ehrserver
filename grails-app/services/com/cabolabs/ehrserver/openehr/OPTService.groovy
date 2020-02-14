@@ -11,8 +11,6 @@ import com.cabolabs.archetype.OperationalTemplateIndexer
 @Transactional
 class OPTService {
 
-   def config = Holders.config.app
-
    // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
 
    static String getOPTContents(OperationalTemplateIndex opt)
@@ -20,16 +18,16 @@ class OPTService {
       return new File(opt.fileLocation).text
    }
 
-   def newOPTFileLocation(String orguid)
+   static String newOPTFileLocation(String orguid)
    {
       // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
-      return config.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
+      return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
    }
 
-   def newOPTFileLocation(String orguid, String givenUid)
+   static String newOPTFileLocation(String orguid, String givenUid)
    {
       // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
-      return config.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + givenUid +'.opt'
+      return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + givenUid +'.opt'
    }
 
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
@@ -65,7 +63,7 @@ class OPTService {
     */
    def getRepoSizeInBytesOrg(String orguid)
    {
-      def r = new File(config.opt_repo.withTrailSeparator() + orguid)
+      def r = new File(Holders.config.app.opt_repo.withTrailSeparator() + orguid)
       return r.directorySize()
    }
 
