@@ -1301,10 +1301,10 @@ gr_account.save(failOnError:true, flush:true)
                ),
                new Plan(
                  name:                            "Testing",
-                 max_organizations:               5,
-                 max_opts_per_organization:       20,
-                 max_api_tokens_per_organization: 3,
-                 repo_total_size_in_kb:           200000, // low for testing! (1MB in kB = 1000 kB)
+                 max_organizations:               20,
+                 max_opts_per_organization:       50,
+                 max_api_tokens_per_organization: 10,
+                 repo_total_size_in_kb:           2000000, // low for testing! (1MB in kB = 1000 kB)
                  period:                          Plan.periods.MONTHLY
                )
             ]

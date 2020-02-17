@@ -18,6 +18,18 @@ class OPTService {
       return new File(opt.fileLocation).text
    }
 
+   static boolean storeOPTContents(String fileLocation, String fileContents)
+   {
+      // creates parent subfolders if dont exist
+      def containerFolder = new File(new File(fileLocation).getParent())
+      containerFolder.mkdirs()
+
+      File fileDest = new File(fileLocation)
+      fileDest << fileContents
+
+      return true // TODO check errors
+   }
+
    static String newOPTFileLocation(String orguid)
    {
       // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
@@ -64,6 +76,10 @@ class OPTService {
    def getRepoSizeInBytesOrg(String orguid)
    {
       def r = new File(Holders.config.app.opt_repo.withTrailSeparator() + orguid)
+
+      // no OPTs where uploaded yet, the folders are created with the first upload
+      if (!r.exists()) return 0
+
       return r.directorySize()
    }
 

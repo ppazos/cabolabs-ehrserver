@@ -271,12 +271,7 @@ class OperationalTemplateController {
          def indexer = new OperationalTemplateIndexer()
 
          // saves OperationalTemplateIndex to the DB
-         def opt = indexer.createOptIndex(template, session.organization)
-
-         // Prepare file
-         def destination = OPTService.newOPTFileLocation(session.organization.uid)
-         File fileDest = new File(destination)
-         fileDest << xml
+         def opt = indexer.createOptIndex(template, session.organization, xml)
 
          // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
          // If the file exists, it will be deleted first

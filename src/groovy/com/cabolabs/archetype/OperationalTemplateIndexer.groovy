@@ -187,7 +187,7 @@ class OperationalTemplateIndexer {
     * @param org organization to associated the Opt with
     * @return
     */
-   def createOptIndex(GPathResult template, Organization org)
+   def createOptIndex(GPathResult template, Organization org, String fileContents)
    {
       def templateId = template.template_id.value.text()
       def concept = template.concept.text()
@@ -203,9 +203,15 @@ class OperationalTemplateIndexer {
          externalUid: uid,
          archetypeId: archetypeId,
          archetypeConcept: archetypeConcept,
-         organizationUid: org.uid
+         organizationUid: org.uid,
+         fileLocation: OPTService.newOPTFileLocation(org.uid)
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
+
+      // Write OPT file
+      //File fileDest = new File(templateIndex.fileLocation)
+      //fileDest << fileContents
+      OPTService.storeOPTContents(templateIndex.fileLocation, fileContents)
 
       return templateIndex
    }
@@ -225,8 +231,16 @@ class OperationalTemplateIndexer {
       def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
       def base_repo = new File( base_path )
 
-      if (!base_repo.exists()) throw new Exception("No existe "+ base_path)
-      if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
+      if (!base_repo.exists())
+      {
+         println base_path + " doesn't exists, base OPTs not loaded"
+         return false
+      }
+      if (!base_repo.canRead())
+      {
+         println base_path + " can't de read, base OPTs not loaded"
+         return false
+      }
       if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
 
       def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
@@ -254,7 +268,7 @@ class OperationalTemplateIndexer {
                return // avoid copying not valid OPT file
             }
 
-            dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
+            dest = new File(OPTService.newOPTFileLocation(org.uid))
             //java.nio.file.Files.copy(file.toPath(), dest.toPath())
             dest <<  opt_contents
          }
@@ -341,6 +355,9 @@ class OperationalTemplateIndexer {
       def template_xml_parsed = slurper.parseText(clean_opt_xml)
 
       this.templateIndex = opt
+
+      // creates the references to the internal template and archetype items,
+      // I guess those were deleted when the OPT was deactivated...
       index(template_xml_parsed, null, org)
       this.templateIndex = null
    }
@@ -429,6 +446,7 @@ class OperationalTemplateIndexer {
          )
 
          if (file_uid) this.templateIndex.fileLocation = OPTService.newOPTFileLocation(org.uid, file_uid)
+         else this.templateIndex.fileLocation = OPTService.newOPTFileLocation(org.uid)
 
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
