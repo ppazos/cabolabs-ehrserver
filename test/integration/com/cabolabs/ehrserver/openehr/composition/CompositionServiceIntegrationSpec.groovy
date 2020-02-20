@@ -642,7 +642,7 @@ class CompositionServiceIntegrationSpec extends IntegrationSpec {
       contribution.save(failOnError:true)
 
       // save version file
-      def file = versionFSRepoService.createNewVersionFile(ehr.organizationUid, version, xml)
+      def file = versionFSRepoService.storeVersionContents(ehr.organizationUid, version, xml)
    }
 
    def cleanup()

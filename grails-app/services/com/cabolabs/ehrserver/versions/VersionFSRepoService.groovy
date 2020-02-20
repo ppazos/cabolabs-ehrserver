@@ -28,6 +28,7 @@ import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 import com.cabolabs.ehrserver.account.Account
+import groovy.util.slurpersupport.GPathResult
 
 /**
  * Operations related to the file system based version repo.
@@ -169,7 +170,7 @@ class VersionFSRepoService {
       {
          throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
       }
-      
+
       return f.text
    }
 
@@ -178,13 +179,21 @@ class VersionFSRepoService {
     * @param version_uid
     * @return
     */
-   def createNewVersionFile(String orguid, Version version, String contents)
+   def storeVersionContents(String orguid, Version version, GPathResult contents)
    {
+      def fileLocation = newVersionFileLocation(orguid)
+
+      // creates all parent subfolder if dont exist
+      def containerFolder = new File(new File(fileLocation).getParent())
+      containerFolder.mkdirs()
+
+      // double check just in case
       if (!repoExists() || !canWriteRepo())
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
 
+      /*
       // TODO: The orguid folder is created just the first time,
       // it might be better to create it whe nthe organization is created.
       if (!repoExistsOrg(orguid))
@@ -192,8 +201,12 @@ class VersionFSRepoService {
          // Creates the orguid subfolder
          new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
       }
+      */
 
-      def f = new File(newVersionFileLocation(orguid))
+      // the file location is  set on the Version
+      version.fileLocation = fileLocation
+
+      def f = new File(fileLocation)
       if (f.exists())
       {
          throw new FileAlreadyExistsException("File ${f.absolutePath} already exists")
@@ -203,7 +216,7 @@ class VersionFSRepoService {
       // FIXME: this is XML only, if we want to store the JSON versions we need to check
       //        the content type of the commit also, this will be required for implementing
       //        the openEHR API where XML to JSON transformations are not direct
-      file << groovy.xml.XmlUtil.serialize( contents )
+      f << groovy.xml.XmlUtil.serialize(contents)
    }
 
    def newVersionFileLocation(String orguid)

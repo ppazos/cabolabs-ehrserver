@@ -35,27 +35,32 @@ class CommitLoggerService {
    /*
     * Operations for the whole version repo.
     */
-   private boolean canWriteRepo()
-   {
-      return new File(config.commit_logs).canWrite()
-   }
-
-   private boolean repoExists()
-   {
-      return new File(config.commit_logs).exists()
-   }
+   // private boolean canWriteRepo()
+   // {
+   //    return new File(config.commit_logs).canWrite()
+   // }
+   //
+   // private boolean repoExists()
+   // {
+   //    return new File(config.commit_logs).exists()
+   // }
 
    /*
     * Operations for the version repo per organization.
     */
-   private boolean canWriteRepoOrg(String orguid)
-   {
-      return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
-   }
+   // private boolean canWriteRepoOrg(String orguid)
+   // {
+   //    return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
+   // }
 
-   private boolean repoExistsOrg(String orguid)
+   // private boolean repoExistsOrg(String orguid)
+   // {
+   //    return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+   // }
+
+   static String getCommitContents(CommitLog commit)
    {
-      return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+      return new File(commit.fileLocation).text
    }
 
    /**
@@ -128,56 +133,57 @@ class CommitLoggerService {
       println authUser
       */
 
+      // save the json or xml to the commit log
+      def ext = '.xml'
+      if (contentType == 'application/json') ext = '.json'
+
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created
 
       def commit = new CommitLog(
-         ehrUid: params.ehrUid,
-         locale: clientLocale,
-         params: params,
-         contentType: contentType,
-         contentLength: contentLength,
-         success: success,
-
-         username: authUser,
-
-         action: params.controller +':'+params.action,
-         objectClazz: 'Contribution',
-         objectUid: contributionUid, // can be null if !success
-
-         remoteAddr: request.remoteAddr,
-         clientIp:        request.getHeader("Client-IP"), // can be null
-         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
-         referer:         request.getHeader('referer'), // can be null
-         requestURL:      request.requestURL,
-         matchedURI:      request.forwardURI,
-         sessionId: session.id.toString()
+         ehrUid:         params.ehrUid,
+         locale:         clientLocale,
+         params:         params,
+         contentType:    contentType,
+         contentLength:  contentLength,
+         success:        success,
+         username:       authUser,
+         action:         params.controller +':'+params.action,
+         objectClazz:    'Contribution',
+         objectUid:      contributionUid, // can be null if !success
+         remoteAddr:     request.remoteAddr,
+         clientIp:       request.getHeader("Client-IP"), // can be null
+         xForwardedFor:  request.getHeader("X-Forwarded-For"), // can be null
+         referer:        request.getHeader('referer'), // can be null
+         requestURL:     request.requestURL,
+         matchedURI:     request.forwardURI,
+         sessionId:      session.id.toString()
       )
-
-      if (!commit.validate()) println commit.errors
-
-      commit.save(failOnError: true)
 
       if (logContent)
       {
          String orguid = request.securityStatelessMap.extradata.org_uid
 
-         // TODO: The orguid folder is created just the first time,
-         // it might be better to create it whe nthe organization is created.
-         if (!repoExistsOrg(orguid))
-         {
-            // Creates the orguid subfolder
-            new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
-         }
+         // saves the reference to the log file in the DB
+         commit.fileLocation = newCommitFileLocation(orguid, ext)
 
-         // save the json or xml to the commit log
-         def ext = '.xml'
-         if (contentType == 'application/json') ext = '.json'
+         // creates parent subfolders if dont exist
+         def containerFolder = new File(new File(commit.fileLocation).getParent())
+         containerFolder.mkdirs()
 
-         def commitLog = new File(config.commit_logs.withTrailSeparator() +
-                                  orguid.withTrailSeparator() +
-                                  commit.fileUid + ext)
+         def commitLog = new File(commit.fileLocation)
          commitLog << logContent
       }
+
+
+      // save log to DB
+      if (!commit.validate()) println commit.errors
+      commit.save(failOnError: true)
+   }
+
+   static String newCommitFileLocation(String orguid, String ext)
+   {
+      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
+      return Holders.config.app.commit_logs.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() + ext
    }
 }

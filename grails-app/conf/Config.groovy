@@ -323,3 +323,16 @@ grails {
      */
    }
 }
+
+// AWS S3 CONFIG
+aws {
+   accessKey = System.getenv('EHRSERVER_S3_ACCESS')
+   secretKey = System.getenv('EHRSERVER_S3_SECRET')
+   bucket = "ehr-server-test"
+   region = "us-east-1"
+   folders { /* keys of folders in S3 */
+      version_repo = "versions/"
+      commit_logs = "commits/"
+      opt_repo = "opts/"
+   }
+}

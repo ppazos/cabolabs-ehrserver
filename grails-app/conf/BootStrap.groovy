@@ -190,6 +190,7 @@ class BootStrap {
 
    def repoChecks()
    {
+      /* now repos will be created the first time a file is saved, if using FS
       // file system checks
       def commits_repo  = new File(Holders.config.app.commit_logs)
       def versions_repo = new File(Holders.config.app.version_repo)
@@ -242,6 +243,7 @@ class BootStrap {
             throw new Exception("Can't write OPT repo for organization "+ org.uid +" check permissions")
          }
       }
+      */
    }
 
    def registerMarshallersSync()

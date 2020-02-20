@@ -36,13 +36,15 @@ class OrganizationService {
       //def deleted_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'deleted')
       //deleted_opt_repo_org.mkdir()
 
+      // will be create the first time a version file is written
       // org version repo
-      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
-      version_repo.mkdir()
+      // def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
+      // version_repo.mkdir()
 
+      // will be created the first time a commit file is written
       // org commit logs repo
-      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
-      commit_logs_repo.mkdir()
+      // def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
+      // commit_logs_repo.mkdir()
 
       if (sendNotification)
       {

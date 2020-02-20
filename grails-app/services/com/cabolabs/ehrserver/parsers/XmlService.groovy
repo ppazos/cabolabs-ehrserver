@@ -454,9 +454,10 @@ class XmlService {
          try
          {
             //println "XML version.uid "+ versionXML.uid.value // null because XMLSlurper doesn't evalaute the XML after adding the uid to the XML
-
             version = contribution.versions.find { it.uid == version_uid }
-            file = versionFSRepoService.createNewVersionFile(ehr.organizationUid, version, versionXML)
+
+            // sets version.fileLocation
+            file = versionFSRepoService.storeVersionContents(ehr.organizationUid, version, versionXML)
          }
          catch (VersionRepoNotAccessibleException e)
          {
