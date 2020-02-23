@@ -39,7 +39,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
  * @author Pablo Pazos <pablo.pazos@cabolabs.com>
  *
  */
-class VersionFSRepoServiceS3 {
+class VersionS3RepoService {
 
    def config = Holders.config.app
    def grailsApplication
@@ -49,7 +49,16 @@ class VersionFSRepoServiceS3 {
     */
    def canWriteRepo()
    {
-      return true
+      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                               "${grailsApplication.config.aws.accessKey}",
+                                               "${grailsApplication.config.aws.secretKey}")
+
+      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+         .withRegion("${grailsApplication.config.aws.region}")
+         .build()
+
+      return s3.doesBucketExistV2(grailsApplication.config.aws.bucket)
    }
 
    def repoExists()
@@ -93,8 +102,9 @@ class VersionFSRepoServiceS3 {
     * The following closures are for reusing the code to calculate the
     * size of an org repo.
     */
-   def filter_file_last_modified_between = { min, max, f ->
-      return min <= f.lastModified() && f.lastModified() < max
+   def filter_file_last_modified_between = { min, max, s3ObjectSummary ->
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getLastModified--
+      return min <= s3ObjectSummary.getLastModified() && s3ObjectSummary.getLastModified() < max
    }
 
    def filter_null = {
@@ -122,57 +132,35 @@ class VersionFSRepoServiceS3 {
          .withRegion("${grailsApplication.config.aws.region}")
          .build()
 
-      def s3Object = s3.getObject(
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+      def listObjectsV2Result = s3.listObjectsV2(
          grailsApplication.config.aws.bucket,
          grailsApplication.config.aws.folders.version_repo + orguid + '/')
 
-      // TODO: not sure if this gives the size of the folder and contents
-      return s3Object.getObjectMedatada().getContentLength()
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
+
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
+      def total = 0
+      list_objectSummaries.each { s3ObjectSummary ->
+
+         if (filter.call(s3ObjectSummary))
+         {
+            total += s3ObjectSummary.getSize()
+         }
+      }
+
+      return total
    }
 
 
+   // this is not used, might be useful for a full admin to get the whole size
+   // of the version repo for all accounts
    def getRepoSizeInBytes()
    {
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
-         .build()
-
-      def s3Object = s3.getObject(
-         grailsApplication.config.aws.bucket,
-         grailsApplication.config.aws.folders.version_repo)
-
-      // TODO: not sure if this gives the size of the folder and contents
-      // check: https://stackoverflow.com/questions/15950032/calculate-s3-objectfolder-size-in-java
-      return s3Object.getObjectMedatada().getContentLength()
+      return 0
    }
 
-   /**
-    * same as getRepoSizeInBytes but faster.
-    */
-   def getRepoSizeInBytesOrg(String orguid)
-   {
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
-         .build()
-
-      def s3Object = s3.getObject(
-         grailsApplication.config.aws.bucket,
-         grailsApplication.config.aws.folders.version_repo + orguid + '/')
-
-      // TODO: not sure if this gives the size of the folder and contents
-      // check: https://stackoverflow.com/questions/15950032/calculate-s3-objectfolder-size-in-java
-      return s3Object.getObjectMedatada().getContentLength()
-   }
 
    /**
     * Sum of the version repos for all the orgs in the account.
@@ -181,7 +169,7 @@ class VersionFSRepoServiceS3 {
    {
       def total_size = 0
       account.organizations.each { org ->
-         total_size += getRepoSizeInBytesOrg(org.uid)
+         total_size += getRepoSizeInBytes(org.uid)
       }
       return total_size
    }
@@ -198,32 +186,12 @@ class VersionFSRepoServiceS3 {
    {
       if (!repoExists() || !canWriteRepo())
       {
-         throw new VersionRepoNotAccessibleException("Unable to write file ${config.aws.folders.version_repo}")
+         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo}")
       }
 
       if (!repoExistsOrg(orguid))
       {
-         throw new VersionRepoNotAccessibleException("Unable to write file ${config.aws.folders.version_repo + orguid}")
-      }
-
-      def f = new File(config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml')
-      if (!f.exists())
-      {
-         throw new FileNotFoundException("File ${f.absolutePath} doesn't exists")
-      }
-      return f.text
-   }
-
-   /**
-    * Creates a version file that shouldnt exist
-    * @param version_uid
-    * @return
-    */
-   def createNewVersionFile(String orguid, Version version, String contents)
-   {
-      if (!repoExists() || !canWriteRepo())
-      {
-         throw new VersionRepoNotAccessibleException("Unable to write file ${config.aws.folders.version_repo}")
+         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo + orguid}")
       }
 
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
@@ -235,35 +203,61 @@ class VersionFSRepoServiceS3 {
          .withRegion("${grailsApplication.config.aws.region}")
          .build()
 
-      // TODO: The orguid folder is created just the first time,
-      // it might be better to create it whe nthe organization is created.
-      if (!repoExistsOrg(orguid))
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+      return s3.getObjectAsString(
+         grailsApplication.config.aws.bucket,
+         version.fileLocation // key
+      )
+   }
+
+   /**
+    * Creates a version file that shouldnt exist
+    * @param version_uid
+    * @return
+    */
+   def storeVersionContents(String orguid, Version version, GPathResult contents)
+   {
+      if (!repoExists() || !canWriteRepo())
       {
-         // Creates the orguid subfolder
-         new File(config.aws.folders.version_repo + orguid).mkdir()
+         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo}")
       }
 
-      if (s3.doesObjectExist(grailsApplication.config.aws.bucket, grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml'))
-      {
-         throw new FileAlreadyExistsException("Object ${grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml'} already exists")
-      }
+      def fileLocation = newVersionFileLocation(orguid)
 
+      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                               "${grailsApplication.config.aws.accessKey}",
+                                               "${grailsApplication.config.aws.secretKey}")
 
-      // creates empty object
+      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+         .withRegion("${grailsApplication.config.aws.region}")
+         .build()
+
+      // if (s3.doesObjectExist(grailsApplication.config.aws.bucket, grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml'))
+      // {
+      //    throw new FileAlreadyExistsException("Object ${grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml'} already exists")
+      // }
+
+      // the file location is  set on the Version
+      version.fileLocation = fileLocation
+
+      // FIXME: check if the XML has the namespace declarations of the root node from the commit
+      // FIXME: this is XML only, if we want to store the JSON versions we need to check
+      //        the content type of the commit also, this will be required for implementing
+      //        the openEHR API where XML to JSON transformations are not direct
+      String text = groovy.xml.XmlUtil.serialize(contents)
+
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
       def putObjectResult = s3.putObject(
          grailsApplication.config.aws.bucket,
-         grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml',
-         ''
+         fileLocation,
+         text
       )
+   }
 
-      // get created object
-      def s3Object = s3.getObject(
-         grailsApplication.config.aws.bucket,
-         grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml')
-
-
-      // FIXME: the caller expects File not S3Object
-      //return returns3Object
+   def newVersionFileLocation(String orguid)
+   {
+      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
+      return grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.xml'
    }
 }

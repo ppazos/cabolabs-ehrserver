@@ -188,64 +188,6 @@ class BootStrap {
       }
    }
 
-   def repoChecks()
-   {
-      /* now repos will be created the first time a file is saved, if using FS
-      // file system checks
-      def commits_repo  = new File(Holders.config.app.commit_logs)
-      def versions_repo = new File(Holders.config.app.version_repo)
-      def opt_repo      = new File(Holders.config.app.opt_repo)
-
-      if (!commits_repo.exists())
-      {
-         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
-      }
-      if (!versions_repo.exists())
-      {
-         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
-      }
-      if (!opt_repo.exists())
-      {
-         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
-      }
-
-      Organization.list().each { org ->
-
-         // version repos per existing org
-         if (!versionFSRepoService.repoExistsOrg(org.uid))
-         {
-            throw new Exception("Version repo doesn't for organization "+ org.uid)
-         }
-         if (!versionFSRepoService.canWriteRepoOrg(org.uid))
-         {
-            throw new Exception("Can't write version repo for organization "+ org.uid +" check permissions")
-         }
-
-         // commit log repos per existing org
-         if (!commitLoggerService.repoExistsOrg(org.uid))
-         {
-            throw new Exception("Commit log repo doesn't for organization "+ org.uid)
-         }
-         if (!commitLoggerService.canWriteRepoOrg(org.uid))
-         {
-            throw new Exception("Can't write commit log repo for organization "+ org.uid +" check permissions")
-         }
-
-         // opt repos per existing org
-         // TODO: create service to access file system repo like version and commit log
-         def org_opt_repo = new File(Holders.config.app.opt_repo.withTrailSeparator() + org.uid)
-         if (!org_opt_repo.exists())
-         {
-            throw new Exception("OPT repo doesn't for organization "+ org.uid)
-         }
-         if (!org_opt_repo.canWrite())
-         {
-            throw new Exception("Can't write OPT repo for organization "+ org.uid +" check permissions")
-         }
-      }
-      */
-   }
-
    def registerMarshallersSync()
    {
       JSON.createNamedConfig('sync') {
@@ -1111,7 +1053,6 @@ class BootStrap {
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
       extendClasses()
-      repoChecks()
       registerMarshallers()
 
       // Sync Marshallers are all in services, current Bootstrap marshallers are not used.

@@ -81,7 +81,10 @@ class VersionFSRepoService {
 
    def getRepoSizeInBytes(String orguid)
    {
-      return getRepoSizeInBytesFiltered(orguid, filter_null)
+      // faster without reading each file
+      def r = new File(config.version_repo.withTrailSeparator() + orguid)
+      return r.directorySize()
+      //return getRepoSizeInBytesFiltered(orguid, filter_null)
    }
 
    def getRepoSizeInBytesBetween(String orguid, Date from, Date to)
@@ -116,19 +119,11 @@ class VersionFSRepoService {
       return size
    }
 
-
+   // this is not used, might be useful for a full admin to get the whole size
+   // of the version repo for all accounts
    def getRepoSizeInBytes()
    {
       def r = new File(config.version_repo.withTrailSeparator())
-      return r.directorySize()
-   }
-
-   /**
-    * same as getRepoSizeInBytes but faster.
-    */
-   def getRepoSizeInBytesOrg(String orguid)
-   {
-      def r = new File(config.version_repo.withTrailSeparator() + orguid)
       return r.directorySize()
    }
 
@@ -139,7 +134,7 @@ class VersionFSRepoService {
    {
       def total_size = 0
       account.organizations.each { org ->
-         total_size += getRepoSizeInBytesOrg(org.uid)
+         total_size += getRepoSizeInBytes(org.uid)
       }
       return total_size
    }
@@ -181,8 +176,6 @@ class VersionFSRepoService {
     */
    def storeVersionContents(String orguid, Version version, GPathResult contents)
    {
-      def fileLocation = newVersionFileLocation(orguid)
-
       // creates all parent subfolder if dont exist
       def containerFolder = new File(new File(fileLocation).getParent())
       containerFolder.mkdirs()
@@ -192,6 +185,8 @@ class VersionFSRepoService {
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
+
+      def fileLocation = newVersionFileLocation(orguid)
 
       /*
       // TODO: The orguid folder is created just the first time,
