@@ -67,7 +67,7 @@ class XmlService {
    def validationErrors = [:] // compoIndex -> error list
 
    def xmlValidationService
-   def versionFSRepoService
+   def versionRepoService
 
    def CHANGE_TYPE_CREATION = 249
    def CHANGE_TYPE_AMENDMENT = 250
@@ -457,7 +457,7 @@ class XmlService {
             version = contribution.versions.find { it.uid == version_uid }
 
             // sets version.fileLocation
-            file = versionFSRepoService.storeVersionContents(ehr.organizationUid, version, versionXML)
+            file = versionRepoService.storeVersionContents(ehr.organizationUid, version, versionXML)
          }
          catch (VersionRepoNotAccessibleException e)
          {

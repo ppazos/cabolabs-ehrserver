@@ -63,7 +63,7 @@ class BootStrap {
    def grailsApplication
    def resourceService
    def configurationService
-   def versionFSRepoService
+   def versionRepoService
    def commitLoggerService
    def jsonService
 
@@ -251,7 +251,7 @@ class BootStrap {
 
             def version_files = []
             contribution.versions.each { v ->
-               version_contents << versionFSRepoService.getExistingVersionContents(contribution.organizationUid, v)
+               version_contents << versionRepoService.getExistingVersionContents(contribution.organizationUid, v)
             }
 
             xml.build {

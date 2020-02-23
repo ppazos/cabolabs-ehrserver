@@ -10,7 +10,7 @@ import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 class QueryService {
 
    def grailsApplication
-   def versionFSRepoService
+   def versionRepoService
 
    /**
     * json contains the query and query parameters that are used from the
@@ -144,16 +144,16 @@ class QueryService {
 
                 try
                 {
-                   buff = versionFSRepoService.getExistingVersionContents(orgUid, version)
+                   buff = versionRepoService.getExistingVersionContents(orgUid, version)
                 }
                 catch (VersionRepoNotAccessibleException e)
                 {
-                   log.warning e.message
+                   log.warn e.message
                    return // continue with next compoIndex
                 }
                 catch (FileNotFoundException e)
                 {
-                   log.warning e.message
+                   log.warn e.message
                    return // continue with next compoIndex
                 }
 
@@ -185,16 +185,16 @@ class QueryService {
 
             try
             {
-               buff = versionFSRepoService.getExistingVersionContents(orgUid, version)
+               buff = versionRepoService.getExistingVersionContents(orgUid, version)
             }
             catch (VersionRepoNotAccessibleException e)
             {
-               log.warning e.message
+               log.warn e.message
                return // continue with next compoIndex
             }
             catch (FileNotFoundException e)
             {
-               log.warning e.message
+               log.warn e.message
                return // continue with next compoIndex
             }
 

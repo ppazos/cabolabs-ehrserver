@@ -69,7 +69,7 @@ class RestController {
    def xmlService // Utilizado por commit
    def jsonService // Query composition with format = json
    def compositionService
-   def versionFSRepoService
+   def versionRepoService
    def commitLoggerService
    def logService
    def notificationService
@@ -1224,7 +1224,7 @@ class RestController {
 
                   try
                   {
-                     buff = versionFSRepoService.getExistingVersionContents(organizationUid, version)
+                     buff = versionRepoService.getExistingVersionContents(organizationUid, version)
                   }
                   catch (VersionRepoNotAccessibleException e)
                   {
@@ -1270,12 +1270,12 @@ class RestController {
                }
                catch (VersionRepoNotAccessibleException e)
                {
-                  log.warning e.message
+                  log.warn e.message
                   return // continue with next compoIndex
                }
                catch (FileNotFoundException e)
                {
-                  log.warning e.message
+                  log.warn e.message
                   return // continue with next compoIndex
                }
 
@@ -1683,7 +1683,7 @@ class RestController {
 
             try
             {
-               buff = versionFSRepoService.getExistingVersionContents(organizationUid, version)
+               buff = versionRepoService.getExistingVersionContents(organizationUid, version)
             }
             catch (VersionRepoNotAccessibleException e)
             {

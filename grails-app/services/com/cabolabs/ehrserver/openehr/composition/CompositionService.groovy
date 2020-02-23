@@ -39,7 +39,7 @@ class CompositionService {
 
    def config = Holders.config.app
    def jsonService
-   def versionFSRepoService
+   def versionRepoService
 
    def compositionAsXml(String uid)
    {
@@ -58,7 +58,7 @@ class CompositionService {
       def version = compoIndex.getParent()
 
       // TODO: Throws FileNotFoundException
-      def xml = versionFSRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
+      def xml = versionRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
 
       return xml
    }

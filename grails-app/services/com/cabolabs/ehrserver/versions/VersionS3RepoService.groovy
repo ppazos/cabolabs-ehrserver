@@ -28,6 +28,7 @@ import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 import com.cabolabs.ehrserver.account.Account
+import groovy.util.slurpersupport.GPathResult
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3
@@ -49,30 +50,32 @@ class VersionS3RepoService {
     */
    def canWriteRepo()
    {
+      println "S3 can write repo"
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
-      return s3.doesBucketExistV2(grailsApplication.config.aws.bucket)
+      return s3.doesBucketExistV2(Holders.config.aws.bucket)
    }
 
    def repoExists()
    {
+      println "S3 repo exists"
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
-      return s3.doesObjectExist(grailsApplication.config.aws.bucket, grailsApplication.config.aws.folders.version_repo)
+      return s3.doesObjectExist(Holders.config.aws.bucket, Holders.config.aws.folders.version_repo)
    }
 
    /*
@@ -80,21 +83,23 @@ class VersionS3RepoService {
     */
    def canWriteRepoOrg(String orguid)
    {
+      println "S3 can write repo org"
       return true
    }
 
    def repoExistsOrg(String orguid)
    {
+      println "S3 repo exists org"
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
-      return s3.doesObjectExist(grailsApplication.config.aws.bucket, grailsApplication.config.aws.folders.version_repo + orguid + '/')
+      return s3.doesObjectExist(Holders.config.aws.bucket, Holders.config.aws.folders.version_repo + orguid + '/')
    }
 
 
@@ -104,7 +109,7 @@ class VersionS3RepoService {
     */
    def filter_file_last_modified_between = { min, max, s3ObjectSummary ->
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getLastModified--
-      return min <= s3ObjectSummary.getLastModified() && s3ObjectSummary.getLastModified() < max
+      return min <= s3ObjectSummary.getLastModified().time && s3ObjectSummary.getLastModified().time < max
    }
 
    def filter_null = {
@@ -113,6 +118,7 @@ class VersionS3RepoService {
 
    def getRepoSizeInBytes(String orguid)
    {
+      println "S3 get repo size in bytes"
       return getRepoSizeInBytesFiltered(orguid, filter_null)
    }
 
@@ -124,25 +130,25 @@ class VersionS3RepoService {
    private int getRepoSizeInBytesFiltered(String orguid, Closure filter)
    {
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
       def listObjectsV2Result = s3.listObjectsV2(
-         grailsApplication.config.aws.bucket,
-         grailsApplication.config.aws.folders.version_repo + orguid + '/')
+         Holders.config.aws.bucket,
+         Holders.config.aws.folders.version_repo + orguid + '/')
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
       def list_objectSummary = listObjectsV2Result.getObjectSummaries()
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
       def total = 0
-      list_objectSummaries.each { s3ObjectSummary ->
+      list_objectSummary.each { s3ObjectSummary ->
 
          if (filter.call(s3ObjectSummary))
          {
@@ -186,26 +192,26 @@ class VersionS3RepoService {
    {
       if (!repoExists() || !canWriteRepo())
       {
-         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo}")
+         throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo}")
       }
 
       if (!repoExistsOrg(orguid))
       {
-         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo + orguid}")
+         throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo + orguid}")
       }
 
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
       return s3.getObjectAsString(
-         grailsApplication.config.aws.bucket,
+         Holders.config.aws.bucket,
          version.fileLocation // key
       )
    }
@@ -219,18 +225,18 @@ class VersionS3RepoService {
    {
       if (!repoExists() || !canWriteRepo())
       {
-         throw new VersionRepoNotAccessibleException("Unable to write object ${config.aws.folders.version_repo}")
+         throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo}")
       }
 
       def fileLocation = newVersionFileLocation(orguid)
 
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${grailsApplication.config.aws.accessKey}",
-                                               "${grailsApplication.config.aws.secretKey}")
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
 
       AmazonS3 s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${grailsApplication.config.aws.region}")
+         .withRegion("${Holders.config.aws.region}")
          .build()
 
       // if (s3.doesObjectExist(grailsApplication.config.aws.bucket, grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + version.fileUid +'.xml'))
@@ -249,7 +255,7 @@ class VersionS3RepoService {
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
       def putObjectResult = s3.putObject(
-         grailsApplication.config.aws.bucket,
+         Holders.config.aws.bucket,
          fileLocation,
          text
       )
@@ -258,6 +264,6 @@ class VersionS3RepoService {
    def newVersionFileLocation(String orguid)
    {
       // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
-      return grailsApplication.config.aws.folders.version_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.xml'
+      return Holders.config.aws.folders.version_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.xml'
    }
 }

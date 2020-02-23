@@ -45,7 +45,7 @@ import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 class DataIndexerService {
 
    def config = Holders.config.app
-   def versionFSRepoService
+   def versionRepoService
 
    def generateIndexes(CompositionIndex compoIndex)
    {
@@ -77,11 +77,11 @@ class DataIndexerService {
 
       try
       {
-         versionXml = versionFSRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
+         versionXml = versionRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
       }
       catch (VersionRepoNotAccessibleException e)
       {
-         log.warning e.message
+         log.warn e.message
          return // continue with next compoIndex
       }
       catch (FileNotFoundException e)

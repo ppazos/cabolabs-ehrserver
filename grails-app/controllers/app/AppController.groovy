@@ -45,7 +45,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
 class AppController {
 
    def springSecurityService
-   def versionFSRepoService
+   def versionRepoService
    def remoteNotificationsService
 
    // shows main dashboard
@@ -116,7 +116,7 @@ class AppController {
          def orgs = Organization.list()
 
          orgs.each { __org ->
-            version_repo_sizes << [(__org): versionFSRepoService.getRepoSizeInBytes(__org.uid)]
+            version_repo_sizes << [(__org): versionRepoService.getRepoSizeInBytes(__org.uid)]
          }
 
          // sort by usage, decreasing
@@ -155,7 +155,7 @@ class AppController {
          }
          count_users = urs.unique().size()
 
-         version_repo_sizes << [(org): versionFSRepoService.getRepoSizeInBytes(org.uid)]
+         version_repo_sizes << [(org): versionRepoService.getRepoSizeInBytes(org.uid)]
       }
 
       // ----------------------------------------------------------------------------------------------------------

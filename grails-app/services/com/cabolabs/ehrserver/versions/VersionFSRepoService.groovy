@@ -44,11 +44,13 @@ class VersionFSRepoService {
     */
    def canWriteRepo()
    {
+      println "FS can write repo"
       return new File(config.version_repo).canWrite()
    }
 
    def repoExists()
    {
+      println "FS repo exists"
       return new File(config.version_repo).exists()
    }
 
@@ -81,6 +83,7 @@ class VersionFSRepoService {
 
    def getRepoSizeInBytes(String orguid)
    {
+      println "FS get repo size in bytes"
       // faster without reading each file
       def r = new File(config.version_repo.withTrailSeparator() + orguid)
       return r.directorySize()
@@ -176,6 +179,8 @@ class VersionFSRepoService {
     */
    def storeVersionContents(String orguid, Version version, GPathResult contents)
    {
+      def fileLocation = newVersionFileLocation(orguid)
+
       // creates all parent subfolder if dont exist
       def containerFolder = new File(new File(fileLocation).getParent())
       containerFolder.mkdirs()
@@ -185,8 +190,6 @@ class VersionFSRepoService {
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
-
-      def fileLocation = newVersionFileLocation(orguid)
 
       /*
       // TODO: The orguid folder is created just the first time,
