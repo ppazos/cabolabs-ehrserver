@@ -33,7 +33,7 @@ import grails.converters.*
 class StatsController {
 
    def versionRepoService
-   def OPTService
+   def optService
 
    /**
     * Show stats dashboard for all the organizations accessible by the user.
@@ -172,7 +172,7 @@ class StatsController {
 
       account.organizations.each { org ->
 
-         size = ((versionRepoService.getRepoSizeInBytes(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1000).setScale(1,0)
+         size = ((versionRepoService.getRepoSizeInBytes(org.uid) + optService.getRepoSizeInBytesOrg(org.uid)) / 1000).setScale(1,0)
 
          // size is set in kB = 1000 bytes
          stats[org.uid] = size

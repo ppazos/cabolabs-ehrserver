@@ -33,7 +33,6 @@ import groovy.util.slurpersupport.GPathResult
 /**
  * Operations related to the file system based version repo.
  * @author Pablo Pazos <pablo.pazos@cabolabs.com>
- *
  */
 class VersionFSRepoService {
 
@@ -44,13 +43,11 @@ class VersionFSRepoService {
     */
    def canWriteRepo()
    {
-      println "FS can write repo"
       return new File(config.version_repo).canWrite()
    }
 
    def repoExists()
    {
-      println "FS repo exists"
       return new File(config.version_repo).exists()
    }
 
@@ -83,7 +80,6 @@ class VersionFSRepoService {
 
    def getRepoSizeInBytes(String orguid)
    {
-      println "FS get repo size in bytes"
       // faster without reading each file
       def r = new File(config.version_repo.withTrailSeparator() + orguid)
       return r.directorySize()

@@ -8,17 +8,17 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.archetype.OperationalTemplateIndexer
 
-@Transactional
-class OPTService {
+// @Transactional
+class OptFSService {
 
    // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
 
-   static String getOPTContents(OperationalTemplateIndex opt)
+   String getOPTContents(OperationalTemplateIndex opt)
    {
       return new File(opt.fileLocation).text
    }
 
-   static boolean storeOPTContents(String fileLocation, String fileContents)
+   boolean storeOPTContents(String fileLocation, String fileContents)
    {
       // creates parent subfolders if dont exist
       def containerFolder = new File(new File(fileLocation).getParent())
@@ -30,15 +30,13 @@ class OPTService {
       return true // TODO check errors
    }
 
-   static String newOPTFileLocation(String orguid)
+   def newOPTFileLocation(String orguid)
    {
-      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
       return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
    }
 
-   static String newOPTFileLocation(String orguid, String givenUid)
+   def newOPTFileLocation(String orguid, String givenUid)
    {
-      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
       return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + givenUid +'.opt'
    }
 

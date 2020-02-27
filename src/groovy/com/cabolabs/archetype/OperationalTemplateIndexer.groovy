@@ -32,7 +32,6 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexItem
-import com.cabolabs.ehrserver.openehr.OPTService
 
 /*
  * TODO: refactor to service.
@@ -46,6 +45,10 @@ class OperationalTemplateIndexer {
    def template
    def templateIndex // OperationalTemplateIndex correspondent to the template we are indexing
    def indexes = []
+
+   // OperationalTemplateIndexer is in src and the optService is not injected,
+   // this is to inject the optService
+   def optService = Holders.grailsApplication.mainContext.getBean 'optService'
 
    // RM attributes that are not in the OPT but also need to be indexed for querying.
    // This is like a schema, but is not including the attrs that are on OPTs.
@@ -204,14 +207,14 @@ class OperationalTemplateIndexer {
          archetypeId: archetypeId,
          archetypeConcept: archetypeConcept,
          organizationUid: org.uid,
-         fileLocation: OPTService.newOPTFileLocation(org.uid)
+         fileLocation: optService.newOPTFileLocation(org.uid)
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
 
       // Write OPT file
       //File fileDest = new File(templateIndex.fileLocation)
       //fileDest << fileContents
-      OPTService.storeOPTContents(templateIndex.fileLocation, fileContents)
+      optService.storeOPTContents(templateIndex.fileLocation, fileContents)
 
       return templateIndex
    }
@@ -268,7 +271,9 @@ class OperationalTemplateIndexer {
                return // avoid copying not valid OPT file
             }
 
-            dest = new File(OPTService.newOPTFileLocation(org.uid))
+            // FIXME: S3 this should not depend on FS
+
+            dest = new File(optService.newOPTFileLocation(org.uid))
             //java.nio.file.Files.copy(file.toPath(), dest.toPath())
             dest <<  opt_contents
          }
@@ -347,7 +352,7 @@ class OperationalTemplateIndexer {
       opt.isActive = true
       opt.save(failOnError: true)
 
-      def opt_xml = OPTService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt)
       def org = Organization.findByUid(opt.organizationUid)
 
       def clean_opt_xml = FileUtils.removeBOM(opt_xml.getBytes())
@@ -367,6 +372,7 @@ class OperationalTemplateIndexer {
    {
       def path = config.opt_repo
 
+      // FIXME: for S3 this should access the OPT service, not the FS directly
       def repo = new File(path.withTrailSeparator() + org.uid)
 
       if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
@@ -420,6 +426,9 @@ class OperationalTemplateIndexer {
 
    def index(GPathResult template, String file_uid, Organization org)
    {
+      println "OPT indexer index "+ file_uid
+      println "optService "+ optService
+
       // TODO: refactor, this is 99% createOptIndex()
       this.template = template
 
@@ -445,8 +454,8 @@ class OperationalTemplateIndexer {
             organizationUid: org.uid
          )
 
-         if (file_uid) this.templateIndex.fileLocation = OPTService.newOPTFileLocation(org.uid, file_uid)
-         else this.templateIndex.fileLocation = OPTService.newOPTFileLocation(org.uid)
+         if (file_uid) this.templateIndex.fileLocation = optService.newOPTFileLocation(org.uid, file_uid)
+         else this.templateIndex.fileLocation = optService.newOPTFileLocation(org.uid)
 
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
@@ -513,6 +522,7 @@ class OperationalTemplateIndexer {
       if (!templateFile.canRead())  throw new Exception("No se puede leer "+ templateFile.getAbsolutePath())
       if (!templateFile.isFile())  throw new Exception("No es un archivo "+ templateFile.getAbsolutePath())
 
+      // FIXME: S3 this should access the OPT service not the FS directly
       // The names of the OPT files from the OPT repo, should be their fileUid
       def file_uid = templateFile.name - '.opt'
       def template = new XmlSlurper().parseText( templateFile.getText() ) // GPathResult

@@ -64,6 +64,7 @@ class BootStrap {
    def resourceService
    def configurationService
    def versionRepoService
+   def optService
    def commitLoggerService
    def jsonService
 
@@ -1272,6 +1273,9 @@ gr_account.save(failOnError:true, flush:true)
          }
       } // not TEST ENV
 
+      // FIXME: for S3, the OptManager is accessing the file system to load OPTs in memory,
+      //        the OPT access service should be provided by parameter and work as IoC.
+      //        The issue is the OptManager is defined in the openEHR-OPT project.
 
       // Need to set the base OPT repo for the OptManager so all calls later to
       // getInstance don't need to pass the path. The path will change with the

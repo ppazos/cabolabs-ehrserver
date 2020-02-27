@@ -331,7 +331,7 @@ aws {
    bucket = "ehr-server-test"
    region = "us-east-1"
    folders { /* keys of folders in S3 */
-      version_repo = "versions/"
+      version_repo = "versions/" // important should end with /
       commit_logs = "commits/"
       opt_repo = "opts/"
    }

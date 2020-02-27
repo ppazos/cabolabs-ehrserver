@@ -431,15 +431,8 @@ class SecurityFilters {
                      setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
                   }
                   session.organization = org // to show the org name in the ui
-
-                  // Load OPTS if not loaded for the current org
-                  /* this is done on bootstrap now (2018-06-28)
-                  def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-                  optMan.loadAll(org.uid)
-                  */
                }
             }
-
          }
          /*
          after = { Map model ->

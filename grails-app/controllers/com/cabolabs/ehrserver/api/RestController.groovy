@@ -76,7 +76,7 @@ class RestController {
    def apiResponsesService
    def queryService
    def configurationService
-   def OPTService
+   def optService
 
    // Para acceder a las opciones de localizacion
    def config = Holders.config.app
@@ -2060,10 +2060,7 @@ class RestController {
          return
       }
 
-      // def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
-      // File opt_file = new File( src )
-      // def opt_out = opt_file.getText()
-      def opt_out = OPTService.getOPTContents(opt)
+      def opt_out = optService.getOPTContents(opt)
       if (format == 'json')
       {
          opt_out = jsonService.xmlToJson(opt_out)

@@ -42,7 +42,7 @@ class OperationalTemplateController {
    def xmlValidationService
    def springSecurityService
    def configurationService
-   def OPTService
+   def optService
 
    def syncMarshallersService
 
@@ -256,7 +256,7 @@ class OperationalTemplateController {
                versionNumber = old_version.versionNumber + 1
 
                // move old version outside the OPT repo
-               OPTService.moveOldVersion(old_version)
+               optService.moveOldVersion(old_version)
 
                // create new version
                // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
@@ -323,7 +323,7 @@ class OperationalTemplateController {
          return
       }
 
-      def opt_xml = OPTService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt)
 
       // get all versions of the OPT, including last (current opt uid)
       def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])
@@ -493,7 +493,7 @@ class OperationalTemplateController {
          optMan.loadAll(session.organization.uid, true)
       }
       */
-      OPTService.emptyTrash(session.organization)
+      optService.emptyTrash(session.organization)
 
 
       flash.message = message(code:"opt.trash.emptied")
