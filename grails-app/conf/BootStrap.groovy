@@ -160,6 +160,14 @@ class BootStrap {
          return delegate
       }
 
+      String.metaClass.normalizeStrangeCharacters = {
+         return java.text.Normalizer.normalize(delegate, java.text.Normalizer.Form.NFD).replaceAll(/\p{InCombiningDiacriticalMarks}+/, '')
+      }
+
+      String.metaClass.toCamelCase = {
+         return delegate.replaceAll( / ([A-Z])/, /$1/ ).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').toLowerCase().replaceAll( /^_/, '' )
+      }
+
       // get the stack trace as string from an exception
       // can also get the first X lines of the trace
       Throwable.metaClass.traceString = { lines ->
@@ -1013,6 +1021,7 @@ class BootStrap {
 
          def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
 
+         // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
          ti.setupBaseOpts( org )
          ti.indexAll( org ) // also shares with all existing orgs if there are no shares
       }
@@ -1179,7 +1188,9 @@ gr_account.save(failOnError:true, flush:true)
          sampleFolderTemplates()
 
 
-         generateTemplateIndexes()
+         // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
+         //generateTemplateIndexes()
+
 
          /*
          // Sample EHRs for testing purposes
@@ -1280,14 +1291,42 @@ gr_account.save(failOnError:true, flush:true)
       // Need to set the base OPT repo for the OptManager so all calls later to
       // getInstance don't need to pass the path. The path will change with the
       // environment automatically (set by ENV in Config.groovy).
-      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
 
-      // Cache OPTs on run/deploy to avoid problems later
-      // On test, this should be done after creating the orgs
-      def orgs = Organization.list()
-      orgs.each { org ->
-         optMan.loadAll(org.uid, true)
+      // ***********************************************************************
+      // This is the setup of the OptManager instance, this should be first,
+      // then any othre use will use the same internal repo.
+      // ***********************************************************************
+
+      def optMan
+      // Using the optService class to know if the file access config is FS or S3
+      // com.cabolabs.ehrserver.openehr.OptFSService
+      // com.cabolabs.ehrserver.openehr.OptS3Service
+      if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // File System Config
+      {
+         def repo = new OptRepositoryFSImpl(Holders.config.app.opt_repo.withTrailSeparator())
+         optMan = OptManager.getInstance(repo)
+
+         // Cache OPTs on run/deploy to avoid problems later
+         // On test, this should be done after creating the orgs
+         def orgs = Organization.list()
+         orgs.each { org ->
+            optMan.loadAll(org.uid, true)
+         }
       }
+      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // S3 Config
+      {
+         // TODO
+         // 1. create a OptRepository impl to access OPTs from S3
+         // 2. initialize OptMAnager with it
+         // 3. default opts should be loaded from there if any (LATER)
+      }
+      else
+      {
+         throw new Exception("OPT Service not configured")
+      }
+
+
+
 
 
       // ============================================================

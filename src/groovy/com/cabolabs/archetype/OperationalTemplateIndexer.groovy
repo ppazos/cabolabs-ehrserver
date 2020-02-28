@@ -230,6 +230,7 @@ class OperationalTemplateIndexer {
     */
    def setupBaseOpts(Organization org)
    {
+      // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
       def opts_path = config.opt_repo
       def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
       def base_repo = new File( base_path )

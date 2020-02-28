@@ -57,6 +57,8 @@ class OptS3Service {
       return true // TODO check errors
    }
 
+   // FIXME: S3 the file name should be the normalized templateId not a UUID to
+   //        enable finding by templateId, needed by openEHR-OPT (OptManager)
    def newOPTFileLocation(String orguid)
    {
       return Holders.config.aws.folders.opt_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
@@ -152,10 +154,12 @@ class OptS3Service {
       def total = 0
       list_objectSummary.each { s3ObjectSummary ->
 
-         if (filter.call(s3ObjectSummary))
-         {
+         // FIXME: filter is not defined
+         // I think this should check the key ends with OPT, this comes from VersionS3RepoService
+         //if (filter.call(s3ObjectSummary))
+         //{
             total += s3ObjectSummary.getSize()
-         }
+         //}
       }
 
       return total

@@ -323,7 +323,7 @@ class SemanticValidationLevel1 {
       def archetypeId = compo.archetype_details.archetype_id.value.text()
       log.info (templateId+' '+archetypeId)
 
-      def optMan = OptManager.getInstance(Holders.config.app.opt_repo.withTrailSeparator())
+      def optMan = OptManager.getInstance() //Holders.config.app.opt_repo.withTrailSeparator())
       //def namespace = RequestContextHolder.currentRequestAttributes().request.securityStatelessMap.extradata.org_uid
       def opt = optMan.getOpt(templateId, this.namespace)
 

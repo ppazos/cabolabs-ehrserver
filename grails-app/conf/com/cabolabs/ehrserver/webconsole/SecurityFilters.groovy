@@ -30,7 +30,6 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
-import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import grails.converters.*
 import javax.servlet.http.Cookie
