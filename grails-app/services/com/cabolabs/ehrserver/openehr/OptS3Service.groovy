@@ -59,14 +59,15 @@ class OptS3Service {
 
    // FIXME: S3 the file name should be the normalized templateId not a UUID to
    //        enable finding by templateId, needed by openEHR-OPT (OptManager)
-   def newOPTFileLocation(String orguid)
-   {
-      return Holders.config.aws.folders.opt_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
-   }
+   // def newOPTFileLocation(String orguid)
+   // {
+   //    return Holders.config.aws.folders.opt_repo + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
+   // }
 
-   def newOPTFileLocation(String orguid, String givenUid)
+   def newOPTFileLocation(String orguid, String template_id)
    {
-      return Holders.config.aws.folders.opt_repo + orguid.withTrailSeparator() + givenUid +'.opt'
+      String normalized_template_id = template_id.normalizeStrangeCharacters().toCamelCase()
+      return Holders.config.aws.folders.opt_repo + orguid.withTrailSeparator() + normalized_template_id +'.opt'
    }
 
    def moveOldVersion(OperationalTemplateIndex old_version_opt)

@@ -53,6 +53,10 @@ import com.cabolabs.ehrserver.sync.*
 
 import com.cabolabs.openehr.terminology.TerminologyParser
 
+// test
+import com.cabolabs.ehrserver.openehr.OptRepositoryS3Impl
+import com.cabolabs.openehr.opt.manager.OptRepositoryFSImpl
+
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class BootStrap {
@@ -1113,24 +1117,24 @@ class BootStrap {
       // --------------------------------------------------------------------
 
 
-// miration creating accounts for existing orgs in prod
-/*
-// cabo account
-def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
-def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
-def cabo_contact = User.findByUsername('accman')
-def cabo_account = new Account(contact: cabo_contact, enabled: true)
-cabo_account.addToOrganizations(ehrserver_org)
-cabo_account.addToOrganizations(cabotests_org)
-cabo_account.save(failOnError:true, flush:true)
+      // miration creating accounts for existing orgs in prod
+      /*
+      // cabo account
+      def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
+      def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
+      def cabo_contact = User.findByUsername('accman')
+      def cabo_account = new Account(contact: cabo_contact, enabled: true)
+      cabo_account.addToOrganizations(ehrserver_org)
+      cabo_account.addToOrganizations(cabotests_org)
+      cabo_account.save(failOnError:true, flush:true)
 
-// gr account
-def gr_org = Organization.findByUid('893c47bf-de29-4d5f-a6e1-698bc022315e')
-def gr_contact = User.findByUsername('sachingupta')
-def gr_account = new Account(contact: gr_contact, enabled: true)
-gr_account.addToOrganizations(gr_org)
-gr_account.save(failOnError:true, flush:true)
-*/
+      // gr account
+      def gr_org = Organization.findByUid('893c47bf-de29-4d5f-a6e1-698bc022315e')
+      def gr_contact = User.findByUsername('sachingupta')
+      def gr_account = new Account(contact: gr_contact, enabled: true)
+      gr_account.addToOrganizations(gr_org)
+      gr_account.save(failOnError:true, flush:true)
+      */
 
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
@@ -1298,6 +1302,7 @@ gr_account.save(failOnError:true, flush:true)
       // ***********************************************************************
 
       def optMan
+      // TODO: create a factory class
       // Using the optService class to know if the file access config is FS or S3
       // com.cabolabs.ehrserver.openehr.OptFSService
       // com.cabolabs.ehrserver.openehr.OptS3Service
@@ -1313,12 +1318,15 @@ gr_account.save(failOnError:true, flush:true)
             optMan.loadAll(org.uid, true)
          }
       }
-      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // S3 Config
+      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptS3Service) // S3 Config
       {
          // TODO
          // 1. create a OptRepository impl to access OPTs from S3
          // 2. initialize OptMAnager with it
          // 3. default opts should be loaded from there if any (LATER)
+
+         def repo = new OptRepositoryS3Impl(Holders.config.aws.folders.opt_repo.withTrailSeparator())
+         optMan = OptManager.getInstance(repo)
       }
       else
       {

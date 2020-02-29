@@ -30,14 +30,15 @@ class OptFSService {
       return true // TODO check errors
    }
 
-   def newOPTFileLocation(String orguid)
-   {
-      return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
-   }
+   // def newOPTFileLocation(String orguid)
+   // {
+   //    return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() +'.opt'
+   // }
 
-   def newOPTFileLocation(String orguid, String givenUid)
+   def newOPTFileLocation(String orguid, String template_id)
    {
-      return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + givenUid +'.opt'
+      String normalized_template_id = template_id.normalizeStrangeCharacters().toCamelCase()
+      return Holders.config.app.opt_repo.withTrailSeparator() + orguid.withTrailSeparator() + normalized_template_id +'.opt'
    }
 
    def moveOldVersion(OperationalTemplateIndex old_version_opt)

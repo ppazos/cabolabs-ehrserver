@@ -34,11 +34,11 @@ import com.cabolabs.archetype.OperationalTemplateIndexer
 beans = {
 
    // Configuration for using File System or S3 file access
-   versionRepoService(VersionS3RepoService)
+   // versionRepoService(VersionS3RepoService)
+   // optService(OptS3Service)
 
-   optService(OptS3Service)
-
-
+   versionRepoService(VersionFSRepoService)
+   optService(OptFSService)
 
    authProvider(AuthProvider) {
       passwordEncoder = ref("passwordEncoder") // from plugin

@@ -4,6 +4,7 @@ package com.cabolabs.ehrserver.openehr
 import com.cabolabs.openehr.opt.manager.OptRepository
 
 import grails.util.Holders
+import com.cabolabs.util.FileUtils
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3
@@ -31,10 +32,14 @@ class OptRepositoryS3Impl implements OptRepository {
    String getOptContents(String location)
    {
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return s3.getObjectAsString(
+      String opt_text = s3.getObjectAsString(
          Holders.config.aws.bucket,
          location // key
       )
+
+      opt_text = FileUtils.removeBOM(opt_text.bytes)
+
+      return opt_text
    }
 
    /**
@@ -66,7 +71,7 @@ class OptRepositoryS3Impl implements OptRepository {
 
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
       def list_objectSummary = listObjectsV2Result.getObjectSummaries()
-      
+
       def key, contents
       list_objectSummary.each { s3ObjectSummary ->
 
@@ -74,7 +79,44 @@ class OptRepositoryS3Impl implements OptRepository {
          key = s3ObjectSummary.getKey()
 
          // gets the OPT contens by key
-         result << getOptContents(key)
+         contents = getOptContents(key)
+
+         contents = FileUtils.removeBOM(contents.bytes)
+
+         result << contents
+      }
+
+      return result
+   }
+
+   /**
+    * Similar to getAllOptContents, but returns the key (location) of each OPT.
+    */
+   Map<String, String> getAllOptKeysAndContents(String namespace)
+   {
+      def result = [:]
+
+      // similar to OptS3Service.getRepoSizeInBytesOrg
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+      def listObjectsV2Result = this.s3.listObjectsV2(
+         Holders.config.aws.bucket,
+         Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
+
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
+
+      def key, contents
+      list_objectSummary.each { s3ObjectSummary ->
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getKey--
+         key = s3ObjectSummary.getKey()
+
+         // gets the OPT contens by key
+         contents = getOptContents(key)
+
+         contents = FileUtils.removeBOM(contents.bytes)
+
+         result[key] = contents
       }
 
       return result
