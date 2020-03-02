@@ -3,7 +3,8 @@ language: groovy
 sudo: true
 
 jdk:
-  - oraclejdk8
+  #- oraclejdk8
+  - openjdk8
 
 services:
   - mysql
