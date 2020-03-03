@@ -50,7 +50,6 @@ class VersionS3RepoService {
     */
    def canWriteRepo()
    {
-      println "S3 can write repo"
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                                                "${Holders.config.aws.accessKey}",
                                                "${Holders.config.aws.secretKey}")
@@ -65,7 +64,6 @@ class VersionS3RepoService {
 
    def repoExists()
    {
-      println "S3 repo exists"
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                                                "${Holders.config.aws.accessKey}",
                                                "${Holders.config.aws.secretKey}")
@@ -83,23 +81,8 @@ class VersionS3RepoService {
     */
    def canWriteRepoOrg(String orguid)
    {
-      println "S3 can write repo org"
+      // TODO
       return true
-   }
-
-   def repoExistsOrg(String orguid)
-   {
-      println "S3 repo exists org"
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${Holders.config.aws.accessKey}",
-                                               "${Holders.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${Holders.config.aws.region}")
-         .build()
-
-      return s3.doesObjectExist(Holders.config.aws.bucket, Holders.config.aws.folders.version_repo + orguid + '/')
    }
 
 
@@ -118,7 +101,6 @@ class VersionS3RepoService {
 
    def getRepoSizeInBytes(String orguid)
    {
-      println "S3 get repo size in bytes"
       return getRepoSizeInBytesFiltered(orguid, filter_null)
    }
 
@@ -193,11 +175,6 @@ class VersionS3RepoService {
       if (!repoExists() || !canWriteRepo())
       {
          throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo}")
-      }
-
-      if (!repoExistsOrg(orguid))
-      {
-         throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo + orguid}")
       }
 
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(

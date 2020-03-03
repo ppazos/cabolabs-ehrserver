@@ -27,40 +27,32 @@ import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
 
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+
 @Transactional
-class CommitLoggerService {
+class CommitLoggerS3Service {
 
    def config = Holders.config.app
 
-   /*
-    * Operations for the whole version repo.
-    */
-   // private boolean canWriteRepo()
-   // {
-   //    return new File(config.commit_logs).canWrite()
-   // }
-   //
-   // private boolean repoExists()
-   // {
-   //    return new File(config.commit_logs).exists()
-   // }
-
-   /*
-    * Operations for the version repo per organization.
-    */
-   // private boolean canWriteRepoOrg(String orguid)
-   // {
-   //    return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
-   // }
-
-   // private boolean repoExistsOrg(String orguid)
-   // {
-   //    return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
-   // }
-
-   static String getCommitContents(CommitLog commit)
+   String getCommitContents(CommitLog commit)
    {
-      return new File(commit.fileLocation).text
+      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
+
+      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+         .withRegion("${Holders.config.aws.region}")
+         .build()
+
+      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+      return s3.getObjectAsString(
+         Holders.config.aws.bucket,
+         commit.fileLocation // key
+      )
    }
 
    /**
@@ -165,14 +157,26 @@ class CommitLoggerService {
          String orguid = request.securityStatelessMap.extradata.org_uid
 
          // saves the reference to the log file in the DB
-         commit.fileLocation = newCommitFileLocation(orguid, ext)
+         commit.fileLocation = newCommitFileLocation(orguid, contributionUid, ext)
 
-         // creates parent subfolders if dont exist
-         def containerFolder = new File(new File(commit.fileLocation).getParent())
-         containerFolder.mkdirs()
+         // ==================================================
+         // puts commit content in S3
+         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                                  "${Holders.config.aws.accessKey}",
+                                                  "${Holders.config.aws.secretKey}")
 
-         def commitLog = new File(commit.fileLocation)
-         commitLog << logContent
+         AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+            .withRegion("${Holders.config.aws.region}")
+            .build()
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
+         def putObjectResult = s3.putObject(
+            Holders.config.aws.bucket,
+            commit.fileLocation,
+            logContent
+         )
+         // ==================================================
       }
 
 
@@ -181,9 +185,11 @@ class CommitLoggerService {
       commit.save(failOnError: true)
    }
 
-   static String newCommitFileLocation(String orguid, String ext)
+   static String newCommitFileLocation(String orguid, String contributionUid, String ext)
    {
+      if (!contributionUid) contributionUid = java.util.UUID.randomUUID()
+
       // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
-      return Holders.config.app.commit_logs.withTrailSeparator() + orguid.withTrailSeparator() + java.util.UUID.randomUUID() + ext
+      return Holders.config.aws.folders.commit_logs.withTrailSeparator() + orguid.withTrailSeparator() + contributionUid + ext
    }
 }

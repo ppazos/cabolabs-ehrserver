@@ -45,7 +45,6 @@ import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.ehrserver.notification.*
 import com.cabolabs.ehrserver.conf.ConfigurationItem
 import com.cabolabs.ehrserver.ehr.*
-import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.parsers.JsonService
@@ -56,6 +55,12 @@ import com.cabolabs.openehr.terminology.TerminologyParser
 // test
 import com.cabolabs.ehrserver.openehr.OptRepositoryS3Impl
 import com.cabolabs.openehr.opt.manager.OptRepositoryFSImpl
+
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+
 
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -222,6 +227,8 @@ class BootStrap {
          it.registerObjectMarshaller(Contribution) { contribution ->
 
             def commit = CommitLog.findClazzAndByObjectUid('Contribution', contribution.uid)
+
+            // FIXME: for S3 this shouldn't depend on the FS, should get the commit through a service
             def file = new File(Holders.config.app.commit_logs.withTrailSeparator() +
                                 contribution.organizationUid.withTrailSeparator() +
                                 commit.fileUid + '.xml') // TODO: read json
@@ -1325,14 +1332,27 @@ class BootStrap {
          // 2. initialize OptMAnager with it
          // 3. default opts should be loaded from there if any (LATER)
 
-         def repo = new OptRepositoryS3Impl(Holders.config.aws.folders.opt_repo.withTrailSeparator())
+         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                                  "${Holders.config.aws.accessKey}",
+                                                  "${Holders.config.aws.secretKey}")
+
+         AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+            .withRegion("${Holders.config.aws.region}")
+            .build()
+
+         def repo = new OptRepositoryS3Impl(s3)
          optMan = OptManager.getInstance(repo)
+
+         def orgs = Organization.list()
+         orgs.each { org ->
+            optMan.loadAll(org.uid, true)
+         }
       }
       else
       {
          throw new Exception("OPT Service not configured")
       }
-
 
 
 

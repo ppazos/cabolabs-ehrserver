@@ -30,15 +30,20 @@ import com.cabolabs.ehrserver.versions.VersionS3RepoService
 import com.cabolabs.ehrserver.openehr.OptFSService
 import com.cabolabs.ehrserver.openehr.OptS3Service
 import com.cabolabs.archetype.OperationalTemplateIndexer
+import com.cabolabs.ehrserver.log.CommitLoggerFSService
+import com.cabolabs.ehrserver.log.CommitLoggerS3Service
 
 beans = {
 
-   // Configuration for using File System or S3 file access
-   // versionRepoService(VersionS3RepoService)
-   // optService(OptS3Service)
+   // Configuration for using S3 file access
+   versionRepoService(VersionS3RepoService)
+   optService(OptS3Service)
+   commitLoggerService(CommitLoggerS3Service)
 
-   versionRepoService(VersionFSRepoService)
-   optService(OptFSService)
+   // Configuration for using File System file access
+   // versionRepoService(VersionFSRepoService)
+   // optService(OptFSService)
+   // commitLoggerService(CommitLoggerFSService)
 
    authProvider(AuthProvider) {
       passwordEncoder = ref("passwordEncoder") // from plugin

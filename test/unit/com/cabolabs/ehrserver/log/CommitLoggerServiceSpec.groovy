@@ -6,8 +6,8 @@ import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(CommitLoggerService)
-class CommitLoggerServiceSpec extends Specification {
+@TestFor(CommitLoggerFSService)
+class CommitLoggerFSServiceSpec extends Specification {
 
     def setup() {
     }

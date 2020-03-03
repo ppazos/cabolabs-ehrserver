@@ -88,6 +88,9 @@ class IndexDataJobSpec extends Specification {
         job.dataIndexerService = new DataIndexerService()
         job.dataIndexerService.transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug)
 
+        // FIXME: indexing should happen in the context of an organization,
+       //        the source OPT could be taken from the test folder (namespace)
+       //        but should be loaded into the organization namespace (org.uid folder)
         // load template that will be used for indexing
         def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )
@@ -137,6 +140,9 @@ class IndexDataJobSpec extends Specification {
         job.dataIndexerService.transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug).transactionManager = getTransactionManager() // workaround to not get null from service that has @Transaction (Grails bug)
 
 
+        // FIXME: indexing should happen in the context of an organization,
+        //        the source OPT could be taken from the test folder (namespace)
+        //        but should be loaded into the organization namespace (org.uid folder)
         // load template that will be used for indexing
         def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
         def opt = new File( "opts" + PS + "tests" + PS + "Test all datatypes_es.opt" )

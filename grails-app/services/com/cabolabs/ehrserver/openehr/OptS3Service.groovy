@@ -155,7 +155,6 @@ class OptS3Service {
       def total = 0
       list_objectSummary.each { s3ObjectSummary ->
 
-         // FIXME: filter is not defined
          // I think this should check the key ends with OPT, this comes from VersionS3RepoService
          //if (filter.call(s3ObjectSummary))
          //{

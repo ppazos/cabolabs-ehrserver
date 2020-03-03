@@ -59,12 +59,6 @@ class VersionFSRepoService {
       return new File(config.version_repo.withTrailSeparator() + orguid).canWrite()
    }
 
-   def repoExistsOrg(String orguid)
-   {
-      return new File(config.version_repo.withTrailSeparator() + orguid).exists()
-   }
-
-
 
    /**
     * The following closures are for reusing the code to calculate the
@@ -153,11 +147,6 @@ class VersionFSRepoService {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
 
-      if (!repoExistsOrg(orguid))
-      {
-         throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo.withTrailSeparator() + orguid}")
-      }
-
       //def f = new File(config.version_repo.withTrailSeparator() + orguid.withTrailSeparator() + version.fileUid +'.xml')
       def f = new File(version.fileLocation)
       if (!f.exists())
@@ -186,16 +175,6 @@ class VersionFSRepoService {
       {
          throw new VersionRepoNotAccessibleException("Unable to write file ${config.version_repo}")
       }
-
-      /*
-      // TODO: The orguid folder is created just the first time,
-      // it might be better to create it whe nthe organization is created.
-      if (!repoExistsOrg(orguid))
-      {
-         // Creates the orguid subfolder
-         new File(config.version_repo.withTrailSeparator() + orguid).mkdir()
-      }
-      */
 
       // the file location is  set on the Version
       version.fileLocation = fileLocation

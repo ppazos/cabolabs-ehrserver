@@ -633,6 +633,11 @@ class OperationalTemplateIndexer {
       this.indexes = []
    }
 
+
+   /* these are used only for testing and depend on files, but tests are wrong since
+      indexing OPTs should always depend on an organization and these functions dont
+      use an org.
+
    def index(File templateFile, Organization org)
    {
       if (!templateFile.exists())  throw new Exception("No existe "+ templateFile.getAbsolutePath())
@@ -664,16 +669,17 @@ class OperationalTemplateIndexer {
       return opt
    }
 
-   /*
-    * templateFileName es el nombre del archivo sin la extension.
-    */
-   def index(String fullTemplateFileName)
+   //
+   // templateFileName es el nombre del archivo sin la extension.
+   //
+   def index(String opt_key, Organization org)
    {
-      def path = fullTemplateFileName
+      def path = opt_key
       def tfile = new File( path )
       // file exists is checked inside
       return index(tfile)
    }
+   */
 
    def indexAttribute(GPathResult node, String parentPath, String archetypePath, GPathResult parent, boolean indexingDatavalue)
    {
@@ -844,13 +850,13 @@ class OperationalTemplateIndexer {
 
          // For datatypes there is no nodeId, we should get the nodeId of the parent ELEMENT,
          // but some archetype editors add nodeIds to datatypes, for now we avoid to set nodeId for datatype paths.
-//         if (!nodeId)
-//         {
+         // if (!nodeId)
+         // {
             // .parent es attributes 'value', .parent.parent es children 'ELEMENT'
             def parent_object = node.parent().parent()
             nodeId = parent_object.node_id.text()
             addParentAttrName = true
-//         }
+         // }
 
 
          // pathables should not use their node_id

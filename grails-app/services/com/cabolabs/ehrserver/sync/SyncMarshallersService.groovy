@@ -93,6 +93,7 @@ class SyncMarshallersService {
       String ext = '.xml'
       if (_commit.contentType.contains('json')) ext = '.json'
 
+      // FIXME: for S3 this shouldn't depend on the FS, should get the commit through a service
       def file = new File(config.commit_logs.withTrailSeparator() +
                           c.organizationUid.withTrailSeparator() +
                           _commit.fileUid + ext)
