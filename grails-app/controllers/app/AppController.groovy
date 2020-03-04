@@ -46,12 +46,14 @@ class AppController {
 
    def springSecurityService
    def versionRepoService
+   def optService
    def remoteNotificationsService
 
    // shows main dashboard
    def index()
    {
       // test S3
+      /*
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                                                "${grailsApplication.config.aws.accessKey}",
                                                "${grailsApplication.config.aws.secretKey}")
@@ -94,6 +96,7 @@ class AppController {
          println "objecgt exists"
       else
          println "object doesnt exist"
+      */
 
 
 
@@ -116,7 +119,7 @@ class AppController {
          def orgs = Organization.list()
 
          orgs.each { __org ->
-            version_repo_sizes << [(__org): versionRepoService.getRepoSizeInBytes(__org.uid)]
+            version_repo_sizes << [(__org): versionRepoService.getRepoSizeInBytes(__org.uid) + optService.getRepoSizeInBytesOrg(__org.uid)]
          }
 
          // sort by usage, decreasing
@@ -155,7 +158,7 @@ class AppController {
          }
          count_users = urs.unique().size()
 
-         version_repo_sizes << [(org): versionRepoService.getRepoSizeInBytes(org.uid)]
+         version_repo_sizes << [(org): versionRepoService.getRepoSizeInBytes(org.uid) + optService.getRepoSizeInBytesOrg(org.uid)]
       }
 
       // ----------------------------------------------------------------------------------------------------------
