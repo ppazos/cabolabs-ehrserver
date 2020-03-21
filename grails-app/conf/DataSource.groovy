@@ -46,8 +46,8 @@ environments {
            String dbName = "ehrserver"
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
-           username = 'root'
-           password = 'toor'
+           username = 'user'
+           password = 'user123!'
         }
     }
     test {

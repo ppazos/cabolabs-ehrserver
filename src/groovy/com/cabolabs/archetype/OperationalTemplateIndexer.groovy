@@ -233,27 +233,8 @@ class OperationalTemplateIndexer {
     *
     * @return
     */
-   def setupBaseOpts(Organization org)
+   def setupBaseOpts(Organization org, def repo)
    {
-      def repo
-
-      // TODO: create a factory class
-      // Using the optService class to know if the file access config is FS or S3
-      // com.cabolabs.ehrserver.openehr.OptFSService
-      // com.cabolabs.ehrserver.openehr.OptS3Service
-      if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // File System Config
-      {
-         repo = new OptRepositoryFSImpl(Holders.config.app.opt_repo.withTrailSeparator())
-      }
-      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptS3Service) // S3 Config
-      {
-         repo = new OptRepositoryS3Impl(Holders.config.aws.folders.opt_repo.withTrailSeparator())
-      }
-      else
-      {
-         throw new Exception("OPT Service not configured")
-      }
-
       def namespace = "base_opts"
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
 
@@ -262,7 +243,7 @@ class OperationalTemplateIndexer {
       def prefix_cut_index
       def suffix_cut_index = '.opt'.size() + 1
 
-      opt_contents { absolute_path, opt_text ->
+      opt_contents.each { absolute_path, opt_text ->
 
          if (!xmlValidationService.validateOPT(opt_text))
          {
@@ -283,61 +264,6 @@ class OperationalTemplateIndexer {
          // copies the contents to the new location under the organization
          optService.storeOPTContents(location, opt_text)
       }
-
-
-
-
-      /*
-      // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
-      def opts_path = config.opt_repo
-      def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
-      def base_repo = new File( base_path )
-
-      if (!base_repo.exists())
-      {
-         println base_path + " doesn't exists, base OPTs not loaded"
-         return false
-      }
-      if (!base_repo.canRead())
-      {
-         println base_path + " can't de read, base OPTs not loaded"
-         return false
-      }
-      if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
-
-      def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
-
-      // repo namespace exists for org?
-      // the org opt repois created when the org is created
-      if (!opt_repo_org.exists())
-      {
-         // create it
-         opt_repo_org.mkdir()
-      }
-
-      // Only copy the base opts if the opt repo is empty, to avoid copying again every time the app starts.
-      if (opt_repo_org.listFiles().count { it.name ==~ /.*\.opt/ } == 0)
-      {
-         def xmlValidationService = new XmlValidationService()
-         def dest, opt_contents
-         base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
-
-            opt_contents = FileUtils.removeBOM(file.text.bytes)
-
-            if (!xmlValidationService.validateOPT(opt_contents))
-            {
-               println "Invalid OPT file "+ file.name +" "+ xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-               return // avoid copying not valid OPT file
-            }
-
-            // FIXME: S3 this should not depend on FS
-
-            dest = new File(optService.newOPTFileLocation(org.uid))
-            //java.nio.file.Files.copy(file.toPath(), dest.toPath())
-            dest <<  opt_contents
-         }
-      }
-      */
    }
 
    /**
@@ -428,30 +354,10 @@ class OperationalTemplateIndexer {
    }
 
    // reindex existing files in the OPT repo of the organization
-   def indexAll(Organization org)
+   def indexAll(Organization org, def repo)
    {
-      def repo
-
-      // TODO: create a factory class
-      // Using the optService class to know if the file access config is FS or S3
-      // com.cabolabs.ehrserver.openehr.OptFSService
-      // com.cabolabs.ehrserver.openehr.OptS3Service
-      if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // File System Config
-      {
-         repo = new OptRepositoryFSImpl(Holders.config.app.opt_repo.withTrailSeparator())
-      }
-      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptS3Service) // S3 Config
-      {
-         repo = new OptRepositoryS3Impl(Holders.config.aws.folders.opt_repo.withTrailSeparator())
-      }
-      else
-      {
-         throw new Exception("OPT Service not configured")
-      }
-
       def namespace = org.uid
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
-
 
       /*
       def path = config.opt_repo
@@ -463,7 +369,6 @@ class OperationalTemplateIndexer {
       if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
       if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
       */
-
 
       def opts = OperationalTemplateIndex.forOrg(org).active().list()
 
@@ -490,9 +395,9 @@ class OperationalTemplateIndexer {
       */
       def parsed_template
 
-      opt_contents { absolute_path, opt_text ->
+      opt_contents.each { absolute_path, opt_text ->
 
-         if (!xmlValidationService.validateOPT(opt_contents))
+         if (!xmlValidationService.validateOPT(opt_text))
          {
              // Important to keep the correspondence between version index and error reporting.
             println "Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors()
@@ -503,9 +408,9 @@ class OperationalTemplateIndexer {
          parsed_template = new XmlSlurper().parseText(opt_text)
 
          // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
-         if (!templateAlreadyExistsForOrg(template, org))
+         if (!templateAlreadyExistsForOrg(parsed_template, org))
          {
-            index(template, null, org) // We dont use the file_uid any more
+            index(parsed_template, null, org) // We dont use the file_uid any more
          }
          else
          {
@@ -545,8 +450,8 @@ class OperationalTemplateIndexer {
    // TODO: the file_uid is not longer used, now the file name will be a normalized template id
    def index(GPathResult template, String file_uid, Organization org)
    {
-      println "OPT indexer index "+ file_uid
-      println "optService "+ optService
+      //println "OPT indexer index "+ file_uid
+      //println "optService "+ optService
 
       // TODO: refactor, this is 99% createOptIndex()
       this.template = template

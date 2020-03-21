@@ -60,6 +60,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.cabolabs.file.RepositoryFactory
 
 
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -1022,20 +1023,47 @@ class BootStrap {
    // load base OPTs
    def generateTemplateIndexes()
    {
-      // for the default organization
-      def org = Organization.get(1)
+      // FIXME: for S3, the OptManager is accessing the file system to load OPTs in memory,
+      //        the OPT access service should be provided by parameter and work as IoC.
+      //        The issue is the OptManager is defined in the openEHR-OPT project.
 
-      // Always regenerate indexes in deploy
-      if (OperationalTemplateIndex.count() == 0)
-      {
+      // Need to set the base OPT repo for the OptManager so all calls later to
+      // getInstance don't need to pass the path. The path will change with the
+      // environment automatically (set by ENV in Config.groovy).
+
+      // ***********************************************************************
+      // This is the setup of the OptManager instance, this should be first,
+      // then any othre use will use the same internal repo.
+      // ***********************************************************************
+      def repo = RepositoryFactory.getInstance().getOPTRepository()
+      def optMan = OptManager.getInstance(repo)
+
+
+
+      // Cache OPTs on run/deploy to avoid problems later
+      // On test, this should be done after creating the orgs
+      def orgs = Organization.list()
+      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+
+      // remove current indexes from db because will be reindexed below
+      // also allows to delete anything that is not currently in the OPT folder
+      OperationalTemplateIndex.list().each { opt ->
+         to.deleteOptReferences(opt)
+      }
+
+      orgs.each { org ->
+
+         // memory loading
+         optMan.loadAll(org.uid, true)
+
+         // database loading
+         // Always regenerate indexes in deploy
          println "Indexing Operational Templates"
 
-         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-
-         // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
-         ti.setupBaseOpts( org )
-         ti.indexAll( org ) // also shares with all existing orgs if there are no shares
+         ti.setupBaseOpts(org, repo)
+         ti.indexAll(org, repo) // also shares with all existing orgs if there are no shares
       }
+
 
       // OptManager OPT loading
       // This is done to set the OPT repo internally, further uses will not pass the repo path.
@@ -1200,7 +1228,7 @@ class BootStrap {
 
 
          // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
-         //generateTemplateIndexes()
+         generateTemplateIndexes()
 
 
          /*
@@ -1294,66 +1322,6 @@ class BootStrap {
             }
          }
       } // not TEST ENV
-
-      // FIXME: for S3, the OptManager is accessing the file system to load OPTs in memory,
-      //        the OPT access service should be provided by parameter and work as IoC.
-      //        The issue is the OptManager is defined in the openEHR-OPT project.
-
-      // Need to set the base OPT repo for the OptManager so all calls later to
-      // getInstance don't need to pass the path. The path will change with the
-      // environment automatically (set by ENV in Config.groovy).
-
-      // ***********************************************************************
-      // This is the setup of the OptManager instance, this should be first,
-      // then any othre use will use the same internal repo.
-      // ***********************************************************************
-
-      def optMan
-      // TODO: create a factory class
-      // Using the optService class to know if the file access config is FS or S3
-      // com.cabolabs.ehrserver.openehr.OptFSService
-      // com.cabolabs.ehrserver.openehr.OptS3Service
-      if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // File System Config
-      {
-         def repo = new OptRepositoryFSImpl(Holders.config.app.opt_repo.withTrailSeparator())
-         optMan = OptManager.getInstance(repo)
-
-         // Cache OPTs on run/deploy to avoid problems later
-         // On test, this should be done after creating the orgs
-         def orgs = Organization.list()
-         orgs.each { org ->
-            optMan.loadAll(org.uid, true)
-         }
-      }
-      else if (optService instanceof com.cabolabs.ehrserver.openehr.OptS3Service) // S3 Config
-      {
-         // TODO
-         // 1. create a OptRepository impl to access OPTs from S3
-         // 2. initialize OptMAnager with it
-         // 3. default opts should be loaded from there if any (LATER)
-
-         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                                  "${Holders.config.aws.accessKey}",
-                                                  "${Holders.config.aws.secretKey}")
-
-         AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-            .withRegion("${Holders.config.aws.region}")
-            .build()
-
-         def repo = new OptRepositoryS3Impl(s3)
-         optMan = OptManager.getInstance(repo)
-
-         def orgs = Organization.list()
-         orgs.each { org ->
-            optMan.loadAll(org.uid, true)
-         }
-      }
-      else
-      {
-         throw new Exception("OPT Service not configured")
-      }
-
 
 
 

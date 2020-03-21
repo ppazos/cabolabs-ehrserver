@@ -83,8 +83,9 @@ class OperationalTemplateController {
     */
    def generate()
    {
+      def repo = com.cabolabs.file.RepositoryFactory.getInstance().getOPTRepository()
       def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      ti.indexAll(session.organization)
+      ti.indexAll(session.organization, repo)
 
       // load opt in manager cache
       def optMan = OptManager.getInstance()
