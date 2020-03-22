@@ -39,21 +39,37 @@ class OptS3Service {
 
    String getOPTContents(OperationalTemplateIndex opt)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return this.s3.getObjectAsString(
-         Holders.config.aws.bucket,
-         opt.fileLocation // key
-      )
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         return this.s3.getObjectAsString(
+            Holders.config.aws.bucket,
+            opt.fileLocation // key
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT contents in S3 "+ e.message
+         return false
+      }
    }
 
    boolean storeOPTContents(String fileLocation, String fileContents)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
-      def putObjectResult = this.s3.putObject(
-         Holders.config.aws.bucket,
-         fileLocation,
-         fileContents
-      )
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
+         def putObjectResult = this.s3.putObject(
+            Holders.config.aws.bucket,
+            fileLocation,
+            fileContents
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem storing OPT contents in S3 "+ e.message
+         return false
+      }
 
       return true // TODO check errors
    }
@@ -145,23 +161,33 @@ class OptS3Service {
     */
    def getRepoSizeInBytesOrg(String orguid)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
-      def listObjectsV2Result = this.s3.listObjectsV2(
-         Holders.config.aws.bucket,
-         Holders.config.aws.folders.opt_repo + orguid + '/')
-
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
-      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
-
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
       def total = 0
-      list_objectSummary.each { s3ObjectSummary ->
 
-         // I think this should check the key ends with OPT, this comes from VersionS3RepoService
-         //if (filter.call(s3ObjectSummary))
-         //{
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+         def listObjectsV2Result = this.s3.listObjectsV2(
+            Holders.config.aws.bucket,
+            Holders.config.aws.folders.opt_repo + orguid + '/'
+         )
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+         def list_objectSummary = listObjectsV2Result.getObjectSummaries()
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
+         list_objectSummary.each { s3ObjectSummary ->
+
+            // I think this should check the key ends with OPT, this comes from VersionS3RepoService
+            //if (filter.call(s3ObjectSummary))
+            //{
             total += s3ObjectSummary.getSize()
-         //}
+            //}
+         }
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT sizes in S3 "+ e.message
+         return false
       }
 
       return total

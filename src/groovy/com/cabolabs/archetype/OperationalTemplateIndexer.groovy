@@ -215,8 +215,6 @@ class OperationalTemplateIndexer {
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
 
       // Write OPT file
-      //File fileDest = new File(templateIndex.fileLocation)
-      //fileDest << fileContents
       optService.storeOPTContents(templateIndex.fileLocation, fileContents)
 
       return templateIndex

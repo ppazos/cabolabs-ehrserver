@@ -59,11 +59,23 @@ class CommitLoggerS3Service {
 
    String getCommitContents(CommitLog commit)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return this.s3.getObjectAsString(
-         Holders.config.aws.bucket,
-         commit.fileLocation // key
-      )
+      def contents
+
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         contents = this.s3.getObjectAsString(
+            Holders.config.aws.bucket,
+            commit.fileLocation // key
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting commit contents in S3 "+ e.message
+         return false
+      }
+
+      return contents
    }
 
    /**
@@ -170,16 +182,19 @@ class CommitLoggerS3Service {
          // saves the reference to the log file in the DB
          commit.fileLocation = newCommitFileLocation(orguid, contributionUid, ext)
 
-         // ==================================================
-         // puts commit content in S3
-
-         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
-         def putObjectResult = this.s3.putObject(
-            Holders.config.aws.bucket,
-            commit.fileLocation,
-            logContent
-         )
-         // ==================================================
+         try
+         {
+            // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
+            def putObjectResult = this.s3.putObject(
+               Holders.config.aws.bucket,
+               commit.fileLocation,
+               logContent
+            )
+         }
+         catch (Exception e)
+         {
+            log.error "There was a problem storing commit contents in S3 "+ e.message
+         }
       }
 
 

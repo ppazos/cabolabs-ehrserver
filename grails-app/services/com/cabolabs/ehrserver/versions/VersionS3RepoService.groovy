@@ -112,22 +112,31 @@ class VersionS3RepoService {
 
    private int getRepoSizeInBytesFiltered(String orguid, Closure filter)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
-      def listObjectsV2Result = this.s3.listObjectsV2(
-         Holders.config.aws.bucket,
-         Holders.config.aws.folders.version_repo + orguid + '/')
-
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
-      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
-
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
       def total = 0
-      list_objectSummary.each { s3ObjectSummary ->
+      def list_objectSummary
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+         def listObjectsV2Result = this.s3.listObjectsV2(
+            Holders.config.aws.bucket,
+            Holders.config.aws.folders.version_repo + orguid + '/'
+         )
 
-         if (filter.call(s3ObjectSummary))
-         {
-            total += s3ObjectSummary.getSize()
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+         list_objectSummary = listObjectsV2Result.getObjectSummaries()
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html
+         list_objectSummary.each { s3ObjectSummary ->
+
+            if (filter.call(s3ObjectSummary))
+            {
+               total += s3ObjectSummary.getSize()
+            }
          }
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting version summaries in S3 "+ e.message
       }
 
       return total
@@ -164,16 +173,27 @@ class VersionS3RepoService {
     */
    def getExistingVersionContents(String orguid, Version version) throws FileNotFoundException, VersionRepoNotAccessibleException
    {
+      def contents
+
       if (!repoExists() || !canWriteRepo())
       {
          throw new VersionRepoNotAccessibleException("Unable to write object ${Holders.config.aws.folders.version_repo}")
       }
 
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return this.s3.getObjectAsString(
-         Holders.config.aws.bucket,
-         version.fileLocation // key
-      )
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         contents = this.s3.getObjectAsString(
+            Holders.config.aws.bucket,
+            version.fileLocation // key
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting version contents in S3 "+ e.message
+      }
+
+      return contents
    }
 
    /**
@@ -204,12 +224,20 @@ class VersionS3RepoService {
       //        the openEHR API where XML to JSON transformations are not direct
       String text = groovy.xml.XmlUtil.serialize(contents)
 
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
-      def putObjectResult = this.s3.putObject(
-         Holders.config.aws.bucket,
-         fileLocation,
-         text
-      )
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
+         def putObjectResult = this.s3.putObject(
+            Holders.config.aws.bucket,
+            fileLocation,
+            text
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem storing version in S3 "+ e.message
+         return false
+      }
    }
 
    def newVersionFileLocation(String orguid)

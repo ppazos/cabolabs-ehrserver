@@ -31,13 +31,23 @@ class OptRepositoryS3Impl implements OptRepository {
     */
    String getOptContents(String location)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      String opt_text = s3.getObjectAsString(
-         Holders.config.aws.bucket,
-         location // key
-      )
+      String opt_text
 
-      opt_text = FileUtils.removeBOM(opt_text.bytes)
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         opt_text = s3.getObjectAsString(
+            Holders.config.aws.bucket,
+            location // key
+         )
+
+         opt_text = FileUtils.removeBOM(opt_text.bytes)
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT contents in S3 "+ e.message
+         return false
+      }
 
       return opt_text
    }
@@ -62,15 +72,24 @@ class OptRepositoryS3Impl implements OptRepository {
    List<String> getAllOptContents(String namespace)
    {
       def result = []
+      def list_objectSummary
 
-      // similar to OptS3Service.getRepoSizeInBytesOrg
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
-      def listObjectsV2Result = this.s3.listObjectsV2(
-         Holders.config.aws.bucket,
-         Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
+      try
+      {
+         // similar to OptS3Service.getRepoSizeInBytesOrg
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+         def listObjectsV2Result = this.s3.listObjectsV2(
+            Holders.config.aws.bucket,
+            Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
 
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
-      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+         list_objectSummary = listObjectsV2Result.getObjectSummaries()
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT contents in S3 "+ e.message
+         return false
+      }
 
       def key, contents
       list_objectSummary.each { s3ObjectSummary ->
@@ -98,15 +117,24 @@ class OptRepositoryS3Impl implements OptRepository {
    Map<String, String> getAllOptKeysAndContents(String namespace)
    {
       def result = [:]
+      def list_objectSummary
 
-      // similar to OptS3Service.getRepoSizeInBytesOrg
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
-      def listObjectsV2Result = this.s3.listObjectsV2(
-         Holders.config.aws.bucket,
-         Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
+      try
+      {
+         // similar to OptS3Service.getRepoSizeInBytesOrg
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+         def listObjectsV2Result = this.s3.listObjectsV2(
+            Holders.config.aws.bucket,
+            Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
 
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
-      def list_objectSummary = listObjectsV2Result.getObjectSummaries()
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+         list_objectSummary = listObjectsV2Result.getObjectSummaries()
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT contents in S3 "+ e.message
+         return false
+      }
 
       def key, contents
       list_objectSummary.each { s3ObjectSummary ->
