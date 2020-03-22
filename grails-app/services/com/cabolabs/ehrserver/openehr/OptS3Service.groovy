@@ -73,14 +73,28 @@ class OptS3Service {
 
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
    {
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObject-java.lang.String-java.lang.String-
-      def s3Object = this.s3.getObject(
-         Holders.config.aws.bucket,
-         old_version_opt.fileLocation // key
-      )
+      def result
+      try
+      {
+         // copy to new deleted key, keeps original
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#copyObject-java.lang.String-java.lang.String-java.lang.String-java.lang.String-
+         result = this.s3.copyObject(
+            Holders.config.aws.bucket,
+            old_version_opt.fileLocation,
+            Holders.config.aws.bucket,
+            old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
+         )
 
-      // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3Object.html#setKey-java.lang.String-
-      s3Object.setKey(old_version_opt.fileLocation + '.old')
+         // delete original
+         this.s3.deleteObject(
+            Holders.config.aws.bucket,
+            old_version_opt.fileLocation
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem moving the versioned OPT "+ old_version_opt.fileLocation +", error: "+ e.message
+      }
    }
 
    def emptyTrash(Organization org)
@@ -88,30 +102,42 @@ class OptS3Service {
       def ti = new OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(org).deleted.list()
 
-      def s3Object
+      def s3Object, result
 
       opts.each { opt ->
 
-         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObject-java.lang.String-java.lang.String-
-         s3Object = this.s3.getObject(
-            Holders.config.aws.bucket,
-            opt.fileLocation // key
-         )
+         try
+         {
+            // copy to new deleted key, keeps original
+            // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#copyObject-java.lang.String-java.lang.String-java.lang.String-java.lang.String-
+            result = this.s3.copyObject(
+               Holders.config.aws.bucket,
+               opt.fileLocation,
+               Holders.config.aws.bucket,
+               opt.fileLocation +'.deleted'
+            )
 
-         println "set object key "+ opt.fileLocation +" to .deleted"
-
-         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3Object.html#setKey-java.lang.String-
-         s3Object.setKey(opt.fileLocation + '.deleted')
+            // delete original
+            this.s3.deleteObject(
+               Holders.config.aws.bucket,
+               opt.fileLocation
+            )
+         }
+         catch (Exception e)
+         {
+            log.error "There was a problem moving the deleted OPT "+ opt.fileLocation +", error: "+ e.message
+            return // breaks the current loop
+         }
 
          // deletes OPT and references from DB
          ti.deleteOptReferences(opt, true)
-
-         // load opt in manager cache
-         // TODO: just unload the deleted OPT
-         def optMan = OptManager.getInstance()
-         optMan.unloadAll(org.uid)
-         optMan.loadAll(org.uid, true)
       }
+
+      // load opt in manager cache
+      // TODO: just unload the deleted OPT
+      def optMan = OptManager.getInstance()
+      optMan.unloadAll(org.uid)
+      optMan.loadAll(org.uid, true)
    }
 
    /**

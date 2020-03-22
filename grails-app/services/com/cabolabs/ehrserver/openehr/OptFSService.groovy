@@ -44,7 +44,11 @@ class OptFSService {
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
    {
       def old_version_file = new File(old_version_opt.fileLocation)
-      old_version_file.renameTo(new File(old_version_opt.fileLocation + '.old'))
+      old_version_file.renameTo(
+         new File(
+            old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
+         )
+      )
    }
 
    def emptyTrash(Organization org)
@@ -55,7 +59,11 @@ class OptFSService {
 
          // move file to deleted folder, we don't actually delete the file, just in case!
          def deleted_file = new File(opt.fileLocation)
-         def moved = deleted_file.renameTo(new File(opt.fileLocation + '.deleted'))
+         def moved = deleted_file.renameTo(
+            new File(
+               opt.fileLocation + '.deleted'
+            )
+         )
          if (!moved) println "DELETED OPT NOT MOVED!"
 
          // deletes OPT and references from DB
