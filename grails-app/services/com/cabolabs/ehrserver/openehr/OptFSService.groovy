@@ -46,7 +46,8 @@ class OptFSService {
       def old_version_file = new File(old_version_opt.fileLocation)
       old_version_file.renameTo(
          new File(
-            old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
+            old_version_opt.fileLocation +
+            '.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
          )
       )
    }
@@ -61,7 +62,7 @@ class OptFSService {
          def deleted_file = new File(opt.fileLocation)
          def moved = deleted_file.renameTo(
             new File(
-               opt.fileLocation + '.deleted'
+               opt.fileLocation +'.'+ Date.nowInIsoUtc() + '.deleted' // timestamp is needed to avoid name collisions
             )
          )
          if (!moved) println "DELETED OPT NOT MOVED!"

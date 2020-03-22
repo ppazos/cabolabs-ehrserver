@@ -135,6 +135,11 @@ class BootStrap {
         return delegate.toString()
       }
 
+      // returns current date in ISO 8601 datetime format without seconds fraction, and UTC timezone
+      Date.metaClass.static.nowInIsoUtc = {
+         return new Date().format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
+      }
+
       String.metaClass.md5 = {
          return java.security.MessageDigest.getInstance("MD5").digest(delegate.bytes).encodeHex().toString()
       }
