@@ -33,9 +33,7 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexItem
 
-// test
-import com.cabolabs.ehrserver.openehr.OptRepositoryS3Impl
-import com.cabolabs.openehr.opt.manager.OptRepositoryFSImpl
+import com.cabolabs.openehr.opt.manager.OptRepository
 
 /*
  * TODO: refactor to service.
@@ -233,7 +231,7 @@ class OperationalTemplateIndexer {
     *
     * @return
     */
-   def setupBaseOpts(Organization org, def repo)
+   def setupBaseOpts(Organization org, OptRepository repo)
    {
       def namespace = "base_opts"
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
@@ -354,7 +352,7 @@ class OperationalTemplateIndexer {
    }
 
    // reindex existing files in the OPT repo of the organization
-   def indexAll(Organization org, def repo)
+   def indexAll(Organization org, OptRepository repo)
    {
       def namespace = org.uid
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
