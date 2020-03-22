@@ -32,24 +32,35 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 
+import javax.annotation.PostConstruct
+
 @Transactional
 class CommitLoggerS3Service {
 
    def config = Holders.config.app
 
-   String getCommitContents(CommitLog commit)
+   AmazonS3 s3
+
+   // this initalizes the S3 connection when the service is created
+   @PostConstruct
+   def init()
    {
+      //your initialization code goes here. e.g connect to some Messaging Service
+
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                                                "${Holders.config.aws.accessKey}",
                                                "${Holders.config.aws.secretKey}")
 
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+      this.s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
          .withRegion("${Holders.config.aws.region}")
          .build()
+   }
 
+   String getCommitContents(CommitLog commit)
+   {
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return s3.getObjectAsString(
+      return this.s3.getObjectAsString(
          Holders.config.aws.bucket,
          commit.fileLocation // key
       )
@@ -161,17 +172,9 @@ class CommitLoggerS3Service {
 
          // ==================================================
          // puts commit content in S3
-         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                                  "${Holders.config.aws.accessKey}",
-                                                  "${Holders.config.aws.secretKey}")
-
-         AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-            .withRegion("${Holders.config.aws.region}")
-            .build()
 
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
-         def putObjectResult = s3.putObject(
+         def putObjectResult = this.s3.putObject(
             Holders.config.aws.bucket,
             commit.fileLocation,
             logContent

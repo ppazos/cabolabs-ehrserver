@@ -13,24 +13,34 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 
+import javax.annotation.PostConstruct
+
 // @Transactional
 class OptS3Service {
 
    // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
+   AmazonS3 s3
 
-   String getOPTContents(OperationalTemplateIndex opt)
+   // this initalizes the S3 connection when the service is created
+   @PostConstruct
+   def init()
    {
+      //your initialization code goes here. e.g connect to some Messaging Service
+
       BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                                                "${Holders.config.aws.accessKey}",
                                                "${Holders.config.aws.secretKey}")
 
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+      this.s3 = AmazonS3ClientBuilder.standard()
          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
          .withRegion("${Holders.config.aws.region}")
          .build()
+   }
 
+   String getOPTContents(OperationalTemplateIndex opt)
+   {
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
-      return s3.getObjectAsString(
+      return this.s3.getObjectAsString(
          Holders.config.aws.bucket,
          opt.fileLocation // key
       )
@@ -38,17 +48,8 @@ class OptS3Service {
 
    boolean storeOPTContents(String fileLocation, String fileContents)
    {
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${Holders.config.aws.accessKey}",
-                                               "${Holders.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${Holders.config.aws.region}")
-         .build()
-
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
-      def putObjectResult = s3.putObject(
+      def putObjectResult = this.s3.putObject(
          Holders.config.aws.bucket,
          fileLocation,
          fileContents
@@ -72,17 +73,8 @@ class OptS3Service {
 
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
    {
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${Holders.config.aws.accessKey}",
-                                               "${Holders.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${Holders.config.aws.region}")
-         .build()
-
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObject-java.lang.String-java.lang.String-
-      def s3Object = s3.getObject(
+      def s3Object = this.s3.getObject(
          Holders.config.aws.bucket,
          old_version_opt.fileLocation // key
       )
@@ -96,24 +88,17 @@ class OptS3Service {
       def ti = new OperationalTemplateIndexer()
       def opts = OperationalTemplateIndex.forOrg(org).deleted.list()
 
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${Holders.config.aws.accessKey}",
-                                               "${Holders.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${Holders.config.aws.region}")
-         .build()
-
       def s3Object
 
       opts.each { opt ->
 
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObject-java.lang.String-java.lang.String-
-         s3Object = s3.getObject(
+         s3Object = this.s3.getObject(
             Holders.config.aws.bucket,
             opt.fileLocation // key
          )
+
+         println "set object key "+ opt.fileLocation +" to .deleted"
 
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3Object.html#setKey-java.lang.String-
          s3Object.setKey(opt.fileLocation + '.deleted')
@@ -134,17 +119,8 @@ class OptS3Service {
     */
    def getRepoSizeInBytesOrg(String orguid)
    {
-      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                                               "${Holders.config.aws.accessKey}",
-                                               "${Holders.config.aws.secretKey}")
-
-      AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-         .withRegion("${Holders.config.aws.region}")
-         .build()
-
       // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
-      def listObjectsV2Result = s3.listObjectsV2(
+      def listObjectsV2Result = this.s3.listObjectsV2(
          Holders.config.aws.bucket,
          Holders.config.aws.folders.opt_repo + orguid + '/')
 
