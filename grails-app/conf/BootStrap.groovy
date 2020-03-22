@@ -1052,21 +1052,27 @@ class BootStrap {
 
       // remove current indexes from db because will be reindexed below
       // also allows to delete anything that is not currently in the OPT folder
-      OperationalTemplateIndex.list().each { opt ->
-         to.deleteOptReferences(opt)
-      }
+      //
+      // no need, this is done in ti.indexAll for the org
+      // OperationalTemplateIndex.list().each { opt ->
+      //    to.deleteOptReferences(opt)
+      // }
 
       orgs.each { org ->
 
-         // memory loading
-         optMan.loadAll(org.uid, true)
-
          // database loading
          // Always regenerate indexes in deploy
-         println "Indexing Operational Templates"
+         println "Indexing Operational Templates for "+ org.name
 
+         // if there are OPTs in "base_opts" copies them to the organization repo
          ti.setupBaseOpts(org, repo)
-         ti.indexAll(org, repo) // also shares with all existing orgs if there are no shares
+
+         // loads all OPTs in the org repo to the DB
+         // also shares with all existing orgs if there are no shares
+         ti.indexAll(org, repo)
+
+         // memory loading
+         optMan.loadAll(org.uid, true)
       }
 
 

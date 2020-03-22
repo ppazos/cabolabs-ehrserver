@@ -78,6 +78,9 @@ class OptRepositoryS3Impl implements OptRepository {
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getKey--
          key = s3ObjectSummary.getKey()
 
+         // avoid returning .deleted and .old OPTs
+         if (!key.endsWith('.opt')) return
+
          // gets the OPT contens by key
          contents = getOptContents(key)
 
@@ -110,6 +113,9 @@ class OptRepositoryS3Impl implements OptRepository {
 
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getKey--
          key = s3ObjectSummary.getKey()
+
+         // avoid returning .deleted and .old OPTs
+         if (!key.endsWith('.opt')) return
 
          // gets the OPT contens by key
          contents = getOptContents(key)
