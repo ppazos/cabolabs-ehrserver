@@ -75,7 +75,8 @@ class XmlServiceIntegrationSpec extends IntegrationSpec {
 
       // Need the OPTs cached for semantic validation when testing XmlService
       // Repo path was set on Bootstrap so no need to pass it here
-      def optMan = OptManager.getInstance()
+      def repo = new com.cabolabs.openehr.opt.manager.OptRepositoryFSImpl(config.app.opt_repo.withTrailSeparator())
+      def optMan = OptManager.getInstance(repo)
       optMan.loadAll(org.uid, true)
 
       createEHR()

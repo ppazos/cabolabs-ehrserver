@@ -10,7 +10,7 @@ import com.cabolabs.ehrserver.exceptions.VersionRepoNotAccessibleException
 class QueryService {
 
    def grailsApplication
-   def versionFSRepoService
+   def versionRepoService
 
    /**
     * json contains the query and query parameters that are used from the
@@ -125,7 +125,6 @@ class QueryService {
       def version
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-      def vf
       if (!qehrId) // group by ehrUid
       {
          result.each { ehrUid, compoIndexes ->
@@ -145,17 +144,16 @@ class QueryService {
 
                 try
                 {
-                   vf = versionFSRepoService.getExistingVersionFile(orgUid, version)
-                   buff = vf.getText()
+                   buff = versionRepoService.getExistingVersionContents(orgUid, version)
                 }
                 catch (VersionRepoNotAccessibleException e)
                 {
-                   log.warning e.message
+                   log.warn e.message
                    return // continue with next compoIndex
                 }
                 catch (FileNotFoundException e)
                 {
-                   log.warning e.message
+                   log.warn e.message
                    return // continue with next compoIndex
                 }
 
@@ -187,17 +185,16 @@ class QueryService {
 
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(orgUid, version)
-               buff = vf.getText()
+               buff = versionRepoService.getExistingVersionContents(orgUid, version)
             }
             catch (VersionRepoNotAccessibleException e)
             {
-               log.warning e.message
+               log.warn e.message
                return // continue with next compoIndex
             }
             catch (FileNotFoundException e)
             {
-               log.warning e.message
+               log.warn e.message
                return // continue with next compoIndex
             }
 

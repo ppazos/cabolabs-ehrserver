@@ -45,13 +45,23 @@ import com.cabolabs.ehrserver.ResourceService
 import com.cabolabs.ehrserver.notification.*
 import com.cabolabs.ehrserver.conf.ConfigurationItem
 import com.cabolabs.ehrserver.ehr.*
-import com.cabolabs.ehrserver.log.CommitLoggerService
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.parsers.JsonService
 import com.cabolabs.ehrserver.sync.*
 
 import com.cabolabs.openehr.terminology.TerminologyParser
+
+// test
+import com.cabolabs.ehrserver.openehr.OptRepositoryS3Impl
+import com.cabolabs.openehr.opt.manager.OptRepositoryFSImpl
+
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.cabolabs.file.RepositoryFactory
+
 
 //org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -63,7 +73,8 @@ class BootStrap {
    def grailsApplication
    def resourceService
    def configurationService
-   def versionFSRepoService
+   def versionRepoService
+   def optService
    def commitLoggerService
    def jsonService
 
@@ -124,6 +135,11 @@ class BootStrap {
         return delegate.toString()
       }
 
+      // returns current date in ISO 8601 datetime format without seconds fraction, and UTC timezone
+      Date.metaClass.static.nowInIsoUtc = {
+         return new Date().format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
+      }
+
       String.metaClass.md5 = {
          return java.security.MessageDigest.getInstance("MD5").digest(delegate.bytes).encodeHex().toString()
       }
@@ -159,6 +175,14 @@ class BootStrap {
          return delegate
       }
 
+      String.metaClass.normalizeStrangeCharacters = {
+         return java.text.Normalizer.normalize(delegate, java.text.Normalizer.Form.NFD).replaceAll(/\p{InCombiningDiacriticalMarks}+/, '')
+      }
+
+      String.metaClass.toCamelCase = {
+         return delegate.replaceAll( / ([A-Z])/, /$1/ ).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').toLowerCase().replaceAll( /^_/, '' )
+      }
+
       // get the stack trace as string from an exception
       // can also get the first X lines of the trace
       Throwable.metaClass.traceString = { lines ->
@@ -188,62 +212,6 @@ class BootStrap {
       }
    }
 
-   def repoChecks()
-   {
-      // file system checks
-      def commits_repo  = new File(Holders.config.app.commit_logs)
-      def versions_repo = new File(Holders.config.app.version_repo)
-      def opt_repo      = new File(Holders.config.app.opt_repo)
-
-      if (!commits_repo.exists())
-      {
-         throw new FileNotFoundException("File ${commits_repo.absolutePath} doesn't exists")
-      }
-      if (!versions_repo.exists())
-      {
-         throw new FileNotFoundException("File ${versions_repo.absolutePath} doesn't exists")
-      }
-      if (!opt_repo.exists())
-      {
-         throw new FileNotFoundException("File ${opt_repo.absolutePath} doesn't exists")
-      }
-
-      Organization.list().each { org ->
-
-         // version repos per existing org
-         if (!versionFSRepoService.repoExistsOrg(org.uid))
-         {
-            throw new Exception("Version repo doesn't for organization "+ org.uid)
-         }
-         if (!versionFSRepoService.canWriteRepoOrg(org.uid))
-         {
-            throw new Exception("Can't write version repo for organization "+ org.uid +" check permissions")
-         }
-
-         // commit log repos per existing org
-         if (!commitLoggerService.repoExistsOrg(org.uid))
-         {
-            throw new Exception("Commit log repo doesn't for organization "+ org.uid)
-         }
-         if (!commitLoggerService.canWriteRepoOrg(org.uid))
-         {
-            throw new Exception("Can't write commit log repo for organization "+ org.uid +" check permissions")
-         }
-
-         // opt repos per existing org
-         // TODO: create service to access file system repo like version and commit log
-         def org_opt_repo = new File(Holders.config.app.opt_repo.withTrailSeparator() + org.uid)
-         if (!org_opt_repo.exists())
-         {
-            throw new Exception("OPT repo doesn't for organization "+ org.uid)
-         }
-         if (!org_opt_repo.canWrite())
-         {
-            throw new Exception("Can't write OPT repo for organization "+ org.uid +" check permissions")
-         }
-      }
-   }
-
    def registerMarshallersSync()
    {
       JSON.createNamedConfig('sync') {
@@ -265,6 +233,8 @@ class BootStrap {
          it.registerObjectMarshaller(Contribution) { contribution ->
 
             def commit = CommitLog.findClazzAndByObjectUid('Contribution', contribution.uid)
+
+            // FIXME: for S3 this shouldn't depend on the FS, should get the commit through a service
             def file = new File(Holders.config.app.commit_logs.withTrailSeparator() +
                                 contribution.organizationUid.withTrailSeparator() +
                                 commit.fileUid + '.xml') // TODO: read json
@@ -307,7 +277,7 @@ class BootStrap {
 
             def version_files = []
             contribution.versions.each { v ->
-               version_files << versionFSRepoService.getExistingVersionFile(contribution.organizationUid, v)
+               version_contents << versionRepoService.getExistingVersionContents(contribution.organizationUid, v)
             }
 
             xml.build {
@@ -318,9 +288,9 @@ class BootStrap {
               audit(contribution.audit) // AuditDetails
 
                xml.startNode 'versions'
-                  version_files.each { vf ->
+                  version_files.each { vc ->
                      //xml.convertAnother vf.text
-                     xml.chars vf.text
+                     xml.chars vc
                   }
                xml.end()
             }
@@ -1058,19 +1028,53 @@ class BootStrap {
    // load base OPTs
    def generateTemplateIndexes()
    {
-      // for the default organization
-      def org = Organization.get(1)
+      // FIXME: for S3, the OptManager is accessing the file system to load OPTs in memory,
+      //        the OPT access service should be provided by parameter and work as IoC.
+      //        The issue is the OptManager is defined in the openEHR-OPT project.
 
-      // Always regenerate indexes in deploy
-      if (OperationalTemplateIndex.count() == 0)
-      {
-         println "Indexing Operational Templates"
+      // Need to set the base OPT repo for the OptManager so all calls later to
+      // getInstance don't need to pass the path. The path will change with the
+      // environment automatically (set by ENV in Config.groovy).
 
-         def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+      // ***********************************************************************
+      // This is the setup of the OptManager instance, this should be first,
+      // then any othre use will use the same internal repo.
+      // ***********************************************************************
+      def repo = RepositoryFactory.getInstance().getOPTRepository()
+      def optMan = OptManager.getInstance(repo)
 
-         ti.setupBaseOpts( org )
-         ti.indexAll( org ) // also shares with all existing orgs if there are no shares
+
+
+      // Cache OPTs on run/deploy to avoid problems later
+      // On test, this should be done after creating the orgs
+      def orgs = Organization.list()
+      def ti = new com.cabolabs.archetype.OperationalTemplateIndexer()
+
+      // remove current indexes from db because will be reindexed below
+      // also allows to delete anything that is not currently in the OPT folder
+      //
+      // no need, this is done in ti.indexAll for the org
+      // OperationalTemplateIndex.list().each { opt ->
+      //    to.deleteOptReferences(opt)
+      // }
+
+      orgs.each { org ->
+
+         // database loading
+         // Always regenerate indexes in deploy
+         println "Indexing Operational Templates for "+ org.name
+
+         // if there are OPTs in "base_opts" copies them to the organization repo
+         ti.setupBaseOpts(org, repo)
+
+         // loads all OPTs in the org repo to the DB
+         // also shares with all existing orgs if there are no shares
+         ti.indexAll(org, repo)
+
+         // memory loading
+         optMan.loadAll(org.uid, true)
       }
+
 
       // OptManager OPT loading
       // This is done to set the OPT repo internally, further uses will not pass the repo path.
@@ -1109,7 +1113,6 @@ class BootStrap {
       TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
       extendClasses()
-      repoChecks()
       registerMarshallers()
 
       // Sync Marshallers are all in services, current Bootstrap marshallers are not used.
@@ -1160,24 +1163,24 @@ class BootStrap {
       // --------------------------------------------------------------------
 
 
-// miration creating accounts for existing orgs in prod
-/*
-// cabo account
-def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
-def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
-def cabo_contact = User.findByUsername('accman')
-def cabo_account = new Account(contact: cabo_contact, enabled: true)
-cabo_account.addToOrganizations(ehrserver_org)
-cabo_account.addToOrganizations(cabotests_org)
-cabo_account.save(failOnError:true, flush:true)
+      // miration creating accounts for existing orgs in prod
+      /*
+      // cabo account
+      def ehrserver_org = Organization.findByUid('e9d13294-bce7-44e7-9635-8e906da0c914')
+      def cabotests_org = Organization.findByUid('57919991-faa1-44c4-836d-da82cb8290dc')
+      def cabo_contact = User.findByUsername('accman')
+      def cabo_account = new Account(contact: cabo_contact, enabled: true)
+      cabo_account.addToOrganizations(ehrserver_org)
+      cabo_account.addToOrganizations(cabotests_org)
+      cabo_account.save(failOnError:true, flush:true)
 
-// gr account
-def gr_org = Organization.findByUid('893c47bf-de29-4d5f-a6e1-698bc022315e')
-def gr_contact = User.findByUsername('sachingupta')
-def gr_account = new Account(contact: gr_contact, enabled: true)
-gr_account.addToOrganizations(gr_org)
-gr_account.save(failOnError:true, flush:true)
-*/
+      // gr account
+      def gr_org = Organization.findByUid('893c47bf-de29-4d5f-a6e1-698bc022315e')
+      def gr_contact = User.findByUsername('sachingupta')
+      def gr_account = new Account(contact: gr_contact, enabled: true)
+      gr_account.addToOrganizations(gr_org)
+      gr_account.save(failOnError:true, flush:true)
+      */
 
       // Do not create data if testing, tests will create their own data.
       if (Environment.current != Environment.TEST)
@@ -1235,7 +1238,9 @@ gr_account.save(failOnError:true, flush:true)
          sampleFolderTemplates()
 
 
+         // FIXME: S3, this depends on the FS, we need to allow setting up base opts from other sources
          generateTemplateIndexes()
+
 
          /*
          // Sample EHRs for testing purposes
@@ -1301,10 +1306,10 @@ gr_account.save(failOnError:true, flush:true)
                ),
                new Plan(
                  name:                            "Testing",
-                 max_organizations:               5,
-                 max_opts_per_organization:       20,
-                 max_api_tokens_per_organization: 3,
-                 repo_total_size_in_kb:           200000, // low for testing! (1MB in kB = 1000 kB)
+                 max_organizations:               20,
+                 max_opts_per_organization:       50,
+                 max_api_tokens_per_organization: 10,
+                 repo_total_size_in_kb:           2000000, // low for testing! (1MB in kB = 1000 kB)
                  period:                          Plan.periods.MONTHLY
                )
             ]
@@ -1329,18 +1334,6 @@ gr_account.save(failOnError:true, flush:true)
          }
       } // not TEST ENV
 
-
-      // Need to set the base OPT repo for the OptManager so all calls later to
-      // getInstance don't need to pass the path. The path will change with the
-      // environment automatically (set by ENV in Config.groovy).
-      def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-
-      // Cache OPTs on run/deploy to avoid problems later
-      // On test, this should be done after creating the orgs
-      def orgs = Organization.list()
-      orgs.each { org ->
-         optMan.loadAll(org.uid, true)
-      }
 
 
       // ============================================================

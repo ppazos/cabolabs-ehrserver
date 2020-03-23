@@ -30,7 +30,6 @@ import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.query.QueryShare
 import com.cabolabs.ehrserver.reporting.ActivityLog
-import com.cabolabs.openehr.opt.manager.OptManager
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import grails.converters.*
 import javax.servlet.http.Cookie
@@ -319,16 +318,16 @@ class SecurityFilters {
                         }
 
 
-
                         def org_uid = request.securityStatelessMap.extradata.org_uid
                         if (Organization.countByUid(org_uid) == 0)
                         {
                            // TODO: send in the request format (add support to json)
+
                            render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                              result {
+                              delegate.result {
                                  type('AR')                         // application reject
                                  message(
-                                    messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
+                                    "opi" //messageSource.getMessage('rest.error.token.organizationDoesntExists', [org_uid] as Object[], getRequestLocale(request))
                                  )
                                  code('EHR_SERVER::API::ERRORS::987657') // sys::service::concept::code
                               }
@@ -348,7 +347,7 @@ class SecurityFilters {
                         if (!orgs.find{ it.uid == org_uid })
                         {
                            render(status: 400, contentType:"text/xml", encoding:"UTF-8") {
-                              result {
+                              delegate.result {
                                  type('AR')                         // application reject
                                  message(
                                     messageSource.getMessage('rest.error.token.userDoesntBelongToOrganization', [username, org_uid] as Object[], getRequestLocale(request))
@@ -431,15 +430,8 @@ class SecurityFilters {
                      setLangCookie(session.lang, response) // 3. sets cookie with the org pref lang
                   }
                   session.organization = org // to show the org name in the ui
-
-                  // Load OPTS if not loaded for the current org
-                  /* this is done on bootstrap now (2018-06-28)
-                  def optMan = OptManager.getInstance( Holders.config.app.opt_repo.withTrailSeparator() )
-                  optMan.loadAll(org.uid)
-                  */
                }
             }
-
          }
          /*
          after = { Map model ->

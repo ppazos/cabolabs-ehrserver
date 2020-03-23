@@ -39,7 +39,7 @@ class OperationalTemplateIndex {
    int versionNumber = 1
    boolean lastVersion = true // to simplify queries
 
-   String fileUid = java.util.UUID.randomUUID() as String
+   String fileLocation
 
    Date dateCreated
    Date lastUpdated
@@ -54,6 +54,9 @@ class OperationalTemplateIndex {
                      templateNodes: OperationalTemplateIndexItem]
 
 
+   static constraints = {
+      fileLocation(maxSize:1024)
+   }
 
    static transients = ['lang']
    def getLang()

@@ -93,6 +93,7 @@ class SyncMarshallersService {
       String ext = '.xml'
       if (_commit.contentType.contains('json')) ext = '.json'
 
+      // FIXME: for S3 this shouldn't depend on the FS, should get the commit through a service
       def file = new File(config.commit_logs.withTrailSeparator() +
                           c.organizationUid.withTrailSeparator() +
                           _commit.fileUid + ext)
@@ -579,9 +580,7 @@ class SyncMarshallersService {
 
    def toJSON(OperationalTemplateIndex o, JsonBuilder jb)
    {
-      def file = new File(config.opt_repo.withTrailSeparator() +
-                          o.organizationUid.withTrailSeparator() +
-                          o.fileUid +".opt")
+      def file = new File(opt.fileLocation)
 
       /* will send the OPT as is in XML
       def json = jsonService.xmlToJson(file.text)

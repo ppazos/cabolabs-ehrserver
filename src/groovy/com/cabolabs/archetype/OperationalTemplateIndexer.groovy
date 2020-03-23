@@ -32,7 +32,8 @@ import com.cabolabs.ehrserver.parsers.XmlValidationService
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndexItem
-import com.cabolabs.ehrserver.openehr.OPTService
+
+import com.cabolabs.openehr.opt.manager.OptRepository
 
 /*
  * TODO: refactor to service.
@@ -46,6 +47,11 @@ class OperationalTemplateIndexer {
    def template
    def templateIndex // OperationalTemplateIndex correspondent to the template we are indexing
    def indexes = []
+
+   // OperationalTemplateIndexer is in src and the optService is not injected,
+   // this is to inject the optService
+   def optService = Holders.grailsApplication.mainContext.getBean 'optService'
+   def xmlValidationService = Holders.grailsApplication.mainContext.getBean 'xmlValidationService'
 
    // RM attributes that are not in the OPT but also need to be indexed for querying.
    // This is like a schema, but is not including the attrs that are on OPTs.
@@ -187,7 +193,7 @@ class OperationalTemplateIndexer {
     * @param org organization to associated the Opt with
     * @return
     */
-   def createOptIndex(GPathResult template, Organization org)
+   def createOptIndex(GPathResult template, Organization org, String fileContents)
    {
       def templateId = template.template_id.value.text()
       def concept = template.concept.text()
@@ -203,9 +209,13 @@ class OperationalTemplateIndexer {
          externalUid: uid,
          archetypeId: archetypeId,
          archetypeConcept: archetypeConcept,
-         organizationUid: org.uid
+         organizationUid: org.uid,
+         fileLocation: optService.newOPTFileLocation(org.uid, templateId)
       )
       if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
+
+      // Write OPT file
+      optService.storeOPTContents(templateIndex.fileLocation, fileContents)
 
       return templateIndex
    }
@@ -219,45 +229,36 @@ class OperationalTemplateIndexer {
     *
     * @return
     */
-   def setupBaseOpts(Organization org)
+   def setupBaseOpts(Organization org, OptRepository repo)
    {
-      def opts_path = config.opt_repo
-      def base_path = config.opt_repo.withTrailSeparator() + 'base_opts'
-      def base_repo = new File( base_path )
+      def namespace = "base_opts"
+      def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
 
-      if (!base_repo.exists()) throw new Exception("No existe "+ base_path)
-      if (!base_repo.canRead()) throw new Exception("No se puede leer "+ base_path)
-      if (!base_repo.isDirectory()) throw new Exception("No es un directorio "+ base_path)
+      // used to get the file name
+      def file_name, location
+      def prefix_cut_index
+      def suffix_cut_index = '.opt'.size() + 1
 
-      def opt_repo_org = new File(opts_path.withTrailSeparator() + org.uid)
+      opt_contents.each { absolute_path, opt_text ->
 
-      // repo namespace exists for org?
-      // the org opt repois created when the org is created
-      if (!opt_repo_org.exists())
-      {
-         // create it
-         opt_repo_org.mkdir()
-      }
-
-      // Only copy the base opts if the opt repo is empty, to avoid copying again every time the app starts.
-      if (opt_repo_org.listFiles().count { it.name ==~ /.*\.opt/ } == 0)
-      {
-         def xmlValidationService = new XmlValidationService()
-         def dest, opt_contents
-         base_repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
-
-            opt_contents = FileUtils.removeBOM(file.text.bytes)
-
-            if (!xmlValidationService.validateOPT(opt_contents))
-            {
-               println "Invalid OPT file "+ file.name +" "+ xmlValidationService.getErrors() // Important to keep the correspondence between version index and error reporting.
-               return // avoid copying not valid OPT file
-            }
-
-            dest = new File(opt_repo_org.canonicalPath.withTrailSeparator() + String.uuid() + '.opt')
-            //java.nio.file.Files.copy(file.toPath(), dest.toPath())
-            dest <<  opt_contents
+         if (!xmlValidationService.validateOPT(opt_text))
+         {
+             // Important to keep the correspondence between version index and error reporting.
+            println "Invalid OPT found in base_opts "+ xmlValidationService.getErrors()
+            return // avoid copying not valid OPT file
          }
+
+         prefix_cut_index = absolute_path.indexOf('base_opts') + 'base_opts/'.size()
+
+         // this is the normalized template id
+         // IMPORTANT: when creating base_opts, the names of the files should be normalized!!!
+         file_name = absolute_path[prefix_cut_index..-suffix_cut_index]
+
+         // new key considering the repo of the org
+         location = optService.newOPTFileLocation(org.uid, file_name)
+
+         // copies the contents to the new location under the organization
+         optService.storeOPTContents(location, opt_text)
       }
    }
 
@@ -333,27 +334,37 @@ class OperationalTemplateIndexer {
       opt.isActive = true
       opt.save(failOnError: true)
 
-      def opt_file = OPTService.getOPTFile(opt.fileUid, opt.organizationUid)
+      def opt_xml = optService.getOPTContents(opt)
       def org = Organization.findByUid(opt.organizationUid)
 
-      def template_xml = FileUtils.removeBOM(opt_file.getBytes())
+      def clean_opt_xml = FileUtils.removeBOM(opt_xml.getBytes())
       def slurper = new XmlSlurper(false, false)
-      def template_xml_parsed = slurper.parseText(template_xml)
+      def template_xml_parsed = slurper.parseText(clean_opt_xml)
 
       this.templateIndex = opt
+
+      // creates the references to the internal template and archetype items,
+      // I guess those were deleted when the OPT was deactivated...
       index(template_xml_parsed, null, org)
       this.templateIndex = null
    }
 
-   def indexAll(Organization org)
+   // reindex existing files in the OPT repo of the organization
+   def indexAll(Organization org, OptRepository repo)
    {
+      def namespace = org.uid
+      def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
+
+      /*
       def path = config.opt_repo
 
+      // FIXME: for S3 this should access the OPT service, not the FS directly
       def repo = new File(path.withTrailSeparator() + org.uid)
 
       if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
       if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
       if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
+      */
 
       def opts = OperationalTemplateIndex.forOrg(org).active().list()
 
@@ -362,6 +373,7 @@ class OperationalTemplateIndexer {
          deleteOptReferences(opt)
       }
 
+      /*
       def opt
       repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
 
@@ -375,6 +387,37 @@ class OperationalTemplateIndexer {
          {
              println "File ${file.name} not indexed, the file name should be an UUID. Please put your initial OPT in the base_opts folder."
          }
+      }
+      */
+      def parsed_template
+
+      opt_contents.each { absolute_path, opt_text ->
+
+         if (!xmlValidationService.validateOPT(opt_text))
+         {
+             // Important to keep the correspondence between version index and error reporting.
+            println "Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors()
+            return // avoid copying not valid OPT file
+         }
+
+          // GPathResult
+         parsed_template = new XmlSlurper().parseText(opt_text)
+
+         // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
+         if (!templateAlreadyExistsForOrg(parsed_template, org))
+         {
+            index(parsed_template, null, org) // We dont use the file_uid any more
+         }
+         else
+         {
+            log.info('File '+ absolute_path +' was not loaded because other template with the same concept or UID is already loaded')
+         }
+
+
+         // TODO: check if this is needed
+         // reset for the next index, used from indexAll
+         this.template = null
+         this.templateIndex = null
       }
    }
 
@@ -400,8 +443,12 @@ class OperationalTemplateIndexer {
       template.language.code_string.text() // https://github.com/ppazos/cabolabs-ehrserver/issues/878
    }
 
+   // TODO: the file_uid is not longer used, now the file name will be a normalized template id
    def index(GPathResult template, String file_uid, Organization org)
    {
+      //println "OPT indexer index "+ file_uid
+      //println "optService "+ optService
+
       // TODO: refactor, this is 99% createOptIndex()
       this.template = template
 
@@ -424,10 +471,9 @@ class OperationalTemplateIndexer {
             externalUid: uid,
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
-            organizationUid: org.uid
+            organizationUid: org.uid,
+            fileLocation: optService.newOPTFileLocation(org.uid, templateId)
          )
-
-         if (file_uid) this.templateIndex.fileUid = file_uid
 
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
@@ -488,12 +534,18 @@ class OperationalTemplateIndexer {
       this.indexes = []
    }
 
+
+   /* these are used only for testing and depend on files, but tests are wrong since
+      indexing OPTs should always depend on an organization and these functions dont
+      use an org.
+
    def index(File templateFile, Organization org)
    {
       if (!templateFile.exists())  throw new Exception("No existe "+ templateFile.getAbsolutePath())
       if (!templateFile.canRead())  throw new Exception("No se puede leer "+ templateFile.getAbsolutePath())
       if (!templateFile.isFile())  throw new Exception("No es un archivo "+ templateFile.getAbsolutePath())
 
+      // FIXME: S3 this should access the OPT service not the FS directly
       // The names of the OPT files from the OPT repo, should be their fileUid
       def file_uid = templateFile.name - '.opt'
       def template = new XmlSlurper().parseText( templateFile.getText() ) // GPathResult
@@ -518,16 +570,17 @@ class OperationalTemplateIndexer {
       return opt
    }
 
-   /*
-    * templateFileName es el nombre del archivo sin la extension.
-    */
-   def index(String fullTemplateFileName)
+   //
+   // templateFileName es el nombre del archivo sin la extension.
+   //
+   def index(String opt_key, Organization org)
    {
-      def path = fullTemplateFileName
+      def path = opt_key
       def tfile = new File( path )
       // file exists is checked inside
       return index(tfile)
    }
+   */
 
    def indexAttribute(GPathResult node, String parentPath, String archetypePath, GPathResult parent, boolean indexingDatavalue)
    {
@@ -698,13 +751,13 @@ class OperationalTemplateIndexer {
 
          // For datatypes there is no nodeId, we should get the nodeId of the parent ELEMENT,
          // but some archetype editors add nodeIds to datatypes, for now we avoid to set nodeId for datatype paths.
-//         if (!nodeId)
-//         {
+         // if (!nodeId)
+         // {
             // .parent es attributes 'value', .parent.parent es children 'ELEMENT'
             def parent_object = node.parent().parent()
             nodeId = parent_object.node_id.text()
             addParentAttrName = true
-//         }
+         // }
 
 
          // pathables should not use their node_id

@@ -27,35 +27,55 @@ import grails.transaction.Transactional
 import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
 
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+
+import javax.annotation.PostConstruct
+
 @Transactional
-class CommitLoggerService {
+class CommitLoggerS3Service {
 
    def config = Holders.config.app
 
-   /*
-    * Operations for the whole version repo.
-    */
-   private boolean canWriteRepo()
+   AmazonS3 s3
+
+   // this initalizes the S3 connection when the service is created
+   @PostConstruct
+   def init()
    {
-      return new File(config.commit_logs).canWrite()
+      //your initialization code goes here. e.g connect to some Messaging Service
+
+      BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                                               "${Holders.config.aws.accessKey}",
+                                               "${Holders.config.aws.secretKey}")
+
+      this.s3 = AmazonS3ClientBuilder.standard()
+         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+         .withRegion("${Holders.config.aws.region}")
+         .build()
    }
 
-   private boolean repoExists()
+   String getCommitContents(CommitLog commit)
    {
-      return new File(config.commit_logs).exists()
-   }
+      def contents
 
-   /*
-    * Operations for the version repo per organization.
-    */
-   private boolean canWriteRepoOrg(String orguid)
-   {
-      return new File(config.commit_logs.withTrailSeparator() + orguid).canWrite()
-   }
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         contents = this.s3.getObjectAsString(
+            Holders.config.aws.bucket,
+            commit.fileLocation // key
+         )
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting commit contents in S3 "+ e.message
+         return false
+      }
 
-   private boolean repoExistsOrg(String orguid)
-   {
-      return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+      return contents
    }
 
    /**
@@ -128,56 +148,66 @@ class CommitLoggerService {
       println authUser
       */
 
+      // save the json or xml to the commit log
+      def ext = '.xml'
+      if (contentType == 'application/json') ext = '.json'
+
       // empty XML is a possible error so the commit should be saved to the
       // database but no xml file will be created
 
       def commit = new CommitLog(
-         ehrUid: params.ehrUid,
-         locale: clientLocale,
-         params: params,
-         contentType: contentType,
-         contentLength: contentLength,
-         success: success,
-
-         username: authUser,
-
-         action: params.controller +':'+params.action,
-         objectClazz: 'Contribution',
-         objectUid: contributionUid, // can be null if !success
-
-         remoteAddr: request.remoteAddr,
-         clientIp:        request.getHeader("Client-IP"), // can be null
-         xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
-         referer:         request.getHeader('referer'), // can be null
-         requestURL:      request.requestURL,
-         matchedURI:      request.forwardURI,
-         sessionId: session.id.toString()
+         ehrUid:         params.ehrUid,
+         locale:         clientLocale,
+         params:         params,
+         contentType:    contentType,
+         contentLength:  contentLength,
+         success:        success,
+         username:       authUser,
+         action:         params.controller +':'+params.action,
+         objectClazz:    'Contribution',
+         objectUid:      contributionUid, // can be null if !success
+         remoteAddr:     request.remoteAddr,
+         clientIp:       request.getHeader("Client-IP"), // can be null
+         xForwardedFor:  request.getHeader("X-Forwarded-For"), // can be null
+         referer:        request.getHeader('referer'), // can be null
+         requestURL:     request.requestURL,
+         matchedURI:     request.forwardURI,
+         sessionId:      session.id.toString()
       )
-
-      if (!commit.validate()) println commit.errors
-
-      commit.save(failOnError: true)
 
       if (logContent)
       {
          String orguid = request.securityStatelessMap.extradata.org_uid
 
-         // TODO: The orguid folder is created just the first time,
-         // it might be better to create it whe nthe organization is created.
-         if (!repoExistsOrg(orguid))
+         // saves the reference to the log file in the DB
+         commit.fileLocation = newCommitFileLocation(orguid, contributionUid, ext)
+
+         try
          {
-            // Creates the orguid subfolder
-            new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
+            // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
+            def putObjectResult = this.s3.putObject(
+               Holders.config.aws.bucket,
+               commit.fileLocation,
+               logContent
+            )
          }
-
-         // save the json or xml to the commit log
-         def ext = '.xml'
-         if (contentType == 'application/json') ext = '.json'
-
-         def commitLog = new File(config.commit_logs.withTrailSeparator() +
-                                  orguid.withTrailSeparator() +
-                                  commit.fileUid + ext)
-         commitLog << logContent
+         catch (Exception e)
+         {
+            log.error "There was a problem storing commit contents in S3 "+ e.message
+         }
       }
+
+
+      // save log to DB
+      if (!commit.validate()) println commit.errors
+      commit.save(failOnError: true)
+   }
+
+   static String newCommitFileLocation(String orguid, String contributionUid, String ext)
+   {
+      if (!contributionUid) contributionUid = java.util.UUID.randomUUID()
+
+      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
+      return Holders.config.aws.folders.commit_logs.withTrailSeparator() + orguid.withTrailSeparator() + contributionUid + ext
    }
 }

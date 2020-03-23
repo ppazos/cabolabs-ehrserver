@@ -680,7 +680,6 @@ class QueryController {
 
    def getTemplateJson(String template_id)
    {
-      //def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
       def optMan = OptManager.getInstance()
       def opt = optMan.getOpt(template_id, session.organization.uid)
       def toJson = new JsonSerializer()

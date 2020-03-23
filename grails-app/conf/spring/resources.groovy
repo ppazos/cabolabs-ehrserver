@@ -25,7 +25,25 @@
 //import com.cabolabs.security.AbstractAuthenticationProcessingFilter
 import com.cabolabs.security.AuthFilter
 import com.cabolabs.security.AuthProvider
+import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.versions.VersionS3RepoService
+import com.cabolabs.ehrserver.openehr.OptFSService
+import com.cabolabs.ehrserver.openehr.OptS3Service
+import com.cabolabs.archetype.OperationalTemplateIndexer
+import com.cabolabs.ehrserver.log.CommitLoggerFSService
+import com.cabolabs.ehrserver.log.CommitLoggerS3Service
+
 beans = {
+
+   // Configuration for using S3 file access
+   versionRepoService(VersionS3RepoService)
+   optService(OptS3Service)
+   commitLoggerService(CommitLoggerS3Service)
+
+   // Configuration for using File System file access
+   // versionRepoService(VersionFSRepoService)
+   // optService(OptFSService)
+   // commitLoggerService(CommitLoggerFSService)
 
    authProvider(AuthProvider) {
       passwordEncoder = ref("passwordEncoder") // from plugin
@@ -35,29 +53,29 @@ beans = {
       // properties
       // http://www.oodlestechnologies.com/blogs/Adding-Custom-Spring-Security-Authentication
       authProvider = ref("authProvider")
-      
-      
+
+
       // AbstractAuthenticationProcessingFilter copied from https://github.com/grails-plugins/grails-spring-security-core/blob/ced4c539dbd0c6ea2cb2ac06349c952accbd8142/src/main/groovy/grails/plugin/springsecurity/SpringSecurityCoreGrailsPlugin.groovy
       // see authenticationProcessingFilter bean.
-      
+
       // Calls methods from https://github.com/spring-projects/spring-security/blob/master/web/src/main/java/org/springframework/security/web/authentication/AbstractAuthenticationProcessingFilter.java
-      
+
       // calls AbstractAuthenticationProcessingFilter.setAuthenticationManager
       authenticationManager = ref("authenticationManager")
       sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-      
+
       // calls AbstractAuthenticationProcessingFilter.setAuthenticationSuccessHandler
       authenticationSuccessHandler = ref('authenticationSuccessHandler')
-      
+
       // calls AbstractAuthenticationProcessingFilter.setAuthenticationFailureHandler
       authenticationFailureHandler = ref('authenticationFailureHandler')
-      
+
       // calls AbstractAuthenticationProcessingFilter.setRememberMeServices
 //      rememberMeServices = ref("rememberMeServices")
-      
+
       // calls AbstractAuthenticationProcessingFilter.setRequiresAuthenticationRequestMatcher
       requiresAuthenticationRequestMatcher = ref('filterProcessUrlRequestMatcher')
-      
+
       continueChainBeforeSuccessfulAuthentication = false // test
    }
 }

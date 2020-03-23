@@ -45,13 +45,13 @@ import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 class DataIndexerService {
 
    def config = Holders.config.app
-   def versionFSRepoService
+   def versionRepoService
 
    def generateIndexes(CompositionIndex compoIndex)
    {
       // created indexes will be loaded here
       def indexes = []
-      def version, versionFile, versionXml, parsedVersion, compoParsed, org
+      def version, versionXml, parsedVersion, compoParsed, org
 
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
@@ -77,11 +77,11 @@ class DataIndexerService {
 
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
+         versionXml = versionRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
       }
       catch (VersionRepoNotAccessibleException e)
       {
-         log.warning e.message
+         log.warn e.message
          return // continue with next compoIndex
       }
       catch (FileNotFoundException e)
@@ -90,7 +90,6 @@ class DataIndexerService {
          return // Continue with next compoIdx
       }
 
-      versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
 
       //       error from error handler?

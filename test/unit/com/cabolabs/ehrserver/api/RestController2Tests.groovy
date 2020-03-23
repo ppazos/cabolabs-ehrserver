@@ -172,9 +172,13 @@ class RestController2Tests {
 
    void testCommitHugeCompo()
    {
+      def org = Organization.findByNumber('1234')
+
+      // FIXME: indexing should happen in the context of an organization,
+      //        the source OPT could be taken from the test folder (namespace)
+      //        but should be loaded into the organization namespace (org.uid folder)
       def oti = new com.cabolabs.archetype.OperationalTemplateIndexer()
-      def opt = new File( "opts" + PS + "tests" + PS + "RIPPLE - Conformance Test template.opt" )
-      oti.index(opt)
+      oti.index("opts" + PS + "tests" + PS + "RIPPLE - Conformance Test template.opt")
 
       request.method = 'POST'
       request.contentType = 'text/xml'

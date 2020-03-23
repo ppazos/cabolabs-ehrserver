@@ -31,19 +31,19 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class ActivityLogController {
 
    def configurationService
-   
+
    def config = Holders.config.app
-   
+
    def index(int offset, String sort, String order)
    {
       int max = configurationService.getValue('ehrserver.console.lists.max_items')
       if (!offset) offset = 0
       if (!sort) sort = 'id'
       if (!order) order = 'desc'
-      
+
       def c = ActivityLog.createCriteria()
       def list
-      
+
       if (SpringSecurityUtils.ifAllGranted("ROLE_ADMIN"))
       {
          list = c.list (max: max, offset: offset, sort: sort, order: order) {
@@ -55,14 +55,16 @@ class ActivityLogController {
             eq('organizationUid', session.organization.uid)
          }
       }
-      
+
       //respond list, model:[activityLogInstanceCount: list.totalCount]
-      
+
       render view:'index', model : [activityLogInstanceList: list.groupBy{it.sessionId}, activityLogInstanceCount: list.totalCount]
    }
 
-   def show(ActivityLog activityLogInstance)
+   def show(Long id)
    {
+      def activityLogInstance = ActivityLog.get(id)
+
       // admins can access all logs
       // filter by current org! because it is accessed by id
       if (!SpringSecurityUtils.ifAllGranted("ROLE_ADMIN") &&
@@ -72,7 +74,7 @@ class ActivityLogController {
          redirect action:'index'
          return
       }
-      respond activityLogInstance
+      return [activityLogInstance: activityLogInstance]
    }
 
    protected void notFound() {

@@ -74,7 +74,8 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
 
-        mavenRepo "http://repo.spring.io/milestone/"
+        mavenRepo "https://repo.spring.io/milestone/"
+        //mavenRepo "https://repo1.maven.org/maven2/"
         //mavenRepo "https://oss.sonatype.org/content/repositories/snapshots/"
 
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
@@ -122,10 +123,21 @@ grails.project.dependency.resolution = {
 
        //compile "org.springframework.security:spring-security-crypto:4.0.2-RELEASE"
        //compile 'org.pac4j:pac4j-core:1.7.1'
+
+      //classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+
+      // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom
+      //compile group: 'com.amazonaws', name: 'aws-java-sdk-bom', version: '1.11.715', ext: 'pom'
+
+      // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
+      //compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.715'
+      // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+      compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.11'
+      compile 'com.amazonaws:aws-java-sdk-core:1.11.715'
+      compile 'com.amazonaws:aws-java-sdk-s3:1.11.715'
     }
 
     plugins {
-
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
