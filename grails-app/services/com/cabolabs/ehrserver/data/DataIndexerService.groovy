@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -35,7 +35,6 @@ import grails.util.Holders
 import org.xml.sax.ErrorHandler
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
-import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 
@@ -43,13 +42,13 @@ import com.cabolabs.ehrserver.indexing.DataValueIndexLog
 class DataIndexerService {
 
    def config = Holders.config.app
-   def versionFSRepoService
+   def versionRepoService
 
    def generateIndexes(CompositionIndex compoIndex)
    {
       // created indexes will be loaded here
       def indexes = []
-      def version, versionFile, versionXml, parsedVersion, compoParsed
+      def version, versionXml, parsedVersion, compoParsed
 
       // Error handler to avoid:
       // Warning: validation was turned on but an org.xml.sax.ErrorHandler was not
@@ -74,11 +73,11 @@ class DataIndexerService {
 
       try
       {
-         versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
+         versionXml = versionRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
       }
       catch (VersionRepoNotAccessibleException e)
       {
-         log.warning e.message
+         log.warn e.message
          return // continue with next compoIndex
       }
       catch (FileNotFoundException e)
@@ -87,7 +86,6 @@ class DataIndexerService {
          return // Continue with next compoIdx
       }
 
-      versionXml = versionFile.getText()
       parsedVersion = parser.parseText(versionXml)
 
       //       error from error handler?

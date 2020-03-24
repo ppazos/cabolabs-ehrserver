@@ -19,14 +19,16 @@ import  groovy.json.StringEscapeUtils
 
 import com.cabolabs.security.RequestMap
 
+import com.cabolabs.file.RepositoryFactory
+
 import java.text.Normalizer
 
 class BootStrap {
 
    def configurationService
    def operationalTemplateIndexerService
-   def OPTService
-   def versionFSRepoService
+   def optService
+   def versionRepoService
 
    GrailsApplication grailsApplication
 
@@ -215,7 +217,7 @@ class BootStrap {
 
       new RequestMap(url: '/compositionIndex/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-        new RequestMap(url: '/stats/organization', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/stats/organization', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
    }
 
    def createTerminologyIds()
@@ -230,8 +232,8 @@ class BootStrap {
    {
       Account.list().each { account ->
 
-         account.current_opt_repo_size = OPTService.getRepoSizeInBytesAccount(account)
-         account.current_version_repo_size = versionFSRepoService.getRepoSizeInBytesAccount(account)
+         account.current_opt_repo_size = optService.getRepoSizeInBytesAccount(account)
+         account.current_version_repo_size = versionRepoService.getRepoSizeInBytesAccount(account)
          account.save(flush: true, failOnError: true)
       }
    }
@@ -268,10 +270,10 @@ class BootStrap {
             ),
             new Plan(
               name:                            "Testing",
-              max_organizations:               5,
-              max_opts_per_organization:       20,
-              max_api_tokens_per_organization: 3,
-              repo_total_size_in_kb:           200000, // low for testing! (1MB in kB = 1000 kB)
+              max_organizations:               20,
+              max_opts_per_organization:       50,
+              max_api_tokens_per_organization: 10,
+              repo_total_size_in_kb:           2000000, // low for testing! (1MB in kB = 1000 kB)
               period:                          Plan.periods.MONTHLY
             )
          ]
@@ -723,22 +725,30 @@ class BootStrap {
 
    def setupTemplates()
    {
-      // for the default organization
+      // for the existing organizations
       def orgs = Organization.list()
 
+      // ***********************************************************************
+      // This is the setup of the OptManager instance, this should be first,
+      // then any othre use will use the same internal repo.
+      // ***********************************************************************
+      def repo = RepositoryFactory.getInstance().getOPTRepository()
+      def optMan = OptManager.getInstance(repo)
+
       // in memory cache, loads files located in the namespace folder
-      def optRepo = grailsApplication.config.getProperty('app.opt_repo')
-      def optMan = OptManager.getInstance(optRepo.withTrailSeparator())
+      //def optRepo = grailsApplication.config.getProperty('app.opt_repo')
+      //def optMan = OptManager.getInstance(optRepo.withTrailSeparator())
       orgs.each { org ->
 
-         // needs to run first so files are copied into the namespace folder
-         if (OperationalTemplateIndex.countByOrganizationUid(org.uid) == 0)
-         {
-            operationalTemplateIndexerService.setupBaseOpts(org.uid)
-            operationalTemplateIndexerService.indexAll(org.uid)
-         }
-
          log.info("Indexing OPTs for organization "+ org.uid)
+
+         // if there are OPTs in "base_opts" copies them to the organization repo
+         operationalTemplateIndexerService.setupBaseOpts(org, repo)
+
+         // loads all OPTs in the org repo to the DB
+         operationalTemplateIndexerService.indexAll(org, repo)
+
+         // memory loading
          optMan.loadAll(org.uid)
       }
    }
@@ -907,9 +917,22 @@ class BootStrap {
          n = Normalizer.normalize(n, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
       }
 
+      String.metaClass.normalizeStrangeCharacters = {
+         return java.text.Normalizer.normalize(delegate, java.text.Normalizer.Form.NFD).replaceAll(/\p{InCombiningDiacriticalMarks}+/, '')
+      }
+
+      String.metaClass.toCamelCase = {
+         return delegate.replaceAll( / ([A-Z])/, /$1/ ).replaceAll( /([A-Z])/, /_$1/ ).replaceAll(/\s/, '_').toLowerCase().replaceAll( /^_/, '' )
+      }
+
       // Escapes quotes in strings for displaying via JS
       String.metaClass.escapeJS = {
          StringEscapeUtils.escapeJavaScript(delegate)
+      }
+
+      // returns current date in ISO 8601 datetime format without seconds fraction, and UTC timezone
+      Date.metaClass.static.nowInIsoUtc = {
+         return new Date().format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
       }
 
       // get the stack trace as string from an exception

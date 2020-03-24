@@ -73,10 +73,18 @@ dependencies {
 
    compile 'org.grails.plugins:ajax-tags:1.0.0'
 
+
+   // internal plugins using jitpack/github
    //compile "grails.simple.auth:grails-simple-auth:0.1" // local
    compile "com.github.ppazos:grails-simple-auth:v0.2"
    //compile "grails.security.stateless.ng:grails-security-stateless-ng:0.1" // local
    compile "com.github.ppazos:grails-security-stateless-ng:v0.1"
+
+
+   // S3 support
+   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.11'
+   compile 'com.amazonaws:aws-java-sdk-core:1.11.715'
+   compile 'com.amazonaws:aws-java-sdk-s3:1.11.715'
 }
 
 bootRun {

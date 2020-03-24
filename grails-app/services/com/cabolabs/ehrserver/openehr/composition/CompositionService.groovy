@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -39,7 +39,7 @@ class CompositionService {
 
    def config = Holders.config.app
    def jsonService
-   def versionFSRepoService
+   def versionRepoService
 
    def compositionAsXml(String uid)
    {
@@ -56,12 +56,7 @@ class CompositionService {
       }
 
       def version = compoIndex.getParent()
-
-      // Throws FileNotFoundException
-      def versionFile = versionFSRepoService.getExistingVersionFile(compoIndex.organizationUid, version)
-
-      def xml = versionFile.getText()
-
+      def xml = versionRepoService.getExistingVersionContents(compoIndex.organizationUid, version)
       return xml
    }
 

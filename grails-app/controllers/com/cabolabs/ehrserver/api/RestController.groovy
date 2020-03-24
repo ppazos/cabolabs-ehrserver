@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -49,7 +49,6 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.ehrserver.openehr.composition.CompositionService
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.query.*
-import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.security.*
 
 
@@ -63,13 +62,14 @@ class RestController {
    def xmlService
    def jsonService
    def compositionService
-   def versionFSRepoService
+   def versionRepoService
    def commitLoggerService
    def logService
    def notificationService
    def apiResponsesService
    def queryService
    def configurationService
+   def optService
 
    // access localization options
    def config = Holders.config.app
@@ -381,7 +381,7 @@ class RestController {
 
 
          // Update account repo size
-         account.current_version_repo_size = versionFSRepoService.getRepoSizeInBytesAccount(account)
+         account.current_version_repo_size = versionRepoService.getRepoSizeInBytesAccount(account)
          account.save(flush: true, failOnError: true)
 
 
@@ -1007,7 +1007,7 @@ class RestController {
          def version
          String buff
          String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-         def vf
+
          //if (!ehrUid) // group by ehrUid
          //{
             res.each { _ehrUid, compoIndexes ->
@@ -1027,15 +1027,14 @@ class RestController {
 
                   try
                   {
-                     vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-                     buff = vf.getText()
+                     buff = versionRepoService.getExistingVersionContents(organizationUid, version)
                   }
                   catch (VersionRepoNotAccessibleException e)
                   {
                      logService.error(request, session, params, e)
                      return // continue with next compoIndex
                   }
-                  catch (FileNotFoundException e)
+                  catch (Exception e)
                   {
                      logService.error(request, session, params, e)
                      return // continue with next compoIndex
@@ -1070,17 +1069,17 @@ class RestController {
 
                try
                {
-                  vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
+                  vf = versionRepoService.getExistingVersionContents(organizationUid, version)
                   buff = vf.getText()
                }
                catch (VersionRepoNotAccessibleException e)
                {
-                  log.warning e.message
+                  log.warn e.message
                   return // continue with next compoIndex
                }
                catch (FileNotFoundException e)
                {
-                  log.warning e.message
+                  log.warn e.message
                   return // continue with next compoIndex
                }
 
@@ -1478,7 +1477,6 @@ class RestController {
       def version
       String buff
       String out = '<?xml version="1.0" encoding="UTF-8"?><list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">\n'
-      def vf
 
       result.each { ehrUid, compoIndexes ->
 
@@ -1497,8 +1495,7 @@ class RestController {
 
             try
             {
-               vf = versionFSRepoService.getExistingVersionFile(organizationUid, version)
-               buff = vf.getText()
+               buff = versionRepoService.getExistingVersionContents(organizationUid, version)
             }
             catch (VersionRepoNotAccessibleException e)
             {
@@ -1870,9 +1867,7 @@ class RestController {
          return
       }
 
-      def src = config.opt_repo.withTrailSeparator() + request.securityStatelessMap.extradata.org_uid.withTrailSeparator() + opt.fileUid + '.opt'
-      File opt_file = new File( src )
-      def opt_out = opt_file.getText()
+      def opt_out = optService.getOPTContents(opt)
 
       withFormat {
          xml {

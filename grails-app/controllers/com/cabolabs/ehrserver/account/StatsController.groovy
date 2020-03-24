@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -32,8 +32,8 @@ import grails.converters.*
 
 class StatsController {
 
-   def versionFSRepoService
-   def OPTService
+   def versionRepoService
+   def optService
 
    /**
     * Show stats dashboard for all the organizations accessible by the user.
@@ -71,7 +71,7 @@ class StatsController {
          stats: [
             transactions: Contribution.byOrgInPeriod(org.uid, dfrom, dto).count(),
             documents: Version.byOrgInPeriod(org.uid, dfrom, dto).count(),
-            size: versionFSRepoService.getRepoSizeInBytesBetween(org.uid, dfrom, dto)
+            size: versionRepoService.getRepoSizeInBytesBetween(org.uid, dfrom, dto)
          ]
       ]
 
@@ -137,7 +137,7 @@ class StatsController {
 
       // FIXME: should be current total size, not size in period, and
       // should be for the account that is the sum of all repos of all the account organizations
-      def size = versionFSRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
+      def size = versionRepoService.getRepoSizeInBytesBetween(uid, dfrom, dto)
 
       // Active plan for the orgazination account
       def org = Organization.findByUid(uid)
@@ -172,7 +172,7 @@ class StatsController {
 
       account.organizations.each { org ->
 
-         size = ((versionFSRepoService.getRepoSizeInBytesOrg(org.uid) + OPTService.getRepoSizeInBytesOrg(org.uid)) / 1000).setScale(1,0)
+         size = ((versionRepoService.getRepoSizeInBytesOrg(org.uid) + optService.getRepoSizeInBytesOrg(org.uid)) / 1000).setScale(1,0)
 
          // size is set in kB = 1000 bytes
          stats[org.uid] = size

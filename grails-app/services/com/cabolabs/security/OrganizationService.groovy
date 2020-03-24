@@ -21,26 +21,8 @@ class OrganizationService {
       // Create default QueryGroup per organization, see https://github.com/ppazos/cabolabs-ehrserver/issues/982
       new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save()
 
-      // create repos
-
-      // create namespace repo for org OPTs
-      def opt_repo_org = new File(config.opt_repo.withTrailSeparator() + org.uid)
-      opt_repo_org.mkdir()
-
-      // create older OPT version repo for the org (needed for versioning)
-      def old_versions_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'older_versions')
-      old_versions_opt_repo_org.mkdir()
-
-      def deleted_opt_repo_org = new File(opt_repo_org.path.withTrailSeparator() + 'deleted')
-      deleted_opt_repo_org.mkdir()
-
-      // org version repo
-      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
-      version_repo.mkdir()
-
-      // org commit logs repo
-      def commit_logs_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
-      commit_logs_repo.mkdir()
+      // There is no need of creating the file repos for the org since those will
+      // be created the first time those are used
 
       if (sendNotification)
       {

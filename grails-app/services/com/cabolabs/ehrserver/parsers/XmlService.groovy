@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -66,7 +66,7 @@ class XmlService {
    def validationErrors = [:] // compoIndex -> error list
 
    def xmlValidationService
-   def versionFSRepoService
+   def versionRepoService
 
    def CHANGE_TYPE_CREATION = 249
    def CHANGE_TYPE_AMENDMENT = 250
@@ -449,9 +449,10 @@ class XmlService {
          try
          {
             //println "XML version.uid "+ versionXML.uid.value // null because XMLSlurper doesn't evalaute the XML after adding the uid to the XML
-
             version = contribution.versions.find { it.uid == version_uid}
-            file = versionFSRepoService.getNonExistingVersionFile(ehr.organizationUid, version)
+
+            // sets version.fileLocation
+            file = versionRepoService.storeVersionContents(ehr.organizationUid, version, versionXML)
          }
          catch (VersionRepoNotAccessibleException e)
          {

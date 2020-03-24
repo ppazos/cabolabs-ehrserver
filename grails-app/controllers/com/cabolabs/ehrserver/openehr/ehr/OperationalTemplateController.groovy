@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -42,7 +42,7 @@ class OperationalTemplateController {
    def authService
    def configurationService
    def operationalTemplateIndexerService
-   def OPTService
+   def optService
    def syncMarshallersService
 
    def index(int offset, String sort, String order, String concept, Boolean deleted)
@@ -82,7 +82,7 @@ class OperationalTemplateController {
     */
    def generate()
    {
-      operationalTemplateIndexerService.indexAll(session.organization.uid)
+      operationalTemplateIndexerService.indexAll(session.organization)
 
       // load opt in manager cache
       def optMan = OptManager.getInstance()
@@ -257,8 +257,7 @@ class OperationalTemplateController {
                versionNumber = old_version.versionNumber + 1
 
                // move old version outside the OPT repo
-               def old_version_file = new File( opt_repo_org_path + old_version.fileUid + '.opt' )
-               old_version_file.renameTo( new File( opt_repo_org_path + 'older_versions'.withTrailSeparator() + old_version_file.name ) )
+               optService.moveOldVersion(old_version)
 
                // create new version
                // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.
@@ -268,32 +267,10 @@ class OperationalTemplateController {
             }
          }
 
-         // !has aaa.es.v1 format?
-         def external_template_id = opt_template_id
-         if (!opt_template_id.isTemplateId())
-         {
-            def concept = opt_template_id.toSnakeCase()
-            def lang = template.language.code_string.text()
-            opt_template_id = concept +'.'+ lang +'.v1'
-         }
-
          // Will index the opt nodes, and help deleting existing ones when updating
 
-         // saves OperationalTemplateIndex to the DB
-         def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization, opt_template_id)
-
-         // Prepare file
-         def destination = opt_repo_org_path + opt.fileUid + '.opt'
-         File fileDest = new File( destination )
-         fileDest << xml
-
-         // http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartFile.html#transferTo-java.io.File-
-         // If the file exists, it will be deleted first
-         //f.transferTo(fileDest)
-         // Tira excepcion si el archivo existe:
-         // Message: opts\Signos.opt (Access is denied)
-         //   Line | Method
-         //->>  221 | <init>   in java.io.FileOutputStream
+         // saves OperationalTemplateIndex to the DB and the file in the OPT repo
+         def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization, xml)
 
          flash.message = g.message(code:"opt.upload.success")
 
@@ -317,12 +294,11 @@ class OperationalTemplateController {
 
 
          // Recalculate OPT repo size for the account
-         account.current_opt_repo_size = OPTService.getRepoSizeInBytesAccount(account)
+         account.current_opt_repo_size = optService.getRepoSizeInBytesAccount(account)
          account.save(flush: true, failOnError: true)
 
 
          res = [status:'ok', message:'OPT added to the organization', opt: opt]
-
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
    }
@@ -343,12 +319,12 @@ class OperationalTemplateController {
          return
       }
 
-      def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
+      def opt_xml = optService.getOPTContents(opt)
 
       // get all versions of the OPT, including last (current opt uid)
       def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])
 
-      [opt_xml: opt_file.getText(), opt: opt, versions: versions]
+      [opt_xml: opt_xml, opt: opt, versions: versions]
    }
 
    def items(String uid, String sort, String order)
@@ -490,29 +466,7 @@ class OperationalTemplateController {
     */
    def empty_trash()
    {
-      def opts = OperationalTemplateIndex.forOrg(session.organization).deleted.list()
-      opts.each { opt ->
-
-         // move file to deleted folder, we don't actually delete the file, just in case!
-         def opt_repo_org_path = config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator()
-         def deleted_file = new File( opt_repo_org_path + opt.fileUid + '.opt' )
-         def moved = deleted_file.renameTo( new File( opt_repo_org_path + 'deleted'.withTrailSeparator() + deleted_file.name ) )
-         if (!moved) println "NOT MOVED!"
-
-         // deletes OPT and references from DB
-         operationalTemplateIndexerService.deleteOptReferences(opt, true)
-
-         /*
-         operationalTemplateIndexerService.indexAll(session.organization)
-         */
-
-         // load opt in manager cache
-         // TODO: just unload the deleted OPT
-         def optMan = OptManager.getInstance()
-         optMan.unloadAll(session.organization.uid)
-         optMan.loadAll(session.organization.uid, true)
-      }
-
+      optService.emptyTrash(session.organization)
 
       flash.message = message(code:"opt.trash.emptied")
       redirect action: 'trash' // URLMapping maps trash to list?deleted=true

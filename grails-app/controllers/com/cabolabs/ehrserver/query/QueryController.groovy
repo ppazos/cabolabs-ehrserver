@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -676,7 +676,6 @@ class QueryController {
 
    def getTemplateJson(String template_id)
    {
-      //def opt_file = new File(config.opt_repo.withTrailSeparator() + session.organization.uid.withTrailSeparator() + opt.fileUid +".opt")
       def optMan = OptManager.getInstance()
       def opt = optMan.getOpt(template_id, session.organization.uid)
       def toJson = new JsonSerializer()

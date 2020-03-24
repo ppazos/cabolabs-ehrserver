@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -323,8 +323,8 @@ class SemanticValidationLevel1 {
       def archetypeId = compo.archetype_details.archetype_id.value.text()
       log.info (templateId+' '+archetypeId)
 
-      def optMan = OptManager.getInstance(Holders.config.app.opt_repo.withTrailSeparator())
-      println "-------------- VALIDATE COMPOSITION NAMESPACE "+ this.namespace
+      def optMan = OptManager.getInstance()
+      //println "-------------- VALIDATE COMPOSITION NAMESPACE "+ this.namespace
       def opt = optMan.getOpt(templateId, this.namespace)
 
       // test

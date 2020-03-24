@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -28,7 +28,7 @@ import grails.util.Holders
 import javax.servlet.http.HttpServletRequest
 
 @Transactional
-class CommitLoggerService {
+class CommitLoggerFSService {
 
    def config = Holders.config.app
 
@@ -56,6 +56,11 @@ class CommitLoggerService {
    private boolean repoExistsOrg(String orguid)
    {
       return new File(config.commit_logs.withTrailSeparator() + orguid).exists()
+   }
+
+   String getCommitContents(CommitLog commit)
+   {
+      return new File(commit.fileLocation).text
    }
 
    /**
@@ -132,26 +137,23 @@ class CommitLoggerService {
       // database but no xml file will be created
 
       def commit = new CommitLog(
-         ehrUid: params.ehrUid,
-         locale: clientLocale,
-         params: params,
-         contentType: contentType,
-         contentLength: contentLength,
-         success: success,
-
-         username: authUser,
-
-         action: params.controller +':'+params.action,
-         objectClazz: 'Contribution',
-         objectUid: contributionUid, // can be null if !success
-
-         remoteAddr: request.remoteAddr,
+         ehrUid:          params.ehrUid,
+         locale:          clientLocale,
+         params:          params,
+         contentType:     contentType,
+         contentLength:   contentLength,
+         success:         success,
+         username:        authUser,
+         action:          params.controller +':'+params.action,
+         objectClazz:     'Contribution',
+         objectUid:       contributionUid, // can be null if !success
+         remoteAddr:      request.remoteAddr,
          clientIp:        request.getHeader("Client-IP"), // can be null
          xForwardedFor:   request.getHeader("X-Forwarded-For"), // can be null
          referer:         request.getHeader('referer'), // can be null
          requestURL:      request.requestURL,
          matchedURI:      request.forwardURI,
-         sessionId: session.id.toString()
+         sessionId:       session.id.toString()
       )
 
       if (!commit.validate()) println commit.errors
@@ -162,22 +164,32 @@ class CommitLoggerService {
       {
          String orguid = request.securityStatelessMap.extradata.org_uid
 
-         // TODO: The orguid folder is created just the first time,
-         // it might be better to create it whe nthe organization is created.
-         if (!repoExistsOrg(orguid))
-         {
-            // Creates the orguid subfolder
-            new File(config.commit_logs.withTrailSeparator() + orguid).mkdir()
-         }
-
          // save the json or xml to the commit log
          def ext = '.xml'
          if (contentType == 'application/json') ext = '.json'
 
-         def commitLog = new File(config.commit_logs.withTrailSeparator() +
-                                  orguid.withTrailSeparator() +
-                                  commit.fileUid + ext)
+         // saves the reference to the log file in the DB
+         commit.fileLocation = newCommitFileLocation(orguid, contributionUid, ext)
+
+         // ==================================================
+         // creates parent subfolders if dont exist
+         def containerFolder = new File(new File(commit.fileLocation).getParent())
+         containerFolder.mkdirs()
+
+         def commitLog = new File(commit.fileLocation)
          commitLog << logContent
       }
+
+      // save log to DB
+      if (!commit.validate()) println commit.errors
+      commit.save(failOnError: true)
+   }
+
+   static String newCommitFileLocation(String orguid, String contributionUid, String ext)
+   {
+      if (!contributionUid) contributionUid = java.util.UUID.randomUUID()
+
+      // TODO: this is XML only, for JSON versions we need to consider the content type of the commit adding a new parameter
+      return Holders.config.app.commit_logs.withTrailSeparator() + orguid.withTrailSeparator() + contributionUid + ext
    }
 }

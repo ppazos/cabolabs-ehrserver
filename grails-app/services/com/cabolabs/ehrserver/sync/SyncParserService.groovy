@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -330,27 +330,25 @@ class SyncParserService {
    OperationalTemplateIndex toJSONOpt(JSONObject j)
    {
       def templateIndex = new OperationalTemplateIndex(
-         templateId: j.templateId,
+         templateId:    j.templateId,
          externalTemplateId: j.externalTemplateId,
-         concept: j.concept,
-         language: j.language,
-         uid: j.uid,
-         externalUid: j.externalUid,
-         archetypeId: j.archetypeId,
+         concept:       j.concept,
+         language:      j.language,
+         uid:           j.uid,
+         externalUid:   j.externalUid,
+         archetypeId:   j.archetypeId,
          archetypeConcept: j.archetypeConcept,
-         isActive: j.isActive,
-         master: false,
-         dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
-         setId: j.setId,
+         isActive:      j.isActive,
+         master:        false,
+         dateCreated:   new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
+         setId:         j.setId,
          versionNumber: j.versionNumber,
-         lastVersion: j.lastVersion
+         lastVersion:   j.lastVersion,
+         fileLocation:  j.fileLocation
       )
 
       def xml = j.opt
-
-      def opt_repo_org_path = config.opt_repo.withTrailSeparator()
-      def destination = opt_repo_org_path + templateIndex.fileUid + '.opt'
-      File fileDest = new File( destination )
+      File fileDest = new File(templateIndex.fileLocation)
       fileDest << xml
 
       // Generates OPT and archetype item indexes just for the uploaded OPT

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -40,7 +40,7 @@ class OperationalTemplateIndex {
    int versionNumber = 1
    boolean lastVersion = true // to simplify queries
 
-   String fileUid = java.util.UUID.randomUUID() as String
+   String fileLocation
 
    Date dateCreated
    Date lastUpdated
@@ -54,7 +54,9 @@ class OperationalTemplateIndex {
    static hasMany = [referencedArchetypeNodes: ArchetypeIndexItem,
                      templateNodes: OperationalTemplateIndexItem]
 
-
+   static constraints = {
+      fileLocation(maxSize:1024)
+   }
 
    static transients = ['lang']
    def getLang()

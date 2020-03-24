@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -80,7 +80,7 @@ class SyncMarshallersService {
       String ext = '.xml'
       if (_commit.contentType.contains('json')) ext = '.json'
 
-      def file = new File(config.commit_logs.withTrailSeparator() + _commit.fileUid + ext)
+      def file = new File(_commit.fileLocation)
 
       def parsed
       if (ext == '.xml')
@@ -574,7 +574,7 @@ class SyncMarshallersService {
 
    def toJSON(OperationalTemplateIndex o, JsonBuilder jb)
    {
-      def file = new File(config.opt_repo.withTrailSeparator() + o.fileUid +".opt")
+      def file = new File(opt.fileLocation)
 
       /* will send the OPT as is in XML
       def json = jsonService.xmlToJson(file.text)

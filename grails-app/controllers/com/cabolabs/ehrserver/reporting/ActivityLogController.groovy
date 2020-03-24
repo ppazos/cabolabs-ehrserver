@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -56,13 +56,13 @@ class ActivityLogController {
          }
       }
 
-      //respond list, model:[activityLogInstanceCount: list.totalCount]
-
       render view:'index', model : [activityLogInstanceList: list.groupBy{it.sessionId}, activityLogInstanceCount: list.totalCount]
    }
 
-   def show(ActivityLog activityLogInstance)
+   def show(Long id)
    {
+      def activityLogInstance = ActivityLog.get(id)
+
       // admins can access all logs
       // filter by current org! because it is accessed by id
       if (!authService.loggedInUserHasAnyRole("ROLE_ADMIN") &&
@@ -72,7 +72,7 @@ class ActivityLogController {
          redirect action:'index'
          return
       }
-      [activityLogInstance: activityLogInstance]
+      return [activityLogInstance: activityLogInstance]
    }
 
    protected void notFound() {

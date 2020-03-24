@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 CaboLabs Health Informatics
+ * Copyright 2011-2020 CaboLabs Health Informatics
  *
  * The EHRServer was designed and developed by Pablo Pazos Gutierrez <pablo.pazos@cabolabs.com> at CaboLabs Health Informatics (www.cabolabs.com).
  *
@@ -26,12 +26,12 @@ import com.cabolabs.ehrserver.ehr.clinical_documents.OperationalTemplateIndex
 import com.cabolabs.ehrserver.query.Query
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
-import com.cabolabs.ehrserver.versions.VersionFSRepoService
 import com.cabolabs.security.*
 
 class AppController {
 
-   def versionFSRepoService
+   def versionRepoService
+   def optService
 
    // dashboard
    def index()
@@ -47,13 +47,14 @@ class AppController {
 
       def orgs = Organization.list()
       orgs.each { __org ->
-         version_repo_sizes << [(__org): versionFSRepoService.getRepoSizeInBytes(__org.uid)]
+         // calculates the size of versions + size of OPTs
+         version_repo_sizes << [(__org): versionRepoService.getRepoSizeInBytes(__org.uid) + optService.getRepoSizeInBytesOrg(__org.uid)]
       }
 
       // sort by usage, decreasing
       version_repo_sizes = version_repo_sizes.sort { -it.value }
 
-      //version_repo_size = versionFSRepoService.getRepoSizeInBytes()
+      //version_repo_size = versionRepoService.getRepoSizeInBytes()
 
       // ---------------------------------------------
       // TODO: check for remote notifications

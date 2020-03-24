@@ -78,14 +78,25 @@ app:
       db_time_format: "HH:mm:ss"
 
 ---
+aws:
+    accessKey: ${EHRSERVER_S3_ACCESS}
+    secretKey: ${EHRSERVER_S3_SECRET}
+    bucket: "ehr-server-test"
+    region: "us-east-1"
+    folders: # keys of folders in S3
+        version_repo: "versions/"
+        commit_logs: "commits/"
+        opt_repo: "opts/"
+
+---
 grails:
     mail:
-       host: ${EHRSERVER_EMAIL_HOST}
-       port: ${EHRSERVER_EMAIL_PORT}
-       username: ${EHRSERVER_EMAIL_USER}
-       password: ${EHRSERVER_EMAIL_PASS}
-       default:
-           from: ${EHRSERVER_EMAIL_FROM}
+        host: ${EHRSERVER_EMAIL_HOST}
+        port: ${EHRSERVER_EMAIL_PORT}
+        username: ${EHRSERVER_EMAIL_USER}
+        password: ${EHRSERVER_EMAIL_PASS}
+        default:
+            from: ${EHRSERVER_EMAIL_FROM}
 
 ---
 grails:
@@ -190,8 +201,8 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: root
-    password: toor
+    username: user
+    password: user123!
 
 environments:
     development:
