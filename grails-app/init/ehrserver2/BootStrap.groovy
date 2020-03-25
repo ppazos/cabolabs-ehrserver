@@ -173,6 +173,7 @@ class BootStrap {
       new RequestMap(url: '/query/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/query/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/query/groups', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/query/createGroup', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       // Query creation
       new RequestMap(url: '/query/getArchetypesInTemplate2', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
@@ -198,6 +199,8 @@ class BootStrap {
       //new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/trash', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/generate', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/operationalTemplate/opt_manager_status', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+
 
       new RequestMap(url: '/notification/index', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/notification/show/.*', configAttribute: 'ROLE_ADMIN').save()
