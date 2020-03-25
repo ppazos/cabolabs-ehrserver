@@ -462,9 +462,6 @@ class XmlService {
          {
             throw new RuntimeException("Unable to save composition from commit, file ${path} already exists. Maybe you committed the same version twice?", e)
          }
-
-         // FIXME: check if the XML has the namespace declarations of the root node from the commit
-         file << groovy.xml.XmlUtil.serialize( versionXML )
       }
    }
 
