@@ -29,10 +29,24 @@ class AuthController {
 
       // TODO: the controller is doing all the work, the authenticate should manage
       //       the session in the manager if the result is positive
+      // FIXME: check role, users shouldnt login to the web console!
       def user
       def isauth = authprov.authenticate([email: email, pass: pass]) { ->
          user = User.findByEmail(email)
          if (!user) return false
+
+         // if the user has any role 'user' then it should not be allowed to login
+         // ecause once inside he can choose to change the org, and if he logged in
+         // as a orgman to org 1 but is user on org 2, shouldnt be able to change to org 2
+         def allow_role = true
+         user.organizations.each { org ->
+            if (user.getHigherAuthority(org).authority == Role.US)
+            {
+               allow_role = false
+            }
+         }
+         if (!allow_role) return false
+
          return PasswordUtils.isPasswordValid(user.password, pass)
       }
 
