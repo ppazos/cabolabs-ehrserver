@@ -91,7 +91,7 @@ class OperationalTemplateController {
 
       println "loaded opts: " + optMan.getLoadedOpts(session.organization.uid)
 
-      redirect(action: "list")
+      redirect(action: "index")
    }
 
 
@@ -283,7 +283,7 @@ class OperationalTemplateController {
 
          // Generates OPT and archetype item indexes just for the uploaded OPT
          operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         operationalTemplateIndexerService.index(template, null, session.organization.uid)
+         operationalTemplateIndexerService.index(template, null, session.organization)
 
 
          // load opt in manager cache
@@ -309,13 +309,13 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
       if (!opt.lastVersion)
       {
          flash.message = message(code:"opt.common.error.templateNotLastVersion")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -334,7 +334,7 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -354,7 +354,7 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -381,7 +381,7 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -397,7 +397,7 @@ class OperationalTemplateController {
       // moved to the deleted folder
 
       flash.message = message(code:"opt.delete.deleted.ok")
-      redirect action:'list'
+      redirect action:'index'
       return
    }
 
@@ -408,7 +408,7 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -433,7 +433,7 @@ class OperationalTemplateController {
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
-         redirect action:'list'
+         redirect action:'index'
          return
       }
 
@@ -469,7 +469,7 @@ class OperationalTemplateController {
       optService.emptyTrash(session.organization)
 
       flash.message = message(code:"opt.trash.emptied")
-      redirect action: 'trash' // URLMapping maps trash to list?deleted=true
+      redirect action: 'trash' // URLMapping maps trash to index?deleted=true
    }
 
    def opt_manager_status()
