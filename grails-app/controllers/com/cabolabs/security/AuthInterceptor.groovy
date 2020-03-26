@@ -80,17 +80,17 @@ class AuthInterceptor {
 
       if (!rm)
       {
-         println "${path} doesnt match any RequestMap URL"
+         log.info "${path} doesnt match any RequestMap URL"
          //println rms.url
          render view: "/noPermissions.gsp"
          return false // all URLs are closed by default!
       }
 
-      println "${path} matches ${rm.url}"
+      log.info "${path} matches ${rm.url}"
 
       if (rm.configAttribute == 'OPEN_ACCESS')
       {
-         println "open access"
+         log.info "open access to rul "+ rm.url
          return true
       }
 
