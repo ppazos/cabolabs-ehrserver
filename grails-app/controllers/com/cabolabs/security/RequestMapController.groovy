@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.util.Holders
 
-@Transactional(readOnly = true)
+@Transactional
 class RequestMapController {
 
    def configurationService
@@ -41,7 +41,7 @@ class RequestMapController {
    }
 
    def show(RequestMap requestMapInstance) {
-      respond requestMapInstance
+      [requestMapInstance: requestMapInstance]
    }
 
    def create()
@@ -49,7 +49,7 @@ class RequestMapController {
       def roles = (Role.list() - Role.findByAuthority(Role.US)).authority
       roles << 'IS_AUTHENTICATED_ANONYMOUSLY'
 
-      respond new RequestMap(params), model: [roles: roles]
+      [requestMapInstance: new RequestMap(params), roles: roles]
    }
 
    @Transactional
@@ -60,7 +60,7 @@ class RequestMapController {
       }
 
       if (requestMapInstance.hasErrors()) {
-         respond requestMapInstance.errors, view:'create'
+         render model: [requestMapInstance: requestMapInstance.errors], view:'create'
          return
       }
 
