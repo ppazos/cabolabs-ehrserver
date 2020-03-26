@@ -11,6 +11,7 @@
         margin-bottom: 15px;
       }
     </style>
+    <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
   </head>
   <body>
     <div class="row">
@@ -62,7 +63,7 @@
           </div>
 
           <div class="btn-toolbar" role="toolbar">
-            <input type="submit" class="upload btn btn-default btn-md" name="doit" value="${g.message(code:'opt.upload.label.upload')}" />
+            <button type="submit" class="upload btn btn-default btn-md" name="doit">${g.message(code:'opt.upload.label.upload')}</button>
           </div>
 
         </g:form>
@@ -70,10 +71,13 @@
     </div>
 
     <asset:javascript src="jquery.iframe-transport.js" /><!-- AJAX file upload -->
-
+    <asset:javascript src="loading-button.js" />
     <script>
 
     $(function() {
+
+      // registers loading spinner on submit button
+      $('[name="doit"]').loading();
 
       // We can attach the `fileselect` event to all file inputs on the page
       $(document).on('change', ':file', function() {
@@ -134,6 +138,9 @@
         }
         else if (data.status == "error")
         {
+          // removes loading spinner from button
+          $('[name="doit"]').loading('stop');
+
           $('body').prepend(
             '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
             data.message +'</div>'
@@ -165,6 +172,9 @@
           // TODO: versioning
           console.log('version alternatives', data.alternatives);
 
+          // removes loading spinner from button
+          $('[name="doit"]').loading('stop');
+
           $('body').prepend(
             '<div class="alert alert-warning alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
             data.message +'</div>'
@@ -179,11 +189,14 @@
       })
       .fail(function(resp,status,status_msg) {
 
-         console.log('fail', resp);
-         $('body').prepend(
-           '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
-           resp.responseJSON.message +'</div>'
-         );
+        // removes loading spinner from button
+        $('[name="doit"]').loading('stop');
+
+        console.log('fail', resp);
+        $('body').prepend(
+          '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
+          resp.responseJSON.message +'</div>'
+        );
       });
     });
     </script>
