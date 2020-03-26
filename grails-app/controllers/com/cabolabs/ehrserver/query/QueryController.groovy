@@ -635,7 +635,7 @@ class QueryController {
          return
       }
 
-      [queryInstance: queryInstance]
+      return [queryInstance: queryInstance]
    }
 
 
