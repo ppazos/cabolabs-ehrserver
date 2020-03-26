@@ -606,7 +606,6 @@
         {
            query.set_format( $('select[name=composition_format]').val() );
            query.set_template_id( $('select[name=templateId]').val() );
-
            query.set_is_count( $('input[name=isCount]').is(':checked') );
         }
 
@@ -2435,8 +2434,8 @@ resp.responseJSON.result.message +'</div>'
                   <td><g:message code="query.create.default_format" /></td>
                   <td>
                     <select name="composition_format" class="form-control input-sm">
-                      <option value="xml" selected="selected">XML</option>
-                      <option value="json">JSON</option>
+                      <option value="json" selected="selected">JSON</option>
+                      <option value="xml">XML</option>
                     </select>
                   </td>
                 </tr>
@@ -2514,8 +2513,8 @@ resp.responseJSON.result.message +'</div>'
                   <td><g:message code="query.create.default_format" /></td>
                   <td>
                     <select name="format" class="form-control input-sm">
-                      <option value="xml" selected="selected">XML</option>
-                      <option value="json">JSON</option>
+                      <option value="json" selected="selected">JSON</option>
+                      <option value="xml">XML</option>
                     </select>
                   </td>
                 </tr>
