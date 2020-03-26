@@ -37,6 +37,7 @@ import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.notification.Notification
 import com.cabolabs.ehrserver.indexing.DataValueIndexLog
+import com.cabolabs.security.*
 
 @Transactional
 class DataIndexerService {
@@ -128,9 +129,11 @@ class DataIndexerService {
          aidx = ArchetypeIndexItem.findByArchetypeIdAndPath(didx.archetypeId, didx.archetypePath)
          if (!aidx)
          {
+            log.warn 'There is no ArchetypeIndexItem for the DataValueIndex '+ didx.archetypeId +" "+ didx.archetypePath +' TID: '+ compoIndex.templateId +' COMPOSER: '+ compoIndex.composer?.name
+
             new DataValueIndexLog(index: didx, message: 'There is no ArchetypeIndexItem for the DataValueIndex '+didx.archetypeId +" "+ didx.archetypePath +' TID: '+ compoIndex.templateId +' COMPOSER: '+ compoIndex.composer?.name).save()
 
-            def admins = User.findAllByRole('admin')
+            def admins = UserRole.findAllByRole(Role.findByAuthority(Role.AD)).user
             admins.each{ admin ->
                new Notification(
                   name:     'There is no ArchetypeIndexItem for the DataValueIndex',
