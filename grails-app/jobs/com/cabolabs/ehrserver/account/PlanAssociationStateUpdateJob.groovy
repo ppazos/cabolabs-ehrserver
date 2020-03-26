@@ -60,18 +60,18 @@ class PlanAssociationStateUpdateJob {
 
             if (inactive_plan_assoc)
             {
-               println "Inactive plan detected"
+               log.info "Inactive plan detected for "+ account.companyName
                // if should start today! if not we have <current active> pediod_of_time <new inactive>
                // and there shouldn't be gaps between active and future inactive plans,
                // TODO: need to add a check for that on the account edit.
                if (today < inactive_plan_assoc.from)
                {
-                  println "Inactive plan is in the future"
+                  //println "Inactive plan is in the future"
                   log.error('inactive plan start date is set in the future and current active plan ends today')
                }
                else
                {
-                  println "Inactive plan becomes active"
+                  log.info "Inactive plan becomes active for "+ account.companyName
                   active_plan_assoc.state = PlanAssociation.states.CLOSED
                   inactive_plan_assoc.state = PlanAssociation.states.ACTIVE
 
