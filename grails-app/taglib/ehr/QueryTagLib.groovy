@@ -63,7 +63,15 @@ class QueryTagLib {
          }
          else // simple criteria
          {
-            println tree.value.archetypeId +" "+ tree.value.path
+            //println tree.value.archetypeId +" "+ tree.value.path
+            def item = ArchetypeIndexItem.findByArchetypeIdAndPath(tree.value.archetypeId, tree.value.path)
+
+            if (!item)
+            {
+               log.error "there is no ArchetypeIndexItem for "+ tree.value.archetypeId + tree.value.path
+               return
+            }
+
             div(class:'table-responsive') {
                table(class:'table table-striped table-bordered table-hover') {
                   tr {
