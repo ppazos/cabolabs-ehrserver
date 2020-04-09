@@ -90,7 +90,7 @@ class AuthInterceptor {
 
       if (rm.configAttribute == 'OPEN_ACCESS')
       {
-         log.info "open access to rul "+ rm.url
+         log.info "open access to url "+ rm.url
          return true
       }
 
