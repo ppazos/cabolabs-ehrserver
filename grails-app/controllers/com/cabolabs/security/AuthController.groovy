@@ -34,6 +34,7 @@ class AuthController {
       def isauth = authprov.authenticate([email: email, pass: pass]) { ->
          user = User.findByEmail(email)
          if (!user) return false
+         if (!user.enabled) return false
 
          // if the user has any role 'user' then it should not be allowed to login
          // ecause once inside he can choose to change the org, and if he logged in

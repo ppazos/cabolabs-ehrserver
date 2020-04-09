@@ -814,15 +814,22 @@ class BootStrap {
       def users = [
          new User(
             email: 'admin@cabolabs.com',
-            password: 'admin'
+            password: 'admin',
+            enabled: true
          ),
          new User(
             email: 'orgman@cabolabs.com',
-            password: 'orgman'
+            password: 'orgman',
+            enabled: true
          ),
          new User(
             email: 'user@cabolabs.com',
-            password: 'user'
+            password: 'user',
+            enabled: true
+         ),
+         new User(
+            email: 'disabled@cabolabs.com',
+            password: 'disabled'
          )
       ]
 
