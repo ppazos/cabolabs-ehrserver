@@ -346,7 +346,6 @@ class OperationalTemplateIndexerService {
       }
 
       def parsed_template
-
       opt_contents.each { absolute_path, opt_text ->
 
          if (!xmlValidationService.validateOPT(opt_text))

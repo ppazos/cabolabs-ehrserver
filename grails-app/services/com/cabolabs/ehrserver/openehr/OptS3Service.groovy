@@ -59,6 +59,7 @@ class OptS3Service {
    {
       try
       {
+         // TODO: not sure if this will fail if an object with the same key is already there
          // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#putObject-java.lang.String-java.lang.String-java.lang.String-
          def putObjectResult = this.s3.putObject(
             Holders.config.aws.bucket,

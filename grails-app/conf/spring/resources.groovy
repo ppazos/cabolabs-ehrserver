@@ -8,12 +8,12 @@ import com.cabolabs.ehrserver.log.CommitLoggerS3Service
 // Place your Spring DSL code here
 beans = {
    // Configuration for using S3 file access
-   versionRepoService(VersionS3RepoService)
-   optService(OptS3Service)
-   commitLoggerService(CommitLoggerS3Service)
+   // versionRepoService(VersionS3RepoService)
+   // optService(OptS3Service)
+   // commitLoggerService(CommitLoggerS3Service)
 
    // Configuration for using File System file access
-   // versionRepoService(VersionFSRepoService)
-   // optService(OptFSService)
-   // commitLoggerService(CommitLoggerFSService)
+   versionRepoService(VersionFSRepoService)
+   optService(OptFSService)
+   commitLoggerService(CommitLoggerFSService)
 }

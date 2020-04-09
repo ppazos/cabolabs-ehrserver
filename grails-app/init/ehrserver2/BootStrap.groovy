@@ -749,6 +749,8 @@ class BootStrap {
          // if there are OPTs in "base_opts" copies them to the organization repo
          operationalTemplateIndexerService.setupBaseOpts(org, repo)
 
+         log.info("operationalTemplateIndexerService.indexAll()")
+
          // loads all OPTs in the org repo to the DB
          operationalTemplateIndexerService.indexAll(org, repo)
 

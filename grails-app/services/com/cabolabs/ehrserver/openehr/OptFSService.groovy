@@ -26,7 +26,13 @@ class OptFSService {
       containerFolder.mkdirs()
 
       File fileDest = new File(fileLocation)
-      fileDest << fileContents
+
+      if (fileDest.exists())
+      {
+         log.warn "File "+ fileLocation +" already exists, overwriting"
+      }
+
+      fileDest.write(fileContents) // overwrites if file exists
 
       return true // TODO check errors
    }
