@@ -124,6 +124,10 @@
               <th><g:message code="ehr.show.attr.systemId" /></th>
               <td><g:fieldValue bean="${ehr}" field="systemId"/></td>
             </tr>
+            <tr>
+              <th><g:message code="ehr.show.attr.deleted" /></th>
+              <td><g:fieldValue bean="${ehr}" field="deleted"/></td>
+            </tr>
           </tbody>
         </table>
 
