@@ -377,7 +377,6 @@ class OperationalTemplateController {
    def delete(String uid)
    {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
-
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
@@ -386,7 +385,14 @@ class OperationalTemplateController {
       }
 
       opt.isDeleted = true
-      opt.save(failOnError: true)
+      opt.save(flush:true, failOnError: true) // without the flush the instance is not updated
+
+      // removes references
+      operationalTemplateIndexerService.deleteOptReferences(opt, false)
+
+      // removes from cache (avoids showing the OPT in the query builder)
+      def optMan = OptManager.getInstance()
+      optMan.removeOpt(opt.templateId, session.organization.uid)
 
       // If the OPT file is moved and the reindex executed, the OPTIndex is deleted
       // from the database and not listed on trash, we need the OPTIndex to be on

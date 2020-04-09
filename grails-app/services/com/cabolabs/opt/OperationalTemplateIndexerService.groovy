@@ -305,7 +305,7 @@ class OperationalTemplateIndexerService {
    def _event_deactivate(OperationalTemplateIndex opt)
    {
       opt.isActive = false
-      opt.save(failOnError: true)
+      opt.save(flush: true, failOnError: true)
 
       deleteOptReferences(opt, false) // do not delete OPT
    }
@@ -317,7 +317,7 @@ class OperationalTemplateIndexerService {
    def _event_activate(OperationalTemplateIndex opt)
    {
       opt.isActive = true
-      opt.save(failOnError: true)
+      opt.save(flush: true, failOnError: true)
 
       def opt_xml = optService.getOPTContents(opt)
       def org = Organization.findByUid(opt.organizationUid)

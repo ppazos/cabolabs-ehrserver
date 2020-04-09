@@ -321,8 +321,8 @@ class QueryController {
          // maxResults(max)
       }
 
-      println list
-      println list.totalCount
+      // println list
+      // println list.totalCount
 
       [queryInstanceList: list.groupBy{it.queryGroup}, queryInstanceTotal: list.totalCount]
    }
@@ -336,7 +336,7 @@ class QueryController {
       */
       [
        queryInstance: new Query(params),
-       templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, session.lang), // queries cna be created for any version of the OPT
+       templateIndexes: OperationalTemplateIndex.notDeleted.forOrg(session.organization).findAllByLanguage(session.lang), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
    }

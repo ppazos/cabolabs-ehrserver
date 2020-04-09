@@ -198,9 +198,10 @@ class BootStrap {
       //new RequestMap(url: '/operationalTemplate/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
-      new RequestMap(url: '/operationalTemplate/trash', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
-      new RequestMap(url: '/operationalTemplate/generate', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/operationalTemplate/trash',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/generate',           configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/operationalTemplate/opt_manager_status', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/delete',             configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
 
       new RequestMap(url: '/notification/index', configAttribute: 'ROLE_ADMIN').save()
