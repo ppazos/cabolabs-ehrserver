@@ -56,6 +56,8 @@ import com.cabolabs.archetype.SemanticValidationLevel1
 //@Transactional
 class XmlService {
 
+   static scope = "request" // one new instance per request instead of default singleton
+
    static transactional = true
 
    // Para acceder a las opciones de localizacion
