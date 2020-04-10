@@ -10,7 +10,7 @@ languages:
 
 ---
 stateless:
-   secretKey: 50e56ace-6b30-44c0-8012-3529a79e3773
+   secretKey: ${EHRSERVER_REST_SECRET}
    expirationTime: 1440 # expiration time in minutes
 
 ---
@@ -18,7 +18,7 @@ app:
    version_repo: versions
    commit_logs: commits
    opt_repo: opts
-   allow_web_user_register: false
+   allow_web_user_register: ${EHRSERVER_ALLOW_WEB_USER_REGISTER}
    list_max: 20
    version_xsd: xsd/Version.xsd
    xslt: xsd/openEHR_RMtoHTML.xsl
@@ -81,8 +81,8 @@ app:
 aws:
     accessKey: ${EHRSERVER_S3_ACCESS}
     secretKey: ${EHRSERVER_S3_SECRET}
-    bucket: "ehr-server-test"
-    region: "us-east-1"
+    bucket: ${EHRSERVER_S3_BUCKET}
+    region: ${EHRSERVER_S3_REGION}
     folders: # keys of folders in S3
         version_repo: "versions/"
         commit_logs: "commits/"
