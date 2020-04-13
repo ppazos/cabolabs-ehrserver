@@ -143,11 +143,16 @@ class VersionS3RepoService {
    }
 
 
-   // this is not used, might be useful for a full admin to get the whole size
+   // this is used for stats, useful for a full admin to get the whole size
    // of the version repo for all accounts
    def getRepoSizeInBytes()
    {
-      return 0
+      def total_size = 0
+      def accounts = Account.list()
+      accounts.each { account ->
+         total_size += getRepoSizeInBytesAccount(account)
+      }
+      return total_size
    }
 
 

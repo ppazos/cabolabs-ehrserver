@@ -29,6 +29,10 @@ import com.cabolabs.ehrserver.openehr.common.change_control.Contribution
 import com.cabolabs.ehrserver.openehr.common.change_control.Version
 import com.cabolabs.security.*
 import grails.converters.*
+import com.cabolabs.ehrserver.openehr.ehr.Ehr
+
+
+import java.math.RoundingMode
 
 class StatsController {
 
@@ -40,6 +44,61 @@ class StatsController {
     */
    def index()
    {
+   }
+
+   // server stats
+   @SecuredStateless
+   def stats()
+   {
+      // Memory report
+      // =====================================================
+      Runtime runtime = Runtime.getRuntime()
+
+      // Run the garbage collector
+      runtime.gc()
+
+      // Calculate the used memory in bytes
+      long total_memory = runtime.totalMemory()
+      long free_memory  = runtime.freeMemory()
+      long used_memory  = total_memory - free_memory
+
+
+      // Version Repo Size (total)
+      // =====================================================
+      def version_repo_size = versionRepoService.getRepoSizeInBytes()
+
+
+      // Determine repository service
+      // =====================================================
+      def repo_service = 'FS'
+      if (versionRepoService instanceof com.cabolabs.ehrserver.versions.VersionS3RepoService)
+      {
+         repo_service = 'AWS S3'
+      }
+
+
+      // Total number of EHRs
+      def total_ehr_count = Ehr.count()
+
+      //  Total number of contributions
+      def total_contribution_count = Contribution.count()
+
+
+      // Memory in MB
+      def stats = [
+         total_memory: (total_memory / (1024L * 1024L)).setScale(1, RoundingMode.HALF_UP),
+         used_memory: (used_memory / (1024L * 1024L)).setScale(1, RoundingMode.HALF_UP),
+         free_memory: (free_memory / (1024L * 1024L)).setScale(1, RoundingMode.HALF_UP),
+         max_memory: (runtime.maxMemory() / (1024L * 1024L)).setScale(1, RoundingMode.HALF_UP),
+         available_processors: runtime.availableProcessors(),
+         version_repo_size: (version_repo_size / (1024L * 1024L)).setScale(1, RoundingMode.HALF_UP),
+         repo_service: repo_service,
+         total_ehr_count: total_ehr_count,
+         total_contribution_count: total_contribution_count,
+         ehrserver_version: grailsApplication.metadata["info.app.version"]
+      ]
+
+      render stats as JSON
    }
 
    /**

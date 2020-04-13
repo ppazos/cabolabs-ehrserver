@@ -116,7 +116,7 @@ class VersionFSRepoService {
       return size
    }
 
-   // this is not used, might be useful for a full admin to get the whole size
+   // this is used for stats, useful for a full admin to get the whole size
    // of the version repo for all accounts
    def getRepoSizeInBytes()
    {

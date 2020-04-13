@@ -84,7 +84,7 @@ class QueryTagLib {
                   tr {
                      td(tree.value.archetypeId)
                      td(tree.value.path)
-                     td(ArchetypeIndexItem.findByArchetypeIdAndPath(tree.value.archetypeId, tree.value.path).name[session.lang])
+                     td(item.name[session.lang])
                      td(tree.value.rmTypeName)
                      td(tree.value.toGUI())
                   }
