@@ -76,7 +76,7 @@ dependencies {
 
    // internal plugins using jitpack/github
    //compile "grails.simple.auth:grails-simple-auth:0.1" // local
-   compile "com.github.ppazos:grails-simple-auth:v0.2"
+   compile "com.github.ppazos:grails-simple-auth:v0.3"
    //compile "grails.security.stateless.ng:grails-security-stateless-ng:0.1" // local
    compile "com.github.ppazos:grails-security-stateless-ng:v0.1"
 
