@@ -15,6 +15,7 @@
 /.idea
 /*.iml
 /*.asscache
+/bin
 
 # default HSQL database files for production mode
 /prodDb.*

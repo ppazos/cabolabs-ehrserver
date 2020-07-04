@@ -107,6 +107,24 @@
       e.preventDefault();
 
       form = $(this);
+      data = form.serializeArray();
+      data.push({name:'doit', value:true}); // the submit button is not serialized, we add it manually
+
+      // client side check for file size
+      if ($(":file", this)[0].files[0].size > 5242880)
+      {
+        $('body').prepend(`
+          <div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            The template size is bigger than 5Mb (you can minify big XMLs by removing new lines and indentation)
+          </div>
+        `);
+
+        $('[name="doit"]').loading('stop');
+
+        return false;
+      }      
 
       // https://cmlenz.github.io/jquery-iframe-transport/
       $.ajax({

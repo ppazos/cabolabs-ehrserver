@@ -23,6 +23,7 @@ app:
    version_xsd: xsd/Version.xsd
    xslt: xsd/openEHR_RMtoHTML.xsl
    opt_xsd: xsd/OperationalTemplate.xsd
+   opt_xsd_alt: xsd/OperationalTemplateExtra.xsd
    terminologies:
       - terminology/openehr_terminology_en.xml
       - terminology/openehr_terminology_es.xml
@@ -166,8 +167,8 @@ grails:
     controllers:
         defaultScope: singleton
         upload:
-            maxFileSize: 10485760 # 10MB
-            maxRequestSize: 10485760
+            maxFileSize: 5242880 # 5MB
+            maxRequestSize: 10485760 # 10MB
     converters:
         encoding: UTF-8
     views:
@@ -202,7 +203,7 @@ dataSource:
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
     username: user
-    password: user123!
+    password: user1234
 
 environments:
     development:

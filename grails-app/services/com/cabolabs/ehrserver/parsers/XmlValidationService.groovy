@@ -37,15 +37,42 @@ import org.xml.sax.SAXParseException
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 
+import grails.core.GrailsApplication
 
-class XmlValidationService {
+import grails.config.Config
+import grails.core.support.GrailsConfigurationAware
+
+class XmlValidationService implements GrailsConfigurationAware {
+
+   GrailsApplication grailsApplication
 
    def errors = []
 
+   def opt_xsd
+   def opt_xsd_alt
+   def version_xsd
+
+   /**
+    * Get values from config once.
+    */
+   @Override
+   void setConfiguration(Config co)
+   {
+      opt_xsd = co.getProperty('app.opt_xsd', String)
+      opt_xsd_alt = co.getProperty('app.opt_xsd_alt', String)
+      version_xsd = co.getProperty('app.version_xsd', String)
+      println "setConfiguration $opt_xsd $version_xsd"
+   }
 
    public boolean validateOPT(String xml)
    {
-      return this.validate(xml, Holders.config.app.opt_xsd)
+      // TODO: do we need to reset the errors if the first one didnt validate?
+      if (!this.validate(xml, opt_xsd))
+      {
+         println "Standard doesnt validate, checking with ALTERNATIVE SCHEMA!"
+         return this.validate(xml, opt_xsd_alt)
+      }
+      true
    }
 
    public boolean validateVersion(GPathResult xml, Map namespaces)
@@ -57,20 +84,18 @@ class XmlValidationService {
       }
       def xmlStr = groovy.xml.XmlUtil.serialize( xml )
 
-      return this.validate(xmlStr, Holders.config.app.version_xsd)
+      return this.validate(xmlStr, version_xsd)
    }
 
    public boolean validateVersion(String xml)
    {
-      return this.validate(xml, Holders.config.app.version_xsd)
+      return this.validate(xml, version_xsd)
    }
-
 
    public List<String> getErrors()
    {
       return this.errors
    }
-
 
    private boolean validate(String xml, String xsdPath)
    {
@@ -83,7 +108,7 @@ class XmlValidationService {
       if (!xsd.exists()) // try to load from resources
       {
          // getResource returns a ServletContextResource
-         def xsdInputStream = Holders.grailsApplication.parentContext.getResource(xsdPath).inputStream
+         def xsdInputStream = grailsApplication.parentContext.getResource(xsdPath).inputStream
 
          // resource on xsd\Version.xsd = null
          println "resource on "+ xsdPath +" = "+ xsdInputStream
