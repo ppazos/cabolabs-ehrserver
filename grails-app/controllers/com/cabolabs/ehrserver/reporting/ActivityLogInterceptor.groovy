@@ -14,7 +14,7 @@ class ActivityLogInterceptor {
    def avoidLog(controller, action)
    {
       def avoid_activity_log = [
-        [controller:'activityLog', action:'*'], // avoid loading activity logs of loading activity logs :()
+        [controller:'activityLog',  action:'*'], // avoid loading activity logs of loading activity logs :()
         [controller:'notification', action:'newNotifications'], // avoid checking for notifications via AJAX
         [controller:'notification', action:'dismiss'], // avoid logging the dismiss of a notification in the web console
         [controller:'rest',         action:'echo']

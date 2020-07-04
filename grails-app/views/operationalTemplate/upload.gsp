@@ -124,13 +124,13 @@
         $('[name="doit"]').loading('stop');
 
         return false;
-      }      
+      }
 
       // https://cmlenz.github.io/jquery-iframe-transport/
       $.ajax({
         url: '${createLink(action:"upload")}',
         dataType: 'json',
-        data: form.serializeArray(),//form.serialize(),
+        data: data,
         processData: false,
         files: $(":file", this),
         iframe: true
