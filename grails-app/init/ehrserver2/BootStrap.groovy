@@ -192,9 +192,9 @@ class BootStrap {
       new RequestMap(url: '/ehrQuery/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/ehrQuery/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-      new RequestMap(url: '/operationalTemplate/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
-      new RequestMap(url: '/operationalTemplate/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
-      new RequestMap(url: '/operationalTemplate/upload', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/index',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/show/.*',            configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/upload',             configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
@@ -202,15 +202,17 @@ class BootStrap {
       new RequestMap(url: '/operationalTemplate/generate',           configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/operationalTemplate/opt_manager_status', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/delete',             configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/items',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/archetypeItems',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
 
-      new RequestMap(url: '/notification/index', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/show/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/create', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/edit/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/save', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/update/.*', configAttribute: 'ROLE_ADMIN').save()
-      new RequestMap(url: '/notification/newNotifications', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/notification/index',               configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/show/.*',             configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/create',              configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/edit/.*',             configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/save',                configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/update/.*',           configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/notification/newNotifications',    configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/logs/.*', configAttribute: 'ROLE_ADMIN').save()
 
