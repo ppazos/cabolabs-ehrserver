@@ -47,6 +47,7 @@ class OperationalTemplateIndex {
 
    boolean isDeleted = false
    boolean isActive = true
+   boolean isIndexed = false
 
    // sync
    boolean master = true
@@ -59,6 +60,8 @@ class OperationalTemplateIndex {
    }
 
    static transients = ['lang']
+
+   // alias to language
    def getLang()
    {
       this.language

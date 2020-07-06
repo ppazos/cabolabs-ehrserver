@@ -356,7 +356,7 @@ class SyncParserService {
 
       def slurper = new XmlSlurper(false, false)
       def template = slurper.parseText(xml)
-      operationalTemplateIndexerService.index(template, null)
+      operationalTemplateIndexerService.index(template, Organization.findByUid(j.organizationUid))
 
       // load opt in manager cache
       // TODO: just load the newly created/updated one

@@ -330,7 +330,7 @@ class OperationalTemplateIndexerService {
 
       // creates the references to the internal template and archetype items,
       // I guess those were deleted when the OPT was deactivated...
-      index(template_xml_parsed, null, org)
+      index(template_xml_parsed, org)
       this.templateIndex = null
    }
 
@@ -361,7 +361,7 @@ class OperationalTemplateIndexerService {
          // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
          if (!templateAlreadyExistsForOrg(parsed_template, org))
          {
-            index(parsed_template, null, org) // We dont use the file_uid any more
+            index(parsed_template, org)
          }
          else
          {
@@ -397,7 +397,7 @@ class OperationalTemplateIndexerService {
       template.language.code_string.text() // https://github.com/ppazos/cabolabs-ehrserver/issues/878
    }
 
-   def index(GPathResult template, String file_uid, Organization org)
+   def index(GPathResult template, Organization org)
    {
       String namespace = org.uid
 
@@ -437,8 +437,6 @@ class OperationalTemplateIndexerService {
             organizationUid: org.uid,
             fileLocation: optService.newOPTFileLocation(org.uid, templateId)
          )
-
-         if (file_uid) this.templateIndex.fileUid = file_uid
 
          // TODO: log errors and throw except
          if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
@@ -497,6 +495,10 @@ class OperationalTemplateIndexerService {
          }
       }
       this.indexes = []
+
+      // mark as indexed
+      this.templateIndex.isIndexed = true
+      if (!this.templateIndex.save(flush:true)) println this.templateIndex.errors
    }
 
    /*

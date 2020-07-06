@@ -272,7 +272,7 @@ class OperationalTemplateController {
          // saves OperationalTemplateIndex to the DB and the file in the OPT repo
          def opt = operationalTemplateIndexerService.createOptIndex(template, session.organization, xml)
 
-         flash.message = g.message(code:"opt.upload.success")
+         flash.message = message(code:"opt.upload.success")
 
          // versioning if needed
          if (setId)
@@ -281,9 +281,10 @@ class OperationalTemplateController {
             opt.versionNumber = versionNumber
          }
 
+         // job will index
          // Generates OPT and archetype item indexes just for the uploaded OPT
-         operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         operationalTemplateIndexerService.index(template, null, session.organization)
+         //operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
+         //operationalTemplateIndexerService.index(template, session.organization)
 
 
          // load opt in manager cache
@@ -298,7 +299,7 @@ class OperationalTemplateController {
          account.save(flush: true, failOnError: true)
 
 
-         res = [status:'ok', message:'OPT added to the organization', opt: opt]
+         res = [status: 'ok', message: message(code:'opt.upload.success'), opt: opt]
          render(text: res as JSON, contentType:"application/json", encoding:"UTF-8")
       }
    }
@@ -338,6 +339,8 @@ class OperationalTemplateController {
          return
       }
 
+      if (!opt.isIndexed) flash.message = message(code:"opt.feedback.notIndexed")
+
       sort = sort ?: 'id'
       order = order ?: 'asc'
 
@@ -357,6 +360,8 @@ class OperationalTemplateController {
          redirect action:'index'
          return
       }
+
+      if (!opt.isIndexed) flash.message = message(code:"opt.feedback.notIndexed")
 
       def items = opt.referencedArchetypeNodes as List
 
