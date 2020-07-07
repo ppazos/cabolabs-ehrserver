@@ -41,7 +41,13 @@ class OperationalTemplateIndexerJob {
 
          // load opt in manager cache
          def optMan = OptManager.getInstance()
+         println optIndex
+         println optIndex.templateId
+         println optIndex.externalTemplateId
+         
+         println optMan.status()
          optMan.load(optIndex.templateId, optIndex.organizationUid, true)
+         println optMan.status()
 
          // the mark as indexed happens in the service.index
          //optIndex.isIndexed = true

@@ -97,6 +97,9 @@ class OperationalTemplateIndex {
       active {
          eq('isActive', true)
       }
+      indexed {
+         eq('isIndexed', true)
+      }
    }
 
    static mapping = {

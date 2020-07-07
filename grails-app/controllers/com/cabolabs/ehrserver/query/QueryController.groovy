@@ -336,7 +336,7 @@ class QueryController {
       */
       [
        queryInstance: new Query(params),
-       templateIndexes: OperationalTemplateIndex.notDeleted.forOrg(session.organization).findAllByLanguage(session.lang), // queries cna be created for any version of the OPT
+       templateIndexes: OperationalTemplateIndex.notDeleted.forOrg(session.organization).indexed.findAllByLanguage(session.lang), // queries cna be created for any version of the OPT
        queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid)
       ]
    }
@@ -409,7 +409,7 @@ class QueryController {
         view: 'create',
         model: [
           queryInstance: queryInstance,
-          templateIndexes: OperationalTemplateIndex.findAllByOrganizationUidAndLanguage(session.organization.uid, session.lang), // queries can be created for any version of the OPT
+          templateIndexes: OperationalTemplateIndex.notDeleted.forOrg(session.organization).indexed.findAllByLanguage(session.lang), // queries can be created for any version of the OPT
           queryGroups: QueryGroup.findAllByOrganizationUid(session.organization.uid),
           mode: 'edit'
         ]
@@ -690,14 +690,34 @@ class QueryController {
    def getArchetypesInTemplate2(String template_id)
    {
       def optMan = OptManager.getInstance()
-      def opt = optMan.getOpt(template_id, session.organization.uid)
-      Map tree = [:]
+      def opt = optMan.getOpt(template_id, session.organization.uid) // FIXME: this is failing to load the OPT, in OperationalTemplateIndexerJob:44 the opt should be loaded in the cache, test it.
+      List tree = []
       getReferencedArchetypesRecursive(opt.definition, tree)
       render tree as JSON
    }
+
    // TODO: move these functions to openEHR-OPT.model.OPT
-   private getReferencedArchetypesRecursive(ObjectNode obj, Map parent_tree)
+   private getReferencedArchetypesRecursive(ObjectNode obj, List parent_tree)
    {
+      def node
+      def child_tree = parent_tree
+      if (obj.path == '/' || obj.type == 'C_ARCHETYPE_ROOT')
+      {
+         // this new structure allows several siblings with the same archetypeId issue #93
+         node = [
+            archetypeId: obj.archetypeId,
+            name: obj.getText(obj.nodeId),
+            rmTypeName: obj.rmTypeName,
+            //obj: obj,
+            children: []
+         ]
+
+         child_tree = node.children
+
+         parent_tree << node
+      }
+
+      /*
       def child_tree = parent_tree
       if (obj.path == '/' || obj.type == 'C_ARCHETYPE_ROOT')
       {
@@ -706,17 +726,20 @@ class QueryController {
          parent_tree[obj.archetypeId].children = [:]
          child_tree = parent_tree[obj.archetypeId].children
       }
+      */
 
       obj.attributes.each { attr ->
          getReferencedArchetypesRecursive(attr, child_tree)
       }
    }
-   private getReferencedArchetypesRecursive(AttributeNode attr, Map parent_tree)
+
+   private getReferencedArchetypesRecursive(AttributeNode attr, List parent_tree)
    {
       attr.children.each { obj ->
          getReferencedArchetypesRecursive(obj, parent_tree)
       }
    }
+
    def getArchetypePaths2(String template_id, String archetypeId, boolean datatypesOnly)
    {
       def optMan = OptManager.getInstance()

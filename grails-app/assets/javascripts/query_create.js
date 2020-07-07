@@ -48,85 +48,92 @@ if (templateid_select)
       return;
     }
 
-    get_archetypes_in_template( $(this).val(), get_archetypes_in_template_callback );
+    get_archetypes_in_template($(this).val(), get_archetypes_in_template_callback);
+
     /*
     get_archetypes_in_template( $(this).val(), function(aiis) {
 
-    console.log(aiis);
+      console.log(aiis);
 
-    // empty paths if previous archetype was selected
-    var path_select = document.getElementById('view_archetype_path');
-    var default_option = path_select.children[0];
-    path_select.innerHTML = '';
-    path_select.add(default_option);
-
-
-    // remder archetypes
-    var select = document.getElementById('view_archetype_id'); // view_archetype_id
-
-    select.innerHTML = ''; // removes current archids
-
-    archetypes = []; // to fill the archetype filter
-    archetypeids = '';
-    aiis.forEach( function(aii) {
-
-    option = document.createElement("option");
-    option.value = aii.archetypeId;
-    option.text = aii.name[session_lang] +' ('+ aii.archetypeId +')';
+      // empty paths if previous archetype was selected
+      var path_select = document.getElementById('view_archetype_path');
+      var default_option = path_select.children[0];
+      path_select.innerHTML = '';
+      path_select.add(default_option);
 
 
-    // to be used on the archetype id filter matching
-    aii.parentOpts.forEach( function(opt)
-    {
-    archetypeids += opt.archetypeId+'|';
-  });
-  option.setAttribute('data-archetypeid', archetypeids);
+      // remder archetypes
+      var select = document.getElementById('view_archetype_id'); // view_archetype_id
+
+      select.innerHTML = ''; // removes current archids
+
+      archetypes = []; // to fill the archetype filter
+      archetypeids = '';
+      aiis.forEach( function(aii) {
+
+        option = document.createElement("option");
+        option.value = aii.archetypeId;
+        option.text = aii.name[session_lang] +' ('+ aii.archetypeId +')';
 
 
-  select.add(option);
+        // to be used on the archetype id filter matching
+        aii.parentOpts.forEach( function(opt)
+        {
+          archetypeids += opt.archetypeId+'|';
+        });
+        option.setAttribute('data-archetypeid', archetypeids);
 
-  // to fill filter by compo archetype id
-  if (aii.rmTypeName == 'COMPOSITION')
-  {
-  archetypes.push(aii.archetypeId);
-}
-});
-});
-*/
-};
+
+        select.add(option);
+
+        // to fill filter by compo archetype id
+        if (aii.rmTypeName == 'COMPOSITION')
+        {
+          archetypes.push(aii.archetypeId);
+        }
+      });
+    });
+  */
+
+  };
 }
 
 var get_archetypes_in_template_callback = function(tree)
 {
-   var level = 0;
-   var select = document.getElementById('view_archetype_id'); // view_archetype_id
-   select.innerHTML = ''; // removes current archids
+  var level = 0;
+  var select = document.getElementById('view_archetype_id'); // view_archetype_id
+  select.innerHTML = ''; // removes current archids
 
-   get_archetypes_in_template_recursive(tree, level, select)
+  get_archetypes_in_template_recursive(tree, level, select);
 }
+
 var get_archetypes_in_template_recursive = function(tree, level, select)
 {
-   //console.log(tree);
-   for (var arch in tree)
-   {
+  //console.log(tree);
+  /*
+  for (var arch in tree)
+  {
+    option = document.createElement("option");
+    option.value = arch;
+    option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + tree[arch].name + ' ('+ arch +')';
+    select.add(option);
 
-      option = document.createElement("option");
-      option.value = arch;
-      option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + tree[arch].name + ' ('+ arch +')';
-      select.add(option);
+    get_archetypes_in_template_recursive(tree[arch].children, level+1, select);
+  }
+  */
 
+  //console.log(tree);
+  tree.forEach(function(node) {
+    //console.log(node);
 
-/*
-      var option = '<option value='+ arch +'>'+
-      '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '&#x2514; ' : '') + tree[arch].name + ' ('+ arch +')'+
-      '</option>';
-      select.append(option);
-*/
+    option = document.createElement("option");
+    option.value = node.archetypeId;
+    option.text = '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + node.name + ' ('+ node.archetypeId +')';
+    select.add(option);
 
-      get_archetypes_in_template_recursive(tree[arch].children, level+1, select)
-   }
+    get_archetypes_in_template_recursive(node.children, level+1, select);
+  });
 }
-
 
 // ====================================================
 // /Concepts and filters module
