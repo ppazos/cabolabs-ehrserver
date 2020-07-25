@@ -73,12 +73,14 @@ dependencies {
 
    compile 'org.grails.plugins:ajax-tags:1.0.0'
 
+   compile 'org.grails.plugins:recaptcha:3.2.0' // register
+
 
    // internal plugins using jitpack/github
    //compile "grails.simple.auth:grails-simple-auth:0.1" // local
-   compile "com.github.ppazos:grails-simple-auth:v0.3"
+   compile "com.github.ppazos:grails-simple-auth:v0.4.1"
    //compile "grails.security.stateless.ng:grails-security-stateless-ng:0.1" // local
-   compile "com.github.ppazos:grails-security-stateless-ng:v0.1"
+   compile "com.github.ppazos:grails-security-stateless-ng:v0.1.1"
 
 
    // S3 support

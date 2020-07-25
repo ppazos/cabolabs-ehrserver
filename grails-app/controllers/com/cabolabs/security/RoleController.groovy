@@ -41,7 +41,7 @@ class RoleController {
    }
 
    def show(Role roleInstance) {
-      respond roleInstance
+      [roleInstance: roleInstance]
    }
 
    def create() {

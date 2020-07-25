@@ -3,15 +3,27 @@ server:
    port: 8090
 
 ---
+# If you add a supported language you need also to translate the messages_YOUR_LANGUAGE.properties file.
 languages:
    - en
    - es
    - pt
 
 ---
+# Declare this environment variable, the value could be a UUID, to use the REST API authentication.
 stateless:
    secretKey: ${EHRSERVER_REST_SECRET}
    expirationTime: 1440 # expiration time in minutes
+
+---
+# To configure this you need an account in https://www.google.com/recaptcha
+# Please create a reCaptcha v2, v3 doesn't work with this plugin.
+# Documentation https://github.com/iamthechad/grails3-recaptcha
+recaptcha:
+    publicKey: "${EHRSERVER_RECAPTCHA_SITEKEY}"
+    privateKey: "${EHRSERVER_RECAPTCHA_SECRETKEY}"
+    includeScript: true
+    includeNoScript: true
 
 ---
 app:
@@ -79,6 +91,7 @@ app:
       db_time_format: "HH:mm:ss"
 
 ---
+# Configure if you want to store files in AWS S3.
 aws:
     accessKey: ${EHRSERVER_S3_ACCESS}
     secretKey: ${EHRSERVER_S3_SECRET}
@@ -90,6 +103,7 @@ aws:
         opt_repo: "opts/"
 
 ---
+# Configure to be able to send emails for user registrations and password reset.
 grails:
     mail:
         host: ${EHRSERVER_EMAIL_HOST}

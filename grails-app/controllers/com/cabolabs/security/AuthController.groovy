@@ -33,8 +33,8 @@ class AuthController {
       def user
       def isauth = authprov.authenticate([email: email, pass: pass]) { ->
          user = User.findByEmail(email)
-         if (!user) return false
-         if (!user.enabled) return false
+         if (!user) return authprov.authError('Wrong credentials')
+         if (!user.enabled) return authprov.authError('Account disabled, please reset your password')
 
          // if the user has any role 'user' then it should not be allowed to login
          // ecause once inside he can choose to change the org, and if he logged in
@@ -46,64 +46,72 @@ class AuthController {
                allow_role = false
             }
          }
-         if (!allow_role) return false
+         if (!allow_role) return authprov.authError("Your role can't login in the administrative console")
 
-         return PasswordUtils.isPasswordValid(user.password, pass)
+         if (PasswordUtils.isPasswordValid(user.password, pass))
+         {
+            return authprov.authOk('Welcome back!')
+         }
+         else
+            return authprov.authError('Wrong credentials')
       }
 
-      if (isauth)
+      println isauth
+
+      if (!isauth.result)
       {
-         def usess = new Session(jsessid: session.id.toString(),
-                                 userId: email,
-                                 authenticated: true,
-                                 payload: [user:user])
-
-         try
-         {
-            sessman.addSession(usess)
-         }
-         catch (Exception e)
-         {
-            // the user already has a session
-         }
-
-
-         // read remote notifications
-         // Get date of the last read of remote notifications by the current user, null if no reads were done
-         // This avoids reading the same notifications twice by the same user
-         def lastALogs = ActivityLog.findAllByActionAndUsername('remote_notifications', email, [max: 1, sort: 'timestamp', order:'desc'])
-         def from
-         if (lastALogs.size() > 0) from = lastALogs[0].timestamp
-
-         def notifications = remoteNotificationsService.getNotifications('ehrserver', session.lang, from)
-
-         notifications.each { notification ->
-            new Notification(
-               name: 'remote',
-               language: session.lang,
-               text: notification.nt,
-               forUser: User.findByEmail(email).id,
-               timestamp: Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", notification.ts)
-            ).save()
-         }
-
-         // Mark current read of the remote notifications
-         new ActivityLog(username: email, action: 'remote_notifications', sessionId: session.id.toString()).save()
-
-         // /remote notifications
-
-
-         // Select the first Organization of the user as the current org, then they can change it from the GUI
-         def user_first_organization = user.firstOrganization
-         session.organization = user_first_organization
-         session.account =  user_first_organization.account
-
-         redirect controller:'app', action:'index'
+         flash.error = isauth.message
+         render view: 'login'
          return
       }
 
-      flash.message = 'wrong credentials' // FIXME: i18n
-      render view: 'login'
+      def usess = new Session(jsessid: session.id.toString(),
+                              userId: email,
+                              authenticated: true,
+                              payload: [user:user])
+
+      try
+      {
+         sessman.addSession(usess)
+      }
+      catch (Exception e)
+      {
+         // the user already has a session
+      }
+
+
+      // read remote notifications
+      // Get date of the last read of remote notifications by the current user, null if no reads were done
+      // This avoids reading the same notifications twice by the same user
+      def lastALogs = ActivityLog.findAllByActionAndUsername('remote_notifications', email, [max: 1, sort: 'timestamp', order:'desc'])
+      def from
+      if (lastALogs.size() > 0) from = lastALogs[0].timestamp
+
+      def notifications = remoteNotificationsService.getNotifications('ehrserver', session.lang, from)
+
+      notifications.each { notification ->
+         new Notification(
+            name: 'remote',
+            language: session.lang,
+            text: notification.nt,
+            forUser: User.findByEmail(email).id,
+            timestamp: Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", notification.ts)
+         ).save()
+      }
+
+      // Mark current read of the remote notifications
+      new ActivityLog(username: email, action: 'remote_notifications', sessionId: session.id.toString()).save()
+
+      // /remote notifications
+
+
+      // Select the first Organization of the user as the current org, then they can change it from the GUI
+      def user_first_organization = user.firstOrganization
+      session.organization = user_first_organization
+      session.account =  user_first_organization.account
+
+      redirect controller:'app', action:'index'
+      return
    }
 
    // token comes always and is required for reset

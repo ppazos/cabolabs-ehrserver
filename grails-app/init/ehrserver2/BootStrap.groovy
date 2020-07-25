@@ -83,13 +83,23 @@ class BootStrap {
    def createRequestMaps()
    {
       def open = [
+         '/',
         '/error',
-        '/favicon'
+        '/favicon',
+        '/auth/login',
+        '/auth/auth',
+        '/auth/resetPassword',
+        '/auth/resetPasswordRequest/.*',
+        '/auth/forgotPassword',
+        '/user/register',
+        '/user/registerOk'
       ]
 
       open.each { url ->
          new RequestMap(url: url, configAttribute: 'OPEN_ACCESS').save()
       }
+
+      new RequestMap(url: '/auth/logout', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/app/get_started', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
@@ -199,11 +209,14 @@ class BootStrap {
       //new RequestMap(url: '/operationalTemplate/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       //new RequestMap(url: '/operationalTemplate/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/trash',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/empty_trash',        configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/generate',           configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/operationalTemplate/opt_manager_status', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/delete',             configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/items',              configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/operationalTemplate/archetypeItems',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/activate',           configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/operationalTemplate/deactivate',         configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
 
       new RequestMap(url: '/notification/index',               configAttribute: 'ROLE_ADMIN').save()
@@ -214,17 +227,17 @@ class BootStrap {
       new RequestMap(url: '/notification/update/.*',           configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/notification/newNotifications',    configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-      new RequestMap(url: '/logs/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/logs/.*',                configAttribute: 'ROLE_ADMIN').save()
 
-      new RequestMap(url: '/dataValueIndex/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/dataValueIndex/.*',      configAttribute: 'ROLE_ADMIN').save()
 
-      new RequestMap(url: '/folderTemplate/.*', configAttribute: 'ROLE_ADMIN').save()
+      new RequestMap(url: '/folderTemplate/.*',      configAttribute: 'ROLE_ADMIN').save()
 
-      new RequestMap(url: '/messaging/feedback', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/messaging/feedback',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/compositionIndex/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-      new RequestMap(url: '/stats/organization', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/stats/organization',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
    }
 
    def createTerminologyIds()

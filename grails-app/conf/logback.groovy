@@ -38,6 +38,7 @@ root(ERROR, ['STDOUT'])
 // new
 logger("ehrserver2.BootStrap", INFO) //, ['STDOUT'], false)
 logger("com.cabolabs.security.stateless", DEBUG)
+//logger("com.cabolabs.security", DEBUG)
 logger("com.cabolabs.ehrserver.i18n", DEBUG)
 logger("com.cabolabs.ehrserver.indexing", INFO)
 logger("com.cabolabs.ehrserver.account", INFO)

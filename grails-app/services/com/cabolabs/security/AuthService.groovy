@@ -29,6 +29,7 @@ class AuthService implements ServletAttributes {
    {
       def sessman = SessionManager.instance
       def sess = sessman.getSession(session.id.toString())
+      if (!sess) return false
 
       return userHasAnyRole(sess.payload.user, roles)
    }

@@ -11,7 +11,7 @@ class AuthInterceptor {
    public AuthInterceptor()
    {
       matchAll()
-         .excludes(controller:'auth')
+         //.excludes(controller:'auth')
          .excludes(controller:'restAuth')
 
    }
@@ -41,6 +41,22 @@ class AuthInterceptor {
       return false
    }
 
+   private boolean isPublic(RequestMap rm)
+   {
+      if (rm && rm.configAttribute == 'OPEN_ACCESS')
+      {
+         log.info "open access to url "+ rm.url
+         return true
+      }
+      return false
+   }
+
+   private boolean isLoggedIn()
+   {
+      def sessman = SessionManager.instance
+      return sessman.hasSession(session.id.toString())
+   }
+
    boolean before() {
 
       //println "AUTH INTERCEPTOR"
@@ -57,48 +73,78 @@ class AuthInterceptor {
          return true
       }
 
-      //println "AuthInterceptor: c: ${controllerName}, a: ${actionName}"
+      log.info "authInterceptor: c: ${controllerName}, a: ${actionName}"
 
-      // Not logged in? Go to the login page
-      def sessman = SessionManager.instance
-      if (!sessman.hasSession(session.id.toString()))
-      {
-         //println "redirects to auth"
-         redirect controller: 'auth', action: 'login'
-         return false
-      }
 
       // Check access to current section by user role
       def path = request.requestURI
 
-      // TODO: move to an on-memory singleton
+      /*
+      request.attributeNames.each { println it +" "+ request.getAttribute(it) }
+      */
+
+
+      // TODO: dont query RequestMaps move to an in-memory singleton
       // TODO: check request method
       def rms = RequestMap.list() //findByUrl(path)
       def rm = rms.find {
          path.matches(it.url) // current path matches reges in RequestMap.url?
       }
 
+      
       if (!rm)
       {
-         log.info "${path} doesnt match any RequestMap URL"
+         log.info "${path} doesn't match any RequestMap URL"
          //println rms.url
          render view: "/noPermissions.gsp"
          return false // all URLs are closed by default!
       }
+      
 
       log.info "${path} matches ${rm.url}"
 
-      if (rm.configAttribute == 'OPEN_ACCESS')
-      {
-         log.info "open access to url "+ rm.url
-         return true
-      }
 
-      // verify role
-      if (!authService.loggedInUserHasAnyRole(rm.configAttribute))
+      // FIXME: check the action is open in the RequestMap, similar to the checks in the toolkit
+      // TODO: do the fix in atomik also
+      
+      if (!isPublic(rm))
       {
-         render view: "/noPermissions.gsp"
-         return false // all URLs are closed by default!
+         if (!isLoggedIn())
+         {
+            log.info "not public and not logged in, redirect to auth"
+            flash.message = "Your session, please login."
+            redirect controller: 'auth', action: 'login'
+            return false
+         }
+         
+         // verify role
+         if (!authService.loggedInUserHasAnyRole(rm.configAttribute))
+         {
+            render view: "/noPermissions.gsp"
+            return false // all URLs are closed by default!
+         }
+
+         /*
+         if (onlyAdmin(controllerName, actionName) && authService.loggedInRole() != 'admin')
+         {
+            // I don't want to tell the user that section exists but he don't have access
+            flash.message = "There was a problem with your request"
+            redirect controller: 'app', action: 'dashboard'
+            return false
+         }
+         */
+      }
+      else // public
+      {
+         if (isLoggedIn()) // if it's logged in, go to dashboard
+         {
+            redirect controller: 'app', action: 'index'
+            return false
+         }
+         else
+         {
+            log.info "public, not logged in"
+         }
       }
 
       true

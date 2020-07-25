@@ -5,7 +5,8 @@ class UrlMappings {
    static mappings = {
 
       // root tries to show the dashboard, if not logged in, the auth interceptor will redirect to login
-      //"/"(controller:'app', action:'index')
+      "/"(controller:'auth', action:'login')
+
       //"/"(uri:'/app')
 
       "500"(view:'/error')

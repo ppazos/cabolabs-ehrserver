@@ -30,7 +30,7 @@ import grails.converters.*
 import grails.util.Holders
 import com.cabolabs.ehrserver.account.*
 import com.cabolabs.ehrserver.api.ApiResponsesService
-
+import com.megatome.grails.RecaptchaService
 
 @Transactional(readOnly = false)
 class UserController {
@@ -38,12 +38,13 @@ class UserController {
    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
    def apiResponsesService
-   def simpleCaptchaService
    def notificationService
    def authService
    def configurationService
    def organizationService
    def logService
+   RecaptchaService recaptchaService
+
 
    def config = Holders.config.app
 
@@ -595,7 +596,12 @@ class UserController {
       }
       else
       {
-         boolean captchaValid = simpleCaptchaService.validateCaptcha(params.captcha)
+         // check captcha
+         boolean captchaValid = true
+         if (!recaptchaService.verifyAnswer(session, request.getRemoteAddr(), params))
+         {
+            captchaValid = false
+         }
 
          def u = new User(
             email: params.email,
@@ -650,6 +656,9 @@ class UserController {
          {
             println u.errors
             println o.errors
+            
+            recaptchaService.cleanUp(session)
+
             flash.message = 'user.registerError.feedback'
             render view: "register", model: [userInstance: u, organizationInstance: o, captchaValid: captchaValid]
          }

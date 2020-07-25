@@ -185,7 +185,7 @@
           <li style="padding-right:15px;">
             <g:link controller="user" action="show" id="${g.loggedUserAttribute(field:'id')}" style="padding: 0; display: inline;">${g.loggedUserAttribute(field:'email')}</g:link>
             &commat;
-            <g:link controller="account" action="show" id="${session.account.id}" style="padding: 0; display: inline;">${session.account.companyName}</g:link>
+            <g:link controller="account" action="show" id="${session?.account?.id}" style="padding: 0; display: inline;">${session?.account?.companyName}</g:link>
             :
             <%--<g:link controller="organization" action="show" id="${session.organization.uid}" style="padding: 0; display: inline;">${session.organization.name}</g:link>--%>
             <g:selectWithCurrentUserOrganizations name="current_organization" class="form-control" style="width:200px; display: inline" />

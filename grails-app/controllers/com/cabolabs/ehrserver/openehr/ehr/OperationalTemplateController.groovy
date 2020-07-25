@@ -429,7 +429,7 @@ class OperationalTemplateController {
 
       // show should be for the latest version
       def c = OperationalTemplateIndex.createCriteria()
-      def latest_version_uid = c.list {
+      def latest_version_uid = c.get {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
@@ -437,8 +437,9 @@ class OperationalTemplateController {
          }
       }
 
-      redirect action:'show', params: [uid:latest_version_uid]
+      redirect action:'show', id:latest_version_uid
    }
+
    def deactivate(String uid)
    {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
@@ -452,7 +453,7 @@ class OperationalTemplateController {
 
       // show should be for the latest version
       def c = OperationalTemplateIndex.createCriteria()
-      def latest_version_uid = c.list {
+      def latest_version_uid = c.get {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
@@ -465,13 +466,13 @@ class OperationalTemplateController {
       if (count > 0)
       {
          flash.message = message(code:"opt.common.error.templateCantBeDeactivatedIndexingPending")
-         redirect action:'show', params: [uid:latest_version_uid]
+         redirect action:'show', id:latest_version_uid
          return
       }
 
       operationalTemplateIndexerService._event_deactivate(opt)
 
-      redirect action:'show', params: [uid:latest_version_uid]
+      redirect action:'show', id:latest_version_uid
    }
 
    /*

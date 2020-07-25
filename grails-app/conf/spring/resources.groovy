@@ -15,5 +15,8 @@ beans = {
    // Configuration for using File System file access
    versionRepoService(VersionFSRepoService)
    optService(OptFSService)
+   {
+      operationalTemplateIndexer = ref('operationalTemplateIndexerService') // without this when emptying the trash it says the indexer is null...
+   }
    commitLoggerService(CommitLoggerFSService)
 }
