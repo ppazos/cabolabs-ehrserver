@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="openEHR/v1/Template">
+  <id>d54d7454-a558-491e-9735-206a815419c1</id>
+  <name>simple_encounter_es.v1</name>
+  <description>
+    <lifecycle_state>Initial</lifecycle_state>
+    <details>
+      <purpose />
+      <use />
+      <misuse />
+    </details>
+    <other_details>
+      <item>
+        <key>MetaDataSet:Sample Set </key>
+        <value>Template metadata sample set </value>
+      </item>
+      <item>
+        <key>Acknowledgements</key>
+        <value />
+      </item>
+      <item>
+        <key>Business Process Level</key>
+        <value />
+      </item>
+      <item>
+        <key>Care setting</key>
+        <value />
+      </item>
+      <item>
+        <key>Client group</key>
+        <value />
+      </item>
+      <item>
+        <key>Clinical Record Element</key>
+        <value />
+      </item>
+      <item>
+        <key>Copyright</key>
+        <value />
+      </item>
+      <item>
+        <key>Issues</key>
+        <value />
+      </item>
+      <item>
+        <key>Owner</key>
+        <value />
+      </item>
+      <item>
+        <key>Sign off</key>
+        <value />
+      </item>
+      <item>
+        <key>Speciality</key>
+        <value />
+      </item>
+      <item>
+        <key>User roles</key>
+        <value />
+      </item>
+    </other_details>
+  </description>
+  <definition xsi:type="COMPOSITION" archetype_id="openEHR-EHR-COMPOSITION.encounter.v1" concept_name="Encuentro">
+    <Content xsi:type="EVALUATION" archetype_id="openEHR-EHR-EVALUATION.reason_for_encounter.v1" concept_name="Motivo de consulta" path="/content">
+      <Rule path="/data[at0001]/items[at0002]" max="0" />
+    </Content>
+    <Content xsi:type="SECTION" archetype_id="openEHR-EHR-SECTION.vital_signs.v0" concept_name="Signos vitales" path="/content">
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.respiration.v1" concept_name="Respiraciones" path="/items[at0001]">
+        <Rule path="/data[at0001]/events[at0002]/state[at0022]" hide_on_form="true" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.pulse.v1" concept_name="*Pulse/Heart beat(en)" path="/items[at0001]">
+        <Rule path="/data[at0002]/events[at0003]/state[at0012]" hide_on_form="true" />
+        <Rule path="/data[at0002]/events[at1036]" max="0" />
+        <Rule path="/protocol[at0010]" hide_on_form="true" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.height.v1" concept_name="Altura/Longitud corporal" path="/items[at0001]">
+        <Rule path="/data[at0001]/events[at0002]/state[at0013]" hide_on_form="true" />
+        <Rule path="/protocol[at0007]" hide_on_form="true" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.body_weight.v1" concept_name="Peso corporal" path="/items[at0001]">
+        <Rule path="/data[at0002]/events[at0003]/state[at0008]" hide_on_form="true" />
+        <Rule path="/protocol[at0015]" hide_on_form="true" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.body_temperature.v2" concept_name="Temperatura Corporal" path="/items[at0001]">
+        <Rule path="/data[at0002]/events[at0003]/state[at0029]" hide_on_form="true" />
+        <Rule path="/data[at0002]/events[at0003]/state[at0029]/items[at0065]" max="0" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.blood_pressure.v1" concept_name="Presión arterial" path="/items[at0001]">
+        <Rule path="/data[at0001]/events[at0006]/data[at0003]/items[at1006]" max="0" />
+        <Rule path="/data[at0001]/events[at0006]/data[at0003]/items[at1007]" max="0" />
+        <Rule path="/data[at0001]/events[at0006]/data[at0003]/items[at0033]" max="0" />
+        <Rule path="/data[at0001]/events[at0006]/state[at0007]" hide_on_form="true" />
+        <Rule path="/data[at0001]/events[at1042]" max="0" />
+        <Rule path="/protocol[at0011]" hide_on_form="true" />
+      </Item>
+      <Item xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.indirect_oximetry.v0" concept_name="*Indirect oximetry(en)" path="/items[at0001]">
+        <Rule path="/data[at0001]/events[at0002]/data[at0003]/items[at0019]" max="0" />
+        <Rule path="/data[at0001]/events[at0002]/data[at0003]/items[at0036]" max="0" />
+        <Rule path="/data[at0001]/events[at0002]/state[at0014]" hide_on_form="true" />
+        <Rule path="/protocol[at0007]/items[at0037]" max="0" />
+        <Rule path="/protocol[at0007]/items[at0038]" max="0" />
+      </Item>
+    </Content>
+    <Content xsi:type="OBSERVATION" archetype_id="openEHR-EHR-OBSERVATION.exam.v1" concept_name="Hallazgos de la examinación física" path="/content">
+      <Rule path="/data[at0001]/events[at0002]/data[at0003]/items[at0011]" max="0" />
+      <Rule path="/protocol[at0007]" hide_on_form="true" />
+    </Content>
+    <Content xsi:type="EVALUATION" archetype_id="openEHR-EHR-EVALUATION.problem_diagnosis.v1" concept_name="*Problem/Diagnosis(en)" path="/content">
+      <Rule path="/data[at0001]/items[at0009]" max="0" />
+      <Rule path="/data[at0001]/items[at0077]" max="0" />
+      <Rule path="/data[at0001]/items[at0072]" max="0" />
+      <Rule path="/data[at0001]/items[at0030]" max="0" />
+      <Rule path="/protocol[at0032]" hide_on_form="true" />
+    </Content>
+    <Context />
+  </definition>
+</template>

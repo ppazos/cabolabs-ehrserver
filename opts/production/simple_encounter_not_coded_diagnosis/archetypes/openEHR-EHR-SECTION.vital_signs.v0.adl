@@ -1,0 +1,171 @@
+﻿archetype (adl_version=1.4; uid=546fd1ef-c520-4b30-a360-cc815fb2d641)
+	openEHR-EHR-SECTION.vital_signs.v0
+
+concept
+	[at0000]	-- Vital signs
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Sebastian Garde">
+				["organisation"] = <"Ocean Informatics">
+				["email"] = <"sebastian.garde@oceaninformatics.com">
+			>
+		>
+		["ko"] = <
+			language = <[ISO_639-1::ko]>
+			author = <
+				["name"] = <"Seung-Jong Yu">
+				["organisation"] = <"Yonsei FM Clinic">
+			>
+			accreditation = <"Medical Doctor">
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+			>
+			accreditation = <"Computer Engineer">
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Sam Heard">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"sam.heard@oceaninformatics.com">
+		["date"] = <"2006-03-14">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"Rubrik oder Abschnitt, der nur Observationen beinhalten kann, die als Vitalparameter gelten. Diese Gruppe von Observationen ist eine in der Medizin allgemein gebräuchliche Menge. Während die einzelnen Messungen in Gesundheitsakten oft getrennt vorkommen, bilden sie zusammen gemessen eine bedeutsame Beurteilung des Zustandes der Person.">
+			use = <"Eine organisatorische Rukrik (Section) für Vitalparameter">
+			keywords = <"Blutdruck", "Temperatur", "Puls", "Sauerstoffsättigung", "Atmung", "Observationen", "Vital", "Parameter">
+			misuse = <"Muss nicht benutzt werden, um die verschiedenen Messungen getrennt voneinander aufzuzeichenen.
+
+">
+			copyright = <"© openEHR Foundation">
+		>
+		["ko"] = <
+			language = <[ISO_639-1::ko]>
+			purpose = <"생체 징후라고 간주되는 관찰사항만들을 포함하는 제목(heading)이나 섹션(Section).  의학에서 이 관찰사항들은 공통적인 세트인데, 기록에서 보면 분리되어 있기도 하지만  이러한 관찰사항들이 함께 측정되면 웰빙상태에 대한 중요한 평가가 된다. ">
+			use = <"생체 징후들을 위한 구조상의 제목">
+			keywords = <"*혈압(ko)", "*체온(ko)", "*맥박(ko)", "*산소 포화도(ko)", "*호흡수(ko)", "*관찰(ko)", "*생체(ko)", "*징후(ko)">
+			misuse = <"엔트리들을 각각 기록하기 위해 사용할 필요는 없다">
+			copyright = <"© openEHR Foundation">
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Representa una sección de un documento clínico que contiene observaciones sobre signos vitales.">
+			use = <"Organización de entradas de signos vitales dentro de una misma sección de un documento clínico.">
+			keywords = <"presión arterial", "temperatura", "frecuencia cardíaca", "saturación de oxígeno", "frecuencia respiratoria", "observaciones", "signos vitales">
+			misuse = <"No debería usarse para registrar los signos vitales individuales por separado.">
+			copyright = <"© openEHR Foundation">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"A heading or section which can only contain observations considered to be vital signs. This group of observations is a common set in medicine, and while these often occur separately in health records, when they are measured together this is a significant assessment of wellbeing.">
+			use = <"An organisational heading for vital signs.">
+			keywords = <"blood pressure", "temperature", "pulse", "oxygen saturation", "respirations", "observations", "vital", "signs">
+			misuse = <"Does not need to be used to record these entries separately.">
+			copyright = <"© openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"in_development">
+	other_contributors = <"Silje Ljosland Bakke, Nasjonal IKT HF, Norway (openEHR Editor)", "Heather Leslie, Ocean Informatics, Australia (openEHR Editor)", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom (openEHR Editor)">
+	other_details = <
+		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.">
+		["custodian_organisation"] = <"openEHR Foundation">
+		["original_namespace"] = <"org.openehr">
+		["original_publisher"] = <"openEHR Foundation">
+		["custodian_namespace"] = <"org.openehr">
+		["MD5-CAM-1.0.1"] = <"BFB0D72627B3F4C46CB5A8DA3678F1DE">
+		["build_uid"] = <"42863b96-939e-4e1a-acca-ebe527baf25d">
+		["revision"] = <"0.0.1-alpha">
+	>
+
+definition
+	SECTION[at0000] matches {	-- Vital signs
+		items cardinality matches {1..*; unordered} matches {
+			allow_archetype OBSERVATION[at0001] occurrences matches {0..*} matches {	-- Vital signs
+				include
+					archetype_id/value matches {/openEHR-EHR-OBSERVATION\.blood_pressure(-[a-zA-Z0-9_]+)*\.v1|openEHR-EHR-OBSERVATION\.body_temperature(-[a-zA-Z0-9_]+)*\.v1|openEHR-EHR-OBSERVATION\.indirect_oximetry(-[a-zA-Z0-9_]+)*\.v1|openEHR-EHR-OBSERVATION\.respiration(-[a-zA-Z0-9_]+)*\.v1|openEHR-EHR-OBSERVATION\.pulse(-[a-zA-Z0-9_]+)*\.v1/}
+			}
+			allow_archetype EVALUATION[at0002] occurrences matches {0..1} matches {	-- Synopsis
+				include
+					archetype_id/value matches {/openEHR-EHR-EVALUATION\.clinical_synopsis(-[a-zA-Z0-9_]+)*\.v1/}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Vital signs">
+					description = <"A group of observations that are recorded at the same time and record the blood pressure, pulse, temperature and other readings.">
+				>
+				["at0001"] = <
+					text = <"Vital signs">
+					description = <"Vital signs observations.">
+				>
+				["at0002"] = <
+					text = <"Synopsis">
+					description = <"Textual summary of vital signs.">
+				>
+			>
+		>
+		["ko"] = <
+			items = <
+				["at0000"] = <
+					text = <"생체 징후">
+					description = <"동시에 기록되는 관찰사항들의 묶음으로 혈압, 맥박수, 체온과 기타 결과들을 기록한다.">
+				>
+				["at0001"] = <
+					text = <"생체 징후">
+					description = <"생체 징후 관찰사항">
+				>
+				["at0002"] = <
+					text = <"요약">
+					description = <"생체 징후에 대한 문자로 된 요약">
+				>
+			>
+		>
+		["de"] = <
+			items = <
+				["at0000"] = <
+					text = <"Vitalparameter">
+					description = <"Eine Gruppe von Observationen, die zur selben Zeit erfasst werden und den Blutdruck, Puls, Temperatur und andere Messungen beinhalten.">
+				>
+				["at0001"] = <
+					text = <"*Vital signs(en)">
+					description = <"*Vital signs observations.(en)">
+				>
+				["at0002"] = <
+					text = <"*Synopsis(en)">
+					description = <"*Textual summary of vital signs(en)">
+				>
+			>
+		>
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Signos vitales">
+					description = <"Grupo de observaciones registradas al mismo tiempo para distintos signos vitales (presión arterial, frecuencia cardíaca, temperatura, etc.)">
+				>
+				["at0001"] = <
+					text = <"Signos vitales">
+					description = <"Observaciones y medidas de signos vitales">
+				>
+				["at0002"] = <
+					text = <"Resumen">
+					description = <"Resumen textual de signos vitales">
+				>
+			>
+		>
+	>

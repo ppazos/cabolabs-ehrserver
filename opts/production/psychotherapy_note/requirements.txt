@@ -1,0 +1,7 @@
+Clinical document to record psychotherapy notes
+
+1. The note is free text, is mostly an OBSERVATION
+2. Note documents should have a coded category, can be mapped to other_context, and the terminology constrained in the template
+3. Note documents should support optional+multiple tags, that can be in other_context, free text or coded, with terminology constrained in the template (on the end user app this terminology might be managed by the used, so it is dynamic, but the template just need to reference it, not know about how this terminology is managed)
+4. Leave an optional extension in the document, we might add more structured data in the future. That slot should be removed from the OPT.
+5. Initial category terminology: patient, family, work

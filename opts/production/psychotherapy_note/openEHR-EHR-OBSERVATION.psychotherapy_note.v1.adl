@@ -1,0 +1,127 @@
+archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.psychotherapy_note.v1
+
+concept
+	[at0000]	-- Psychotherapy note
+language
+	original_language = <[ISO_639-1::es]>
+	translations = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			author = <
+				["name"] = <"?">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"">
+	>
+	details = <
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Nota que registra una sesión de psycoterapia.">
+			use = <"Se utiliza para registrar información en texto libre de sesiones de psycoterapia.">
+			misuse = <"">
+			copyright = <"">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"*Nota que registra una sesión de psycoterapia.(es)">
+			use = <"*Se utiliza para registrar información en texto libre de sesiones de psycoterapia.(es)">
+			misuse = <"*(es)">
+			copyright = <"*(es)">
+		>
+	>
+	lifecycle_state = <"0">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"6D7B95B4B847D9FCEBEAE6703237A01E">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Psychotherapy note
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {1..*; unordered} matches {
+									ELEMENT[at0004] matches {	-- Note
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									allow_archetype CLUSTER[at0005] occurrences matches {0..*} matches {	-- Extension
+										include
+											archetype_id/value matches {/.*/}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Nota de psycoterapia">
+					description = <"*">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Arbol">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Nota">
+					description = <"Nota en texto libre que registra la sesión de psycoterapia.">
+				>
+				["at0005"] = <
+					text = <"Extensión">
+					description = <"Extensión para futuras estructuras.">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Psychotherapy note">
+					description = <"*">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Note">
+					description = <"Free text note about a psychotherapy session">
+				>
+				["at0005"] = <
+					text = <"Extension">
+					description = <"Extension for future structures">
+				>
+			>
+		>
+	>

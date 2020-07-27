@@ -44,10 +44,10 @@ class DataValueIndexController {
       // Mark current compos as not indexed, the indexer will catch up on the next round
       CompositionIndex.list().each {
          it.dataIndexed = false
-         it.save()
+         it.save(flush:true)
       }
       
-      flash.message = 'datavalueindex.reindex.indexingExecuted'
+      flash.message = message(code:'datavalueindex.reindex.indexingExecuted')
       redirect action:'index'
    }
 }

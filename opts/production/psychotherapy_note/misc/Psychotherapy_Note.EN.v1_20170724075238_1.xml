@@ -1,0 +1,155 @@
+<version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ORIGINAL_VERSION">
+  <contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>96de9ba1-f5a3-45d9-86bd-bed36e4f55d5</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>d3c040ac-f653-487d-a785-f5f11f617fb7</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. Yamamoto</name>
+    </committer>
+    <time_committed>
+      <value>20170724T195238,377-0300</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>95b38b01-4daa-4f4c-9ef4-87b6352a544c::EMR_APP::1</value>
+  </uid>
+  <data xsi:type="COMPOSITION" archetype_node_id="openEHR-EHR-COMPOSITION.health_summary-categorized.v1">
+    <name>
+      <value>Health summary</value>
+    </name>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.health_summary-categorized.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>Psychotherapy_Note.EN.v1</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>en</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>event</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>433</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>a43ee3e7-5215-4d5f-934e-714904d1c401</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. Yamamoto</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>20170724T195238,427-0300</value>
+      </start_time>
+      <setting>
+        <value>Hospital C</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>229</code_string>
+        </defining_code>
+      </setting>
+      <other_context archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Tree</value>
+        </name><!-- SLOT NOT PROCESSED -->
+        <items archetype_node_id="at0.3" xsi:type="ELEMENT">
+          <name>
+            <value>Category</value>
+          </name>
+          <value xsi:type="DV_CODED_TEXT">
+            <value>YamztxgGYQ.MLlKTdNEdePoSHxdaRX</value>
+            <defining_code>
+              <terminology_id>
+                <value>LOCAL_CATEGORIES</value>
+              </terminology_id>
+              <code_string>1009500</code_string>
+            </defining_code>
+          </value>
+        </items>
+      </other_context>
+    </context>
+    <content archetype_node_id="openEHR-EHR-EVALUATION.clinical_synopsis.v1" xsi:type="EVALUATION">
+      <name>
+        <value>Clinical Synopsis</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>en</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF" />
+      <data archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>List</value>
+        </name>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>Synopsis</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>ErCKdar akGUKgFjvGdhtUwxPc,bqdgnsdhTtBYwRFxvoWUIMys akWtbFRraVpSKhBOscAICEduFaNsqXQPaXgQlbeUEUOLkpDQ.CnBbJQoztI .lsIA SHBgQVZduYEvlKhhHZ.rtwf QYZlYnAMEAyyYxVBiGgSAhOIAllXvujgL,InvgJPJKBcsbIDUA EqkzGGFaBPbzPnd ENAciLdYfXkTZNmNscKjbBkp NKMpFVCzxpB,xd VUnfyQ</value>
+          </value>
+        </items>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>complete</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>

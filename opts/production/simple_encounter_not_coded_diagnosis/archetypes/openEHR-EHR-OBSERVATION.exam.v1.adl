@@ -1,0 +1,780 @@
+﻿archetype (adl_version=1.4; uid=8ec2d367-1d40-4e57-bf8b-4dde81132a64)
+	openEHR-EHR-OBSERVATION.exam.v1
+
+concept
+	[at0000]	-- Physical examination findings
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["sl"] = <
+			language = <[ISO_639-1::sl]>
+			author = <
+				["name"] = <"Uroš Rajkovič, Biljana Prinčič">
+				["organisation"] = <"Slovenia">
+			>
+		>
+		["zh-cn"] = <
+			language = <[ISO_639-1::zh-cn]>
+			author = <
+				["name"] = <"Lin Zhang">
+				["organisation"] = <"BIPH">
+				["email"] = <"linforest@163.com">
+			>
+			accreditation = <"?">
+		>
+		["nb"] = <
+			language = <[ISO_639-1::nb]>
+			author = <
+				["name"] = <"Lars Bitsch-Larsen and Einar Fosse">
+				["organisation"] = <"Haukeland University Hospital Bergen, Norway; UNN HF Centre for Integrated Care and Telemedicine">
+				["email"] = <"lbla@helse-bergen.no; Einar.Fosse@unn.no">
+			>
+			accreditation = <"MD, DEAA, MBA, specialist in tropical medic">
+		>
+		["es-ar"] = <
+			language = <[ISO_639-1::es-ar]>
+			author = <
+				["name"] = <"Edgardo Vazquez">
+				["organisation"] = <"VinculoMedico">
+			>
+			accreditation = <"Medical Doctor">
+		>
+		["ar-sy"] = <
+			language = <[ISO_639-1::ar-sy]>
+			author = <
+				["name"] = <"Mona Saleh">
+			>
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			author = <
+				["name"] = <"Pablo Pazos">
+				["organisation"] = <"CaboLabs">
+			>
+			accreditation = <"Computer Engineer">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			author = <
+				["name"] = <"Osmeire Chamelette Sanzovo">
+				["organisation"] = <"Hospital Sírio Libanês - SP">
+				["email"] = <"osmeire.acsanzovo@hsl.org.br">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"2007-11-10">
+	>
+	details = <
+		["sl"] = <
+			language = <[ISO_639-1::sl]>
+			purpose = <"Za beleženje znakov izmerjenih v okviru fizikalnega pregleda">
+			use = <"\"Container\" za gnezdenje \"cluster\"-jev, ki podrobno opisujejo posamezne elemente fizikalnega pregleda vključujoč pregled, tipanje, avskultacijo (osluškovanje) in udarjanje (skupine vključno z njihovimi specializacijami).
+
+cluster - skupina, grozd">
+			keywords = <"pregled", "fizikalni">
+			misuse = <"*Not to be used for recording history-taking observations - use specific OBSERVATION and CLUSTER archetypes. For example OBSERVATION.story and CLUSTER.symptom.
+
+Not to be used to record stand-alone clinical observations - use specific OBSERVATION archetypes. For example OBSERVATION.blood_pressure, OBSERVATION.body_weight, or OBSERVATION.height.(en)">
+			copyright = <"© openEHR Foundation, Nasjonal IKT HF">
+		>
+		["es-ar"] = <
+			language = <[ISO_639-1::es-ar]>
+			purpose = <"Para registrar una descripcion narrativa e interpretacion clinica de los hallazgos observados durante el examen fisico completo de una persona, y proveer un marco de referencia para anidar CLUSTER de arquetipos detallados, cada uno de los cuales posibilita registrar en detalle aspectos especificos del examen fisico">
+			use = <"Utilizar para registrar una descripcion narrativa de los hallazgos observados durante el examen fisico general de una persona.
+
+Utilizar para incorporar la descripcion narrativa de hallazgos clinicos dentro de sistemas clinicos actuales o legados a un formato de arquetipos, utilizando el elemento de data \"Descripcion Clinica\". 
+
+Utilizar como un arquetipo contenedor - para proveer un arquetipo ENTRY consultable en el cual, puedan ser anidados arquetipos CLUSTER especificos de examenes, incluidos aquellos que detallan la inspeccion, palpacion, asucultacion, percusion y movimiento de los sistemas o estructuras anatomicas del cuerpo">
+			keywords = <"examen", "fisico", "examen", "hallazgos", "clinicos">
+			misuse = <"No debe ser utilizado para registrar observaciones de la toma de historia -utilizar arquetipos especificos de OBSERVACION y CLUSTER. Por ejemplo OBSERVACION.historia y CLUSTER.sintoma.
+
+No debe ser utilizado para registrar observaciones clinicas autonomas - utilizar arquetipos especificos OBSERVATION. Por ejemplo OBSERVATION.presion_arterial, OBSERVATION.peso_corporal, u OBSERVATION.altura. ">
+			copyright = <"© openEHR Foundation, Nasjonal IKT HF">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"For recording details about findings on physical examination of the subject of care.">
+			use = <"Use to record details about findings on physical examination of the subject of care. This may include a narrative description of the findings, a framework in which to nest detailed CLUSTER examination archetypes, and a clinical interpretation of the findings.
+
+Examples of detailed CLUSTER examination archetypes include those that describe inspection, palpation, auscultation, percussion and movement of body systems or anatomical structures, such as CLUSTER.exam_pupils.
+
+Narrative descriptions of clinical findings from existing clinical systems may be captured using the 'Description' data element.
+
+Clinicians may sometimes want to record a summative phrase such as 'chronic otitis media' as an Interpretation of the physical examination. In the context of the physical examination archetype this should only be understood as 'physical signs are consistent with chronic otitis media'. While the summative phrase may appear to represent a diagnosis, safe and consistent querying requires a diagnosis to be recorded using the EVALUATION.problem_diagnosis archetype, even if the phrases are identical.">
+			keywords = <"examination", "physical", "exam", "findings", "clinical">
+			misuse = <"Not to be used for recording history-taking observations - use specific OBSERVATION and CLUSTER archetypes. For example OBSERVATION.story and CLUSTER.symptom.
+
+Not to be used to record stand-alone clinical observations - use specific OBSERVATION archetypes. For example OBSERVATION.blood_pressure, OBSERVATION.body_weight, or OBSERVATION.height.">
+			copyright = <"© openEHR Foundation, Nasjonal IKT HF">
+		>
+		["ar-sy"] = <
+			language = <[ISO_639-1::ar-sy]>
+			purpose = <"لتسجيل الموجودات التي تم العثور عليها عند الفحص البدني">
+			use = <"تم تصميم النموذج ليحتوي على عناقيد مفصلة متعلقة بالفحص بما في ذلك الاكتشاف, الجس, التسمع و القرع بما في هذه العناقيد من تخصيصات.">
+			keywords = <"الفحص", "البدني">
+			misuse = <"">
+			copyright = <"© openEHR Foundation, Nasjonal IKT HF">
+		>
+		["nb"] = <
+			language = <[ISO_639-1::nb]>
+			purpose = <"For registrering av funn ved fysisk undersøkelse av en helsetjenestemottaker.">
+			use = <"Benyttes ved registrering av detaljer om fysiske funn observert ved klinisk undersøkelse av et individ. Dette kan inkludere en tekstlig beskrivelse av funn og kliniske fortolkninger av funn. Tekstlige beskrivelser av kliniske funn innhentet fra eksisterende kliniske systemer kan fanges opp ved å benytte dataelementet \"Description\". 
+
+Arketypen kan også benyttes som et rammeverk for innsetting av detaljer ved hjelp av CLUSTER.exam-arketyper. Eksempler på detaljer som kan beskrives ved hjelp av innsatte CLUSTER-arketyper er inspeksjon, palpasjon, auskultasjon, perkusjon og bevegelser i kroppsystemer eller anatomiske strukturer (feks CLUSTER.exam_pupils).
+
+Noen ganger vil klinikere ønske å registrere et sammendrag, f.eks. \"kronisk otitis media\", som en fortolkning av funn ved klinisk undersøkelse. I denne konteksten - arketypen 'Funn ved klinisk undersøkelse' - bør dette forståes som 'funn forenlig med kronisk otitis media', og ikke en fastsatt diagnose. Skulle sammendraget synes å representere en diagnose, vil sikker og konsistent dataspørring kreve en diagnose som registreres i EVALUATION.problem_diagnosis-arketypen, selv om sammendraget/frasen og diagnosen er identiske.">
+			keywords = <"klinisk undersøkelse", "fysisk undersøkelse", "undersøkelse", "funn", "klinisk", "legeundersøkelse", "observasjon", "kroppsundersøkelse">
+			misuse = <"Skal ikke anvendes for å registrere observasjoner gjort under anamneseopptak - bruk spesifikke OBSERVATION og CLUSTER-arketyper, for eksempel OBSERVATION.story eller CLUSTER.symptom.
+
+Skal ikke anvendes for å registrere frittstående observasjoner - bruk spesifikke OBSERVATION-arketyper, for eksempel OBSERVATION.body_weight eller OBSERVATION.height.
+
+Skal ikke anvendes til å registrere satte diagnoser, til dette brukes EVALUATION.problem_diagnosis.">
+			copyright = <"© openEHR Foundation, Nasjonal IKT HF">
+		>
+		["es"] = <
+			language = <[ISO_639-1::es]>
+			purpose = <"Este arquetipo será utilizado para registrar detalles sobre los hallazgos en el examen físico del paciente">
+			use = <"Este arquetipo será utilizado para registrar detalles sobre los hallazgos en el examen físico del paciente.
+
+Puede utilizarse junto a otros arquetipos para incluir detalles de los hallazgos clínicos, para describir examinación por inspección, palpación, auscultación, percusión y movimiento de los sistemas o estructuras anatómicas. Por ejemplo se podrá utilizar el arquetipo CLUSTER.exam_pupils.
+
+La información registrada mediante este arquetipo debe estar relacionada con la examinación física y sus hallazgos. Algunas interpretaciones de los hallazgos pueden registrarse usando este arquetipo aunque parezcan diagnósticos, pero solo si están directamente relacionadas con el hallazgo. Para registrar un diagnóstico utilizar el arquetipo EVALUATION.problem_diagnosis, aunque el texto de la interpretación del hallazgo sea igual al diagnóstico.">
+			keywords = <"examinación", "palpación", "auscultación", "percusión", "hallazgos clínicos", "examen físico">
+			misuse = <"No se debe utilizar para registrar información histórica del paciente, para eso utilizar el arquetipo OBSERVATION.story
+
+No se debe utilizar para registrar observaciones independientes y signos, para eso utilizar arquetipos específicos como OBSERVATION.blood_pressure, OBSERVATION.body_weight, OBSERVATION.height, etc.">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			purpose = <"Para registro de detalhes sobre os resultados no exame físico do sujeito do cuidado.">
+			use = <"Use para registrar detalhes sobre achados no exame físico do sujeito do cuidado. Pode incluir uma descrição narrativa dos achados, uma estrutura em que aninhar detalhados arquétipos do exame do CLUSTER, e uma interpretação clínica dos achados.
+
+Exemplos de arquétipos detalhados de exame CLUSTER incluem aqueles que descrevem inspeção, palpação, ausculta, percussão e movimento de sistemas corporais ou estruturas anatômicas, como CLUSTER.exam_pupils.
+
+As descrições narrativas dos achados dos sistemas clínicos existentes podem ser capturadas utilizando o elemento de dados \"Descrição\".
+
+Os médicos às vezes podem querer gravar uma frase resumida, como \"otite média crônica\", como Interpretação do exame físico. No contexto do arquétipo do exame físico, isso só deve ser entendido como \"os sinais físicos são consistentes com a otite média crônica\". Embora a expressão resumida possa parecer representar um diagnóstico, a consulta segura e consistente requer que um diagnóstico seja registrado usando o arquétipo EVALUATION.problem_diagnosis, mesmo que as frases sejam idênticas.">
+			keywords = <"exame", "físico", "achados", "clínico">
+			misuse = <"Não deve ser utilizado para gravação de anamnese observações - usar arquétipos específicos OBSERVATION e CLUSTER. Por exemplo, OBSERVATION.story e CLUSTER .symptom.
+
+Não deve ser utilizado pra gravar observações clínicas isoladas - use arquétipos específicos OBSERVATION. Por exemplo: OBSERVATION.blood_pressure, OBSERVATION.body_weight, ou OBSERVATION.height.">
+		>
+		["zh-cn"] = <
+			language = <[ISO_639-1::zh-cn]>
+			purpose = <"用于记录关于对于特定主体对象体格检查发现的详情。">
+			use = <"用于记录关于对于特定主体对象体格检查发现的详情。其中，可包括关于这些发现的叙述型描述、一种用于嵌套若干详细的群簇（CLUSTER）型原始型的框架以及关于这些发现的临床解释。
+
+关于群簇（CLUSTER）型检查原始型的例子包括那些用于详细描述望诊、触诊、听诊、叩诊以及身体系统运动或者解剖结构的原始型，如瞳孔检查原始型CLUSTER.exam_pupils。
+
+对于现有临床系统之中临床发现的叙述型描述，可以采用名为“Description”（描述）的数据元进行采集。
+
+临床医生有时可能希望采用“慢性中耳炎”之类的概括性短语来记录对于体格检查的解释。在当前体格检查原始型的语境下，仅仅应当将其理解为“体征与慢性中耳炎相符或者说相一致”。尽管这种概括性短语可能看似用来表示某种诊断，但就安全一致的查询来说，依然需要采用问题诊断原始型EVALUATION.problem_diagnosis来记录诊断，即使是二者所采用的短语完全相同。">
+			keywords = <"临床", "体格检查", "检查", "发现", "所见", "查体">
+			misuse = <"并非旨在用于记录病史采集类观察项目——此时请采用具体的观察（OBSERVATION）型和群簇（CLUSTER）型原始型。例如，纪事原始型OBSERVATION.story和症状原始型CLUSTER.symptom。
+
+并非旨在用于记录单独的临床观察项目——此时请采用具体的观察（OBSERVATION）型原始型。例如，血压原始型OBSERVATION.blood_pressure、体重原始型OBSERVATION.body_weight，或者身高原始型OBSERVATION.height。">
+		>
+	>
+	lifecycle_state = <"published">
+	other_contributors = <"Sheryl Alexander, NT Department of Health, Australia", "Tomas Alme, DIPS, Norway", "Nadim Anani, Karolinska Institutet, Sweden", "Rita Apelt, Department of Health,NT, Australia", "Vebjørn Arntzen, Oslo University Hospital, Norway (openEHR Editor)", "Silje Ljosland Bakke, Nasjonal IKT HF, Norway (openEHR Editor)", "Lars Bitsch-Larsen, Haukeland University Hospital, Bergen, Norway", "Margaret Campbell, Queensland Health, Australia", "Rong Chen, Cambio Healthcare Systems, Sweden", "B Christensen, HUS, Norway", "Stephen Chu, Queensland Health, Australia", "Margaret Cotter, AMSANT, Australia", "Lisbeth Dahlhaug, Helse Midt - Norge IT, Norway", "Michelle Dowden, Miwatj Health Ngalkanbuy Health, Australia", "Samo Drnovsek, Marand ltd, Slovenia", "Einar Fosse, UNN HF, Norwegian Centre for Integrated Care and Telemedicine, Norway", "Hildegard Franke, freshEHR Clinical Informatics Ltd., United Kingdom (openEHR Editor)", "Tim Garden, NTG Department of Health, Australia", "Tanya Gardner, CAAC, Australia", "Sam Heard, Ocean Informatics, Australia (Editor)", "Ingrid Heitmann, Oslo universitetssykehus HF, Norway", "Andreas Hering, Helse Bergen HF, Haukeland universitetssjukehus, Norway", "Anca Heyd, DIPS ASA, Norway", "Lars Morgan Karlsen, DIPS ASA, Norway", "Russell Leftwich, Russell B Leftwich MD, United States", "Sabine Leh, Haukeland University Hospital, Department of Pathology, Norway", "Heather Leslie, Ocean Informatics, Australia (openEHR Editor)", "Hallvard Lærum, Oslo Universitetssykehus HF, Norway", "Ian McNicoll, freshEHR Clinical Informatics, United Kingdom", "Bjørn Næss, DIPS ASA, Norway", "Jeremy Oats, NT Health, Australia", "Anne Pauline Anderssen, Helse Nord RHF, Norway", "Rune Pedersen, Universitetssykehuset i Nord Norge, Norway", "Steven Schatz, Department of Health (Northern Territory), Australia", "Anoop Shah, University College London, United Kingdom", "Line Sæle, Nasjonal IKT, Norway", "John Tore Valand, Helse Bergen, Norway (openEHR Editor)", "Cherie Whitbread, Royal Darwin Hospital, Australia", "Jo Wright, NT Dept of Health, Australia (Editor)", "Lin Zhang, BIPH, China">
+	other_details = <
+		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.">
+		["custodian_organisation"] = <"Nasjonal IKT">
+		["current_contact"] = <"Heather Leslie, Ocean Informatics, heather.leslie@oceaninformatics.com">
+		["original_namespace"] = <"no.nasjonalikt">
+		["original_publisher"] = <"Nasjonal IKT">
+		["custodian_namespace"] = <"no.nasjonalikt">
+		["MD5-CAM-1.0.1"] = <"42A758CADEF3767E390EB8187F98AFF5">
+		["build_uid"] = <"6d17b7cf-9bd3-406b-86e7-017f572fd0e7">
+		["revision"] = <"1.1.0">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Physical examination findings
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..*} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Description
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									allow_archetype CLUSTER[at0005] occurrences matches {0..*} matches {	-- Examination detail
+										include
+											archetype_id/value matches {/.*/}
+									}
+									ELEMENT[at0006] occurrences matches {0..*} matches {	-- Interpretation
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0011] occurrences matches {0..1} matches {	-- Comment
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+						state matches {
+							ITEM_TREE[at0009] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0008] occurrences matches {0..*} matches {	-- Confounding factors
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0013] occurrences matches {0..1} matches {	-- Position
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		protocol matches {
+			ITEM_TREE[at0007] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					allow_archetype CLUSTER[at0010] occurrences matches {0..*} matches {	-- Device Details
+						include
+							archetype_id/value matches {/openEHR-EHR-CLUSTER\.device(-[a-zA-Z0-9_]+)*\.v1/}
+					}
+					allow_archetype CLUSTER[at0012] occurrences matches {0..*} matches {	-- Extension
+						include
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+		}
+	}
+
+
+
+ontology
+	term_definitions = <
+		["ar-sy"] = <
+			items = <
+				["at0000"] = <
+					text = <"*Physical Examination Findings(en)">
+					description = <"*Findings observed during the physical examination of a subject.(en)">
+				>
+				["at0001"] = <
+					text = <"*Event Series(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"*Any event(en)">
+					description = <"*Unspecified point in time which may be explicitly defined in a template or at run-time.(en)">
+				>
+				["at0003"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0004"] = <
+					text = <"*Description(en)">
+					description = <"*Narrative description of the overall findings observed during a physical examination of a patient.(en)">
+					comment = <"*May be used to record a narrative summary of the complete clinical examination or key aspects of clinical examination findings, which will be supported by structured data. Details of specific structured findings can be included using CLUSTER archetypes in the 'Examination Detail' slot. This data element may be used to capture legacy data that is not available in a structured format.(en)">
+				>
+				["at0005"] = <
+					text = <"*Examination Detail(en)">
+					description = <"*Structured details of the physical examination.(en)">
+					comment = <"*Detailed clinical findings will be recorded as CLUSTER archetypes which can then be nested within this SLOT to represent the fractal nature of clinical examination and allow for variation in clinician's requirements for examination documentation. For example: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix and CLUSTER.palpation_of_fetus can be nested in this slot or within each other to represent the specific  requirements of clinicians working in the obstetric domains - content, priorities and level of detail will differ depending on clinical context, professional background and specialty.(en)">
+				>
+				["at0006"] = <
+					text = <"*Interpretation(en)">
+					description = <"*Single word, phrase or brief description represents the clinical meaning and significance of the physical examination findings.(en)">
+					comment = <"*Coding with a terminology is preferred, if possible. For example, normal examination or chronic otitis media.(en)">
+				>
+				["at0007"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0008"] = <
+					text = <"*Confounding Factors(en)">
+					description = <"*Description of any incidental factors that may have contributed to the physical examination findings.(en)">
+				>
+				["at0009"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0010"] = <
+					text = <"*Device Details(en)">
+					description = <"*Details about any device used during the physical examination.(en)">
+				>
+				["at0011"] = <
+					text = <"*Comment(en)">
+					description = <"*Any additional narrative comment not covered by other elements.(en)">
+				>
+				["at0012"] = <
+					text = <"*Cluster(en)">
+					description = <"**(en)">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The position of the subject at the time of examination.(en)">
+				>
+			>
+		>
+		["sl"] = <
+			items = <
+				["at0000"] = <
+					text = <"Ugotovitve pregleda">
+					description = <"Za dokumentiranje ugotovitev/znakov fizikalnega pregleda subjekta">
+				>
+				["at0001"] = <
+					text = <"*Event Series(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"*Any event(en)">
+					description = <"*Unspecified point in time which may be explicitly defined in a template or at run-time.(en)">
+				>
+				["at0003"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0004"] = <
+					text = <"Klinični opis">
+					description = <"Beleženje ugotovljenih dejstev pri pregledu">
+					comment = <"*May be used to record a narrative summary of the complete clinical examination or key aspects of clinical examination findings, which will be supported by structured data. Details of specific structured findings can be included using CLUSTER archetypes in the 'Examination Detail' slot. This data element may be used to capture legacy data that is not available in a structured format.(en)">
+				>
+				["at0005"] = <
+					text = <"*Examination Detail(en)">
+					description = <"*Structured details of the physical examination.(en)">
+					comment = <"*Detailed clinical findings will be recorded as CLUSTER archetypes which can then be nested within this SLOT to represent the fractal nature of clinical examination and allow for variation in clinician's requirements for examination documentation. For example: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix and CLUSTER.palpation_of_fetus can be nested in this slot or within each other to represent the specific  requirements of clinicians working in the obstetric domains - content, priorities and level of detail will differ depending on clinical context, professional background and specialty.(en)">
+				>
+				["at0006"] = <
+					text = <"*Interpretation(en)">
+					description = <"*Single word, phrase or brief description represents the clinical meaning and significance of the physical examination findings.(en)">
+					comment = <"*Coding with a terminology is preferred, if possible. For example, normal examination or chronic otitis media.(en)">
+				>
+				["at0007"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0008"] = <
+					text = <"*Confounding Factors(en)">
+					description = <"*Description of any incidental factors that may have contributed to the physical examination findings.(en)">
+				>
+				["at0009"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0010"] = <
+					text = <"*Device Details(en)">
+					description = <"*Details about any device used during the physical examination.(en)">
+				>
+				["at0011"] = <
+					text = <"*Comment(en)">
+					description = <"*Any additional narrative comment not covered by other elements.(en)">
+				>
+				["at0012"] = <
+					text = <"*Cluster(en)">
+					description = <"**(en)">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The position of the subject at the time of examination.(en)">
+				>
+			>
+		>
+		["es-ar"] = <
+			items = <
+				["at0000"] = <
+					text = <"Hallazgos del Examen Fisico">
+					description = <"Hallazgos observados durante el examen fisico de una persona">
+				>
+				["at0001"] = <
+					text = <"*Event Series(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0002"] = <
+					text = <"*Any event(en)">
+					description = <"*Unspecified point in time which may be explicitly defined in a template or at run-time.(en)">
+				>
+				["at0003"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0004"] = <
+					text = <"Descripcion">
+					description = <"Descripcion narrativa de los hallazgos generales observados durante un examen fisico de un paciente">
+					comment = <"Puede ser utilizado para registrar un resumen narrativo del examen clinico completo o aspectos claves de los hallazgos del examen clinico, que sera apoyado con data estructurada. Los detalles de hallazgos especificos estructurados pueden ser incluidos utilizando arquetipos CLUSTER en el espacio \"Detalles del Examen\". Este elemento de data puede ser utilizado para capturar data legada que no esta disponble en un formato estructurado.">
+				>
+				["at0005"] = <
+					text = <"*Examination Detail(en)">
+					description = <"*Structured details of the physical examination.(en)">
+					comment = <"*Detailed clinical findings will be recorded as CLUSTER archetypes which can then be nested within this SLOT to represent the fractal nature of clinical examination and allow for variation in clinician's requirements for examination documentation. For example: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix and CLUSTER.palpation_of_fetus can be nested in this slot or within each other to represent the specific  requirements of clinicians working in the obstetric domains - content, priorities and level of detail will differ depending on clinical context, professional background and specialty.(en)">
+				>
+				["at0006"] = <
+					text = <"Interpretacion">
+					description = <"Palabra, frase o descripcion breve que represente el significado clinico e importancia de los hallazgos del examen fisico">
+					comment = <"Se prefiere la dodificacion con una terminologia. Por ejemplo, examen normal u otitis media cronica">
+				>
+				["at0007"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0008"] = <
+					text = <"Factores de Confusion">
+					description = <"Descripcion de cualquier factor incidental que pueda haber contribuido a los hallazgos del examen físico">
+				>
+				["at0009"] = <
+					text = <"*Tree(en)">
+					description = <"*@ internal @(en)">
+				>
+				["at0010"] = <
+					text = <"Detalle del dispositivo">
+					description = <"Detalles acerca de cualquier dispositivo utilizado durante el examen fisico.">
+				>
+				["at0011"] = <
+					text = <"Comentario">
+					description = <"Cualquier comentario narrativo adicional no incluido por otros elementos">
+				>
+				["at0012"] = <
+					text = <"*Cluster(en)">
+					description = <"**(en)">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The position of the subject at the time of examination.(en)">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Physical examination findings">
+					description = <"Findings observed during the physical examination of a subject of care.">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"Default, unspecified point in time or interval event which may be explicitly defined in a template or at run-time.">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Description">
+					description = <"Narrative description of the overall findings observed during a physical examination of a patient.">
+					comment = <"May be used to record a narrative summary of the complete clinical examination or key aspects of clinical examination findings, which will be supported by structured data. Details of specific structured findings can be included using CLUSTER archetypes in the 'Examination Detail' slot. This data element may be used to capture legacy data that is not available in a structured format.">
+				>
+				["at0005"] = <
+					text = <"Examination detail">
+					description = <"Structured details of the physical examination.">
+					comment = <"Detailed clinical findings will be recorded as CLUSTER archetypes which can be nested within this SLOT to represent the fractal nature of clinical examination and allow for variation in clinician's requirements for examination documentation. For example: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix and CLUSTER.palpation_of_fetus can be nested in this slot or within each other to represent the specific requirements of clinicians working in the obstetric domains - content, priorities and level of detail will differ depending on clinical context, professional background and specialty.">
+				>
+				["at0006"] = <
+					text = <"Interpretation">
+					description = <"Single word, phrase or brief description which represents the clinical meaning and significance of the physical examination findings.">
+					comment = <"Coding with a terminology is preferred, if possible. For example, 'normal examination' or 'tympanic membrane perforation'.">
+				>
+				["at0007"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0008"] = <
+					text = <"Confounding factors">
+					description = <"Description of any incidental factors that may have contributed to the physical examination findings.">
+				>
+				["at0009"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"Device Details">
+					description = <"Details about any device used during the physical examination.">
+				>
+				["at0011"] = <
+					text = <"Comment">
+					description = <"Additional narrative about the overall physical examination findings not captured in other fields.">
+				>
+				["at0012"] = <
+					text = <"Extension">
+					description = <"Additional information required to capture local content or to align with other reference models/formalisms.">
+					comment = <"e.g. Local information requirements or additional metadata to align with FHIR or CIMI equivalents.">
+				>
+				["at0013"] = <
+					text = <"Position">
+					description = <"The body position of the subject during the examination.">
+				>
+			>
+		>
+		["nb"] = <
+			items = <
+				["at0000"] = <
+					text = <"Funn ved fysisk undersøkelse">
+					description = <"Funn ved fysisk undersøkelse av en helsetjenestemottaker.">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Uspesifisert hendelse">
+					description = <"Standard, uspesifisert tidspunkt eller tidsintervall som kan defineres mer eksplisitt i en template eller i en applikasjon.">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Beskrivelse">
+					description = <"En narrativ beskrivelse av funn ved en klinisk undersøkelse av et individ.">
+					comment = <"Kan anvendes til å registrere en tekstlig sammenfatning av en komplett klinisk undersøkelse eller nøkkelfunn ved den kliniske undersøkelsen, som vil bli understøttet av strukturerte data. Dette dataelementet kan brukes for å fange opp \"legacy data\" som ikke er tilgjengelig i et strukturert format. Detaljer om spesifikt strukturert funn inkluderes ved å bruke CLUSTER-arketyper i \"Examination Detail\" SLOT.">
+				>
+				["at0005"] = <
+					text = <"Undersøkelsesdetaljer">
+					description = <"Strukturerte detaljer fra den kliniske undersøkelsen.">
+					comment = <"Detaljerte kliniske funn vil bli registrert som CLUSTER-arketyper som kan settes inn i dette elementet for å vise den oppdelte metoden som brukes i den kliniske undersøkelsen og tillater variasjoner i klinikerens behov for dokumentasjon av de kliniske funn.
+
+For eksempel kan CLUSTER.palpation_of_uterus, CLUSTER.palpation_of Cervix, CLUSTER.palpation_of_fetus, settes inn i dette elementet eller i hverandre, for å representere de varierte kravene en kliniker som arbeider innenfor obstetrikken har til- innhold, prioritet og detalj nivå. Dette vil variere med klinisk kontekst, profesjonell bakgrunn og spesialitet.">
+				>
+				["at0006"] = <
+					text = <"Fortolkning">
+					description = <"Enkelt ord, setning, frase eller kort beskrivelse som representerer den kliniske betydning og viktigheten av funnene ved den kliniske undersøkelsen.">
+					comment = <"Koding med terminologi foretrekkes når mulig. For eksempel \"normal undersøkelse\" eller \"tympanisk membran perforasjon\".">
+				>
+				["at0007"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0008"] = <
+					text = <"Konfunderende faktorer">
+					description = <"Kommentar til og registrering av faktorer som kan ha betydning for funn ved den kliniske undersøkelsen.">
+				>
+				["at0009"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"Detaljer om medisinsk utstyr">
+					description = <"Detaljer vedrørende medisinsk utstyr benyttet ved den kliniske undersøkelsen.">
+					comment = <"For eksempel: dopplerapparat, jordmorstetoskop, stemmegaffel, kateter, bandasjer, biomedisinsk utstyr og software.">
+				>
+				["at0011"] = <
+					text = <"Kommentar">
+					description = <"Tekstlig beskrivelse av de fysiske funn som ikke dekkes av andre felt.">
+				>
+				["at0012"] = <
+					text = <"Tilleggsinformasjon">
+					description = <"Ytterligere informasjon som er nødvendig for å registrere lokalt innhold/kontekst, eller for å sammenstille med andre referansemodeller/formalismer.">
+					comment = <"F.eks lokale informasjonskrav eller ekstra metadata for å tilpasse med FHIR eller CIMI ekvivalenter.">
+				>
+				["at0013"] = <
+					text = <"Stilling">
+					description = <"Individets kroppsstilling under undersøkelsen.">
+				>
+			>
+		>
+		["es"] = <
+			items = <
+				["at0000"] = <
+					text = <"Hallazgos de la examinación física">
+					description = <"Hallazgos observados durante la examinación física del paciente">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"*Any event(en)">
+					description = <"*Default, unspecified point in time or interval event which may be explicitly defined in a template or at run-time.(en)">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Descripción">
+					description = <"Descripción narrativa del total de los hallazgos durante la examinación física del paciente">
+					comment = <"*May be used to record a narrative summary of the complete clinical examination or key aspects of clinical examination findings, which will be supported by structured data. Details of specific structured findings can be included using CLUSTER archetypes in the 'Examination Detail' slot. This data element may be used to capture legacy data that is not available in a structured format.(en)">
+				>
+				["at0005"] = <
+					text = <"Detalles de la examinación">
+					description = <"Detalles estructurados de la examinación física">
+					comment = <"*Detailed clinical findings will be recorded as CLUSTER archetypes which can be nested within this SLOT to represent the fractal nature of clinical examination and allow for variation in clinician's requirements for examination documentation. For example: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix and CLUSTER.palpation_of_fetus can be nested in this slot or within each other to represent the specific requirements of clinicians working in the obstetric domains - content, priorities and level of detail will differ depending on clinical context, professional background and specialty.(en)">
+				>
+				["at0006"] = <
+					text = <"Interpretación">
+					description = <"Descripción corta que representa el significado clínico de los hallazgos">
+					comment = <"*Coding with a terminology is preferred, if possible. For example, 'normal examination' or 'tympanic membrane perforation'.(en)">
+				>
+				["at0007"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0008"] = <
+					text = <"Factores de confusión">
+					description = <"Descripción de los factores que pueden haber obstruido o dificultado la examinación física y los hallazgos">
+				>
+				["at0009"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"Detalles del dispositivo">
+					description = <"Detalles sobre cualquier dispositivo utilizado durante la examinación física">
+				>
+				["at0011"] = <
+					text = <"Comentario">
+					description = <"Información narrativa adicional sobre los hallazgos durante la examinación física">
+				>
+				["at0012"] = <
+					text = <"Extensión">
+					description = <"Información adicional requerida para registrar contenido local o alinear con otros modelos o formalismos">
+					comment = <"*e.g. Local information requirements or additional metadata to align with FHIR or CIMI equivalents.(en)">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The body position of the subject during the examination.(en)">
+				>
+			>
+		>
+		["pt-br"] = <
+			items = <
+				["at0000"] = <
+					text = <"Achados de exame físico">
+					description = <"Resultados observados durante o exame físico de um sujeito de atenção.">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Qualquer evento">
+					description = <"Padrão, ponto indeterminado no tempo ou intervalo de evento que pode ser definido explicitamente em um modelo ou em tempo de execução.">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Descrição">
+					description = <"Descrição narrativa dos achados gerais observados durante o exame físico de um paciente.">
+					comment = <"Pode ser usado para gravar um resumo narrativo do exame clínico completo ou aspectos-chave dos achados do exame clínico, que serão apoiados por dados estruturados. Detalhes de conclusões específicas estruturadas podem ser incluídos usando arquétipos CLUSTER no slot 'Detalhes do exame'. Este elemento de dados pode ser usado para capturar dados do legado que não estão disponíveis em um formato estruturado.">
+				>
+				["at0005"] = <
+					text = <"Detalhes do exame">
+					description = <"Detalhes estruturados do exame físico">
+					comment = <"Achados clínicos detalhados serão registrados como arquétipos CLUSTER que podem ser aninhados dentro este SLOT para representar a natureza fracionada do exame clínico e permitir a variação em requisitos clínicos para a documentação do exame. Por exemplo: CLUSTER.palpation_of_uterus, CLUSTER.palpation_of_cervix e CLUSTER.palpation_of_fetus podem ser aninhados neste SLOTou uns dentro dos outros para representar as exigências específicas dos médicos trabalhando nos domínios obstétricos - conteúdo, prioridades e nível de detalhe serão diferentes dependendo do contexto clínico, experiência profissional e especialidade.">
+				>
+				["at0006"] = <
+					text = <"Interpretação">
+					description = <"Palavra única, frase ou breve descrição que representa o significado clínico e dos achados do exame físico.">
+					comment = <"A codificação com uma terminologia é preferida, se possível. Por exemplo, \"exame normal\" ou \"perfuração da membrana timpânica\".">
+				>
+				["at0007"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0008"] = <
+					text = <"Fatores de confusão">
+					description = <"Descrição de fatores incidentais que podem ter contribuído para os achados do exame físico.">
+				>
+				["at0009"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"Detalhes do dispositivo">
+					description = <"Detalhes sobre qualquer dispositivo utilizado durante o exame físico.">
+				>
+				["at0011"] = <
+					text = <"Comentários">
+					description = <"Narrativa adicional sobre os achados gerais do exame físico não capturados em outros campos.">
+				>
+				["at0012"] = <
+					text = <"Extensão">
+					description = <"Informações adicionais necessárias para capturar conteúdo local ou alinhar com outros modelos/formalismos de referência">
+					comment = <"Por exemplo: Requisitos de informação local e metadados adicionais para alinhamento com equivalentes FHIR ou CIMI.">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The body position of the subject during the examination.(en)">
+				>
+			>
+		>
+		["zh-cn"] = <
+			items = <
+				["at0000"] = <
+					text = <"体格检查发现">
+					description = <"对于特定主体对象进行体格检查过程中所获得的发现。">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"任何事件">
+					description = <"默认值，未加具体说明的，而可以在特定模板中或在运行时加以明确定义的时刻（时间点）型或时段（时间段、时间区间）型事件。">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"描述">
+					description = <"关于特定患者的体格检查过程中所观察到的全部发现的叙述型描述。">
+					comment = <"可用于记录关于整个临床检查或者临床检查发现关键方面（将采用结构化数据加以支持）的叙述型摘要。在检查细节槽位“Examination Detail”之中，可以利用群簇（CLUSTER）型原始型来包括关于具体结构化发现的细节。该数据元可用于采集和记录并未采用某种结构化格式的历史遗留数据。">
+				>
+				["at0005"] = <
+					text = <"检查细节">
+					description = <"体格检查的结构化细节。">
+					comment = <"详细的临床发现将被记录为可以嵌套在该槽位（SLOT ）之中的群簇（CLUSTER）型原始型，用于表达临床检查的分形特性，并顾及到不同临床医生对于检查文档记录需求的差异。例如，可以将子宫扪诊群簇型原始型CLUSTER.palpation_of_uterus、宫颈扪诊群簇型原始型CLUSTER.palpation_of_cervix和胎儿扪诊群簇型原始型CLUSTER.palpation_of_fetus嵌套在该槽位之中，或者它们相互嵌套，以便表达在产科学领域工作的临床医师的特殊需求——根据临床语境、专业背景以及专业的不同，内容、优先级别和详细程度将会有所不同。">
+				>
+				["at0006"] = <
+					text = <"解释">
+					description = <"用于表示体格检查发现的临床含义和意义的单个词语、短语或简要描述。">
+					comment = <"在可能的情况下，首选采用特定的术语集进行编码。例如，“检查正常”或“鼓膜穿孔”。">
+				>
+				["at0007"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0008"] = <
+					text = <"干扰因素">
+					description = <"关于可能对体格检查发现做出了贡献的任何偶然因素的描述。">
+				>
+				["at0009"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0010"] = <
+					text = <"装置细节">
+					description = <"关于体格检查过程中所使用的任何装置的细节。">
+				>
+				["at0011"] = <
+					text = <"注释">
+					description = <"其他字段之中并未采集的关于全部体格检查发现的叙述型注释。">
+				>
+				["at0012"] = <
+					text = <"扩展">
+					description = <"采集本地内容或者与其他参考模型/形式化体系进行映射时所需的额外信息。">
+					comment = <"例如，本地信息需求，或者是与FHIR或CIMI等价模型映射时所需的额外元数据。">
+				>
+				["at0013"] = <
+					text = <"*Position(en)">
+					description = <"*The body position of the subject during the examination.(en)">
+				>
+			>
+		>
+	>
