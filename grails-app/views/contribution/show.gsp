@@ -43,10 +43,8 @@
           success: function(xml, textStatus)
           {
             console.log('xml', xml);
-            $('#xml').addClass('xml');
-            $('#xml').text(formatXml( xmlToString(xml) ));
+            $('#xml').text(formatXml2( xmlToString(xml) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-
             $('#xml_modal').modal();
           }
         });
@@ -139,7 +137,7 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
          <div class="modal-body">
-           <pre><code id="xml"></code></pre>
+           <pre><code id="xml" class="xml"></code></pre>
          </div>
         </div>
       </div>

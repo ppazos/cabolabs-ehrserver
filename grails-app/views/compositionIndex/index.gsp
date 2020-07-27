@@ -10,6 +10,9 @@
        border: none;
      }
      </style>
+     <asset:stylesheet src="highlightjs/xcode.css" />
+    <asset:javascript src="highlight.pack.js" />
+     <asset:javascript src="xml_utils.js" />
   </head>
   <body>
     <div class="row">

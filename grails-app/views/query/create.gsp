@@ -746,7 +746,7 @@
              {
                // highlight
                code.addClass('xml');
-               code.text(formatXml( xmlToString(res) ));
+               code.text(formatXml2( xmlToString(res) ));
                code.each(function(i, e) { hljs.highlightBlock(e); });
              }
 
@@ -882,7 +882,7 @@ resp.responseJSON.result.message +'</div>'
 
               // highlight
               code.addClass('xml');
-              code.text(formatXml( xmlToString(res) ));
+              code.text(formatXml2( xmlToString(res) ));
               code.each(function(i, e) { hljs.highlightBlock(e); });
             }
 

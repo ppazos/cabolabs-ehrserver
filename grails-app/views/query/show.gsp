@@ -199,7 +199,7 @@ println "FULL WHERE: "+ QueryUtils.getFullCriteriaExpressionToSQL(tree)
          success: function(data, textStatus) {
             //console.log(data);
             $('#xml').addClass('xml');
-            $('#xml').text(formatXml( xmlToString(data) ));
+            $('#xml').text(formatXml2( xmlToString(data) ));
             $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
          },
          error: function(XMLHttpRequest, textStatus, errorThrown) {
