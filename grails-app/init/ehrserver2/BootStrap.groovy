@@ -236,9 +236,10 @@ class BootStrap {
 
       new RequestMap(url: '/messaging/feedback',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-      new RequestMap(url: '/compositionIndex/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/compositionIndex/index',   configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/compositionIndex/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
-      new RequestMap(url: '/stats/organization',     configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/stats/organization',       configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
    }
 
    def createTerminologyIds()
