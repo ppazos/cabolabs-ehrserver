@@ -1329,7 +1329,6 @@ class RestController {
       String toDate        = request.JSON.toDate
       String qarchetypeId  = request.JSON.qarchetypeId
       String format        = request.JSON.format
-
       String composerUid   = request.JSON.composerUid
       String composerName  = request.JSON.composerName
 
@@ -1417,7 +1416,7 @@ class RestController {
 
 
       def result = cilist
-      def model = [:]
+      //def model = [:]
 
       // count queries do not return compos, so we cant group
       if (!query.isCount)
@@ -1426,12 +1425,12 @@ class RestController {
          // we need to group those CompositionIndexes by EHR.
          // Update, to have the same structure even for 1 EHR, we do the group on all cases
          result = cilist.groupBy { ci -> ci.ehrUid }
-         model[ehr_compositionIndexInstanceList] = result // the key is different to know the result is grouped by ehr
+         //model.ehr_compositionIndexInstanceList = result // the key is different to know the result is grouped by ehr
       }
       else
       {
          result = [count: result[0]] // long
-         model[compositionIndexInstanceList] = result
+         //model.compositionIndexInstanceList = result
       }
 
       // Muestra compositionIndex/list
@@ -1439,7 +1438,11 @@ class RestController {
       {
           // TODO: pagination
           render(template:'/compositionIndex/listTable',
-                 model: model,
+                 model:[
+                    compositionIndexInstanceList:  result,
+                    //compositionIndexInstanceTotal: cilist.size(),
+                    groupedByEhr: (!qehrId)
+                 ],
                  contentType: "text/html")
           return
       }

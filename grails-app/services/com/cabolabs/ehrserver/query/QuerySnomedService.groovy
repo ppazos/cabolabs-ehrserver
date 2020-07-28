@@ -11,6 +11,7 @@ import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 class QuerySnomedService {
 
    def api_key = System.getenv('EHRSERVER_SNQUERY_KEY')
+   def base = 'https://snquery.veratech.es'
 
    // always throws exceptions on failing cases!
    def getCodesFromExpression(String snomedExpr)
@@ -18,12 +19,12 @@ class QuerySnomedService {
       def res = []
       def error = false
       def status
-      def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
+      def http = new HTTPBuilder(this.base)
 
       try
       {
          http.request( POST ) {
-            uri.path = '/SnomedQuery/ws/JSONQuery'
+            uri.path = '/ws/JSONQuery'
             uri.query = [cache: 'true']
             send URLENC, [query: snomedExpr]
             headers.Accept = 'application/json'
@@ -81,10 +82,10 @@ class QuerySnomedService {
    {
       def valid = true
 
-      def http = new HTTPBuilder('http://veratechnas1.synology.me:6699')
+      def http = new HTTPBuilder(this.base)
 
       http.request( POST ) {
-         uri.path = '/SnomedQuery/ws/validate'
+         uri.path = '/ws/validate'
          uri.query = [cache: 'true']
          send URLENC, [query: snomedExpr]
          headers.Accept = 'application/json'

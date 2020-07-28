@@ -26,6 +26,7 @@ import grails.util.Holders
 import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
+import com.cabolabs.ehrserver.query.QuerySnomedService
 
 /**
  * WHERE archId/path operand value
@@ -36,7 +37,7 @@ import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
  */
 class DataCriteria {
 
-   def querySnomedService
+   def querySnomedService = new QuerySnomedService()
 
    String archetypeId
    String path
