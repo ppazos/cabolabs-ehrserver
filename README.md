@@ -133,29 +133,45 @@ This guide is based on a Linux environment, should be adapted for other OS.
 
   1. curl -s get.sdkman.io | bash
   2. source "$HOME/.sdkman/bin/sdkman-init.sh"
-  3. sdk install grails 2.5.6
+  3. sdk install grails 3.3.10
   4. set version by default: Y
   5. grails -version
 
-Note: Grails should be 2.5.6!
+Note: Grails should be 3.3.10!
 
-### Database
+### Database for development
 
-  1. install [MySQL](https://dev.mysql.com/downloads/mysql/)
-  2. copy the default root password
-  3. cd /usr/local/mysql/bin
-  4. ./mysql -u root -p
-  5. enter default root password
-  6. ALTER USER 'root'@'localhost' IDENTIFIED BY 'NEW-ROOT-PASSWORD';
-  8. CREATE DATABASE ehrserver;
-  9. exit
+  Install [MySQL](https://dev.mysql.com/downloads/mysql/)
+
+  MySQL >= 5.7
+  
+  1. sudo mysql -u root
+  2. CREATE DATABASE ehrserver2;
+  3. exit
+
+  MySQL < 5.7
+
+  1. from the installation process, copy the default root password
+  2. ./mysql -u root -p
+  3. enter default root password, and proceed to change it
+  4. ALTER USER 'root'@'localhost' IDENTIFIED BY 'NEW-ROOT-PASSWORD';
+  5. CREATE DATABASE ehrserver2;
+  6. exit
+
+  On any version you can also create a non-root user and use that to access your EHRServer database.
+
+  1. create user 'user'@'localhost' identified by 'your_password';
+  2. grant all on ehrserver2.* to 'user'@'localhost';
+  3. select host, user from mysql.user;
+  4. exit
+  5. mysql -u user -p
+
 
 ### EHRServer configuration
 
-  1. cd ehrserver/grails-app/conf
-  2. nano DataSource.groovy
-  3. change development password to NEW-ROOT-PASSWORD
-  4. save
+  1. nano ehrserver/conf/application.yml
+  2. change development password to NEW-ROOT-PASSWORD
+  3. save
 
 ### EHRServer environment variables
 
@@ -171,12 +187,29 @@ Note: Grails should be 2.5.6!
       export EHRSERVER_EMAIL_PORT=1234
       export EHRSERVER_EMAIL_USER="user@yourdomain.com"
       export EHRSERVER_EMAIL_PASS="youruserpassword"
-      export EHRSERVER_ALLOW_WEB_USER_REGISTER=true
+      export EHRSERVER_ALLOW_WEB_USER_REGISTER=false
+
+  Conditional:
+
+      If EHRSERVER_ALLOW_WEB_USER_REGISTER =>
+          export EHRSERVER_RECAPTCHA_SITEKEY="generate a recaptcha v2 site key"
+          export EHRSERVER_RECAPTCHA_SECRETKEY="generate a recaptcha v2 secret key"
+
+      If you want to use AWS S3 for file storage =>
+          export EHRSERVER_S3_ACCESS="your config in S3"
+          export EHRSERVER_S3_SECRET="your config in S3"
+          export EHRSERVER_S3_BUCKET="your config in S3"
+          export EHRSERVER_S3_REGION="your config in S3"
 
 
 ### EHRServer run (dev environment)
 
   1. cd ehrserver
   2. grails run-app
-  3. open http://localhost:8090/ehr
+  3. open http://localhost:8090
   4. login with admin/admin/123456
+
+
+# Atomik Server
+
+I you need more speed and mono-tenancy EHR server, please check this Atomik! https://atomik.app/
