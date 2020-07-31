@@ -348,6 +348,7 @@ class RestController {
             return
          }
       }
+      //println com.cabolabs.openehr.opt.manager.OptManager.getInstance().status()
 
 
       def contribution

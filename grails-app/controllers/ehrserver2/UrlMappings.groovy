@@ -239,6 +239,13 @@ class UrlMappings {
          action = 'index'
       }
 
+      // mapping for sortable columns in activityLog/index
+      name logs: "/logs/index" {
+        controller = 'activityLog'
+        action = 'index'
+      }
+
+
 /*
       "/api/v1/login"(
          method: 'POST',

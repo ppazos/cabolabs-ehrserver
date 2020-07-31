@@ -137,6 +137,7 @@ class BootStrap {
       new RequestMap(url: '/organization/edit/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/organization/save', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/organization/update/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/organization/generateApiKey', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/user/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/user/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
