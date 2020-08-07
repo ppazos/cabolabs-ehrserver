@@ -104,6 +104,6 @@ class Ehr {
 
    String toString()
    {
-      return "EHR ("+ this.uid +") of subject ("+ this.subject.value +")"
+      return "EHR ("+ this.uid +") of subject ("+ (this.subject) ? this.subject.value : 'no subject' +")"
    }
 }

@@ -114,7 +114,7 @@ class SyncParserService {
          systemId: j.systemId,
          uid: j.uid,
          dateCreated: new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
-         subject: fromJSONPartySelf(j.subject),
+         subject: fromJSONPartySelf(j.subject), // subject can be null
          organizationUid: j.organizationUid,
          deleted: j.deleted,
          master: false

@@ -878,7 +878,7 @@ class XmlService {
          endTime:       endTime,
          timeCommitted: auditTimeCommitted,
          location:      location,  // optional for event, null for persistent
-         subjectId:     ehr.subject.value,
+         subjectId:     ehr.subject?.value,
          ehrUid:        ehr.uid,
          organizationUid: ehr.organizationUid,
          archetypeId:   version.data.@archetype_node_id.text(),

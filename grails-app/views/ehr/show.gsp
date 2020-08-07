@@ -110,7 +110,7 @@
             </tr>
              <tr>
               <th><g:message code="ehr.list.attr.subject.value" /></th>
-              <td>${ehr.subject.value}</td>
+              <td>${ehr.subject?.value}</td>
             </tr>
             <tr>
               <th><g:message code="ehr.list.attr.organization" /></th>

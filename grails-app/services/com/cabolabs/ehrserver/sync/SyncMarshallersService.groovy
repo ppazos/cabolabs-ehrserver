@@ -130,7 +130,7 @@ class SyncMarshallersService {
       jb.ehr {
          uid e.uid
          dateCreated e.dateCreated
-         subject (toJSON(e.subject, jb)) // PartySelf
+         subject (toJSON(e.subject, jb)) // PartySelf, can be null
          systemId e.systemId
          deleted e.deleted
          master e.master
