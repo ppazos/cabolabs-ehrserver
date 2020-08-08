@@ -68,7 +68,7 @@ class OptFSService {
          def deleted_file = new File(opt.fileLocation)
          def moved = deleted_file.renameTo(
             new File(
-               opt.fileLocation +'.'+ Date.nowInIsoUtc() + '.deleted' // timestamp is needed to avoid name collisions
+               opt.fileLocation +'.'+ Date.nowInIsoBasicUtc() + '.deleted' // timestamp is needed to avoid name collisions
             )
          )
          if (!moved) println "DELETED OPT NOT MOVED!"

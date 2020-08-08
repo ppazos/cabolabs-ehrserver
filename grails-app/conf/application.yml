@@ -78,6 +78,7 @@ app:
 
       # Dates without seconds fraction
       datetime_format_nof: "yyyyMMdd'T'HHmmssX"
+      datetime_utcformat_nof: "yyyyMMdd'T'HHmmss'Z'"
       ext_datetime_format_nof: "yyyy-MM-dd'T'HH:mm:ssX"
       ext_datetime_utcformat_nof: "yyyy-MM-dd'T'HH:mm:ss'Z'"
 

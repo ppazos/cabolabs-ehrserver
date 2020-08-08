@@ -966,6 +966,9 @@ class BootStrap {
       Date.metaClass.static.nowInIsoUtc = {
          return new Date().format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
       }
+      Date.metaClass.static.nowInIsoBasicUtc = {
+         return new Date().format(Holders.config.app.l10n.datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
+      }
 
       // get the stack trace as string from an exception
       // can also get the first X lines of the trace

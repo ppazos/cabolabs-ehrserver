@@ -131,7 +131,7 @@ class OptS3Service {
                Holders.config.aws.bucket,
                opt.fileLocation,
                Holders.config.aws.bucket,
-               opt.fileLocation +'.'+ Date.nowInIsoUtc() +'.deleted' // timestamp is needed to avoid name collisions
+               opt.fileLocation +'.'+ Date.nowInIsoBasicUtc() +'.deleted' // timestamp is needed to avoid name collisions
             )
 
             // delete original
