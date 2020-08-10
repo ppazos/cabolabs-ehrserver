@@ -14,8 +14,13 @@ class OptFSService {
 
    // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
 
-   String getOPTContents(OperationalTemplateIndex opt)
+   String getOPTContents(OperationalTemplateIndex opt, int max_bytes_to_return = 1000000)
    {
+      // avoid returning files that are too big
+      if (new File(opt.fileLocation).length() > max_bytes_to_return)
+      {
+         return
+      }
       return new File(opt.fileLocation).text
    }
 

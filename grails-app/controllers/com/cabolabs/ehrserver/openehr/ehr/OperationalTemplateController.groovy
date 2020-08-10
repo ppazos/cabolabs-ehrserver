@@ -281,21 +281,6 @@ class OperationalTemplateController {
             opt.versionNumber = versionNumber
          }
 
-         // job will index
-         // Generates OPT and archetype item indexes just for the uploaded OPT
-         //operationalTemplateIndexerService.templateIndex = opt // avoids creating another opt index internally and use the one created here
-         //operationalTemplateIndexerService.index(template, session.organization)
-
-
-         // load opt in manager cache
-         // TODO: just load the newly created/updated one
-         /* done in the indexer job
-         def optMan = OptManager.getInstance()
-         optMan.unloadAll(session.organization.uid)
-         optMan.loadAll(session.organization.uid, true)
-         */
-
-
          // Recalculate OPT repo size for the account
          account.current_opt_repo_size = optService.getRepoSizeInBytesAccount(account)
          account.save(flush: true, failOnError: true)

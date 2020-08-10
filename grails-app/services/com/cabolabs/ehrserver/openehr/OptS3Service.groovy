@@ -38,7 +38,7 @@ class OptS3Service {
          .build()
    }
 
-   String getOPTContents(OperationalTemplateIndex opt)
+   String getOPTContents(OperationalTemplateIndex opt, int max_bytes_to_return = 1000000)
    {
       try
       {

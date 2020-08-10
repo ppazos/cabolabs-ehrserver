@@ -7,6 +7,7 @@ import com.cabolabs.security.Organization
 class OperationalTemplateIndexerJob {
 
    def operationalTemplateIndexerService
+   def optService
    
    static concurrent = false
 
@@ -32,8 +33,8 @@ class OperationalTemplateIndexerJob {
          operationalTemplateIndexerService.templateIndex = optIndex // avoids creating another opt index internally and use the one created here
 
 
-         xml = new File(optIndex.fileLocation)
-         template = slurper.parse(xml)
+         xml = optService.getOPTContents(optIndex)
+         template = slurper.parseText(xml)
 
 
          operationalTemplateIndexerService.index(template, Organization.findByUid(optIndex.organizationUid))
