@@ -933,7 +933,7 @@ class BootStrap {
 
       // String has the format aaaa.es.v1?
       String.metaClass.isTemplateId = {
-         return (delegate ==~ /([a-z]+(_[a-z]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)/)
+         return (delegate ==~ /([a-z]+(_[a-z0-9]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)/)
       }
 
       String.metaClass.toSnakeCase = {

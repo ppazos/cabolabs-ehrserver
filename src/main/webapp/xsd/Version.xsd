@@ -986,7 +986,7 @@
   <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/917 concept_snake_case.en.1.5-->
   <xs:simpleType name="TEMPLATE_ID_VALUE_FORMAT">
      <xs:restriction base="NotEmptyToken">
-        <xs:pattern value="([a-z]+(_[a-z]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)"/>
+        <xs:pattern value="([a-z]+(_[a-z0-9]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)"/>
      </xs:restriction>
   </xs:simpleType>
 </xsd:schema>
