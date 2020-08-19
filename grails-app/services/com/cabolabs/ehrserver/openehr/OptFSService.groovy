@@ -27,6 +27,7 @@ class OptFSService {
    boolean storeOPTContents(String fileLocation, String fileContents)
    {
       // creates parent subfolders if dont exist
+      // parent is the organization folder
       def containerFolder = new File(new File(fileLocation).getParent())
       containerFolder.mkdirs()
 

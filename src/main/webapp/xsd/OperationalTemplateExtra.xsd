@@ -3,7 +3,7 @@
            xmlns="http://schemas.openehr.org/v1"
            elementFormDefault="qualified"
            targetNamespace="http://schemas.openehr.org/v1"
-           id="OperationalTemplateMarand.xsd">
+           id="OperationalTemplateExtra.xsd">
    <xs:element name="template" type="OPERATIONAL_TEMPLATE"/>
    <xs:complexType name="OPERATIONAL_TEMPLATE">
       <xs:sequence>
@@ -16,27 +16,42 @@
 			<xs:element name="annotations" type="ANNOTATION" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="ontology" type="EXTRA_ONTOLOGY" minOccurs="0" />
 			<xs:element name="component_ontologies" type="EXTRA_ONTOLOGY" minOccurs="0" maxOccurs="unbounded" />
-         <xs:element name="view" minOccurs="0">
-            <xs:complexType>
-               <xs:sequence>
-                  <xs:element name="constraints" maxOccurs="unbounded" minOccurs="0">
-                     <xs:complexType>
-                        <xs:sequence>
-                           <xs:element name="items">
-                              <xs:complexType>
-                                 <xs:sequence>
-                                    <xs:element type="xs:string" name="value"/>
-                                 </xs:sequence>
-                                 <xs:attribute type="xs:string" name="id" use="optional"/>
-                              </xs:complexType>
-                           </xs:element>
-                        </xs:sequence>
-                        <xs:attribute type="xs:string" name="path" use="optional"/>
-                     </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-            </xs:complexType>
-         </xs:element>
+         <xs:element name="constraints" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="attributes" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="rm_attribute_name" type="xs:string" minOccurs="0"/>
+									<xs:element name="children" type="C_OBJECT_WITH_DEFAULT_VALUE" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="differential_path" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="view" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="constraints" maxOccurs="unbounded" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="items" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element type="xs:anySimpleType" name="value"/>
+											</xs:sequence>
+											<xs:attribute type="xs:string" name="id" use="optional"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute type="xs:string" name="path" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						</xs:sequence>
+				</xs:complexType>
+			</xs:element>
       </xs:sequence>
    </xs:complexType>
    <xs:complexType name="C_ARCHETYPE_ROOT">
@@ -60,12 +75,20 @@
 		</xs:sequence>
 		<xs:attribute name="path" type="xs:string" />
 	</xs:complexType>
-	<xs:complexType name="ANNOTATION_ITEM">
+	<!-- <xs:complexType name="ANNOTATION_ITEM">
 		<xs:sequence>
 			<xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:string" />
+	</xs:complexType> -->
+	<xs:complexType name="ANNOTATION_ITEM">
+	  <xs:simpleContent>
+	    <xs:extension base="xs:string">
+		   <xs:attribute name="id" type="xs:string" />
+		 </xs:extension>
+	  </xs:simpleContent>
 	</xs:complexType>
+
 	<xs:complexType name="EXTRA_ONTOLOGY">
 	   <xs:sequence>
 			<xs:element name="term_definitions" type="CodeDefinitionSet" maxOccurs="unbounded"/>
@@ -406,7 +429,18 @@
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
-	  </xs:complexType>
+	</xs:complexType>
+
+	<xs:complexType name="C_OBJECT_WITH_DEFAULT_VALUE">
+      <xs:complexContent>
+        <xs:extension base="C_OBJECT">
+          <xs:sequence>
+            <xs:element name="default_value" type="DATA_VALUE"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+
    <xs:complexType name="C_ATTRIBUTE" abstract="true">
 		    <xs:complexContent>
 			      <xs:extension base="ARCHETYPE_CONSTRAINT">
@@ -418,14 +452,14 @@
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
-	  </xs:complexType>
+	</xs:complexType>
    <xs:complexType name="C_SINGLE_ATTRIBUTE">
 		    <xs:complexContent>
 			      <xs:extension base="C_ATTRIBUTE">
 				        <xs:sequence/>
 			      </xs:extension>
 		    </xs:complexContent>
-	  </xs:complexType>
+	</xs:complexType>
    <xs:complexType name="C_MULTIPLE_ATTRIBUTE">
 		    <xs:complexContent>
 			      <xs:extension base="C_ATTRIBUTE">
@@ -434,7 +468,7 @@
 				        </xs:sequence>
 			      </xs:extension>
 		    </xs:complexContent>
-	  </xs:complexType>
+	</xs:complexType>
    <xs:complexType name="CARDINALITY">
 		    <xs:sequence>
 			      <xs:element name="is_ordered" type="xs:boolean"/>

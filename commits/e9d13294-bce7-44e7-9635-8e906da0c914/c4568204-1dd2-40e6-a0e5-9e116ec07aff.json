@@ -1,0 +1,1357 @@
+{ "versions": [{
+	"version" : {
+		"@xmlns" : "http://schemas.openehr.org/v1",
+		"@xmlns:xsi" : "http://www.w3.org/2001/XMLSchema-instance",
+		"@xsi:type" : "ORIGINAL_VERSION",
+		"contribution" : {
+			"id" : {
+				"@xsi:type" : "HIER_OBJECT_ID",
+				"value" : "c4568204-1dd2-40e6-a0e5-9e116ec07aff"
+			},
+			"namespace" : "EHR::COMMON",
+			"type" : "CONTRIBUTION"
+		},
+		"commit_audit" : {
+			"system_id" : "CABOLABS_EHR",
+			"committer" : {
+				"@xsi:type" : "PARTY_IDENTIFIED",
+				"external_ref" : {
+					"id" : {
+						"@xsi:type" : "HIER_OBJECT_ID",
+						"value" : "37e1a072-bf24-4fdf-941d-a245cacc0201"
+					},
+					"namespace" : "DEMOGRAPHIC",
+					"type" : "PERSON"
+				},
+				"name" : "Dr. House"
+			},
+			"time_committed" : {
+				"value" : "20200812T211159,810-0300"
+			},
+			"change_type" : {
+				"value" : "creation",
+				"defining_code" : {
+					"terminology_id" : {
+						"value" : "openehr"
+					},
+					"code_string" : 249
+				}
+			}
+		},
+		"uid" : {
+			"value" : "ce77ffff-d7f6-4e96-b47a-b0474bbdc600::EMR_APP::1"
+		},
+		"data" : {
+			"@xsi:type" : "COMPOSITION",
+			"@archetype_node_id" : "openEHR-EHR-COMPOSITION.encounter.v1",
+			"name" : {
+				"value" : "Encounter"
+			},
+			"archetype_details" : {
+				"archetype_id" : {
+					"value" : "openEHR-EHR-COMPOSITION.encounter.v1"
+				},
+				"template_id" : {
+					"value" : "teste_fh_1.en.v1"
+				},
+				"rm_version" : "1.0.2"
+			},
+			"language" : {
+				"terminology_id" : {
+					"value" : "ISO_639-1"
+				},
+				"code_string" : "en"
+			},
+			"territory" : {
+				"terminology_id" : {
+					"value" : "ISO_3166-1"
+				},
+				"code_string" : "UY"
+			},
+			"category" : {
+				"value" : "event",
+				"defining_code" : {
+					"terminology_id" : {
+						"value" : "openehr"
+					},
+					"code_string" : 433
+				}
+			},
+			"composer" : {
+				"@xsi:type" : "PARTY_IDENTIFIED",
+				"external_ref" : {
+					"id" : {
+						"@xsi:type" : "HIER_OBJECT_ID",
+						"value" : "06f52187-7241-4f75-9eed-6ec1819382e0"
+					},
+					"namespace" : "DEMOGRAPHIC",
+					"type" : "PERSON"
+				},
+				"name" : "Dr. Yamamoto"
+			},
+			"context" : {
+				"start_time" : {
+					"value" : "20200812T211159,853-0300"
+				},
+				"setting" : {
+					"value" : "home",
+					"defining_code" : {
+						"terminology_id" : {
+							"value" : "openehr"
+						},
+						"code_string" : 225
+					}
+				},
+				"other_context" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0001",
+					"name" : {
+						"value" : "Tree"
+					}
+				}
+			},
+			"content" : [ {
+				"@xsi:type" : "OBSERVATION",
+				"@archetype_node_id" : "openEHR-EHR-OBSERVATION.blood_pressure.v2",
+				"name" : {
+					"value" : "Blood pressure"
+				},
+				"language" : {
+					"terminology_id" : {
+						"value" : "ISO_639-1"
+					},
+					"code_string" : "en"
+				},
+				"encoding" : {
+					"terminology_id" : {
+						"value" : "Unicode"
+					},
+					"code_string" : "UTF-8"
+				},
+				"subject" : {
+					"@xsi:type" : "PARTY_SELF"
+				},
+				"protocol" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0011",
+					"name" : {
+						"value" : "Tree"
+					},
+					"items" : [ {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at0013",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Cuff size"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Adult Thigh",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at0015"
+							}
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at0014",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Location of measurement"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Right arm",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at0025"
+							}
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1035",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Method"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Auscultation",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at1036"
+							}
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1038",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Mean arterial pressure formula"
+						},
+						"value" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "SVKSvZ KjwgxR.kaf tpDMkinnGRBzYagybmPqYSxjvzZqax slOcWuTEcNJEfSxNQFrLdAQzEI,EW.ALCHLBxOJ,iiyfDXVrhXgpfRh.mGYEqipfmoWudbjGWomW,bD,,gn,PyBHwQHvPoZhik.TvSuOfvZEgZOKHvNkYGPlFHyTeGnBPUpbaFYJBbohArCZg tsZirGrkYVFSAjayWCmgHkfSzLzoJk,mJqqKslOgtWNKauNgzgVbNHOcchp "
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1054",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Systolic pressure formula"
+						},
+						"value" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : ",NCIxeHkeCmANSV,LhTF,fx.zGeGsXNmWh OTEQyCcQqJGLZeo SEx.zXNF,KDeXK.ztlRlEvSOxyMmQLjdLBKZYXXaeqS tRfVTXoXBzVYpp,UIKIkYcTnq.IsFFkphmQINccxiH lMSVksfJooKpiNecGDtcgLGWhtW,,sXkMZaHmxziASDhNG.pWQpmrDnhauVeZMvWOLlewCFlTMBpMXulIBpL Mih.aBOgcGhxXrQseMQBvpoLJbL,Kxaq"
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1055",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Diastolic pressure formula"
+						},
+						"value" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "SR KSF xeRCggeKiUytuRIf FqtklZGGVyTIVOCUgQGbmMFaKamuLhijZROUoFFXDHTLPyHowqQQrGMMCr,xq AGvfrSsUWvJNRMCQzdRJCQQf,KIgLzJF WZsKslPjhkorquVuHgGeJcEAQZCyGlspkeUwWTCBTqalepcSFJiTFFtFNSkhVHh ChHqRrmvZuhNDnSOnacGUAranDatoQ FStj.fkWqxwflu SXpy.FGBHceMeugZvJTUf cq Y"
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1010",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Diastolic endpoint"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Phase IV",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at1011"
+							}
+						}
+					}, {
+						"@xsi:type" : "CLUSTER",
+						"@archetype_node_id" : "openEHR-EHR-CLUSTER.device.v1",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Medical device"
+						},
+						"items" : [ {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0001",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Device name"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "iDj ByEaTOAgBrlwFHMFeRIouWUaWaACKoyrcykSPGarRpPelWGGPDWflmtKxgJNKgdUGEulySGixrfecXWqavxHCtUAdEf,tnudNFeocMNdtrqkXehQglVrwuHphKWrMCrJeOJpenJYsKIBqquuYVqUcRZnHwfbyMkpsTGLzH,.xHvQaTmlFnoYxKajmGyTNQUIuwNlCFoyCIGRQjhvUTtbWVumPZDADfC.VRdZtTSGpZWCldCPAFyo.aQcZOT"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0003",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Type"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "LWxzfm YbUoX.LWvQbLVE,nRjJKWLziZLQotP.rIkVqixvaQQSN AblAag,ffwwLaBIeiffi,ydCHJh,ZmqiHxbZumCiCtTItGnlUecJXWTsyKfGUdvBAfQChjjTeSd..AmSWdRDEkUPqavaRjuG OmtCKivPyMoF xTXUXzYwVACmFFBJSkduAkA WMcvOkevROudwoieTgvZDRTdseSLZNvlVXFHMUoRHCNLrrEcCvauAZHbtTyrWBGDyNg,P"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0002",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Description"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "bTYPoo,hkJRgAu,WLFqAAmaByNfLHZenElVhMFDKePptctfAjyNAPF jaXibSJVacnwZgAImHHmZCMeBHpMqwWlKEPpKWwaWiQRCIuRiUV.FIjJHTDopUZEAcZNPfsmSpkTUFcVZZxkuLNLinSmKfdSuupGKTAJCVQOabee Xa.ybciOppdSMWipZqLIhsyVsJUcCvifpRsObciv,SnJQQwlxe,ThXjHPPrEper BQsYitHirsgvZCcFrkwPgPg"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0021",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Unique device identifier (UDI)"
+							},
+							"value" : {
+								"@xsi:type" : "DV_IDENTIFIER",
+								"issuer" : "Hospital de Clinicas",
+								"assigner" : "Hospital de Clinicas",
+								"id" : "02211689",
+								"type" : "LOCALID"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0004",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Manufacturer"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "jQIitixALcvCrOTuoRWmRQEcMJvBOYpNJlVwFOWKmtURVwgvhZnLeGXD,CqTVBCngpihYbe.cQrvvITtitgkUAHwoeblCquzcFaHZGYTflqBKiZCvxYQ,bwhztLlQWUATF AeZnzvbZVjpiPAmuPMZpYdzxGfTgUgFORuvM,QoYDkiZ dUcQYBuorfqAshq,hFFmTL,slAOj.hPkjwpXMnlvtSjugbWd.uuHFUnPUeqhiFgWGrwHPXbqGnvJeSS"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0005",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Date of manufacture"
+							},
+							"value" : {
+								"@xsi:type" : "DV_DATE_TIME",
+								"value" : "20200812T211200,029-0300"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0020",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Serial number"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "H.NRx,HEuVYGGxSzaCNTkyXssWVityJArK.Vva,WFWlGrrWQ xb,NRMPEKggxkVnE.rnmhYnCfcFmCZIbpBBJWhOQhoXGlvAeojOwEAzzpyR,XtLLGMEeLHJnAhqjO,tYQnfgx. uPrkqgdHFdzbxT,OkuEZxh.KPuAUDijMnOGvRNcTOS,ZnrRw,JCo SkzGQnto.LEguygbejs.IsoMfoYuXYTxuODMqHOtzqfJrUMeqtSqwlA..jwIEG.WHO"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0022",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Catalogue number"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "jjtlXcETpdTrpkvPezBbXrUurBuXcsWHzwHUtycSWLOgaVVXojhfjvPxWOf,LYTAFEfCQYPJbYmNaDms,fJVvbvZbBj,aZJPMgD HzqoTHKTNLRn.rHFfiAPmbi,YF,sllEEUrYZWuLOLXRkqoXHtFHEIbkWeCFRHxYNgGqpKqEj,qzBknzSDYZlOOIdwBhEKnNRnxXHZDUMMGgyQiFeIIfxA.qEZHOfytD,ovdhCgvRdPpR.CjZ,kglG NBelF"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0023",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Model number"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "fEyt,ZmoV.tbErCPtXJQhwxvIxhzTBOd.OtbUBOJUALAXxbIaOnKRv.zFQxUbvbKimRPuFqldiSTmbEOtBrsxt,OF,MijhB K RnMMmO,llluTnsRus mXCLXXDCJTBxHu,pviRtZGqbJILRbDjizZNNZyoQqFQWaQWOixthSSnAzaIgfAgGgcfIumS HiTCxDiFunkAlrLK xMiwLkKqOC.RnWfNJitAXsnyza fBsWtEcsYzLNnquP,uHKNWo"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0006",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Batch/Lot number"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "pTGoqh dka MQLBtESJrupMcDMewpUxeZaTAMotZUtYswD.gCPXH.VPs,ehaJWEPH.eqfmiStVtPdV.wvFh,XaFjRQgyIAukVROQhXTKMUwzZBfe lkfUcYeUFTTHsvRVRYLrOwmEUHcdFdfSnmRVSYSOvuDiJZumSglUAmpRDVkKdnUv dozsAXbxskZkFW.xlFvOaQlPWOiPAexr.kkRqPcUUROSEfpPfPLzOvSuhVcKdxSkwJrwRfLeqDkzd"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0025",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Software version"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "gtdFXQnxtqaSJtCmKgU hIGUQzDDIwRMajFVJWCsEbhEsImJRtpiuYGoPQuq zBYBHtpqvucHUZuNLEbtefwSEMYv,xLEFmEYBZcdAayenrmUwADSrQWTr,glGhEsDevxJDBkYhETLFckNHSNmYq MaavYTxjHtXnikOqoog  gSKAaagVLNhkF zNh.igfaiCyOA.DukBrWAMsohsfCJKjXAJBjM.eeJqMDISncsuvlLcczMfQnWplfmsZvKBg"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0007",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Date of expiry"
+							},
+							"value" : {
+								"@xsi:type" : "DV_DATE_TIME",
+								"value" : "20200812T211200,056-0300"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0024",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Other identifier"
+							},
+							"value" : {
+								"@xsi:type" : "DV_IDENTIFIER",
+								"issuer" : "Hospital de Clinicas",
+								"assigner" : "Hospital de Clinicas",
+								"id" : 15778011,
+								"type" : "LOCALID"
+							}
+						}, {
+							"@xsi:type" : "ELEMENT",
+							"@archetype_node_id" : "at0008",
+							"name" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "Comment"
+							},
+							"value" : {
+								"@xsi:type" : "DV_TEXT",
+								"value" : "LLQzdicxrZyIUZQzQbUIGgoNTFJDOGgDVcZFfzBsgoVqPGDjTopbmNWaCt,hpbzK EVPChwilLGXE,ZF,zOwIwwoObjrLVQOoqmyxvQvn. JeTFUCVKEPnpFjS CFwAkdPZzTqBxIn SCskhBkVGaQPoNCYWuXb mMsAFJSgeU KEnOAKlyPCIruiRLLXCQYHAPTS apFzEGerBjoqHndixeyGfZaobpGfBeBPsZpGoHlLVxJs,Dvf,tlMPjgBp"
+							}
+						} ]
+					} ]
+				},
+				"data" : {
+					"@xsi:type" : "HISTORY",
+					"@archetype_node_id" : "at0001",
+					"name" : {
+						"value" : "History"
+					},
+					"origin" : {
+						"@xsi:type" : "DV_DATE_TIME",
+						"value" : "20200812T211200,069-0300"
+					},
+					"events" : {
+						"@xsi:type" : "POINT_EVENT",
+						"@archetype_node_id" : "at0006",
+						"name" : {
+							"value" : "Any event"
+						},
+						"time" : {
+							"@xsi:type" : "DV_DATE_TIME",
+							"value" : "20200812T211200,075-0300"
+						},
+						"data" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0003",
+							"name" : {
+								"value" : "blood pressure"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0004",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Systolic"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 142.8,
+									"units" : "mm[Hg]"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0005",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Diastolic"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 781.0,
+									"units" : "mm[Hg]"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1006",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Mean arterial pressure"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 381.0,
+									"units" : "mm[Hg]"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1007",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Pulse pressure"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 399.6,
+									"units" : "mm[Hg]"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1059",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Clinical interpretation"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "zwzMLZTMVlW.A,SJqpopEoUh qsV.JpPlqmq.F,hUvZCrpWgDctViXGR sphopryjawFPLfH kVaUnVoGYPXdofyYOboXSyYyjqklvbmyiHsUlUIYcynXWfMOadTeJeDDIsDDgbkdEBHWBBsrcTlCqv,AO.pQBavbDnPimdSckzbHsqVEfbsxFooDTYieckTbFHgU.iwiIYUTxQBykRfzvFIpp VFJkZAoJ. YskpdBKz,ayZgjcAcVZZuPPOwn"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0033",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Comment"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "oDiBeBTlkLFAUVAiCAPKsguMwTrEBSOHza, bIwot BMOPLkBzdIqdPqqITlHjmLGrVShGrevqjvGMDZcLZcsXx,GgJxektK.ZpMNOCpHfR.COrdrrGRAiiO hJFCojivXUfADQanhrZLRbPmRcy hlsHOcWhuUTyyzuSBavHAZvbdNUmBnB BEQEGKndPsWfuucPzzCQmxLMOu vVEfDAJvhjwQL.NmYqwMwk M.YrB,WYOVRtPjiwRqiBHr F"
+								}
+							} ]
+						},
+						"state" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0007",
+							"name" : {
+								"value" : "state structure"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0008",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Position"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Standing",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at1000"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1052",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Confounding factors"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "asxwhTz XloDKmye,Mttx.VJGngJt pGDWWwMuurPulaAqSGJSL.bCPGOHss AWfHffMmhF.JXVDVoD v,fvBCvaPCWV. NpvLYpw, RActaMatdZXmeVUThuoNwZIccPCnhE,mHDLxfhxPSvrQJvFazSjJjqTbLsKDCGrdwKkklWDyNd.tuHuPGUNDYGcvKQAPUWQamqCYhBaNsJZBMpSgN hYdKBbOFxqzTaidluMuirwPL,oUeV,VJLzGNLY"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1043",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Sleep status"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Awake",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at1044"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1005",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Tilt"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : -70.4,
+									"units" : "deg"
+								}
+							} ]
+						}
+					}
+				}
+			}, {
+				"@xsi:type" : "OBSERVATION",
+				"@archetype_node_id" : "openEHR-EHR-OBSERVATION.respiration.v2",
+				"name" : {
+					"value" : "Respiration"
+				},
+				"language" : {
+					"terminology_id" : {
+						"value" : "ISO_639-1"
+					},
+					"code_string" : "en"
+				},
+				"encoding" : {
+					"terminology_id" : {
+						"value" : "Unicode"
+					},
+					"code_string" : "UTF-8"
+				},
+				"subject" : {
+					"@xsi:type" : "PARTY_SELF"
+				},
+				"protocol" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0057",
+					"name" : {
+						"value" : "Tree"
+					}
+				},
+				"data" : {
+					"@xsi:type" : "HISTORY",
+					"@archetype_node_id" : "at0001",
+					"name" : {
+						"value" : "history"
+					},
+					"origin" : {
+						"@xsi:type" : "DV_DATE_TIME",
+						"value" : "20200812T211200,115-0300"
+					},
+					"events" : {
+						"@xsi:type" : "POINT_EVENT",
+						"@archetype_node_id" : "at0002",
+						"name" : {
+							"value" : "Any event"
+						},
+						"time" : {
+							"@xsi:type" : "DV_DATE_TIME",
+							"value" : "20200812T211200,117-0300"
+						},
+						"data" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0003",
+							"name" : {
+								"value" : "List"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0062",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Presence"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Present",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0063"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0004",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Rate"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 59.5,
+									"units" : "/min"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0005",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Regularity"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Regular",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0006"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0016",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Depth"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Normal",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0017"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0024",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Clinical description"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "uKmpNqIbSaTMk RQ.sQnGXhUZZv.hLhZbVlJGGUNgb,SN,kDTUsFke,CvOQMQXQGtyVwSkdttTgYGYNVXQmS oNQuAwmlBZ Lo,pyxlvnbfXFdIUiRhaBPgjKXV,dtrVdj.KCrxHplZLXVjNWRkiBHKdcymBbTtLWXU.yNTpbExQ.zzFwVhCxkUsEOEaPiVFWwlzV,rLIxoaINJecgseIqZHXnybCDcYMynzTOWlnqsPPNs.gtdjOGRSZdHuEZK"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0009",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Clinical interpretation"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : " RZoAjlLwsKy DOGMkXyyz.DYIdowDvNhTlW,eeVaUcrRfPdS,oz,ImdiNnr vtfhO EaMcZYeUSwC,QNMguVDqDw.ADoGgBhSSHWvlYXrvim.FrnD riJmaFmytzQIMSFfdcphgmabIHkCyRWVAwNc AXxUbEtRP TjHjNbDzWtNovWXTbOlCJnDbqlyrDiOOYAsjvkEF y,zEDsRpfjsABoGKynAyGMXEq.gsLsyuSihQJgrTT nkrb YICQH"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0070",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Comment"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "ymCuSHAtqSdDaltmoZskRfm wS bfsjhdws,GpakRwIqqZxYuGpEB.zTB,sOJRNfhdcK,DRt,EzRiEQTVLYp CYvQLU.rqvHXhNOHDjFVPovrSDOo LNRkrNtSLBXUAvwJILrFzWE ladmqqnaEjNCfITePpcjZwVZFJgtrsN.V orCHYBZNfInTYrs BIifJSylgz bvQEGXmITbFCYoR, sGJUfUOBbCnVWpUoJHzGnWppQygbXcRjprbpzaG"
+								}
+							} ]
+						},
+						"state" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0022",
+							"name" : {
+								"value" : "List"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0065",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Body position"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Standing/upright",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0066"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0056",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Confounding factors"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "ssoZGgYoAxHsYeTKreJi GjwuslPAQhdYPvJkddOkdr.cguPbfbUmmlI uMxLrBNrgeEsanTCZBWzworNiqnZjJLdIGV sdBVmV,xVWgVAwCkVRGqsRhbTDsITlvLHiGJwvPZxcpXrRSMjIObtXyDmKDsqylp,FLIakSaR,hCfBchvGfVauiN  MYjybIxftEvGzsPxGZdIA QpjjeiSMBtzU.NyzVbqZBfF fDXzzSNJBoqNWJ,iCHPZQaurMv"
+								}
+							} ]
+						}
+					}
+				}
+			}, {
+				"@xsi:type" : "OBSERVATION",
+				"@archetype_node_id" : "openEHR-EHR-OBSERVATION.pulse.v2",
+				"name" : {
+					"value" : "Pulse/Heart beat"
+				},
+				"language" : {
+					"terminology_id" : {
+						"value" : "ISO_639-1"
+					},
+					"code_string" : "en"
+				},
+				"encoding" : {
+					"terminology_id" : {
+						"value" : "Unicode"
+					},
+					"code_string" : "UTF-8"
+				},
+				"subject" : {
+					"@xsi:type" : "PARTY_SELF"
+				},
+				"protocol" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0010",
+					"name" : {
+						"value" : "List"
+					},
+					"items" : [ {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1019",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Method"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Palpation",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at1032"
+							}
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at1037",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Body site"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Radial Artery - Left",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at1038"
+							}
+						}
+					} ]
+				},
+				"data" : {
+					"@xsi:type" : "HISTORY",
+					"@archetype_node_id" : "at0002",
+					"name" : {
+						"value" : "history"
+					},
+					"origin" : {
+						"@xsi:type" : "DV_DATE_TIME",
+						"value" : "20200812T211200,180-0300"
+					},
+					"events" : {
+						"@xsi:type" : "POINT_EVENT",
+						"@archetype_node_id" : "at0003",
+						"name" : {
+							"value" : "Any event"
+						},
+						"time" : {
+							"@xsi:type" : "DV_DATE_TIME",
+							"value" : "20200812T211200,182-0300"
+						},
+						"data" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0001",
+							"name" : {
+								"value" : "structure"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1005",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Presence"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Present",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at1024"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0004",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Rate"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 733.0,
+									"units" : "/min"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0005",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Regularity"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Regular",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0006"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1055",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Irregular type"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Regularly Irregular",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0007"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1030",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Character"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "MaC.xRrRICmRAdfMDFqsqrfwpKQxpekFrdmDp.GJm OFTxTtUlkAJorDAIlSaeE.kHxKvVLSulGLPzfLyuqbQvxeOhAPhwImKvnlKpzWeVzRNKqxdPGOBXdxSIyNkSYYipQEeOqTDEPAw.EVluljCnIJtltjtufCPdWuXArXiBSEORrxxcZcL,yocXzjsZkUPtGbmEqVEBazPB.lx.Dl,Lq YAKLelu yFmqaPpQBEFfFLUHWavJHJwjVdKnLeY"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1022",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Clinical description"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "RhH,rqYSZnICu,IPqwjfkIgqueQeGpkZvNuyEqSYamQxJfOAzGeNzmXRflZU vWPqodenBbCaWUAmiaRlyNQVPnVPdfCqXdSpYLhi moRuOMsQpXRCFiwQAOEsOHOwSQqdBAgRaHMcRcBamLrLfqYclLjLlKjhTO,ZrE,gqcrzwRdeYdCOKUPicATSBLdxnJXBhDnMj MkWws.ZxcIVTMyuVKlKNcNrFxCDxPu,IMh.AFzFWnbTVUM iXVxLULE"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1023",
+								"name" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Clinical interpretation",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at1057"
+									}
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "QqQEriFlmuGagQfZENqyTq.GfFWENhPFYHJHfOyGJi,bptHANAEqCYzUCKaqTPwzuVH,vy xSZ, wyapUfkrEzDXdJj.daQGZklzdFDkGNiyskZKzR,wioIRIbBnddjgPgCaxYlpOWJECLz tUgHtUkmmfRIp aMpE.OpOprHirqjbMZnMnApAFlduX HejNlUVKsAaDDdPQAwryIdPjjvq.IGYjwm OykIiVJshBDpLXkBh,txzfsEq.IdkKOe"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1059",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Comment"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : ".uzt vhyW.t BmMmdzBkqooW.LTywIEpXqQ.GJAcmfTdcybOCsKJEUbsRSZAculXEMaPqtnxqJAsHEOUp NVsxkglGBFNckCjFLCqJu,ejkIqDDp,dVVIvfktWUfVSY.IUGd ynHFvIAmVbBWmCIVKj tFHWcQWHkHKdbRtJd.ykIGs,hWJcyFScRhxeHybWzBvgemxhOckEdSIuUItDuIo xeho CIyMDidKMuf,hlGRy,TPatu.bCyrmXzhvD"
+								}
+							} ]
+						},
+						"state" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0012",
+							"name" : {
+								"value" : "List"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0013",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Position"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Standing/upright",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at1003"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at1018",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Confounding factors"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "gsxWnpPclWWRhCQUEIrcVnOZxCI.dOugYGhljxcDzFDBAAFRcSxjWlXWt,sqUypekZkZLldgXZVtyjrbmsDUvkzqcEzQKnXCAjergOHLsjqRojemBtEBLDJhBtsPjYfvAfSvOKitzRileMjqWDdugM,EfwfrYdbnlKpYZsiRGMGIzzYIIgJe.okuRp zoHZlGVEXFAiwZbDbVb,dPbtlnWmkXX,rqEC.FummMaSJPHexjzshwiydDKVYYuXOlqw"
+								}
+							} ]
+						}
+					}
+				}
+			}, {
+				"@xsi:type" : "OBSERVATION",
+				"@archetype_node_id" : "openEHR-EHR-OBSERVATION.pulse_oximetry.v1",
+				"name" : {
+					"value" : "Pulse oximetry"
+				},
+				"language" : {
+					"terminology_id" : {
+						"value" : "ISO_639-1"
+					},
+					"code_string" : "en"
+				},
+				"encoding" : {
+					"terminology_id" : {
+						"value" : "Unicode"
+					},
+					"code_string" : "UTF-8"
+				},
+				"subject" : {
+					"@xsi:type" : "PARTY_SELF"
+				},
+				"protocol" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0007",
+					"name" : {
+						"value" : "List"
+					},
+					"items" : [ {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at0009",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Sensor site"
+						},
+						"value" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "vnazDNtCZrdAPBhWqZrftoLFYDNVLScpuDyFREgADmQ.ZlZTUFoaJQ,yNXCgrYbpOsIIQZe EVfpcxSbCSqWeTLovjFvZLSFFGQRYcUkzqVEJJXdNzVTfMJtIU.JwfmFXAZkIikLlMVijdaLtcqwn.LWrixUvnjFQN.gMERErGV,WAcfMVMNny.qUTCOj.ohf.OWAPbCGY UhLdAmoNmQ,NhYbSaUzqb,FN,KliPYINSTUqvCXKPcYZtWufzgtu"
+						}
+					}, {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at0061",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Pre/post-ductal"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Pre-ductal",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at0062"
+							}
+						}
+					} ]
+				},
+				"data" : {
+					"@xsi:type" : "HISTORY",
+					"@archetype_node_id" : "at0001",
+					"name" : {
+						"value" : "Event Series"
+					},
+					"origin" : {
+						"@xsi:type" : "DV_DATE_TIME",
+						"value" : "20200812T211200,259-0300"
+					},
+					"events" : {
+						"@xsi:type" : "POINT_EVENT",
+						"@archetype_node_id" : "at0002",
+						"name" : {
+							"value" : "Any event"
+						},
+						"time" : {
+							"@xsi:type" : "DV_DATE_TIME",
+							"value" : "20200812T211200,262-0300"
+						},
+						"data" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0003",
+							"name" : {
+								"value" : "Tree"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0006",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "SpO₂"
+								},
+								"value" : {
+									"@xsi:type" : "DV_PROPORTION",
+									"numerator" : 39.9,
+									"denominator" : 100,
+									"type" : 2
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0044",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "SpOC"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 934.4,
+									"units" : "ml/dl"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0045",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "SpCO"
+								},
+								"value" : {
+									"@xsi:type" : "DV_PROPORTION",
+									"numerator" : 75.3,
+									"denominator" : 100,
+									"type" : 2
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0046",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "SpMet"
+								},
+								"value" : {
+									"@xsi:type" : "DV_PROPORTION",
+									"numerator" : 52.9,
+									"denominator" : 100,
+									"type" : 2
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0058",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Interpretation"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "WReLOBUfzFYqhLHCaQOgLvuAibIPmEQQ CZeMson iZnplAJ,BaLdJZceR,FHLXram pIwCYXyjnBKizbziBAAcjWCiwEuq.oLSggTBNEaKhFePrb dgeBXgnlMxQuANTKMeMRFNLbaLNCCvEmWxIbMPzYsKGdCxjoIYhqDDDGoaHQYqwDUdcTVvhzkfUKK,yLNqUmRH KYxcR.MEBSYOkWKjL kZGTpmkWohFpJGHSmuTCslMzNyMvlrjBXLRS"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0036",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Comment"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "UKpFekWEgrmPVNdmqjLwHjZnLMWvTIuHRtqHzkYfBQ.aXVHmARO h.smCcJCFMZ,hGFT.uemSqXMReYmsCVuhnDBVeDIqwH usZRETP ebjxxL.KwQLqfrFbXFZPVGiVehTjbtIZncdx.SbZcbdppWQHxtd,.,JruAmPaHhjkxEBTyoIJurxtg.yxnyWVXHFYTzwIPzElXgjjUkzbDnsxrp,JNDSVgucUvQrLusnHZy,kPED .sf,kTMOUcXAgg"
+								}
+							} ]
+						},
+						"state" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0014",
+							"name" : {
+								"value" : "Tree"
+							},
+							"items" : {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0016",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Confounding factors"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "TIwN TCZidZkKmfnffNe.DMlJBFoWfBiSpqNSoQmNQPbPiYrjOmCAyLWtsWYxpPSShoFp O,hSmGz LhyIEwlXkCeQeVXf,Ckql,gfmhPCoWfXmXImqbsTnyWEeCDTryX GIPIcCuisWjgOtfTUqkXzRSCzmhWDUevIsooOlAofjoIURAkqrlrJO DTClKVEEJzjmrEIpaABgYRPJLwFbBkGhocwRagGfDkSDsmpzjaHcIRubElJklEZGxTVrpk"
+								}
+							}
+						}
+					}
+				}
+			}, {
+				"@xsi:type" : "OBSERVATION",
+				"@archetype_node_id" : "openEHR-EHR-OBSERVATION.body_temperature.v2",
+				"name" : {
+					"value" : "Body temperature"
+				},
+				"language" : {
+					"terminology_id" : {
+						"value" : "ISO_639-1"
+					},
+					"code_string" : "en"
+				},
+				"encoding" : {
+					"terminology_id" : {
+						"value" : "Unicode"
+					},
+					"code_string" : "UTF-8"
+				},
+				"subject" : {
+					"@xsi:type" : "PARTY_SELF"
+				},
+				"protocol" : {
+					"@xsi:type" : "ITEM_TREE",
+					"@archetype_node_id" : "at0020",
+					"name" : {
+						"value" : "Protocol"
+					},
+					"items" : {
+						"@xsi:type" : "ELEMENT",
+						"@archetype_node_id" : "at0021",
+						"name" : {
+							"@xsi:type" : "DV_TEXT",
+							"value" : "Location of measurement"
+						},
+						"value" : {
+							"@xsi:type" : "DV_CODED_TEXT",
+							"value" : "Rectum",
+							"defining_code" : {
+								"terminology_id" : {
+									"value" : "local"
+								},
+								"code_string" : "at0025"
+							}
+						}
+					}
+				},
+				"data" : {
+					"@xsi:type" : "HISTORY",
+					"@archetype_node_id" : "at0002",
+					"name" : {
+						"value" : "History"
+					},
+					"origin" : {
+						"@xsi:type" : "DV_DATE_TIME",
+						"value" : "20200812T211200,318-0300"
+					},
+					"events" : {
+						"@xsi:type" : "POINT_EVENT",
+						"@archetype_node_id" : "at0003",
+						"name" : {
+							"value" : "Any event"
+						},
+						"time" : {
+							"@xsi:type" : "DV_DATE_TIME",
+							"value" : "20200812T211200,321-0300"
+						},
+						"data" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0001",
+							"name" : {
+								"value" : "Tree"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0004",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Temperature"
+								},
+								"value" : {
+									"@xsi:type" : "DV_QUANTITY",
+									"magnitude" : 176.7,
+									"units" : "_no_constraint_defined_"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0063",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Comment"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "UZeCRzMEvIOivapN.fykuSUGRurh.QvgQio,dGFZjCAEU UCbIXCItdeGqQbmVjZFDpPQDw CjlqSiXxrRfTrmSMxatmKNMQTWOsRSfdmkNpUbEHWWmQ dGxdGrLmhdjjsyfPJDGKKD,wTwKyAoppkQJTeaIjGeIwEUAucBhYcCBOLT,EpuVbPIdQdYXJbEDg Wuik.,StCfTKufIwY.UKv,HrnYvWEirO IJdVxWRXSAuDJyINOM UjbdEGYXk"
+								}
+							} ]
+						},
+						"state" : {
+							"@xsi:type" : "ITEM_TREE",
+							"@archetype_node_id" : "at0029",
+							"name" : {
+								"value" : "State"
+							},
+							"items" : [ {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0030",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Body exposure"
+								},
+								"value" : {
+									"@xsi:type" : "DV_CODED_TEXT",
+									"value" : "Naked",
+									"defining_code" : {
+										"terminology_id" : {
+											"value" : "local"
+										},
+										"code_string" : "at0031"
+									}
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0041",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Description of thermal stress"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "UNWwQonuyimeyltWzGuWD,LSlfukOdzdkZMxFOLDvNtWLwZKRZSXnbm,YZBycVJXsDV.dCtuhW.ZLeSfSwDJGZYjxVkWcTqhOM.ftuYmsc OywbqATzoZIiZDWuuzmIFYGeaWQeIDkw.ShnkPcailu,BJzsvUnCFwwLiHtKWWKjMNqGG.SBQZOuYzKUTl BETiLkZvhsdOolAxpIDonemxJSCG.nvF,wxVcCrliAmg.ekLPpopmIpptzFOqCAWe"
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0065",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Day of menstrual cycle"
+								},
+								"value" : {
+									"@xsi:type" : "DV_COUNT",
+									"magnitude" : 4
+								}
+							}, {
+								"@xsi:type" : "ELEMENT",
+								"@archetype_node_id" : "at0066",
+								"name" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "Confounding factors"
+								},
+								"value" : {
+									"@xsi:type" : "DV_TEXT",
+									"value" : "YgPveFZezBeAvdOun,cdVaBQUDSaxxb hjMyzQgQpkzItFNObwdjBEEfycXY.GqY bmiXKSMlKRKBfxBbdAH xyt.GYEIRqWHbThayjMppjbJKDbbuJeixMbGhXhLOincxhVQeHQCGXRikb.ZzBN.MVkQ,vPBEPCHLkEtCjqcVjHNnxSvPb QdWzLvUFmLTL.QScDaWmGbNnTp LAaJa,cNvHIKrcJrbXGtjKA.SXcaDmWZnKYJ.gfWciyvCCmt"
+								}
+							} ]
+						}
+					}
+				}
+			} ]
+		},
+		"lifecycle_state" : {
+			"value" : "complete",
+			"defining_code" : {
+				"terminology_id" : {
+					"value" : "openehr"
+				},
+				"code_string" : 532
+			}
+		}
+	}
+}]
+}

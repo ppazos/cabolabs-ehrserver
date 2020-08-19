@@ -763,9 +763,17 @@ class BootStrap {
       //def optMan = OptManager.getInstance(optRepo.withTrailSeparator())
       orgs.each { org ->
 
-         log.info("Indexing OPTs for organization "+ org.uid)
+         log.info("creating OPT repo folder for organization "+ org.uid)
+
+         // creates the orgs folder if it doesn't exist to avoid depending on base opts to exist
+         def org_opt_repo = Holders.config.app.opt_repo.withTrailSeparator() + org.uid
+         def containerFolder = new File(org_opt_repo)
+         containerFolder.mkdirs()
+
+         log.info("indexing OPTs for organization "+ org.uid)
 
          // if there are OPTs in "base_opts" copies them to the organization repo
+         // if three are base opts, this will create the organization folder in /opts, but if base opts are empty, it doesnt create the org's folder
          operationalTemplateIndexerService.setupBaseOpts(org, repo)
 
          log.info("operationalTemplateIndexerService.indexAll()")
@@ -828,6 +836,8 @@ class BootStrap {
 
    def createUsers()
    {
+      if (User.count() > 0) return
+      
       // User encodes the password internally
       def users = [
          new User(
