@@ -36,66 +36,66 @@ y muestra todas las compositions de la contrib:
 </g:each>
 
 
-    <script type="text/javascript">
-    $(document).ready(function() { // same code as versionedComposition show, TODO: refactor
+<script type="text/javascript">
+$(document).ready(function() { // same code as versionedComposition show, TODO: refactor
 
-      $('.showCompo').on('click', function(e) {
+  $('.showCompo').on('click', function(e) {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        iframe = $('iframe', '#html_modal');
-        iframe[0].src = this.href;
+    iframe = $('iframe', '#html_modal');
+    iframe[0].src = this.href;
 
-        $('#html_modal').modal();
-      });
+    $('#html_modal').modal();
+  });
 
-      $('#html_modal').on('hidden.bs.modal', function (event) {
-        iframe = $('iframe', '#html_modal');
-        iframe[0].src = '';
-      });
+  $('#html_modal').on('hidden.bs.modal', function (event) {
+    iframe = $('iframe', '#html_modal');
+    iframe[0].src = '';
+  });
 
-      $('.compoXml').on('click', function(e) {
+  $('.compoXml').on('click', function(e) {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        $.ajax({
-          url: this.href,
-          dataType: 'xml',
-          success: function(xml, textStatus)
-          {
-            console.log('xml', xml);
-            $('#xml').text(formatXml2( xmlToString(xml) ));
-            $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
-            $('#xml_modal').modal();
-          }
-        });
-
-      });
-
-      $('#xml_modal').on('hidden.bs.modal', function (event) {
-        $('#xml').text('');
-      });
+    $.ajax({
+      url: this.href,
+      dataType: 'xml',
+      success: function(xml, textStatus)
+      {
+        console.log('xml', xml);
+        $('#xml').text(formatXml2( xmlToString(xml) ));
+        $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+        $('#xml_modal').modal();
+      }
     });
-    </script>
-    <div class="modal fade" id="xml_modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-         <div class="modal-body">
-           <pre><code id="xml" class="xml"></code></pre>
-         </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <iframe src="" style="padding:0; margin:0; width:100%; height:540px; border:0;"></iframe>
-          </div>
-        </div>
+  });
+
+  $('#xml_modal').on('hidden.bs.modal', function (event) {
+    $('#xml').text('');
+  });
+});
+</script>
+<div class="modal fade" id="xml_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <pre><code id="xml" class="xml"></code></pre>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="modal fade" id="html_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <iframe src="" style="padding:0; margin:0; width:100%; height:540px; border:0;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
 
