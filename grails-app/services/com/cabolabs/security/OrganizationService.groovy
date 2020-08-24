@@ -30,6 +30,16 @@ class OrganizationService {
          notificationService.sendNewOrganizationAssociatedEmail([account: account, organization: org])
       }
 
+      // create folders
+      def opt_repo = new File(config.opt_repo.withTrailSeparator() + org.uid)
+      opt_repo.mkdirs()
+
+      def version_repo = new File(config.version_repo.withTrailSeparator() + org.uid)
+      version_repo.mkdirs()
+
+      def commit_repo = new File(config.commit_logs.withTrailSeparator() + org.uid)
+      commit_repo.mkdirs()
+
       return org
    }
 }

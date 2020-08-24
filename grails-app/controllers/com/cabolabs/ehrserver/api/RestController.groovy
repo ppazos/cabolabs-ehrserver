@@ -280,7 +280,7 @@ class RestController {
          }
          catch (org.xml.sax.SAXParseException sex) // checks malformed XML
          {
-            logService.error(request, session, params, e)
+            logService.error(request, session, params, sex)
             commitLoggerService.log(request, null, false, null, session, params)
             renderError(message(code:'rest.commit.error.invalidXML'), '50111', 400, [], sex)
             return

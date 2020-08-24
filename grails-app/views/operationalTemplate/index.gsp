@@ -121,46 +121,60 @@
               <g:set var="sameLangTemplates" value="${opts.findAll{ it.lang == session.lang }}" />
               <g:set var="otherLangTemplates" value="${opts.findAll{ it.lang != session.lang }}" />
               <tr><td colspan="7"><h3><g:message code="template.list.accessible_in_current_lang" /></h3></td></tr>
-              <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
-                <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                  <td>
-                    <g:link action="show" id="${templateInstance.uid}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
-                  </td>
-                  <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "language")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
-                  <td>${templateInstance.versionNumber}</td>
-                  <td>
-                    <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
-                    <br/>
-                    <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
-                  </td>
-                </tr>
-              </g:each>
+              <g:if test="${sameLangTemplates.size()==0}">
+                <tr><td colspan="7">
+                  <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                </td></tr>
+              </g:if>
+              <g:else>
+                <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
+                  <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                    <td>
+                      <g:link action="show" id="${templateInstance.uid}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                    </td>
+                    <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "language")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
+                    <td>${templateInstance.versionNumber}</td>
+                    <td>
+                      <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
+                      <br/>
+                      <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
+                    </td>
+                  </tr>
+                </g:each>
+              </g:else>
               <tr>
                 <td colspan="7">
                   <h3><g:message code="template.list.not_accessible_in_current_lang" /></h3>
                   <p><g:message code="template.list.not_accessible_in_current_lang.description" /></p>
                 </td>
               </tr>
-              <g:each in="${otherLangTemplates}" status="i" var="templateInstance">
-                <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                  <td>
-                    <g:link action="show" params="[uid:templateInstance.uid]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
-                  </td>
-                  <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "language")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
-                  <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
-                  <td>${templateInstance.versionNumber}</td>
-                  <td>
-                    <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
-                    <br/>
-                    <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
-                  </td>
-                </tr>
-              </g:each>
+              <g:if test="${otherLangTemplates.size()==0}">
+                <tr><td colspan="7">
+                  <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                </td></tr>
+              </g:if>
+              <g:else>
+                <g:each in="${otherLangTemplates}" status="i" var="templateInstance">
+                  <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+                    <td>
+                      <g:link action="show" params="[uid:templateInstance.uid]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                    </td>
+                    <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "language")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "uid")}</td>
+                    <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
+                    <td>${templateInstance.versionNumber}</td>
+                    <td>
+                      <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
+                      <br/>
+                      <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
+                    </td>
+                  </tr>
+                </g:each>
+              </g:else>
             </tbody>
           </table>
         </div>

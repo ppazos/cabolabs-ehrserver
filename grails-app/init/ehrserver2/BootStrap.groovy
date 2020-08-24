@@ -103,6 +103,7 @@ class BootStrap {
 
       new RequestMap(url: '/app/index', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
       new RequestMap(url: '/app/get_started', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+      new RequestMap(url: '/app/change_org', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/plan/index', configAttribute: 'ROLE_ADMIN').save()
       new RequestMap(url: '/plan/show/.*', configAttribute: 'ROLE_ADMIN').save()
@@ -766,9 +767,9 @@ class BootStrap {
          log.info("creating OPT repo folder for organization "+ org.uid)
 
          // creates the orgs folder if it doesn't exist to avoid depending on base opts to exist
-         def org_opt_repo = Holders.config.app.opt_repo.withTrailSeparator() + org.uid
-         def containerFolder = new File(org_opt_repo)
-         containerFolder.mkdirs()
+         // def org_opt_repo = Holders.config.app.opt_repo.withTrailSeparator() + org.uid
+         // def containerFolder = new File(org_opt_repo)
+         // containerFolder.mkdirs()
 
          log.info("indexing OPTs for organization "+ org.uid)
 
@@ -788,6 +789,8 @@ class BootStrap {
 
    def defaultOrganizations()
    {
+      def PS = System.getProperty("file.separator")
+
       def organizations = []
       if (Organization.count() == 0)
       {
@@ -798,7 +801,19 @@ class BootStrap {
 
          // Create default QueryGroup per organization, see https://github.com/ppazos/cabolabs-ehrserver/issues/982
          organizations.each { org ->
+
             new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save(flush:true)
+
+
+            // create folders if don't exist
+            def opt_repo = new File(Holders.config.app.opt_repo + PS + org.uid)
+            opt_repo.mkdirs()
+
+            def version_repo = new File(Holders.config.app.version_repo + PS + org.uid)
+            version_repo.mkdirs()
+
+            def commit_repo = new File(Holders.config.app.commit_logs + PS + org.uid)
+            commit_repo.mkdirs()
          }
 
 

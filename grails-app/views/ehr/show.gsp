@@ -5,32 +5,32 @@
     <meta name="layout" content="admin">
     <title><g:message code="ehr.show.title" /></title>
     <style>
-    tr:hover {
-     background: none;
-    }
-    td {
-      vertical-align: middle;
-    }
-    .filter_highlight {
-      background-color: #ffff80;
-    }
-    input[type=text] {
-      width: 100px;
-    }
-    ol.property-list, li {
-      margin:0px;
-    }
-    .composition_filters {
-      padding: 5px 0px 10px 0px;
-      border-bottom: 1px solid #ddd;
-    }
-    .folder {
-      padding-left: 1em;
-    }
-    .icon {
-      width: 48px;
-      border: none;
-    }
+      tr:hover {
+      background: none;
+      }
+      td {
+        vertical-align: middle;
+      }
+      .filter_highlight {
+        background-color: #ffff80;
+      }
+      input[type=text] {
+        width: 100px;
+      }
+      ol.property-list, li {
+        margin:0px;
+      }
+      .composition_filters {
+        padding: 5px 0px 10px 0px;
+        border-bottom: 1px solid #ddd;
+      }
+      .folder {
+        padding-left: 1em;
+      }
+      .icon {
+        width: 48px;
+        border: none;
+      }
     </style>
 
     <!-- highlight xml and json -->

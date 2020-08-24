@@ -137,7 +137,7 @@
       <ul class="nav navbar-top-links navbar-right">
         <g:each in="${grailsApplication.config.languages}" var="lang">
           <li>
-            <g:link action="auth" params="[lang:lang]" class="${(locale.language == lang)?'active':''}">${lang}</g:link>
+            <g:link controller="auth" action="login" params="[lang:lang]" class="${(locale.language == lang)?'active':''}">${lang}</g:link>
           </li>
         </g:each>
       </ul>
