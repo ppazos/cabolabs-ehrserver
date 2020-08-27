@@ -119,49 +119,56 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
          def terminologyId = 'local'
 
-         def constraint = optMan.getNode(archetypeId, path + '/defining_code', namespace)
+         // There could be multiple constraints on the same path as alternatives
+         // TODO: test if we need to display more than one criteria builder if there are alternative constraints
+         def constraints = optMan.getNodes(archetypeId, path + '/defining_code', namespace)
+
          //println constraint
          //println constraint.reference // ac0001
          //println constraint.terminologyIdName
          //println constraint.terminologyRef
-         if (constraint && constraint.type == 'C_CODE_PHRASE') // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
-         {
-            constraint.codeList.each { code ->
 
-              codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
-            }
-         }
-         else
+         if (constraints)
          {
-            // nodes is a list of CCodePhrase if any are found
-            def nodes = optMan.getNodesByDataPath(archetypeId, path + '/defining_code', namespace)
-            if (nodes)
+            def constraint = constraints.find{ it.type == 'C_CODE_PHRASE' }
+            if (constraint) // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
             {
-               // to get terms from the openehr terminology
-               def terminology = TerminologyParser.getInstance()
+               constraint.codeList.each { code ->
 
-               nodes.each { ccodephrase ->
-                  if (ccodephrase.terminologyIdName == 'local')
-                  {
-                     ccodephrase.codeList.each { code ->
-                        codes[code] = optMan.getText(archetypeId, code, lang, namespace)
+               codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+               }
+            }
+            else
+            {
+               // nodes is a list of CCodePhrase if any are found
+               def nodes = optMan.getNodesByDataPath(archetypeId, path + '/defining_code', namespace)
+               if (nodes)
+               {
+                  // to get terms from the openehr terminology
+                  def terminology = TerminologyParser.getInstance()
+
+                  nodes.each { ccodephrase ->
+                     if (ccodephrase.terminologyIdName == 'local')
+                     {
+                        ccodephrase.codeList.each { code ->
+                           codes[code] = optMan.getText(archetypeId, code, lang, namespace)
+                        }
                      }
-                  }
-                  else if (ccodephrase.terminologyIdName == 'openehr')
-                  {
-                     // resolve against terminology!!!
+                     else if (ccodephrase.terminologyIdName == 'openehr')
+                     {
+                        // resolve against terminology!!!
 
-                     // using TerminologyParser from openEHR-OPT
-                     ccodephrase.codeList.each { code ->
-                        codes[code] = terminology.getRubric(lang, code)
+                        // using TerminologyParser from openEHR-OPT
+                        ccodephrase.codeList.each { code ->
+                           codes[code] = terminology.getRubric(lang, code)
+                        }
+
+                        terminologyId = 'openehr'
                      }
-
-                     terminologyId = 'openehr'
                   }
                }
             }
          }
-
 
 
          // if it starts with underscore, do not process on the ui

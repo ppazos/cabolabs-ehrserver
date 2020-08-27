@@ -115,24 +115,30 @@ class DataCriteriaDV_ORDINAL extends DataCriteria {
          def codes = [:]
          def lang = RequestContextHolder.currentRequestAttributes().session.lang
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
-         def constraint = optMan.getNode(archetypeId, path, namespace)
 
-         if (constraint.type == 'C_DV_ORDINAL')
+         // There could be multiple constraints on the same path as alternatives
+         // TODO: test if we need to display more than one criteria builder if there are alternative constraints
+         def constraints = optMan.getNodes(archetypeId, path, namespace)
+         if (constraints)
          {
-            constraint.list.each { cdvord_item ->
+            def constraint = constraints.find{ it.type == 'C_DV_ORDINAL' }
+            if (constraint)
+            {
+               constraint.list.each { cdvord_item ->
 
-               //println cdvord_item.value +" "+ cdvord_item.symbol.codeString +" "+ cdvord_item.symbol.terminologyId // int, CodePhrase
-               /*
-               codes[cdvord_item.value] = [
-                  code: cdvord_item.symbol.codeString,
-                  name: optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace),
-                  terminologyId: cdvord_item.symbol.terminologyId // instead of putting the terminology appart from the code, this needs both and value to be on the same structure, the GUI should handle this case for displaying
-               ]
-               */
-               codes[cdvord_item.value] = optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace)
+                  //println cdvord_item.value +" "+ cdvord_item.symbol.codeString +" "+ cdvord_item.symbol.terminologyId // int, CodePhrase
+                  /*
+                  codes[cdvord_item.value] = [
+                     code: cdvord_item.symbol.codeString,
+                     name: optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace),
+                     terminologyId: cdvord_item.symbol.terminologyId // instead of putting the terminology appart from the code, this needs both and value to be on the same structure, the GUI should handle this case for displaying
+                  ]
+                  */
+                  codes[cdvord_item.value] = optMan.getText(archetypeId, cdvord_item.symbol.codeString, lang, namespace)
+               }
+
+               spec[0].value.codes = codes
             }
-
-            spec[0].value.codes = codes
          }
       }
 

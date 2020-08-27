@@ -63,9 +63,13 @@ class DataCriteriaDV_DURATION extends DataCriteria {
    {
       def optMan = OptManager.getInstance()
       def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
-      def constraint = optMan.getNode(archetypeId, path, namespace) // ObjectNode
+      
+      // There could be multiple constraints on the same path as alternatives
+      // TODO: test if we need to display more than one criteria builder if there are alternative constraints
+      def constraints = optMan.getNodes(archetypeId, path, namespace) // ObjectNode
+
       /*
-      println constraint.type
+      println constraint.type // C_COMPLEX_OBJECT
       println constraint.attributes.find{ it.rmAttributeName == 'value'}
       println constraint.attributes.find{ it.rmAttributeName == 'value'}.children // PrimitiveObjectNode
       println constraint.attributes.find{ it.rmAttributeName == 'value'}.children.type // C_PRIMITIVE_OBJECT
@@ -74,8 +78,11 @@ class DataCriteriaDV_DURATION extends DataCriteria {
       */
 
       def criteria_constraints = [min: null, max: null]
-      if (constraint)
+
+      if (constraints)
       {
+         def constraint = constraints[0]
+
          // PrimitiveObjectNode
          def c_duration_value = constraint.attributes.find{ it.rmAttributeName == 'value'}?.children?.getAt(0)
          if (c_duration_value)
