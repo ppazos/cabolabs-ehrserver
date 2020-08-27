@@ -1,0 +1,37 @@
+version: '3.0'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./terminology:/app/terminology
+      - ./grails-app/conf/:/usr/local/tomcat/webapps/config
+      - ./opts:/usr/local/tomcat/opts
+      - ./versions:/usr/local/tomcat/versions
+      - ./grails-app/conf/application.yml:/app/config.yml
+    depends_on:
+      - db
+    environment:
+      - SPRING_CONFIG_LOCATION=/app/config.yml
+      - EHRSERVER_MYSQL_DB_BEHAVIOUR=create-drop
+      - EHRSERVER_MYSQL_DB_HOST=db
+      - EHRSERVER_MYSQL_DB_PORT=3306
+      - EHRSERVER_MYSQL_DB_USERNAME=ehrserver2
+      - EHRSERVER_MYSQL_DB_PASSWORD=ehrserver2
+      - EHRSERVER_DB_NAME=ehrserver2
+      - EHRSERVER_ALLOW_WEB_USER_REGISTER=false
+      - EHRSERVER_REST_SECRET=d9507256-e461-4336-a6ec-2f412796f134
+      - EHRSERVER_EMAIL_HOST=localhost
+      - EHRSERVER_EMAIL_PORT=2525
+  db:
+    image: mysql:5.7
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=ehrserver2
+      - MYSQL_USER=ehrserver2
+      - MYSQL_PASSWORD=ehrserver2
+      - MYSQL_ROOT_PASSWORD=root
+volumes:
+  database: {}
