@@ -14,9 +14,9 @@
     <div class="row row-grid">
       <div class="col-lg-12">
 
-	     <g:if test="${flash.message}">
-	       <div class="alert alert-info" role="alert">${flash.message}</div>
-	     </g:if>
+       <g:if test="${flash.message}">
+         <div class="alert alert-info" role="alert">${flash.message}</div>
+       </g:if>
 
         <table class="table">
           <tbody>
@@ -48,7 +48,7 @@
             <g:link action="edit" id="${organizationInstance.uid}"><button type="button" class="btn btn-default btn-md"><span class="fa fa-edit fa-fw" aria-hidden="true"></span> <g:message code="default.button.edit.label" default="Edit" /></button></g:link>
           </fieldset>
         </div>
-	   </div>
+     </div>
     </div>
 
     <div class="row">
@@ -69,89 +69,90 @@
           <button class="next btn btn-default btn-md"><span class="fa fa-chevron-right fa-fw" aria-hidden="true"></span></button>
         </div>
         <script>
-            var first_day_prev_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCDate(1);
-               d.setUTCMonth( d.getUTCMonth() - 1 );
-               d.setUTCHours(0,0,0,0);
-               return d;
-            };
-            var first_day_current_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCDate(1);
-               d.setUTCHours(0,0,0,0);
-               return d;
-            };
-            var last_day_prev_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCDate(0); // last day of previous month
-               return d;
-            };
-            var first_day_next_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCDate(1);
-               d.setUTCMonth( d.getUTCMonth() + 1 );
-               d.setUTCHours(0,0,0,0);
-               return d;
-            };
-            var last_day_next_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCMonth( d.getUTCMonth() + 2 ); // next next month
-               d.setUTCDate(0); // last day of previous month
-               return d;
-            };
-            var first_day_next_next_month_of = function(date)
-            {
-               var d = new Date(date);
-               d.setUTCDate(1);
-               d.setUTCMonth( d.getUTCMonth() + 2 ); // next, next month
-               d.setUTCHours(0,0,0,0);
-               return d;
-            };
+          // FIXME: move these functions to a library
+          var first_day_prev_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCDate(1);
+            d.setUTCMonth( d.getUTCMonth() - 1 );
+            d.setUTCHours(0,0,0,0);
+            return d;
+          };
+          var first_day_current_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCDate(1);
+            d.setUTCHours(0,0,0,0);
+            return d;
+          };
+          var last_day_prev_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCDate(0); // last day of previous month
+            return d;
+          };
+          var first_day_next_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCDate(1);
+            d.setUTCMonth( d.getUTCMonth() + 1 );
+            d.setUTCHours(0,0,0,0);
+            return d;
+          };
+          var last_day_next_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCMonth( d.getUTCMonth() + 2 ); // next next month
+            d.setUTCDate(0); // last day of previous month
+            return d;
+          };
+          var first_day_next_next_month_of = function(date)
+          {
+            var d = new Date(date);
+            d.setUTCDate(1);
+            d.setUTCMonth( d.getUTCMonth() + 2 ); // next, next month
+            d.setUTCHours(0,0,0,0);
+            return d;
+          };
 
-            /*
-            console.log('now', new Date(ref_date).toUTCString());
-            console.log(first_day_prev_month_of(ref_date).toUTCString());
-            console.log(first_day_current_month_of(ref_date).toUTCString());
-            console.log(first_day_next_month_of(ref_date).toUTCString());
-            console.log(first_day_next_next_month_of(ref_date).toUTCString());
-            */
+          /*
+          console.log('now', new Date(ref_date).toUTCString());
+          console.log(first_day_prev_month_of(ref_date).toUTCString());
+          console.log(first_day_current_month_of(ref_date).toUTCString());
+          console.log(first_day_next_month_of(ref_date).toUTCString());
+          console.log(first_day_next_next_month_of(ref_date).toUTCString());
+          */
 
-            $(function() {
+          $(function() {
 
-              $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
+            $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
 
-              $('button.prev').on( "click", function() {
-                var prev_from = first_day_prev_month_of(ref_date);
-                var prev_to = first_day_current_month_of(ref_date);
+            $('button.prev').on( "click", function() {
+              var prev_from = first_day_prev_month_of(ref_date);
+              var prev_to = first_day_current_month_of(ref_date);
 
-                console.log(ref_date, prev_from, prev_to);
+              console.log(ref_date, prev_from, prev_to);
 
-                var data = {'uid': '${params.uid}', 'from': prev_from.getTime(), 'to': prev_to.getTime()};
+              var data = {'uid': '${params.uid}', 'from': prev_from.getTime(), 'to': prev_to.getTime()};
 
-                $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
-                  $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
-                });
-              });
-
-              $('button.next').on( "click", function() {
-                var next_from = first_day_next_month_of(ref_date);
-                var next_to = first_day_next_next_month_of(ref_date);
-
-                console.log(ref_date, next_from, next_to);
-
-                var data = {'uid': '${params.uid}', 'from': next_from.getTime(), 'to': next_to.getTime()};
-
-                $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
-                  $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
-                });
+              $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
+                $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
               });
             });
+
+            $('button.next').on( "click", function() {
+              var next_from = first_day_next_month_of(ref_date);
+              var next_to = first_day_next_next_month_of(ref_date);
+
+              console.log(ref_date, next_from, next_to);
+
+              var data = {'uid': '${params.uid}', 'from': next_from.getTime(), 'to': next_to.getTime()};
+
+              $('.stats').load("${g.createLink(controller:'stats', action:'organization')}", data, function() {
+                $('.ref_date').text( new Date(ref_date).toISOString().slice(0,7) );
+              });
+            });
+          });
         </script>
       </div>
     </div>
@@ -171,57 +172,64 @@
       <div class="col-lg-12">
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
-	         <g:link action="generateApiKey" params="[uid: params.uid]" class="create">
-	           <button type="button" class="btn btn-default btn-md">
-	             <span class="fa fa-key fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.generate" />
-	           </button>
-	         </g:link>
-	       </fieldset>
-	     </div>
+           <g:link action="generateApiKey" params="[uid: params.uid]" class="create">
+             <button type="button" class="btn btn-default btn-md">
+               <span class="fa fa-key fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.generate" />
+             </button>
+           </g:link>
+         </fieldset>
+       </div>
       </div>
     </div>
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:set var="apikeys" value="${ApiKey.findAllByOrganization(organizationInstance)}" />
         <div class="table-responsive">
-	       <table class="table table-striped table-bordered table-hover">
-	         <g:each in="${apikeys}" var="key">
-	            <tr>
-                <td>
-                  <table class="table table-bordered" style="margin-bottom:0;">
-                    <tr>
-                      <th width="50%"><g:message code="apikey.attr.systemId" /></th>
-         	            <th><g:message code="apikey.attr.scope" /></th>
-                    </tr>
-                    <tr>
-                      <td>
-      	                ${key.systemId}
-      	              </td>
-                      <td>
-                        ${key.scope}
-                      </td>
-                    </tr>
-                    <tr>
-         	            <th colspan="2"><g:message code="apikey.attr.token" /></th>
-                    </tr>
-                    <tr>
-                      <td colspan="2">
-      	                <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
-      	              </td>
-                    </tr>
-                  </table>
-                </td>
-                <td width="10%" align="center">
-	                <g:link action="deleteApiKey" id="${key.id}" class="delete">
-	                  <button type="button" class="btn btn-default btn-md">
-				           <span class="fa fa-times fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.remove" />
-				         </button>
-	                </g:link>
-	              </td>
-              </tr>
-	         </g:each>
-	       </table>
-	     </div>
+          <table class="table table-striped table-bordered table-hover">
+            <g:if test="${apikeys.size()==0}">
+              <tr><td>
+                <h4><g:message code="apikey.index.notKeysYet" /></h4>
+              </td></tr>
+            </g:if>
+            <g:else> 
+              <g:each in="${apikeys}" var="key">
+                <tr>
+                  <td>
+                    <table class="table table-bordered" style="margin-bottom:0;">
+                      <tr>
+                        <th width="50%"><g:message code="apikey.attr.systemId" /></th>
+                        <th><g:message code="apikey.attr.scope" /></th>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${key.systemId}
+                        </td>
+                        <td>
+                          ${key.scope}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th colspan="2"><g:message code="apikey.attr.token" /></th>
+                      </tr>
+                      <tr>
+                        <td colspan="2">
+                          <textarea width="100%" rows="5" class="form-control">${key.token}</textarea>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="10%" align="center">
+                    <g:link action="deleteApiKey" id="${key.id}" class="delete">
+                      <button type="button" class="btn btn-default btn-md">
+                        <span class="fa fa-times fa-fw" aria-hidden="true"></span> <g:message code="organization.show.apikeys.remove" />
+                      </button>
+                    </g:link>
+                  </td>
+                </tr>
+              </g:each>
+            </g:else>
+          </table>
+        </div>
       </div>
     </div>
   </body>

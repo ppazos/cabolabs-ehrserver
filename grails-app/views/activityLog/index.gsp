@@ -15,8 +15,8 @@
     <div class="row row-grid">
       <div class="col-lg-12">
         <g:if test="${flash.message}">
-	       <div class="alert alert-info" role="alert">${flash.message}</div>
-	     </g:if>
+	        <div class="alert alert-info" role="alert">${flash.message}</div>
+	      </g:if>
 
         <g:each in="${activityLogInstanceList}" var="e">
           <g:set var="sessionId" value="${e.key}" />
@@ -35,46 +35,46 @@
               <tbody>
                 <g:each in="${e.value}" status="i" var="activityLogInstance">
                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                     <td><g:link controller="logs" action="show" id="${activityLogInstance.id}"><g:formatDate date="${activityLogInstance.timestamp}" /></g:link></td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "username")}</td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "requestURL")}</td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
-                     <td>${fieldValue(bean: activityLogInstance, field: "remoteAddr")}</td>
-                   </tr>
+                    <td><g:link controller="logs" action="show" id="${activityLogInstance.id}"><g:formatDate date="${activityLogInstance.timestamp}" /></g:link></td>
+                    <td>${fieldValue(bean: activityLogInstance, field: "username")}</td>
+                    <td>${fieldValue(bean: activityLogInstance, field: "requestURL")}</td>
+                    <td>${fieldValue(bean: activityLogInstance, field: "action")}</td>
+                    <td>${fieldValue(bean: activityLogInstance, field: "remoteAddr")}</td>
+                  </tr>
                   <g:if test="${activityLogInstance instanceof CommitLog}">
-                     <tr>
-                       <td colspan="5" style="padding:0;">
-                         <table class="table table-bordered" style="margin:0;">
-                           <tr>
-                             <th>EHR</th>
-                             <th>Contribution</th>
-                             <th>Type</th>
-                             <th>Locale</th>
-                             <th>Successful commit?</th>
-                           </tr>
-                           <tr>
-                             <td>${activityLogInstance.ehrUid}</td>
-                             <td>${activityLogInstance.objectUid}</td>
-                             <td>${activityLogInstance.contentType}</td>
-                             <td>${activityLogInstance.locale}</td>
-                             <td>${activityLogInstance.success}</td>
-                           </tr>
-                         </table>
-                       </td>
-                     </tr>
+                    <tr>
+                      <td colspan="5" style="padding:0;">
+                        <table class="table table-bordered" style="margin:0;">
+                          <tr>
+                            <th>EHR</th>
+                            <th>Contribution</th>
+                            <th>Type</th>
+                            <th>Locale</th>
+                            <th>Successful commit?</th>
+                          </tr>
+                          <tr>
+                            <td>${activityLogInstance.ehrUid}</td>
+                            <td>${activityLogInstance.objectUid}</td>
+                            <td>${activityLogInstance.contentType}</td>
+                            <td>${activityLogInstance.locale}</td>
+                            <td>${activityLogInstance.success}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
                   </g:if>
                   <g:elseif test="${activityLogInstance instanceof ErrorLog}">
                     <tr>
                       <td colspan="5" style="padding:0;">
                         <table class="table table-bordered" style="margin:0;">
-                         <tr class="danger">
-                           <th>Message</th>
-                           <th>Trace</th>
-                         </tr>
-                         <tr class="danger">
-                           <td>${activityLogInstance.message}</td>
-                           <td><pre>${activityLogInstance.trace}</pre></td>
-                         </tr>
+                          <tr class="danger">
+                            <th>Message</th>
+                            <th>Trace</th>
+                          </tr>
+                          <tr class="danger">
+                            <td>${activityLogInstance.message}</td>
+                            <td><pre>${activityLogInstance.trace}</pre></td>
+                          </tr>
                         </table>
                       </td>
                     </tr>

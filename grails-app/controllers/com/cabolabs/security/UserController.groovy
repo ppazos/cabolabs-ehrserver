@@ -60,12 +60,12 @@ class UserController {
       if (!sort) sort = 'id'
       if (!order) order = 'asc'
 
-      def list, count
+      def list
       def c = UserRole.createCriteria()
 
       if (authService.loggedInUserHasAnyRole("ROLE_ADMIN"))
       {
-         def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
+         list = c.list(max: max, offset: offset, sort: sort, order: order) {
             user {
                eq('isVirtual', false)
                if (email)
@@ -80,9 +80,6 @@ class UserController {
                }
             }
          }
-
-         list = urs
-         count = urs.totalCount
       }
       else
       {
@@ -90,7 +87,7 @@ class UserController {
          def loggedInUser = authService.loggedInUser
          def org = session.organization // with this in the criteria makes the unit test fail.
 
-         def urs = c.list(max: max, offset: offset, sort: sort, order: order) {
+         list = c.list(max: max, offset: offset, sort: sort, order: order) {
             eq('organization', org)
             if (email)
             {
@@ -99,12 +96,9 @@ class UserController {
                }
             }
          }
-
-         list = urs
-         count = urs.totalCount
       }
 
-      render view: 'index', model: [userInstanceList: list, userInstanceCount: count]
+      render view: 'index', model: [userInstanceList: list, userInstanceCount: list.totalCount]
    }
 
 
