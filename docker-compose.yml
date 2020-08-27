@@ -9,7 +9,8 @@ services:
       - ./grails-app/conf/:/usr/local/tomcat/webapps/config
       - ./opts:/usr/local/tomcat/opts
       - ./versions:/usr/local/tomcat/versions
-      - ./grails-app/conf/application.yml:/app/config.yml
+      # can be used to load a custom yml
+      # - ./grails-app/conf/application.yml:/app/config.yml
     depends_on:
       - db
     environment:

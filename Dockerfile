@@ -11,5 +11,7 @@ RUN /opt/grails-3.3.10/bin/grails war
 
 FROM tomcat:8-jdk8-openjdk
 COPY --from=build /app/build/libs/app-2.2.beta.war /usr/local/tomcat/webapps/ROOT.war
+WORKDIR /app
+COPY --from=build /app/grails-app/conf/application.yml /app/config.yml
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
