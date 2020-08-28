@@ -217,8 +217,8 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: user
-    password: user1234
+    username: ${EHRSERVER_MYSQL_DB_USERNAME}
+    password: ${EHRSERVER_MYSQL_DB_PASSWORD}
 
 environments:
     development:
@@ -231,8 +231,8 @@ environments:
             url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC
     production:
         dataSource:
-            dbCreate: update
-            url: jdbc:mysql://localhost:3306/ehrserver2_prod?useTimezone=true&serverTimezone=UTC
+            dbCreate: ${EHRSERVER_MYSQL_DB_BEHAVIOUR}
+            url: jdbc:mysql://${EHRSERVER_MYSQL_DB_HOST}:${EHRSERVER_MYSQL_DB_PORT}/${EHRSERVER_DB_NAME}?useTimezone=true&serverTimezone=UTC
             properties:
                 jmxEnabled: true
                 initialSize: 5

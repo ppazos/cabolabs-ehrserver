@@ -1,22 +1,17 @@
-FROM java
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update
-RUN apt-get install -y mysql-server
-
-# install grails
-RUN curl -L https://github.com/grails/grails-core/releases/download/v2.5.6/grails-2.5.6.zip  -o /grails.zip
-RUN unzip /grails.zip -d /opt
-ADD . /app
-
+FROM openjdk:8-alpine AS build
+RUN apk update && apk add wget unzip git
+RUN wget https://github.com/grails/grails-core/releases/download/v3.3.10/grails-3.3.10.zip
+RUN unzip grails-3.3.10.zip -d /opt/
+ENV GRAILS_HOME=/opt/grails-3.3.10
+ENV PATH="${GRAILS_HOME}/bin:${PATH}"
 WORKDIR /app
+# COPY . .
+RUN git clone https://github.com/ppazos/cabolabs-ehrserver.git .
+RUN /opt/grails-3.3.10/bin/grails war
 
-ENV GRAILS_HOME /opt/grails-2.5.6
-ENV PATH $GRAILS_HOME/bin:$PATH
-
-EXPOSE 8090
-RUN grails dependency-report
-RUN chmod +x /app/docker-entrypoint.sh
-# Define default command.
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["grails", "-Dserver.port=8090", "run-app"]
-
+FROM tomcat:8-jdk8-openjdk
+COPY --from=build /app/build/libs/app-2.2.beta.war /usr/local/tomcat/webapps/ROOT.war
+WORKDIR /app
+COPY --from=build /app/grails-app/conf/application.yml /app/config.yml
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
