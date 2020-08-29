@@ -356,6 +356,18 @@ class SemanticValidationLevel1 {
       //        and checks against OPT defined paths, not template data paths, we need to calculate
       //        template data paths on the OPT to make the correct check.
 
+/*
+      println "------------"
+      println opt.nodes.values().flatten().templateDataPath //.value.templateDataPath
+      println templatePath
+      println archetypePath
+      println archetypeId
+      //println opt.nodes*.value //.collect{ it.templateDataPath }
+      println opt.nodes.values().flatten().findAll { it.templateDataPath == templatePath }.class
+
+      println opt.getNodesByTemplateDataPath(templatePath)
+      */
+
       // check the node is defined by the OPT
       if (!continue_with_children_attrs.contains(node.name()) &&
           !opt.existsNodeByTemplateDataPath(templatePath)) // in memory verification!

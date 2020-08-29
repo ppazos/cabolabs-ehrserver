@@ -25,6 +25,7 @@ package com.cabolabs.ehrserver.reporting
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.util.Holders
+import com.cabolabs.ehrserver.openehr.common.change_control.CommitLog
 
 @Transactional(readOnly = true)
 class ActivityLogController {
@@ -72,7 +73,15 @@ class ActivityLogController {
          redirect action:'index'
          return
       }
-      return [activityLogInstance: activityLogInstance]
+
+      def contents = ""
+      if (activityLogInstance instanceof CommitLog)
+      {
+         def f = new File(activityLogInstance.fileLocation)
+         if (f.exists()) contents = new File(activityLogInstance.fileLocation).text
+      }
+
+      return [activityLogInstance: activityLogInstance, contents: contents]
    }
 
    protected void notFound() {

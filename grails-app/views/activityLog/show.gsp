@@ -1,4 +1,4 @@
-<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %>
+<%@ page import="com.cabolabs.ehrserver.reporting.ActivityLog" %><%@ page import="com.cabolabs.ehrserver.openehr.common.change_control.CommitLog" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -64,8 +64,31 @@
               <th><g:message code="activityLog.requestURL.label" default="URL" /></th>
               <td><g:fieldValue bean="${activityLogInstance}" field="requestURL" /></td>
             </tr>
+            <tr>
+              <th><g:message code="activityLog.contents.label" default="Contents" /></th>
+              <td><textarea class="form-control" rows="15">${contents}</textarea></td>
+            </tr>
           </tbody>
         </table>
+
+        <g:if test="${activityLogInstance instanceof CommitLog}">
+          <table class="table table-bordered" style="margin:0;">
+            <tr>
+              <th>EHR</th>
+              <th>Contribution</th>
+              <th>Type</th>
+              <th>Locale</th>
+              <th>Successful commit?</th>
+            </tr>
+            <tr>
+              <td>${activityLogInstance.ehrUid}</td>
+              <td>${activityLogInstance.objectUid}</td>
+              <td>${activityLogInstance.contentType}</td>
+              <td>${activityLogInstance.locale}</td>
+              <td>${activityLogInstance.success}</td>
+            </tr>
+          </table>
+        </g:if>
 
       </div>
     </div>

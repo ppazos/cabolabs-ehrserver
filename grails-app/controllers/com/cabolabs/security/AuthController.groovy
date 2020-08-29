@@ -56,7 +56,7 @@ class AuthController {
             return authprov.authError('Wrong credentials')
       }
 
-      println isauth
+      //println isauth
 
       if (!isauth.result)
       {
