@@ -112,9 +112,6 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          def lang = RequestContextHolder.currentRequestAttributes().session.lang
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
 
-         println lang
-         println namespace
-
          // 1. codeList can be empty if the archetype doesn't have a constraint.
          // 2. for DV_TEXT we generate DV_CODED_TEXT index to support inheritance,
          // but if the OPT doesn't have a DV_CODED_TEXT, the path will return a null node.
@@ -156,11 +153,6 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
                   terminologyId = 'openehr'
                }
-
-               // constraint.codeList.each { code ->
-
-               //    codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
-               // }
             }
             else
             {
