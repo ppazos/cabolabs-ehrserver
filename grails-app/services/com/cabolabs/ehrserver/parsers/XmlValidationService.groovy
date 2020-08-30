@@ -111,7 +111,7 @@ class XmlValidationService implements GrailsConfigurationAware {
          def xsdInputStream = grailsApplication.parentContext.getResource(xsdPath).inputStream
 
          // resource on xsd\Version.xsd = null
-         println "resource on "+ xsdPath +" = "+ xsdInputStream
+         log.info "loading resource on "+ xsdPath +" = "+ xsdInputStream
 
          schema = schemaFactory.newSchema( [ new StreamSource( xsdInputStream ) ] as Source[] )
       }

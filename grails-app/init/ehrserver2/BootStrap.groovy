@@ -8,20 +8,17 @@ import com.cabolabs.ehrserver.openehr.common.change_control.*
 import com.cabolabs.ehrserver.query.*
 import com.cabolabs.ehrserver.openehr.common.generic.*
 import com.cabolabs.ehrserver.conf.*
-
 import com.cabolabs.ehrserver.openehr.ehr.*
 import com.cabolabs.ehrserver.api.structures.*
-
 import grails.core.GrailsApplication
 import grails.util.Holders
 import grails.converters.*
 import  groovy.json.StringEscapeUtils
-
 import com.cabolabs.security.RequestMap
-
 import com.cabolabs.file.RepositoryFactory
-
 import java.text.Normalizer
+import com.cabolabs.openehr.terminology.TerminologyParser
+import java.util.jar.JarFile
 
 class BootStrap {
 
@@ -29,6 +26,7 @@ class BootStrap {
    def operationalTemplateIndexerService
    def optService
    def versionRepoService
+   def PS = System.getProperty("file.separator")
 
    GrailsApplication grailsApplication
 
@@ -70,6 +68,9 @@ class BootStrap {
 
       log.info "calculating initial accounts repo size"
       calculateRepoSizes()
+
+      log.info "loading openEHR terminologies"
+      loadOpenEHRTerminologies()
 
       log.info "creating terminology ids"
       createTerminologyIds()
@@ -242,6 +243,15 @@ class BootStrap {
       new RequestMap(url: '/compositionIndex/show/.*', configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
 
       new RequestMap(url: '/stats/organization',       configAttribute: 'ROLE_ADMIN,ROLE_ACCOUNT_MANAGER,ROLE_ORG_MANAGER').save()
+   }
+
+   def loadOpenEHRTerminologies()
+   {
+      def terminology = TerminologyParser.getInstance()
+
+      terminology.parseTerms(grailsApplication.parentContext.getResource("terminology"+ PS +"openehr_terminology_en.xml").inputStream)
+      terminology.parseTerms(grailsApplication.parentContext.getResource("terminology"+ PS +"openehr_terminology_es.xml").inputStream)
+      terminology.parseTerms(grailsApplication.parentContext.getResource("terminology"+ PS +"openehr_terminology_pt.xml").inputStream)
    }
 
    def createTerminologyIds()
@@ -783,14 +793,12 @@ class BootStrap {
          operationalTemplateIndexerService.indexAll(org, repo)
 
          // memory loading
-         optMan.loadAll(org.uid)
+         optMan.loadAll(org.uid, true)
       }
    }
 
    def defaultOrganizations()
    {
-      def PS = System.getProperty("file.separator")
-
       def organizations = []
       if (Organization.count() == 0)
       {

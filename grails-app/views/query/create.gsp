@@ -1235,8 +1235,8 @@ resp.responseJSON.result.message +'</div>'
           didx.name[session_lang] +' ('+ didx.rmTypeName + ')</option>'
           */
           '<option value="'+ obj.path +'" data-type="'+ obj.rm_type_name +'" '+
-                   (is_dv(obj.rm_type_name) ? 'class="datavalue '+ (obj.path.endsWith('/null_flavour')?'null_flavour':'') +'"' : (obj.path.endsWith('/null_flavour')?'class="null_flavour"':'')) +
-                   'data-name="'+ obj.text +'">'+
+            (is_dv(obj.rm_type_name) ? 'class="datavalue '+ (obj.path.endsWith('/null_flavour')?'null_flavour':'') +'"' : (obj.path.endsWith('/null_flavour')?'class="null_flavour"':'')) +
+            'data-name="'+ obj.text +'">'+
             '\xA0'.repeat(level+(level > 0 ? level : 0)) + (level > 0 ? '\u2514 ' : '') + obj.text +' ('+ obj.rm_type_name +')</option>'
         );
 
@@ -1279,22 +1279,6 @@ resp.responseJSON.result.message +'</div>'
             select.append('<option value="">${g.message(code:"query.create.please_select_datapoint")}</option>');
 
             process_archetype_obj(data, level, select);
-
-            /*
-            // Adds options to the select
-            $(data).each(function(i, didx) {
-
-              // if there is no name for the current lang, the node is from a template that is on another language, should not be on the query create.
-              if (didx.name[session_lang])
-              {
-                $('select[name=view_archetype_path]').append(
-                  '<option value="'+ didx.path +'" data-type="'+ didx.rmTypeName +'" data-name="'+ didx.name[session_lang] +'"'+
-                  (didx.path.endsWith('/null_flavour')?'class="null_flavour"':'') +'>'+
-                  didx.name[session_lang] +' ('+ didx.rmTypeName + ')</option>'
-                );
-              }
-            });
-            */
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
 

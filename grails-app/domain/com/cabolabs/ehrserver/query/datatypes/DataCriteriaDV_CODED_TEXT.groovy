@@ -112,6 +112,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          def lang = RequestContextHolder.currentRequestAttributes().session.lang
          def namespace = RequestContextHolder.currentRequestAttributes().session.organization.uid
 
+         println lang
+         println namespace
+
          // 1. codeList can be empty if the archetype doesn't have a constraint.
          // 2. for DV_TEXT we generate DV_CODED_TEXT index to support inheritance,
          // but if the OPT doesn't have a DV_CODED_TEXT, the path will return a null node.
@@ -128,15 +131,36 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          //println constraint.terminologyIdName
          //println constraint.terminologyRef
 
+         // to get terms from the openehr terminology
+         def terminology = TerminologyParser.getInstance()
+
          if (constraints)
          {
             def constraint = constraints.find{ it.type == 'C_CODE_PHRASE' }
             if (constraint) // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
             {
-               constraint.codeList.each { code ->
-
-               codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+               if (constraint.terminologyIdName == 'local')
+               {
+                  constraint.codeList.each { code ->
+                     codes[code] = optMan.getText(archetypeId, code, lang, namespace)
+                  }
                }
+               else if (constraint.terminologyIdName == 'openehr')
+               {
+                  // resolve against terminology!!!
+
+                  // using TerminologyParser from openEHR-OPT
+                  constraint.codeList.each { code ->
+                     codes[code] = terminology.getRubric(lang, code)
+                  }
+
+                  terminologyId = 'openehr'
+               }
+
+               // constraint.codeList.each { code ->
+
+               //    codes[code] = optMan.getText(archetypeId, code, lang, namespace) // at00XX -> name
+               // }
             }
             else
             {
@@ -144,9 +168,6 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                def nodes = optMan.getNodesByDataPath(archetypeId, path + '/defining_code', namespace)
                if (nodes)
                {
-                  // to get terms from the openehr terminology
-                  def terminology = TerminologyParser.getInstance()
-
                   nodes.each { ccodephrase ->
                      if (ccodephrase.terminologyIdName == 'local')
                      {
@@ -192,6 +213,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
          }
          else if (path.endsWith('/null_flavour')) // show valid null flavour codes
          {
+            // TODO: check if the opt has constraints for this node to use only those codes
             // TODO: support getting this from i18n openehr terminology
             /*
             <group name="null flavours">
@@ -239,9 +261,9 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
             {
                // terminology:WHO?subset=ATC&amp;language=en-GB
                // WHO
-               def terminology = idef.terminologyRef.split('\\?')[0].split(':')[1]
+               def terminology_ref = idef.terminologyRef.split('\\?')[0].split(':')[1]
 
-               spec[0].terminologyId.codes = [(terminology): terminology]
+               spec[0].terminologyId.codes = [(terminology_ref): terminology_ref]
             }
             else // there are no terminologies in the OPT, get available ones
             {

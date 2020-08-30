@@ -744,7 +744,11 @@ class QueryController {
    {
       def optMan = OptManager.getInstance()
       def opt = optMan.getOpt(template_id, session.organization.uid)
+      opt.complete() // adds the null flavour and other nodes of the RM not in the OPT
       def obj = opt.findRoot(archetypeId)
+      // FIXME: this is not returning the null_flavour nodes, the previous getArchetypePaths
+      //        that loaded the indexes from the DB contained the null_flavours, but didn't
+      //        have the tree structure
       def toJson = new JsonSerializer()
       toJson.serialize(obj)
       def json = toJson.get()
