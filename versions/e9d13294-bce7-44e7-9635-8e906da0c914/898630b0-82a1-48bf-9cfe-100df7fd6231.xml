@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><version xmlns="http://schemas.openehr.org/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ORIGINAL_VERSION">
+  <contribution>
+    <id xsi:type="HIER_OBJECT_ID">
+      <value>8d33077e-b1b4-4d5d-a58e-20e29b326cc2</value>
+    </id>
+    <namespace>EHR::COMMON</namespace>
+    <type>CONTRIBUTION</type>
+  </contribution>
+  <commit_audit>
+    <system_id>CABOLABS_EHR</system_id>
+    <committer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>bfe61a09-7172-491e-a1db-681cb313f596</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. House</name>
+    </committer>
+    <time_committed>
+      <value>2020-08-28T22:23:18.909Z</value>
+    </time_committed>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+  </commit_audit>
+  <uid>
+    <value>55fa371a-825c-4038-ad6b-8b2073f409b7::CABOLABS_EHR::1</value>
+  </uid>
+  <data archetype_node_id="openEHR-EHR-COMPOSITION.test_ism_paths.v1" xsi:type="COMPOSITION">
+    <name>
+      <value>Test ism paths</value>
+    </name>
+    <uid xsi:type="HIER_OBJECT_ID">
+      <value>d2878fcf-afa3-4265-b60f-bedd85871701</value>
+    </uid>
+    <archetype_details>
+      <archetype_id>
+        <value>openEHR-EHR-COMPOSITION.test_ism_paths.v1</value>
+      </archetype_id>
+      <template_id>
+        <value>test_ism_paths.es.v1</value>
+      </template_id>
+      <rm_version>1.0.2</rm_version>
+    </archetype_details>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>evento</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>433</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type="PARTY_IDENTIFIED">
+      <external_ref>
+        <id xsi:type="HIER_OBJECT_ID">
+          <value>57732304-fb9e-4304-9301-a6971d4433f3</value>
+        </id>
+        <namespace>DEMOGRAPHIC</namespace>
+        <type>PERSON</type>
+      </external_ref>
+      <name>Dr. House</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>2020-08-28T22:23:18.909Z</value>
+      </start_time>
+      <setting>
+        <value>Hospital B</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>229</code_string>
+        </defining_code>
+      </setting>
+    </context>
+    <content archetype_node_id="openEHR-EHR-ACTION.test_ism_paths.v1" xsi:type="ACTION">
+      <name>
+        <value>Test ism paths</value>
+      </name>
+      <language>
+        <terminology_id>
+          <value>ISO_639-1</value>
+        </terminology_id>
+        <code_string>es</code_string>
+      </language>
+      <encoding>
+        <terminology_id>
+          <value>Unicode</value>
+        </terminology_id>
+        <code_string>UTF-8</code_string>
+      </encoding>
+      <subject xsi:type="PARTY_SELF"/>
+      <time xsi:type="DV_DATE_TIME">
+        <value>2020-08-28T22:23:18.909Z</value>
+      </time>
+      <description archetype_node_id="at0001" xsi:type="ITEM_TREE">
+        <name>
+          <value>Arbol</value>
+        </name>
+        <items archetype_node_id="at0002" xsi:type="ELEMENT">
+          <name>
+            <value>text</value>
+          </name>
+          <value xsi:type="DV_TEXT">
+            <value>vsImqRXyJfUDUtFJctzO.FqWrfhAowyv xRX.cZAJVAKxIpoEyvLmBPnvdwvbonvVE By,hEjHmmNZNzFPgYOx,SZGSADgoiYrppymZKXCNDYgKCkyzGuboEAkGEeTYr,rfTQZZvIORigOKiEZNxdtlAXRFzc,IGstoQLMcTiZLNSwpRgWtOQHrwP HWhQgjQZGuZImUaFZVgnVVHHby.SwwDshIAeWyO,cSpdCTZFLlo.AZSsKJjCvoyPJViXU</value>
+          </value>
+        </items>
+      </description>
+      <ism_transition>
+        <current_state>
+          <value>planned</value>
+          <defining_code>
+            <terminology_id>
+              <value>openehr</value>
+            </terminology_id>
+            <code_string>526</code_string>
+          </defining_code>
+        </current_state>
+      </ism_transition>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>complete</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>

@@ -123,7 +123,12 @@
               <tr><td colspan="7"><h3><g:message code="template.list.accessible_in_current_lang" /></h3></td></tr>
               <g:if test="${sameLangTemplates.size()==0}">
                 <tr><td colspan="7">
-                  <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                  <g:if test="${params.deleted}">
+                    <h4><g:message code="opt.index.noTemplatesDeletedYet" /></h4>
+                  </g:if>
+                  <g:else>
+                    <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                  </g:else>
                 </td></tr>
               </g:if>
               <g:else>
@@ -153,7 +158,12 @@
               </tr>
               <g:if test="${otherLangTemplates.size()==0}">
                 <tr><td colspan="7">
-                  <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                  <g:if test="${params.deleted}">
+                    <h4><g:message code="opt.index.noTemplatesDeletedYet" /></h4>
+                  </g:if>
+                  <g:else>
+                    <h4><g:message code="opt.index.noTemplatesYet" /></h4>
+                  </g:else>
                 </td></tr>
               </g:if>
               <g:else>

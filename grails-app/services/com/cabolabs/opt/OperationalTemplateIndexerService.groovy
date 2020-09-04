@@ -585,7 +585,7 @@ class OperationalTemplateIndexerService {
 
       if (node.rm_type_name.text().startsWith('DV_INTERVAL'))
       {
-         println "DV_INTERVAL indexes not supported yet"
+         log.debug "DV_INTERVAL indexes not supported yet"
          return
       }
 
