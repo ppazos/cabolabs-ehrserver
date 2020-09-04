@@ -5,7 +5,9 @@ in: version
 
 <g:set var="cindex" value="${version.data}" />
 <tr>
-  <td>${version.uid}</td>
+  <td>
+    <g:link controller="versionedComposition" action="show" id="${version.uid.split('::')[0]}">${version.uid}</g:link></td>
+  <td>${cindex.category}</td>
   <td>${cindex.startTime}</td>
   <td>${cindex.templateId}</td>
   <td>${cindex.archetypeId}</td>

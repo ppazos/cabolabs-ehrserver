@@ -45,6 +45,8 @@ import java.nio.file.FileAlreadyExistsException
 import com.cabolabs.ehrserver.openehr.ehr.Ehr
 import com.cabolabs.util.DateParser
 import com.cabolabs.ehrserver.versions.VersionFSRepoService
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvIdentifierIndex
+
 
 // https://stackoverflow.com/questions/21138173/grails-saving-multiple-object-rollback-all-object-if-one-fails-to-save
 import org.springframework.transaction.interceptor.TransactionAspectSupport
@@ -688,10 +690,31 @@ class XmlService {
           */
          timeCommitted: auditTimeCommitted, //Date.parse(config.l10n.datetime_format, parsedVersion.commit_audit.time_committed.text()),
          changeType:    ChangeType.fromValue(change_type_code as short),
-         committer: new DoctorProxy(
+         committer: new DoctorProxy( // TODO: refactor to a method parse_PARTY_IDENTIFIED
             name: version.commit_audit.committer.name.text()
          )
       )
+
+      // Process identifiers of PARTY_IDENTIFIED
+      version.commit_audit.committer.identifiers.each { identifier ->
+      
+         audit.committer.addToIdentifiers(
+            new DvIdentifierIndex(
+               issuer: identifier.issuer.text(),
+               assigner: identifier.assigner.text(),
+               identifier: identifier.id.text(),
+               type: identifier.type.text(),
+               rmTypeName: 'DV_IDENTIFIER',
+               
+               // this attribute is above the compo, and it's RM only
+               templateId: '-',
+               archetypeId: '-',
+               instanceTemplatePath: '-',
+               path: '-',
+               archetypePath: '-'
+            )
+         )
+      }
 
       if (!version.commit_audit.committer.external_ref.isEmpty())
       {
@@ -814,9 +837,33 @@ class XmlService {
          <name>Dr. Yamamoto</name>
        </composer>
       */
+
+      // TODO: refactor to a method parse_PARTY_IDENTIFIED
       def composer = new DoctorProxy(
          name: version.data.composer.name.text()
       )
+
+      // Process identifiers of PARTY_IDENTIFIED
+      version.datacomposer.identifiers.each { identifier ->
+      
+         composer.addToIdentifiers(
+            new DvIdentifierIndex(
+               issuer: identifier.issuer.text(),
+               assigner: identifier.assigner.text(),
+               identifier: identifier.id.text(),
+               type: identifier.type.text(),
+               rmTypeName: 'DV_IDENTIFIER',
+               
+               // this attribute is above the compo, and it's RM only
+               templateId: '-',
+               archetypeId: '-',
+               instanceTemplatePath: '-',
+               path: '-',
+               archetypePath: '-'
+            )
+         )
+      }
+
 
       if (!version.data.composer.external_ref.isEmpty())
       {
@@ -948,6 +995,7 @@ class XmlService {
             committer: new DoctorProxy(
                name: auditCommitter
                // TODO: 'value' con el id
+               // TODO: why not check all the committers are the same for all the versions and use that instead of a param?
             )
          )
          // versions se setean abajo

@@ -26,6 +26,7 @@ import com.cabolabs.ehrserver.openehr.common.generic.AuditDetails
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAccessType
 import com.cabolabs.ehrserver.ehr.clinical_documents.CompositionIndex
+import com.cabolabs.ehrserver.ehr.clinical_documents.data.DvIdentifierIndex
 
 /**
  * Emula a common.generic.PARTY_IDENTIFIED que hereda de PARTY_PROXY.
@@ -56,7 +57,8 @@ class DoctorProxy {
    // GENERIC_ID, HIER_OBJECT_ID
    String id_type
 
-   // TODO: PARTY_IDENTIFIED.identifiers
+   // PARTY_IDENTIFIED.identifiers
+   static hasMany = [identifiers: DvIdentifierIndex]
 
    static constraints = {
       namespace(nullable:true)

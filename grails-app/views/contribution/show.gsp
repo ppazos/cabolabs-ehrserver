@@ -118,6 +118,7 @@
              <table class="table table-striped table-bordered table-hover">
                <tr>
                  <th><g:message code="version.attr.uid" /></th>
+                 <th><g:message code="composition.attr.category" /></th>
                  <th><g:message code="composition.attr.startTime" /></th>
                  <th><g:message code="composition.attr.templateId" /></th>
                  <th><g:message code="composition.attr.archetypeId" /></th>

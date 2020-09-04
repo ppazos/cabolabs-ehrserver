@@ -1,13 +1,20 @@
 <%-- usado desde ehr/_ehrContributions.gsp --%>
 <tr><!-- contribution data -->
   <td>${contribution.audit.timeCommitted}</td>
-  <td>${contribution.audit.committer.name}</td>
+  <td>
+    ${contribution.audit.committer.name}
+    ${contribution.audit.committer.identifiers}
+    <g:each in="${contribution.audit.committer.identifiers}" var="identifier">
+      ${identifier.identifier} (${identifier.type})<br/>
+    </g:each>
+  </td>
 </tr>
 <tr>
   <td colspan="2">
     <table class="table table-striped table-bordered table-hover" style="margin-bottom:0px;"><!-- contribution versions data -->
       <tr>
         <th><g:message code="version.attr.uid" /></th>
+        <th><g:message code="composition.attr.category" /></th>
         <th><g:message code="composition.attr.startTime" /></th>
         <th><g:message code="composition.attr.templateId" /></th>
         <th><g:message code="composition.attr.archetypeId" /></th>
