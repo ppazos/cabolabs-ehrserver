@@ -812,16 +812,19 @@ class BootStrap {
 
             new QueryGroup(name:'Ungrouped', organizationUid:org.uid).save(flush:true)
 
+            // only for FS config, create the organization folders
+            if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService)
+            {
+               // create folders if don't exist
+               def opt_repo = new File(Holders.config.app.opt_repo + PS + org.uid)
+               opt_repo.mkdirs()
 
-            // create folders if don't exist
-            def opt_repo = new File(Holders.config.app.opt_repo + PS + org.uid)
-            opt_repo.mkdirs()
+               def version_repo = new File(Holders.config.app.version_repo + PS + org.uid)
+               version_repo.mkdirs()
 
-            def version_repo = new File(Holders.config.app.version_repo + PS + org.uid)
-            version_repo.mkdirs()
-
-            def commit_repo = new File(Holders.config.app.commit_logs + PS + org.uid)
-            commit_repo.mkdirs()
+               def commit_repo = new File(Holders.config.app.commit_logs + PS + org.uid)
+               commit_repo.mkdirs()
+            }
          }
 
 

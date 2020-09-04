@@ -151,19 +151,6 @@ class OperationalTemplateController {
 
          def xml = FileUtils.removeBOM(f.getBytes())
 
-         /*
-         // Avoid BOM on OPT files (the Template Designer exports OPTs with BOM and that breaks the XML parser)
-         def bytes = f.getBytes()
-         def inputStream = new ByteArrayInputStream(bytes)
-         def bomInputStream = new UnicodeBOMInputStream(inputStream)
-         bomInputStream.skipBOM() // NOP if no BOM is detected
-
-         // Read out
-         def isr = new InputStreamReader(bomInputStream)
-         def br = new BufferedReader(isr)
-         def xml = br.text // getText from Groovy
-         */
-
          // Validate XML
          if (!xmlValidationService.validateOPT(xml))
          {

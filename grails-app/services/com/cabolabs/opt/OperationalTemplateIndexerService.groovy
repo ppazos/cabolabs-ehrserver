@@ -351,7 +351,7 @@ class OperationalTemplateIndexerService {
          if (!xmlValidationService.validateOPT(opt_text))
          {
              // Important to keep the correspondence between version index and error reporting.
-            println "Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors()
+            log.error("Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors())
             return // avoid copying not valid OPT file
          }
 
@@ -365,7 +365,7 @@ class OperationalTemplateIndexerService {
          }
          else
          {
-            log.info('File '+ absolute_path +' was not loaded because other template with the same concept or UID is already loaded')
+            log.error('File '+ absolute_path +' was not loaded because other template with the same concept or UID is already loaded')
          }
 
 
@@ -536,6 +536,7 @@ class OperationalTemplateIndexerService {
    /*
     * templateFileName es el nombre del archivo sin la extension.
     */
+   /*
    def index(String fullTemplateFileName)
    {
       def path = fullTemplateFileName
@@ -543,6 +544,7 @@ class OperationalTemplateIndexerService {
       // file exists is checked inside
       return index(tfile)
    }
+   */
 
    def indexAttribute(GPathResult node, String parentPath, String archetypePath, GPathResult parent, boolean indexingDatavalue)
    {
@@ -672,7 +674,7 @@ class OperationalTemplateIndexerService {
          }
          else
          {
-            println "PATHABLE DETECTED "+ node.rm_type_name.text() +" PATH IS "+ path
+            log.debug("PATHABLE detected "+ node.rm_type_name.text() +" path is "+ path)
          }
       }
 
