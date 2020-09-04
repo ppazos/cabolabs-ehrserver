@@ -56,6 +56,7 @@ class DataValueIndex {
    static constraints = {
       path(maxSize: 4096)
       archetypePath(maxSize: 2048)
+      owner nullable: true // used in DoctorProxy
    }
 
 
