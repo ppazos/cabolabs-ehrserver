@@ -18,8 +18,13 @@
   <div id="jstree_container"></div>
 </div>
 
+<!-- FIXME: import from local -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+<asset:stylesheet src="animate.css" />
+<asset:stylesheet src="pnotify.custom.min.css" />
+<asset:javascript src="pnotify.custom.min.js" />
     
 <script type="text/javascript">
 
@@ -89,7 +94,18 @@ var folder_template = {
      var name = $('[name=new_folder]').val();
      if (!name)
      {
-        alert('Please enter a name for the new folder');
+        new PNotify({
+          title: 'Warning',
+          text : 'Please enter a name for the new folder',
+          type : 'error',
+          styling: 'bootstrap3',
+          history: false,
+          stack: {
+            "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+            modal: true, overlay_close: true
+          },
+          addclass: 'pnotify-center'
+        });
         return false;
      }
      
@@ -106,14 +122,36 @@ var folder_template = {
      name = $('[name=name]').val();
      if (!name)
      {
-        alert("${message(code:'folderTemplate.create.feedback.nameMandatory')}");
+        new PNotify({
+          title: 'Warning',
+          text : '${message(code:'folderTemplate.create.feedback.nameMandatory')}',
+          type : 'error',
+          styling: 'bootstrap3',
+          history: false,
+          stack: {
+            "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+            modal: true, overlay_close: true
+          },
+          addclass: 'pnotify-center'
+        });
         return false;
      }
      
      description = $('[name=description]').val();
      if (!description)
      {
-        alert("${message(code:'folderTemplate.create.feedback.descriptionMandatory')}");
+        new PNotify({
+          title: 'Warning',
+          text : '${message(code:'folderTemplate.create.feedback.descriptionMandatory')}',
+          type : 'error',
+          styling: 'bootstrap3',
+          history: false,
+          stack: {
+            "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+            modal: true, overlay_close: true
+          },
+          addclass: 'pnotify-center'
+        });
         return false;
      }
      
@@ -123,7 +161,18 @@ var folder_template = {
      
      if (!folder_template.has_folders())
      {
-        alert("${message(code:'folderTemplate.create.feedback.oneFolderRequired')}");
+        new PNotify({
+          title: 'Warning',
+          text : '${message(code:'folderTemplate.create.feedback.oneFolderRequired')}',
+          type : 'error',
+          styling: 'bootstrap3',
+          history: false,
+          stack: {
+            "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+            modal: true, overlay_close: true
+          },
+          addclass: 'pnotify-center'
+        });
         return false;
      }
      

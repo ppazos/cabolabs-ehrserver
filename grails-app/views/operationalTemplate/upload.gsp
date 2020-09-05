@@ -12,6 +12,9 @@
       }
     </style>
     <asset:link rel="stylesheet" href="font-awesome.min.css" type="text/css" />
+    <asset:stylesheet src="animate.css" />
+    <asset:stylesheet src="pnotify.custom.min.css" />
+    <asset:javascript src="pnotify.custom.min.js" />
   </head>
   <body>
     <div class="row">
@@ -94,9 +97,23 @@
             log = numFiles > 1 ? numFiles + ' files selected' : label;
 
         if( input.length ) {
-            input.val(log);
+          input.val(log);
         } else {
-            if( log ) alert(log);
+          if (log)
+          {
+            new PNotify({
+              title: 'Warning',
+              text : log,
+              type : 'error',
+              styling: 'bootstrap3',
+              history: false,
+              stack: {
+                "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                modal: true, overlay_close: true
+              },
+              addclass: 'pnotify-center'
+            });
+          }
         }
       });
     });

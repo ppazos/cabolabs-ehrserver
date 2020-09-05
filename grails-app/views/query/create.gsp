@@ -561,15 +561,37 @@
 
         if (!query.has_name())
         {
-           alert('${g.message(code:"query.create.pleaseSpecifyQueryName")}'); // TODO: bootstrap alerts
-           return;
+          new PNotify({
+            title: 'Warning',
+            text : '${g.message(code:"query.create.pleaseSpecifyQueryName")}',
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
+          return;
         }
 
         if (query.get_type() == 'composition')
         {
           if (!criteria_builder.is_valid())
           {
-            alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
+            new PNotify({
+              title: 'Warning',
+              text : '${g.message(code:"query.create.invalidCriteria")}',
+              type : 'error',
+              styling: 'bootstrap3',
+              history: false,
+              stack: {
+                "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                modal: true, overlay_close: true
+              },
+              addclass: 'pnotify-center'
+            });
             return;
           }
 
@@ -582,15 +604,37 @@
 
         if (!query.has_criteria() && !query.has_projections())
         {
-           if (query.get_type() == 'datavalue')
-           {
-              alert('${g.message(code:"query.create.emptyProjections")}');
-           }
-           else
-           {
-              alert('${g.message(code:"query.create.emptyCriteria")}');
-           }
-           return;
+          if (query.get_type() == 'datavalue')
+          {
+            new PNotify({
+              title: 'Warning',
+              text : '${g.message(code:"query.create.emptyProjections")}',
+              type : 'error',
+              styling: 'bootstrap3',
+              history: false,
+              stack: {
+                "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                modal: true, overlay_close: true
+              },
+              addclass: 'pnotify-center'
+            });
+          }
+          else
+          {
+            new PNotify({
+              title: 'Warning',
+              text : '${g.message(code:"query.create.emptyCriteria")}',
+              type : 'error',
+              styling: 'bootstrap3',
+              history: false,
+              stack: {
+                "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                modal: true, overlay_close: true
+              },
+              addclass: 'pnotify-center'
+            });
+          }
+          return;
         }
 
         if ( $('input[name=isPublic]').is(':checked') ) query.set_public();
@@ -612,38 +656,35 @@
 
         // We need these functions because the URLs are created on the server.
         var s_o_u = {
-           save_query: function() {
-             $.ajax({
-               method: 'POST',
-               url: '${createLink(controller:"query", action:"save")}',
-               contentType : 'application/json',
-               data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
-             })
-             .done(function( data ) { // redirect to show
-               //console.log(data);
-               //alert(JSON.stringify(data));
-               location.href = '${createLink("action": "show")}/'+ data.uid;
-             });
-           },
-           update_query: function() {
-             $.ajax({
-               method: 'POST',
-               url: '${createLink(controller:"query", action:"update")}',
-               contentType : 'application/json',
-               data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
-             })
-             .done(function( data ) { // redirect to show
-               //console.log(data);
-               location.href = '${createLink("action": "show")}/'+ data.uid;
-             })
-             .fail(function(resp,status,status_msg) {
-
-                $('body').prepend(
-                   '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
-                   resp.responseJSON.message +'</div>'
-                );
-             });
-           }
+          save_query: function() {
+            $.ajax({
+              method: 'POST',
+              url: '${createLink(controller:"query", action:"save")}',
+              contentType : 'application/json',
+              data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+            })
+            .done(function(data) { // redirect to show
+              location.href = '${createLink("action": "show")}/'+ data.uid;
+            });
+          },
+          update_query: function() {
+            $.ajax({
+              method: 'POST',
+              url: '${createLink(controller:"query", action:"update")}',
+              contentType : 'application/json',
+              data: JSON.stringify( {query: query} ) // JSON.parse(  avoid puting functions, just data
+            })
+            .done(function(data) { // redirect to show
+              //console.log(data);
+              location.href = '${createLink("action": "show")}/'+ data.uid;
+            })
+            .fail(function(resp,status,status_msg) {
+              $('body').prepend(
+                '<div class="alert alert-danger alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
+                resp.responseJSON.message +'</div>'
+              );
+            });
+          }
         };
 
         // save_query() or update_query()
@@ -662,7 +703,18 @@
 
         if (!criteria_builder.is_valid())
         {
-          alert('${g.message(code:"query.create.invalidCriteria")}'); // TODO: bootstrap alerts
+          new PNotify({
+            title: 'Warning',
+            text : '${g.message(code:"query.create.invalidCriteria")}',
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
           return;
         }
 
@@ -718,71 +770,71 @@
         })
         .done(function( res ) {
 
-           //console.log("queryCompositions result", res);
-           $('#results').empty();
-           $('#chartContainer').empty();
-           var code = $('#code');
-           // reset code class or highlight
-           code.removeClass('xml json');
-           code.empty();
-           code.hide();
+          //console.log("queryCompositions result", res);
+          $('#results').empty();
+          $('#chartContainer').empty();
+          var code = $('#code');
+          // reset code class or highlight
+          code.removeClass('xml json');
+          code.empty();
+          code.hide();
 
-           // Si devuelve HTML
-           if ($('input[name=showUI]:checked').val()=='true')
-           {
-             $('#results').html( res );
-             $('#results').show('slow');
-           }
-           else // Si devuelve XML o JSON
-           {
-             //console.log('JSON OR XML');
-             if (format == 'json')
-             {
-               code.addClass('json');
-               code.text(JSON.stringify(res, undefined, 2));
-               code.each(function(i, e) { hljs.highlightBlock(e); });
-             }
-             else
-             {
-               // highlight
-               code.addClass('xml');
-               code.text(formatXml2( xmlToString(res) ));
-               code.each(function(i, e) { hljs.highlightBlock(e); });
-             }
+          // Si devuelve HTML
+          if ($('input[name=showUI]:checked').val()=='true')
+          {
+            $('#results').html( res );
+            $('#results').show('slow');
+          }
+          else // Si devuelve XML o JSON
+          {
+            //console.log('JSON OR XML');
+            if (format == 'json')
+            {
+              code.addClass('json');
+              code.text(JSON.stringify(res, undefined, 2));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
+            }
+            else
+            {
+              // highlight
+              code.addClass('xml');
+              code.text(formatXml2( xmlToString(res) ));
+              code.each(function(i, e) { hljs.highlightBlock(e); });
+            }
 
-             code.show('slow');
-           }
+            code.show('slow');
+          }
 
-           // Muestra el boton que permite ver los datos crudos
-           // devueltos por el servidor
-           $('#show_data').show();
+          // Muestra el boton que permite ver los datos crudos
+          // devueltos por el servidor
+          $('#show_data').show();
         })
         .fail(function(resp,status,status_msg) {
 
-           //console.log(resp);
-           //console.log(resp.responseXML); // XML object!
-           //console.log(resp.responseXML.getElementsByTagName("result")[0]);
-           //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0]);
-           //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue);
+          //console.log(resp);
+          //console.log(resp.responseXML); // XML object!
+          //console.log(resp.responseXML.getElementsByTagName("result")[0]);
+          //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0]);
+          //console.log(resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue);
 
-           //console.log(status);
-           //console.log(status_msg);
+          //console.log(status);
+          //console.log(status_msg);
 
-           if (format == 'xml')
-           {
-             // show error in XML response
-             $('#query_test_common').prepend(
+          if (format == 'xml')
+          {
+            // show error in XML response
+            $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
-             );
-           }
-           else
-           {
-              $('#query_test_common').prepend(
+            );
+          }
+          else
+          {
+            $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseJSON.result.message +'</div>'
-             );
-           }
+            );
+          }
         });
 
         //console.log('after ajax submit');
@@ -898,24 +950,24 @@ resp.responseJSON.result.message +'</div>'
          })
          .fail(function(resp,status,status_msg) {
 
-           if (format == 'xml')
-           {
-             // show error in XML response
-             $('#query_test_common').prepend(
+          if (format == 'xml')
+          {
+            // show error in XML response
+            $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseXML.getElementsByTagName("result")[0].getElementsByTagName("message")[0].childNodes[0].nodeValue +'</div>'
-             );
-           }
-           else
-           {
-              console.log('json', resp);
+            );
+          }
+          else
+          {
+            console.log('json', resp);
 
-              $('#query_test_common').prepend(
+            $('#query_test_common').prepend(
 '<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'+
 resp.responseJSON.result.message +'</div>'
-             );
-           }
-         });
+            );
+          }
+        });
 
       }; // test_query_datavalue
 
@@ -925,23 +977,23 @@ resp.responseJSON.result.message +'</div>'
        */
       var ajax_submit_test_or_save = function (action) {
 
-         //console.log('ajax_submit', action);
+        //console.log('ajax_submit', action);
 
-         if (action == 'save' || action == 'update')
-         {
-            save_or_update_query(action);
-         }
-         else if (action == 'test')
-         {
-            if ($('select[name=type]').val()=='composition')
-            {
-               test_query_composition();
-            }
-            else // query type = datavalue
-            {
-               test_query_datavalue();
-            }
-         } // test query
+        if (action == 'save' || action == 'update')
+        {
+          save_or_update_query(action);
+        }
+        else if (action == 'test')
+        {
+          if ($('select[name=type]').val()=='composition')
+          {
+            test_query_composition();
+          }
+          else // query type = datavalue
+          {
+            test_query_datavalue();
+          }
+        } // test query
 
       }; // ajax_submit
 
@@ -965,7 +1017,18 @@ resp.responseJSON.result.message +'</div>'
         //console.log( 'check if a path is selected, value ', $('select[name=view_archetype_path]').val() );
         if ( $('select[name=view_archetype_path]').val() == null )
         {
-          alert('${g.message(code:"query.create.selectDatapoint")}');
+          new PNotify({
+            title: 'Warning',
+            text : '${g.message(code:"query.create.selectDatapoint")}',
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
           return false;
         }
 
@@ -1009,7 +1072,18 @@ resp.responseJSON.result.message +'</div>'
 
         if (criteria_add_error)
         {
-          alert(criteria_add_error);
+          new PNotify({
+            title: 'Warning',
+            text : criteria_add_error,
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
           return false;
         }
         // =======================================================================================
@@ -1177,12 +1251,34 @@ resp.responseJSON.result.message +'</div>'
 
         if ( $('select[name=view_archetype_id]').val() == null )
         {
-          alert('${g.message(code:"query.create.please_select_concept")}');
+          new PNotify({
+            title: 'Warning',
+            text : '${g.message(code:"query.create.please_select_concept")}',
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
           return;
         }
         if ( $('select[name=view_archetype_path]').val() == null )
         {
-          alert('${g.message(code:"query.create.please_select_datapoint")}');
+          new PNotify({
+            title: 'Warning',
+            text : '${g.message(code:"query.create.please_select_datapoint")}',
+            type : 'error',
+            styling: 'bootstrap3',
+            history: false,
+            stack: {
+              "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+              modal: true, overlay_close: true
+            },
+            addclass: 'pnotify-center'
+          });
           return;
         }
 
@@ -2114,7 +2210,18 @@ resp.responseJSON.result.message +'</div>'
           }
           else
           {
-            alert('Select a simple type node to define the criteria');
+            new PNotify({
+              title: 'Warning',
+              text : 'Select a simple type node to define the criteria',
+              type : 'error',
+              styling: 'bootstrap3',
+              history: false,
+              stack: {
+                "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                modal: true, overlay_close: true
+              },
+              addclass: 'pnotify-center'
+            });
             option.attr('selected', false); // avoids selecting a non-datavalue option
           }
 

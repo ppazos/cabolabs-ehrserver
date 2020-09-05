@@ -43,50 +43,52 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/timeline.js"></script>
 
-    <script type="text/javascript">
-    $(document).ready(function() {
+    <asset:stylesheet src="animate.css" />
+    <asset:stylesheet src="pnotify.custom.min.css" />
+    <asset:javascript src="pnotify.custom.min.js" />
 
-      /* =====================================================================================
-       * Calendars para filtros de compositions.
-       */
-      $("input[name=fromDate]").datetimepicker({
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+        /* =====================================================================================
+        * Calendars para filtros de compositions.
+        */
+        $("input[name=fromDate]").datetimepicker({
           format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ", "YYYY-MM-DD"
           viewMode: 'years',
           useCurrent: false
-       }).on("dp.change", function (e) {
-
+        }).on("dp.change", function (e) {
           if (e.date) $('input[name=toDate]').data("DateTimePicker").minDate(e.date);
-       });
-       $("input[name=toDate]").datetimepicker({
+        });
+        $("input[name=toDate]").datetimepicker({
           format: "YYYYMMDD", // "yyyy-mm-ddThh:ii:ssZ",
           viewMode: 'years',
           useCurrent: false
-       }).on("dp.change", function (e) {
-
+        }).on("dp.change", function (e) {
           if (e.date) $('input[name=fromDate]').data("DateTimePicker").maxDate(e.date);
-       });
-      /* ===================================================================================== */
-
-    });
-
-    var highlight_filtered_data = function()
-    {
-      console.log('highlight_filtered_data');
-      archId = $('select[name=qarchetypeId]').val();
-      if (archId != '')
-      {
-        $('td.contribution_data_archid').each( function(i,td){
-
-          td = $(td);
-          console.log('td ' + td);
-          console.log('td ' + td.text());
-          if (td.text() == archId)
-          {
-            td.addClass('filter_highlight');
-          }
         });
-      }
-    };
+        /* ===================================================================================== */
+
+      });
+
+      var highlight_filtered_data = function()
+      {
+        console.log('highlight_filtered_data');
+        archId = $('select[name=qarchetypeId]').val();
+        if (archId != '')
+        {
+          $('td.contribution_data_archid').each( function(i,td){
+
+            td = $(td);
+            console.log('td ' + td);
+            console.log('td ' + td.text());
+            if (td.text() == archId)
+            {
+              td.addClass('filter_highlight');
+            }
+          });
+        }
+      };
     </script>
   </head>
   <body>
@@ -171,7 +173,6 @@
         </div>
 
 
-
         <h2><g:message code="ehr.show.directory" /></h2>
         <g:ehr_directory directory="${ehr.directory}" />
 
@@ -189,12 +190,34 @@
 
               if (versioned_object_uids.length == 0)
               {
-                alert('Select one or more documents');
+                new PNotify({
+                  title: 'Warning',
+                  text : 'Select one or more documents',
+                  type : 'error',
+                  styling: 'bootstrap3',
+                  history: false,
+                  stack: {
+                    "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                    modal: true, overlay_close: true
+                  },
+                  addclass: 'pnotify-center'
+                });
                 return;
               }
               if (folder_id == undefined)
               {
-                alert('Select a folder');
+                new PNotify({
+                  title: 'Warning',
+                  text : 'Select a folder',
+                  type : 'error',
+                  styling: 'bootstrap3',
+                  history: false,
+                  stack: {
+                    "dir1": "down", "dir2": "left", "push": "bottom", "spacing1": 25, "spacing2": 25, "context": $("body"),
+                    modal: true, overlay_close: true
+                  },
+                  addclass: 'pnotify-center'
+                });
                 return;
               }
 

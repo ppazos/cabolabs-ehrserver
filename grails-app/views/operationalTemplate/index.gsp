@@ -91,12 +91,12 @@
       </div>
     </div>
     <script>
-    // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
-    if (${params.containsKey('filter')})
-    {
-      $("#collapse-filter").addClass('in');
-      $(".btn.filter").toggleClass( "btn-primary" );
-    }
+      // avoids waiting to load the whole page to show the filters, that makes the page do an unwanted jump.
+      if (${params.containsKey('filter')})
+      {
+        $("#collapse-filter").addClass('in');
+        $(".btn.filter").toggleClass( "btn-primary" );
+      }
     </script>
 
     <div class="row row-grid">
