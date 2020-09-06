@@ -583,11 +583,17 @@ class OperationalTemplateIndexerService {
    {
       if (!node) throw new Exception("Empty node while indexing OPT")
 
+      /*
       if (node.rm_type_name.text().startsWith('DV_INTERVAL'))
       {
-         log.debug "DV_INTERVAL indexes not supported yet"
-         return
+         //log.debug "DV_INTERVAL indexes not supported yet"
+         //return
+         log.debug "DV_INTERVAL detected"
+         println archetypePath
+         println node.rm_type_name.text()
       }
+      */
+      
 
       /*
       println "indexObject "+ this.template.template_id.value.text() +": "+
@@ -684,7 +690,7 @@ class OperationalTemplateIndexerService {
       /*
        * If current node should be indexed based on its rm_type_name
        */
-      if ( !node.rm_type_name.isEmpty() && validIndexType )
+      if (!node.rm_type_name.isEmpty() && validIndexType)
       {
          // test
          //this.paths << path

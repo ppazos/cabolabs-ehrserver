@@ -5,13 +5,13 @@ import com.cabolabs.openehr.opt.model.*
 
 class OptGuiTagLib {
 
-    //static defaultEncodeAs = [taglib:'html']
+   //static defaultEncodeAs = [taglib:'html']
 //    static defaultEncodeAs = [taglib:'raw']
-    //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
+   //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
-    // icon for each IM type
-    // TODO: more data values
-    static typeIcon = [
+   // icon for each IM type
+   // TODO: more data values
+   static typeIcon = [
       'FOLDER':         'folder-open',
       'COMPOSITION':    'file-text-o',
       'EVENT_CONTEXT':  'info',
@@ -35,188 +35,196 @@ class OptGuiTagLib {
       'DV_DATE':        'calendar',
       'DV_DATE_TIME':   'calendar',
       'DV_TEXT':        'font',
-      'DV_CODED_TEXT':  'list-ul'
-    ]
+      'DV_CODED_TEXT':  'list-ul',
+      'DV_COUNT':       'list-ol',
+      'DV_INTERVAL_DV_DATE_TIME': 'arrows-h',
+      'DV_INTERVAL_DV_COUNT':     'arrows-h',
+      'DV_INTERVAL_DV_QUANTITY':  'arrows-h'
+   ]
 
-    // attributes of the IM that are not in the OPT
-    static typeIMAttributes = [:] // TODO
+   // attributes of the IM that are not in the OPT
+   static typeIMAttributes = [:] // TODO
 
-    // names for the IM attributes (in OPT or not in OPT) that don't have a nodeId
-    // so those don't have a term in the ontology.
-    // TODO: I18N
-    /*
-    static typeIMAttributeName = [
-      'COMPOSITION': [
-        '/category': 'Category'
-      ]
-    ]
-    */
-
-    // User from datatypes to assign names to internal attributes
-    // TODO: complete, and I18N
-    static typeIMAttributeNameEndsWith = [
-      '/defining_code': 'Defining Code',
-      '/value': 'Value',
-      '/name': 'Name',
+   // names for the IM attributes (in OPT or not in OPT) that don't have a nodeId
+   // so those don't have a term in the ontology.
+   // TODO: I18N
+   /*
+   static typeIMAttributeName = [
+   'COMPOSITION': [
       '/category': 'Category'
-    ]
+   ]
+   ]
+   */
 
-    private def traverse(ObjectNode o, body, definition)
-    {
-       //println " ".multiply(pad) + o.rmTypeName.padRight(35-pad, '.') + (o.archetypeId ?: o.path)
-       out << '<div class="'+ o.rmTypeName +'">'
-       //out << (o.archetypeId ?: o.path)
+   // User from datatypes to assign names to internal attributes
+   // TODO: complete, and I18N
+   static typeIMAttributeNameEndsWith = [
+   '/defining_code': 'Defining Code',
+   '/value': 'Value',
+   '/name': 'Name',
+   '/category': 'Category'
+   ]
 
+   private def traverse(ObjectNode o, body, definition)
+   {
+      def type = o.rmTypeName
 
-       // changes to the object root to get the terminology term text
-       // all terms are on the root nodes
-       if (o.archetypeId) definition = o
+      if (type.startsWith('DV_INTERVAL')) type = type.replaceAll('<','_').replaceAll('>','')
 
-
-       def s = ''
-       if (typeIcon[o.rmTypeName])
-       {
-          s = $/<span class="fa-stack">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-${typeIcon[o.rmTypeName]} fa-stack-1x fa-inverse" aria-hidden="true"></i>
-          </span>/$
-       }
-       s = '<h3>'+ s + o.rmTypeName +'<i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-down" aria-hidden="true"></i></h3>'
-
-       row([], { s })
+      //println " ".multiply(pad) + o.rmTypeName.padRight(35-pad, '.') + (o.archetypeId ?: o.path)
+      out << '<div class="'+ type +'">'
+      //out << (o.archetypeId ?: o.path)
 
 
-       if (o.nodeId)
-       {
-          row([], {
-            $/<label class="col-sm-2 control-label">Text</label>
-            <div class="col-sm-10">${definition.getText(o.nodeId)} (${o.nodeId})</div>/$
-          })
-          row([], {
-            $/<label class="col-sm-2 control-label">Description</label>
-            <div class="col-sm-10">${definition.getDescription(o.nodeId)}</div>/$
-          })
-       }
-       else
-       {
-          def entry = typeIMAttributeNameEndsWith.find { o.path.endsWith(it.key) }
-          if (entry)
-          {
-             row([], {
-               $/<label class="col-sm-2 control-label">Text</label>
-               <div class="col-sm-10">${entry.value}</div>/$
-             })
-          }
-          /* TODO: cant get the parent object right now
-           https://github.com/ppazos/openEHR-OPT/issues/30
-          else
-          {
-             if (typeIMAttributeName[o.parent.rmTypeName] && typeIMAttributeName[o.parent.rmTypeName][o.path])
-             {
-                out << '<div>'
-                out << typeIMAttributeName[o.parent.rmTypeName][o.path]
-                out << '</div>'
-             }
-          }
-          */
-       }
+      // changes to the object root to get the terminology term text
+      // all terms are on the root nodes
+      if (o.archetypeId) definition = o
 
-       if (o.archetypeId)
-       {
-          row([], {
-             $/<label class="col-sm-2 control-label">Archetype ID</label>
-             <div class="col-sm-10">${o.archetypeId}</div>/$
-          })
-       }
 
-       // paths
-       row([], {
-          $/<label class="col-sm-2 control-label">Data Path</label>
-           <div class="col-sm-10">${o.dataPath}</div>/$
-       })
-       row([], {
-          $/<label class="col-sm-2 control-label">Local Path</label>
-           <div class="col-sm-10">${o.path}</div>/$
-       })
-       row([], {
-          $/<label class="col-sm-2 control-label">Absolute Path</label>
-          <div class="col-sm-10">${o.templatePath}</div>/$
-       })
+      def s = ''
+      if (typeIcon[type])
+      {
+         s = $/<span class="fa-stack">
+         <i class="fa fa-circle fa-stack-2x"></i>
+         <i class="fa fa-${typeIcon[type]} fa-stack-1x fa-inverse" aria-hidden="true"></i>
+         </span>/$
+      }
+      s = '<h3>'+ s + type +'<i class="fa fa-caret-up" aria-hidden="true"></i><i class="fa fa-caret-down" aria-hidden="true"></i></h3>'
 
-       // is slot?
-       if (o.type == 'ARCHETYPE_SLOT')
-       {
+      row([], { s })
+
+
+      if (o.nodeId)
+      {
          row([], {
-            $/<label class="col-sm-2 control-label">Unresolved slot to</label>
-            <div class="col-sm-10">${o.includes}</div>/$
+         $/<label class="col-sm-2 control-label">Text</label>
+         <div class="col-sm-10">${definition.getText(o.nodeId)} (${o.nodeId})</div>/$
          })
-       }
+         row([], {
+         $/<label class="col-sm-2 control-label">Description</label>
+         <div class="col-sm-10">${definition.getDescription(o.nodeId)}</div>/$
+         })
+      }
+      else
+      {
+         def entry = typeIMAttributeNameEndsWith.find { o.path.endsWith(it.key) }
+         if (entry)
+         {
+            row([], {
+            $/<label class="col-sm-2 control-label">Text</label>
+            <div class="col-sm-10">${entry.value}</div>/$
+            })
+         }
+         /* TODO: cant get the parent object right now
+         https://github.com/ppazos/openEHR-OPT/issues/30
+         else
+         {
+            if (typeIMAttributeName[o.parent.rmTypeName] && typeIMAttributeName[o.parent.rmTypeName][o.path])
+            {
+               out << '<div>'
+               out << typeIMAttributeName[o.parent.rmTypeName][o.path]
+               out << '</div>'
+            }
+         }
+         */
+      }
 
-       o.attributes.each{
-          traverse(it, body, definition)
-       }
+      if (o.archetypeId)
+      {
+         row([], {
+            $/<label class="col-sm-2 control-label">Archetype ID</label>
+            <div class="col-sm-10">${o.archetypeId}</div>/$
+         })
+      }
 
-       out << '</div>'
-    }
+      // paths
+      row([], {
+         $/<label class="col-sm-2 control-label">Data Path</label>
+         <div class="col-sm-10">${o.dataPath}</div>/$
+      })
+      row([], {
+         $/<label class="col-sm-2 control-label">Local Path</label>
+         <div class="col-sm-10">${o.path}</div>/$
+      })
+      row([], {
+         $/<label class="col-sm-2 control-label">Absolute Path</label>
+         <div class="col-sm-10">${o.templatePath}</div>/$
+      })
 
-    private def traverse(AttributeNode a, body, definition)
-    {
-       //println " ".multiply(pad) + a.rmAttributeName
+      // is slot?
+      if (o.type == 'ARCHETYPE_SLOT')
+      {
+      row([], {
+         $/<label class="col-sm-2 control-label">Unresolved slot to</label>
+         <div class="col-sm-10">${o.includes}</div>/$
+      })
+      }
 
-       a.children.each{
-          traverse(it, body, definition)
-       }
-    }
+      o.attributes.each{
+         traverse(it, body, definition)
+      }
 
-    def row = { attrs, body ->
+      out << '</div>'
+   }
 
-       out << '<div class="row">'
-       out << body()
-       out << '</div>'
-    }
+   private def traverse(AttributeNode a, body, definition)
+   {
+      //println " ".multiply(pad) + a.rmAttributeName
 
-    def displayOPTTree = { attrs, body ->
+      a.children.each{
+         traverse(it, body, definition)
+      }
+   }
 
-        traverse(attrs.opt.definition, body, attrs.opt.definition)
-    }
+   def row = { attrs, body ->
 
-    def displayOPTNodes = { attrs, body ->
+      out << '<div class="row">'
+      out << body()
+      out << '</div>'
+   }
 
-        attrs.opt.nodes.sort{it.key}.each { path, node ->
+   def displayOPTTree = { attrs, body ->
 
-          out << '<div>'
-          out << path
-          out << '</div>'
-        }
-    }
+      traverse(attrs.opt.definition, body, attrs.opt.definition)
+   }
 
-    def displayOPT = { attrs, body ->
+   def displayOPTNodes = { attrs, body ->
 
-       def opt = attrs.opt
+      attrs.opt.nodes.sort{it.key}.each { path, node ->
 
-       row([], {
-          $/<label class="col-sm-2 control-label">UID</label>
-           <div class="col-sm-10">${opt.uid}</div>/$
-       })
+         out << '<div>'
+         out << path
+         out << '</div>'
+      }
+   }
 
-       row([], {
-          $/<label class="col-sm-2 control-label">Template ID</label>
-          <div class="col-sm-10">${opt.templateId}</div>/$
-       })
+   def displayOPT = { attrs, body ->
 
-       row([], {
-          $/<label class="col-sm-2 control-label">Concept</label>
-          <div class="col-sm-10">${opt.concept}</div>/$
-       })
+      def opt = attrs.opt
 
-       row([], {
-          $/<label class="col-sm-2 control-label">Language</label>
-          <div class="col-sm-10">${opt.language}</div>/$
-       })
+      row([], {
+         $/<label class="col-sm-2 control-label">UID</label>
+         <div class="col-sm-10">${opt.uid}</div>/$
+      })
 
-       row([], {
-          $/<label class="col-sm-2 control-label">Purpose</label>
-          <div class="col-sm-10">${opt.purpose}</div>/$
-       })
-    }
+      row([], {
+         $/<label class="col-sm-2 control-label">Template ID</label>
+         <div class="col-sm-10">${opt.templateId}</div>/$
+      })
+
+      row([], {
+         $/<label class="col-sm-2 control-label">Concept</label>
+         <div class="col-sm-10">${opt.concept}</div>/$
+      })
+
+      row([], {
+         $/<label class="col-sm-2 control-label">Language</label>
+         <div class="col-sm-10">${opt.language}</div>/$
+      })
+
+      row([], {
+         $/<label class="col-sm-2 control-label">Purpose</label>
+         <div class="col-sm-10">${opt.purpose}</div>/$
+      })
+   }
 }
