@@ -11,7 +11,7 @@ buildscript {
    }
 }
 
-version "2.2.beta"
+version "2.3"
 group "ehrserver2"
 
 apply plugin:"eclipse"
