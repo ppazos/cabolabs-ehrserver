@@ -249,15 +249,20 @@ class OperationalTemplateController {
                old_version.lastVersion = false
                //old_version.save() // the deactivation already saves
 
-               def indexer = new OperationalTemplateIndexer()
-               indexer._event_deactivate(old_version)
 
                // data for new version
                setId = old_version.setId
                versionNumber = old_version.versionNumber + 1
 
                // move old version outside the OPT repo
-               optService.moveOldVersion(old_version)
+               def newLocation = optService.moveOldVersion(old_version)
+
+               // updates the file location because it was moved
+               old_version.fileLocation = newLocation
+
+
+               def indexer = new OperationalTemplateIndexer()
+               indexer._event_deactivate(old_version)
 
                // create new version
                // DONE: the OPT.uid can't be equal to an existing OPT.uid that is not the selected versionOfTemplateUid, the user should change the OPT uid to do so.

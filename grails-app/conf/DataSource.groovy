@@ -47,7 +47,7 @@ environments {
            url = "jdbc:mysql://$host:$port/$dbName" // ?useTimezone=true&serverTimezone=UTC
 
            username = 'user'
-           password = 'user123!'
+           password = 'user1234'
         }
     }
     test {

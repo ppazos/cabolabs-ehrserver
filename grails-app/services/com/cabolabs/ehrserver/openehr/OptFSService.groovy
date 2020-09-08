@@ -44,12 +44,13 @@ class OptFSService {
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
    {
       def old_version_file = new File(old_version_opt.fileLocation)
-      old_version_file.renameTo(
-         new File(
-            old_version_opt.fileLocation +
-            '.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
-         )
-      )
+
+      // needs the version number to avoid name conflicts
+      def newLocation = old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old'
+
+      old_version_file.renameTo(new File(newLocation))
+
+      return newLocation
    }
 
    def emptyTrash(Organization org)

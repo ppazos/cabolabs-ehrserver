@@ -90,6 +90,10 @@ class OptS3Service {
    def moveOldVersion(OperationalTemplateIndex old_version_opt)
    {
       def result
+
+      // needs the version number to avoid name conflicts
+      def newLocation = old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old'
+
       try
       {
          // copy to new deleted key, keeps original
@@ -98,7 +102,7 @@ class OptS3Service {
             Holders.config.aws.bucket,
             old_version_opt.fileLocation,
             Holders.config.aws.bucket,
-            old_version_opt.fileLocation +'.r'+ old_version_opt.versionNumber +'.old' // needs the version number to avoid name conflicts
+            newLocation
          )
 
          // delete original
@@ -111,6 +115,8 @@ class OptS3Service {
       {
          log.error "There was a problem moving the versioned OPT "+ old_version_opt.fileLocation +", error: "+ e.message
       }
+
+      return newLocation
    }
 
    def emptyTrash(Organization org)
