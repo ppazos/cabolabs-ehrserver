@@ -41,6 +41,6 @@ class ArchetypeIndexItem {
    
    static constraints = {
       path(size:1..1023)
-      terminologyRef(nullable:true)
+      terminologyRef(nullable:true, size:0..1023)
    }
 }

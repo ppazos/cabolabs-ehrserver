@@ -155,4 +155,101 @@ class OptRepositoryS3Impl implements OptRepository {
 
       return result
    }
+
+   // similar to getAllOptKeysAndContents but returns a bunch of useful metadata
+   List getAllOptMetadataAndContents(String namespace)
+   {
+      def temp = [:]
+      def last_version_opts = []
+      def list_objectSummary
+
+      try
+      {
+         // similar to OptS3Service.getRepoSizeInBytesOrg
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#listObjectsV2-java.lang.String-java.lang.String-
+         def listObjectsV2Result = this.s3.listObjectsV2(
+            Holders.config.aws.bucket,
+            Holders.config.aws.folders.opt_repo.withTrailSeparator() + namespace.withTrailSeparator())
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/ListObjectsV2Result.html
+         list_objectSummary = listObjectsV2Result.getObjectSummaries()
+      }
+      catch (Exception e)
+      {
+         log.error "There was a problem getting OPT contents in S3 "+ e.message
+         return false
+      }
+
+      def key, contents
+      list_objectSummary.each { s3ObjectSummary ->
+
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/model/S3ObjectSummary.html#getKey--
+         key = s3ObjectSummary.getKey()
+
+         // we want the old versions and deleted ones to reconstruct the DB from the OPT repo
+         // avoid returning .deleted and .old OPTs
+         //if (!key.endsWith('.opt')) return
+
+         // gets the OPT contens by key
+         contents = getOptContents(key)
+
+         contents = FileUtils.removeBOM(contents.bytes)
+
+         temp[key] = contents
+
+         // the .opt are the latest versions of the opts
+         if (key.endsWith('.opt')) last_version_opts << key
+      }
+
+      // group all versions for each opt
+      // the latest version opt should be the prefix for all the versions
+      // [opt_v3 -> [opt_v1, opt_v2, opt_v3], ...]
+      def opt_groups = [:]
+      temp.keySet().each { opt_path ->
+         last_version_opts.each { last_version_opt ->
+            if (opt_path.startsWith(last_version_opt))
+            {
+               if (!opt_groups[last_version_opt]) opt_groups[last_version_opt] = []
+               opt_groups[last_version_opt] << opt_path
+            }
+         }
+      }
+
+      def version_metadata = []
+      def version_string
+      def version_number
+      def set_id
+      opt_groups.each { last_version_opt, opt_versions ->
+
+         // all the versions will have the same set_id
+         set_id = java.util.UUID.randomUUID() as String
+         
+         opt_versions.each { opt_version ->
+            if (opt_version == last_version_opt)
+            {
+               version_metadata << [
+                  opt: opt_version,
+                  version: opt_versions.size(),
+                  is_last: true,
+                  contents: temp[opt_version],
+                  set_id: set_id
+               ]
+            }
+            else
+            {
+               version_string = opt_version.split('\\.')[-2] // r1, r2, ...
+               version_number = (version_string - 'r').toInteger()
+               version_metadata << [
+                  opt: opt_version,
+                  version: version_number,
+                  is_last: false,
+                  contents: temp[opt_version],
+                  set_id: set_id
+               ]
+            }
+         }
+      }
+
+      return version_metadata
+   }
 }

@@ -353,19 +353,12 @@ class OperationalTemplateIndexer {
    def indexAll(Organization org, OptRepository repo)
    {
       def namespace = org.uid
-      def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
 
-      /*
-      def path = config.opt_repo
+      // opts in the repo
+      //def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
+      def opt_contents = repo.getAllOptMetadataAndContents(namespace)
 
-      // FIXME: for S3 this should access the OPT service, not the FS directly
-      def repo = new File(path.withTrailSeparator() + org.uid)
-
-      if (!repo.exists()) throw new Exception("No existe "+ path.withTrailSeparator() + org.uid)
-      if (!repo.canRead()) throw new Exception("No se puede leer "+ path.withTrailSeparator() + org.uid)
-      if (!repo.isDirectory()) throw new Exception("No es un directorio "+ path.withTrailSeparator() + org.uid)
-      */
-
+      // opt in the DB
       def opts = OperationalTemplateIndex.forOrg(org).active().list()
 
       opts.each { opt ->
@@ -373,25 +366,20 @@ class OperationalTemplateIndexer {
          deleteOptReferences(opt)
       }
 
-      /*
-      def opt
-      repo.eachFileMatch groovy.io.FileType.FILES, ~/.*\.opt/, { file ->
-
-         // Load only if the name is an UUID, it is the OperationalTemplateIndex.fileUid
-         try
-         {
-            UUID uuid = UUID.fromString( file.name - '.opt' )
-            opt = index(file, org)
-         }
-         catch (IllegalArgumentException exception)
-         {
-             println "File ${file.name} not indexed, the file name should be an UUID. Please put your initial OPT in the base_opts folder."
-         }
-      }
-      */
       def parsed_template
+      
+      def absolute_path
+      def opt_text
 
-      opt_contents.each { absolute_path, opt_text ->
+      opt_contents.each { opt_metadata -> //absolute_path, opt_text ->
+
+         absolute_path = opt_metadata.opt
+         opt_text = opt_metadata.contents
+         //versionNumber = opt_metadata.version
+         //lastVersion = opt_metadata.is_last
+         //setId = opt_metadata.set_id
+
+         println ">>> META: "+ opt_metadata.opt +" "+ opt_metadata.version +" "+ opt_metadata.is_last
 
          if (!xmlValidationService.validateOPT(opt_text))
          {
@@ -404,9 +392,11 @@ class OperationalTemplateIndexer {
          parsed_template = new XmlSlurper().parseText(opt_text)
 
          // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
-         if (!templateAlreadyExistsForOrg(parsed_template, org))
+         // allow only if it's an older version of the same template
+         if (!templateAlreadyExistsForOrg(parsed_template, org) || !opt_metadata.is_last)
          {
-            index(parsed_template, null, org) // We dont use the file_uid any more
+            // FIXME: We dont use the file_uid any more
+            index(parsed_template, null, org, opt_metadata.version, opt_metadata.set_id, opt_metadata.is_last, absolute_path)
          }
          else
          {
@@ -444,7 +434,8 @@ class OperationalTemplateIndexer {
    }
 
    // TODO: the file_uid is not longer used, now the file name will be a normalized template id
-   def index(GPathResult template, String file_uid, Organization org)
+   // fileLocation will come only when the opt is NOT a last version, to index a previous version of the OPT
+   def index(GPathResult template, String file_uid, Organization org, int versionNumber = 1, String setId ="", boolean lastVersion = true, String fileLocation = "")
    {
       //println "OPT indexer index "+ file_uid
       //println "optService "+ optService
@@ -472,7 +463,11 @@ class OperationalTemplateIndexer {
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
             organizationUid: org.uid,
-            fileLocation: optService.newOPTFileLocation(org.uid, templateId)
+            fileLocation: (lastVersion) ? optService.newOPTFileLocation(org.uid, templateId) : fileLocation,
+            versionNumber: versionNumber,
+            lastVersion: lastVersion,
+            isActive: lastVersion,
+            setId: (!setId) ? java.util.UUID.randomUUID() as String : setId
          )
 
          // TODO: log errors and throw except
@@ -826,7 +821,10 @@ class OperationalTemplateIndexer {
          {
             def def_code_node = node.attributes.find{ it.rm_attribute_name.text() == 'defining_code' }
             def uri = def_code_node.children.referenceSetUri.text()
-            if (uri) archIndexIndex.terminologyRef = uri
+            if (uri)
+            {
+               archIndexIndex.terminologyRef = uri
+            }
          }
 
          indexes << archIndexIndex
