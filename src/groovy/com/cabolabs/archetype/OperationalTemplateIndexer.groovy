@@ -42,7 +42,7 @@ class OperationalTemplateIndexer {
 
    def config = Holders.config.app
 
-   def log = Logger.getLogger('com.cabolabs.archetype.OperationalTemplateIndexer')
+   def log = Logger.getLogger("com.cabolabs.archetype.OperationalTemplateIndexer")
 
    def template
    def templateIndex // OperationalTemplateIndex correspondent to the template we are indexing
@@ -289,7 +289,13 @@ class OperationalTemplateIndexer {
 
       if (delete_opt)
       {
-         opt.delete(flush:true)
+         // delete all previous versions if exist
+         def allVersions = OperationalTemplateIndex.findAllBySetId(opt.setId)
+
+         allVersions*.delete(flush:true)
+         
+         // included in previous line
+         //opt.delete(flush:true)
       }
 
       archNodes.each { archNode ->

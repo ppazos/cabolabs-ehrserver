@@ -1,0 +1,253 @@
+---
+server:
+   port: 8090
+
+---
+# If you add a supported language you need also to translate the messages_YOUR_LANGUAGE.properties file.
+languages:
+   - en
+   - es
+   - pt
+
+---
+# Declare this environment variable, the value could be a UUID, to use the REST API authentication.
+stateless:
+   secretKey: ${EHRSERVER_REST_SECRET}
+   expirationTime: 1440 # expiration time in minutes
+
+---
+# To configure this you need an account in https://www.google.com/recaptcha
+# Please create a reCaptcha v2, v3 doesn't work with this plugin.
+# Documentation https://github.com/iamthechad/grails3-recaptcha
+recaptcha:
+    publicKey: "${EHRSERVER_RECAPTCHA_SITEKEY}"
+    privateKey: "${EHRSERVER_RECAPTCHA_SECRETKEY}"
+    includeScript: true
+    includeNoScript: true
+
+---
+app:
+   version_repo: versions
+   commit_logs: commits
+   opt_repo: opts
+   allow_web_user_register: ${EHRSERVER_ALLOW_WEB_USER_REGISTER}
+   list_max: 20
+   version_xsd: xsd/Version.xsd
+   xslt: xsd/openEHR_RMtoHTML.xsl
+   opt_xsd: xsd/OperationalTemplate.xsd
+   opt_xsd_alt: xsd/OperationalTemplateExtra.xsd
+   terminologies:
+      - terminology/openehr_terminology_en.xml
+      - terminology/openehr_terminology_es.xml
+      - terminology/openehr_terminology_pt.xml
+   security:
+      min_password_length: 6
+   l10n:
+      locale: en
+      decimal_symbol: ',' # separation between integer numbers and decimal numbers
+      decimal_digits: 2   # format for digits after decimal point
+      digit_grouping: '.' # digit grouper for big numbers ej. 1.000.000
+      display_leading_zeros: true # if false, 0,7 is formatted to ,7
+
+      # // formatos de fechas
+      # // ==================
+      # //  - ref: http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+      # //
+      # // h hora 1-12
+      # // H hora 0-23
+      # // a marcador AM/PM
+      # // m minutis
+      # // S milisegundos
+      # // Z zona horaria (RFC 822)
+      #
+      # // formatos para procesamiento de fechas
+      # // incluye fraccion (debe estar separado con el decimal_symbol) y zona horaria
+      datetime_format: "yyyyMMdd'T'HHmmss,SSSX"
+      date_format: "yyyyMMdd"
+      time_format: "HHmmss"
+
+      # Extended formats supported by openEHR --------------------------------------------------------------
+      # 2015-12-02T17:41:56.809Z
+      ext_datetime_format: "yyyy-MM-dd'T'HH:mm:ss,SSSX" # contains timezone e.g. -0300
+      ext_datetime_format_point: "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+      # If the time is in UTC, add a Z directly after the time without a space. Z is the zone
+      # designator for the zero UTC offset. "09:30 UTC" is therefore represented as "09:30Z" or "0930Z".
+      ext_datetime_utcformat: "yyyy-MM-dd'T'HH:mm:ss,SSS'Z'"
+      ext_datetime_utcformat_point: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+      # ----------------------------------------------------------------------------------------------------
+
+      # Dates without seconds fraction
+      datetime_format_nof: "yyyyMMdd'T'HHmmssX"
+      datetime_utcformat_nof: "yyyyMMdd'T'HHmmss'Z'"
+      ext_datetime_format_nof: "yyyy-MM-dd'T'HH:mm:ssX"
+      ext_datetime_utcformat_nof: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+
+      # formatos para mostrar las fechas al usuario
+      display_datetime_format: "yyyy/MM/dd HH:mm:ss (X)"
+      display_date_format: "yyyy/MM/dd"
+      display_time_format: "HH:mm:ss"
+
+      db_datetime_format: "yyyy-MM-dd HH:mm:ss" # mysql no soporta fragment o timezone, otros dbms si
+      db_date_format: "yyyy-MM-dd"
+      db_time_format: "HH:mm:ss"
+
+---
+# Configure if you want to store files in AWS S3.
+aws:
+    accessKey: ${EHRSERVER_S3_ACCESS}
+    secretKey: ${EHRSERVER_S3_SECRET}
+    bucket: ${EHRSERVER_S3_BUCKET}
+    region: ${EHRSERVER_S3_REGION}
+    folders: # keys of folders in S3
+        version_repo: "versions/"
+        commit_logs: "commits/"
+        opt_repo: "opts/"
+
+---
+# Configure to be able to send emails for user registrations and password reset.
+grails:
+    mail:
+        host: ${EHRSERVER_EMAIL_HOST}
+        port: ${EHRSERVER_EMAIL_PORT}
+        username: ${EHRSERVER_EMAIL_USER}
+        password: ${EHRSERVER_EMAIL_PASS}
+        default:
+            from: ${EHRSERVER_EMAIL_FROM}
+
+---
+grails:
+    profile: web
+    codegen:
+        defaultPackage: ehrserver2
+    gorm:
+        reactor:
+            # Whether to translate GORM events into Reactor events
+            # Disabled by default for performance reasons
+            events: false
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'
+spring:
+    main:
+        banner-mode: "off"
+    groovy:
+        template:
+            check-template-location: false
+
+# Spring Actuator Endpoints are Disabled by Default
+endpoints:
+    enabled: false
+    jmx:
+        enabled: true
+
+---
+grails:
+    mime:
+        disable:
+            accept:
+                header:
+                    userAgents:
+                        - Gecko
+                        - WebKit
+                        - Presto
+                        - Trident
+        types:
+            all: '*/*'
+            atom: application/atom+xml
+            css: text/css
+            csv: text/csv
+            form: application/x-www-form-urlencoded
+            html:
+              - text/html
+              - application/xhtml+xml
+            js: text/javascript
+            json:
+              - application/json
+              - text/json
+            multipartForm: multipart/form-data
+            pdf: application/pdf
+            rss: application/rss+xml
+            text: text/plain
+            hal:
+              - application/hal+json
+              - application/hal+xml
+            xml:
+              - text/xml
+              - application/xml
+    urlmapping:
+        cache:
+            maxsize: 1000
+    controllers:
+        defaultScope: singleton
+        upload:
+            maxFileSize: 5242880 # 5MB
+            maxRequestSize: 10485760 # 10MB
+    converters:
+        encoding: UTF-8
+    views:
+        default:
+            codec: html
+        gsp:
+            encoding: UTF-8
+            htmlcodec: xml
+            codecs:
+                expression: html
+                scriptlets: html
+                taglib: none
+                staticparts: none
+    exceptionresolver:
+        params:
+            exclude:
+                - password
+                - pass
+                - email
+endpoints:
+    jmx:
+        unique-names: true
+
+---
+hibernate:
+    cache:
+        queries: false
+        use_second_level_cache: false
+        use_query_cache: false
+dataSource:
+    pooled: true
+    jmxExport: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: ${EHRSERVER_MYSQL_DB_USERNAME}
+    password: ${EHRSERVER_MYSQL_DB_PASSWORD}
+
+environments:
+    development:
+        dataSource:
+            dbCreate: create-drop
+            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC
+    test:
+        dataSource:
+            dbCreate: update
+            url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC
+    production:
+        dataSource:
+            dbCreate: ${EHRSERVER_MYSQL_DB_BEHAVIOUR}
+            url: jdbc:mysql://${EHRSERVER_MYSQL_DB_HOST}:${EHRSERVER_MYSQL_DB_PORT}/${EHRSERVER_DB_NAME}?useTimezone=true&serverTimezone=UTC
+            properties:
+                jmxEnabled: true
+                initialSize: 5
+                maxActive: 50
+                minIdle: 5
+                maxIdle: 25
+                maxWait: 10000
+                maxAge: 600000
+                timeBetweenEvictionRunsMillis: 5000
+                minEvictableIdleTimeMillis: 60000
+                validationQuery: SELECT 1
+                validationQueryTimeout: 3
+                validationInterval: 15000
+                testOnBorrow: true
+                testWhileIdle: true
+                testOnReturn: false
+                jdbcInterceptors: ConnectionState
+                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED

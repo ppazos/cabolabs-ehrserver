@@ -77,7 +77,7 @@ environments {
 
             String host = System.getenv('EHRSERVER_MYSQL_DB_HOST')
             String port = System.getenv('EHRSERVER_MYSQL_DB_PORT')
-            String dbName = System.getenv('EHRSERVER_DB_NAME')
+            String dbName = System.getenv('EHRSERVER_MYSQL_DB_DBNAME')
 
             url = "jdbc:mysql://$host:$port/$dbName?useSSL=false" // ?useTimezone=true&serverTimezone=UTC
 
