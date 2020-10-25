@@ -385,12 +385,13 @@ class OperationalTemplateIndexer {
          //lastVersion = opt_metadata.is_last
          //setId = opt_metadata.set_id
 
-         println ">>> META: "+ opt_metadata.opt +" "+ opt_metadata.version +" "+ opt_metadata.is_last
+         println ">>> OPT METADATA - opt: "+ opt_metadata.opt +" version: "+ opt_metadata.version +" is_last: "+ opt_metadata.is_last
 
          if (!xmlValidationService.validateOPT(opt_text))
          {
              // Important to keep the correspondence between version index and error reporting.
-            println "Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors()
+            println ">>> Invalid OPT for organization ${org.uid} "
+            println xmlValidationService.getErrors()
             return // avoid copying not valid OPT file
          }
 

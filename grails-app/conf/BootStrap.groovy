@@ -140,6 +140,10 @@ class BootStrap {
          return new Date().format(Holders.config.app.l10n.ext_datetime_utcformat_nof, TimeZone.getTimeZone("UTC"))
       }
 
+      Date.metaClass.static.nowInBasicUtc = {
+         return new Date().format(Holders.config.app.l10n.datetime_format_utc, TimeZone.getTimeZone("UTC"))
+      }
+
       String.metaClass.md5 = {
          return java.security.MessageDigest.getInstance("MD5").digest(delegate.bytes).encodeHex().toString()
       }
@@ -1043,6 +1047,7 @@ class BootStrap {
       def repo = RepositoryFactory.getInstance().getOPTRepository()
       def optMan = OptManager.getInstance(repo)
 
+      log.info("Using OPT repo: "+ repo.getClass())
 
 
       // Cache OPTs on run/deploy to avoid problems later
@@ -1058,7 +1063,17 @@ class BootStrap {
       //    to.deleteOptReferences(opt)
       // }
 
+      // if the organization has templates already in the DB when the app initializes it means the DB is configured for UPDATE
+      // if the DB is configured in create-drop, the previous revisions of the OPTs should not be loaded since it could generate
+      // inconsistencies, so only the last versions are loaded and the previous revisions should be deleted
       orgs.each { org ->
+
+         // if running with db update, the OPTs should already be in the DB, trying to setup and reload could generate inconsistencies
+         if (OperationalTemplateIndex.forOrg(org).count() > 0)
+         {
+            log.info("Avoid loading OPTs for organization ${org.uid} because has OPTs already loaded")
+            return
+         }
 
          // database loading
          // Always regenerate indexes in deploy

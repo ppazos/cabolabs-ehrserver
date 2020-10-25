@@ -244,6 +244,9 @@ app {
       date_format = "yyyyMMdd"
       time_format = "HHmmss"
 
+      // basic ISO in UTC
+      datetime_format_utc = "yyyyMMdd'T'HHmmss,SSS'Z'"
+
 
       // Extended formats supported by openEHR --------------------------------------------------------------
       //2015-12-02T17:41:56.809Z

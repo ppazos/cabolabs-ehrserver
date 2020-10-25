@@ -207,7 +207,7 @@ class OptRepositoryS3Impl implements OptRepository {
       def opt_groups = [:]
       temp.keySet().each { opt_path ->
          last_version_opts.each { last_version_opt ->
-            if (opt_path.startsWith(last_version_opt))
+            if (opt_path.startsWith(last_version_opt) && !opt_path.endsWith('.deleted'))
             {
                if (!opt_groups[last_version_opt]) opt_groups[last_version_opt] = []
                opt_groups[last_version_opt] << opt_path
@@ -225,6 +225,10 @@ class OptRepositoryS3Impl implements OptRepository {
          set_id = java.util.UUID.randomUUID() as String
          
          opt_versions.each { opt_version ->
+            
+            // avoid processing deleted
+            if (opt_version.endsWith('.deleted')) return
+
             if (opt_version == last_version_opt)
             {
                version_metadata << [
