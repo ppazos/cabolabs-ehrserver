@@ -418,11 +418,9 @@ class QueryController {
 
    def update()
    {
-      //def json = request.JSON.query
-      //def query = Query.get(json.id) // the id comes in the json object
+      def json = request.JSON.query
+      def query = Query.get(json.id) // the id comes in the json object
 
-      def json = params.json
-      def query = params.query
       query.updateInstance(json)
       query.cacheHQLWhere()
 
