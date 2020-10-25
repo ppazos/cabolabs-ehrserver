@@ -90,6 +90,7 @@
                 <table class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
+                      <th>UID</th>
                       <g:sortableColumn property="name" title="${message(code: 'query.show.name.attr', default: 'Name')}" />
                       <g:sortableColumn property="group" title="${message(code: 'query.show.group.attr', default: 'Group')}" />
                       <g:sortableColumn property="format" title="${message(code: 'query.show.format.attr', default: 'Format')}" />
@@ -100,7 +101,8 @@
                   <tbody>
                     <g:each in="${groupQueries.value}" status="i" var="queryInstance">
                       <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-                        <td><g:link action="show" id="${queryInstance.uid}">${queryInstance.name[session.lang]}</g:link></td>
+                        <td><g:link action="show" id="${queryInstance.uid}">${queryInstance.uid}</g:link></td>
+                        <td>${queryInstance.name[session.lang]}</td>
                         <td>${fieldValue(bean: queryInstance, field: "group")}</td>
                         <td>${fieldValue(bean: queryInstance, field: "format")}</td>
                         <td>${fieldValue(bean: queryInstance, field: "type")}</td>
