@@ -8,6 +8,7 @@ services:
       - ./terminology:/app/terminology
       - ./grails-app/conf/:/usr/local/tomcat/webapps/config
       - ./opts:/usr/local/tomcat/opts
+      - ./opts:/app/opts
       - ./versions:/usr/local/tomcat/versions
       # can be used to load a custom yml
       # - ./grails-app/conf/application.yml:/app/config.yml
@@ -26,7 +27,7 @@ services:
       - EHRSERVER_EMAIL_HOST=localhost
       - EHRSERVER_EMAIL_PORT=2525
   db:
-    image: mysql:5.7
+    image: mysql:5.7.22
     volumes:
       - database:/var/lib/mysql
     environment:
