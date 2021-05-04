@@ -14,6 +14,13 @@ EHRServer is the first open source Clinical Data Management and Sharing Platform
 
 EHRServer was designer for developers by developers. You don't need to be an openEHR guru to use it. Easy to install, use, manage and integrate.
 
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/ppazos/cabolabs-ehrserver.svg)](https://starchart.cc/ppazos/cabolabs-ehrserver)
+
+
+
 # Screenshots
 
 ## Dashboard
