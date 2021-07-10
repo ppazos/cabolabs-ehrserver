@@ -509,7 +509,6 @@ class UserController {
       def orguids, org, roles, highestRole
       def _rolesICanAssign = rolesICanAssign()
 
-
       // Removes current roles, for the roles and orgs the current user can assign, if those roles were removed.
       userRoles.each { userRole ->
 
@@ -543,7 +542,7 @@ class UserController {
          // 3. the role was removed from the user in the UI, if it wasn't removed, keep it
          if (_rolesICanAssign[userRole.organization].contains(userRole.role) && !inRoles.contains(userRole.role.authority))
          {
-            UserRole.remove( userInstance, userRole.role, userRole.organization, true )
+            UserRole.remove(userInstance, userRole.role, userRole.organization, true)
          }
       }
 
@@ -559,6 +558,9 @@ class UserController {
             if (roles.authority.contains(assignRole) && !UserRole.exists(userInstance.id, Role.findByAuthority(assignRole).id, org.id))
             {
                UserRole.create(userInstance, Role.findByAuthority(assignRole), org, true)
+
+               // notify user of the new role
+               notificationService.sendNewRoleAssignedOnAnOrganization([user: userInstance, organization: org, authority: assignRole])
             }
          }
       }

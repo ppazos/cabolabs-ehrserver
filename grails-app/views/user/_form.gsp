@@ -24,8 +24,8 @@
       <table class="table table-striped table-bordered table-hover table-org-roles">
         <thead>
           <tr>
-            <th><g:message code="user.account.label" default="Accounts" /></th>
-            <th><g:message code="user.organizations.label" default="Organizations" /></th>
+            <th><g:message code="user.account.label" default="Account" /></th>
+            <th><g:message code="user.organizations.label" default="Organization" /></th>
             <g:each in="${Role.list()}" var="role">
               <g:userDoesntHaveRole role="ROLE_ADMIN"><%-- dont show admin if user is not admin --%>
                 <g:if test="${role.authority != 'ROLE_ADMIN'}">

@@ -114,18 +114,54 @@ class NotificationService {
 
       def title, preview, salute, message, url, actions, closing, bye
 
-      title   = g.message(code:'notificationService.organizationAssociated.title')
-      preview = g.message(code:'notificationService.organizationAssociated.preview')
-      salute  = g.message(code:'notificationService.organizationAssociated.salute', args:[accman.email])
-      message = g.message(code:'notificationService.organizationAssociated.message', args:[organization.number])
+      title   = g.message(code:'notificationService.newOrganizationAssociated.title')
+      preview = g.message(code:'notificationService.newOrganizationAssociated.preview')
+      salute  = g.message(code:'notificationService.newOrganizationAssociated.salute', args:[accman.email])
+      message = g.message(code:'notificationService.newOrganizationAssociated.message', args:[organization.number])
 
       url     = g.createLink(controller:'login', absolute:true)
-      actions = g.message(code:'notificationService.organizationAssociated.actions', args:[url])
+      actions = g.message(code:'notificationService.newOrganizationAssociated.actions', args:[url])
+
+      closing = g.message(code:'notificationService.newOrganizationAssociated.closing')
+      bye     = g.message(code:'notificationService.newOrganizationAssociated.bye')
+
+      this.sendMail(accman.email, title, preview, salute, message, actions, closing, bye)
+   }
+
+   /*
+    * Similar to the sendNewOrganizationAssociatedEmail but the message is sent to a user assigned a new role on an organization.
+    */
+   def sendNewRoleAssignedOnAnOrganization(Map messageData)
+   {
+      def user = messageData['user']
+      def organization = messageData['organization']
+      def authority = messageData['authority']
+
+      def g = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
+
+      def title, preview, salute, message, url, actions, closing, bye
+
+      title   = g.message(code:'notificationService.organizationAssociated.title')
+      preview = g.message(code:'notificationService.organizationAssociated.preview')
+      salute  = g.message(code:'notificationService.organizationAssociated.salute', args:[user.email])
+
+      if (authority != Role.US)
+      {
+         message = g.message(code:'notificationService.organizationAssociated.message', args:[authority, organization.number])
+
+         url     = g.createLink(controller:'login', absolute:true)
+         actions = g.message(code:'notificationService.organizationAssociated.actions', args:[url])
+      }
+      else
+      {
+         message = g.message(code:'notificationService.organizationAssociated.message_user', args:[authority, organization.number])
+         actions = ''
+      }
 
       closing = g.message(code:'notificationService.organizationAssociated.closing')
       bye     = g.message(code:'notificationService.organizationAssociated.bye')
 
-      this.sendMail(accman.email, title, preview, salute, message, actions, closing, bye)
+      this.sendMail(user.email, title, preview, salute, message, actions, closing, bye)
    }
 
    def sendMail(String recipient, String title = 'Message from CaboLabs EHRServer!',

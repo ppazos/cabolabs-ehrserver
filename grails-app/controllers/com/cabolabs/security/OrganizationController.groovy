@@ -181,6 +181,7 @@ class OrganizationController {
          }
       }
 
+      // sends notification to the account manager (in account.contact) of the account containing the new organization
       def organizationInstance = organizationService.create(account, name)
 
       def accman_associated = false // prevents associating the accman twice if the current user is accman
@@ -190,7 +191,7 @@ class OrganizationController {
          if (assign)
          {
             // Assign org to logged user
-            UserRole.create( user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true )
+            UserRole.create(user, (Role.findByAuthority('ROLE_ADMIN')), organizationInstance, true)
          }
       }
       else
@@ -199,7 +200,7 @@ class OrganizationController {
          // uses the higher role on the current org to assign on the new org
          def higher_role_in_current_org = user.getHigherAuthority(session.organization)
 
-         UserRole.create( user, higher_role_in_current_org, organizationInstance, true )
+         UserRole.create(user, higher_role_in_current_org, organizationInstance, true)
 
          if (higher_role_in_current_org.authority == Role.AM) accman_associated = true
       }
@@ -207,7 +208,7 @@ class OrganizationController {
       // create accman userrole for the account contact
       if (!accman_associated)
       {
-         UserRole.create( account.contact, (Role.findByAuthority(Role.AM)), organizationInstance, true )
+         UserRole.create(account.contact, (Role.findByAuthority(Role.AM)), organizationInstance, true)
       }
 
 

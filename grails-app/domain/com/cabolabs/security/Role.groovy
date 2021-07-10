@@ -22,9 +22,10 @@
 
 package com.cabolabs.security
 
-import grails.core.GrailsDomainClass
+import groovy.transform.EqualsAndHashCode
 
-class Role implements Serializable {
+@EqualsAndHashCode(includes='authority')
+class Role { // implements Serializable {
 
 	private static final long serialVersionUID = 1
    static final String AD = 'ROLE_ADMIN'
@@ -37,24 +38,6 @@ class Role implements Serializable {
 	Role(String authority) {
 		this()
 		this.authority = authority
-	}
-
-	@Override
-	int hashCode() {
-		authority?.hashCode() ?: 0
-	}
-
-	@Override
-	boolean equals(other) {
-      // instanceof GrailsDomainClass avoids errors for not having instanceOf(), a method of domain classes
-      if (!(other instanceof GrailsDomainClass))
-      {
-         return false
-      }
-
-println other + ' is grails domain in Role'
-
-		is(other) || (other.instanceOf(Role) && other.authority == authority)
 	}
 
 	@Override
