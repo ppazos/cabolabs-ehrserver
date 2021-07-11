@@ -366,7 +366,10 @@ class XmlService {
                versionedComposition = new VersionedComposition(
                   uid: version.objectId,
                   ehr: ehr,
-                  isPersistent: (version.data.category == 'persistent'))
+                  isPersistent: (version.data.category == 'persistent'),
+                  archetypeId: version.data.archetypeId,
+                  templateId: version.data.templateId
+               )
 
                // If errors, throws grails.validation.ValidationException with the errors
                //versionedComposition.save(flush:true, failOnError:true)

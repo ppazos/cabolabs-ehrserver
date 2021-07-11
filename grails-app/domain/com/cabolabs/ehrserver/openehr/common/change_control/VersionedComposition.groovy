@@ -38,6 +38,11 @@ class VersionedComposition {
    
    // When the first commit of a VERSION is received.
    Date timeCreated = new Date()
+
+   // indexed values used for searching/filtering/sorting
+   // https://github.com/ppazos/cabolabs-ehrserver/issues/804
+   String archetypeId
+   String templateId
    
    static transients = ['allVersions', 'latestVersion']
    

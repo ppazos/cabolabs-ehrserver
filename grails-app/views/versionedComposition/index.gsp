@@ -79,14 +79,13 @@
             </thead>
             <tbody>
               <g:each in="${versionedCompositionInstanceList}" status="i" var="versionedCompositionInstance">
-                <g:set var="compo" value="${versionedCompositionInstance.latestVersion.data}" />
                 <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                   <td><g:link action="show" id="${versionedCompositionInstance.uid}">${fieldValue(bean: versionedCompositionInstance, field: "uid")}</g:link></td>
                   <td><g:link controller="ehr" action="show" params="[uid: versionedCompositionInstance.ehr.uid]">${versionedCompositionInstance.ehr.uid}</g:link></td>
                   <td><g:formatBoolean boolean="${versionedCompositionInstance.isPersistent}" /></td>
                   <td><g:formatDate date="${versionedCompositionInstance.timeCreated}" /></td>
-                  <td>${compo.templateId}</td>
-                  <td>${compo.archetypeId}</td>
+                  <td>${versionedCompositionInstance.templateId}</td>
+                  <td>${versionedCompositionInstance.archetypeId}</td>
                 </tr>
               </g:each>
             </tbody>
