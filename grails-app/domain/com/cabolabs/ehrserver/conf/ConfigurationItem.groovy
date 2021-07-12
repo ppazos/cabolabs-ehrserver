@@ -49,6 +49,9 @@ class ConfigurationItem {
             break
             case 'boolean':
                if (!['true','false'].contains(val))
+               {
+                  errors.rejectValue('value', 'invalidBoolean')
+               }
             break
             case 'url':
                if (!(val =~ /\b(https?|ftp|file):\\/\\/[-a-zA-Z0-9+&@#\\/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\/%=~_|]/))
@@ -57,7 +60,7 @@ class ConfigurationItem {
                }
             break
             case 'uuid':
-               if (!(val =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/))
+               if (!(val =~ /^[0-9a-fA-F]{8}(\-[0-9a-fA-F]{4}){3}\-[0-9a-fA-F]{12}$/))
                {
                   errors.rejectValue('value', 'invalidUUID')
                }

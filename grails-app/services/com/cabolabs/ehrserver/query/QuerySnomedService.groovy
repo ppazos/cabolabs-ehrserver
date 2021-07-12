@@ -6,11 +6,11 @@ import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.URLENC
 import static groovyx.net.http.Method.POST
 import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
+import com.cabolabs.ehrserver.conf.ConfigurationItem
 
 @Transactional
 class QuerySnomedService {
 
-   def api_key = System.getenv('EHRSERVER_SNQUERY_KEY')
    def base = 'https://snquery.veratech.es'
 
    // always throws exceptions on failing cases!
@@ -21,22 +21,27 @@ class QuerySnomedService {
       def status
       def http = new HTTPBuilder(this.base)
 
+      def api_key = ConfigurationItem.findByKey('ehrserver.query.snquery.auth_token')?.value ?: System.getenv('EHRSERVER_SNQUERY_KEY')
+
       try
       {
          http.request( POST ) {
+
             uri.path = '/ws/JSONQuery'
             uri.query = [cache: 'true']
             send URLENC, [query: snomedExpr]
             headers.Accept = 'application/json'
-            headers.Authorization = 'Bearer '+ api_key // FIXME: get from config
+            headers.Authorization = 'Bearer '+ api_key
 
             response.success = { resp, json ->
-               println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+               
+               log.info "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
                //println resp.statusLine.statusCode // 200
                //println json.getClass() // class net.sf.json.JSONArray
 
                json.each { item ->
-                  //println item.idconcept +' '+ item.concept
+
+                  log.debug item.idconcept +' '+ item.concept
 
                   res << item.idconcept
                }
@@ -45,11 +50,12 @@ class QuerySnomedService {
             // FIXME: log correctly
             // FIXME: throw exception based on status like 429 Too Many Requests, etc.
             response.failure = { resp, reader ->
-               println 'request failed'
-               println resp
-               println resp.statusLine
-               println resp.status
-               println reader.text
+
+               log.error 'request failed'
+               //println resp groovyx.net.http.HttpResponseDecorator
+               log.error resp.statusLine.toString() // HTTP/1.1 429 Too Many Requests
+               log.error resp.status.toString() // 429
+               log.error reader.text.toString()
 
                status = resp.status
 
@@ -84,24 +90,30 @@ class QuerySnomedService {
 
       def http = new HTTPBuilder(this.base)
 
+      def api_key = ConfigurationItem.findByKey('ehrserver.query.snquery.auth_token')?.value ?: System.getenv('EHRSERVER_SNQUERY_KEY')
+
       http.request( POST ) {
+
          uri.path = '/ws/validate'
          uri.query = [cache: 'true']
          send URLENC, [query: snomedExpr]
          headers.Accept = 'application/json'
-         headers.Authorization = 'Bearer '+ api_key // FIXME: get from config
+         headers.Authorization = 'Bearer '+ api_key
 
          response.success = { resp, json ->
-            println "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+
+            log.info "POST Success: ${resp.statusLine}" // POST Success: HTTP/1.1 200 OK
+
             valid = json[0] // [true] / [false]
          }
 
          response.failure = { resp, reader ->
-            println 'request failed'
-            println resp
-            println resp.statusLine
-            println resp.status
-            println reader.text
+            
+            log.error 'request failed'
+            //println resp groovyx.net.http.HttpResponseDecorator
+            log.error resp.statusLine.toString() // HTTP/1.1 429 Too Many Requests
+            log.error resp.status.toString() // 429
+            log.error reader.text.toString()
 
             valid = false
          }

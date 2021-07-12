@@ -27,6 +27,7 @@ import com.cabolabs.ehrserver.data.DataValues
 import com.cabolabs.ehrserver.ehr.clinical_documents.ArchetypeIndexItem
 import com.cabolabs.ehrserver.exceptions.QuerySnomedServiceException
 import com.cabolabs.ehrserver.query.QuerySnomedService
+import com.cabolabs.ehrserver.conf.ConfigurationItem
 
 /**
  * WHERE archId/path operand value
@@ -274,24 +275,30 @@ class DataCriteria {
 
                // will throw exceptions on any fail case, this should make the whole .toSQL to fail, since the result wouldn't be valid
                // the exception should reach the top level to return the error to the user on GUI or API, so no catch here!
-               conceptids = querySnomedService.getCodesFromExpression(value[0])
+               if (ConfigurationItem.findByKey('ehrserver.query.snquery.enabled')?.typedValue)
+               {
+                  // TODO: be prepared for communication errors to avoid generating invalid HQL
+                  conceptids = querySnomedService.getCodesFromExpression(value[0])
+               }
+               else
+               {
+                  log.info("SNQUERY service is disabled")
+               }
 
-               // be prepared for communication errors to avoid generating invalid HQL
+               // NOTE: the list for the IN operator in SQL can't be empty
                if (conceptids.size() > 0)
                {
                   sql += this.alias +'.'+ attr + (negation ? ' NOT' : '') +' IN ('
 
-                  conceptids.each { singleValue ->
-                     sql += singleValue.asSQLValue(operand) +','
-                  }
-                  sql = sql[0..-2] + ')' // removes last ,
+                  sql += conceptids*.asSQLValue(operand).join(', ') // a, b, c
+
+                  sql += ')'
                }
                else
                {
-                  // conceptually if the list of concepts is empty, the SQL IN operator should return always false since x IN [] is false.
-                  // so we throw an exception when no concepts are returned from the service.
-                  throw new QuerySnomedServiceException('querySnomedService.error.emptyResults')
-                  //sql += ' 1=1 ' // just a placeholder to have a valid query, TODO: this should be an empty list
+                  // if the list of concepts is empty, the SQL IN operator should return always false
+                  // this is a valid mechanism to indicate a false value in the corresponding place in the WHERE clause
+                  sql += '0=1'
                }
             }
 

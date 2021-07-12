@@ -1043,10 +1043,12 @@ class BootStrap {
    def createConfig()
    {
       def conf = [
-         new ConfigurationItem(key:'ehrserver.instance.id', value:'9cbabb12-c4ae-421c-868c-a68985123983', type:'string', blank:false, description:'EHRServer running instance ID'),
-         new ConfigurationItem(key:'ehrserver.console.lists.max_items', value:'20', type:'number', blank:false, description:'Max number of items on the lists views for the Web Console'),
-         new ConfigurationItem(key:'ehrserver.security.passwords.min_length', value:'6', type:'number', blank:false, description:'Minimum password size used on password reset'),
-         new ConfigurationItem(key:'ehrserver.security.password_token.expiration', value:'1440', type:'number', blank:false, description:'Number of minutes after the password reset token expires')
+         new ConfigurationItem(key:'ehrserver.instance.id',                        value:'9cbabb12-c4ae-421c-868c-a68985123983', type:'string',  blank:false, description:'EHRServer running instance ID'),
+         new ConfigurationItem(key:'ehrserver.console.lists.max_items',            value:'20',                                   type:'number',  blank:false, description:'Max number of items on the lists views for the Web Console'),
+         new ConfigurationItem(key:'ehrserver.security.passwords.min_length',      value:'6',                                    type:'number',  blank:false, description:'Minimum password size used on password reset'),
+         new ConfigurationItem(key:'ehrserver.security.password_token.expiration', value:'1440',                                 type:'number',  blank:false, description:'Number of minutes after the password reset token expires'),
+         new ConfigurationItem(key:'ehrserver.query.snquery.auth_token',           value:'22222222-2222-2222-2222-222222222222', type:'uuid',    blank:false, description:'Limited access key to SNQUERY server to evaluate SNOMED CT expressions in openEHR queries. For an unlimited access key contact https://www.veratech.es/'),
+         new ConfigurationItem(key:'ehrserver.query.snquery.enabled',              value:'false',                                type:'boolean', blank:false, description:'This flag enables or disables access to the SNQUERY service, if false, all queries with SNOMED CT operators will be ignored')
       ]
 
       conf.each {
