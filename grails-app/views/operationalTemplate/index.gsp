@@ -60,8 +60,9 @@
             </g:userHasAnyRole>
 
             <g:link action="trash">
-              <button type="button" class="btn btn-default btn-md">
+              <button type="button" class="btn btn-danger btn-md">
                 <span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="operationalTemplate.trash.label" />
+                <span class="badge">${count_deleted}</span>
               </button></g:link>
           </g:else>
         </div>

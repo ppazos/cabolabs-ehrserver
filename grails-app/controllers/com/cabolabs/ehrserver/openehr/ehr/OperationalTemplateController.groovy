@@ -72,8 +72,10 @@ class OperationalTemplateController {
                 .forOrg(org).likeConcept(concept).deleted.lastVersions
                 .list(max: max, offset: offset, sort: sort, order: order)
       }
+      def count_deleted = OperationalTemplateIndex
+                .forOrg(org).likeConcept(concept).deleted.lastVersions.count()
 
-      [opts: list, total: list.totalCount]
+      [opts: list, total: list.totalCount, count_deleted: count_deleted]
    }
 
    /**
