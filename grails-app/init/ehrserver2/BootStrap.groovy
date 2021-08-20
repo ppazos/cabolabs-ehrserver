@@ -772,11 +772,10 @@ class BootStrap {
       // then any othre use will use the same internal repo.
       // ***********************************************************************
       def repo = RepositoryFactory.getInstance().getOPTRepository()
-      def optMan = OptManager.getInstance(repo)
+      def optMan = OptManager.getInstance()
+      optMan.init(repo)
 
       // in memory cache, loads files located in the namespace folder
-      //def optRepo = grailsApplication.config.getProperty('app.opt_repo')
-      //def optMan = OptManager.getInstance(optRepo.withTrailSeparator())
       orgs.each { org ->
 
          log.info("creating OPT repo folder for organization "+ org.uid)
