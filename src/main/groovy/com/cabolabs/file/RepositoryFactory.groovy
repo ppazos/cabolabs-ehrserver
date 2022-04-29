@@ -31,6 +31,7 @@ class RepositoryFactory {
       def repo
       if (optService instanceof com.cabolabs.ehrserver.openehr.OptFSService) // File System Config
       {
+         println ">>> " + new File(Holders.config.app.opt_repo.withTrailSeparator()).absolutePath
          repo = new OptRepositoryFSImpl(Holders.config.app.opt_repo.withTrailSeparator())
       }
       else if (optService instanceof com.cabolabs.ehrserver.openehr.OptS3Service) // S3 Config
