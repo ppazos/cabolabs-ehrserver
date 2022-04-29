@@ -230,6 +230,10 @@ environments:
             dbCreate: update
             url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC
     production:
+        app:
+            version_repo: ${EHRSERVER_WORKING_FOLDER}versions
+            commit_logs: ${EHRSERVER_WORKING_FOLDER}commits
+            opt_repo: ${EHRSERVER_WORKING_FOLDER}opts
         dataSource:
             dbCreate: ${EHRSERVER_MYSQL_DB_BEHAVIOUR}
             url: jdbc:mysql://${EHRSERVER_MYSQL_DB_HOST}:${EHRSERVER_MYSQL_DB_PORT}/${EHRSERVER_DB_NAME}?useTimezone=true&serverTimezone=UTC
