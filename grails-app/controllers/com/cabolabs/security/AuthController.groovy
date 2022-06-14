@@ -163,7 +163,7 @@ class AuthController {
          user.save(flush:true)
 
          flash.message = message(code:"user.resetPassword.passwordResetOK")
-         redirect controller:'login', action:'auth'
+         redirect action:'login'
          return
       }
    }
