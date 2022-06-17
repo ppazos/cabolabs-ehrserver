@@ -44,7 +44,7 @@ class OperationalTemplateIndexerJob {
          def optMan = OptManager.getInstance()
          println optIndex
          println optIndex.templateId
-         println optIndex.externalTemplateId
+         println optIndex.localTemplateId
          
          println optMan.status()
          optMan.load(optIndex.templateId, optIndex.organizationUid, true)

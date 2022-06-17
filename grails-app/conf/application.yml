@@ -217,6 +217,7 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
+    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     username: ${EHRSERVER_MYSQL_DB_USERNAME}
     password: ${EHRSERVER_MYSQL_DB_PASSWORD}
 

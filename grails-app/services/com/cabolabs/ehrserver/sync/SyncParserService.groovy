@@ -330,21 +330,21 @@ class SyncParserService {
    OperationalTemplateIndex toJSONOpt(JSONObject j)
    {
       def templateIndex = new OperationalTemplateIndex(
-         templateId:    j.templateId,
-         externalTemplateId: j.externalTemplateId,
-         concept:       j.concept,
-         language:      j.language,
-         uid:           j.uid,
-         externalUid:   j.externalUid,
-         archetypeId:   j.archetypeId,
+         templateId:       j.templateId,
+         localTemplateId:  j.localTemplateId,
+         concept:          j.concept,
+         language:         j.language,
+         uid:              j.uid,
+         localUid:         j.localUid,
+         archetypeId:      j.archetypeId,
          archetypeConcept: j.archetypeConcept,
-         isActive:      j.isActive,
-         master:        false,
-         dateCreated:   new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
-         setId:         j.setId,
-         versionNumber: j.versionNumber,
-         lastVersion:   j.lastVersion,
-         fileLocation:  j.fileLocation
+         isActive:         j.isActive,
+         master:           false,
+         dateCreated:      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(j.dateCreated),
+         setId:            j.setId,
+         versionNumber:    j.versionNumber,
+         lastVersion:      j.lastVersion,
+         fileLocation:     j.fileLocation
       )
 
       def xml = j.opt
