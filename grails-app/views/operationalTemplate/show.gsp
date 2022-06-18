@@ -63,12 +63,12 @@
         <div class="btn-toolbar" role="toolbar">
           <fieldset class="buttons">
             <g:if test="${opt.isActive}">
-              <g:link action="deactivate" params="[uid: opt.uid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-ban fa-fw" aria-hidden="true"></span> <g:message code="opt.actions.deactivate" /></button></g:link>
+              <g:link action="deactivate" params="[uid: opt.localUid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-ban fa-fw" aria-hidden="true"></span> <g:message code="opt.actions.deactivate" /></button></g:link>
             </g:if>
             <g:else>
-              <g:link action="activate" params="[uid: opt.uid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-success btn-md"><span class="fa fa-eye fa-fw" aria-hidden="true"></span> <g:message code="opt.actions.activate" /></button></g:link>
+              <g:link action="activate" params="[uid: opt.localUid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-success btn-md"><span class="fa fa-eye fa-fw" aria-hidden="true"></span> <g:message code="opt.actions.activate" /></button></g:link>
             </g:else>
-            <g:link class="delete" action="delete" params="[uid: opt.uid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" default="Delete" /></button></g:link>
+            <g:link class="delete" action="delete" params="[uid: opt.localUid]" data-toggle="confirmation" data-title="Are you sure?"><button type="button" class="btn btn-danger btn-md"><span class="fa fa-trash fa-fw" aria-hidden="true"></span> <g:message code="default.button.delete.label" default="Delete" /></button></g:link>
           </fieldset>
         </div>
 

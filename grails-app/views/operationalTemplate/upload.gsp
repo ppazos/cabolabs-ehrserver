@@ -169,7 +169,7 @@
             '<div class="alert alert-info alert-dismissible" role="alert" style="position: fixed; top: 10px; z-index: 1099; display: block; width:80%; left:10%;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> '+
             data.message +'</div>'
           );
-          location.href = '${createLink("action": "show")}/'+ data.opt.uid;
+          location.href = '${createLink("action": "show")}/'+ data.opt.localUid;
         }
         else if (data.status == "error")
         {
@@ -216,7 +216,7 @@
           );
 
           $.each(data.alternatives, function( i, opt ) {
-            $('select', '#alternative_opts').append('<option value="'+ opt.uid +'">'+ opt.concept +' ('+ opt.templateId +')</option>');
+            $('select', '#alternative_opts').append('<option value="'+ opt.localUid +'">'+ opt.concept +' ('+ opt.templateId +')</option>');
           });
 
           $('#alternative_opts').show();

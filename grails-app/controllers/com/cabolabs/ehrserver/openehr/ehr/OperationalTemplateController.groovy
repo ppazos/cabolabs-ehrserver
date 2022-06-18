@@ -283,7 +283,7 @@ class OperationalTemplateController {
 
    def show(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
@@ -307,7 +307,7 @@ class OperationalTemplateController {
 
    def items(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -329,7 +329,7 @@ class OperationalTemplateController {
 
    def archetypeItems(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -358,7 +358,7 @@ class OperationalTemplateController {
     */
    def delete(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
@@ -391,7 +391,7 @@ class OperationalTemplateController {
 
    def activate(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -408,7 +408,7 @@ class OperationalTemplateController {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
-            property('uid')
+            property('localUid')
          }
       }
 
@@ -417,7 +417,7 @@ class OperationalTemplateController {
 
    def deactivate(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -432,7 +432,7 @@ class OperationalTemplateController {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
-            property('uid')
+            property('localUid')
          }
       }
 
