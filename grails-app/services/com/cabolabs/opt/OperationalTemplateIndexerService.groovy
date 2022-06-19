@@ -250,10 +250,7 @@ class OperationalTemplateIndexerService {
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
 
       // used to get the file name
-      def file_name, location
-      //def prefix_cut_index
-      //def suffix_cut_index = '.opt'.size() + 1
-      def parsed_template, template_id
+      def location, parsed_template, template_id
 
       opt_contents.each { absolute_path, opt_text ->
 
@@ -269,20 +266,7 @@ class OperationalTemplateIndexerService {
 
          template_id = parsed_template.template_id.value.text()
 
-         // new key considering the repo of the org
          location = optService.newOPTFileLocation(org.uid, template_id)
-
-
-         //prefix_cut_index = absolute_path.indexOf('base_opts') + 'base_opts/'.size()
-
-         // this is the normalized template id
-         // IMPORTANT: when creating base_opts, the names of the files should be normalized!!! (its the internal template ID)
-         //file_name = absolute_path[prefix_cut_index..-suffix_cut_index]
-
-         //println file_name
-
-         // new key considering the repo of the org
-         //location = optService.newOPTFileLocation(org.uid, file_name)
 
          // copies the contents to the new location under the organization
          optService.storeOPTContents(location, opt_text)
