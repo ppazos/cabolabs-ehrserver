@@ -1,10 +1,10 @@
 <terminology name="openehr" language="es">	
 	<codeset issuer="openehr" openehr_id="compression algorithms" external_id="openehr_compression_algorithms">
-		<code value="compress"/>
-		<code value="deflate"/>
+		<code value="compresión"/>
+		<code value="deflación"/>
 		<code value="gzip"/>
 		<code value="zlib"/>
-		<code value="other"/>
+		<code value="otro"/>
 	</codeset>
 	<codeset issuer="openehr" openehr_id="integrity check algorithms" external_id="openehr_integrity_check_algorithms">
 		<code value="SHA-1"/>
@@ -24,16 +24,17 @@
 		<concept id="648" rubric="testigo"/>
 	</group>
 	<group name="audit change type">
-		<concept id="249" rubric="creacion"/>
-		<concept id="250" rubric="amendment"/>
-		<concept id="251" rubric="modificacion"/>
-		<concept id="252" rubric="synthesis"/>
-		<concept id="523" rubric="deleted"/>
-		<concept id="666" rubric="attestation"/>
-		<concept id="253" rubric="unknown"/>
+		<concept id="249" rubric="creación"/>
+		<concept id="250" rubric="enmienda"/>
+		<concept id="251" rubric="modificación"/>
+		<concept id="252" rubric="síntesis"/>
+		<concept id="523" rubric="eliminado"/>
+		<concept id="666" rubric="testimonio"/>
+		<concept id="253" rubric="desconocido"/>
 	</group>
 	<group name="composition category">
 		<concept id="431" rubric="persistente"/>
+		<concept id="435" rubric="episódico"/>
 		<concept id="433" rubric="evento"/>
 	</group>
 	<group name="MultiMedia">
@@ -166,18 +167,18 @@
 		<concept id="685" rubric="Refractive power"/>
 	</group>
 	<group name="version lifecycle state">
-		<concept id="532" rubric="complete"/>
-		<concept id="553" rubric="incomplete"/>
-		<concept id="523" rubric="deleted"/>
+		<concept id="532" rubric="completo"/>
+		<concept id="553" rubric="incompleto"/>
+		<concept id="523" rubric="eliminado"/>
 	</group>
 	<group name="participation function">
-		<concept id="253" rubric="unknown"/>
+		<concept id="253" rubric="desconocido"/>
 	</group>
 	<group name="null flavours">
-		<concept id="271" rubric="no information"/>
-		<concept id="253" rubric="unknown"/>
-		<concept id="272" rubric="masked"/>
-		<concept id="273" rubric="not applicable"/>
+		<concept id="271" rubric="sin información"/>
+		<concept id="253" rubric="desconocido"/>
+		<concept id="272" rubric="oculto"/>
+		<concept id="273" rubric="no aplica"/>
 	</group>
 	<group name="participation mode">
 		<concept id="193" rubric="not specified"/>
@@ -214,107 +215,108 @@
 		<concept id="220" rubric="physically remote"/>
 	</group>
 	<group name="instruction states">
-		<concept id="524" rubric="initial"/>
-		<concept id="526" rubric="planned"/>
-		<concept id="527" rubric="postponed"/>
-		<concept id="528" rubric="cancelled"/>
-		<concept id="529" rubric="scheduled"/>
-		<concept id="245" rubric="active"/>
-		<concept id="530" rubric="suspended"/>
-		<concept id="531" rubric="aborted"/>
-		<concept id="532" rubric="completed"/>
-		<concept id="533" rubric="expired"/>
+		<concept id="524" rubric="inicial"/>
+		<concept id="526" rubric="planificado"/>
+		<concept id="527" rubric="postpuesto"/>
+		<concept id="528" rubric="cancelado"/>
+		<concept id="529" rubric="coordinado"/>
+		<concept id="245" rubric="activo"/>
+		<concept id="530" rubric="suspendido"/>
+		<concept id="531" rubric="abortado"/>
+		<concept id="532" rubric="completado"/>
+		<concept id="533" rubric="expirado"/>
 	</group>
 	<group name="instruction transitions">
-		<concept id="535" rubric="initiate"/>
-		<concept id="536" rubric="plan step"/>
-		<concept id="537" rubric="postpone"/>
-		<concept id="538" rubric="restore"/>
-		<concept id="166" rubric="cancel"/>
-		<concept id="542" rubric="postponed step"/>
-		<concept id="539" rubric="schedule"/>
-		<concept id="540" rubric="start"/>
-		<concept id="541" rubric="do"/>
-		<concept id="543" rubric="active step"/>
-		<concept id="544" rubric="suspend"/>
-		<concept id="545" rubric="suspended step"/>
-		<concept id="546" rubric="resume"/>
-		<concept id="547" rubric="abort"/>
-		<concept id="548" rubric="finish"/>
-		<concept id="549" rubric="time out"/>
-		<concept id="550" rubric="notify aborted"/>
-		<concept id="551" rubric="notify completed"/>
-		<concept id="552" rubric="notify cancelled"/>
+		<concept id="535" rubric="iniciar"/>
+		<concept id="536" rubric="paso del plan"/>
+		<concept id="537" rubric="postponer"/>
+		<concept id="538" rubric="restaurar"/>
+		<concept id="166" rubric="cancelar"/>
+		<concept id="542" rubric="paso postpuesto"/>
+		<concept id="539" rubric="coordinar"/>
+		<concept id="534" rubric="paso coordinado"/>
+		<concept id="540" rubric="comienzar"/>
+		<concept id="541" rubric="realizar"/>
+		<concept id="543" rubric="paso activo"/>
+		<concept id="544" rubric="suspender"/>
+		<concept id="545" rubric="paso suspendido"/>
+		<concept id="546" rubric="reanudar"/>
+		<concept id="547" rubric="abortar"/>
+		<concept id="548" rubric="terminar"/>
+		<concept id="549" rubric="se acabó el tiempo"/>
+		<concept id="550" rubric="notificar abortado"/>
+		<concept id="551" rubric="notificar completado"/>
+		<concept id="552" rubric="notificar cancelado"/>
 	</group>
 	<group name="subject relationship">
-		<concept id="0" rubric="self"/>
-		<concept id="3" rubric="foetus"/>
-		<concept id="10" rubric="mother"/>
-		<concept id="9" rubric="father"/>
-		<concept id="6" rubric="donor"/>
-		<concept id="253" rubric="unknown"/>
-		<concept id="261" rubric="adopted daughter"/>
-		<concept id="260" rubric="adopted son"/>
-		<concept id="259" rubric="adoptive father"/>
-		<concept id="258" rubric="adoptive mother"/>
-		<concept id="256" rubric="biological father"/>
-		<concept id="255" rubric="biological mother"/>
-		<concept id="23" rubric="brother"/>
-		<concept id="28" rubric="child"/>
-		<concept id="265" rubric="cohabitee"/>
-		<concept id="257" rubric="cousin"/>
-		<concept id="29" rubric="daughter"/>
-		<concept id="264" rubric="guardian"/>
-		<concept id="39" rubric="maternal aunt"/>
-		<concept id="8" rubric="maternal"/>
-		<concept id="7" rubric="maternal "/>
-		<concept id="38" rubric="maternal uncle"/>
-		<concept id="189" rubric="neonate"/>
-		<concept id="254" rubric="parent"/>
-		<concept id="22" rubric="partner/spouse"/>
-		<concept id="41" rubric="paternal aunt"/>
-		<concept id="36" rubric="paternal grandfa-"/>
-		<concept id="37" rubric="paternal grand-"/>
-		<concept id="40" rubric="paternal uncle"/>
-		<concept id="27" rubric="sibling"/>
-		<concept id="24" rubric="sister"/>
-		<concept id="31" rubric="son"/>
-		<concept id="263" rubric="step father"/>
-		<concept id="262" rubric="step mother"/>
-		<concept id="25" rubric="step or half brother"/>
-		<concept id="26" rubric="step or half sister"/>
+		<concept id="0" rubric="sí mismo"/>
+		<concept id="3" rubric="feto"/>
+		<concept id="10" rubric="madre"/>
+		<concept id="9" rubric="padre"/>
+		<concept id="6" rubric="donante"/>
+		<concept id="253" rubric="desconocido"/>
+		<concept id="261" rubric="hija adoptiva"/>
+		<concept id="260" rubric="hijo adoptivo"/>
+		<concept id="259" rubric="padre adoptivo"/>
+		<concept id="258" rubric="madre adoptiva"/>
+		<concept id="256" rubric="padre biológico"/>
+		<concept id="255" rubric="madre biológica"/>
+		<concept id="23" rubric="hermano"/>
+		<concept id="28" rubric="niño"/>
+		<concept id="265" rubric="cohabitante"/>
+		<concept id="257" rubric="primo"/>
+		<concept id="29" rubric="hija"/>
+		<concept id="264" rubric="guardián"/>
+		<concept id="39" rubric="tía materna"/>
+		<concept id="8" rubric="abuelo materno"/>
+		<concept id="7" rubric="abuela materna"/>
+		<concept id="38" rubric="tío materno"/>
+		<concept id="189" rubric="neonato"/>
+		<concept id="254" rubric="padre"/>
+		<concept id="22" rubric="compañero/esposo"/>
+		<concept id="41" rubric="tía paterna"/>
+		<concept id="36" rubric="abuelo paterno"/>
+		<concept id="37" rubric="abuela paterna"/>
+		<concept id="40" rubric="tío paterno"/>
+		<concept id="27" rubric="hermano"/>
+		<concept id="24" rubric="hermana"/>
+		<concept id="31" rubric="hijo"/>
+		<concept id="263" rubric="padrastro"/>
+		<concept id="262" rubric="madrastra"/>
+		<concept id="25" rubric="hermanastro o medio hermano"/>
+		<concept id="26" rubric="hermanastra o media hermana"/>
 	</group>
 	<group name="term mapping purpose">
-		<concept id="669" rubric="public health"/>
-		<concept id="670" rubric="reimbursement"/>
-		<concept id="671" rubric="research study"/>
+		<concept id="669" rubric="salud pública"/>
+		<concept id="670" rubric="reembolso"/>
+		<concept id="671" rubric="investigación"/>
 	</group>
-	<group name="evento math function">
-		<concept id="145" rubric="minimum"/>
-		<concept id="144" rubric="maximum"/>
-		<concept id="267" rubric="mode"/>
-		<concept id="268" rubric="median"/>
-		<concept id="146" rubric="mean"/>
-		<concept id="147" rubric="change"/>
+	<group name="event math function">
+		<concept id="145" rubric="mínimo"/>
+		<concept id="144" rubric="máximo"/>
+		<concept id="267" rubric="modo"/>
+		<concept id="268" rubric="mediana"/>
+		<concept id="146" rubric="media"/>
+		<concept id="147" rubric="cambio"/>
 		<concept id="148" rubric="total"/>
-		<concept id="149" rubric="variation"/>
-		<concept id="521" rubric="decrease"/>
-		<concept id="522" rubric="increase"/>
-		<concept id="640" rubric="actual"/>
+		<concept id="149" rubric="variación"/>
+		<concept id="521" rubric="disminución"/>
+		<concept id="522" rubric="incremento"/>
+		<concept id="640" rubric="real"/>
 	</group>
 	<group name="setting">
-		<concept id="225" rubric="home"/>
-		<concept id="227" rubric="emergency care"/>
-		<concept id="228" rubric="primary medical "/>
-		<concept id="229" rubric="primary nursing "/>
-		<concept id="230" rubric="primary allied "/>
-		<concept id="231" rubric="midwifery care"/>
-		<concept id="232" rubric="secondary medical "/>
-		<concept id="233" rubric="secondary nursing "/>
-		<concept id="234" rubric="secondary allied "/>
-		<concept id="235" rubric="complementary "/>
-		<concept id="236" rubric="dental care"/>
-		<concept id="237" rubric="nursing home care"/>
-		<concept id="238" rubric="other care"/>
+		<concept id="225" rubric="hogar"/>
+		<concept id="227" rubric="atención de emergencia"/>
+		<concept id="228" rubric="atención médica primaria"/>
+		<concept id="229" rubric="atención primaria de enfermería"/>
+		<concept id="230" rubric="atención primaria de trabajadores de la salud"/>
+		<concept id="231" rubric="atención de partera"/>
+		<concept id="232" rubric="atención médica secundaria"/>
+		<concept id="233" rubric="atención secundaria de enfermería"/>
+		<concept id="234" rubric="atención secundaria de trabajadores de la salud"/>
+		<concept id="235" rubric="atención complementaria"/>
+		<concept id="236" rubric="atención dental"/>
+		<concept id="237" rubric="atención en casa de salud"/>
+		<concept id="238" rubric="otros cuidados"/>
 	</group>
 </terminology>
