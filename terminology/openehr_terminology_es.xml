@@ -181,38 +181,38 @@
 		<concept id="273" rubric="no aplica"/>
 	</group>
 	<group name="participation mode">
-		<concept id="193" rubric="not specified"/>
-		<concept id="216" rubric="face-to-face communication"/>
-		<concept id="223" rubric="interpreted face-to-face communication"/>
-		<concept id="217" rubric="signing (face-to-face)"/>
-		<concept id="195" rubric="live audiovisual; videoconference; videophone"/>
-		<concept id="198" rubric="videoconferencing"/>
-		<concept id="197" rubric="videophone"/>
-		<concept id="218" rubric="signing over video"/>
-		<concept id="224" rubric="interpreted video communication"/>
-		<concept id="194" rubric="asynchronous audiovisual; recorded video"/>
-		<concept id="196" rubric="recorded video"/>
-		<concept id="202" rubric="live audio-only; telephone; internet phone; teleconference"/>
-		<concept id="204" rubric="telephone"/>
-		<concept id="203" rubric="teleconference"/>
-		<concept id="205" rubric="internet telephone"/>
-		<concept id="222" rubric="interpreted audio-only"/>
-		<concept id="199" rubric="asynchronous audio-only; dictated; voice mail"/>
-		<concept id="200" rubric="dictated"/>
-		<concept id="201" rubric="voice-mail"/>
-		<concept id="212" rubric="live text-only; internet chat; SMS chat; interactive written note"/>
-		<concept id="213" rubric="internet chat"/>
-		<concept id="214" rubric="SMS chat"/>
-		<concept id="215" rubric="interactive written note"/>
-		<concept id="206" rubric="asynchronous text; email; fax; letter; handwritten note; SMS message"/>
-		<concept id="211" rubric="handwritten note"/>
-		<concept id="210" rubric="printed/typed letter"/>
-		<concept id="207" rubric="email"/>
-		<concept id="208" rubric="facsimile/telefax"/>
-		<concept id="221" rubric="translated text"/>
-		<concept id="209" rubric="SMS message"/>
-		<concept id="219" rubric="physically present"/>
-		<concept id="220" rubric="physically remote"/>
+		<concept id="193" rubric="no especificado"/>
+		<concept id="216" rubric="comunicación cara a cara"/>
+		<concept id="223" rubric="comunicación cara a cara interpretada"/>
+		<concept id="217" rubric="firma (cara a cara)"/>
+		<concept id="195" rubric="audiovisuales en vivo; video conferencia; video llamada"/>
+		<concept id="198" rubric="video conferencia"/>
+		<concept id="197" rubric="video llamada"/>
+		<concept id="218" rubric="firma sobre video"/>
+		<concept id="224" rubric="comunicación por video interpretada"/>
+		<concept id="194" rubric="audiovisual asíncrona; video grabado"/>
+		<concept id="196" rubric="video grabado"/>
+		<concept id="202" rubric="sólo audio en vivo; teléfono; teléfono de internet; tele-conferencia"/>
+		<concept id="204" rubric="teléfono"/>
+		<concept id="203" rubric="tele-conferencia"/>
+		<concept id="205" rubric="teléfono de internet"/>
+		<concept id="222" rubric="sólo audio interpretado"/>
+		<concept id="199" rubric="sólo audio asíncrono; dictado; correo de voz"/>
+		<concept id="200" rubric="dictado"/>
+		<concept id="201" rubric="correo de voz"/>
+		<concept id="212" rubric="sólo texto en vivo; charla de texto por internet; charla por SMS; nota escrita interactiva"/>
+		<concept id="213" rubric="charla (texto) por internet"/>
+		<concept id="214" rubric="charla por SMS"/>
+		<concept id="215" rubric="nota escrita interactiva"/>
+		<concept id="206" rubric="texto asíncrono; correo electrónico; fax; carta; nota manuscrita; mensaje SMS"/>
+		<concept id="211" rubric="nota manuscrita"/>
+		<concept id="210" rubric="carta impresa/escrita"/>
+		<concept id="207" rubric="correo electrónico"/>
+		<concept id="208" rubric="facsímil/telefax"/>
+		<concept id="221" rubric="texto traducido"/>
+		<concept id="209" rubric="mensajería SMS"/>
+		<concept id="219" rubric="físicamente presente"/>
+		<concept id="220" rubric="físicamente remoto"/>
 	</group>
 	<group name="instruction states">
 		<concept id="524" rubric="inicial"/>
