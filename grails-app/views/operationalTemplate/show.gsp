@@ -102,8 +102,6 @@
       </table>
     </div>
 
-
-
     <div class="row">
       <div class="col-md-12">
         <g:message code="common.format.xml" />
@@ -115,7 +113,7 @@
       $('#xml').addClass('xml');
       // The first replace removes the new lines and empty spaces of indentation
       // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
-      $('#xml').text(formatXml2( '${raw(opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'"))}' ));
+      $('#xml').text(formatXml2('${raw(opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'"))}'));
       $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
 
       $('[data-toggle=confirmation]').confirmation({

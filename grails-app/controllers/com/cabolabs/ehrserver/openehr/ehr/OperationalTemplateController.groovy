@@ -286,14 +286,12 @@ class OperationalTemplateController {
       def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
-         println "no opt"
          flash.message = message(code:"opt.common.error.templateNotFound")
          redirect action:'index'
          return
       }
       if (!opt.lastVersion)
       {
-         println "no last version"
          flash.message = message(code:"opt.common.error.templateNotLastVersion")
          redirect action:'index'
          return

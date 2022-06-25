@@ -34,8 +34,6 @@ class OperationalTemplateIndexerJob {
 
 
          xml = optService.getOPTContents(optIndex, -1)
-         println xml
-
          template = slurper.parseText(xml)
 
 
