@@ -345,7 +345,7 @@ class OperationalTemplateIndexerService {
       opt.isActive = true
       opt.save(flush: true, failOnError: true)
 
-      def opt_xml = optService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt, -1)
       def org = Organization.findByUid(opt.organizationUid)
 
       def clean_opt_xml = FileUtils.removeBOM(opt_xml.getBytes())
@@ -450,6 +450,8 @@ class OperationalTemplateIndexerService {
       // if it is not coming from an alraedy indexed OPT
       if (!this.templateIndex)
       {
+         def fileLocation = optService.newOPTFileLocation(org.uid, templateId)
+
          this.templateIndex = new OperationalTemplateIndex(
             localTemplateId: localTemplateId,
             templateId: templateId,
@@ -459,7 +461,8 @@ class OperationalTemplateIndexerService {
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
             organizationUid: org.uid,
-            fileLocation: optService.newOPTFileLocation(org.uid, templateId)
+            fileLocation: fileLocation,
+            size: new File(fileLocation).length() // FIXME: this doesn't work for S3 storage!
          )
 
          // TODO: log errors and throw except

@@ -286,18 +286,20 @@ class OperationalTemplateController {
       def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
+         println "no opt"
          flash.message = message(code:"opt.common.error.templateNotFound")
          redirect action:'index'
          return
       }
       if (!opt.lastVersion)
       {
+         println "no last version"
          flash.message = message(code:"opt.common.error.templateNotLastVersion")
          redirect action:'index'
          return
       }
 
-      def opt_xml = optService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt, -1)
 
       // get all versions of the OPT, including last (current opt uid)
       def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])

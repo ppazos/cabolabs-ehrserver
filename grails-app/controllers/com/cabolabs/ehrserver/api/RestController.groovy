@@ -1873,7 +1873,7 @@ class RestController {
          return
       }
 
-      def opt_out = optService.getOPTContents(opt)
+      def opt_out = optService.getOPTContents(opt, -1)
 
       withFormat {
          xml {

@@ -327,6 +327,7 @@ class SyncParserService {
       return eq
    }
 
+   // FIXME: sync should send the OPT files and generate these indexes in the slave server, instead of creating them in the master and send them.
    OperationalTemplateIndex toJSONOpt(JSONObject j)
    {
       def templateIndex = new OperationalTemplateIndex(
@@ -344,7 +345,8 @@ class SyncParserService {
          setId:            j.setId,
          versionNumber:    j.versionNumber,
          lastVersion:      j.lastVersion,
-         fileLocation:     j.fileLocation
+         fileLocation:     j.fileLocation,
+         size:             j.size
       )
 
       def xml = j.opt

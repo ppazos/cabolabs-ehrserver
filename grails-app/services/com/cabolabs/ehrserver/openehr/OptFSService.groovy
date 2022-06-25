@@ -17,7 +17,7 @@ class OptFSService {
    String getOPTContents(OperationalTemplateIndex opt, int max_bytes_to_return = 1000000)
    {
       // avoid returning files that are too big
-      if (new File(opt.fileLocation).length() > max_bytes_to_return)
+      if (max_bytes_to_return > 0 && opt.size > max_bytes_to_return)
       {
          return
       }

@@ -26,14 +26,16 @@ class OperationalTemplateIndexerJob {
 
       opts.each { optIndex ->
 
-         println "Indexing ${optIndex.templateId}"
+         println "Indexing ${optIndex.templateId} ${optIndex.fileLocation}"
 
          // FIXME: this is a terrible way of saying "do not create the OPTIndex", that should be a parameter or something else...
          // Generates OPT and archetype item indexes just for the uploaded OPT
          operationalTemplateIndexerService.templateIndex = optIndex // avoids creating another opt index internally and use the one created here
 
 
-         xml = optService.getOPTContents(optIndex)
+         xml = optService.getOPTContents(optIndex, -1)
+         println xml
+
          template = slurper.parseText(xml)
 
 
