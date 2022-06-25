@@ -1862,6 +1862,7 @@ class RestController {
    }
 
    @SecuredStateless
+   // FIXME: the opt.uid is the external uid, remove the externalUid parameter
    def getTemplate(String uid, String externalUid, String format)
    {
       def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, request.securityStatelessMap.extradata.org_uid)
@@ -1872,7 +1873,7 @@ class RestController {
          return
       }
 
-      def opt_out = optService.getOPTContents(opt)
+      def opt_out = optService.getOPTContents(opt, -1)
 
       withFormat {
          xml {

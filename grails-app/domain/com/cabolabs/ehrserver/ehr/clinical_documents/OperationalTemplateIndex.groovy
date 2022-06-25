@@ -24,12 +24,23 @@ package com.cabolabs.ehrserver.ehr.clinical_documents
 
 class OperationalTemplateIndex {
 
+   /*
    String templateId       // formatted template id
    String concept          // Concept name of the OPT
    String language         // en formato 'en', antes era ISO_639-1::en pero https://github.com/ppazos/cabolabs-ehrserver/issues/878
    String uid = java.util.UUID.randomUUID() as String
    String externalUid      // from the OPT file
    String externalTemplateId // from the OPT file
+   */
+
+   String localTemplateId  // normalized templateId
+   String localUid = java.util.UUID.randomUUID() as String
+
+   String concept          // Concept name of the OPT
+   String language         // en formato 'en', antes era ISO_639-1::en pero https://github.com/ppazos/cabolabs-ehrserver/issues/878
+
+   String uid              // original from the OPT file
+   String templateId       // original from the file without normalization
    String archetypeId      // root archetype id
    String archetypeConcept // concept name for the archetype root node
 
@@ -41,6 +52,7 @@ class OperationalTemplateIndex {
    boolean lastVersion = true // to simplify queries
 
    String fileLocation
+   Integer size // file in bytes
 
    Date dateCreated
    Date lastUpdated
@@ -57,6 +69,7 @@ class OperationalTemplateIndex {
 
    static constraints = {
       fileLocation(maxSize:1024)
+      size(nullable: true)
    }
 
    static transients = ['lang']
@@ -82,10 +95,10 @@ class OperationalTemplateIndex {
 
          eq('lastVersion', true)
       }
-      matchExternalUidOrExternalTemplateId { externalUid, templateId ->
+      matchUidOrTemplateId { uid, templateId ->
          or {
-            eq('externalUid', externalUid)
-            eq('externalTemplateId', templateId)
+            eq('uid', uid)
+            eq('templateId', templateId)
          }
       }
       notDeleted {

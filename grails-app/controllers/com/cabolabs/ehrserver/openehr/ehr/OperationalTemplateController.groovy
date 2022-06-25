@@ -84,7 +84,8 @@ class OperationalTemplateController {
     */
    def generate()
    {
-      operationalTemplateIndexerService.indexAll(session.organization)
+      def repo = RepositoryFactory.getInstance().getOPTRepository()
+      operationalTemplateIndexerService.indexAll(session.organization, repo)
 
       // load opt in manager cache
       def optMan = OptManager.getInstance()
@@ -201,10 +202,10 @@ class OperationalTemplateController {
          def opt_uid = template.uid.value.text()
          def opt_template_id = template.template_id.value.text()
          def alternatives = OperationalTemplateIndex.forOrg(session.organization)
-                                            .matchExternalUidOrExternalTemplateId(opt_uid, opt_template_id)
+                                            .matchUidOrTemplateId(opt_uid, opt_template_id)
                                             .lastVersions
                                             .list()
-         if (alternatives.size() > 0)
+         if (alternatives)
          {
             if (!versionOfTemplateUid) // user needs to resolve revision
             {
@@ -225,7 +226,7 @@ class OperationalTemplateController {
                }
 
                // the user selected an OPT different than the one that has the same internal UID?
-               def same_uid_opts = alternatives.findAll{ it.externalUid == opt_uid }
+               def same_uid_opts = alternatives.findAll{ it.uid == opt_uid }
 
                if (same_uid_opts.size() > 1 || same_uid_opts[0].id != old_version.id)
                {
@@ -282,7 +283,7 @@ class OperationalTemplateController {
 
    def show(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
@@ -296,7 +297,7 @@ class OperationalTemplateController {
          return
       }
 
-      def opt_xml = optService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt, -1)
 
       // get all versions of the OPT, including last (current opt uid)
       def versions = OperationalTemplateIndex.findAllBySetId(opt.setId, [sort: 'versionNumber', order: 'desc'])
@@ -306,7 +307,7 @@ class OperationalTemplateController {
 
    def items(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -328,7 +329,7 @@ class OperationalTemplateController {
 
    def archetypeItems(String uid, String sort, String order)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -357,7 +358,7 @@ class OperationalTemplateController {
     */
    def delete(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
       if (!opt)
       {
          flash.message = message(code:"opt.common.error.templateNotFound")
@@ -390,7 +391,7 @@ class OperationalTemplateController {
 
    def activate(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -407,7 +408,7 @@ class OperationalTemplateController {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
-            property('uid')
+            property('localUid')
          }
       }
 
@@ -416,7 +417,7 @@ class OperationalTemplateController {
 
    def deactivate(String uid)
    {
-      def opt = OperationalTemplateIndex.findByUidAndOrganizationUid(uid, session.organization.uid)
+      def opt = OperationalTemplateIndex.findByLocalUidAndOrganizationUid(uid, session.organization.uid)
 
       if (!opt)
       {
@@ -431,7 +432,7 @@ class OperationalTemplateController {
          eq('setId', opt.setId)
          eq('lastVersion', true)
          projections {
-            property('uid')
+            property('localUid')
          }
       }
 

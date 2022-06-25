@@ -19,7 +19,7 @@ class OptS3Service {
 
    def operationalTemplateIndexer
 
-   // TODO: refactor, these are the same as the ones in VersionFSRepoService, just the repo field changes.
+   // TODO: refactor, these methods are implemented in OptRepositoryS3Impl, we could use that one instead of repeating the code
    AmazonS3 s3
 
    // this initalizes the S3 connection when the service is created

@@ -136,7 +136,7 @@
                 <g:each in="${sameLangTemplates}" status="i" var="templateInstance">
                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                     <td>
-                      <g:link action="show" id="${templateInstance.uid}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                      <g:link action="show" id="${templateInstance.localUid}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
                     </td>
                     <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
                     <td>${fieldValue(bean: templateInstance, field: "language")}</td>
@@ -144,9 +144,9 @@
                     <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
                     <td>${templateInstance.versionNumber}</td>
                     <td>
-                      <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
+                      <g:link action="items" params="[uid: templateInstance.localUid]"><g:message code="template.list.template_indexes" /></g:link>
                       <br/>
-                      <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
+                      <g:link action="archetypeItems" params="[uid: templateInstance.localUid]"><g:message code="template.list.archetype_indexes" /></g:link>
                     </td>
                   </tr>
                 </g:each>
@@ -171,7 +171,7 @@
                 <g:each in="${otherLangTemplates}" status="i" var="templateInstance">
                   <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                     <td>
-                      <g:link action="show" params="[uid:templateInstance.uid]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
+                      <g:link action="show" params="[uid:templateInstance.localUid]" title="Ver XML ${templateInstance.concept}" id="${templateInstance.id}">${fieldValue(bean: templateInstance, field: "templateId")}</g:link>
                     </td>
                     <td>${fieldValue(bean: templateInstance, field: "concept")}</td>
                     <td>${fieldValue(bean: templateInstance, field: "language")}</td>
@@ -179,9 +179,9 @@
                     <td>${fieldValue(bean: templateInstance, field: "archetypeId")}</td>
                     <td>${templateInstance.versionNumber}</td>
                     <td>
-                      <g:link action="items" params="[uid: templateInstance.uid]"><g:message code="template.list.template_indexes" /></g:link>
+                      <g:link action="items" params="[uid: templateInstance.localUid]"><g:message code="template.list.template_indexes" /></g:link>
                       <br/>
-                      <g:link action="archetypeItems" params="[uid: templateInstance.uid]"><g:message code="template.list.archetype_indexes" /></g:link>
+                      <g:link action="archetypeItems" params="[uid: templateInstance.localUid]"><g:message code="template.list.archetype_indexes" /></g:link>
                     </td>
                   </tr>
                 </g:each>

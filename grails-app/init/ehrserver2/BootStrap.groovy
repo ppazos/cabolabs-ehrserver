@@ -451,12 +451,13 @@ class BootStrap {
       }
 
       JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
-        return [templateId:  opt.templateId,
-                concept:     opt.concept,
-                language:    opt.language,
-                uid:         opt.uid,
-                externalUid: opt.externalUid,
-                archetypeId: opt.archetypeId,
+        return [templateId:       opt.templateId,
+                localTemplateId:  opt.localTemplateId,
+                concept:          opt.concept,
+                language:         opt.language,
+                uid:              opt.uid,
+                localUid:         opt.localUid,
+                archetypeId:      opt.archetypeId,
                 archetypeConcept: opt.archetypeConcept,
                 organizationUid:  opt.organizationUid,
                 setID:       opt.setId,
@@ -736,10 +737,11 @@ class BootStrap {
       XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
         xml.build {
           templateId(opt.templateId)
+          localTemplateId(opt.localTemplateId)
           concept(opt.concept)
           language(opt.language)
           uid(opt.uid)
-          externalUid(opt.externalUid)
+          localUid(opt.localUid)
           archetypeId(opt.archetypeId)
           archetypeConcept(opt.archetypeConcept)
           organizationUid(opt.organizationUid)
@@ -971,9 +973,22 @@ class BootStrap {
          return delegate
       }
 
-      // String has the format aaaa.es.v1?
-      String.metaClass.isTemplateId = {
-         return (delegate ==~ /([a-z]+(_[a-z0-9]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)/)
+      // String has the format aaa_bb_cc?
+      String.metaClass.isNormalizedTemplateId = {
+         //return (delegate ==~ /([a-z]+(_[a-z0-9]+)*)\.([a-z]{2})\.v([0-9]+[0-9]*(\.[0-9]+[0-9]*(\.[0-9]+[0-9]*)?)?)/)
+         
+         // just checks snake case
+         // this is a copy of repo.isNormalizedTemplateId(delegate)
+         return (delegate ==~ /^([a-z]+(_[a-z0-9]+)*)$/)
+      }
+      String.metaClass.normalizeTemplateId = {
+         // https://gist.github.com/ppazos/12f3efc4eb178e43ff73a0c989a2e1d7
+         String normalized = java.text.Normalizer.normalize(delegate, java.text.Normalizer.Form.NFD).replaceAll(/\p{InCombiningDiacriticalMarks}+/, '')
+
+         // lowercase, no spaces, remove non (letters or numbers), remove beginning/ending underscores if there is any
+         String snake      = normalized.toLowerCase().replaceAll(/\s/, '_').replaceAll(/[^a-zA-Z0-9]+/,'_').replaceAll( /^_/, '' ).replaceAll( /_$/, '' )
+         String removeDots = snake.replaceAll(/\./, '_')
+         return removeDots
       }
 
       String.metaClass.toSnakeCase = {

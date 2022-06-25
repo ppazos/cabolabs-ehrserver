@@ -584,11 +584,11 @@ class SyncMarshallersService {
 
       jb.template {
          templateId o.templateId
-         externalTemplateId o.externalTemplateId
+         localTemplateId o.localTemplateId
          concept o.concept
          language o.language
          uid o.uid
-         externalUid o.externalUid
+         localUid o.localUid
          archetypeId o.archetypeId
          archetypeConcept o.archetypeConcept
          setId o.setId

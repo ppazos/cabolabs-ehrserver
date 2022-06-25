@@ -170,14 +170,29 @@ class OperationalTemplateIndexerService {
    def createOptIndex(GPathResult template, Organization org, String fileContents)
    {
       def templateId = template.template_id.value.text()
-      def externalTemplateId = templateId
+      def localTemplateId = templateId
+      def language = getTemplateLanguage(template)
 
       // normalize templateId for internal use
-      if (!templateId.isTemplateId())
+      if (!localTemplateId.isNormalizedTemplateId())
       {
-         def concept = templateId.toSnakeCase()
-         def lang = template.language.code_string.text()
-         templateId = concept +'.'+ lang +'.v1'
+         localTemplateId = optService.normalizeTemplateId(localTemplateId)
+
+         /*
+         // MODIFIES the templateId in the XML OPT with the normalized one
+         // FIXME: this should be an option given to the user
+
+         // delete template_id
+         template.template_id.replaceNode {}
+
+         // append sibling after uid, adds template_id
+         template.uid.replaceNode { uid ->
+            mkp.yield(uid)
+            template_id {
+               value(templateId)
+            }
+         }
+         */
       }
 
       def concept = template.concept.text()
@@ -186,21 +201,36 @@ class OperationalTemplateIndexerService {
       def archetypeId = template.definition.archetype_id.value.text()
       def archetypeConcept = template.definition.term_definitions.find { it.@code.text() == 'at0000' }.items.find { it.@id == 'text' }.text()
 
+      // stores pretty print
+      //def xmlString = groovy.xml.XmlUtil.serialize(template)
+      
+      // stores minified
+      def xmlString = new groovy.xml.StreamingMarkupBuilder(useDoubleQuotes: true).bind {
+         mkp.yield template
+      }.toString()
+
+
       def templateIndex = new OperationalTemplateIndex(
-         templateId: templateId,
-         externalTemplateId: externalTemplateId,
-         concept: concept,
-         language: getTemplateLanguage(template),
-         externalUid: uid,
-         archetypeId: archetypeId,
+         templateId:       templateId,
+         localTemplateId:  localTemplateId,
+         concept:          concept,
+         language:         getTemplateLanguage(template),
+         uid:              uid,
+         archetypeId:      archetypeId,
          archetypeConcept: archetypeConcept,
-         organizationUid: org.uid,
-         fileLocation: optService.newOPTFileLocation(org.uid, templateId)
+         organizationUid:  org.uid,
+         fileLocation:     optService.newOPTFileLocation(org.uid, templateId),
+         size:             xmlString.size()
       )
-      if (!templateIndex.save(flush:true)) println templateIndex.errors // TODO: log errors and throw except
+
+      if (!templateIndex.save(flush:true))
+      {
+         log.error(templateIndex.errors.toString())
+         // TODO: log errors and throw except
+      }
 
       // Write OPT file
-      optService.storeOPTContents(templateIndex.fileLocation, fileContents)
+      optService.storeOPTContents(templateIndex.fileLocation, xmlString)
 
       return templateIndex
    }
@@ -220,9 +250,7 @@ class OperationalTemplateIndexerService {
       def opt_contents = repo.getAllOptKeysAndContents(namespace) // also removes BOM!
 
       // used to get the file name
-      def file_name, location
-      def prefix_cut_index
-      def suffix_cut_index = '.opt'.size() + 1
+      def location, parsed_template, template_id
 
       opt_contents.each { absolute_path, opt_text ->
 
@@ -233,14 +261,12 @@ class OperationalTemplateIndexerService {
             return // avoid copying not valid OPT file
          }
 
-         prefix_cut_index = absolute_path.indexOf('base_opts') + 'base_opts/'.size()
+         // GPathResult
+         parsed_template = new XmlSlurper().parseText(opt_text)
 
-         // this is the normalized template id
-         // IMPORTANT: when creating base_opts, the names of the files should be normalized!!!
-         file_name = absolute_path[prefix_cut_index..-suffix_cut_index]
+         template_id = parsed_template.template_id.value.text()
 
-         // new key considering the repo of the org
-         location = optService.newOPTFileLocation(org.uid, file_name)
+         location = optService.newOPTFileLocation(org.uid, template_id)
 
          // copies the contents to the new location under the organization
          optService.storeOPTContents(location, opt_text)
@@ -319,7 +345,7 @@ class OperationalTemplateIndexerService {
       opt.isActive = true
       opt.save(flush: true, failOnError: true)
 
-      def opt_xml = optService.getOPTContents(opt)
+      def opt_xml = optService.getOPTContents(opt, -1)
       def org = Organization.findByUid(opt.organizationUid)
 
       def clean_opt_xml = FileUtils.removeBOM(opt_xml.getBytes())
@@ -351,16 +377,17 @@ class OperationalTemplateIndexerService {
          if (!xmlValidationService.validateOPT(opt_text))
          {
              // Important to keep the correspondence between version index and error reporting.
-            log.error("Invalid OPT found in organization ${org.uid} repo "+ xmlValidationService.getErrors())
+            log.error("Invalid OPT found in organization ${org.uid} repo at ${absolute_path} "+ xmlValidationService.getErrors().toString())
             return // avoid copying not valid OPT file
          }
 
-          // GPathResult
+         // GPathResult
          parsed_template = new XmlSlurper().parseText(opt_text)
 
          // index only if the opt doesnt exist, this avoids to load 2 opts with the same concept or uid from indexAll
          if (!templateAlreadyExistsForOrg(parsed_template, org))
          {
+            log.info('Indexing '+ absolute_path)
             index(parsed_template, org)
          }
          else
@@ -381,15 +408,14 @@ class OperationalTemplateIndexerService {
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
       def opts = OperationalTemplateIndex.forOrg(org)
-                                         .matchExternalUidOrExternalTemplateId(opt_uid, opt_template_id)
+                                         .matchUidOrTemplateId(opt_uid, opt_template_id)
                                          .list()
-
-      if (opts.size() != 0)
-      {
-         return true
-      }
-
-      return false
+      // TODO: check files with old and new formats
+      // println opt_uid
+      // println opt_template_id
+      // println opts
+      // println ""
+      return !opts.isEmpty()
    }
 
    private String getTemplateLanguage(GPathResult template)
@@ -405,19 +431,17 @@ class OperationalTemplateIndexerService {
       this.template = template
 
       // Create opt index
-      def externalTemplateId = this.template.template_id.value.text()
+      def templateId = this.template.template_id.value.text()
+      def language = getTemplateLanguage(template)
 
       // Standardize the templateId to concept.es.v1
-      def templateId = externalTemplateId
-      if (!templateId.isTemplateId())
+      def localTemplateId = templateId
+      if (!localTemplateId.isNormalizedTemplateId())
       {
-         def concept = templateId.toSnakeCase()
-         def lang = template.language.code_string.text()
-         templateId = concept +'.'+ lang +'.v1'
+         localTemplateId = optService.normalizeTemplateId(localTemplateId)
       }
 
       def concept = this.template.concept.text()
-      def language = getTemplateLanguage(template)
       def uid = this.template.uid.value.text()
 
       def archetypeId = this.template.definition.archetype_id.value.text()
@@ -426,16 +450,19 @@ class OperationalTemplateIndexerService {
       // if it is not coming from an alraedy indexed OPT
       if (!this.templateIndex)
       {
+         def fileLocation = optService.newOPTFileLocation(org.uid, templateId)
+
          this.templateIndex = new OperationalTemplateIndex(
+            localTemplateId: localTemplateId,
             templateId: templateId,
-            externalTemplateId: externalTemplateId,
             concept: concept,
             language: language,
-            externalUid: uid,
+            uid: uid,
             archetypeId: archetypeId,
             archetypeConcept: archetypeConcept,
             organizationUid: org.uid,
-            fileLocation: optService.newOPTFileLocation(org.uid, templateId)
+            fileLocation: fileLocation,
+            size: new File(fileLocation).length() // FIXME: this doesn't work for S3 storage!
          )
 
          // TODO: log errors and throw except
