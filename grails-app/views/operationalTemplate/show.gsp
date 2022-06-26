@@ -110,11 +110,13 @@
     </div>
 
     <script type="text/javascript">
-      $('#xml').addClass('xml');
-      // The first replace removes the new lines and empty spaces of indentation
-      // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
-      $('#xml').text(formatXml2('${raw(opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'"))}'));
-      $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+      <g:if test="${opt_xml}">
+        $('#xml').addClass('xml');
+        // The first replace removes the new lines and empty spaces of indentation
+        // The second escapes single quotes that might appear in the text of the XML that breaks the javascript
+        $('#xml').text(formatXml2('${raw(opt_xml.normalize().replaceAll(/\n(\s)*/,'').replaceAll("'", "\\\\'"))}'));
+        $('#xml').each(function(i, e) { hljs.highlightBlock(e); });
+      </g:if>
 
       $('[data-toggle=confirmation]').confirmation({
         rootSelector: '[data-toggle=confirmation]',
