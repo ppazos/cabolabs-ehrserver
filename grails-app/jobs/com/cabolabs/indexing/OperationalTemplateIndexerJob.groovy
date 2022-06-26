@@ -46,9 +46,9 @@ class OperationalTemplateIndexerJob {
          println optIndex.templateId
          println optIndex.localTemplateId
          
-         println optMan.status()
+         //println optMan.status()
          optMan.load(optIndex.templateId, optIndex.organizationUid, true)
-         println optMan.status()
+         //println optMan.status()
 
          // the mark as indexed happens in the service.index
          //optIndex.isIndexed = true
