@@ -460,8 +460,10 @@ class BootStrap {
                 archetypeId:      opt.archetypeId,
                 archetypeConcept: opt.archetypeConcept,
                 organizationUid:  opt.organizationUid,
-                setID:       opt.setId,
-                versionNumber: opt.versionNumber]
+                setID:            opt.setId,
+                versionNumber:    opt.versionNumber,
+                size:             opt.size,
+                fileLocation:     opt.fileLocation]
       }
 
 
@@ -747,6 +749,8 @@ class BootStrap {
           organizationUid(opt.organizationUid)
           setId(opt.setId)
           versionNumber(opt.versionNumber)
+          size(opt.size)
+          fileLocation(opt.fileLocation)
         }
       }
 
