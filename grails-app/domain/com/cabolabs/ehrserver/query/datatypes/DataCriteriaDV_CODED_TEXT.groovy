@@ -132,7 +132,7 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
 
          //println constraint
          //println constraint.reference // ac0001
-         //println constraint.terminologyIdName
+         //println constraint.terminologyId
          //println constraint.terminologyRef
 
          // to get terms from the openehr terminology
@@ -143,13 +143,13 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
             def constraint = constraints.find{ it.type == 'C_CODE_PHRASE' }
             if (constraint) // C_CODE_PHRASE is the only type that has codeList, the constraint can be also COSTRAINT_REF or or C_CODE_REFERENCE.
             {
-               if (constraint.terminologyIdName == 'local')
+               if (constraint.terminologyId == 'local')
                {
                   constraint.codeList.each { code ->
                      codes[code] = optMan.getText(archetypeId, code, lang, namespace)
                   }
                }
-               else if (constraint.terminologyIdName == 'openehr')
+               else if (constraint.terminologyId == 'openehr')
                {
                   // resolve against terminology!!!
 
@@ -168,13 +168,13 @@ class DataCriteriaDV_CODED_TEXT extends DataCriteria {
                if (nodes)
                {
                   nodes.each { ccodephrase ->
-                     if (ccodephrase.terminologyIdName == 'local')
+                     if (ccodephrase.terminologyId == 'local')
                      {
                         ccodephrase.codeList.each { code ->
                            codes[code] = optMan.getText(archetypeId, code, lang, namespace)
                         }
                      }
-                     else if (ccodephrase.terminologyIdName == 'openehr')
+                     else if (ccodephrase.terminologyId == 'openehr')
                      {
                         // resolve against terminology!!!
 
