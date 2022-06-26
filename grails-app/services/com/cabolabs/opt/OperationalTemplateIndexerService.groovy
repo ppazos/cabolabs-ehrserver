@@ -407,15 +407,15 @@ class OperationalTemplateIndexerService {
    {
       def opt_uid = template.uid.value.text()
       def opt_template_id = template.template_id.value.text()
-      def opts = OperationalTemplateIndex.forOrg(org)
+      def opt_count = OperationalTemplateIndex.forOrg(org)
                                          .matchUidOrTemplateId(opt_uid, opt_template_id)
-                                         .list()
+                                         .count()
       // TODO: check files with old and new formats
       // println opt_uid
       // println opt_template_id
       // println opts
       // println ""
-      return !opts.isEmpty()
+      return opt_count > 0
    }
 
    private String getTemplateLanguage(GPathResult template)
@@ -477,7 +477,7 @@ class OperationalTemplateIndexerService {
          archetypeId: archetypeId,
          path: '/',
          rmTypeName: 'COMPOSITION',
-         name: [(getTemplateLanguage(this.template)): archetypeConcept]
+         name: [(language): archetypeConcept]
       )
 
       //println this.paths // test
@@ -495,12 +495,11 @@ class OperationalTemplateIndexerService {
                // The issue is that templates are defined for one language, and archetype paths can be
                // referenced from many templates, using different languages, so the name associated
                // with each path needs to be recorded in each language.
-               def opt_lang = getTemplateLanguage(this.template)
-               def lang_found = existingIndex.name.find { it.key == opt_lang }
+               def lang_found = existingIndex.name.find { it.key == language }
                if (!lang_found)
                {
                   //println "adding a new language to the archetype index: "+ di.archetypeId + di.path +": "+ opt_lang +" "+ di.name[opt_lang]
-                  existingIndex.name[opt_lang] = di.name[opt_lang] // copies the name from the new index to the existing one
+                  existingIndex.name[language] = di.name[language] // copies the name from the new index to the existing one
                }
 
 
@@ -857,7 +856,7 @@ class OperationalTemplateIndexerService {
 
 
       // Index attrs not in the OPT
-      if ( !node.rm_type_name.isEmpty() )
+      if (!node.rm_type_name.isEmpty())
       {
          createIndexesForRMAttributes(node.rm_type_name.text(), parent.archetype_id.value.text(), archetypePath, node, '/', parent)
       }
