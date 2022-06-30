@@ -205,10 +205,9 @@ class OperationalTemplateIndexerService {
       //def xmlString = groovy.xml.XmlUtil.serialize(template)
       
       // stores minified
-      def xmlString = new groovy.xml.StreamingMarkupBuilder(useDoubleQuotes: true).bind {
+      def xmlString = new groovy.xml.StreamingMarkupBuilder(useDoubleQuotes: true, encoding:'utf-8').bind {
          mkp.yield template
       }.toString()
-
 
       def templateIndex = new OperationalTemplateIndex(
          templateId:       templateId,
