@@ -216,7 +216,7 @@ class OperationalTemplateController {
             }
             else // revision choosen by user
             {
-               def old_version = alternatives.find{ it.uid == versionOfTemplateUid }
+               def old_version = alternatives.find{ it.localUid == versionOfTemplateUid }
 
                if (!old_version) // invalid uid
                {
