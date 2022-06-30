@@ -109,7 +109,7 @@ Thanks for your support!
 ## Community support
 
   * [Let me know if you are using the EHRServer!](https://twitter.com/ppazos)
-  * [Asks questions and get support](https://gitter.im/CaboLabs/EHRServer)
+  * Asks questions and get support [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/CaboLabs/EHRServer)
   * [Twitter](https://twitter.com/CloudEHRServer)
   * [LinkedIn Group](https://www.linkedin.com/groups/12070397/)
   * [Facebook Group](https://www.facebook.com/groups/ehrserver/)
@@ -120,9 +120,7 @@ Thanks for your support!
 
 <div align="center">
 
-[![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver)
-
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/CaboLabs/EHRServer)
+<!-- [![Build Status](https://travis-ci.org/ppazos/cabolabs-ehrserver.svg?branch=master)](https://travis-ci.org/ppazos/cabolabs-ehrserver) -->
 </div>
 
 
@@ -130,6 +128,13 @@ Thanks for your support!
 
   * [Installing EHRServer](https://cloudehrserver.com/learn/try_it)
   * [Subscribe to CloudEHRServer](https://cloudehrserver.com/pricing)
+  * Run with docker-compose:
+    1. $ grails war
+    2. $ cd docker-compose
+    3. $ docker-compose up
+    4. localhost:8080 will be Adminer (a MySQL manager)
+    5. localhost:8888 will be Tomcat (running EHRServer)
+    6. Change the ports and SMTP configuration in the docker-compose file
 
 
 ## Quick install, configure, run locally (step by step)
