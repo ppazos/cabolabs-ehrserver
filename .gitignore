@@ -54,7 +54,7 @@
 # avoid committing local changes to db config to the shared repo
 /grails-app/conf/DataSource.groovy
 
-/docker-compose/database
+/docker-compose/database/*
 /docker-compose/versions/e9d13294-bce7-44e7-9635-8e906da0c914
 /docker-compose/opts/e9d13294-bce7-44e7-9635-8e906da0c914
 /docker-compose/opts/base_opts
