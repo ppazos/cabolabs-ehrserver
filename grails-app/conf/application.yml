@@ -217,7 +217,8 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    dialect: org.hibernate.dialect.MySQL8Dialect
     username: ${EHRSERVER_MYSQL_DB_USERNAME}
     password: ${EHRSERVER_MYSQL_DB_PASSWORD}
 
@@ -225,7 +226,7 @@ environments:
     development:
         dataSource:
             dbCreate: create-drop
-            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC
+            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC #&useUnicode=true&characterEncoding=UTF-8
     test:
         dataSource:
             dbCreate: update

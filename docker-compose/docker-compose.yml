@@ -1,0 +1,51 @@
+version: '3.0'
+services:
+  server:
+    image: tomcat:8.5.81-jdk8
+    depends_on:
+      - db
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./opts:/usr/local/tomcat/opts
+      - ./commits:/usr/local/tomcat/commits
+      - ./versions:/usr/local/tomcat/versions
+      - ./../build/libs/cabolabs-ehrserver-2.3.war.original:/usr/local/tomcat/webapps/ROOT.war
+      # can be used to load a custom yml
+      # - ./grails-app/conf/application.yml:/app/config.yml
+    environment:
+      #- SPRING_CONFIG_LOCATION=/app/config.yml
+      - EHRSERVER_MYSQL_DB_BEHAVIOUR=create-drop
+      - EHRSERVER_MYSQL_DB_HOST=db
+      - EHRSERVER_MYSQL_DB_PORT=3306
+      - EHRSERVER_MYSQL_DB_USERNAME=ehrserver2
+      - EHRSERVER_MYSQL_DB_PASSWORD=ehrserver2
+      - EHRSERVER_DB_NAME=ehrserver2
+      - EHRSERVER_ALLOW_WEB_USER_REGISTER=false
+      - EHRSERVER_REST_SECRET=d9507256-e461-4336-a6ec-2f4127954321
+      - EHRSERVER_SNQUERY_KEY=22222222-2222-2222-2222-222222222222
+      - EHRSERVER_WORKING_FOLDER=/usr/local/tomcat/
+      # CHANGE THESE WITH SMTP SERVER/CREDENTIALs TO BE ABLE TO SEND EMAILS TO USERS
+      - EHRSERVER_EMAIL_HOST=localhost
+      - EHRSERVER_EMAIL_PORT=2525
+      - EHRSERVER_EMAIL_FROM=ehrserver@ehrserver.com
+      - EHRSERVER_EMAIL_PASS=yourSMTPPassword
+      
+  db:
+    image: mysql:5.7.38-debian
+    volumes:
+      - ./database:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=ehrserver2
+      - MYSQL_USER=ehrserver2
+      - MYSQL_PASSWORD=ehrserver2
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3366:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
