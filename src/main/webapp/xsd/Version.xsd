@@ -736,14 +736,14 @@
      </xs:complexType>
 
    <!-- https://github.com/ppazos/cabolabs-ehrserver/issues/917 -->
-   <!--
+   <!-- going back to more relazed template id format -->
    <xs:complexType name="TEMPLATE_ID">
           <xs:complexContent>
                <xs:extension base="OBJECT_ID"/>
           </xs:complexContent>
      </xs:complexType>
-   -->
-   <xs:complexType name="TEMPLATE_ID">
+   
+   <!-- <xs:complexType name="TEMPLATE_ID">
 		    <xs:complexContent>
 			      <xs:restriction base="OBJECT_ID">
 				 <xs:sequence>
@@ -751,7 +751,7 @@
 				 </xs:sequence>
 			      </xs:restriction>
 		    </xs:complexContent>
-	  </xs:complexType>
+	  </xs:complexType> -->
 
    <xs:complexType name="TERMINOLOGY_ID">
           <xs:complexContent>
