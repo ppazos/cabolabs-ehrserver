@@ -451,27 +451,30 @@ class BootStrap {
       }
 
       JSON.registerObjectMarshaller(OperationalTemplateIndex) { opt ->
-        return [templateId:       opt.templateId,
-                localTemplateId:  opt.localTemplateId,
-                concept:          opt.concept,
-                language:         opt.language,
-                uid:              opt.uid,
-                localUid:         opt.localUid,
-                archetypeId:      opt.archetypeId,
-                archetypeConcept: opt.archetypeConcept,
-                organizationUid:  opt.organizationUid,
-                setID:            opt.setId,
-                versionNumber:    opt.versionNumber,
-                size:             opt.size,
-                fileLocation:     opt.fileLocation]
+        return [
+         templateId:       opt.templateId,
+            localTemplateId:  opt.localTemplateId,
+            concept:          opt.concept,
+            language:         opt.language,
+            uid:              opt.uid,
+            localUid:         opt.localUid,
+            archetypeId:      opt.archetypeId,
+            archetypeConcept: opt.archetypeConcept,
+            organizationUid:  opt.organizationUid,
+            setID:            opt.setId,
+            versionNumber:    opt.versionNumber,
+            size:             opt.size//,
+            //fileLocation:     opt.fileLocation
+         ]
       }
 
 
       JSON.registerObjectMarshaller(Organization) { o ->
-        return [uid: o.uid,
-                name: o.name,
-                number: o.number
-               ]
+         return [
+            uid: o.uid,
+            name: o.name,
+            number: o.number
+         ]
       }
 
 
@@ -737,29 +740,29 @@ class BootStrap {
       }
 
       XML.registerObjectMarshaller(OperationalTemplateIndex) { opt, xml ->
-        xml.build {
-          templateId(opt.templateId)
-          localTemplateId(opt.localTemplateId)
-          concept(opt.concept)
-          language(opt.language)
-          uid(opt.uid)
-          localUid(opt.localUid)
-          archetypeId(opt.archetypeId)
-          archetypeConcept(opt.archetypeConcept)
-          organizationUid(opt.organizationUid)
-          setId(opt.setId)
-          versionNumber(opt.versionNumber)
-          size(opt.size)
-          fileLocation(opt.fileLocation)
-        }
+         xml.build {
+            templateId(opt.templateId)
+            localTemplateId(opt.localTemplateId)
+            concept(opt.concept)
+            language(opt.language)
+            uid(opt.uid)
+            localUid(opt.localUid)
+            archetypeId(opt.archetypeId)
+            archetypeConcept(opt.archetypeConcept)
+            organizationUid(opt.organizationUid)
+            setId(opt.setId)
+            versionNumber(opt.versionNumber)
+            size(opt.size)
+            //fileLocation(opt.fileLocation)
+         }
       }
 
       XML.registerObjectMarshaller(Organization) { o, xml ->
-        xml.build {
-          uid(o.uid)
-          name(o.name)
-          number(o.number)
-        }
+         xml.build {
+            uid(o.uid)
+            name(o.name)
+            number(o.number)
+         }
       }
    }
 

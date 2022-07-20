@@ -172,7 +172,7 @@ class StatsController {
     */
    def organization(String uid, long from, long to)
    {
-      println params
+      //println params
       // If not date range is set, set the rante to the current month
       // Range will be checked like: from <= timeCommitted < to
       // so "to" should be next months 1st day on time 0

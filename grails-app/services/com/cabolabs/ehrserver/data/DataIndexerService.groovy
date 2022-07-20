@@ -1189,4 +1189,55 @@ class DataIndexerService {
         instanceTemplatePath: paths.instanceTemplatePath
       )
    }
+
+   // Process all interval types
+   void process_DV_INTERVAL_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, 
+      String parentClass)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId, multiple_index, parentInstancePath, parentClass)
+
+      //println "paths count "+ paths.instanceTemplatePath
+
+      /*
+      <value xsi:type="DV_INTERVAL">
+         <lower xsi:type="DV_COUNT"> | DV_QUANTITY | DV_DATE_TIME
+            <magnitude>3</magnitude>
+         </lower>
+         <upper xsi:type="DV_COUNT">
+            <magnitude>50</magnitude>
+         </upper>
+         <lower_unbounded>false</lower_unbounded>
+         <upper_unbounded>false</upper_unbounded>
+      </value>
+      */
+      
+      // TODO: https://github.com/ppazos/EHRServerNG/issues/102
+   }
+
+   // TODO: DV_URI and DV_EHR_URI indexers https://github.com/ppazos/EHRServerNG/issues/101
+   void process_DV_URI_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, 
+      String parentClass)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId, multiple_index, parentInstancePath, parentClass)
+
+   }
+
+   void process_DV_EHR_URI_index(
+      GPathResult node,
+      String templateId, String path,
+      String archetypeId, String archetypePath,
+      CompositionIndex owner, List indexes, int multiple_index, String parentInstancePath, 
+      String parentClass)
+   {
+      def paths = getChildPathsAndRootArchetype(node, path, archetypePath, archetypeId, multiple_index, parentInstancePath, parentClass)
+
+   }
 }

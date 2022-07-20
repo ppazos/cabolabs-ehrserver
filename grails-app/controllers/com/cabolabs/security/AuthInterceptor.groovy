@@ -73,7 +73,7 @@ class AuthInterceptor {
          return true
       }
 
-      log.info "authInterceptor: c: ${controllerName}, a: ${actionName}"
+      //log.info "authInterceptor: c: ${controllerName}, a: ${actionName}"
 
 
       // Check access to current section by user role
@@ -111,7 +111,7 @@ class AuthInterceptor {
       {
          if (!isLoggedIn())
          {
-            log.info "not public and not logged in, redirect to auth"
+            //log.info "not public and not logged in, redirect to auth"
             flash.message = "Your session, please login."
             redirect controller: 'auth', action: 'login'
             return false

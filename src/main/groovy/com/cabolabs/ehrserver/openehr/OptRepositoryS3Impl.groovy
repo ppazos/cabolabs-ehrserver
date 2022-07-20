@@ -52,6 +52,31 @@ class OptRepositoryS3Impl implements OptRepository {
       return opt_text
    }
 
+   boolean existsOpt(String location)
+   {
+      try
+      {
+         // https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3.html#getObjectAsString-java.lang.String-java.lang.String-
+         return s3.doesObjectExist(
+            Holders.config.aws.bucket,
+            location // key
+         )
+      }
+      catch (Exception e)
+      {
+         return false
+      }
+   }
+
+   boolean existsOpt(String templateId, String namespace)
+   {
+      def normalizedTemplateId = templateId.normalizeStrangeCharacters().toCamelCase()
+      def location = Holders.config.aws.folders.opt_repo.withTrailSeparator() +
+                     namespace.withTrailSeparator() +
+                     normalizedTemplateId + '.opt'
+      return existsOpt(location)
+   }
+
    /**
     * Does a search in the namespace and finds the first OPT that matches the templateId.
     * Returns null if no OPT was found.

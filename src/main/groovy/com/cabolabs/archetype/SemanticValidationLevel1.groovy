@@ -358,19 +358,19 @@ class SemanticValidationLevel1 {
 
 /*
       println "------------"
-      println opt.nodes.values().flatten().templateDataPath //.value.templateDataPath
+      println opt.nodes.values().flatten().templatePath //.value.templatePath
       println templatePath
       println archetypePath
       println archetypeId
-      //println opt.nodes*.value //.collect{ it.templateDataPath }
-      println opt.nodes.values().flatten().findAll { it.templateDataPath == templatePath }.class
+      //println opt.nodes*.value //.collect{ it.templatePath }
+      println opt.nodes.values().flatten().findAll { it.templatePath == templatePath }.class
 
-      println opt.getNodesByTemplateDataPath(templatePath)
+      println opt.getNodesByTemplatePath(templatePath) << note this is not a templateDataPath is a templatePath without the alternative indezes for OPT nodes
       */
 
       // check the node is defined by the OPT
       if (!continue_with_children_attrs.contains(node.name()) &&
-          !opt.existsNodeByTemplateDataPath(templatePath)) // in memory verification!
+          !opt.existsNodeByTemplatePath(templatePath)) // in memory verification!
       {
          if (!errors[compoIndex]) errors[compoIndex] = []
          errors[compoIndex] << 'Found a node ('+ templatePath +') that is not defined in the template "'+ templateId +'"' // TODO: i18n

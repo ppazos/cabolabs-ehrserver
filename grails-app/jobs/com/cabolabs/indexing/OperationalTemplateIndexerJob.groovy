@@ -42,9 +42,9 @@ class OperationalTemplateIndexerJob {
 
          // load opt in manager cache
          def optMan = OptManager.getInstance()
-         println optIndex
-         println optIndex.templateId
-         println optIndex.localTemplateId
+         //println optIndex
+         //println optIndex.templateId
+         //println optIndex.localTemplateId
          
          //println optMan.status()
          optMan.load(optIndex.templateId, optIndex.organizationUid, true)

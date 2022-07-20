@@ -227,7 +227,7 @@ class OrganizationController {
    @Transactional
    def update(String uid, Long version)
    {
-     println params
+      //println params
       def organizationInstance = Organization.findByUid(uid)
       organizationInstance.properties = params
       organizationInstance.validate()
