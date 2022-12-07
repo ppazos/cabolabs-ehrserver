@@ -32,9 +32,10 @@ services:
       - EHRSERVER_EMAIL_PASS=yourSMTPPassword
       
   db:
-    image: mysql:5.7.38-debian
+    image: mysql:5.7.40-debian
     volumes:
-      - ./database:/var/lib/mysql
+      - mysql_data:/var/lib/mysql # managed by docker
+      #- ./database:/var/lib/mysql # not managed by docker
     restart: always
     environment:
       - MYSQL_DATABASE=ehrserver2
@@ -49,3 +50,6 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+volumes:
+  mysql_data:

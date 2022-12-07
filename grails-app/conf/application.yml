@@ -217,8 +217,8 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    dialect: org.hibernate.dialect.MySQL8Dialect
+    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    #dialect: org.hibernate.dialect.MySQL8Dialect
     username: ${EHRSERVER_MYSQL_DB_USERNAME}
     password: ${EHRSERVER_MYSQL_DB_PASSWORD}
 
@@ -226,11 +226,11 @@ environments:
     development:
         dataSource:
             dbCreate: create-drop
-            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC #&useUnicode=true&characterEncoding=UTF-8
+            url: jdbc:mysql://localhost:3306/ehrserver2?useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2 #&useUnicode=true&characterEncoding=UTF-8
     test:
         dataSource:
             dbCreate: update
-            url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC
+            url: jdbc:mysql://localhost:3306/ehrserver2_test?useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
     production:
         app:
             version_repo: ${EHRSERVER_WORKING_FOLDER}versions
@@ -238,7 +238,7 @@ environments:
             opt_repo: ${EHRSERVER_WORKING_FOLDER}opts
         dataSource:
             dbCreate: ${EHRSERVER_MYSQL_DB_BEHAVIOUR}
-            url: jdbc:mysql://${EHRSERVER_MYSQL_DB_HOST}:${EHRSERVER_MYSQL_DB_PORT}/${EHRSERVER_DB_NAME}?useTimezone=true&serverTimezone=UTC
+            url: jdbc:mysql://${EHRSERVER_MYSQL_DB_HOST}:${EHRSERVER_MYSQL_DB_PORT}/${EHRSERVER_DB_NAME}?useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
             properties:
                 jmxEnabled: true
                 initialSize: 5
