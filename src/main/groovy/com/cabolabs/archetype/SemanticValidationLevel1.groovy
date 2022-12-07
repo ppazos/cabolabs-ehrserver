@@ -327,8 +327,8 @@ class SemanticValidationLevel1 {
       //println "-------------- VALIDATE COMPOSITION NAMESPACE "+ this.namespace
       def opt = optMan.getOpt(templateId, this.namespace)
 
-      // test
-      opt.nodes.sort{ it.key }.each { p, o -> println p }
+      // test: prints all paths of the OPT sorted
+      //opt.nodes.sort{ it.key }.each { p, o -> println p }
 
       traverseCompoNodes(compo, templateId, '/', archetypeId, '/', 'COMPOSITION', opt, compoIndex)
    }

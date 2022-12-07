@@ -132,9 +132,9 @@ Thanks for your support!
     1. $ grails war
     2. $ cd docker-compose
     3. $ docker-compose up
-    4. localhost:8080 will be Adminer (a MySQL manager)
-    5. localhost:8888 will be Tomcat (running EHRServer)
-    6. Change the ports and SMTP configuration in the docker-compose file
+    4. localhost:8080 will be Adminer (a MySQL manager) (default user: ehrserver2/ehrserver2)
+    5. localhost:8888 will be Tomcat (running EHRServer) (default user: admin@cabolabs.com/admin)
+    6. Change the ports and SMTP configuration in the docker-compose file (optional, for user management like password reset)
 
 
 ## Quick install, configure, run locally (step by step)
