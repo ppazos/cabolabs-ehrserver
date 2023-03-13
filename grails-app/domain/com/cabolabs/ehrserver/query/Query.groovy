@@ -187,7 +187,10 @@ class Query {
          // http://codippa.com/how-to-resolve-a-collection-with-cascadeall-delete-orphan-was-no-longer-referenced-by-the-owning-entity-instance/
 
          // from tree to associative expression
-         this.where.addAll( DataCriteriaExpression.treeToExpression(json.where) )
+         if (json.where) // the GUI allows the where to be empty
+         {
+            this.where.addAll( DataCriteriaExpression.treeToExpression(json.where) )
+         }
          /*
          json.where.each { criteria ->
 

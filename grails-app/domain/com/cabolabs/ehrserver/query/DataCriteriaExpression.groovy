@@ -69,6 +69,9 @@ class DataCriteriaExpression {
    // boolean expression in Query.where
    static List treeToExpression(org.grails.web.json.JSONObject criteria)
    {
+      // avoids nulls
+      if (!criteria) return []
+
       //println criteria.toString()
       prepareCriteriaTree(criteria) // sets all node.parent
       //println criteria.toString() // this gives a stack overflow because of the parent links, is a graph not a tree
